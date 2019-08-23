@@ -5,9 +5,6 @@
 
 package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation;
 
-import com.cmclinnovations.data.collections.ObjectPool;
-import com.cmclinnovations.io.file.parser.FileParser;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,14 +13,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import com.cmclinnovations.data.collections.ObjectPool;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
@@ -36,7 +33,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -60,7 +57,7 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  * - There are at least two iterations of calculations. It takes a few days (more than 5 days) to complete calculations.
  *   
  * Output of calculations:
- * - Estimates dHf (298.15K) for selected 923 reference species.
+ * - Estimates dHf (298.15K) for selected 920 reference species.
  * - Generates complete reaction (rst file) list and species list (csv file) in folders named as same as species id's name. Species's id (CAS Registry Number) is given in first column of input 'csv' file. 
  * - Generates files in '.temp' folder. The folder has more than 66GB of data.  
  * - Based on [1] (page 149), it should return 'a set of consistent (accepted) and a set of inconsistent (rejected) reference data' [1]. 
@@ -90,7 +87,8 @@ public class LeaveOneOutCrossValidation {
          *  
          * String srcRefPool = "C:\\Users\\pb556\\workspace\\methodology\\results\\thermal_scaled_kJperMol.csv";
          * String destRList = "C:\\Users\\pb556\\workspace\\methodology\\results\\leave-one-out-x-validation\\hco\\";
-        */         	
+         * 
+        */
     	
     	/**
          * @author nk510
@@ -98,11 +96,17 @@ public class LeaveOneOutCrossValidation {
          * @since 2018-04-20
          * 
     	 * srcRefPool: Testing main method by using recovered file: thermal_scaled_kJperMol.csv (date stamp: date stamp 19/03/16. @19.48) and created new file path.   	
-    	 * Input file contains information about 923 species
+    	 * Input file contains information about 920 species
     	 * 
          */    	 
     	
-    	String srcRefPool = "D:\\LeaveOneOutCrossValidation_results\\thermal_scaled_kJperMol.csv";
+//    	String srcRefPool = "D:\\LeaveOneOutCrossValidation_results\\thermal_scaled_kJperMol.csv";
+    	
+//    	String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\179-pb556-DetailedMethodology\\calc-enthalpy_scaled_kJperMol.csv";
+    	
+    	String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+    	    	
+//    	String srcRefPool ="C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol3.csv";
     	
     	/**
     	 * @author nk510
@@ -112,11 +116,12 @@ public class LeaveOneOutCrossValidation {
          * destRList: Output folder that contains folders named by species-id (using 'ref' attribute in Java class 'Species')
     	 * Each folder could be empty (no calculation output) such as 2409-55-4, or contains one or more 'rct', and 'csv' files. 
     	 * The folder is created ones.
+    	 * 
          */
     	
-        String destRList = "D:\\LeaveOneOutCrossValidation_results\\leave-one-out-x-validation\\hco10\\";
+        String destRList = "D:\\Data-Philip\\LeaveOneOutCrossValidation_results\\";
         
-        /** 
+        /**
          * 
          * @author nk510
          * @version 1.0
@@ -124,6 +129,7 @@ public class LeaveOneOutCrossValidation {
          *
          *  refParser: Creates object variable of  SpeciesPoolParser by using input csv file.
          *  SpeciesPoolParser class implements methods for parsing input csv file. It extends CSVParser (extends FileParser<Set<Species>>) class.
+         *  
          */
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
@@ -142,6 +148,7 @@ public class LeaveOneOutCrossValidation {
          */
         
         List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
+
         
         /**
          * @author nk510
@@ -155,7 +162,7 @@ public class LeaveOneOutCrossValidation {
          * 
          */
         
-        LPSolver solver = new TerminalGLPKSolver(15000, true, true);
+        LPSolver solver = new TerminalGLPKSolver(15000, true, true); 
         
         /**
          * @author nk510
@@ -184,26 +191,30 @@ public class LeaveOneOutCrossValidation {
          * 
          * */
 
-        solver.setDirectory(new File("D:\\LeaveOneOutCrossValidation_temp11\\"));
+        solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
 
         /**
+         * 
          * @author nk510
          * @version 1.0
          * @since 2018-04-20
          *          
          * I can not understand what is the meaning of integer arrays defined below, used as a maximum number of loops in calculations. They are used in calculation loop as a lower/upper bounds like in matrix dimensions [crtRuns,crtRes].
          * I did not find in PhD thesis [1] term 'radicals' used in pseudo code of Chapter 6 [1]. Term 'radicals' appears in Chapter 2 [1].
+         * 
          */
         
         int[] ctrRuns = new int[]{1};
         int[] ctrRes = new int[]{5}; // 1, 5, 15, 25  // first version: int[] ctrRes = new int[]{25};
-        int[] ctrRadicals = new int[]{100, 1, 2, 3, 4, 5}; // 0, 1, 2, 3, 4, 5  //first version: int[] ctrRadicals = new int[]{100, 0, 1, 2};
+        int[] ctrRadicals = new int[]{100}; // 100, 1, 2, 3, 4, 5 |  0, 1, 2, 3, 4, 5  //first version: int[] ctrRadicals = new int[]{100, 0, 1, 2};
         
         for (int z = 0; z < ctrRadicals.length; z++) {
             
         	int maxRadical = ctrRadicals[z];
             
-            int timeout = 600;
+//            int timeout = 600;
+      
+        	  int timeout = 1500;
             
             RadicalsFilter filter = new RadicalsFilter(0, maxRadical);
 
@@ -309,7 +320,9 @@ public class LeaveOneOutCrossValidation {
                          *                          
                          */
                         
-                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
+                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+                        
+//                      PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HDReactionType()));
                         
                         /**
                     	 * @author nk510
@@ -330,9 +343,8 @@ public class LeaveOneOutCrossValidation {
                          *                          
                          */
                         
-                        MultiRunCalculator c =
-                                new MultiRunCalculator(
-                                poolModCalc);
+                        MultiRunCalculator c = new MultiRunCalculator(poolModCalc);
+                        
                         c.setNumberOfRuns(ctrRuns[i]);
                         
                         /**

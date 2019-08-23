@@ -47,6 +47,8 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  *
  * @author pb556
  * 
+ * Generates HD type of reactions for selected three species. 
+ * 
  */
 
 public class TiCl4CalculationHD {
@@ -79,7 +81,7 @@ public class TiCl4CalculationHD {
         
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-3-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";
         
 //      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
@@ -107,35 +109,55 @@ public class TiCl4CalculationHD {
         Map<String, Integer[]> mapElPairing = new HashMap<>();
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+        
         refParser.parse();
+        
         List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
 
         SpeciesPoolParser soiParser = new SpeciesPoolParser(new File(srcSoiPool));
+        
         soiParser.parse();
+        
         List<Species> soiSpecies = new ArrayList<>(soiParser.getSpeciesOfInterest());
 
         Collection<Species> invalids = new HashSet<>();
+        
         Map<Species, Integer> spinMultiplicity = new HashMap<>();
+        
         int ctr = 1;
 
         Set<Species> all = new HashSet<>();
         
         all.addAll(soiSpecies);
+        
         all.addAll(refSpecies);
 
         for (Species s : all) {
-            System.out.println("REF: Processing " + ctr + " / " + all.size());
-            ctr++;
-            File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
-            if (f.exists()) {
+        	
+        System.out.println("REF: Processing " + ctr + " / " + all.size());
+        
+        ctr++;
+        
+        File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
+        
+        if (f.exists()) {
+        	
                 System.out.print(f.getName() + ": ");
+                
                 try {
+                	
                     Integer[] e = HfSpeciesConverter.getNumberOfElectrons(HfSpeciesConverter.parse(f));
+                    
                     if (e != null) {
+                    	
                         spinMultiplicity.put(s, e[1] + 1);
+                        
                         mapElPairing.put(s.getRef(), e);
+                        
                     } else {
+                    	
                         System.out.println("REF: e- pairing could not be determined for " + s.getRef());
+                        
                         invalids.add(s);
                     }
                     

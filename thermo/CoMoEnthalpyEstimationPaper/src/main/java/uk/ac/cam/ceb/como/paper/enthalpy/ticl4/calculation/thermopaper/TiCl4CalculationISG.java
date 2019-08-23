@@ -21,6 +21,10 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import com.google.common.collect.Multiset;
+
+import uk.ac.cam.ceb.como.chem.periodictable.Block;
+import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.reactions.ReactionListWriter;
@@ -40,7 +44,6 @@ import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.HfSpeciesConverter;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
-
 /**
  *
  * @author pb556
@@ -70,7 +73,7 @@ public class TiCl4CalculationISG {
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\";
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //171//ref-enthalpy_scaled_kJperMol.csv
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 1 species in first raw. Other species from the list belong to reference species.
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-O2-3let.csv";
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv";
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv"; //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species. //171//calc-enthalpy_scaled_kJperMol.csv
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg\\";
@@ -105,51 +108,250 @@ public class TiCl4CalculationISG {
         Map<String, Integer[]> mapElPairing = new HashMap<>();
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+        
         refParser.parse();
+        
         List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
 
+        System.out.println("- - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - ");
+        
+        System.out.println("refSpecies: ");
+        
+        for(Species spRef : refSpecies) {
+        	
+        	System.out.println("spRef.getRef(): " + spRef.getRef());
+        	System.out.println("spRef.getHf(): " + spRef.getHf());
+        	System.out.println("spRef.getTotalEnergy(): " + spRef.getTotalEnergy());
+        	
+        	Map<String, String> atomicMap = spRef.getAtomMap();
+        	
+        	System.out.println("Atomic map:");
+        	
+        	for(Map.Entry<String, String> atMap:atomicMap.entrySet()) {
+        		
+            System.out.println("- " + atMap.getKey() + " " + atMap.getValue());
+        		
+        	}
+
+        	Multiset<Element> multiSet = spRef.getAtomMultiset();
+        	
+        	System.out.println("Element MultiSet: ");
+        	
+        	for(Element elMultiSet : multiSet) {
+        		
+        		System.out.println("elMultiSet.getAtomicNumber(): " + elMultiSet.getAtomicNumber());
+        		System.out.println("elMultiSet.getAtomicWeight(): " + elMultiSet.getAtomicWeight());
+        		System.out.println("elMultiSet.getGroup(): " + elMultiSet.getGroup());
+        		System.out.println("elMultiSet.getMassNumber(): " + elMultiSet.getMassNumber());
+        		System.out.println("elMultiSet.getName(): " + elMultiSet.getName());
+        		System.out.println("elMultiSet.getNumberOfNeutrons(): " + elMultiSet.getNumberOfNeutrons());
+        		System.out.println("elMultiSet.getNumberOfPairedElectrons(): " + elMultiSet.getNumberOfPairedElectrons());
+        		System.out.println("elMultiSet.getNumberOfUnpairedElectrons(): " + elMultiSet.getNumberOfUnpairedElectrons());
+        		System.out.println("elMultiSet.getPeriod(): " + elMultiSet.getPeriod());
+        		System.out.println("elMultiSet.getSymbol(): " + elMultiSet.getSymbol());
+        		System.out.println("elMultiSet.getBlock(): " + elMultiSet.getBlock());
+        	}
+        	
+        	Map<String, Element> elementMap = spRef.getElementMap();
+        	
+        	System.out.println("Element Map: ");
+        	
+        	for(Map.Entry<String, Element> element: elementMap.entrySet()) {
+        		
+        		System.out.println("element.getKey(): " + element.getKey());
+        		
+        		Element elementObject = element.getValue();
+        		
+        		System.out.println("elementObject.getAtomicNumber(): " + elementObject.getAtomicNumber());
+        		System.out.println("elementObject.getAtomicWeight(): " + elementObject.getAtomicWeight());
+        		System.out.println("elementObject.getGroup(): " + elementObject.getGroup());
+        		System.out.println("elementObject.getMassNumber(): " + elementObject.getMassNumber());
+        		System.out.println("elementObject.getName(): " + elementObject.getName());
+        		System.out.println("elementObject.getNumberOfNeutrons(): " + elementObject.getNumberOfNeutrons());
+        		System.out.println("elementObject.getNumberOfPairedElectrons(): " + elementObject.getNumberOfPairedElectrons());
+        		System.out.println("elementObject.getNumberOfUnpairedElectrons(): " + elementObject.getNumberOfUnpairedElectrons());
+        		System.out.println("elementObject.getPeriod(): " + elementObject.getPeriod());
+        		System.out.println("elementObject.getSymbol(): " + elementObject.getSymbol());
+        		        		
+        		Block block = elementObject.getBlock();
+        		
+        		System.out.println("Block: ");
+        		
+        		System.out.println("block.name(): " + block.name());
+        		System.out.println("block.ordinal(): " + block.ordinal());
+        		
+        	}
+        }
+        
+        System.out.println("- - - - - - - - - - - - - - - - - - -  - - - - - - - - - - - - - ");
+        
         SpeciesPoolParser soiParser = new SpeciesPoolParser(new File(srcSoiPool));
+        
         soiParser.parse();
+        
         List<Species> soiSpecies = new ArrayList<>(soiParser.getSpeciesOfInterest());
 
+        System.out.println("soiSpecies: ");
+        
+        for(Species sp: soiSpecies) {
+        	
+        	System.out.println("species.getRef(): " + sp.getRef());
+        	System.out.println("species.getHf(): " + sp.getHf());
+        	System.out.println("species.getTotalEnergy(): " + sp.getTotalEnergy());
+        	
+        	Map<String, String> atomicMap = sp.getAtomMap();
+        	
+        	System.out.println("Atomic map:");
+        	
+        	for(Map.Entry<String, String> atMap:atomicMap.entrySet()) {
+        		
+            System.out.println("- " + atMap.getKey() + " " + atMap.getValue());
+        		
+        	}
+
+        	Multiset<Element> multiSet = sp.getAtomMultiset();
+        	
+        	System.out.println("Element MultiSet: ");
+        	
+        	for(Element elMultiSet : multiSet) {
+        		
+        		System.out.println("elMultiSet.getAtomicNumber(): " + elMultiSet.getAtomicNumber());
+        		System.out.println("elMultiSet.getAtomicWeight(): " + elMultiSet.getAtomicWeight());
+        		System.out.println("elMultiSet.getGroup(): " + elMultiSet.getGroup());
+        		System.out.println("elMultiSet.getMassNumber(): " + elMultiSet.getMassNumber());
+        		System.out.println("elMultiSet.getName(): " + elMultiSet.getName());
+        		System.out.println("elMultiSet.getNumberOfNeutrons(): " + elMultiSet.getNumberOfNeutrons());
+        		System.out.println("elMultiSet.getNumberOfPairedElectrons(): " + elMultiSet.getNumberOfPairedElectrons());
+        		System.out.println("elMultiSet.getNumberOfUnpairedElectrons(): " + elMultiSet.getNumberOfUnpairedElectrons());
+        		System.out.println("elMultiSet.getPeriod(): " + elMultiSet.getPeriod());
+        		System.out.println("elMultiSet.getSymbol(): " + elMultiSet.getSymbol());
+        		System.out.println("elMultiSet.getBlock(): " + elMultiSet.getBlock());
+        		
+        	}
+        	
+        	Map<String, Element> elementMap = sp.getElementMap();
+        	
+        	System.out.println("Element Map: ");
+        	
+        	for(Map.Entry<String, Element> element: elementMap.entrySet()) {
+        		
+        		System.out.println("element.getKey(): " + element.getKey());
+        		
+        		Element elementObject = element.getValue();
+        		
+        		System.out.println("elementObject.getAtomicNumber(): " + elementObject.getAtomicNumber());
+        		System.out.println("elementObject.getAtomicWeight(): " + elementObject.getAtomicWeight());
+        		System.out.println("elementObject.getGroup(): " + elementObject.getGroup());
+        		System.out.println("elementObject.getMassNumber(): " + elementObject.getMassNumber());
+        		System.out.println("elementObject.getName(): " + elementObject.getName());
+        		System.out.println("elementObject.getNumberOfNeutrons(): " + elementObject.getNumberOfNeutrons());
+        		System.out.println("elementObject.getNumberOfPairedElectrons(): " + elementObject.getNumberOfPairedElectrons());
+        		System.out.println("elementObject.getNumberOfUnpairedElectrons(): " + elementObject.getNumberOfUnpairedElectrons());
+        		System.out.println("elementObject.getPeriod(): " + elementObject.getPeriod());
+        		System.out.println("elementObject.getSymbol(): " + elementObject.getSymbol());
+        		        		
+        		Block block = elementObject.getBlock();
+        		
+        		System.out.println("Block: ");
+        		
+        		System.out.println("block.name(): " + block.name());
+        		System.out.println("block.ordinal(): " + block.ordinal());
+        		
+        	}        	
+        }
+        
         Collection<Species> invalids = new HashSet<>();
+        
         Map<Species, Integer> spinMultiplicity = new HashMap<>();
+        
         int ctr = 1;
 
         Set<Species> all = new HashSet<>();
+        
         all.addAll(soiSpecies);
+        
         all.addAll(refSpecies);
 
         for (Species s : all) {
-            System.out.println("REF: Processing " + ctr + " / " + all.size());
-            ctr++;
-            File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
-            if (f.exists()) {
-                System.out.print(f.getName() + ": ");
-                try {
-                    Integer[] e = HfSpeciesConverter.getNumberOfElectrons(HfSpeciesConverter.parse(f));
-                    if (e != null) {
-                        spinMultiplicity.put(s, e[1] + 1);
-                        mapElPairing.put(s.getRef(), e);
+        
+        System.out.println("REF: Processing " + ctr + " / " + all.size());
+            
+        ctr++;
+        
+        File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
+            
+        if (f.exists()) {
+        
+        System.out.print(f.getName() + ": ");
+        
+        try {
+
+            		Integer[] e = HfSpeciesConverter.getNumberOfElectrons(HfSpeciesConverter.parse(f));
+                    
+            		System.out.println("Integer[] e = HfSpeciesConverter.getNumberOfElectrons(HfSpeciesConverter.parse(f));");
+            		
+            		for(Integer e1: e) {
+            			
+            		System.out.println("e1: " + e1);
+            		
+            		}
+            		
+            		if (e != null) {
+                    
+            			spinMultiplicity.put(s, e[1] + 1);
+                        
+            			mapElPairing.put(s.getRef(), e);
+            			
                     } else {
+                    	
                         System.out.println("REF: e- pairing could not be determined for " + s.getRef());
+                        
                         invalids.add(s);
+                        
                     }
+            		
+            		System.out.println("mapElPairing:");
+            		
+            		for(Map.Entry<String, Integer[]> mapEl : mapElPairing.entrySet()) {
+            			
+            			System.out.println(" - mapEl.getKey(): " + mapEl.getKey());
+            			
+            			Integer[] mapElInt = mapEl.getValue();
+            			
+            			for(Integer m:mapElInt) {
+            				
+            				System.out.println(" - m.floatValue(): " +m.floatValue());
+            			}
+            			
+            		}
+            		
                 } catch (NullPointerException npe) {
+                	
                 	/**
+                	 * 
                 	 * Check this line with Angiras.
+                	 * 
                 	 */
                     if (s.getRef().compareTo("Ti5O6Cl8") == 0) {
+                    	
                         spinMultiplicity.put(s, 1);
+                        
                     } else {
+                    	
                         System.out.println(s.getRef());
+                        
                     }
+                    
                 }
+            	
             } else {
+            	
                 System.out.println("REF: No file found for " + s.getRef());
+                
                 invalids.add(s);
             }
         }
+        
         refSpecies.removeAll(invalids);
         
         all.removeAll(invalids);
@@ -164,11 +366,14 @@ public class TiCl4CalculationISG {
         solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
 
         int[] ctrRuns = new int[]{1};
+        
         int[] ctrRes = new int[]{1}; // 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, - number of reactions //8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
+        
         int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
 
         for (int z = 0; z < ctrRadicals.length; z++) {
-            int maxRadical = ctrRadicals[z];
+        
+        	int maxRadical = ctrRadicals[z];
             
             int timeout = 1500;
             
@@ -185,7 +390,7 @@ public class TiCl4CalculationISG {
                     	System.out.println("Skipping " + destRList + "\\" + config);
                         
                     	continue;
-                    	
+                    
                     }
                     
                     Collections.shuffle(refSpecies);
@@ -247,13 +452,18 @@ public class TiCl4CalculationISG {
                         Future<Map<Species, Collection<ReactionList>>> future = executor.submit(t);
                         
                         try {
+                        	
                             try {
+                            	
                                 Map<Species, Collection<ReactionList>> r = (Map<Species, Collection<ReactionList>>) future.get(timeout, TimeUnit.SECONDS);
                                 
                                 if (r != null) {
+                                	
                                     for (Species sR : r.keySet()) {
+                                    	
                                         results.put(target, r.get(sR));
                                     }
+                                    
                                 } else {
                                     r = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
                                     
@@ -262,24 +472,31 @@ public class TiCl4CalculationISG {
                                         for (Species sR : r.keySet()) {
                                         	
                                             results.put(target, r.get(sR));
-                                            
                                         }
                                         
                                     } else {
                                     	
                                         results.put(target, null);
-                                        
+                                     
                                     }
                                 }
                             } catch (TimeoutException | InterruptedException | ExecutionException e) {
+                            	
                                 System.out.println("Terminated!");
+                                
                                 Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
+                                
                                 if (re != null) {
-                                    for (Species sR : re.keySet()) {
-                                        results.put(target, re.get(sR));
+                                
+                                	for (Species sR : re.keySet()) {
+                                    
+                                		results.put(target, re.get(sR));
                                     }
+                                	
                                 } else {
+                                	
                                     results.put(target, null);
+                                    
                                 }
                             }
 
@@ -333,7 +550,6 @@ public class TiCl4CalculationISG {
                                 	   System.out.println("key.getRef(): " + key.getRef() + " ,  value : " + value);
                                    }
                                    
-
                                    System.out.println("[r.getSpecies().getRef(): " +r.getSpecies().getRef() + "] [r.getSpecies().getHf(): " + r.getSpecies().getHf() + "] [r.getSpecies().getTotalEnergy(): " + r.getSpecies().getTotalEnergy() + "]");
                                     
                                     s.setHf(r.calculateHf());
