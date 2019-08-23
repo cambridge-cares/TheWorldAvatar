@@ -50,11 +50,12 @@ class CliInputStrategy(object):
         self.q_method_map = None
         self.raw_src = None
         self.OPT = Constants.TPL_OPT
-        self.range = self.get_range(self.coords)
+        self.range = None
 
     def extract_data(self):
         self.BDN = self.get_bdn(self.bdn_data)
         self.coords = self.get_coordinates(self.coor_data)
+        self.range = self.get_range(self.coords)
         self.input = self.retrieve_input()
         self.input[Constants.KEY_BDN] = self.BDN
         self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)
@@ -157,18 +158,16 @@ class CliInputStrategy(object):
 
         q1, q2, q3 = self.get_src_queries()
 
-        for src in (self.entity,):
-            new_src = self.get_new_src(src, self.query(q1), self.query(q2), self.query(q3))
+        for src in self.entity:
+            new_src = self.get_new_src(self.get_src_iri(src), self.query(q1), self.query(q2), self.query(q3))
 
             sources.append(new_src)
 
         return sources
 
-    def get_new_src(self, src, qdata, qdata_c, qdata_erate):
-        iri = self.get_src_iri(src)
-        if iri is not None:
-            aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
-            return self.make_src(aresult, sorteder, pollutantnames)
+    def get_new_src(self, iri, qdata, qdata_c, qdata_erate):
+        aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
+        return self.make_src(aresult, sorteder, pollutantnames)
 
     def get_src_queries(self):
         return None, None, None
@@ -284,6 +283,7 @@ class PlantCliInputStrategy(CliInputStrategy):
     def __init__(self, args):
         super().__init__(args)
         self.pollutants = [Constants.POL_CO2, Constants.POL_CO, Constants.POL_NO2, Constants.POL_HC, Constants.POL_NOX]
+        self.entity = (self.entity,)
 
     def retrieve_input(self):
         self.raw_src = self.get_src_data()
@@ -372,8 +372,9 @@ class ShipCliInputStrategy(CliInputStrategy):
         iri = self.get_src_iri(src)
         if iri is not None:
             aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
-            aresult[Constants.KEY_MMSI] = src[Constants.KEY_MMSI]
-            return self.make_src(aresult, sorteder, pollutantnames)
+            new_src = self.make_src(aresult, sorteder, pollutantnames)
+            new_src.set_name(src[Constants.KEY_MMSI])
+            return new_src
 
     def get_src_iri(self, src):
         return self.connect_chimney_db(src)
@@ -457,9 +458,8 @@ class ShipCliInputStrategy(CliInputStrategy):
                         Constants.KEY_GRPTANK, src_names, 0)
 
     def connect_chimney_db(self, src):
-        #mmsi = src[Constants.KEY_MMSI]
-        #iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
-        iri = 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl'
+        mmsi = src[Constants.KEY_MMSI]
+        iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
         self.connect_db(iri, Constants.KEY_PARSE)
 
         return iri

@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+
 class Constants(object):
     BASE_IRI = 'http://www.theworldavatar.com/'
     IRI_ONTO = BASE_IRI + 'ontology/'
@@ -95,18 +96,18 @@ class Constants(object):
     OWL_PHASE_SYSTEM = IRI_ONTOCAPE + 'material/phase_system/phase_system.owl#'
     OWL_TIMESPACE_EXT = IRI_ONTOCAPE + 'supporting_concepts/space_and_time/space_and_time_extended.owl#'
     OWL_PLANT = IRI_ONTOCAPE + 'chemical_process_system/CPS_realization/plant.owl#'
-    OWL_TOPOLOGY = IRI_ONTOCAPE + 'meta_model/topology/topology.owl#'
+    OWL_TOPOLOGY = IRI_ONTO + 'meta_model/topology/topology.owl#'
     OWL_CHEM_PROC_SYS = IRI_ONTOCAPE + 'chemical_process_system/chemical_process_system.owl#'
     OWL_TECH_SYS = IRI_ONTOCAPE + 'upper_level/technical_system.owl#'
     OWL_MATERIAL = IRI_ONTOCAPE + 'material/material.owl#'
-    OWL_SUBSTANCE = IRI_ONTOCAPE + 'substance/substance.owl#'
-    OWL_NO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Nitrogen__dioxide',
-    OWL_CO = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Carbon__monoxide',
-    OWL_CO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Carbon__dioxide',
-    OWL_SO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Sulfur__dioxide',
-    OWL_O3 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Ozone',
-    OWL_HC = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Unburned_Hydrocarbon',
-    OWL_NOx = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Nitrogen__oxides',
+    OWL_SUBSTANCE = IRI_ONTOCAPE + 'material/substance/substance.owl#'
+    OWL_NO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Nitrogen__dioxide'
+    OWL_CO = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Carbon__monoxide'
+    OWL_CO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Carbon__dioxide'
+    OWL_SO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Sulfur__dioxide'
+    OWL_O3 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Ozone'
+    OWL_HC = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Unburned_Hydrocarbon'
+    OWL_NOx = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Nitrogen__oxides'
     OWL_PART_001 = IRI_KB_SHIPS + 'Chimney-1.owl#Particulate-001'
     KEY_DIAMETER = 'diameter'
     KEY_DENSITY = 'density'
@@ -142,7 +143,7 @@ class Constants(object):
                                  'OptPercentiles', 'OptExceedences', 'OptUnits', 'OptGroupsOrSource',
                                  'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
                                  'OptCreateComprehensiveFile'])
-    KEY_GRPTANK  = 'Grouptank001'
+    KEY_GRPTANK = 'Grouptank001'
 
 
 class QueryStrings(object):
@@ -194,9 +195,10 @@ class QueryStrings(object):
                 PREFIX material: <''' + Constants.OWL_MATERIAL + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 
-                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER \
-                                                                       + ''' ?temp ?height ?massflow ?heatcapa ?''' \
-                                                                       + Constants.KEY_DENSITY + ''' ?moleweight
+                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER + ''' ?''' + \
+                                    Constants.KEY_TEMP + ''' ?''' + Constants.KEY_HEIGHT + ''' ?''' + \
+                                    Constants.KEY_MASS_FLOW + ''' ?''' + Constants.KEY_HEAT_CAP + ''' ?''' + \
+                                    Constants.KEY_DENSITY + ''' ?''' + Constants.KEY_MOLE_WEIGHT + '''
                 WHERE {
                 
                     ?o plant:hasHeight ?he.
@@ -282,19 +284,20 @@ class QueryStrings(object):
 
     SPARQL_HEIGHT_DIAMETER_CONTENT_X_Y_VELOCITY_MASSFLOW_TEMP_HEATCAPA_DENSITY_MOLEWEIGHT = '''
                 PREFIX sys: <''' + Constants.OWL_SYSTEM + '''>
-                PREFIX space_and_time_extended: <''' + Constants.OWL_TIMESPACE_EXT + ''''>
+                PREFIX space_and_time_extended: <''' + Constants.OWL_TIMESPACE_EXT + '''>
                 PREFIX plant:<''' + Constants.OWL_PLANT + '''>
-                PREFIX topology:''' + Constants.OWL_TOPOLOGY + '''>
+                PREFIX topology:<''' + Constants.OWL_TOPOLOGY + '''>
                 PREFIX behavior: <''' + Constants.OWL_BEHAVIOUR + '''>
-                PREFIX chemical_process_system:<''' + Constants.OWL_CHEM_PROC_SYS + ''''>
-                PREFIX phase_system:<''' + Constants.OWL_PHASE_SYSTEM + ''''>
-                PREFIX material: <''' + Constants.OWL_MATERIAL + ''''>
+                PREFIX chemical_process_system:<''' + Constants.OWL_CHEM_PROC_SYS + '''>
+                PREFIX phase_system:<''' + Constants.OWL_PHASE_SYSTEM + '''>
+                PREFIX material: <''' + Constants.OWL_MATERIAL + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
 
                 SELECT ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_HEIGHT + ''' ?''' + Constants.KEY_DIAMETER \
-                            + ''' ?''' + Constants.KEY_CONTENT + ''' ?x ?y ?velocity ?''' + Constants.KEY_MASS_FLOW \
-                            + ''' ?''' + Constants.KEY_TEMP + ''' ?''' + Constants.KEY_MOLE_WEIGHT + ''' ?''' \
-                            + Constants.KEY_HEAT_CAP + ''' ?''' + Constants.KEY_DENSITY + '''
+                            + ''' ?''' + Constants.KEY_CONTENT + ''' ?x ?y ?''' + Constants.KEY_VELOCITY + ''' ?''' \
+                            + Constants.KEY_MASS_FLOW + ''' ?''' + Constants.KEY_TEMP + ''' ?''' \
+                            + Constants.KEY_MOLE_WEIGHT + ''' ?''' + Constants.KEY_HEAT_CAP + ''' ?''' \
+                            + Constants.KEY_DENSITY + '''
                 WHERE {{
                 ?o plant:hasHeight ?he.
                 ?he sys:numericalValue ?''' + Constants.KEY_HEIGHT + ''' .

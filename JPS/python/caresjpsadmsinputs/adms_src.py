@@ -57,3 +57,6 @@ class AdmsSrc(object):
     def set_coordinates(self, coordinates):
         self.SrcX1 = coordinates[0]
         self.SrcY1 = coordinates[1]
+
+    def set_name(self, src_name):
+        self.SrcName = src_name
