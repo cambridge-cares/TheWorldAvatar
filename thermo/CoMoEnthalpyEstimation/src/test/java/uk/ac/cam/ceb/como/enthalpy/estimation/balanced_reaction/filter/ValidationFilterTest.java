@@ -4,26 +4,25 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.ValidationFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
-import org.junit.Ignore;
-import org.junit.Test;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class ValidationFilterTest {
     

@@ -4,18 +4,20 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.validation;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.ObjectPoolCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.ObjectPoolCalculator;
 
 /**
  *
@@ -30,6 +32,7 @@ public class LeaveOneOutCrossValidation implements Runnable {
     protected HashMap<Species, Reaction> resultsDetailed = null;
     protected HashMap<Species, ReactionList> resultsDetailedComplete = null;
     protected ObjectPool pool = null;
+    
     private Logger logger = Logger.getLogger(getClass());
 
     public LeaveOneOutCrossValidation(ObjectPool<Species> pool, ObjectPoolCalculator calculator, ReactionSelector selector) {
@@ -52,37 +55,58 @@ public class LeaveOneOutCrossValidation implements Runnable {
     }
 
     public Map<Species, Reaction> getDetailedValidationResults() {
+    	
         return resultsDetailed;
+        
     }
 
     public Map<Species, ReactionList> getCompleteDetailedValidationResults() {
+    	
         return resultsDetailedComplete;
+        
     }
 
     @Override
     public void run() {
-        results = new HashMap<Species, Double>();
+        
+    	results = new HashMap<Species, Double>();
         resultsDetailed = new HashMap<Species, Reaction>();
         resultsDetailedComplete = new HashMap<Species, ReactionList>();
+        
         ObjectPool orig = new ObjectPool();
         orig.addAll(pool.getValidatedObjects());
+        
         HashMap<Species, Object> res = new HashMap<Species, Object>();
+        
         int ctr = 0;
+        
         for (Object soi : orig.getValidatedObjects()) {
-            ctr++;
+            
+        	ctr++;
+            
             ObjectPool clone = SolverHelper.clone(orig);
             Species selSOI = null;
+            
             for (Object x : clone.getInvalidatedObjects()) {
+            	
                 Species o = (Species) x;
+                
                 if (o.equals((Species) soi, true)) {
+                	
                     selSOI = (Species) o;
                     break;
+                    
                 }
             }
+            
             if (selSOI == null) {
+            	
                 for (Object x : clone.getValidatedObjects()) {
+                	
                     Species o = (Species) x;
+                    
                     if (o.equals((Species) soi, true)) {
+                    	
                         selSOI = (Species) o;
                         break;
                     }
@@ -93,51 +117,85 @@ public class LeaveOneOutCrossValidation implements Runnable {
             } else {
                 clone.invalidate((Species) soi);
             }
+            
             calculator.set(clone);
+            
             try {
-                System.out.println("Process " + ctr + "/" + orig.getValidatedObjects().size());
+                
+            	System.out.println("Process " + ctr + "/" + orig.getValidatedObjects().size());
                 calculator.calculate((Species) soi);
+                
                 HashMap<Species, ReactionList> sol = new HashMap<Species, ReactionList>();
                 HashMap<Species, Object> buffer = (HashMap<Species, Object>) calculator.get();
+            
                 for (Species s : buffer.keySet()) {
+                	
                     if (buffer.get(s) instanceof ReactionList) {
+                    	
                         sol.put(s, (ReactionList) buffer.get(s));
+                        
                     }
+                    
                     if (buffer.get(s) instanceof Collection) {
+                    	
                         Collection c = (Collection) buffer.get(s);
                         ReactionList combined = new ReactionList();
+                        
                         for (Object o : c) {
+                        	
                             if (o instanceof ReactionList) {
+                            	
                                 ReactionList b = (ReactionList) o;
+                                
                                 for (int i = 0; i < b.size(); i++) {
+                                	
                                     combined.add(b.get(i));
+                                    
                                 }
                             }
+                            
                             if (o instanceof Reaction) {
+                            	
                                 combined.add((Reaction) o);
+                                
                             }
                         }
+                        
                         sol.put(s, combined);
                     }
                 }
+                
                 res.put((Species) soi, calculator.get());
+                
                 for (Species s : sol.keySet()) {
+                	
                     if (selector != null) {
+                    	
                         try {
+                        	
                             ReactionList valid = selector.select(sol.get(s));
                             results.put(s, s.getHf() - valid.get(0).calculateHf());
                             resultsDetailed.put(s, valid.get(0));
-                            System.out.println(valid.get(0).toString());
+                            
+                            System.out.println("valid.get(0).toString(): " + valid.get(0).toString());
+                            
                         } catch (IndexOutOfBoundsException ioobe) {
+                        	
                             logger.warn("No result obtained for species " + s.getRef());
+                            
                         }
+                        
                         //System.out.println(s.getHf() - valid.get(0).calculateHf());
+                        
                     } else {
                         try {
-                            // use Median if ArrayList
+                            
+                        	// use Median if ArrayList
                             results.put(s, s.getHf() - sol.get(s).get(0).calculateHf());
                             resultsDetailed.put(s, sol.get(s).get(0));
+                            
                             System.out.println(sol.get(s).get(0).toString());
+                            
                         } catch (IndexOutOfBoundsException ioobe) {
                             logger.warn("No result obtained for species " + s.getRef());
                         }

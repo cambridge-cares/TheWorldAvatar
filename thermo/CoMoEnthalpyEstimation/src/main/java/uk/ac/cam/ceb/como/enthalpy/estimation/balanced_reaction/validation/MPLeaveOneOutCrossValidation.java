@@ -7,20 +7,21 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.validation;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
+
 import org.apache.log4j.Logger;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPManager;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPService;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPModel;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPCalculationThread;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPService;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.ObjectPoolCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
 
 /**
  *
@@ -35,26 +36,31 @@ public class MPLeaveOneOutCrossValidation implements Runnable {
     private Logger logger = Logger.getLogger(getClass());
 
     public MPLeaveOneOutCrossValidation(ObjectPool<Species> pool, ObjectPoolCalculator calculator, ReactionSelector selector) {
+    	
         this.pool = pool;
         this.calculator = calculator;
         this.selector = selector;
     }
 
     public MPLeaveOneOutCrossValidation(ObjectPool<Species> pool, ObjectPoolCalculator calculator) {
+    	
         this.pool = pool;
         this.calculator = calculator;
     }
 
     public void validate() {
+    	
         this.run();
     }
 
     public Map<Species, Double> getValidationResults() {
+    	
         return results;
     }
 
     @Override
     public void run() {
+    	
         results = new HashMap<Species, Double>();
         ObjectPool orig = new ObjectPool();
         orig.addAll(pool.getValidatedObjects());
