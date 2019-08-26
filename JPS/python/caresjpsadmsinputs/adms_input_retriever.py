@@ -373,7 +373,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 
     def get_new_src(self, src, q1, q2, q3):
         new_src = super(ShipCliInputStrategy, self).get_new_src(src, q1, q2, q3)
-        #new_src.set_name(src[Constants.KEY_MMSI])
+        new_src.set_name(src[Constants.KEY_MMSI])
         return new_src
 
     def get_src_iri(self, src):
@@ -408,7 +408,7 @@ class ShipCliInputStrategy(CliInputStrategy):
         class member variable for every examined source for later use. @see: get_src_data()
         @return: list of Pol objects.
         """
-        limit = 10 - len(self.pollutants) #No more that 10 pollutants are allowed per ADMS source
+        limit = 10 - len(self.pollutants)  # No more that 10 pollutants are allowed per ADMS source
         pols = []
         pol_data = []
         diam_dens = set()
@@ -447,7 +447,7 @@ class ShipCliInputStrategy(CliInputStrategy):
                 pols.append(AdmsPol(name, 1, [diam], [dens], [1.0e+0]))
                 self.pollutants.append(name)
 
-        self.update_em_rates(pol_names,limit)
+        self.update_em_rates(pol_names, limit)
 
         return pols
 
@@ -457,7 +457,7 @@ class ShipCliInputStrategy(CliInputStrategy):
             mf_acc = 0
             em_rates_ltd = {}
             for p in srt_rates[limit:]:
-                mf_acc =  mf_acc + p[1]
+                mf_acc = mf_acc + p[1]
             i = 1
             for p in srt_rates[:limit]:
                 pname = pol_names[p[0]]
@@ -468,7 +468,6 @@ class ShipCliInputStrategy(CliInputStrategy):
                 i = i + 1
             self.em_rates[src] = em_rates_ltd
 
-
     def get_opt(self, pol_names, src_names):
         num_pol = len(pol_names)
 
@@ -477,9 +476,8 @@ class ShipCliInputStrategy(CliInputStrategy):
                         Constants.KEY_GRPTANK, src_names, 0)
 
     def connect_chimney_db(self, src):
-        #mmsi = src[Constants.KEY_MMSI]
-        #iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
-        iri = 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl'
+        mmsi = src[Constants.KEY_MMSI]
+        iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
         self.connect_db(iri, Constants.KEY_PARSE)
 
         return iri
