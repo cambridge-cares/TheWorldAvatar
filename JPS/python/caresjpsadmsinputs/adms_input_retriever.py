@@ -159,13 +159,17 @@ class CliInputStrategy(object):
         q1, q2, q3 = self.get_src_queries()
 
         for src in self.entity:
-            new_src = self.get_new_src(self.get_src_iri(src), self.query(q1), self.query(q2), self.query(q3))
+            new_src = self.get_new_src(src, q1, q2, q3)
 
             sources.append(new_src)
 
         return sources
 
-    def get_new_src(self, iri, qdata, qdata_c, qdata_erate):
+    def get_new_src(self, src, q1, q2, q3):
+        iri = self.get_src_iri(src)
+        qdata = self.query(q1)
+        qdata_c = self.query(q2)
+        qdata_erate = self.query(q3)
         aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
         return self.make_src(aresult, sorteder, pollutantnames)
 
@@ -180,8 +184,7 @@ class CliInputStrategy(object):
         return [], [], []
 
     def make_src(self, aresult, sorteder, pollutantnames):
-        src = self.make_common_src(aresult, sorteder, pollutantnames)
-        return src
+        return self.make_common_src(aresult, sorteder, pollutantnames)
 
     @staticmethod
     def make_common_src(aresult, sorteder, pollutantnames):
@@ -368,13 +371,10 @@ class ShipCliInputStrategy(CliInputStrategy):
 
         return q1, q2, q3
 
-    def get_new_src(self, src, qdata, qdata_c, qdata_erate):
-        iri = self.get_src_iri(src)
-        if iri is not None:
-            aresult, sorteder, pollutantnames = self.get_new_src_data(iri, qdata, qdata_c, qdata_erate)
-            new_src = self.make_src(aresult, sorteder, pollutantnames)
-            new_src.set_name(src[Constants.KEY_MMSI])
-            return new_src
+    def get_new_src(self, src, q1, q2, q3):
+        new_src = super(ShipCliInputStrategy, self).get_new_src(src, q1, q2, q3)
+        #new_src.set_name(src[Constants.KEY_MMSI])
+        return new_src
 
     def get_src_iri(self, src):
         return self.connect_chimney_db(src)
@@ -408,6 +408,7 @@ class ShipCliInputStrategy(CliInputStrategy):
         class member variable for every examined source for later use. @see: get_src_data()
         @return: list of Pol objects.
         """
+        limit = 10 - len(self.pollutants) #No more that 10 pollutants are allowed per ADMS source
         pols = []
         pol_data = []
         diam_dens = set()
@@ -419,18 +420,21 @@ class ShipCliInputStrategy(CliInputStrategy):
 
         for src in self.entity:
             iri = self.connect_chimney_db(src)
+            self.em_rates[iri] = {}
             qb = self.query(q1)
             massrate = self.query(q2).__iter__().__next__()[Constants.KEY_MASS_RATE].toPython()
 
             for row in qb:
                 dd = (row[Constants.KEY_DIAMETER].toPython(), row[Constants.KEY_DENSITY].toPython())
+                mf = float(row[Constants.KEY_MASS_FRACTION]) * massrate
                 pol_data.append({Constants.KEY_DIAMETER + Constants.KEY_DENSITY: dd,
-                                 Constants.KEY_MASS_FLOW: float(row[Constants.KEY_MASS_FRACTION]) * massrate,
+                                 Constants.KEY_MASS_FLOW: mf,
                                  Constants.KEY_SRC: iri})
                 diam_dens.add(dd)
-            self.em_rates[iri] = {}
+                self.em_rates[iri][dd] = mf
 
-        for diam, dens in diam_dens:
+        dd_srt = sorted(diam_dens, key=lambda tup: tup[0], reverse=True)[0:limit]
+        for diam, dens in dd_srt:
             name = None
             if diam <= 0.00001:
                 name = Constants.POL_PM10 + '-' + str(i)
@@ -443,12 +447,27 @@ class ShipCliInputStrategy(CliInputStrategy):
                 pols.append(AdmsPol(name, 1, [diam], [dens], [1.0e+0]))
                 self.pollutants.append(name)
 
-        for pd in pol_data:
-            pol_key = pd[Constants.KEY_DIAMETER + Constants.KEY_DENSITY]
-            if pol_key in pol_names:
-                self.em_rates[pd[Constants.KEY_SRC]][pol_names[pol_key]] = pd[Constants.KEY_MASS_FLOW]
+        self.update_em_rates(pol_names,limit)
 
         return pols
+
+    def update_em_rates(self, pol_names, limit):
+        for src in self.em_rates:
+            srt_rates = sorted(self.em_rates[src].items(), key=lambda kv: kv[0][0], reverse=True)
+            mf_acc = 0
+            em_rates_ltd = {}
+            for p in srt_rates[limit:]:
+                mf_acc =  mf_acc + p[1]
+            i = 1
+            for p in srt_rates[:limit]:
+                pname = pol_names[p[0]]
+                pmflr = p[1]
+                if i == limit:
+                    pmflr = pmflr + mf_acc
+                em_rates_ltd[pname] = pmflr
+                i = i + 1
+            self.em_rates[src] = em_rates_ltd
+
 
     def get_opt(self, pol_names, src_names):
         num_pol = len(pol_names)
@@ -458,8 +477,9 @@ class ShipCliInputStrategy(CliInputStrategy):
                         Constants.KEY_GRPTANK, src_names, 0)
 
     def connect_chimney_db(self, src):
-        mmsi = src[Constants.KEY_MMSI]
-        iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        #mmsi = src[Constants.KEY_MMSI]
+        #iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        iri = 'http://www.theworldavatar.com/kb/ships/Chimney-1.owl'
         self.connect_db(iri, Constants.KEY_PARSE)
 
         return iri
