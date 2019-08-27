@@ -39,6 +39,7 @@ public class NISTInfoReader extends NISTParser {
         info.settBoil(extractTBoil(body));
         info.settCritical(extractTCritical(body));
         info.setpTriple(extractPTriple(body));
+        info.settFusion(extractTFusion(body));
         /**
          * @author NK510
          */
@@ -328,7 +329,7 @@ public class NISTInfoReader extends NISTParser {
      * Extract the boiling point (temperature and units) of the current</br> 
      * species from the corresponding HTML file.
      * 
-     * @param bodyThermoPhase
+     * @param body
      * @return
      */
     protected Temperature extractTBoil(StringList body) {
@@ -365,7 +366,7 @@ public class NISTInfoReader extends NISTParser {
      * Extract the critical point (temperature and units) of the current</br> 
      * species from the corresponding HTML file.
      * 
-     * @param bodyThermoPhase
+     * @param body
      * @return
      */
     protected Temperature extractTCritical(StringList body) {
@@ -397,11 +398,12 @@ public class NISTInfoReader extends NISTParser {
         }
         return null;
     }
+    
     /**
      * Extract the triple point pressure (and units) of the current</br> 
      * species from the corresponding HTML file.
      * 
-     * @param bodyThermoPhase
+     * @param body
      * @return
      */
     protected Pressure extractPTriple(StringList body) {
@@ -428,6 +430,43 @@ public class NISTInfoReader extends NISTParser {
                 	}
                 	pressure.setUnits(content.get(i+3));
                     return pressure;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Extract the fusion or melting point (temperature and units) of the</br> 
+     * current species from the corresponding HTML file.
+     * 
+     * @param body
+     * @return
+     */
+    protected Temperature extractTFusion(StringList body) {
+        int lineIndex = -1;
+        for (int i = 0; i < body.size(); i++) {
+            if (body.get(i).contains("T<sub>fus</sub></td><td")) {
+                lineIndex = i;
+                break;
+            }
+        }
+        if (lineIndex < 0) {
+            return null;
+        }
+        ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
+        if (content.size() > 4 && content.contains("T")) {
+            for (int i = 0; i < content.size(); i++) {
+                if (content.get(i).trim().contains("T") && content.get(i+1).trim().contains("fus")) {
+                	// fusion point temperature
+                	temperature = new Temperature();
+                	if(content.get(i+2).contains("&plusmn;")){
+                		temperature.setValue(content.get(i+2).replace("&plusmn;", "±"));
+                	}else{
+                		temperature.setValue(content.get(i+2));
+                	}
+                	temperature.setUnits(content.get(i+3));
+                    return temperature;
                 }
             }
         }

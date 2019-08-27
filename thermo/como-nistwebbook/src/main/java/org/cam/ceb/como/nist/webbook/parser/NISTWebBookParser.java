@@ -49,6 +49,10 @@ public class NISTWebBookParser {
 				System.out.println("Triple point pressure:"+speciesInfo.getpTriple().getValue());
 				System.out.println("Triple point pressure units:"+speciesInfo.getpTriple().getUnits());
 			}
+			if(speciesInfo.gettFusion()!=null){
+				System.out.println("Fusion (or melting) temperature:"+speciesInfo.gettFusion().getValue());
+				System.out.println("Fusion (or melting) temperature units:"+speciesInfo.gettFusion().getUnits());
+			}
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}
 	}

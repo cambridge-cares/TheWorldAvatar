@@ -32,6 +32,7 @@ public class NISTSpeciesInfo {
     private Temperature tBoil;
     private Temperature tCritical;
     private Pressure pTriple;
+    private Temperature tFusion;
     
     /**
      *
@@ -213,5 +214,23 @@ public class NISTSpeciesInfo {
 	 */
 	public void setpTriple(Pressure pTriple) {
 		this.pTriple = pTriple;
+	}
+
+	/**
+	 * Returns the fusion or melting point of the current species including the temperature and units.
+	 * 
+	 * @return
+	 */
+	public Temperature gettFusion() {
+		return tFusion;
+	}
+
+	/**
+	 * Sets the fusion or melting point of the current species including the temperature and units.
+	 * 
+	 * @param tFusion
+	 */
+	public void settFusion(Temperature tFusion) {
+		this.tFusion = tFusion;
 	}
 }
