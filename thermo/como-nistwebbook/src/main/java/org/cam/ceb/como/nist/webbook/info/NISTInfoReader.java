@@ -7,10 +7,14 @@ package org.cam.ceb.como.nist.webbook.info;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 
 import org.cam.ceb.como.chem.filemgmt.gaussian.parser.util.StringList;
 import org.cam.ceb.como.nist.webbook.parser.NISTHTMLReaderHelper;
 import org.cam.ceb.como.nist.webbook.parser.NISTParser;
+import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy;
+import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy.EnthalpyType;
+import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy.ValueType;
 
 /**
  *
@@ -22,6 +26,7 @@ public class NISTInfoReader extends NISTParser {
     protected NISTSpeciesInfo info = new NISTSpeciesInfo();
     private Temperature temperature;
     private Pressure pressure;
+    private List<NISTEnthalpy> enthalpies;
 
     @Override
     public void parseSection(StringList body) {
@@ -40,6 +45,7 @@ public class NISTInfoReader extends NISTParser {
         info.settCritical(extractTCritical(body));
         info.setpTriple(extractPTriple(body));
         info.settFusion(extractTFusion(body));
+        info.setEnthalpy(extractEoF(body));
         /**
          * @author NK510
          */
@@ -472,4 +478,60 @@ public class NISTInfoReader extends NISTParser {
         }
         return null;
     }
+    
+    /**
+     * Extract the enthalpies of formation of the current species from</br> 
+     * the corresponding HTML file.
+     * 
+     * @param body
+     * @return
+     */
+    protected List<NISTEnthalpy> extractEoF(StringList body) {
+        int lineIndex = -1;
+    	enthalpies = new ArrayList<NISTEnthalpy>();
+        // Flag defined to stop looking for the enthalpies of formation when
+    	//  the corresponding table is parsed.
+    	boolean tableFlag = false;
+    	for (int i = 0; i < body.size(); i++) {
+            if (body.get(i).contains("<sub>f</sub>H&deg;<sub>gas</sub></td><td")) {
+                tableFlag = true; 
+            	lineIndex = i;
+                if (lineIndex < 0) {
+                	return null;
+                }
+                ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
+                if (content.size() > 6 && content.contains("f")) {
+                	for (int j = 0; j < content.size(); j++) {
+                		if (content.get(j).trim().contains("f") && content.get(j+1).trim().contains("H&deg;")) {
+                			NISTEnthalpy enthalpy = new NISTEnthalpy();
+                			enthalpies.add(enthalpy);
+                			// fusion point temperature
+                			if(content.get(j+3).contains("&plusmn;")){
+                				String[] tokens = content.get(j+3).split("&plusmn;");
+                				if(tokens.length>=2 && isNumeric(tokens[0].trim()) && isNumeric(tokens[1].trim())){
+                					enthalpy.setTolerance(Double.parseDouble(tokens[1]), Double.parseDouble(tokens[1]));
+                					enthalpy.setValue(Double.parseDouble(tokens[0].trim()), ValueType.NONE, EnthalpyType.FORMATION);
+                				}
+                			}else{
+                				if(isNumeric(content.get(j+3))){
+                					enthalpy.setValue(Double.parseDouble(content.get(j+3)), ValueType.NONE, EnthalpyType.FORMATION);                			
+                				}
+                			}
+                			enthalpy.setUnits(content.get(j+4));
+                			enthalpy.setReference(content.get(j+6));
+                		}
+                		break;
+                	}
+                }
+            }
+            if(tableFlag && body.get(i).contains("</table>")){
+            	return enthalpies;
+            }
+        }
+    	return enthalpies;
+    }
+    
+    public static boolean isNumeric(String str) {
+    	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+    	}
 }

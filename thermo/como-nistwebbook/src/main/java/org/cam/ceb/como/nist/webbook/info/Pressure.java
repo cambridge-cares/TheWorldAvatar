@@ -1,6 +1,6 @@
 package org.cam.ceb.como.nist.webbook.info;
 /**
- * A model created to encode different pressures of species.   
+ * A model created to encode different pressures of species.
  * 
  * @author msff2
  *

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.cam.ceb.como.nist.webbook.DownloadHTML;
 import org.cam.ceb.como.nist.webbook.info.NISTSpeciesInfo;
+import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy;
 
 public class NISTWebBookParser {
 	/**
@@ -26,7 +27,7 @@ public class NISTWebBookParser {
 	public static void main(String[] args) {
 		nistWebBookParser = new NISTWebBookParser();
 		try{
-			nistWebBookParser.parseHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\ThermoPhase\\");
+			nistWebBookParser.parseHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\");
 			nistWebBookParser.parseSDF("D:\\msff2\\Documents\\Data\\NIST\\download\\");
 		}catch(Exception e){
 			e.printStackTrace();
@@ -52,6 +53,13 @@ public class NISTWebBookParser {
 			if(speciesInfo.gettFusion()!=null){
 				System.out.println("Fusion (or melting) temperature:"+speciesInfo.gettFusion().getValue());
 				System.out.println("Fusion (or melting) temperature units:"+speciesInfo.gettFusion().getUnits());
+			}
+			if(speciesInfo.getEnthalpy()!=null && speciesInfo.getEnthalpy().size()>0){
+				for(NISTEnthalpy enthalpy: speciesInfo.getEnthalpy()){
+					System.out.println("Enthalpy value:"+enthalpy.getValue());
+					System.out.println("Enthalpy units:"+enthalpy.getUnits());
+					System.out.println("Enthalpy reference:"+enthalpy.getReference());
+				}
 			}
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}

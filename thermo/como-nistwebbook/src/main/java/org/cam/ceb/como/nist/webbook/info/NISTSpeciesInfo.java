@@ -8,6 +8,9 @@ package org.cam.ceb.como.nist.webbook.info;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
+
+import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy;
 
 /**
  *
@@ -33,6 +36,7 @@ public class NISTSpeciesInfo {
     private Temperature tCritical;
     private Pressure pTriple;
     private Temperature tFusion;
+    private List<NISTEnthalpy> enthalpy;
     
     /**
      *
@@ -232,5 +236,25 @@ public class NISTSpeciesInfo {
 	 */
 	public void settFusion(Temperature tFusion) {
 		this.tFusion = tFusion;
+	}
+
+	/**
+	 * Returns the available enthalpies of formation of the current species</br> 
+	 * including the value, units and references.
+	 * 
+	 * @return
+	 */
+	public List<NISTEnthalpy> getEnthalpy() {
+		return enthalpy;
+	}
+
+	/**
+	 * Sets the available enthalpies of formation of the current species</br> 
+	 * including the value, units and references.
+	 * 
+	 * @param enthalpy
+	 */
+	public void setEnthalpy(List<NISTEnthalpy> enthalpy) {
+		this.enthalpy = enthalpy;
 	}
 }
