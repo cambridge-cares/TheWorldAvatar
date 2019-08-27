@@ -26,7 +26,7 @@ public class NISTWebBookParser {
 	public static void main(String[] args) {
 		nistWebBookParser = new NISTWebBookParser();
 		try{
-			nistWebBookParser.parseHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\");
+			nistWebBookParser.parseHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\ThermoPhase\\");
 			nistWebBookParser.parseSDF("D:\\msff2\\Documents\\Data\\NIST\\download\\");
 		}catch(Exception e){
 			e.printStackTrace();
@@ -41,6 +41,8 @@ public class NISTWebBookParser {
 			DownloadHTML.display(speciesInfo);
 			System.out.println("Energy:"+speciesInfo.getEnergy());
 			System.out.println("name:"+speciesInfo.getName());
+			System.out.println("Boiling point temperature:"+speciesInfo.gettBoil().getValue());
+			System.out.println("Boiling point temperature units:"+speciesInfo.gettBoil().getUnits());
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}
 	}

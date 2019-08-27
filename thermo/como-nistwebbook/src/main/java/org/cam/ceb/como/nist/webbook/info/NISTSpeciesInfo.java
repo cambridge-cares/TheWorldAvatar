@@ -12,6 +12,7 @@ import java.util.HashSet;
 /**
  *
  * @author pb556
+ * @author Feroz Farazi (msff2@cam.ac.uk)
  *  
  */
 
@@ -28,6 +29,7 @@ public class NISTSpeciesInfo {
     private String url2D = "";
     private String url3D = "";
     private String energy = "";
+    private Temperature tBoil;
     
     /**
      *
@@ -155,5 +157,23 @@ public class NISTSpeciesInfo {
 	 */
 	public void setEnergy(String energy) {
 		this.energy = energy;
+	}
+
+	/**
+	 * Returns the boiling point of the current species including the temperature and units.
+	 * 
+	 * @return
+	 */
+	public Temperature gettBoil() {
+		return tBoil;
+	}
+
+	/**
+	 * Sets the boiling point of the current species including the temperature and units.
+	 * 
+	 * @param tBoil
+	 */
+	public void settBoil(Temperature tBoil) {
+		this.tBoil = tBoil;
 	}
 }

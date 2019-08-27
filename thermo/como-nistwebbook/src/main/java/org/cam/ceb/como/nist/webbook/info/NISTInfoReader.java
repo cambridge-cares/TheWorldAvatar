@@ -20,6 +20,7 @@ import org.cam.ceb.como.nist.webbook.parser.NISTParser;
 public class NISTInfoReader extends NISTParser {
 
     protected NISTSpeciesInfo info = new NISTSpeciesInfo();
+    private Temperature temperature;
 
     @Override
     public void parseSection(StringList body) {
@@ -34,6 +35,7 @@ public class NISTInfoReader extends NISTParser {
         info.setUrl2DMolFile(extractUrl2DMol(body));
         info.setUrl3DSDFile(extractUrl3DSD(body));
         info.setPermanentLink(extractPermanentLink(body));
+        info.settBoil(extractTBoil(body));
         
         /**
          * @author NK510
@@ -319,4 +321,36 @@ public class NISTInfoReader extends NISTParser {
     	
     	return "";
     }
+    
+    protected Temperature extractTBoil(StringList bodyThermoPhase) {
+        int lineIndex = -1;
+        for (int i = 0; i < body.size(); i++) {
+            if (body.get(i).contains("T<sub>boil</sub></td><td")) {
+                lineIndex = i;
+                break;
+            }
+        }
+        //body.getFirstMatchPosition(0, ".*CAS//s+Registry//s+Number:.*");±
+        if (lineIndex < 0) {
+            return null;
+        }
+        ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
+        if (content.size() > 4 && content.contains("T")) {
+            for (int i = 0; i < content.size(); i++) {
+                if (content.get(i).trim().contains("T") && content.get(i+1).trim().contains("boil")) {
+                	// boiling temperature
+                	temperature = new Temperature();
+                	if(content.get(i+2).contains("&plusmn;")){
+                		temperature.setValue(content.get(i+2).replace("&plusmn;", "±"));
+                	}else{
+                    	temperature.setValue(content.get(i+2));                		
+                	}
+                	temperature.setUnits(content.get(i+3));
+                    return temperature;
+                }
+            }
+        }
+        return null;
+    }
+
 }

@@ -9,9 +9,6 @@ import org.cam.ceb.como.chem.filemgmt.gaussian.parser.util.StringList;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,9 +44,6 @@ public abstract class NISTParser {
         } catch (IOException ex) {
             Logger.getLogger(NISTGasPhaseThermoChemReader.class.getName()).log(Level.SEVERE, "The file " + path + "could not be read.", ex);
         }
-        if (title != null) {
-            parseSection(body);
-        }
     }
     
     private void parseBody() {
@@ -65,7 +59,7 @@ public abstract class NISTParser {
             parseSection(body);
         }
     }
-    
+
     public abstract Object get();
     /**
      * Extracts the title of the current HTML file.
@@ -81,6 +75,6 @@ public abstract class NISTParser {
     public StringList extractBody() throws FileNotFoundException, IOException {
         return NISTHTMLReaderHelper.extractHTMLBody(new File(path));
     }
-    
+
     public abstract void parseSection(StringList body);
 }
