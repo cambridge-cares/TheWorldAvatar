@@ -21,6 +21,7 @@ public class NISTInfoReader extends NISTParser {
 
     protected NISTSpeciesInfo info = new NISTSpeciesInfo();
     private Temperature temperature;
+    private Pressure pressure;
 
     @Override
     public void parseSection(StringList body) {
@@ -37,7 +38,7 @@ public class NISTInfoReader extends NISTParser {
         info.setPermanentLink(extractPermanentLink(body));
         info.settBoil(extractTBoil(body));
         info.settCritical(extractTCritical(body));
-        
+        info.setpTriple(extractPTriple(body));
         /**
          * @author NK510
          */
@@ -396,5 +397,40 @@ public class NISTInfoReader extends NISTParser {
         }
         return null;
     }
-
+    /**
+     * Extract the triple point pressure (and units) of the current</br> 
+     * species from the corresponding HTML file.
+     * 
+     * @param bodyThermoPhase
+     * @return
+     */
+    protected Pressure extractPTriple(StringList body) {
+        int lineIndex = -1;
+        for (int i = 0; i < body.size(); i++) {
+            if (body.get(i).contains("P<sub>triple</sub></td><td")) {
+                lineIndex = i;
+                break;
+            }
+        }
+        if (lineIndex < 0) {
+            return null;
+        }
+        ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
+        if (content.size() > 4 && content.contains("P")) {
+            for (int i = 0; i < content.size(); i++) {
+                if (content.get(i).trim().contains("P") && content.get(i+1).trim().contains("triple")) {
+                	// critical point pressure
+                	pressure = new Pressure();
+                	if(content.get(i+2).contains("&plusmn;")){
+                		pressure.setValue(content.get(i+2).replace("&plusmn;", "±"));
+                	}else{
+                		pressure.setValue(content.get(i+2));
+                	}
+                	pressure.setUnits(content.get(i+3));
+                    return pressure;
+                }
+            }
+        }
+        return null;
+    }
 }

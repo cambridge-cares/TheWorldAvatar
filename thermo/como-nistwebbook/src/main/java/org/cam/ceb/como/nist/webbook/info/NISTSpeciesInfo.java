@@ -31,6 +31,7 @@ public class NISTSpeciesInfo {
     private String energy = "";
     private Temperature tBoil;
     private Temperature tCritical;
+    private Pressure pTriple;
     
     /**
      *
@@ -194,5 +195,23 @@ public class NISTSpeciesInfo {
 	 */
 	public void settCritical(Temperature tCritical) {
 		this.tCritical = tCritical;
+	}
+
+	/**
+	 * Returns the triple point of the current species including the pressure and units.
+	 * 
+	 * @return
+	 */
+	public Pressure getpTriple() {
+		return pTriple;
+	}
+
+	/**
+	 * Sets the triple point of the current species including the pressure and units.
+	 * 
+	 * @param pTriple
+	 */
+	public void setpTriple(Pressure pTriple) {
+		this.pTriple = pTriple;
 	}
 }

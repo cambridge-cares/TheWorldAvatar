@@ -45,6 +45,10 @@ public class NISTWebBookParser {
 			System.out.println("Boiling point temperature units:"+speciesInfo.gettBoil().getUnits());
 			System.out.println("Critical point temperature:"+speciesInfo.gettCritical().getValue());
 			System.out.println("Critical point temperature units:"+speciesInfo.gettCritical().getUnits());
+			if(speciesInfo.getpTriple()!=null){
+				System.out.println("Triple point pressure:"+speciesInfo.getpTriple().getValue());
+				System.out.println("Triple point pressure units:"+speciesInfo.getpTriple().getUnits());
+			}
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}
 	}
