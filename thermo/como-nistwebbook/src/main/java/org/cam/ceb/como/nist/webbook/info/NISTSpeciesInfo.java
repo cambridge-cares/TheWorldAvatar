@@ -27,6 +27,7 @@ public class NISTSpeciesInfo {
     private Collection<String> isotopologues = new HashSet<String>();
     private String url2D = "";
     private String url3D = "";
+    private String energy = "";
     
     /**
      *
@@ -137,4 +138,22 @@ public class NISTSpeciesInfo {
     	
     	return permanentLink;
     }
+
+    /**
+     * Returns electronic or total energy of the current species
+     * 
+     * @return
+     */
+	public String getEnergy() {
+		return energy;
+	}
+
+	/**
+	 * Sets electronic or total energy of the current species
+	 * 
+	 * @param energy
+	 */
+	public void setEnergy(String energy) {
+		this.energy = energy;
+	}
 }
