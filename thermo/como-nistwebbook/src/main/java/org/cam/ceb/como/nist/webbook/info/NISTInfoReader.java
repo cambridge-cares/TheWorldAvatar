@@ -29,7 +29,7 @@ public class NISTInfoReader extends NISTParser {
         info.setInChIKey(extractInChIKey(body));
         info.setIsotopologues(extractIsotopologues(body));
         info.setMolecularWeight(extractMolecularWeight(body));
-        info.setName(extractName(body));
+        info.setName(extractName(title));
         info.setOtherNames(extractOtherNames(body));
         info.setUrl2DMolFile(extractUrl2DMol(body));
         info.setUrl3DSDFile(extractUrl3DSD(body));
@@ -151,22 +151,18 @@ public class NISTInfoReader extends NISTParser {
         
         return isotopologues;
     }
-
-    protected String extractName(StringList body) {
-        int lineIndex = -1;
-        for (int i = 0; i < body.size(); i++) {
-            if (body.get(i).contains("<h1><a id=\"Top\" name=\"Top\">")) {
-                lineIndex = i;
-                break;
-            }
-        }
-        //body.getFirstMatchPosition(0, ".*CAS//s+Registry//s+Number:.*");
-        if (lineIndex < 0) {
-            return "";
-        }
-        ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
-        if (content.size() == 1) {
-            return content.get(0);
+    
+    /**
+     * Extracts name of the current species.
+     * 
+     * @param title
+     * @return
+     */
+    protected String extractName(String title) {
+        String content = title;
+        if(content.contains("<title") && content.indexOf(">")<content.length() && content.contains("</title>")){
+        	content = content.substring(content.indexOf(">")+1, content.indexOf("</title>"));
+        	return content;
         }
         return "";
     }

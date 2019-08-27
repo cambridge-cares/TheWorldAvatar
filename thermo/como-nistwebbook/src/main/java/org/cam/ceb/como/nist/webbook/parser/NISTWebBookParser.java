@@ -40,6 +40,7 @@ public class NISTWebBookParser {
 			NISTSpeciesInfo speciesInfo = data.get(key);
 			DownloadHTML.display(speciesInfo);
 			System.out.println("Energy:"+speciesInfo.getEnergy());
+			System.out.println("name:"+speciesInfo.getName());
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}
 	}
