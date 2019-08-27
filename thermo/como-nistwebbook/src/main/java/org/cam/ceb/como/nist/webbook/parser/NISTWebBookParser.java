@@ -43,6 +43,8 @@ public class NISTWebBookParser {
 			System.out.println("name:"+speciesInfo.getName());
 			System.out.println("Boiling point temperature:"+speciesInfo.gettBoil().getValue());
 			System.out.println("Boiling point temperature units:"+speciesInfo.gettBoil().getUnits());
+			System.out.println("Critical point temperature:"+speciesInfo.gettCritical().getValue());
+			System.out.println("Critical point temperature units:"+speciesInfo.gettCritical().getUnits());
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}
 	}

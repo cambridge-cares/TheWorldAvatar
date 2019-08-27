@@ -30,6 +30,7 @@ public class NISTSpeciesInfo {
     private String url3D = "";
     private String energy = "";
     private Temperature tBoil;
+    private Temperature tCritical;
     
     /**
      *
@@ -175,5 +176,23 @@ public class NISTSpeciesInfo {
 	 */
 	public void settBoil(Temperature tBoil) {
 		this.tBoil = tBoil;
+	}
+
+	/**
+	 * Returns the critical point of the current species including the temperature and units. 
+	 * 
+	 * @return
+	 */
+	public Temperature gettCritical() {
+		return tCritical;
+	}
+
+	/**
+	 * Sets the critical point of the current species including the temperature and units.
+	 * 
+	 * @param tCritical
+	 */
+	public void settCritical(Temperature tCritical) {
+		this.tCritical = tCritical;
 	}
 }

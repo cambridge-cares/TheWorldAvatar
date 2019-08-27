@@ -36,6 +36,7 @@ public class NISTInfoReader extends NISTParser {
         info.setUrl3DSDFile(extractUrl3DSD(body));
         info.setPermanentLink(extractPermanentLink(body));
         info.settBoil(extractTBoil(body));
+        info.settCritical(extractTCritical(body));
         
         /**
          * @author NK510
@@ -322,7 +323,14 @@ public class NISTInfoReader extends NISTParser {
     	return "";
     }
     
-    protected Temperature extractTBoil(StringList bodyThermoPhase) {
+    /**
+     * Extract the boiling point (temperature and units) of the current</br> 
+     * species from the corresponding HTML file.
+     * 
+     * @param bodyThermoPhase
+     * @return
+     */
+    protected Temperature extractTBoil(StringList body) {
         int lineIndex = -1;
         for (int i = 0; i < body.size(); i++) {
             if (body.get(i).contains("T<sub>boil</sub></td><td")) {
@@ -330,7 +338,6 @@ public class NISTInfoReader extends NISTParser {
                 break;
             }
         }
-        //body.getFirstMatchPosition(0, ".*CAS//s+Registry//s+Number:.*");±
         if (lineIndex < 0) {
             return null;
         }
@@ -344,6 +351,43 @@ public class NISTInfoReader extends NISTParser {
                 		temperature.setValue(content.get(i+2).replace("&plusmn;", "±"));
                 	}else{
                     	temperature.setValue(content.get(i+2));                		
+                	}
+                	temperature.setUnits(content.get(i+3));
+                    return temperature;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Extract the critical point (temperature and units) of the current</br> 
+     * species from the corresponding HTML file.
+     * 
+     * @param bodyThermoPhase
+     * @return
+     */
+    protected Temperature extractTCritical(StringList body) {
+        int lineIndex = -1;
+        for (int i = 0; i < body.size(); i++) {
+            if (body.get(i).contains("T<sub>c</sub></td><td")) {
+                lineIndex = i;
+                break;
+            }
+        }
+        if (lineIndex < 0) {
+            return null;
+        }
+        ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
+        if (content.size() > 4 && content.contains("T")) {
+            for (int i = 0; i < content.size(); i++) {
+                if (content.get(i).trim().contains("T") && content.get(i+1).trim().contains("c")) {
+                	// boiling temperature
+                	temperature = new Temperature();
+                	if(content.get(i+2).contains("&plusmn;")){
+                		temperature.setValue(content.get(i+2).replace("&plusmn;", "±"));
+                	}else{
+                    	temperature.setValue(content.get(i+2));
                 	}
                 	temperature.setUnits(content.get(i+3));
                     return temperature;
