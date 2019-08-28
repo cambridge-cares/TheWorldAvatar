@@ -46,6 +46,7 @@ public class NISTInfoReader extends NISTParser {
         info.setpTriple(extractPTriple(body));
         info.settFusion(extractTFusion(body));
         info.setEnthalpy(extractEoF(body));
+        info.setPhase(extractPhaseAtCondensedState(body));
         /**
          * @author NK510
          */
@@ -529,6 +530,44 @@ public class NISTInfoReader extends NISTParser {
             }
         }
     	return enthalpies;
+    }
+
+    /**
+     * Extract the phase of the current species at condensed state from the</br>
+     * corresponding HTML file.
+     * 
+     * @param body
+     * @return
+     */
+    protected String extractPhaseAtCondensedState(StringList body) {
+        int lineIndex = -1;
+        // Defined a flag to identify the line within the "Condensed phase
+        // thermochemistry data" block where the phase of interest appears.  
+        boolean flag = false;
+        for (int i = 0; i < body.size(); i++) {
+            if (body.get(i).contains("id=\"Thermo-Condensed\">Condensed phase thermochemistry data<")) {
+                flag = true;
+            }
+            if(flag && body.get(i).contains("><sub>f</sub>H&deg;<sub>")){
+            	lineIndex = i;
+            	break;
+            }
+        }
+        if (lineIndex < 0) {
+            return null;
+        }
+        ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
+        if (content.size() > 2 && content.contains("f")) {
+            for (int i = 0; i < content.size(); i++) {
+                if (content.get(i).trim().contains("f") && content.get(i+1).trim().contains("H&deg;")) {
+                	// phase
+                	if(content.get(i+2).contains("liquid") || content.get(i+2).contains("gas") || content.get(i+2).contains("solid")){
+                		return content.get(i+2);
+                	}
+                }
+            }
+        }
+        return "";
     }
     
     public static boolean isNumeric(String str) {

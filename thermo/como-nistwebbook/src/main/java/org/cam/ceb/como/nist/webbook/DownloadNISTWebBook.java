@@ -46,7 +46,7 @@ public class DownloadNISTWebBook {
 			delay(5);
 			URLDownload.fileUrl("https://webbook.nist.gov/cgi/cbook.cgi?Str2File="+nistSpeciesId.getCASRegNr(), nistSpeciesId.getCASRegNr()+".mol", "D:\\msff2\\Documents\\Data\\NIST\\download\\");
 			delay(5);
-			URLDownload.fileUrl("https://webbook.nist.gov/cgi/cbook.cgi?ID="+nistSpeciesId.getCASRegNr()+"&Units=SI&cTG=on&cTP=on", nistSpeciesId.getCASRegNr()+".html", "D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\");
+			URLDownload.fileUrl("https://webbook.nist.gov/cgi/cbook.cgi?ID="+nistSpeciesId.getCASRegNr()+"&Units=SI&cTG=on&cTC=on&cTP=on", nistSpeciesId.getCASRegNr()+".html", "D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\");
 //			delay(5);
 //			URLDownload.fileUrl("https://webbook.nist.gov/cgi/cbook.cgi?ID="+nistSpeciesId.getCASRegNr()+"&Units=SI&Mask=4#Thermo-Phase", nistSpeciesId.getCASRegNr()+".html", "D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\ThermoPhase\\");			
 			}

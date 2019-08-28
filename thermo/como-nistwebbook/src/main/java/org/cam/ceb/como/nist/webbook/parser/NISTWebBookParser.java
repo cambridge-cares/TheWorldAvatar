@@ -61,6 +61,9 @@ public class NISTWebBookParser {
 					System.out.println("Enthalpy reference:"+enthalpy.getReference());
 				}
 			}
+			if(speciesInfo.getPhase()!=null && !speciesInfo.getPhase().trim().isEmpty()){
+				System.out.println("Phase:"+speciesInfo.getPhase());
+			}			
 			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
 		}
 	}

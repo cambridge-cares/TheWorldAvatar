@@ -21,12 +21,12 @@ import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy;
 
 public class NISTSpeciesInfo {
 
-    private String name = "";
-    private String inchi = "";
-    private String key = "";
-    private String cas = "";
+    private String name;
+    private String inchi;
+    private String key;
+    private String cas;
     private double weight = 0.0;
-    private ChemFormula formula = null;
+    private ChemFormula formula;
     private Collection<String> names = new HashSet<String>();
     private Collection<String> isotopologues = new HashSet<String>();
     private String url2D = "";
@@ -37,6 +37,8 @@ public class NISTSpeciesInfo {
     private Pressure pTriple;
     private Temperature tFusion;
     private List<NISTEnthalpy> enthalpy;
+    private String phase;
+    
     
     /**
      *
@@ -256,5 +258,23 @@ public class NISTSpeciesInfo {
 	 */
 	public void setEnthalpy(List<NISTEnthalpy> enthalpy) {
 		this.enthalpy = enthalpy;
+	}
+
+	/**
+	 * Returns the phase of the current species at condensed state. 
+	 * 
+	 * @return
+	 */
+	public String getPhase() {
+		return phase;
+	}
+
+	/**
+	 * Sets the phase of the current species at condensed state.
+	 * 
+	 * @param phase
+	 */
+	public void setPhase(String phase) {
+		this.phase = phase;
 	}
 }
