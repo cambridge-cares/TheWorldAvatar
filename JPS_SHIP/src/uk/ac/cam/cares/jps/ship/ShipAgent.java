@@ -143,13 +143,11 @@ public class ShipAgent extends HttpServlet {
 		}
 		
 		Individual particleratevalue1 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-001_EmissionRate");
-		//Individual particleratevalue2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_Particulate-002_EmissionRate");
+		
 		if(particleratevalue1!=null) {
 			particleratevalue1.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
 		}
-//		if(particleratevalue2!=null) {
-//			particleratevalue2.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double("0")));
-//		}
+
 		
 		
 		//JSONObject jsonObject = parseJSONFile(outputfiledir); (used after the format of json file is fixed )
