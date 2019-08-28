@@ -28,7 +28,7 @@ public class NISTWebBookParser {
 		nistWebBookParser = new NISTWebBookParser();
 		try{
 			nistWebBookParser.parseHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\");
-			nistWebBookParser.parseSDF("D:\\msff2\\Documents\\Data\\NIST\\download\\");
+			nistWebBookParser.parseSDF("D:\\msff2\\Documents\\Data\\NIST\\download\\", "D:\\msff2\\Documents\\Data\\NIST\\list-of-atoms\\atom.csv");
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -40,12 +40,21 @@ public class NISTWebBookParser {
 		for(String key:data.keySet()){
 			NISTSpeciesInfo speciesInfo = data.get(key);
 			DownloadHTML.display(speciesInfo);
-			System.out.println("Energy:"+speciesInfo.getEnergy());
-			System.out.println("name:"+speciesInfo.getName());
-			System.out.println("Boiling point temperature:"+speciesInfo.gettBoil().getValue());
-			System.out.println("Boiling point temperature units:"+speciesInfo.gettBoil().getUnits());
-			System.out.println("Critical point temperature:"+speciesInfo.gettCritical().getValue());
-			System.out.println("Critical point temperature units:"+speciesInfo.gettCritical().getUnits());
+			if(speciesInfo.getEnergy()!=null){
+				System.out.println("Energy:"+speciesInfo.getEnergy());
+			}
+			System.out.println("Paired Electrons:"+speciesInfo.getPairedElectrons());
+			if(speciesInfo.getName()!=null && !speciesInfo.getName().isEmpty()){
+				System.out.println("name:"+speciesInfo.getName());
+			}
+			if(speciesInfo.gettBoil()!=null){
+				System.out.println("Boiling point temperature:"+speciesInfo.gettBoil().getValue());
+				System.out.println("Boiling point temperature units:"+speciesInfo.gettBoil().getUnits());
+			}
+			if(speciesInfo.gettCritical()!=null){
+				System.out.println("Critical point temperature:"+speciesInfo.gettCritical().getValue());
+				System.out.println("Critical point temperature units:"+speciesInfo.gettCritical().getUnits());
+			}
 			if(speciesInfo.getpTriple()!=null){
 				System.out.println("Triple point pressure:"+speciesInfo.getpTriple().getValue());
 				System.out.println("Triple point pressure units:"+speciesInfo.getpTriple().getUnits());
@@ -87,9 +96,10 @@ public class NISTWebBookParser {
 	 * @param sdfFolderPath
 	 * @throws Exception
 	 */
-	public void parseSDF(String sdfFolderPath) throws Exception{
+	public void parseSDF(String sdfFolderPath, String pathToAtoms) throws Exception{
 		if(sdfFolderPath!=null && !sdfFolderPath.isEmpty())
 		{
+			nistSDFParser.setPathToAtoms(pathToAtoms);
 			nistSDFParser.parseSDF(sdfFolderPath, data);
 		}
 	}

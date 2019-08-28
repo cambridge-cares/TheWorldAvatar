@@ -38,7 +38,9 @@ public class NISTSpeciesInfo {
     private Temperature tFusion;
     private List<NISTEnthalpy> enthalpy;
     private String phase;
-    
+    private int unpairedElectrons;
+    private int pairedElectrons;
+    private int electrons;
     
     /**
      *
@@ -276,5 +278,35 @@ public class NISTSpeciesInfo {
 	 */
 	public void setPhase(String phase) {
 		this.phase = phase;
+	}
+
+
+	public int getUnpairedElectrons() {
+		return unpairedElectrons;
+	}
+
+
+	public void setUnpairedElectrons(int unpairedElectrons) {
+		this.unpairedElectrons = unpairedElectrons;
+	}
+
+
+	public int getPairedElectrons() {
+		return pairedElectrons;
+	}
+
+
+	public void setPairedElectrons(int pairedElectrons) {
+		this.pairedElectrons = pairedElectrons;
+	}
+
+
+	public int getElectrons() {
+		return electrons;
+	}
+
+
+	public void setElectrons(int electrons) {
+		this.electrons = electrons;
 	}
 }
