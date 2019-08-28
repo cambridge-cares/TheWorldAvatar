@@ -44,6 +44,8 @@ public class NISTWebBookParser {
 				System.out.println("Energy:"+speciesInfo.getEnergy());
 			}
 			System.out.println("Paired Electrons:"+speciesInfo.getPairedElectrons());
+			System.out.println("Unpaired Electrons:"+speciesInfo.getUnpairedElectrons());
+			System.out.println("Total number of Electrons:"+speciesInfo.getElectrons());
 			if(speciesInfo.getName()!=null && !speciesInfo.getName().isEmpty()){
 				System.out.println("name:"+speciesInfo.getName());
 			}

@@ -71,18 +71,19 @@ public class NISTSDFParser {
 		parseEnergy(lines);
 	}
 	
+	/**
+	 * It parses atomic bonds from the SDF file and atom.csv file and</br>
+	 * calculates the paired, unpaired and total number of electrons. 
+	 * 
+	 * @param lines
+	 */
 	private void parseAtomicBonds(List<String> lines){
 		parseElementalBonds(lines);
-		int pairedElectrons = 0;
-		for(int i=0;i<atomVsBondList.size();i++){
-			Map<String, Integer> temp = atomVsBondList.get(i);
-			Integer bond = new Integer(0);
-			for(String str:temp.keySet()){
-				bond = temp.get(str);
-				pairedElectrons = pairedElectrons + bond.intValue() * 2;
-			}
-		}
+		int pairedElectrons = calculatePairedElectrons();
 		reader.setPairedElectrons(pairedElectrons);
+		int unpairedElectrons = calculateUnpairedElectrons(pairedElectrons);
+		reader.setUnpairedElectrons(unpairedElectrons);
+		reader.setElectrons(pairedElectrons+unpairedElectrons);
 	}
 	
 	private void parseElementalBonds(List<String> lines){
@@ -216,5 +217,39 @@ public class NISTSDFParser {
 	public static boolean isInteger(String str) {
 		  return str.matches("\\d+(\\d+)?");
 	}
-
+	
+	/**
+	 * Calculates the number of paired electrons.
+	 * 
+	 * @return
+	 */
+	private int calculatePairedElectrons(){
+		int pairedElectrons = 0;
+		for(int i=0;i<atomVsBondList.size();i++){
+			Map<String, Integer> temp = atomVsBondList.get(i);
+			Integer bond = new Integer(0);
+			for(String str:temp.keySet()){
+				bond = temp.get(str);
+				pairedElectrons = pairedElectrons + bond.intValue() * 2;
+			}
+		}
+		return pairedElectrons;
+	}
+	
+	/**
+	 * Calculates the number of unpaired electrons.
+	 * 
+	 * @param pairedElectrons
+	 * @return
+	 */
+	private int calculateUnpairedElectrons(int pairedElectrons){
+		int electrons = 0;
+		for(int i=0;i<atomVsBondList.size();i++){
+			Map<String, Integer> temp = atomVsBondList.get(i);
+			for(String str:temp.keySet()){
+				electrons = electrons + atomVsElectronMap.get(str).intValue();
+			}
+		}		
+		return electrons - pairedElectrons;
+	}
 }
