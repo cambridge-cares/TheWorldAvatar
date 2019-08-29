@@ -46,6 +46,13 @@ public class NISTWebBookParser {
 			System.out.println("Paired Electrons:"+speciesInfo.getPairedElectrons());
 			System.out.println("Unpaired Electrons:"+speciesInfo.getUnpairedElectrons());
 			System.out.println("Total number of Electrons:"+speciesInfo.getElectrons());
+			if(speciesInfo.getBondType()!=null){
+				for(int i=0;i<speciesInfo.getBondType().size();i++){
+					for(String atom:speciesInfo.getBondType().get(i).keySet()){
+						System.out.println("Atom "+(i+1)+ " has the following bond type(s):"+speciesInfo.getBondType().get(i).get(atom));
+					}
+				}
+			}
 			if(speciesInfo.getName()!=null && !speciesInfo.getName().isEmpty()){
 				System.out.println("name:"+speciesInfo.getName());
 			}

@@ -29,6 +29,9 @@ public class NISTSDFParser {
 	Map<String, Integer> atomVsElectronMap = new HashMap<String, Integer>();
 	List<Map<String, Integer>> atomVsBondList = new ArrayList<Map<String, Integer>>();
 	Map<String, Integer> atomVsBondMap = new HashMap<String, Integer>();
+	List<Map<String, List<Integer>>> listOfAtomVsBondTypeMap = new ArrayList<Map<String, List<Integer>>>();
+	Map<String, List<Integer>> atomVsBondTypeMap = new HashMap<String, List<Integer>>();
+	List<Integer> bondType = new ArrayList<Integer>();
 	
 	/**
 	 * A parser designed to extract data from all SDF files.
@@ -84,37 +87,80 @@ public class NISTSDFParser {
 		int unpairedElectrons = calculateUnpairedElectrons(pairedElectrons);
 		reader.setUnpairedElectrons(unpairedElectrons);
 		reader.setElectrons(pairedElectrons+unpairedElectrons);
+		reader.setBondType(listOfAtomVsBondTypeMap);
 	}
 	
 	private void parseElementalBonds(List<String> lines){
 		boolean flag = false;
 		int index = -2;
 		atomVsBondList = new ArrayList<Map<String,Integer>>();
+		listOfAtomVsBondTypeMap = new ArrayList<Map<String, List<Integer>>>();
 		for(String line:lines){
 			if(line.contains("Copyright by the U.S. Sec.")){
 				flag = true;
 			}
 			String[] tokens = line.trim().split("\\s+");
 			if(flag && ++index>=1 && tokens.length>=10 && atomVsElectronMap.containsKey(tokens[3])){
-				atomVsBondMap = new HashMap<String, Integer>();
-				atomVsBondMap.put(tokens[3], new Integer(0));
-				atomVsBondList.add(atomVsBondMap);
+				parseGeometryBlock(tokens);
 			} else if(index>=1 && tokens.length>=3){
-				Map<String, Integer> temp = atomVsBondList.get(Integer.parseInt(tokens[0])-1);
-				String key = "";
-				Integer bond = new Integer(0);
-				for(String str:temp.keySet()){
-					key = str;
-					bond = temp.get(str);
-					bond = new Integer(bond.intValue()+Integer.parseInt(tokens[2]));
-				}
-				temp.put(key, bond);
-				atomVsBondList.remove(Integer.parseInt(tokens[0])-1);
-				atomVsBondList.add(Integer.parseInt(tokens[0])-1, temp);
+				parseBondTypeBlock(tokens);
+				parseBondType(tokens);
 			}
 			if(line.contains("M  END")){
 				break;
 			}
+		}
+	}
+	
+		/**
+		 * Parses the geometry block of the current SDF file to extract</br>
+		 * the name and position of each atom of the current species. 
+		 * 
+		 * @param tokens
+		 */
+	private void parseGeometryBlock(String[] tokens){
+		atomVsBondMap = new HashMap<String, Integer>();
+		atomVsBondTypeMap = new HashMap<String, List<Integer>>();
+		atomVsBondTypeMap.put(tokens[3], new ArrayList<Integer>());
+		listOfAtomVsBondTypeMap.add(atomVsBondTypeMap);
+		atomVsBondMap.put(tokens[3], new Integer(0));
+		atomVsBondList.add(atomVsBondMap);				
+	}
+	
+	/**
+	 * Parses the bond type block of the current SDF file to extract</br>
+	 * bond types of each atom of the current species.
+	 * 
+	 * @param tokens
+	 */
+	private void parseBondTypeBlock(String[] tokens){
+		Map<String, Integer> temp = atomVsBondList.get(Integer.parseInt(tokens[0])-1);
+		String key = "";
+		Integer bond = new Integer(0);
+		for(String str:temp.keySet()){
+			key = str;
+			bond = temp.get(str);
+			bond = new Integer(bond.intValue()+Integer.parseInt(tokens[2]));
+		}
+		temp.put(key, bond);
+		atomVsBondList.remove(Integer.parseInt(tokens[0])-1);
+		atomVsBondList.add(Integer.parseInt(tokens[0])-1, temp);
+	}
+	
+	/**
+	 * Parses the type of bond for each atom of the current species.
+	 * 
+	 * @param tokens
+	 */
+	private void parseBondType(String[] tokens){
+		Map<String, List<Integer>> atom1st = listOfAtomVsBondTypeMap.get(Integer.parseInt(tokens[0])-1);
+		Map<String, List<Integer>> atom2nd = listOfAtomVsBondTypeMap.get(Integer.parseInt(tokens[1])-1);		
+		String key = "";
+		for(String str:atom1st.keySet()){
+			atom1st.get(str).add(new Integer(tokens[2]));
+		}
+		for(String str:atom2nd.keySet()){
+			atom2nd.get(str).add(new Integer(tokens[2]));
 		}
 	}
 	

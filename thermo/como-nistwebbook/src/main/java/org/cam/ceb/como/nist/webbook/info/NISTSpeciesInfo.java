@@ -6,9 +6,12 @@
  */
 package org.cam.ceb.como.nist.webbook.info;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy;
 
@@ -41,6 +44,7 @@ public class NISTSpeciesInfo {
     private int unpairedElectrons;
     private int pairedElectrons;
     private int electrons;
+    private List<Map<String, List<Integer>>> bondType;
     
     /**
      *
@@ -308,5 +312,15 @@ public class NISTSpeciesInfo {
 
 	public void setElectrons(int electrons) {
 		this.electrons = electrons;
+	}
+
+
+	public List<Map<String, List<Integer>>> getBondType() {
+		return bondType;
+	}
+
+
+	public void setBondType(List<Map<String, List<Integer>>> bondType) {
+		this.bondType = bondType;
 	}
 }
