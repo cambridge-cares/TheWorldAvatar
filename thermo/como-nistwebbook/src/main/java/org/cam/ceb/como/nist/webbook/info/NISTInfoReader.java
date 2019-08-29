@@ -351,7 +351,7 @@ public class NISTInfoReader extends NISTParser {
             return null;
         }
         ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
-        if (content.size() > 4 && content.contains("T")) {
+        if (content.size() > 5 && content.contains("T")) {
             for (int i = 0; i < content.size(); i++) {
                 if (content.get(i).trim().contains("T") && content.get(i+1).trim().contains("boil")) {
                 	// boiling temperature
@@ -362,6 +362,9 @@ public class NISTInfoReader extends NISTParser {
                     	temperature.setValue(content.get(i+2));                		
                 	}
                 	temperature.setUnits(content.get(i+3));
+                	if(!content.get(i+5).contains("N/A") && !content.get(i+5).isEmpty()){
+                		temperature.setReference(content.get(i+5));
+                	}
                     return temperature;
                 }
             }
@@ -388,7 +391,7 @@ public class NISTInfoReader extends NISTParser {
             return null;
         }
         ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
-        if (content.size() > 4 && content.contains("T")) {
+        if (content.size() > 5 && content.contains("T")) {
             for (int i = 0; i < content.size(); i++) {
                 if (content.get(i).trim().contains("T") && content.get(i+1).trim().contains("c")) {
                 	// boiling temperature
@@ -399,6 +402,9 @@ public class NISTInfoReader extends NISTParser {
                     	temperature.setValue(content.get(i+2));
                 	}
                 	temperature.setUnits(content.get(i+3));
+                	if(!content.get(i+5).contains("N/A") && !content.get(i+5).isEmpty()){
+                		temperature.setReference(content.get(i+5));
+                	}
                     return temperature;
                 }
             }
@@ -425,7 +431,7 @@ public class NISTInfoReader extends NISTParser {
             return null;
         }
         ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
-        if (content.size() > 4 && content.contains("P")) {
+        if (content.size() > 5 && content.contains("P")) {
             for (int i = 0; i < content.size(); i++) {
                 if (content.get(i).trim().contains("P") && content.get(i+1).trim().contains("triple")) {
                 	// critical point pressure
@@ -436,6 +442,9 @@ public class NISTInfoReader extends NISTParser {
                 		pressure.setValue(content.get(i+2));
                 	}
                 	pressure.setUnits(content.get(i+3));
+                	if(!content.get(i+5).contains("N/A") && !content.get(i+5).isEmpty()){
+                		pressure.setReference(content.get(i+5));
+                	}
                     return pressure;
                 }
             }
@@ -462,7 +471,7 @@ public class NISTInfoReader extends NISTParser {
             return null;
         }
         ArrayList<String> content = NISTHTMLReaderHelper.extractContent(body.get(lineIndex));
-        if (content.size() > 4 && content.contains("T")) {
+        if (content.size() > 5 && content.contains("T")) {
             for (int i = 0; i < content.size(); i++) {
                 if (content.get(i).trim().contains("T") && content.get(i+1).trim().contains("fus")) {
                 	// fusion point temperature
@@ -473,6 +482,9 @@ public class NISTInfoReader extends NISTParser {
                 		temperature.setValue(content.get(i+2));
                 	}
                 	temperature.setUnits(content.get(i+3));
+                	if(!content.get(i+5).contains("N/A") && !content.get(i+5).isEmpty()){
+                		temperature.setReference(content.get(i+5));
+                	}
                     return temperature;
                 }
             }
@@ -519,7 +531,9 @@ public class NISTInfoReader extends NISTParser {
                 				}
                 			}
                 			enthalpy.setUnits(content.get(j+4));
-                			enthalpy.setReference(content.get(j+6));
+                        	if(!content.get(j+6).contains("N/A") && !content.get(j+6).isEmpty()){
+                        		enthalpy.setReference(content.get(j+6));
+                        	}
                 		}
                 		break;
                 	}

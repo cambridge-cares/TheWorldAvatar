@@ -6,8 +6,9 @@ package org.cam.ceb.como.nist.webbook.info;
  *
  */
 public class Pressure {
-	private String value = "";
-	private String units = "";
+	private String value;
+	private String units;
+	private String reference;
 	public String getValue() {
 		return value;
 	}
@@ -19,5 +20,11 @@ public class Pressure {
 	}
 	public void setUnits(String units) {
 		this.units = units;
+	}
+	public String getReference() {
+		return reference;
+	}
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 }

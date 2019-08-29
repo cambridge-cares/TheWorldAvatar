@@ -248,7 +248,7 @@ public class NISTSDFParser {
 	 * @return
 	 * @throws IOException
 	 */
-	private BufferedReader openSourceFile(String absolutePath)
+	public static BufferedReader openSourceFile(String absolutePath)
 			throws IOException {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(
 				absolutePath), "UTF-8"));
