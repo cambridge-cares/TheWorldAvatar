@@ -15,6 +15,7 @@ public interface IKeys {
 	
 	String SCENARIO_USECASEDIRECTORY_SEPARATOR = "scenario.usecasedirectory.separator";
 	String ABSDIR_ROOT =  "absdir.root";
-	String PATH_KNOWLEDGEBASE_SHIPS = "reldir.knowledgebase.ships";
+	String PATH_KNOWLEDGEBASE_SHIPS = "path.knowledgebase.ships";
 	String URL_SCHEME = "url.scheme";
+
 }
