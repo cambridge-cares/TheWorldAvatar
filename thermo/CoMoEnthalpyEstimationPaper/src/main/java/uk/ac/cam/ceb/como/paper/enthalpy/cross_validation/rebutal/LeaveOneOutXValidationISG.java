@@ -356,21 +356,20 @@ public class LeaveOneOutXValidationISG {
                                 rListWriter.write();
                                 
                                 for(int ri=0; ri<completeRList.size();ri++) {
-                                
+                                 
                                 double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                                 
                             	System.out.println( " Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
                                
-                                if(error<maxErr) {
+                            	if(error<maxErr) {
                                 	
-                                	validReaction.put(completeRList.get(ri), error);
+                                validReaction.put(completeRList.get(ri), error);
                                 	
-                                	if(!validSpecies.contains(completeRList.get(ri).getSpecies())){
+                                if(!validSpecies.contains(completeRList.get(ri).getSpecies())){
                                 		
-                                	validSpecies.add(completeRList.get(ri).getSpecies());
+                                validSpecies.add(completeRList.get(ri).getSpecies());
                                 	
-                                	}
-                                	
+                                }
                                 
                                 }else {
                                 	
@@ -410,7 +409,7 @@ public class LeaveOneOutXValidationISG {
                             
                         } catch (OutOfMemoryError e) {
                         	
-                            System.gc();                            
+                            System.gc();              
                         }
                     }
 
@@ -455,6 +454,7 @@ public class LeaveOneOutXValidationISG {
         BufferedWriter invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "invalid_reactions" + ".txt", true)); 
         
         System.out.println();
+        
         System.out.println("Invalid reactions: ");
         
         for(Map.Entry<Reaction, Double> inv: invalidReaction.entrySet()) {
@@ -467,32 +467,123 @@ public class LeaveOneOutXValidationISG {
     	
         }
         
-       invalidReactionFile.close();
+        invalidReactionFile.close();
        
-       System.out.println();
+        System.out.println();
        
-       System.out.println("Valid Species names: ");
+        System.out.println("Valid Species names: ");
        
-       for(Species vs: validSpecies) {
+        for(Species vs: validSpecies) {
     	   
-    	   System.out.println(vs.getRef());
+        System.out.println(vs.getRef());
+       
        }
-       
-       
        
        System.out.println();
        
        System.out.println("Invalid Species names: ");
        
        for(Species invs: invalidSpecies) {
-    	   
+          
        if(!validSpecies.contains(invs)) {
-    		   
+       
        System.out.println(invs.getRef());
        
        }
-       
-       
        }
+       
+       /**
+        * 
+        * Calculation error bar for each invalid species.
+        * 
+        */
+//     Map<Species, Double> speciesErrorBarMap = new HashMap<Species, Double>();
+       
+//     System.out.println("- - -  - -  - - - - - - - - - -  - - - - -  - - - - - -");
+       
+//       for(Species invspecies: invalidSpecies) {
+//    	   
+//    	   if(!validSpecies.contains(invspecies)) {
+//    		   
+//        	   double errorSum = 0.0;
+//        	   
+//        	   int errorCount = 0;
+//        	   
+//        	   double errorBar = 0.0;
+//    		   
+//    	   
+//    	   for(Map.Entry<Reaction, Double> invr: invalidReaction.entrySet()) {
+//    		   
+//    		   if(invr.getKey().getSpecies().getRef().toString().equalsIgnoreCase(invspecies.getRef())){
+//    			   
+//    		    errorSum = errorSum + invr.getValue();
+//    			   
+//    			errorCount++;
+//
+//    		   }
+//    	   }
+//    	   
+//    	   errorBar =errorSum/errorCount;
+//    	   
+//    	   System.out.println("Species name: " + invspecies.getRef() + " , Error bar is: " + errorBar);
+//    	   
+//    	   speciesErrorBarMap.put(invspecies, errorBar);
+//    	   
+//    	   }
+//    	   
+//       }  
+
+       /**
+        * 
+        * Calculation error bar for each species in invalid set of reactions.
+        * 
+        */
+     Set<Species> uniqueinvSetOfSpecies  = new HashSet<Species>();
+     
+     for(Map.Entry<Reaction, Double> invspm: invalidReaction.entrySet()) {
+    	 
+    if(!uniqueinvSetOfSpecies.contains(invspm.getKey().getSpecies())) {
+    	
+    	uniqueinvSetOfSpecies.add(invspm.getKey().getSpecies());
+    
+    }
+     
+     }
+    
+     System.out.println("- - - -  - - -  - - - - - -  - - - - - - ");
+     
+     for(Species s : uniqueinvSetOfSpecies) {
+    	 
+    	 System.out.println(s.getRef());    
+     }
+     
+     System.out.println("- - - -  - - -  - - - - - -  - - - - - - ");
+
+     
+     for(Species usp: uniqueinvSetOfSpecies ) {
+
+         double errorSum = 0.0;
+         int errorCount=0;
+    	 double errorBar = 0.0;
+    	 
+    	 for(Map.Entry<Reaction, Double> m: invalidReaction.entrySet()) {
+    		 
+    		 if(m.getKey().getSpecies().getRef().equals(usp.getRef())) {
+    			 
+    			 
+    			 errorSum = errorSum + m.getValue();
+    			 
+    			 errorCount++;
+    		 }
+    		 
+    	 }
+    	 
+    	 errorBar=errorSum/errorCount;
+    	 
+    	 
+    	 System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
+      
+     }
+    
     }
 }
