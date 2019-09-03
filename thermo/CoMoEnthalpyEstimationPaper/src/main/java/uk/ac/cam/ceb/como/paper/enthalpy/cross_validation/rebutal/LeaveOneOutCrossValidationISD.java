@@ -302,9 +302,6 @@ public class LeaveOneOutCrossValidationISD {
                                     	validReaction.put(r, d);
                                     }
                                     
-                                    
-                                    
-                                    
                                     s.setHf(r.calculateHf());
                                     
 //                                  System.out.println("Reaction("+cri+"):_ " + rList.get(cri).toString() + "  Reaction enthalpy from rList: " + rList.get(cri).calculateHf() + "  Median reaction enthalpy from r after calling selector : " + r.calculateHf());
@@ -366,8 +363,6 @@ public class LeaveOneOutCrossValidationISD {
                                 	 */
                                 	
                                 System.out.println("[Species name: " + sp.getRef() + "  Species enthalpy (median?): " + sp.getHf() + " ]" );
-                                
-                                
                                 
                                 }
                             	

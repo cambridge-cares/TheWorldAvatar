@@ -291,6 +291,9 @@ public class LeaveOneOutXValidationISG {
                                 	  System.out.println("Species name for reaction list : " + r.getSpecies().getRef());
                                   }
 
+                                  /**
+                                   * 
+                                   */
 //                                Reaction r = selector.select(rList).get(0);
 //                                    
 //                                System.out.println("Median Reaction: " + r.toString() + " species Hf: " + r.getSpecies().getHf() + " : r.calculateHf(): " + r.calculateHf());
@@ -368,7 +371,7 @@ public class LeaveOneOutXValidationISG {
                                 if(!validSpecies.contains(completeRList.get(ri).getSpecies())){
                                 		
                                 validSpecies.add(completeRList.get(ri).getSpecies());
-                                	
+                                
                                 }
                                 
                                 }else {
@@ -379,23 +382,23 @@ public class LeaveOneOutXValidationISG {
                                 	
                                 		invalidSpecies.add(completeRList.get(ri).getSpecies());
                                 	}
-                                	
                                 }
                                 
-                                }                             
+                                }                         
                             }
-
+                            
                             if(!ttipSpecies.isEmpty()){
                             	
                             	for(Species sp: ttipSpecies) {
                                     
-                                	/**
+                                
+                            		/**
                                 	 * 
                                 	 * Median enthalpy and species name.
                                 	 * 
                                 	 */
                                 	
-                                System.out.println("[Species name: " + sp.getRef() + "  Species enthalpy (median?): " + sp.getHf() + " ]" );
+                                System.out.println("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
                                 
                                 }
                             	
@@ -409,7 +412,7 @@ public class LeaveOneOutXValidationISG {
                             
                         } catch (OutOfMemoryError e) {
                         	
-                            System.gc();              
+                            System.gc();
                         }
                     }
 
@@ -426,7 +429,7 @@ public class LeaveOneOutXValidationISG {
                         writer.write();
                         
                     } catch (Exception e) {
-                    	
+                    
                     }
                 }
             }
@@ -497,10 +500,9 @@ public class LeaveOneOutXValidationISG {
         * Calculation error bar for each invalid species.
         * 
         */
-//     Map<Species, Double> speciesErrorBarMap = new HashMap<Species, Double>();
+     Map<Species,Double> speciesErrorBarMap = new HashMap<Species,Double>();
        
-//     System.out.println("- - -  - -  - - - - - - - - - -  - - - - -  - - - - - -");
-       
+//     System.out.println("- - -  - -  - - - - - - - - - -  - - - - -  - - - - - -");       
 //       for(Species invspecies: invalidSpecies) {
 //    	   
 //    	   if(!validSpecies.contains(invspecies)) {
@@ -509,9 +511,8 @@ public class LeaveOneOutXValidationISG {
 //        	   
 //        	   int errorCount = 0;
 //        	   
-//        	   double errorBar = 0.0;
-//    		   
-//    	   
+//        	   double errorBar = 0.0;    		   
+//     
 //    	   for(Map.Entry<Reaction, Double> invr: invalidReaction.entrySet()) {
 //    		   
 //    		   if(invr.getKey().getSpecies().getRef().toString().equalsIgnoreCase(invspecies.getRef())){
@@ -542,23 +543,22 @@ public class LeaveOneOutXValidationISG {
      
      for(Map.Entry<Reaction, Double> invspm: invalidReaction.entrySet()) {
     	 
-    if(!uniqueinvSetOfSpecies.contains(invspm.getKey().getSpecies())) {
+     if(!uniqueinvSetOfSpecies.contains(invspm.getKey().getSpecies())) {
     	
     	uniqueinvSetOfSpecies.add(invspm.getKey().getSpecies());
     
-    }
+     }
      
      }
     
-     System.out.println("- - - -  - - -  - - - - - -  - - - - - - ");
+     System.out.println("- - - -  - - - Unique species names from invalid reactions:  - - - - - -  - - - - - - ");
      
      for(Species s : uniqueinvSetOfSpecies) {
     	 
     	 System.out.println(s.getRef());    
      }
      
-     System.out.println("- - - -  - - -  - - - - - -  - - - - - - ");
-
+     System.out.println("- - - -  - - -  Species names from invalid reactions and their error bars: - - - - - -  - - - - - - ");
      
      for(Species usp: uniqueinvSetOfSpecies ) {
 
@@ -570,20 +570,59 @@ public class LeaveOneOutXValidationISG {
     		 
     		 if(m.getKey().getSpecies().getRef().equals(usp.getRef())) {
     			 
-    			 
     			 errorSum = errorSum + m.getValue();
     			 
     			 errorCount++;
-    		 }
-    		 
+    		 }    		 
     	 }
     	 
-    	 errorBar=errorSum/errorCount;
+     errorBar=errorSum/errorCount;
+     
+
+     System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
     	 
-    	 
-    	 System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
-      
+     speciesErrorBarMap.put(usp, errorBar);
+     
      }
+     
+     Map<Species,Double> invalidSpeciesErrorBarMap = new HashMap<Species,Double>();
+     
+     for(Map.Entry<Species,Double> speciesMap : speciesErrorBarMap.entrySet()) {
+    	 
+    	 if(invalidSpecies.contains(speciesMap.getKey()) && (!validSpecies.contains(speciesMap.getKey()))) {
+    	 
+    	 invalidSpeciesErrorBarMap.put(speciesMap.getKey(), speciesMap.getValue());
+    	 
+          }
+    	 
+     }
+     
+     System.out.println();
+     System.out.println("-----------------Species from invalid (rejected) list with error bar: ");
+     
+     for(Map.Entry<Species, Double> invmap: invalidSpeciesErrorBarMap.entrySet()) {
+    	 
+    	 System.out.println(invmap.getKey().getRef()+ " " + invmap.getValue()) ;
+     }
+     
+     System.out.println();
+     
+     System.out.println("- - - -  - - -  - - - - - -  - - - - - -");
+     
+     double maxErrorBar = Collections.max(invalidSpeciesErrorBarMap.values());
+     
+     for(Map.Entry<Species,Double> invspeciesMap : invalidSpeciesErrorBarMap.entrySet()) {
+    
+    	 if(invspeciesMap.getValue()==maxErrorBar) {
+    		 
+   		 System.out.println("Species name : " + invspeciesMap.getKey().getRef() + " error bar from map : " +  invspeciesMap.getValue() + " max error bar: " + maxErrorBar);
+    		 
+    		 break;
+    	 }
+     }
+     
+     
+        
     
     }
 }
