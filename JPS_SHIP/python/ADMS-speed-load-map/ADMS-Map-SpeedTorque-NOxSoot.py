@@ -12,8 +12,7 @@ import pickle
 
 ## Global inputs.
 NO_frac = 0.35
-NumParSizeClasses = 9
-#NumParSizeClasses = 4
+NumParSizeClasses = 4
 LogNorm_mu = 200.0
 #controlls the width of the distribution
 LogNorm_sigma = 1.0
