@@ -47,6 +47,24 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  *
  * @author pb556
  * 
+ * @author nk510 ( caresssd@hermes.cam.ac.uk )
+ * @author am2145( am2145@cam.ac.uk )
+ * - This code does pre- processing step in cross validation for selected Ti-based species.
+ * - In this inputs are: 
+ *    - A set of Ti-based species (Gaussian files) given as reference list. 
+ *    - A list of 25 target species  for which enthalpies are given. This list is given as csv file. Comments: List of target and reference species should be the same.
+ *    - Maximum error that is compared with error for each generated reaction. If error  for each reaction is smaller that maximum error then that reaction is valid. Otherwise, that reaction is invalid. 
+ *    - Number of runs is set to one, and number of allowed reactions is set to 5.
+ *    - ISG reaction type
+ * - Calculates EBRs for reference set of species (srcRefPool) by using Gaussian files of the same set of species.
+ * - Calculates difference  (error) between estimated enthalpy of formation for each species in each generated reaction and reference enthalpy of selected species.
+ * - Calculates error bar for each species by using errors for each generated reaction.
+ * - Generates list of valid reactions.
+ * - Generates list of invalid reactions.
+ * - Generates an initial list of valid species
+ * - Generates an initial list of invalid species
+ * - Generates a species name and its  maximum error bar. 
+ * 
  */
 
 public class LeaveOneOutXValidationISG {
@@ -68,7 +86,7 @@ public class LeaveOneOutXValidationISG {
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";      
-
+        
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         
         refParser.parse();
@@ -439,8 +457,7 @@ public class LeaveOneOutXValidationISG {
         
         System.out.println("Valid reactions: ");
         
-        BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "valid_reactions" + ".txt", true)); 
-        
+        BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "valid_reactions" + ".txt", true));
         
         for(Map.Entry<Reaction, Double> v: validReaction.entrySet()) {
         	
@@ -578,7 +595,6 @@ public class LeaveOneOutXValidationISG {
     	 
      errorBar=errorSum/errorCount;
      
-
      System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
     	 
      speciesErrorBarMap.put(usp, errorBar);
@@ -594,10 +610,10 @@ public class LeaveOneOutXValidationISG {
     	 invalidSpeciesErrorBarMap.put(speciesMap.getKey(), speciesMap.getValue());
     	 
           }
-    	 
      }
      
      System.out.println();
+     
      System.out.println("-----------------Species from invalid (rejected) list with error bar: ");
      
      for(Map.Entry<Species, Double> invmap: invalidSpeciesErrorBarMap.entrySet()) {
@@ -619,10 +635,10 @@ public class LeaveOneOutXValidationISG {
     		 
     		 break;
     	 }
-     }
-     
-     
-        
+    }
+    
+    
+    
     
     }
 }
