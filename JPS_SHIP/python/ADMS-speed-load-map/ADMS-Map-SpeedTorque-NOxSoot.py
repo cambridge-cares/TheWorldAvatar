@@ -1,3 +1,6 @@
+import csv
+import random
+import sys
 from math import exp, log, sqrt, pi, erf
 import json
 
@@ -9,8 +12,7 @@ import pickle
 
 ## Global inputs.
 NO_frac = 0.35
-NumParSizeClasses = 9
-#NumParSizeClasses = 4
+NumParSizeClasses = 4
 LogNorm_mu = 200.0
 #controlls the width of the distribution
 LogNorm_sigma = 1.0
@@ -66,9 +68,10 @@ def PollutantsList(aNOx):
 def ParticleList(aSoot):
     the_list = []
     prev_cdf = 0.0
+    sizes = get_sizes(NumParSizeClasses)
     for i in range(1,NumParSizeClasses+1):
         #1e4 ... / 4
-        the_size = exp(log(1e3)*i/7)
+        the_size = sizes[i-1]
         cdf = LogNormalCDF(the_size, LogNorm_mu, LogNorm_sigma)
         the_mfr = aSoot*(cdf-prev_cdf)/1000.0/3600.0 #g/h to kg/s
         the_list.append(ParSizeClassDict(the_size, 'nm', 1800, 'kg/m3', the_mfr, 'kg/s'))
@@ -115,6 +118,16 @@ def evaluate_map(aSpeed, aTorque):
     rSoot = evaluate_surrogate(Soot_surr, xs)[0]
     rSoot = exp(rSoot*log(10.0))
     return rNOx, rSoot
+
+def get_sizes(num):
+    num_low = round(num/2)
+    num_high = num - num_low
+    range_pm25 = -2.4538 * numpy.random.random_sample(num_low, ) + 2.5
+    range_pm10 = -3.75 * numpy.random.random_sample(num_high, ) + 10
+    sizes = range_pm25.tolist() + range_pm10.tolist()
+    return sorted(sizes)
+
+
 
 ######################
 ## Executable part.
