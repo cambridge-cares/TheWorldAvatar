@@ -1,16 +1,17 @@
 package uk.ac.cam.cares.jps.base.scenario.test;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
@@ -220,5 +221,20 @@ public class TestScenario extends TestCase {
 		
 		long diff = System.currentTimeMillis() - start;	
 		System.out.println("diff=" + diff);
+	}
+	
+	public void testJPSContext() {
+		
+		JSONObject jo = new JSONObject();
+		jo.put("key1", "value1");
+		jo.put("key2", "value2");
+		JPSContext.putScenarioUrl(jo, "scenarioabc");
+		jo.put("key3", "value3");
+		JPSContext.putScenarioUrl(jo, "scenarioxyz");
+		jo.put("key4", "value4");
+		
+		String actual = JPSContext.getScenarioUrl(jo);
+		assertEquals("scenarioxyz", actual);
+		System.out.println(jo);
 	}
 }

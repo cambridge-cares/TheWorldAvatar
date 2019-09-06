@@ -13,9 +13,9 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 public class TestNuclear extends TestCase {
@@ -49,10 +49,10 @@ public class TestNuclear extends TestCase {
 		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
 		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put(JPSConstants.RUN_SIMULATION, false);
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		
@@ -69,8 +69,8 @@ public class TestNuclear extends TestCase {
 		
 		// process the simulation result
 		jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);	
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
 		System.out.println("result from processsimulationresult=" + resultProcess);
 	}

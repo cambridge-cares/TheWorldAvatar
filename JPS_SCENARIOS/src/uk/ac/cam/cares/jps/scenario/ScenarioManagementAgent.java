@@ -21,6 +21,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog.ScenarioLogEntry;
 
@@ -206,12 +207,12 @@ public class ScenarioManagementAgent extends HttpServlet {
 		// this has the following consequence: if one agent makes a call to access the knowledge graph then its call is redirected
 		// to the scenario agent
 		String scenarioUrl = getScenarioUrl(scenarioName);
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		String usecaseUrl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
 		if (usecaseUrl == null) {
 			// create new usecaseUrl
 			usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-			jo.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+			JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		}
 	}
 }

@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
@@ -59,7 +60,7 @@ public class ScenarioAgent extends HttpServlet {
 		// as the scenario agent calls other agents.
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+			JPSContext.putScenarioUrl(jo, scenarioUrl);
 		}
 				
 		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
@@ -337,7 +338,7 @@ public class ScenarioAgent extends HttpServlet {
 	 */
 	private void mergeScenario(JSONObject jo, String scenarioName, ScenarioLog log) {
 		
-		String sourceUrl = jo.getString(JPSConstants.SCENARIO_URL);
+		String sourceUrl = JPSContext.getScenarioUrl(jo);
 		String sourceName = BucketHelper.getScenarioName(sourceUrl);
 		
 		// merge the logs

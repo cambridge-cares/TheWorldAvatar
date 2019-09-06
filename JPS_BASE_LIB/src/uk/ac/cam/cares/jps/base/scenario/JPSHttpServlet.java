@@ -10,10 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.logging.log4j.ThreadContext;
 import org.json.JSONObject;
-
 import org.slf4j.Logger;
+
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -193,22 +192,22 @@ public abstract class JPSHttpServlet extends HttpServlet {
     public static void enableScenario(HttpServletRequest request) {
         JSONObject jo = AgentCaller.readJsonParameter(request);
         if (!jo.isNull(JPSConstants.SCENARIO_URL)) {
-            String scenarioURL = jo.getString(JPSConstants.SCENARIO_URL);
-            ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioURL);
+            String scenarioUrl = JPSContext.getScenarioUrl(jo);
+            JPSContext.putScenarioUrl(scenarioUrl);
         }
         if (!jo.isNull(JPSConstants.SCENARIO_USE_CASE_URL)) {
-            String scenarioURL = jo.getString(JPSConstants.SCENARIO_USE_CASE_URL);
-            ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, scenarioURL);
+            String usecaseUrl =  JPSContext.getUsecaseUrl(jo);
+            JPSContext.putUsecaseUrl(usecaseUrl);
         }
     }
 
     public static void enableScenario(String scenarioUrl) {
-        ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+    	JPSContext.putScenarioUrl(scenarioUrl);
     }
 
     public static void enableScenario(String scenarioUrl, String usecaseUrl) {
-        ThreadContext.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-        ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+    	JPSContext.putScenarioUrl(scenarioUrl);
+    	JPSContext.putUsecaseUrl(usecaseUrl);
     }
 
     /**
@@ -217,7 +216,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * must be called whenever enable was called - even in case of an exception during any get, put etc. method of a servlet.
      */
     public static void disableScenario() {
-        ThreadContext.remove(JPSConstants.SCENARIO_URL);
-        ThreadContext.remove(JPSConstants.SCENARIO_USE_CASE_URL);
+    	JPSContext.removeScenarioUrl();
+    	JPSContext.removeUsecaseUrl();
     }
 }

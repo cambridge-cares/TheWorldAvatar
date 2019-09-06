@@ -6,11 +6,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 
@@ -82,16 +77,16 @@ public class TestScenarioManagement extends TestCase {
 	
 
 	
-	public void testTmp6() {
-		
-		String path = "/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl";
-	
-		String cutPath = ScenarioHelper.cutHash(path);;
-		String bucket = ScenarioHelper.getScenarioBucket(JPSConstants.SCENARIO_NAME_BASE);
-		String hostport = KeyValueManager.get(IKeys.HOST) + "_" + KeyValueManager.get(IKeys.PORT);
-		String localFile = bucket + "/" + hostport + cutPath;				
-		String result =  new QueryBroker().readFile(localFile); 
-		
-		System.out.println(result);
-	}
+//	public void testTmp6() {
+//		
+//		String path = "/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl";
+//	
+//		String cutPath = ScenarioHelper.cutHash(path);;
+//		String bucket = ScenarioHelper.getScenarioBucket(JPSConstants.SCENARIO_NAME_BASE);
+//		String hostport = KeyValueManager.get(IKeys.HOST) + "_" + KeyValueManager.get(IKeys.PORT);
+//		String localFile = bucket + "/" + hostport + cutPath;				
+//		String result =  new QueryBroker().readFile(localFile); 
+//		
+//		System.out.println(result);
+//	}
 }

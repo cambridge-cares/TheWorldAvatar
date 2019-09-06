@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -19,6 +18,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
@@ -80,8 +80,8 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		String scenarioUrlOfMockedAgent = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5";
 		new CoordinationAgent().coordinate(scenarioUrlOfMockedAgent, jo, "PF");
@@ -96,8 +96,8 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		String scenarioUrlOfMockedAgent = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5";
 		new CoordinationAgent().coordinate(scenarioUrlOfMockedAgent, jo, "OPF");
@@ -112,8 +112,8 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("mergescenariourl", "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5");
 		

@@ -9,9 +9,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.ship.HKUPollutionRetriever;
 import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 
@@ -29,7 +29,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		String scenarioName = inputjo.optString("scenarioname");
 		if ((scenarioName != null) && !scenarioName.isEmpty()) {
 			scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
-			jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+			JPSContext.putScenarioUrl(jo, scenarioUrl);
 		}
 		
 		System.out.println("CoordinationDataCollection is called with scenarioUrl = " + scenarioUrl);
