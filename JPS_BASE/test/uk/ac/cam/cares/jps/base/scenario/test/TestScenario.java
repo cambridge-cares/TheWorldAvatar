@@ -4,6 +4,7 @@ import org.apache.jena.ontology.OntModel;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -95,7 +96,8 @@ public class TestScenario extends TestCase {
 		
 		String scenarioName = "testmy123";
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
-		String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
+		//String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
+		String root = ScenarioHelper.getScenarioBucket(scenarioName);
 		
 		String url = "http://www.theworldavatar.com/jps/kb/sgp/jurongisland/something.owl";
 		String path = BucketHelper.getLocalPath(url, scenarioUrl);
@@ -210,7 +212,7 @@ public class TestScenario extends TestCase {
 	
 	public void testPingScenarioAgentPerformance() {
 		
-		String url = "http://localhost:8080/JPS_SCENARIO/scenario/testPingScenarioAgentPerformance/ping";
+		String url = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testPingScenarioAgentPerformance/ping";
 		long start = System.currentTimeMillis();
 		for (int i=0; i<10; i++) {
 			String result = AgentCaller.executeGetWithURL(url);

@@ -178,13 +178,4 @@ public class TestScenarios extends TestCase {
 		JSONObject jo = new JSONObject(result);
 		assertTrue(jo.has("weatherstate"));
 	}
-	
-	public void xxxtestMergeScenarios() {
-		
-		String sourceBucket = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\aascmergesource";
-		String destBucket = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\aascmerge";
-		
-		new ScenarioAgent().copyOwlFiles(sourceBucket, destBucket);
-		
-	}
 }

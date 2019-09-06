@@ -3,7 +3,7 @@ $(function() {
   var selected = [];
   var loadeddata;
   var table = $("#tablescenarios").DataTable();
-  var listScenariosUrl = "http://localhost:8080/JPS_SCENARIO/scenariomanagement/list"
+  var listScenariosUrl = "http://localhost:8080/jps/scenariomanagement/list"
   var selectedScenario;
   var selectedOperation;
  
@@ -60,7 +60,7 @@ $(function() {
 	  
 	  var scenarioname = $('#newscenarioname').val();
 	  
-	  var url = "http://localhost:8080/JPS_SCENARIO/scenario/" + scenarioname;
+	  var url = "http://localhost:8080/jps/scenario/" + scenarioname;
 	  
 	    $.ajax({
 	        type: 'GET',
