@@ -1,8 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -348,54 +346,5 @@ public class DataPreProcessing {
     }
     
     }
-  
-    /**
-     * @author nk510
-     * Method stores invalid or valid set of reactions in a txt file.
-     * 
-     * @param reactionFile The file that contains valid or invalid list of reactions
-     * @param reactionList Generated reaction list
-     * @throws IOException
-     */
-    public void generateInitialReactionListFile(BufferedWriter reactionFile, Map<Reaction, Double> reactionList) throws IOException {
 
-    	for(Map.Entry<Reaction, Double> v: reactionList.entrySet()) {
-        	
-        	System.out.println("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
-        	
-        	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
-        	
-        	reactionFile.write("\n");
-        	
-        }
-        
-        reactionFile.close();
-    	
-    }   
-
-    
-    /**
-     * 
-     * @param speciesFile Target species file that contains valid or invalid species names.
-     * @param speciesSet The set of species.
-     * @throws IOException the exception.
-     */
-    public void generateInitialSpeciesFile(BufferedWriter speciesFile,  Set<Species> speciesSet) throws IOException {
-    	
-    	for(Species s: speciesSet) {
-     	   
-    		
-            System.out.println("Species name: " + s.getRef());
-           
-            speciesFile.write(s.getRef());
-            
-            speciesFile.write("\n");
-            
-           }
-    	
-    	speciesFile.close();
-    	
-    }
-    
-    
 }
