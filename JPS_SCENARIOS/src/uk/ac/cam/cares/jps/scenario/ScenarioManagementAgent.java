@@ -208,7 +208,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 		// to the scenario agent
 		String scenarioUrl = getScenarioUrl(scenarioName);
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
+		String usecaseUrl = JPSContext.getUsecaseUrl(jo);
 		if (usecaseUrl == null) {
 			// create new usecaseUrl
 			usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);

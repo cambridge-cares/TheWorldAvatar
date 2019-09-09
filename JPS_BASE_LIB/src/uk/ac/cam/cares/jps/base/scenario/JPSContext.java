@@ -9,22 +9,37 @@ public class JPSContext {
 	
     public static void put(JSONObject jo, String key, String value) {
     	
-//    	JSONObject jpscontext = null;
-//        if (!jo.isNull(JPSConstants.SCENARIO_JPS_CONTEXT)) {
-//        	jpscontext = jo.getJSONObject(JPSConstants.SCENARIO_JPS_CONTEXT);
-//        } else {
-//        	jpscontext = new JSONObject();
-//        	jo.put(JPSConstants.SCENARIO_JPS_CONTEXT, jpscontext);
-//        }
-//        
-//        jpscontext.put(key, value);
+    	JSONObject jpscontext = null;
+        if (jo.isNull(JPSConstants.SCENARIO_JPS_CONTEXT)) {
+        	jpscontext = new JSONObject();
+        	jo.put(JPSConstants.SCENARIO_JPS_CONTEXT, jpscontext);
+        } else {
+        	jpscontext = jo.getJSONObject(JPSConstants.SCENARIO_JPS_CONTEXT);
+        }
+        
+        jpscontext.put(key, value);
     	
-    	jo.put(key, value);
+    	//jo.put(key, value);
     }
     
+    /**
+     * @param jo
+     * @param key
+     * @return null if key no found 
+     */
     public static String get(JSONObject jo, String key) {
-    	//return jo.getJSONObject(JPSConstants.SCENARIO_JPS_CONTEXT).getString(key);
-    	return jo.getString(key);
+    	
+    	JSONObject jpscontext = jo.optJSONObject(JPSConstants.SCENARIO_JPS_CONTEXT);
+    	if (jpscontext != null) {
+    		String value = jpscontext.optString(key);
+    		if (!value.isEmpty()) {
+    			return value;
+    		}
+    	} 
+    	
+    	return null;
+    	
+    	//return jo.optString(key);
     }
       
 	public static void putScenarioUrl(JSONObject jo, String value) {		

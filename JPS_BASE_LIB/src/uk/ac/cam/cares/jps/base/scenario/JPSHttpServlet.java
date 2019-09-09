@@ -13,7 +13,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
@@ -191,11 +190,11 @@ public abstract class JPSHttpServlet extends HttpServlet {
      */
     public static void enableScenario(HttpServletRequest request) {
         JSONObject jo = AgentCaller.readJsonParameter(request);
-        if (!jo.isNull(JPSConstants.SCENARIO_URL)) {
+        if (JPSContext.getScenarioUrl(jo) != null) {
             String scenarioUrl = JPSContext.getScenarioUrl(jo);
             JPSContext.putScenarioUrl(scenarioUrl);
         }
-        if (!jo.isNull(JPSConstants.SCENARIO_USE_CASE_URL)) {
+        if (JPSContext.getUsecaseUrl(jo) != null) {
             String usecaseUrl =  JPSContext.getUsecaseUrl(jo);
             JPSContext.putUsecaseUrl(usecaseUrl);
         }

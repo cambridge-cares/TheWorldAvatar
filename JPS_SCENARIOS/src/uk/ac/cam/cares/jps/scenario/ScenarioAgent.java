@@ -48,8 +48,8 @@ public class ScenarioAgent extends HttpServlet {
 		
 		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
 
-		String scenariourl = jo.optString(JPSConstants.SCENARIO_URL);
-		String usecaseurl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
+		String scenariourl = JPSContext.getScenarioUrl(jo);
+		String usecaseurl = JPSContext.getUsecaseUrl(jo);
 		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
 		//logger.debug("with input param=" + jo);
 		//logger.debug("with query string=" + request.getQueryString());
