@@ -57,20 +57,8 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 
 public class DataPreProcessing {
 	
-	Collection<Species> invalids = new HashSet<>();
-    
-    Map<Species, Integer> spinMultiplicity = new HashMap<>();
-    
-    Set<Species> validSpecies = new HashSet<Species>();
-	
-	Set<Species> invalidSpecies = new HashSet<Species>();
-
-	Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
-	
-	Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
-	
-    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  LPSolver solver ) throws Exception {
-    	
+    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, Set<Species> validSpecies,  Set<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
+    	 
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
             int maxRadical = ctrRadicals[z];
@@ -223,7 +211,7 @@ public class DataPreProcessing {
                               
                               List<Reaction> reactionList = selector.select(rList);
                               
-                              System.out.println("reactionList.size(): " + reactionList.size());
+//                              System.out.println("reactionList.size(): " + reactionList.size());
                               
                               for(Reaction r : reactionList) {
                             	  

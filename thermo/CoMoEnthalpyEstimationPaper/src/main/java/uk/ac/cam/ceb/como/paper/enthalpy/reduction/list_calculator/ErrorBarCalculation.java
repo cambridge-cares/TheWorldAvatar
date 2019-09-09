@@ -13,11 +13,11 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 public class ErrorBarCalculation {
 	
-    Set<Species> validSpecies = new HashSet<Species>();
-	
-	Set<Species> invalidSpecies = new HashSet<Species>();
-	
-	Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
+//    Set<Species> validSpecies = new HashSet<Species>();
+//	
+//	Set<Species> invalidSpecies = new HashSet<Species>();
+//	
+//	Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
 	
     /**
      * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -28,6 +28,7 @@ public class ErrorBarCalculation {
      * @param reactionFile The file that contains valid or invalid list of reactions
      * @param reactionList Generated reaction list
      * @throws IOException
+     * 
      */
     public void generateInitialReactionListFile(BufferedWriter reactionFile, Map<Reaction, Double> reactionList) throws IOException {
 
@@ -38,40 +39,68 @@ public class ErrorBarCalculation {
         	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
         	
         	reactionFile.write("\n");
-        	
         }
-        
-        reactionFile.close();
     	
-    }   
-
+        reactionFile.close();
+    }
     
     /**
      * @author nk510 ( caresssd@hermes.cam.ac.uk )
      * @author am2145( am2145@cam.ac.uk )
      * 
-     * @param speciesFile Target species file that contains valid or invalid species names.
-     * @param speciesSet The set of species.
+     * @param validSpeciesFile Target species file that contains valid species names.
+     * @param validSpeciesSet The set of valid species.
      * @throws IOException the exception.
      */
-    public void generateInitialSpeciesFile(BufferedWriter speciesFile,  Set<Species> speciesSet) throws IOException {
+    public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile,  Set<Species> validSpeciesSet) throws IOException {
     	
-    	for(Species s: speciesSet) {
-     	   
+    	for(Species s: validSpeciesSet) {
     		
             System.out.println("Species name: " + s.getRef());
            
-            speciesFile.write(s.getRef());
+            validSpeciesFile.write(s.getRef());
             
-            speciesFile.write("\n");
+            validSpeciesFile.write("\n");
             
            }
     	
-    	speciesFile.close();
+    	validSpeciesFile.close();
     	
     }
     
     /**
+     * 
+     * @author nk510 ( caresssd@hermes.cam.ac.uk )
+     * @author am2145( am2145@cam.ac.uk )
+     * 
+     * @param invalidSpeciesFile The file where list of invalid species will be written.
+     * @param invalidSpeciesSet The set of invalid species.
+     * @param validSpeciesSet The set of valid species. 
+     * @throws IOException the exception. 
+     */
+    public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile, Set<Species> invalidSpeciesSet, Set<Species> validSpeciesSet) throws IOException {
+    	
+    	for(Species invs: invalidSpeciesSet) {
+            
+    	       if(!validSpeciesSet.contains(invs)) {
+    	       
+    	       System.out.println("Species name: " + invs.getRef());
+    	       
+    	       invalidSpeciesFile.write(invs.getRef());
+    	       
+               invalidSpeciesFile.write("\n");
+    	       
+    	       }
+    	       
+    	}
+    	       
+    	invalidSpeciesFile.close();
+    	
+    	
+    }
+    
+    /**
+     * 
      * @author nk510 ( caresssd@hermes.cam.ac.uk )
      * @author am2145( am2145@cam.ac.uk )
      * 
@@ -79,8 +108,9 @@ public class ErrorBarCalculation {
      * 
      * @param speciesErrorBarMap Contains species name and  errors for each reaction. The error bar  value is calculated as average of all errors for all reactions generated for given species. 
      * @return species names and their error bars.
+     * 
      */
-    public Map<Species, Double> calculateSpeciesErrorBar( Map<Species,Double> speciesErrorBarMap ) {
+    public Map<Species, Double> calculateSpeciesErrorBar( Map<Species,Double> speciesErrorBarMap, Map<Reaction, Double> invalidReaction, Set<Species> validSpecies, Set<Species> invalidSpecies ) {
     	
       Set<Species> uniqueinvSetOfSpecies  = new HashSet<Species>();
       

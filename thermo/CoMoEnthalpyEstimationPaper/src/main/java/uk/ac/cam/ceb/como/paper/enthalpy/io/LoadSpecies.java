@@ -1,9 +1,12 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.io;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.HfSpeciesConverter;
 
@@ -22,9 +25,10 @@ public class LoadSpecies {
 	 * @throws Exception the exception.
 	 * 
 	 */
-	public void loadSpeciesProperties(int crt, Collection<Species> ref, Map<Species, Integer> spinMultiplicity,String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids ) throws Exception {
 	
-		int ctr = 1; // remove from here
+	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids ) throws Exception {	
+		 
+		int ctr = 1;
 		
 	     /**
 	      * Iterates over target species collection
@@ -66,7 +70,31 @@ public class LoadSpecies {
 		
 		ref.removeAll(invalids);
 		
+		List<Species> refSpecies = new ArrayList<Species>(ref);
+		
+		return refSpecies;
+		
 	}
-	
+	/**
+	 * @author mk510 (caresssd@hermes.cam.ac.uk)
+	 * @author am2145( am2145@cam.ac.uk )
+	 * 
+	 * @param srcCompoundsRef the path to Gaussian files
+	 * @param srcRefPool the path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
+	 * @return the collection of Species objects.
+	 * @throws Exception
+	 */
+	public Collection<Species> loadReferenceSpeciesFiles(String srcRefPool) throws Exception{
+		
+		SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+        
+        refParser.parse();
+        
+        Collection<Species> ref = refParser.getRefSpecies();
+        
+		return ref;
+		 
+		
+	}
 	
 }
