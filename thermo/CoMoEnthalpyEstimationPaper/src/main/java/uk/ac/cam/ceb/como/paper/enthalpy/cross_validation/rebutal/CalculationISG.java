@@ -44,6 +44,7 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 /**
  *
  * @author pb556
+ * 
  */
 public class CalculationISG {
     
@@ -60,7 +61,6 @@ public class CalculationISG {
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\hco_isg\\";
         String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
-
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         refParser.parse();
@@ -98,6 +98,7 @@ public class CalculationISG {
                 invalids.add(s);
             }
         }
+        
         refSpecies.removeAll(invalids);
         all.removeAll(invalids);
         soiSpecies.removeAll(invalids);

@@ -1,9 +1,10 @@
 /*
+ * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * 
  */
 package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.rebutal;
-
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -49,8 +50,9 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  * 
  * @author nk510 ( caresssd@hermes.cam.ac.uk )
  * @author am2145( am2145@cam.ac.uk )
+ * 
  * - This code does pre- processing step in cross validation for selected Ti-based species.
- * - In this inputs are: 
+ * - In this code inputs are: 
  *    - A set of Ti-based species (Gaussian files) given as reference list. 
  *    - A list of 25 target species  for which enthalpies are given. This list is given as csv file. Comments: List of target and reference species should be the same.
  *    - Maximum error that is compared with error for each generated reaction. If error  for each reaction is smaller that maximum error then that reaction is valid. Otherwise, that reaction is invalid. 
@@ -62,8 +64,8 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  * - Generates list of valid reactions.
  * - Generates list of invalid reactions.
  * - Generates an initial list of valid species
- * - Generates an initial list of invalid species
- * - Generates a species name and its  maximum error bar. 
+ * - Generates an initial list of invalid species.
+ * - Reports a species name and its maximum error bar.
  * 
  */
 
@@ -84,8 +86,10 @@ public class LeaveOneOutXValidationISG {
         Map<String, Integer[]> mapElPairing = new HashMap<>();
         
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+        
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";      
+        
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         
@@ -308,10 +312,8 @@ public class LeaveOneOutXValidationISG {
                                 	  
                                 	  System.out.println("Species name for reaction list : " + r.getSpecies().getRef());
                                   }
+                                  
 
-                                  /**
-                                   * 
-                                   */
 //                                Reaction r = selector.select(rList).get(0);
 //                                    
 //                                System.out.println("Median Reaction: " + r.toString() + " species Hf: " + r.getSpecies().getHf() + " : r.calculateHf(): " + r.calculateHf());
@@ -451,7 +453,7 @@ public class LeaveOneOutXValidationISG {
                     }
                 }
             }
-        }
+        }//for (int z = 0; z < ctrRadicals.length; z++)
         
         System.out.println();
         
@@ -633,7 +635,7 @@ public class LeaveOneOutXValidationISG {
     		 
    		 System.out.println("Species name : " + invspeciesMap.getKey().getRef() + " error bar from map : " +  invspeciesMap.getValue() + " max error bar: " + maxErrorBar);
     		 
-    		 break;
+    	 break;
     	 }
     }
     

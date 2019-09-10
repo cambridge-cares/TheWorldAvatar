@@ -3,14 +3,18 @@ package uk.ac.cam.ceb.como.paper.enthalpy.io;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.HfSpeciesConverter;
 
 public class LoadSpecies {
+
+	private Collection<Species> refSpecies;
 
 	/**
 	 * 
@@ -21,17 +25,18 @@ public class LoadSpecies {
 	 * @param spinMultiplicity the spin multiplicity value.
 	 * @param srcCompoundsRef the path to Gaussian files (g09) as a reference set of species.
 	 * @param mapElPairing contains species name and number of electrons.
-	 * @param invalids initial collection of invalid species.
 	 * @throws Exception the exception.
 	 * 
 	 */
 	
-	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids ) throws Exception {	
+	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {	
+		 
+		 Collection<Species> invalids = new HashSet<>();
 		 
 		int ctr = 1;
 		
 	     /**
-	      * Iterates over target species collection
+	      * Iterates over target species collection.
 	      */
 		for (Species s : ref) {
 			
@@ -77,10 +82,10 @@ public class LoadSpecies {
 	}
 	/**
 	 * @author mk510 (caresssd@hermes.cam.ac.uk)
-	 * @author am2145( am2145@cam.ac.uk )
+	 * @author am2145 ( am2145@cam.ac.uk )
 	 * 
-	 * @param srcCompoundsRef the path to Gaussian files
-	 * @param srcRefPool the path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
+	 * @param srcCompoundsRef The path to Gaussian files
+	 * @param srcRefPool The path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
 	 * @return the collection of Species objects.
 	 * @throws Exception
 	 */
@@ -97,4 +102,55 @@ public class LoadSpecies {
 		
 	}
 	
+	/**
+	 * @param srcRefPoolv The path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
+	 * @param validSpecies  The set of valid species generated in pre-processing step.
+	 * @return The collection of species that are selected as valid species in pre-processing step.
+	 * @throws Exception The exception.
+	 */
+	public void loadReferenceSpeciesForInitialAnalysis(String srcRefPool, Set<Species> validSpecies) throws Exception{
+		
+		SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+
+		refParser.parse();
+        
+        refSpecies = new ArrayList<>(refParser.getRefSpecies());
+
+        List<Species> intialAnalysisRefSpecies = new ArrayList<Species>();
+        
+        System.out.println("Started reference species: ");
+        
+        for(Species r: refSpecies) {
+        	
+        	System.out.println("species ref name: " +r.getRef() + " species ref  enthalpy: "  + r.getHf());
+        	
+        	for(Species vs: validSpecies) {
+        	
+        		if(vs.getRef().equals(r.getRef())) {
+        			
+        		intialAnalysisRefSpecies.add(r);
+        		
+        	}
+        	}
+        }
+        
+        System.out.println("Initial Analysis Ref Species: ");
+        
+        for(Species iars: intialAnalysisRefSpecies) {
+        	
+        	System.out.println(iars.getRef());
+        	
+        }
+        
+//		return intialAnalysisRefSpecies;
+        
+	}
+	
+	public Collection<Species> getRefSpecies() {
+		return refSpecies;
+	}
+	
+	public void setRefSpecies(Collection<Species> refSpecies) {
+		this.refSpecies = refSpecies;
+	}
 }

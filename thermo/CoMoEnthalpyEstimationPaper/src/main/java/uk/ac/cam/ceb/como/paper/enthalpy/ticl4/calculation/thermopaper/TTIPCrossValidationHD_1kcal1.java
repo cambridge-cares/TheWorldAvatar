@@ -30,7 +30,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -54,10 +54,15 @@ public class TTIPCrossValidationHD_1kcal1 {
 //      String srcSoiPool = "W:\\projects\\enthalpy-methodology\\ttip-case-2\\soi-calc-enthalpy_scaled_kJperMol.csv";
 //      String destRList = "W:\\projects\\enthalpy-methodology\\ttip-case-2\\results\\hd-1kcal\\";
 
-        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";
+//        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
+//        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+//        String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";       
+        
+        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8-valid.csv"; //reference data
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8-one-species.csv";  // target species calc-enthalpy_scaled_kJperMol-test-O2-3let calc-enthalpy_scaled_kJperMol-test
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg\\";
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         refParser.parse();
@@ -121,8 +126,8 @@ public class TTIPCrossValidationHD_1kcal1 {
         solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
 
         int[] ctrRuns = new int[]{1};
-        int[] ctrRes = new int[]{1,2,3,4,5,6,7,8,9,10}; // 1, 5, 15, 25
-        int[] ctrRadicals = new int[]{100,0}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRes = new int[]{5}; // 1, 5, 15, 25 //1,2,3,4,5,6,7,8,9,10
+        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5 //100,0
 
         for (int z = 0; z < ctrRadicals.length; z++) {
             
@@ -150,6 +155,7 @@ public class TTIPCrossValidationHD_1kcal1 {
                     for (Species target : soiSpecies) {
 
                         Map<Species, Collection<ReactionList>> results = new HashMap<>();
+                        
                         System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + soiSpecies.size() + ")");
                         ctr++;
 
@@ -174,7 +180,7 @@ public class TTIPCrossValidationHD_1kcal1 {
                         Collections.shuffle(refPool);
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         
-                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HDReactionType()));
+                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));//new HDReactionType()
                         poolModCalc.setMaximumSearchDepth(50);
                         
                         MultiRunCalculator c
@@ -245,6 +251,16 @@ public class TTIPCrossValidationHD_1kcal1 {
                                 rListWriter.set(completeRList);
                                 rListWriter.overwrite(true);
                                 rListWriter.write();
+                                
+                                for(int ri=0; ri<completeRList.size();ri++) {
+                                    
+                            double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
+                                    
+                          	System.out.println( " Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() + " Error: " +  error);
+                          	
+                                    }
+                                
+                                
                             }
 
                             if (!ttipSpecies.isEmpty()) {
