@@ -57,10 +57,10 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		}
 		String type=jo.getString("type").toLowerCase();
 		JSONObject speedob= new JSONObject();		
-		speedob.put("value", valuecalc);
+		speedob.put("value", valuecalc); //600-2500
 		speedob.put("unit", "RPM");
 		JSONObject torob= new JSONObject();
-		torob.put("value", 250);
+		torob.put("value", 250); //50-550 range
 		torob.put("unit", "Nm");
 		in.put("speed", speedob);
 		in.put("torque", torob);
