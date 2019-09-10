@@ -35,7 +35,7 @@ public class JPS_ESS extends JPSHttpServlet {
 
 	private static final long serialVersionUID = -4199209974912271432L;
 	private Logger logger = LoggerFactory.getLogger(JPS_ESS.class);
-	public static final String AGENT_TAG = "GAMS_NuclearAgent";
+	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 
 	public static void runGAMS() throws IOException, InterruptedException {
 		System.out.println("Start");
@@ -60,7 +60,7 @@ public class JPS_ESS extends JPSHttpServlet {
 		// String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
 
 		ArrayList<String> groupcommand = new ArrayList<String>();
-//		groupcommand.add("start");
+
 		groupcommand.add("C:/Users/GKAR01/Documents/gamsdir/projdir/gamsexecute.bat");
 
 		// CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
@@ -73,6 +73,7 @@ public class JPS_ESS extends JPSHttpServlet {
 			throws ServletException, IOException {
 		
 		JSONObject jofornuc = AgentCaller.readJsonParameter(request);
+		System.out.println("parameter got= "+jofornuc.toString());
 
 		String sparqlQuery = "PREFIX rdf:<http://www.w3.org/2001/XMLSchema#>\r\n"
 				+ "PREFIX App:<http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#>\r\n"
