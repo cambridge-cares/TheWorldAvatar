@@ -5,8 +5,7 @@ public interface JPSConstants {
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
 	static String SCENARIO_SUBDIR_DATA = "data";
-	
-	// TODO-AE SC 20190218 rename the constant value and use prefix jps to make them unique, merge this interface with others (e.g. from config)
+
 	static String SCENARIO_JPS_CONTEXT = "jpscontext";
 	static String SCENARIO_URL = "scenariourl";
 	static String SCENARIO_USE_CASE_URL = "usecaseurl";

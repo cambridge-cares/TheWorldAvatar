@@ -279,12 +279,9 @@ public class ScenarioAgent extends HttpServlet {
 		// The description contains all information (input and output parameter) that the composition engine needs
 		// to compose the corresponding agent.  
 		// The input variable jo contains already the values for all input parameter (for executing the composed agent). 
-		// However, it does not contained the parameter types and output parameter that the composition engines needs to know. 
+		// However, it does not contain the parameter types and output parameters that the composition engines needs to know. 
 		// Thus, we have to add the IRI of composedAgent.
-		//String composedAgent =  ScenarioManagementAgent.getScenarioIRI(scenarioName);
-		// TODO-AE SC 20190215 move log constructor out this method, maybe managed by ScenarioManagementAgent?
 		String composedAgent = ScenarioMockManager.getLatestMockedAgent(log);
-		// TODO-AE SC URGENT define "agent" as key in Base (that is also used by AgentWebAPI). Summarize this with SCENARIO_AGENT.
 		jo.put("agent", composedAgent);
 		
 		// The scenario url is the URL of the scenario functionality for mocking the composed agent.
