@@ -4,19 +4,18 @@
         <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
         <class>uk.ac.cam.cares.jps.ship.model.ShipEntity</class>
         <class>uk.ac.cam.cares.jps.ship.model.ShipDetailsEntity</class>
+        <class>uk.ac.cam.cares.jps.ship.model.ShipPollutionEntity</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql:adms_ships"/>
-            <property name="javax.persistence.jdbc.user" value="postgres"/>
-            <property name="javax.persistence.jdbc.password" value="postgres"/>
-
-            <!-- EclipseLink should create the database schema automatically -->
-
-            <property name="eclipselink.ddl-generation" value="create-tables" />
-            <property name="eclipselink.ddl-generation.output-mode" value="database" />
-
-
+            <property name="eclipselink.jdbc.url" value="jdbc:postgresql://localhost:5432/adms_ships"/>
+            <property name="eclipselink.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="eclipselink.jdbc.user" value="postgres"/>
+            <property name="eclipselink.jdbc.password" value="postgres"/>
+            <property name="eclipselink.target-database" value="PostgreSQL"/>
+            <property name="eclipselink.logging.level" value="WARNING"/>
+            <!--EclipseLink should create the database schema automatically -->
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="database"/>
         </properties>
     </persistence-unit>
 </persistence>

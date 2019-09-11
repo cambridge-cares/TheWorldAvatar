@@ -8,26 +8,63 @@ import java.util.Objects;
 @Entity
 @Table(name = "ship_details", schema = "public", catalog = "adms_ships")
 public class ShipDetailsEntity {
+    @Id
+    @Column(name = "id", nullable = false)
+    @SequenceGenerator( name = "mySeq", sequenceName = "MY_SEQ", allocationSize = 1, initialValue = 1 )
+    @GeneratedValue(strategy=GenerationType.IDENTITY, generator="mySeq")
     private int id;
+    @Basic
+    @Column(name = "dest", length = -1)
     private String dest;
+    @Basic
+    @Column(name = "ss")
     private Double ss;
+    @Basic
+    @Column(name = "cu")
     private Double cu;
+    @Basic
+    @Column(name = "dw")
     private Integer dw;
+    @Basic
+    @Column(name = "draught")
     private Double draught;
+    @Basic
+    @Column(name = "lat")
     private Double lat;
+    @Basic
+    @Column(name = "lon")
     private Double lon;
+    @Basic
+    @Column(name = "r")
     private Integer r;
+    @Basic
+    @Column(name = "lc")
     private Integer lc;
+    @Basic
+    @Column(name = "sl")
     private Boolean sl;
+    @Basic
+    @Column(name = "sc")
     private Integer sc;
+    @Basic
+    @Column(name = "heading")
     private Integer heading;
-    private Integer etaTs;
+    @Basic
+    @Column(name = "etats")
+    private Integer etats;
+    @Basic
+    @Column(name = "ts")
     private Integer ts;
+    @Basic
+    @Column(name = "tst")
     private Integer tst;
+    @JsonBackReference
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "ship_mmsi", referencedColumnName = "mmsi")
     private ShipEntity shipByShipMmsi;
 
-    @Id
-    @Column(name = "id")
+
+
     public int getId() {
         return id;
     }
@@ -36,8 +73,7 @@ public class ShipDetailsEntity {
         this.id = id;
     }
 
-    @Basic
-    @Column(name = "dest")
+
     public String getDest() {
         return dest;
     }
@@ -46,8 +82,7 @@ public class ShipDetailsEntity {
         this.dest = dest;
     }
 
-    @Basic
-    @Column(name = "ss")
+
     public Double getSs() {
         return ss;
     }
@@ -56,8 +91,7 @@ public class ShipDetailsEntity {
         this.ss = ss;
     }
 
-    @Basic
-    @Column(name = "cu")
+
     public Double getCu() {
         return cu;
     }
@@ -66,8 +100,7 @@ public class ShipDetailsEntity {
         this.cu = cu;
     }
 
-    @Basic
-    @Column(name = "dw")
+
     public Integer getDw() {
         return dw;
     }
@@ -76,8 +109,7 @@ public class ShipDetailsEntity {
         this.dw = dw;
     }
 
-    @Basic
-    @Column(name = "draught")
+
     public Double getDraught() {
         return draught;
     }
@@ -86,8 +118,7 @@ public class ShipDetailsEntity {
         this.draught = draught;
     }
 
-    @Basic
-    @Column(name = "lat")
+
     public Double getLat() {
         return lat;
     }
@@ -96,8 +127,7 @@ public class ShipDetailsEntity {
         this.lat = lat;
     }
 
-    @Basic
-    @Column(name = "lon")
+
     public Double getLon() {
         return lon;
     }
@@ -106,8 +136,7 @@ public class ShipDetailsEntity {
         this.lon = lon;
     }
 
-    @Basic
-    @Column(name = "r")
+
     public Integer getR() {
         return r;
     }
@@ -116,8 +145,7 @@ public class ShipDetailsEntity {
         this.r = r;
     }
 
-    @Basic
-    @Column(name = "lc")
+
     public Integer getLc() {
         return lc;
     }
@@ -126,8 +154,7 @@ public class ShipDetailsEntity {
         this.lc = lc;
     }
 
-    @Basic
-    @Column(name = "sl")
+
     public Boolean getSl() {
         return sl;
     }
@@ -136,8 +163,7 @@ public class ShipDetailsEntity {
         this.sl = sl;
     }
 
-    @Basic
-    @Column(name = "sc")
+
     public Integer getSc() {
         return sc;
     }
@@ -146,8 +172,7 @@ public class ShipDetailsEntity {
         this.sc = sc;
     }
 
-    @Basic
-    @Column(name = "heading")
+
     public Integer getHeading() {
         return heading;
     }
@@ -156,18 +181,16 @@ public class ShipDetailsEntity {
         this.heading = heading;
     }
 
-    @Basic
-    @Column(name = "etats")
-    public Integer getEtaTs() {
-        return etaTs;
+
+    public Integer getEtats() {
+        return etats;
     }
 
-    public void setEtaTs(Integer etaTs) {
-        this.etaTs = etaTs;
+    public void setEtats(Integer etats) {
+        this.etats = etats;
     }
 
-    @Basic
-    @Column(name = "ts")
+
     public Integer getTs() {
         return ts;
     }
@@ -176,8 +199,7 @@ public class ShipDetailsEntity {
         this.ts = ts;
     }
 
-    @Basic
-    @Column(name = "tst")
+
     public Integer getTst() {
         return tst;
     }
@@ -206,7 +228,6 @@ public class ShipDetailsEntity {
         if (!Objects.equals(sl, that.sl)) return false;
         if (!Objects.equals(sc, that.sc)) return false;
         if (!Objects.equals(heading, that.heading)) return false;
-        if (!Objects.equals(etaTs, that.etaTs)) return false;
         if (!Objects.equals(ts, that.ts)) return false;
         return Objects.equals(tst, that.tst);
     }
@@ -226,15 +247,12 @@ public class ShipDetailsEntity {
         result = 31 * result + (sl != null ? sl.hashCode() : 0);
         result = 31 * result + (sc != null ? sc.hashCode() : 0);
         result = 31 * result + (heading != null ? heading.hashCode() : 0);
-        result = 31 * result + (etaTs != null ? etaTs.hashCode() : 0);
         result = 31 * result + (ts != null ? ts.hashCode() : 0);
         result = 31 * result + (tst != null ? tst.hashCode() : 0);
         return result;
     }
 
-    @JsonBackReference
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "ship_mmsi", referencedColumnName = "mmsi")
+
     public ShipEntity getShipByShipMmsi() {
         return shipByShipMmsi;
     }
@@ -242,4 +260,5 @@ public class ShipDetailsEntity {
     public void setShipByShipMmsi(ShipEntity shipByShipMmsi) {
         this.shipByShipMmsi = shipByShipMmsi;
     }
+
 }

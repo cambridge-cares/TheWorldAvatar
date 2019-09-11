@@ -9,19 +9,41 @@ import java.util.Objects;
 @Entity
 @Table(name = "ship", schema = "public", catalog = "adms_ships")
 public class ShipEntity {
-    private int mmsi;
-    private Integer imo;
-    private String name;
-    private String type;
-    private Integer y;
-    private String country;
-    private Integer al;
-    private Integer gt;
-    private Integer aw;
-    private Collection<ShipDetailsEntity> shipDetailsByMmsi;
-
     @Id
-    @Column(name = "mmsi")
+    @Column(name = "mmsi", nullable = false)
+    private int mmsi;
+    @Basic
+    @Column(name = "imo")
+    private Integer imo;
+    @Basic
+    @Column(name = "name", length = -1)
+    private String name;
+    @Basic
+    @Column(name = "type", length = -1)
+    private String type;
+    @Basic
+    @Column(name = "y")
+    private Integer y;
+    @Basic
+    @Column(name = "country", length = -1)
+    private String country;
+    @Basic
+    @Column(name = "al")
+    private Integer al;
+    @Basic
+    @Column(name = "gt")
+    private Integer gt;
+    @Basic
+    @Column(name = "aw")
+    private Integer aw;
+    @JsonManagedReference
+    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "shipByShipMmsi")
+    private Collection<ShipDetailsEntity> shipDetailsByMmsi;
+    @JsonManagedReference
+    @OneToOne(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "shipByShipMmsi")
+    private ShipPollutionEntity shipPollutionByMmsi;
+
+
     public int getMmsi() {
         return mmsi;
     }
@@ -30,8 +52,7 @@ public class ShipEntity {
         this.mmsi = mmsi;
     }
 
-    @Basic
-    @Column(name = "imo")
+
     public Integer getImo() {
         return imo;
     }
@@ -40,8 +61,7 @@ public class ShipEntity {
         this.imo = imo;
     }
 
-    @Basic
-    @Column(name = "name")
+
     public String getName() {
         return name;
     }
@@ -50,8 +70,7 @@ public class ShipEntity {
         this.name = name;
     }
 
-    @Basic
-    @Column(name = "type")
+
     public String getType() {
         return type;
     }
@@ -60,8 +79,7 @@ public class ShipEntity {
         this.type = type;
     }
 
-    @Basic
-    @Column(name = "y")
+
     public Integer getY() {
         return y;
     }
@@ -70,8 +88,7 @@ public class ShipEntity {
         this.y = y;
     }
 
-    @Basic
-    @Column(name = "country")
+
     public String getCountry() {
         return country;
     }
@@ -80,8 +97,7 @@ public class ShipEntity {
         this.country = country;
     }
 
-    @Basic
-    @Column(name = "al")
+
     public Integer getAl() {
         return al;
     }
@@ -90,8 +106,7 @@ public class ShipEntity {
         this.al = al;
     }
 
-    @Basic
-    @Column(name = "gt")
+
     public Integer getGt() {
         return gt;
     }
@@ -100,8 +115,7 @@ public class ShipEntity {
         this.gt = gt;
     }
 
-    @Basic
-    @Column(name = "aw")
+
     public Integer getAw() {
         return aw;
     }
@@ -142,13 +156,25 @@ public class ShipEntity {
         return result;
     }
 
-    @JsonManagedReference
-    @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.LAZY, mappedBy = "shipByShipMmsi")
+
     public Collection<ShipDetailsEntity> getShipDetailsByMmsi() {
         return shipDetailsByMmsi;
     }
 
     public void setShipDetailsByMmsi(Collection<ShipDetailsEntity> shipDetailsByMmsi) {
         this.shipDetailsByMmsi = shipDetailsByMmsi;
+    }
+
+
+    public ShipPollutionEntity getShipPollutionByMmsi() {
+        if (shipPollutionByMmsi == null) {
+            shipPollutionByMmsi = new ShipPollutionEntity();
+            shipPollutionByMmsi.setShipByShipMmsi(this);
+        }
+        return shipPollutionByMmsi;
+    }
+
+    public void setShipPollutionByMmsi(ShipPollutionEntity shipPollutionByMmsi) {
+        this.shipPollutionByMmsi = shipPollutionByMmsi;
     }
 }

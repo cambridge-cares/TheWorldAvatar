@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 import javax.servlet.ServletException;
@@ -85,13 +86,14 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
     private JSONArray getNewWasteAsync(String reactionMechanism, JSONObject jsonShip) {
         JSONArray newwaste = new JSONArray();
         ArrayList<CompletableFuture> wastes = new ArrayList<>();
-        int sizeofshipselected = jsonShip.length();
+        JSONArray ships = jsonShip.getJSONObject("collection").getJSONArray("items");
+        int sizeofshipselected = ships.length();
 
         for (int i = 0; i < sizeofshipselected; i++) {
             logger.info("Ship AGENT called: " + i);
             JSONObject jsonReactionShip = new JSONObject();
             jsonReactionShip.put("reactionmechanism", reactionMechanism);
-            jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
+            jsonReactionShip.put("ship", ships.getJSONObject(i));
 
             CompletableFuture<String> getAsync = CompletableFuture.supplyAsync(() ->
                     execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString()));
@@ -105,7 +107,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
             try {
                 newwaste.put(waste.get());
             } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+                throw new JPSRuntimeException(e.getMessage());
             }
         }
 

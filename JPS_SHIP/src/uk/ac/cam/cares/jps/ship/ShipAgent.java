@@ -12,7 +12,10 @@ import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.ship.listener.LocalEntityManagerFactory;
+import uk.ac.cam.cares.jps.ship.model.ShipEntity;
 
+import javax.persistence.EntityManager;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -39,7 +42,7 @@ public class ShipAgent extends HttpServlet {
     private static final String OWL_CHIMNEY = CHIMNEY + ".owl";
     private Logger logger = LoggerFactory.getLogger(ShipAgent.class);
 
-    private void savefile(OntModel jenaOwlModel, String iriOfChimney) throws IOException {
+    private void savefile(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
 
         String filePath2= iriOfChimney.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
         System.out.println("filepath2= " + filePath2);
@@ -69,11 +72,22 @@ public class ShipAgent extends HttpServlet {
 
         jenaOwlModel.write(out, "RDF/XML-ABBREV");
 
-        linkChimneyToShip();
+        linkChimneyToShip(iriOfChimney, mmsi);
     }
 
-    private void linkChimneyToShip() {
-        //@TODO [AC] - implementation
+    /**
+     * Creates chimney iri record in PostgreSQL with ship mmsi as foreign key.
+     * @see uk.ac.cam.cares.jps.ship.model.ShipDetailsEntity
+     * @param iriOfChimney Chimney IRI of ship identified by mmsi
+     * @param mmsi Maritime Mobile Service Identity (ID of ship)
+     */
+    private void linkChimneyToShip(String iriOfChimney, String mmsi) {
+        EntityManager em = LocalEntityManagerFactory.createEntityManager();
+        ShipEntity ship = em.find(ShipEntity.class, Integer.decode(mmsi));
+        ship.getShipPollutionByMmsi().setChimneyIri(iriOfChimney);
+        em.getTransaction().begin();
+        em.persist(ship);
+        em.getTransaction().commit();
     }
 
     private void doConversion(OntModel jenaOwlModel, String iriofchimney, JSONObject jsonObject) throws JSONException {
@@ -259,7 +273,7 @@ public class ShipAgent extends HttpServlet {
 
     }
 
-    private void startConversion(OntModel jenaOwlModel, String iriOfChimney, JSONObject jsonresultstring) throws IOException {
+    private void startConversion(OntModel jenaOwlModel, String iriOfChimney, JSONObject jsonresultstring, String mmsi) throws IOException {
 
 
         doConversion(jenaOwlModel, iriOfChimney, jsonresultstring);
@@ -267,7 +281,7 @@ public class ShipAgent extends HttpServlet {
 
         // save the updated model file
 
-        savefile(jenaOwlModel, iriOfChimney);
+        savefile(jenaOwlModel, iriOfChimney, mmsi);
 
 
     }
@@ -362,7 +376,7 @@ public class ShipAgent extends HttpServlet {
                 }
             }
 
-            startConversion(jenaOwlModel, iriOfChimney, jsonsrmresult);
+            startConversion(jenaOwlModel, iriOfChimney, jsonsrmresult, mmsi);
 
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
