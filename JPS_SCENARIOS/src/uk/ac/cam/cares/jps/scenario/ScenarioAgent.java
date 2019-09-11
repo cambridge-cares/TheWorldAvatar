@@ -71,7 +71,9 @@ public class ScenarioAgent extends HttpServlet {
 			
 			// do nothing, the scenario log file has been already created above
 			
-			//result = getScenarioFile(scenarioName);
+			JSONObject resultjo = new JSONObject(log.getLogAsString());
+			// pretty print with 2 spaces to indent
+			result = resultjo.toString(2);
 		
 		} else if ("/option".equals(operation)) {
 			

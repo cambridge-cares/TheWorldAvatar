@@ -21,6 +21,11 @@ public class ResourcePathConverter {
 		
 		String converted = null;
 		
+		//TODO-AE SC URGENT 20190910 this will work on claudius but not anymore locally --> configurable solution?
+		if (true) {
+			return path;
+		}
+		
 		String s = "http://www.theworldavatar.com/kb";
 		if (path.startsWith(s)) {
 			converted = path.replace(s, "http://localhost:8080/kb");

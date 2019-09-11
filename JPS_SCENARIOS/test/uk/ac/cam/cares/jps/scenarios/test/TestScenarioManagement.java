@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.scenarios.test;
 
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -34,14 +32,6 @@ public class TestScenarioManagement extends TestCase {
 		JSONArray joarray = jo.getJSONArray("service");
 		// operations: mock, call, read, query, delete and one from OpenWeatherMap
 		assertEquals(7, joarray.length());
-	}
-	
-	
-	public void testTmp() {
-		List<String> list = new ScenarioManagementAgent().getScenarioIRIsOLD();
-		for (String current : list) {
-			System.out.println(current);
-		}
 	}
 	
 	public void testTmp3() {
@@ -89,4 +79,11 @@ public class TestScenarioManagement extends TestCase {
 //		
 //		System.out.println(result);
 //	}
+	
+	public void testTmp7() {
+		String s = "{\"entries\":[{\"scenario\":\"aasc4\",\"message\":{\"extendsagent\":\"http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Service\"},\"timestamp\":\"2019-05-23 19:07:41.045-SGT\"},{\"scenario\":\"aasc4\",\"message\":{\"agent\":\"http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Service\",\"operation\":\"mock\"},\"timestamp\":\"2019-09-10 10:31:53.378-SGT\"}]}";
+		JSONObject resultjo = new JSONObject(s);
+		
+		System.out.println(resultjo.toString(2));
+	}
 }

@@ -3,15 +3,28 @@ $(function() {
   var selected = [];
   var loadeddata;
   var table = $("#tablescenarios").DataTable();
-  var listScenariosUrl = "http://localhost:8080/jps/scenariomanagement/list"
+  var host = "http://www.theworldavatar.com";
+  //var host = "http://localhost:8080";
+  var listScenariosUrl = host + "/jps/scenariomanagement/list"
   var selectedScenario;
   var selectedOperation;
+  var showscenarios = false;
+  
+  hideLowerPanels();
  
-  $("#loadData").click(function() {	
-    loadData();
+  $("#loadAgents").click(function() {
+	selectedScenario = null;
+	showscenarios = false;
+    loadData(showscenarios);
+  });
+  
+  $("#loadScenarios").click(function() {
+	selectedScenario = null;
+	showscenarios = true;
+	loadData(showscenarios);
   });
 
-  function loadData() {
+  function loadData() {	  
     $.ajax({
       type: 'GET',
       url: listScenariosUrl,
@@ -38,12 +51,24 @@ $(function() {
     table.clear();
     $('#tableparams2').DataTable().clear();
     
+    hideLowerPanels();
+    if (showscenarios) {
+  	  $('#containernewscenario').show();
+    }
+    
     var scenarios = loadeddata.result;
     for(var i in scenarios) {
       var name = scenarios[i].name;
       var type = scenarios[i].type;
+      if (showscenarios && (type != 'scenario')) {
+    	  continue;
+      }
+      if (!showscenarios && (type != 'agent') && (type != 'composed')) {
+    	  continue;
+      }
+      
       var id = scenarios[i].id;
-      var irilink = '<a href="' + id + '">' + id + '</a>';
+      var irilink = '<a href="' + id + '" target="_blank">' + id + '</a>';
     
      // warning: don't use table here because there is a difference
      // between dataTable() and DataTable()
@@ -54,13 +79,21 @@ $(function() {
         irilink
       ]);
     }
+    
+    if (selectedScenario) {
+    	scenarioname = selectedScenario.name;
+    	showOperations(scenarioname)
+    }
   }
   
   $('#createscenariobutton').click(function() {
 	  
+	  
+	  selectedScenario = null;
+	  
 	  var scenarioname = $('#newscenarioname').val();
 	  
-	  var url = "http://localhost:8080/jps/scenario/" + scenarioname;
+	  var url = host + "/jps/scenario/" + scenarioname;
 	  
 	    $.ajax({
 	        type: 'GET',
@@ -89,6 +122,9 @@ $(function() {
 	  
 	  //alert('hello' + scenario.service[0].hasOperation.hasHttpUrl);
 	  
+	  showLowerPanels()
+	  
+	  
 	  $('#tableparams2').DataTable().clear();
 	  
 	  // find object in json array that correspond to the selected row by name comparison
@@ -97,6 +133,9 @@ $(function() {
 	    var name = scenarios[i].name;
 	    if (name === scenarioname) {
 	    	selectedScenario = scenarios[i]
+	    	
+	    	$('#selectedscenario').text(selectedScenario.name)
+	    	
 	    	break;
 	    }
 	  }
@@ -167,7 +206,7 @@ $(function() {
       var inout = "in";
       var name = params[i].hasName;
       var type = params[i].hasType;
-	  var typelink = '<a href="' + type + '">' + type + '</a>';
+	  var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
 	  var value =  "<input type=\"text\" id=\"inparamvalue" + i + "\">";
 
       if (name === "scenarioagent") {
@@ -187,7 +226,7 @@ $(function() {
     
     // add usecaseurl as input param
     var type = "http://www.w3.org/2001/XMLSchema#string";
-	var typelink = '<a href="' + type + '">' + type + '</a>';
+	var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
 	var value =  "<input type=\"text\" id=\"inparamvalue" + numberin + "\">";
     $('#tableparams2').dataTable().fnAddData( [
         "in",
@@ -201,7 +240,7 @@ $(function() {
       var inout = "out";
       var name = params[i].hasName;
       var type = params[i].hasType;
-      var typelink = '<a href="' + type + '">' + type + '</a>';
+      var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
       var value = "---";
       
       
@@ -243,10 +282,17 @@ $(function() {
   });
   
   $('#executelinkbutton').click(function() {
-	  showLink(true);
+	  showLink(true, false);
+  });
+  
+  $('#executelinkandshowresultbutton').click(function() {
+	  showLink(true, true);
   });
 	
-  function showLink(execute) {
+  
+  
+  
+  function showLink(execute, showresult) {
 	  var url = selectedOperation.hasHttpUrl;
 	  
 	  if (selectedScenario.type === 'composed') {
@@ -327,7 +373,14 @@ $(function() {
 		        contentType: "text/plain",
 		        dataType: 'text',
 		        success: function (data) {
-		          alert(data);
+		          if (showresult) {
+		          	alert(data);
+		          }
+			      opid = selectedOperation.hasHttpUrl
+			      console.log("my url " + opid + " endswith " + opid.endsWith('mock'));
+			      if (opid.endsWith('mock')) {
+			    	  loadData();
+		    	  }	
 		        },
 		        error: function (e) {
 		          console.log("There was an error with your request...");
@@ -335,6 +388,24 @@ $(function() {
 		        }
 		      });
 	  }
+  }
+  
+  function hideLowerPanels() {
+	  $('#tableparams2').dataTable().fnClearTable();
+	  $('#containernewscenario').hide();
+	  $('#containeroperations').hide();
+	  $('#containertableparams2').hide();
+	  $('#containerlinkbuttons').hide();
+	  $('#newscenarioname').val('');
+	  $('#linkforaction').text('');
+  }
+  
+  function showLowerPanels() {
+	  $('#containeroperations').show();
+	  $('#containertableparams2').show();
+	  $('#containerlinkbuttons').show();
+	  $('#newscenarioname').val('');
+	  $('#linkforaction').text('');
   }
   
 });

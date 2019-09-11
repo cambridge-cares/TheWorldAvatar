@@ -49,7 +49,8 @@ public class ScenarioManagementAgent extends HttpServlet {
 	}
 	
 	public static String getScenarioIRI(String scenarioName) {
-		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
+		//return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName) + ".owl#Service";
+		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
 	}
 	
 	public static String getScenarioUrl(String scenarioName) {
@@ -139,7 +140,7 @@ public class ScenarioManagementAgent extends HttpServlet {
 		
 		// add operations from the latest mocked agent
 		agent = ScenarioMockManager.getLatestMockedAgent(log);
-		if (agent != null) {
+		if ((agent != null) && !agent.isEmpty()) {
 			input = new JSONObject().put("agent", agent); 
 			jsondescr = AgentCaller.executeGetWithJsonParameter("/JPS_COMPOSITION/describe", input.toString());
 			
@@ -177,20 +178,6 @@ public class ScenarioManagementAgent extends HttpServlet {
 			if (current.isDirectory()) {
 				String scenarioName = current.getName();
 				result.add(scenarioName);
-			}
-		}
-		
-		return result;
-	}
-	
-	public List<String> getScenarioIRIsOLD() {
-		List<String> result = new ArrayList<String>();
-		
-		File dir = new File(ScenarioHelper.getScenarioWorkingDir());
-		for (File current : dir.listFiles()) {
-			if (current.isFile() && current.getName().endsWith(".owl")) {
-				String iri = getScenarioIRI(current.getName());
-				result.add(iri);
 			}
 		}
 		
