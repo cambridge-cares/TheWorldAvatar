@@ -37,33 +37,52 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 * @author nk510 ( caresssd@hermes.cam.ac.uk )
 * @author am2145( am2145@cam.ac.uk )
 * 
-* - This code does pre- processing step in cross validation for selected Ti-based species.
+* - This code does pre- processing step in cross validation for selected reference set of species.
+* 
 * - In this code inputs are: 
-*    - A set of Ti-based species (Gaussian files) given as reference list. 
-*    - A list of 25 target species  for which enthalpies are given. This list is given as csv file. Comments: List of target and reference species should be the same.
+*    - A set of species (Gaussian files) given as reference list. 
+*    - A list of target species  for which enthalpies are given. This list is given as csv file. Comments: List of target and reference species should be the same.
 *    - Maximum error that is compared with error for each generated reaction. If error  for each reaction is smaller that maximum error then that reaction is valid. Otherwise, that reaction is invalid. 
 *    - Number of runs is set to one, and number of allowed reactions that will be generated.
 *    - ISG reaction type
-* - Calculates EBRs for reference set of species (srcRefPool) by using Gaussian files of the same set of species.
-* - Calculates difference  (error) between estimated enthalpy of formation for each species in each generated reaction and reference enthalpy of selected species.
+*    
+*   Output is:
+* - Calculates EBRs for reference set of species (srcRefPool) by using Gaussian files of that set of species.
+* - Calculates difference  (error) between estimated enthalpy of formation for each species in each generated reaction and reference enthalpy of selected species. Reference enthalpy is given in csv file.
 * - Calculates error bar for each species by using errors for each generated reaction.
-* - Generates list of valid reactions.
-* - Generates list of invalid reactions.
+* - Generates an initial list of valid reactions.
+* - Generates an initial list of invalid reactions.
 * - Generates an initial list of valid species
 * - Generates an initial list of invalid species.
-* - Reports a species name and its maximum error bar.
+* 
 * 
 */
 
 public class DataPreProcessing {
 	
+    /**
+     * @param timeout Time limited
+     * @param maxErr Maximum error that is compared with the error for each generated reaction. 
+     * @param destRList The destination folder where information about reactions, enthalpies, valid species, invalid species, valid reactions, invalid reaction are saved.
+     * @param ctrRadicals The number of raducals. 
+     * @param ctrRuns The number of runs.
+     * @param ctrRes The number of reaction that will be generated.
+     * @param refSpecies The species
+     * @param spinMultiplicity The spin multiplicity for each species.
+     * @param solver The LP solver
+     * @param validSpecies The set of valid species that is generated in pre-processing step.
+     * @param invalidSpecies The set of invalid species  that is generated in pre-processing step.
+     * @param validReaction  The set of valid reactions that is generated in pre-processing step.
+     * @param invalidReaction The set of invalid reactions that is generated in pre-processing step.
+     * @throws Exception the exception.
+     */
     public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, Set<Species> validSpecies,  Set<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
     	 
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
             int maxRadical = ctrRadicals[z];
             
-             timeout = 1500; // remove this when call this method
+//             timeout = 1500; // remove this when call this method
         
         for (int i = 0; i < ctrRuns.length; i++) {
         
@@ -82,7 +101,7 @@ public class DataPreProcessing {
                 
                 Collections.shuffle(refSpecies);
                 
-                int ctr = 1; //added int 
+                int ctr = 1;  
                 
                 for (Species target : refSpecies) {
 
@@ -211,7 +230,7 @@ public class DataPreProcessing {
                               
                               List<Reaction> reactionList = selector.select(rList);
                               
-//                              System.out.println("reactionList.size(): " + reactionList.size());
+                              System.out.println("reactionList.size(): " + reactionList.size());
                               
                               for(Reaction r : reactionList) {
                             	  
@@ -291,7 +310,7 @@ public class DataPreProcessing {
                             
                         		/**
                             	 * 
-                            	 * Median enthalpy and species name.
+                            	 * Species reference enthalpy and species name.
                             	 * 
                             	 */
                             	

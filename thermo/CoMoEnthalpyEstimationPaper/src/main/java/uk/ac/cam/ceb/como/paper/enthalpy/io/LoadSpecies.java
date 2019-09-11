@@ -14,7 +14,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.utils.HfSpeciesConverter;
 
 public class LoadSpecies {
 
-	private Collection<Species> refSpecies;
+	
 
 	/**
 	 * 
@@ -108,13 +108,13 @@ public class LoadSpecies {
 	 * @return The collection of species that are selected as valid species in pre-processing step.
 	 * @throws Exception The exception.
 	 */
-	public void loadReferenceSpeciesForInitialAnalysis(String srcRefPool, Set<Species> validSpecies) throws Exception{
+	public List<Species> loadReferenceSpeciesForInitialAnalysis(String srcRefPool, Set<Species> validSpecies) throws Exception{
 		
 		SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
 
 		refParser.parse();
         
-        refSpecies = new ArrayList<>(refParser.getRefSpecies());
+		Collection<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
 
         List<Species> intialAnalysisRefSpecies = new ArrayList<Species>();
         
@@ -142,15 +142,84 @@ public class LoadSpecies {
         	
         }
         
-//		return intialAnalysisRefSpecies;
+		return intialAnalysisRefSpecies;
         
 	}
 	
-	public Collection<Species> getRefSpecies() {
-		return refSpecies;
+	
+	
+	/**
+	 * @param refSpecies The collection of reference set of species that is accepted set of species.
+	 * @param soiSpecies The collection of target species that is one species from rejected list of spcies having maximum error bar. 
+	 * @param all The collection of reference and target set of species
+	 * @param spinMultiplicity The spin multiplicity 
+	 * @param srcCompoundsRef The source folder that contains Gaussian files for selected set of reference species taken from valid list of species.
+	 * @param mapElPairing 
+	 * @throws Exception
+	 */
+	public void loadSpeciesPropertiesInitialAnalysis(Collection<Species> refSpecies, Collection<Species> soiSpecies, Set<Species> all, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {
+		
+		Collection<Species> invalids = new HashSet<>();
+        
+//        Map<Species, Integer> spinMultiplicity = new HashMap<>();
+        
+        int ctr = 1;
+
+//        Set<Species> all = new HashSet<>();
+        
+        all.addAll(soiSpecies);
+        all.addAll(refSpecies);
+
+        for (Species s : refSpecies) {
+        	
+            System.out.println("REF: Processing " + ctr + " / " + refSpecies.size());
+            ctr++;
+            
+            File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
+            
+            if (f.exists()) {
+            
+            	System.out.print(f.getName() + ": ");
+                
+            	try {
+            		
+                    Integer[] e = HfSpeciesConverter.getNumberOfElectrons(HfSpeciesConverter.parse(f));
+                    
+                    if (e != null) {
+                    	
+                        spinMultiplicity.put(s, e[1] + 1);
+                        mapElPairing.put(s.getRef(), e);
+                        
+                    } else {
+                        
+                    	System.out.println("REF: e- pairing could not be determined for " + s.getRef());
+                        invalids.add(s);
+                    }
+                    
+                } catch (NullPointerException npe) {
+                	
+                    if (s.getRef().compareTo("Ti5O6Cl8") == 0) {
+                    	
+                        spinMultiplicity.put(s, 1);
+                        
+                    } else {
+                    	
+                        System.out.println(s.getRef());
+                    }
+                }
+            } else {
+            	
+                System.out.println("REF: No file found for " + s.getRef());
+                
+                invalids.add(s);
+            }
+        }
+        
+        refSpecies.removeAll(invalids);
+        all.removeAll(invalids);
+        soiSpecies.removeAll(invalids);
+        
 	}
 	
-	public void setRefSpecies(Collection<Species> refSpecies) {
-		this.refSpecies = refSpecies;
-	}
+	
 }

@@ -2,6 +2,7 @@ package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -14,28 +15,33 @@ import uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing.DataPreProcessing;
 import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSolver;
 import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
+import uk.ac.cam.ceb.paper.sort.Sort;
 
 /**
  * 
  * @author nk510 (caresssd@hermes.cam.ac.uk)
  * @author am2145(am2145@cam.ac.uk)
  *
- * This class contains main method that runs Global cross validation algorithm published in [1].
+ *         This class contains main method that runs Global cross validation
+ *         algorithm published in [1].
  * 
- * References used in documentation:
- *   
- * [1] Philipp Buerger, First-Principles Investigation of Titanium Dioxide Gas-Phase Precursor Chemistry, PhD thesis, St Edmund’s College, February 7, 2017.
- *   
+ *         References used in documentation:
+ * 
+ *         [1] Philipp Buerger, First-Principles Investigation of Titanium
+ *         Dioxide Gas-Phase Precursor Chemistry, PhD thesis, St Edmund’s
+ *         College, February 7, 2017.
+ * 
+ *         This code requires at least Java 1.8
  */
 public class LeaveOneOutCrossValidationAlgorithm {
-	
+
 	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
-    
-    static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
-    
-    static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
-    
-    static String tempFolder="D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+
+	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+
+	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+
+	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
@@ -48,7 +54,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	public static Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
 
 	public static Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
-	
+
 	public static Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
 
 	/**
@@ -67,92 +73,184 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	static int[] ctrRadicals = new int[] { 100 }; // 0, 1, 2, 3, 4, 5
 
 	public static void main(String[] args) throws Exception {
-
-		LoadSpecies ls = new LoadSpecies();
 		
-		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool),spinMultiplicity,srcCompoundsRef, mapElPairing);
+		
+		LoadSpecies ls = new LoadSpecies();
+
+		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,
+				srcCompoundsRef, mapElPairing);
 
 		LoadSolver lSolver = new LoadSolver();
 
 		DataPreProcessing dpp = new DataPreProcessing();
 
 		ErrorBarCalculation errorBarCalculation = new ErrorBarCalculation();
-		
+
 		System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
-		
+
 		/**
 		 * 
-		 * Data pre-processing step in cross validation algorithm. 
-		 * Determine the error metrics for reactions and species. Recommended a list of rejected species.
+		 * Data pre-processing step in cross validation algorithm. Determine the error
+		 * metrics for reactions and species. Recommended a list of rejected species.
 		 * 
 		 */
-		dpp.getPreProcessingCorssValidation(1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies, spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies, validReaction, invalidReaction);
-		
+		dpp.getPreProcessingCorssValidation(1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
+				spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
+				validReaction, invalidReaction);
+
 		/**
 		 * 
 		 * Printing valid reactions in txt file and on console.
 		 * 
 		 */
-		BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList +  "valid_reactions" + ".txt", true));
-		
+		BufferedWriter validReactionFile = new BufferedWriter(
+				new FileWriter(destRList + "valid_reactions" + ".txt", true));
+
 		System.out.println("Valid reactions writing . . . ");
-		
+
 		errorBarCalculation.generateInitialReactionListFile(validReactionFile, validReaction);
-		
+
 		/**
 		 * 
 		 * Printing invalid reactions in txt file and on console.
 		 * 
 		 */
-		BufferedWriter invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "invalid_reactions" + ".txt", true));
-		
+		BufferedWriter invalidReactionFile = new BufferedWriter(
+				new FileWriter(destRList + "invalid_reactions" + ".txt", true));
+
 		System.out.println("Invalid reactions writing . . .");
-		
+
 		errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, invalidReaction);
-		
+
 		/**
 		 * 
 		 * Printing valid species in txt file and on console.
 		 * 
 		 */
 		System.out.println("Valid species writing . . . ");
-		
-		BufferedWriter validSpeciesFile = new BufferedWriter(new FileWriter(destRList + "valid_species" + ".txt", true));
-		
+
+		BufferedWriter validSpeciesFile = new BufferedWriter(
+				new FileWriter(destRList + "valid_species" + ".txt", true));
+
 		errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, validSpecies);
-		
+
 		/**
 		 * 
 		 * Printing invalid species in txt file and on console.
 		 * 
 		 */
 		System.out.println("Invalid species writing . . .");
-		
-		BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "invalid_species" + ".txt", true));
 
-		errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies,validSpecies);		
-		
+		BufferedWriter invalidSpeciesFile = new BufferedWriter(
+				new FileWriter(destRList + "invalid_species" + ".txt", true));
+
+		errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
+
 		/**
 		 * 
-		 * Error bar is average of all errors generated for each reaction of given species.
-		 *  
+		 * Error bar is average of all errors generated for each reaction of given
+		 * species.
+		 * 
 		 * Calculates error bar for each species in invalid set of species.
+		 * 
 		 */
-		
-		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));
+
+		invalidSpeciesErrorBar
+				.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));
 
 		/**
-		 * Reports a species name and its maximum error bar from the set of all error bars of rejected species.
+		 * 
+		 * Reports a species name and its maximum error bar from the set of all error
+		 * bars of rejected species.
+		 * 
 		 */
-		double error = errorBarCalculation.getMaximumErrorBar(invalidSpeciesErrorBar);
-		
-		System.out.println("error: " + error);
-		
-		 ls.loadReferenceSpeciesForInitialAnalysis(srcRefPool, validSpecies);
-		 
-		 
-		
-		
-}
 
+		double error = errorBarCalculation.getMaximumErrorBar(invalidSpeciesErrorBar);
+
+		System.out.println("error: " + error);
+
+		/**
+		 * 
+		 * Sorted hash map in decreasing order comparing by error bar value in Java 1.8.
+		 * 
+		 */
+		Map<Species, Double> sortedInvalidSpeciesErrorBar = Sort
+				.sortingSpeciesMapComparingByValue(invalidSpeciesErrorBar);
+
+		System.out.println("Sorted species:");
+
+		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
+
+			System.out.println(ss.getKey().getRef() + " " + ss.getValue());
+		}
+
+		/**
+		 * The code below is initial data analysis part of cross validation algorithm.
+		 * 
+		 * The code iterates over sorted rejected set of species and their error bars. For each
+		 * species from the hash map code below, it runs cross validation algorithm by
+		 * using valid set of species as reference set. The code tries to estimate
+		 * better error bar that is lower than current error bar for the selected target
+		 * species (invalid species with maximum error bar). If this error bar is lower
+		 * that the error bar of selected species in rejected list then the code adds
+		 * that species into valid set of species. The code takes next species from
+		 * invalid set of species with the maximum error bar and repeats the procedure
+		 * above.
+		 * 
+		 * Iteration stops if there will be no rejected species with lower error bar
+		 * than current error bar for that species in rejected list of species.
+		 * 
+		 * As a final result, the code below generates a set of rejected and accepted
+		 * species.
+		 * 
+		 */
+		for (Map.Entry<Species, Double> errorMap : sortedInvalidSpeciesErrorBar.entrySet()) {
+
+			 Map<String, Integer[]> mapElPairing = new HashMap<>();
+
+			 Map<Species, Integer> spinMultiplicity = new HashMap<>();
+			
+			 Set<Species> all = new HashSet<>();
+			 
+			List<Species> srcRefPoolSpecies = new ArrayList<Species>();
+
+			/**
+			 * Reference set of species
+			 */
+			srcRefPoolSpecies.addAll(ls.loadReferenceSpeciesForInitialAnalysis(srcRefPool, validSpecies));
+
+			/**
+			 * Adding invalid species with current max error bar into source reference pool
+			 * species list (srcRefPoolSpecies).
+			 */
+			srcRefPoolSpecies.add(errorMap.getKey());
+
+			System.out.println("Reference species list:");
+
+			for (Species s : srcRefPoolSpecies) {
+
+				System.out.println(s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap()
+						+ s.getBondTypeMultiset());
+			}
+
+			System.out.println("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf()
+					+ " , " + errorMap.getKey().getTotalEnergy() + " , " + errorMap.getKey().getAtomMap() + " , "
+					+ errorMap.getKey().getBondTypeMultiset());
+
+			System.out.println("After updated Hf: ");
+
+			/**
+			 * Enthalpy of formation for target species is set to zero.
+			 */
+			errorMap.getKey().setHf(0.0);
+
+			System.out.println("Soi species name (target species): " + errorMap.getKey().getRef() + " , "
+					+ errorMap.getKey().getHf() + " , " + errorMap.getKey().getTotalEnergy() + " , "
+					+ errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
+
+			
+			break;
+		}
+
+	}
 }

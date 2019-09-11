@@ -57,7 +57,7 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  *    - A list of one target species  (only one species) for which enthalpy is not given and that has the highest error bar among all rejected species. This list is given as csv file. 
  *    - Number of runs is set to one, and number of allowed reactions is set to 5.
  *    - ISG reaction type
- * - Calculates EBR for target species (one) and estimates enthalpy for each reaction
+ * - Calculates EBR for target (one) species  and estimates enthalpy for each reaction
  * - Calculates error bar by using all calculated errors for each reactions. For this test case we generate five reactions.
  * 
  * 
@@ -87,16 +87,19 @@ public class TiCl4CalculationIndividual {
         Map<String, Integer[]> mapElPairing = new HashMap<>();
 
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
+        
         refParser.parse();
         
         List<Species> refSpecies = new ArrayList<>(refParser.getRefSpecies());
 
         for(Species r: refSpecies) {
-        	
-        	System.out.println("species ref name: " +r.getRef() + " species ref  enthalpy: "  + r.getHf());
+        
+        System.out.println("species ref name: " + r.getRef() + " species ref  enthalpy: "  + r.getHf());
+        
         }
         
         SpeciesPoolParser soiParser = new SpeciesPoolParser(new File(srcSoiPool));
+        
         soiParser.parse();
         
         Set<Species> soiSetOfSpecies = soiParser.getAllSpecies();
@@ -113,7 +116,7 @@ public class TiCl4CalculationIndividual {
         		
         		/**
         		 * 
-        		 * Q: How data below are represented in csv file and where these data come from?
+        		 * Q: How data below are represented in csv file and where these data came from?
         		 * 
         		 */
         		System.out.println("Atomic number: " + e.getAtomicNumber() + ", weight: " + e.getAtomicWeight() + " group" + e.getGroup() + " mass number:  " + e.getMassNumber() + " name" + e.getName() +  " n. of neutrons : " + e.getNumberOfNeutrons());
@@ -127,8 +130,15 @@ public class TiCl4CalculationIndividual {
         
         List<Species> soiSpecies = new ArrayList<>(soiParser.getSpeciesOfInterest());
 
+        for(Species s: soiSpecies) {
+        	
+        	System.out.println("soiSpecies:  " + s.getRef() + " , Hf: "  + s.getHf() + " ,  total energy: " + s.getTotalEnergy() + " , bond type multiset: " + s.getBondTypeMultiset() + " , atom map: " + s.getAtomMap());
+        }
+        
         Collection<Species> invalids = new HashSet<>();
+        
         Map<Species, Integer> spinMultiplicity = new HashMap<>();
+        
         int ctr = 1;
 
         Set<Species> all = new HashSet<>();
@@ -425,11 +435,12 @@ public class TiCl4CalculationIndividual {
                                  * Number of reaction to be used as a error count in calculating error bar.
                                  */
                                 int errorCount=completeRList.size();
+                                
                            	    double errorBar = 0.0;
                            	 
                                 for(int ri=0; ri<completeRList.size();ri++) {
                                     
-//                                double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
+//                              double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                                 	
                                 double error = Math.abs(target.getHf()-completeRList.get(ri).calculateHf());
                                 
