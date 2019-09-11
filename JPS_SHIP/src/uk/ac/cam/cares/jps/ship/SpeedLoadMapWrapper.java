@@ -1,8 +1,10 @@
 package uk.ac.cam.cares.jps.ship;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import javax.servlet.ServletException;
@@ -20,10 +22,44 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
 	
-	private void startspeedloadmap(String batchFolderlocation) {
-		//system.out.println("starting the binary converter");
+	private String getSurogateValues(String inputs) {
+		String workingDir = AgentLocator.getPathToJpsWorkingDir();
+		String smlWorkingDir = workingDir + "/JPS/SRM/ADMS-speed-load-map";
+		String pythonExec = smlWorkingDir + "/env/Scripts/python.exe";
+
+		ArrayList<String> args = new ArrayList<String>();
+		args.add(pythonExec);
+		args.add(inputs);
+		return CommandHelper.executeCommands(smlWorkingDir, args);
+		/*
+		try (FileWriter file = new FileWriter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/in.json")) {
+
+			file.write(inputs);
+			file.flush();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ADMS-speed-load-map/SpeedLoadMap.bat ";
+
 		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
+
+		String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/out.json";
+
+
+		File file = new File(jsonFiledir);
+		StringBuilder fileContents = new StringBuilder((int)file.length());
+
+		try (Scanner scanner = new Scanner(file)) {
+			while(scanner.hasNextLine()) {
+				fileContents.append(scanner.nextLine() + System.lineSeparator());
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return fileContents.toString();
+		 */
 	}
 	
 	//if(!source.contains("none")) {
@@ -64,31 +100,8 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		torob.put("unit", "Nm");
 		in.put("speed", speedob);
 		in.put("torque", torob);
-		  try (FileWriter file = new FileWriter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/in.json")) {
-			  
-	            file.write(in.toString());
-	            file.flush();
-	 
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        }
-		
-		startspeedloadmap(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map");
-		String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/out.json";
-	   
-		
-		File file = new File(jsonFiledir);
-	    StringBuilder fileContents = new StringBuilder((int)file.length());        
 
-	    try (Scanner scanner = new Scanner(file)) {
-	        while(scanner.hasNextLine()) {
-	            fileContents.append(scanner.nextLine() + System.lineSeparator());
-	        }
-	    }
-	    
-	    String newjsonfile = fileContents.toString();
-	    
-		JSONObject json = crankUpRealShipModel(type, newjsonfile);
+		JSONObject json = crankUpRealShipModel(type, getSurogateValues(in.toString()));
 		
 		AgentCaller.writeJsonParameter(response, json);
 		
