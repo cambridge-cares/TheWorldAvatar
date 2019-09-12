@@ -10,7 +10,6 @@ import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -19,8 +18,10 @@ import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.powsys.coordination.CoordinationAgent;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 
@@ -36,7 +37,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 	
 	public void testGetNuclearPowerPlantsFromMockedScenarioAgent() {
 		
-		String scenarioUrlOfMockedAgent = "http://localhost:8080/JPS_SCENARIO/scenario/aasc5";
+		String scenarioUrlOfMockedAgent = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5";
 		List<String> result = new CoordinationAgent().getNuclearPowerPlantsFromMockedScenarioAgent(scenarioUrlOfMockedAgent);
 		assertEquals(4, result.size());
 		for (String current : result) {
@@ -79,10 +80,10 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		String scenarioUrlOfMockedAgent = "http://localhost:8080/JPS_SCENARIO/scenario/aasc5";
+		String scenarioUrlOfMockedAgent = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5";
 		new CoordinationAgent().coordinate(scenarioUrlOfMockedAgent, jo, "PF");
 	}
 	
@@ -95,10 +96,10 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		String scenarioUrlOfMockedAgent = "http://localhost:8080/JPS_SCENARIO/scenario/aasc5";
+		String scenarioUrlOfMockedAgent = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5";
 		new CoordinationAgent().coordinate(scenarioUrlOfMockedAgent, jo, "OPF");
 	}
 	
@@ -111,10 +112,10 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		jo.put("mergescenariourl", "http://localhost:8080/JPS_SCENARIO/scenario/aasc5");
+		jo.put("mergescenariourl", "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5");
 		
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/startcombinedsimulationOPF", jo.toString());
 		System.out.println("result = " + result);
@@ -123,9 +124,9 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 //	public void testENSimulationWithExistingNPPs() throws IOException  {
 //
 //		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSCoordinate");
-//		//String usecaseUrl = "http://localhost:8080/JPS_SCENARIO/scenario/testPOWSYSCoordinate/kb/cd66f823-17b3-414b-a5c7-070f760f27cb";
+//		//String usecaseUrl = "http://localhost:808" + ScenarioHelper.SCENARIO_COMP_URL + "/testPOWSYSCoordinate/kb/cd66f823-17b3-414b-a5c7-070f760f27cb";
 //		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSCoordinateTemp");
-//		String usecaseUrl = "http://localhost:8080/JPS_SCENARIO/scenario/testPOWSYSCoordinate/kb/98d018c8-7ccf-468d-be5b-fad9c9f3b605";
+//		String usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testPOWSYSCoordinate/kb/98d018c8-7ccf-468d-be5b-fad9c9f3b605";
 //		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);
 //		//function to copy all the owl file involved ???
 //		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);

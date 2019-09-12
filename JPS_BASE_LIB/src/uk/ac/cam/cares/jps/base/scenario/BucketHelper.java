@@ -4,8 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.logging.log4j.ThreadContext;
-
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -22,7 +20,7 @@ public class BucketHelper {
 
 	public static String getScenarioUrl() {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		if (scenarioUrl == null) {
 			scenarioUrl = getScenarioUrl(JPSConstants.SCENARIO_NAME_BASE);
 		}
@@ -45,10 +43,10 @@ public class BucketHelper {
 	
 	public static String getUsecaseUrl() {
 
-		String usecaseUrl = ThreadContext.get(JPSConstants.SCENARIO_USE_CASE_URL);	
+		String usecaseUrl = JPSContext.getUsecaseUrl();	
 		if (usecaseUrl == null) {
 			usecaseUrl = getUsecaseUrl(getScenarioUrl());
-			ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+			JPSContext.putUsecaseUrl(usecaseUrl);
 		}
 		
 		return usecaseUrl;
@@ -64,7 +62,7 @@ public class BucketHelper {
 	}
 
 	public static String getKbScenarioUrl() {
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		if (scenarioUrl == null) {
 			throw new JPSRuntimeException("can't create a scenario kb url for the base scenario");
 		} 
@@ -96,7 +94,7 @@ public class BucketHelper {
 	}
 	
 	public static String getLocalPath(String url) {
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);
+		String scenarioUrl = JPSContext.getScenarioUrl();
 		return getLocalPath(url, scenarioUrl);
 	}
 	

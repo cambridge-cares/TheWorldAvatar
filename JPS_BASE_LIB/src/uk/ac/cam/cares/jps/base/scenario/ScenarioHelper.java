@@ -11,14 +11,15 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class ScenarioHelper {
 	
 	private static final String JPS_WORKING_DIR = AgentLocator.getPathToJpsWorkingDir();
-	public static final String SCENARIO_COMP_URL = "/JPS_SCENARIO/scenario";
+	public static final String SCENARIO_COMP_URL = "/jps/scenario";
 	
 	public static String getJpsWorkingDir() {
 		return JPS_WORKING_DIR;
 	}
 	
 	public static String getScenarioWorkingDir() {
-		return JPS_WORKING_DIR + SCENARIO_COMP_URL;
+		//return JPS_WORKING_DIR + SCENARIO_COMP_URL;
+		return JPS_WORKING_DIR + "/JPS_SCENARIO/scenario";
 	}
 	
 	public static String getScenarioPath(String scenarioName) {
@@ -27,7 +28,7 @@ public class ScenarioHelper {
 	
 	public static String getScenarioBucket(String scenarioName) {
 		
-		String scenarioBucket = getJpsWorkingDir() + getScenarioPath(scenarioName);
+		String scenarioBucket = getScenarioWorkingDir() + "/" + scenarioName;
 		// TODO-AE SC URGENT copy-on-write not yet implemented
 		// so far only copy-on-read is implemented and thus this method returns always the scenario file
 		// for copy-on-write we can create the bucket later (instead of checking always whether the bucket already exists) - at least for read and query
@@ -71,7 +72,7 @@ public class ScenarioHelper {
 	
 	/**
 	 * Divides the path into one to three Strings:<br>
-	 * - the first string is the scenario name, e.g. for URL http://www.twa.com/JPS_SCENARIO/scenario/foo1234567 the scenarioName is foo1234567<br>
+	 * - the first string is the scenario name, e.g. for URL http://www.twa.com/jps.../scenario/foo1234567 the scenarioName is foo1234567<br>
 	 * - the second string is an optional operation, e.g. start or clean<br>
 	 * 
 	 * @param path
