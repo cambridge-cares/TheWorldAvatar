@@ -21,66 +21,22 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 
 @WebServlet("/SLMAgent")
 public class SpeedLoadMapWrapper extends HttpServlet {
+	private static final String slmDir = "\\python\\ADMS-speed-load-map";
+	private static final String slmPython = "\\env\\Scripts\\python.exe";
+	private static final String slmScript = "ADMS-Map-SpeedTorque-NOxSoot.py";
 	
 	private String getSurogateValues(String inputs) {
-		String workingDir = AgentLocator.getPathToJpsWorkingDir();
-		String smlWorkingDir = workingDir + "/JPS/SRM/ADMS-speed-load-map";
-		String pythonExec = smlWorkingDir + "/env/Scripts/python.exe";
+		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
+		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
+		String pythonExec = smlWorkingDir + slmPython;
 
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(pythonExec);
+        args.add(slmScript);
 		args.add(inputs);
+
 		return CommandHelper.executeCommands(smlWorkingDir, args);
-		/*
-		try (FileWriter file = new FileWriter(AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/in.json")) {
-
-			file.write(inputs);
-			file.flush();
-
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		String startSRMCommand = "C:/JPS_DATA/workingdir/JPS/SRM/ADMS-speed-load-map/SpeedLoadMap.bat ";
-
-		CommandHelper.executeSingleCommand(batchFolderlocation, startSRMCommand);
-
-		String jsonFiledir = AgentLocator.getPathToJpsWorkingDir() + "/JPS/SRM/ADMS-speed-load-map/out.json";
-
-
-		File file = new File(jsonFiledir);
-		StringBuilder fileContents = new StringBuilder((int)file.length());
-
-		try (Scanner scanner = new Scanner(file)) {
-			while(scanner.hasNextLine()) {
-				fileContents.append(scanner.nextLine() + System.lineSeparator());
-			}
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		return fileContents.toString();
-		 */
 	}
-	
-	//if(!source.contains("none")) {
-	
-	/*
-	 * http://betterboat.com/average-boat-speed/ assume fastest medium boat 
-	 * max speed= 25knot max rpm= 2500 rpm torque=constant=250Nm then 1knot=100 rpm rpm=
-	 * https://www.marineinsight.com/shipping-news/worlds-fastest-ship-built-tasmania-christened-argentinas-president/->fastest=58.1 knot
-	 * knot*2500/58.1 roughly 1 ship 33 kg/h 1 boat= 1.1338650741577147e-05*3600 = 0.041
-	 * kg/h NO2 (comparison of NO2
-	 * https://pdfs.semanticscholar.org/1bd2/52f2ae1ede131d0ef84ee21c84a73fb6b374.pdf) 
-	 * 1 boat mass flux=0.0192143028723584 kg/s 
-
-	 */
-	
-	
-	//double valuecalc=100*shipspeed;
-	
-	/*JSONObject in= new JSONObject();
-	
-}*/
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -101,7 +57,7 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 		in.put("speed", speedob);
 		in.put("torque", torob);
 
-		JSONObject json = crankUpRealShipModel(type, getSurogateValues(in.toString()));
+		JSONObject json = crankUpRealShipModel(type, getSurogateValues(in.toString().replace("\"", "'")));
 		
 		AgentCaller.writeJsonParameter(response, json);
 		

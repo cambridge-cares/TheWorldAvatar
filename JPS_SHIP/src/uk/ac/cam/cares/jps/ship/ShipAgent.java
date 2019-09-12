@@ -59,12 +59,12 @@ public class ShipAgent extends HttpServlet {
             if (listOfFiles != null) {
                 for (File listOfFile : listOfFiles) {
                     if (!listOfFile.delete()) {
-                        throw new IOException("Could not clean up: " + filePath2);
+                        throw new IOException("Could not clean up: " + stockdir);
                     }
                 }
             }
         } else {
-            throw new IOException("No such directory: " + filePath2);
+            throw new IOException("No such directory: " + stockdir);
         }
 
 
@@ -303,7 +303,7 @@ public class ShipAgent extends HttpServlet {
 
         JSONObject joforrec = AgentCaller.readJsonParameter(request);
         String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)
-                + ":" + KeyValueManager.get(IKeys.PORT);
+                + ":" + KeyValueManager.get(IKeys.PORT) + "/JPS_SHIP";
         String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
         String iri = null;
         String mmsi = null;
@@ -399,7 +399,9 @@ public class ShipAgent extends HttpServlet {
         Charset charset = StandardCharsets.UTF_8;
         String content = new String(Files.readAllBytes(source.toPath()), charset);
 
-        content = content.replaceAll(shipKbURL + OWL_CHIMNEY, shipKbURL + mmsi + "/" + OWL_CHIMNEY);
+        content = content.replaceAll("http://www.theworldavatar.com/kb/ships/" + OWL_CHIMNEY,
+                shipKbURL + mmsi + "/" + OWL_CHIMNEY);
+        //content = content.replaceAll(shipKbURL + OWL_CHIMNEY, shipKbURL + mmsi + "/" + OWL_CHIMNEY);
         byte[] contentBytes = content.getBytes(charset);
 
         jenaOwlModel.read(new ByteArrayInputStream(contentBytes), null);
