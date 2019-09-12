@@ -157,9 +157,9 @@ public class LoadSpecies {
 	 * @param mapElPairing 
 	 * @throws Exception
 	 */
-	public void loadSpeciesPropertiesInitialAnalysis(Collection<Species> refSpecies, Collection<Species> soiSpecies, Set<Species> all, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {
+	public void loadSpeciesPropertiesInitialAnalysis(List<Species> refSpecies, List<Species> soiSpecies, Set<Species> all, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids ) throws Exception {
 		
-		Collection<Species> invalids = new HashSet<>();
+//		Collection<Species> invalids = new HashSet<>();
         
 //        Map<Species, Integer> spinMultiplicity = new HashMap<>();
         
@@ -173,6 +173,7 @@ public class LoadSpecies {
         for (Species s : refSpecies) {
         	
             System.out.println("REF: Processing " + ctr + " / " + refSpecies.size());
+            
             ctr++;
             
             File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
@@ -218,6 +219,8 @@ public class LoadSpecies {
         refSpecies.removeAll(invalids);
         all.removeAll(invalids);
         soiSpecies.removeAll(invalids);
+        
+//        SolverHelper.add(mapElPairing);
         
 	}
 	

@@ -21,7 +21,7 @@ public class Sort {
 		
 		/**
 		 * 
-		 * Sorted hash map in decreasing order comparing by error bar value in Java 1.8
+		 * Sorted hash map of rejected species in decreasing order comparing by error bar value. Works in Java 1.8 or higher.
 		 * 
 		 */
 		Map<Species, Double> sortedSpeciesMap = speciesMap.entrySet()

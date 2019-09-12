@@ -92,9 +92,9 @@ public class DataPreProcessing {
                 
         		System.out.println("Process configuration " + config);
                 
-                if (new File(destRList + "\\" + config + ".txt").exists()) {
+                if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	
-                    System.out.println("Skipping " + destRList + "\\" + config);
+                    System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
                     
                     continue;
                 }
@@ -112,7 +112,7 @@ public class DataPreProcessing {
                 
                     ctr++;
 
-                    if (new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+                    if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                     
                     	continue;
                     }
@@ -246,13 +246,13 @@ public class DataPreProcessing {
                             }
                         }
 
-                        if(!new File(destRList + "\\" + target.getRef() + "\\").exists()) {
+                        if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
                         	
-                        new File(destRList + "\\" + target.getRef() + "\\").mkdirs();
+                        new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
                         
                         }
 
-                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));                            
+                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));                            
                         
                         /**
                          * 
@@ -260,7 +260,7 @@ public class DataPreProcessing {
                          * 
                          */
                         
-                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
                         if (!completeRList.isEmpty()) {
@@ -340,7 +340,7 @@ public class DataPreProcessing {
                     
                     writer.overwrite(true);
                     
-                    writer.set(destRList + "\\" + config + ".txt");
+                    writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
                     
                     writer.write();
                     
