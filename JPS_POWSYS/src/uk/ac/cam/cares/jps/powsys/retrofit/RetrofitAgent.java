@@ -32,9 +32,11 @@ import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
@@ -49,17 +51,14 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			throws ServletException, IOException {
 	
 		JSONObject jo = AgentCaller.readJsonParameter(request);
-		retrofit(jo);
+		String electricalNetwork = jo.getString("electricalnetwork");
+		JSONArray ja = jo.getJSONArray("plants");
+		List<String> nuclearPowerPlants = MiscUtil.toList(ja);
+		
+		retrofit(electricalNetwork, nuclearPowerPlants);
 	}
 	
-	/**
-	 * @param input
-	 */
-	public void retrofit(JSONObject input) {
-		
-		// scenarioUrlOfMockedAgent scenario url with the result of the nuclear power plant simulation (including OWL files for nuclear power plants and generators)
-		String scenarioUrlOfMockedAgent = input.getString("mergescenariourl");
-		String electricalNetwork = input.getString("electricalnetwork");
+	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants) {
 		
 		// the hasSubsystem triples of the electrical network top node itself are not part of the model
 		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
@@ -69,43 +68,10 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		BusInfo slackBus = findFirstSlackBus(buses);		
 				
 		deletePowerGeneratorsFromElectricalNetwork(model, electricalNetwork, slackBus);
-		
-		List<String> plants = getNuclearPowerPlantsFromMockedScenarioAgent(scenarioUrlOfMockedAgent);
-		
-		completeNuclearPowerGenerators(scenarioUrlOfMockedAgent, plants);
-		
-		List<GeneratorInfo> newGenerators = queryGenerators(scenarioUrlOfMockedAgent, plants);
-
-		addNuclearPowerGeneratorsToElectricalNetwork(electricalNetwork, newGenerators);
-		
-		initVoltageMagnitudeInPUForBuses(buses);
-		
-		connectNuclearPowerGeneratorsToOptimalBus(buses, newGenerators, slackBus);
-	}
-	
-	/**
-	 * @param input
-	 */
-	private void retrofitOLD(JSONObject input) {
-		
-		// scenarioUrlOfMockedAgent scenario url with the result of the nuclear power plant simulation (including OWL files for nuclear power plants and generators)
-		String scenarioUrlOfMockedAgent = input.getString("mergescenariourl");	
-		String electricalNetwork = input.getString("electricalnetwork");
-		
-		// the hasSubsystem triples of the electrical network top node itself are not part of the model
-		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
-		
-		List<BusInfo> buses = queryBuses(model);
-		
-		BusInfo slackBus = findFirstSlackBus(buses);		
 				
-		deletePowerGeneratorsFromElectricalNetwork(model, electricalNetwork, slackBus);
+		completeNuclearPowerGenerators(nuclearPowerPlants);
 		
-		List<String> plants = getNuclearPowerPlantsFromMockedScenarioAgent(scenarioUrlOfMockedAgent);
-		
-		completeNuclearPowerGenerators(scenarioUrlOfMockedAgent, plants);
-		
-		List<GeneratorInfo> newGenerators = queryGenerators(scenarioUrlOfMockedAgent, plants);
+		List<GeneratorInfo> newGenerators = queryGenerators(nuclearPowerPlants);
 
 		addNuclearPowerGeneratorsToElectricalNetwork(electricalNetwork, newGenerators);
 		
@@ -131,21 +97,24 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		return slackBus;
 	}
 	
-	public List<String> completeNuclearPowerGenerators(String scenarioUrlOfMockedAgent, List<String> nuclearPowerPlants) {
+	public List<String> completeNuclearPowerGenerators(List<String> nuclearPowerPlants) {
 		
 		List<String> result = new ArrayList<String>();
 		
 		String sparqlQuery = getQueryForGeneratorsInNuclearPlant();
 		
-		for (String current : nuclearPowerPlants) {
-			String queryResult = new ScenarioClient().query(scenarioUrlOfMockedAgent, current, sparqlQuery);		
+		for (String current : nuclearPowerPlants) {	
+			String queryResult = new QueryBroker().queryFile(current, sparqlQuery);	
+			
 			List<String[]> list = JenaResultSetFormatter.convertToListofStringArrays(queryResult, "generator");
 			
 			for (String[] currentRow : list) {
 				String generator = currentRow[0];
 				result.add(generator);
 				
-				URI uri = new ScenarioClient().getReadUrl(scenarioUrlOfMockedAgent, generator);
+				//URI uri = new ScenarioClient().getReadUrl(scenarioUrlOfMockedAgent, generator);
+				String scenarioUrl = BucketHelper.getScenarioUrl();
+				URI uri = new ScenarioClient().getReadUrl(scenarioUrl, generator);
 				OntModel model = JenaHelper.createModel();
 				try {
 					URL url = uri.toURL();
@@ -167,20 +136,6 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		builder.a("?entity", OPSREAL, "NuclearPlant");
 		builder.prop("?entity", "?generator", OCPSYST, "hasSubsystem");
 		return builder.build().toString();
-	}
-	
-	public List<String> getNuclearPowerPlantsFromMockedScenarioAgent(String scenarioUrlOfMockedAgent) {
-		
-		List<String> plantList = new ArrayList<String>();
-		JSONObject jo = new JSONObject();
-		String result = new ScenarioClient().mockedOperation(scenarioUrlOfMockedAgent, "/processresult", jo.toString());
-		logger.info("result from mocked scenario agent = " + result);
-		JSONArray jaResult = new JSONObject(result).getJSONArray("plants");
-		for (int i=0; i<jaResult.length(); i++) {
-			plantList.add(jaResult.getString(i));
-		}
-		
-		return plantList;
 	}
 	
 	public void completePowerGenerator(OntModel model, String powerGenerator) {
@@ -361,7 +316,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		 return distance;
 	}
 	
-	private List<GeneratorInfo> queryGenerators(String scenarioUrlOfMockedAgent, List<String> nuclearPowerPlants) {
+	private List<GeneratorInfo> queryGenerators(List<String> nuclearPowerPlants) {
 		
 		List<GeneratorInfo> result = new ArrayList<GeneratorInfo>();
 		
@@ -370,7 +325,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		QueryBroker broker = new QueryBroker();
 		
 		for (String currentPlant : nuclearPowerPlants) {
-			String queryResult = new ScenarioClient().query(scenarioUrlOfMockedAgent, currentPlant, queryNuclearPowerPlant);		
+			String queryResult = new QueryBroker().queryFile(currentPlant, queryNuclearPowerPlant);			
 			List<String[]> generators = JenaResultSetFormatter.convertToListofStringArrays(queryResult, "generator");
 			
 			for (String[] currentGen : generators) {

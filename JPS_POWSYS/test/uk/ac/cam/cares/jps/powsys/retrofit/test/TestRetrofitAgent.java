@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.powsys.retrofit.test;
 
 import java.io.File;
-import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.RDFNode;
@@ -16,7 +15,6 @@ import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
@@ -27,16 +25,6 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		RDFNode o = w.getPropertyValue(url, path);
 		double actual = o.asLiteral().getDouble();
 		assertEquals(expected, actual);
-	}
-
-	public void testGetNuclearPowerPlantsFromMockedScenarioAgent() {
-		
-		String scenarioUrlOfMockedAgent = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/aasc5";
-		List<String> result = new RetrofitAgent().getNuclearPowerPlantsFromMockedScenarioAgent(scenarioUrlOfMockedAgent);
-		assertEquals(4, result.size());
-		for (String current : result) {
-			assertTrue(current.contains("NucPP"));
-		}
 	}
 	
 	public void testCompleteOnePowerGenerator() {

@@ -27,23 +27,23 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
 			throws ServletException, IOException {
 	
 		JSONObject jo = AgentCaller.readJsonParameter(request);
-		//String electricalNetwork = jo.getString("electricalnetwork");
-		
 		String path = request.getServletPath();
 
-		String pathForENAgent = null;
 		if ("/startsimulation".equals(path)) {
 			
 			startSimulation(jo);
 			
 		} else if ("/processresult".equals(path)) {
 			
+			// TODO-AE SC URGENT 20190913 implement /processresult
+			// TODO-AE SC URGENT 20190913 add power plants
+			
 		} else if ("/processresultwithpf".equals(path)) {
-			pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationPF";
+			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationPF";
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
 		} else if ("/processresultwithopf".equals(path)) {
-			pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationOPF";
+			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationOPF";
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
 		}
