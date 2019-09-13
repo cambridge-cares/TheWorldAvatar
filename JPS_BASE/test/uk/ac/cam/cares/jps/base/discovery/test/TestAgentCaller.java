@@ -2,11 +2,11 @@ package uk.ac.cam.cares.jps.base.discovery.test;
 
 import java.net.URI;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
@@ -71,5 +71,17 @@ public class TestAgentCaller extends TestCase {
 		expected = "http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl#Service";
 		actual = AgentCaller.decodePercentage("http://www.theworldavatar.com/kb/agents/Service__OpenWeatherMap.owl%23Service");
 		assertEquals(expected, actual);
+	}
+	
+	public void testSerializeForResponse() {
+	
+		JSONObject result = new JSONObject();
+		JSONArray ja = new JSONArray();
+		ja.put("a");
+		ja.put("b");
+		result.put("plants", ja);
+		
+		String message =  AgentCaller.serializeForResponse(result);
+		assertEquals("{\"plants\":[\"a\",\"b\"]}", message);
 	}
 }

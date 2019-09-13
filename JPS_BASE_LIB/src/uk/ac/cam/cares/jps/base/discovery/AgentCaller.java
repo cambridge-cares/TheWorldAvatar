@@ -29,6 +29,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -341,12 +342,7 @@ public class AgentCaller {
             return;
         }
 
-        String message = null;
-        if (object instanceof String) {
-            message = (String) object;
-        } else {
-            message = new Gson().toJson(object);
-        }
+        String message = serializeForResponse(object);
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("UTF-8");
         try {
@@ -354,6 +350,18 @@ public class AgentCaller {
         } catch (IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
+    }
+    
+    public static String serializeForResponse(Object object) {
+        String message = null;
+        if (object instanceof String) {
+            message = (String) object;
+        } else if (object instanceof JSONObject || object instanceof JSONArray) {
+        	message = object.toString();
+        } else {
+            message = new Gson().toJson(object);
+        }
+        return message;
     }
 
     public static String encodePercentage(String s) {

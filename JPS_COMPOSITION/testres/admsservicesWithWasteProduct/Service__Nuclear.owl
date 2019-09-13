@@ -8,7 +8,7 @@
           <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessageContent_c109d3a1-54ea-491e-9354-a01290e18293">
             <msm:hasMandatoryPart>
               <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#MessagePart_e63bba18-6b96-4585-815b-c893288a7f62">
-                <msm:hasName>plantirilist</msm:hasName>
+                <msm:hasName>plants</msm:hasName>
                 <msm:isArray>true</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant</msm:hasType>
               </msm:MessagePart>

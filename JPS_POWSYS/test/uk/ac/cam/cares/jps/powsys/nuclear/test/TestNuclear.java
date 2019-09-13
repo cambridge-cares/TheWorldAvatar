@@ -35,7 +35,7 @@ public class TestNuclear extends TestCase {
 		new QueryBroker().put(destinationUrl, file);
 		
 		List<String> result = agent.processSimulationResult(dataPath);
-		System.out.println(result);
+		System.out.println("result from processsimulationresult=" + result);
 		assertEquals(4, result.size());
 	}
 	
@@ -73,5 +73,7 @@ public class TestNuclear extends TestCase {
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
 		System.out.println("result from processsimulationresult=" + resultProcess);
+		jo = new JSONObject(resultProcess);
+		assertEquals(4, jo.getJSONArray("plants").length());
 	}
 }

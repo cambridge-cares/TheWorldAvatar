@@ -203,7 +203,7 @@ public class TestAgentDescriptions extends TestCase {
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
 			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
-			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plantirilist",true)
+			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
 			.build();
 	}
 

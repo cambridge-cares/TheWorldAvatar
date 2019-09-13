@@ -112,7 +112,7 @@ public class NuclearAgent extends JPSHttpServlet {
 				
 				String dataPath = QueryBroker.getLocalDataPath();
 				List<String> result = processSimulationResult(dataPath);
-				JSONObject resultjson = new JSONObject().put("plantirilist", result);
+				JSONObject resultjson = new JSONObject().put("plants", result);
 				AgentCaller.printToResponse(resultjson.toString(), response);	
 			} catch (NumberFormatException | URISyntaxException e) {
 				logger.error(e.getMessage(), e);
