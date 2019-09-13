@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 
@@ -80,10 +81,18 @@ public class TestScenarioManagement extends TestCase {
 //		System.out.println(result);
 //	}
 	
+
 	public void testTmp7() {
 		String s = "{\"entries\":[{\"scenario\":\"aasc4\",\"message\":{\"extendsagent\":\"http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Service\"},\"timestamp\":\"2019-05-23 19:07:41.045-SGT\"},{\"scenario\":\"aasc4\",\"message\":{\"agent\":\"http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Service\",\"operation\":\"mock\"},\"timestamp\":\"2019-09-10 10:31:53.378-SGT\"}]}";
 		JSONObject resultjo = new JSONObject(s);
 		
 		System.out.println(resultjo.toString(2));
 	}
+	
+	public void testTmp8() {
+		
+		String s = BucketHelper.getUsecaseUrl();
+		System.out.println(s);
+	}
+	
 }

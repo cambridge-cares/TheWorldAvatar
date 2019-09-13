@@ -35,21 +35,26 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
 			
 		} else if ("/processresult".equals(path)) {
 			
-			// TODO-AE SC URGENT 20190913 implement /processresult
-			// TODO-AE SC URGENT 20190913 add power plants
+			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			
 		} else if ("/processresultwithpf".equals(path)) {
+			
 			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationPF";
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
+			
 		} else if ("/processresultwithopf".equals(path)) {
+			
 			String pathForENAgent = "JPS_POWSYS/ENAgent/startsimulationOPF";
 			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
 			AgentCaller.executeGetWithJsonParameter(pathForENAgent, jo.toString());
+			
 		}
 	}
 	
 	public void startSimulation(JSONObject jo) {
+		
+		logger.info("starting optimization for carbon tax");
 		
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
 		
@@ -58,12 +63,5 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
 		result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
 	
 		logger.info("started npp optimization asynchronously");
-	}
-	
-	public void processResult(JSONObject jo) {
-		
-		
-		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
-		
 	}
 }

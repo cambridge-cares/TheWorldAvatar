@@ -3,8 +3,8 @@ $(function() {
   var selected = [];
   var loadeddata;
   var table = $("#tablescenarios").DataTable();
-  var host = "http://www.theworldavatar.com";
-  //var host = "http://localhost:8080";
+  //var host = "http://www.theworldavatar.com";
+  var host = "http://localhost:8080";
   var listScenariosUrl = host + "/jps/scenariomanagement/list"
   var selectedScenario;
   var selectedOperation;

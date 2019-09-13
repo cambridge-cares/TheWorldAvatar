@@ -16,6 +16,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 public class TestNuclear extends TestCase {
@@ -43,7 +44,8 @@ public class TestNuclear extends TestCase {
 		
 		JSONObject jo = new JSONObject();
 		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
-		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		
@@ -69,6 +71,7 @@ public class TestNuclear extends TestCase {
 		
 		// process the simulation result
 		jo = new JSONObject();
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());

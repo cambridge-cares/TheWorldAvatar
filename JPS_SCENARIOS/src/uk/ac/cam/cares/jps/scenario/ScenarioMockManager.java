@@ -94,13 +94,13 @@ public class ScenarioMockManager {
 	
 	private JSONObject findResultInScenarioLog(JSONObject jo, String scenarioName, String operation, ScenarioLog log) {
 		
-		// TODO-AE SC URGENT 20190910 dummy mock is commented
+		// TODO-AE SC URGENT 20190913 dummy mock is commented
 		// This is a dummy for getting the mocking result and returns only the last result
-		List<ScenarioLogEntry> entries = log.search("operation", operation);
-		if (entries.size() > 0) {
-			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
-			return latestEntry.message.getJSONObject("output");
-		}
+//		List<ScenarioLogEntry> entries = log.search("operation", operation);
+//		if (entries.size() > 0) {
+//			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
+//			return latestEntry.message.getJSONObject("output");
+//		}
 		return null;
 	}
 }
