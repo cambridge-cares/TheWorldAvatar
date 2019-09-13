@@ -214,11 +214,44 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * accepted species.
 		 * 
 		 */
-		int iteration = 0;
+		/**
+		 * Determines whether a species is added into valid set of species
+		 */
+		boolean addedSpeciesToValidSet=true;
+		
+		int  loop = 1;
+		
+		while(addedSpeciesToValidSet) {
+
+//		addedSpeciesToValidSet=false;
+			
+		int iteration = 1;		
+		
+		/**
+		 * Set of species that are still member of invalid set of species after completed cross validation. 
+		 */
+		Set<Species> tempInvalidSetOfSpecies = new HashSet<Species>();
+		
+//		int numberOfAnalysedSpecies = 0;
+		
+		Set<Species> tempValidSpecies = new HashSet<Species>();
+		
+		tempValidSpecies.addAll(validSpecies);
+		
+		int tempValidSpeciesSize = tempValidSpecies.size();
 		
 		for (Map.Entry<Species, Double> errorMap : sortedInvalidSpeciesErrorBar.entrySet()) {
-
-				System.out.println("Iteration number. " + iteration++);
+			
+			    //if(numberOfAnalysedSpecies==tempInvalidSetOfSpecies.size()) {break;}
+			    
+			    System.out.println("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
+			    
+			    /**
+			     * Skips species that are added into valid set of species;
+			     */
+			    if(containsSpecies(validSpecies, errorMap.getKey())) {System.out.println("Species skipped: " + errorMap.getKey().getRef());continue; }
+			     
+				System.out.println("Iteration number. " + iteration);
 				
 				List<Species> targetSpecies = new ArrayList<Species>();
 
@@ -237,11 +270,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				/**
 				 * 
 				 * Creates reference set of species from valid set of species generated in
-				 * pre-processing step. Also, adds a species from invalid set of species to a
-				 * reference set of species. That added species has lower error bar than error
-				 * bar fot that species calculated in pre-processing step.
-				 * 
-				 * 
+				 * pre-processing step. Also, adds a species from invalid set of species that is under current investigation  (cross validation) to a
+				 * reference set of species. 
+				 * 				 
 				 */
 				srcRefPoolSpecies.addAll(ls.loadReferenceSpeciesForInitialAnalysis(srcRefPool, validSpecies));
 
@@ -251,12 +282,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				 */
 				srcRefPoolSpecies.add(errorMap.getKey());
 
-				System.out.println("Reference species list:");
+				System.out.println("Species reference list:");
 
 				for (Species s : srcRefPoolSpecies) {
 
-					System.out.println(s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , "
-							+ s.getAtomMap() + s.getBondTypeMultiset());
+					System.out.println(s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + s.getBondTypeMultiset());
 				}
 
 				System.out.println("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf()
@@ -289,17 +319,100 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				
 				InitialDataAnalysis initialDataAnalysis = new InitialDataAnalysis();
 				
-				initialDataAnalysis.getInitialDataAnalysisCrossValidation(iteration, destRList, ctrRadicals, ctrRuns, ctrRes, srcRefPoolSpecies, targetSpecies, srcCompoundsRef, spinMultiplicity, mapElPairing, tempFolder, invalids, all, validSpecies, invalidSpecies, targetSpeciesEnthalpy, currentErrorBar);
+				initialDataAnalysis.getInitialDataAnalysisCrossValidation(loop, addedSpeciesToValidSet,iteration, destRList, ctrRadicals, ctrRuns, ctrRes, srcRefPoolSpecies, 
+						targetSpecies, srcCompoundsRef, spinMultiplicity, mapElPairing, tempFolder, invalids, all, validSpecies, targetSpeciesEnthalpy, currentErrorBar);
+				
+				iteration++;
+				
+//				numberOfAnalysedSpecies++;
 
 			}
 		
-	System.out.println("Updated valid set of species after one iteration through the set of invalid species and running cross validation:");
-		
+	System.out.println("Updated valid set of species after ("  + loop + ") iteration through the set of invalid species in initial analysis:");
+	
+	int num = 1;
+	
 	for(Species s: validSpecies) {
+	
+	System.out.println( num + ". species name: " + s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + " , " + s.getBondTypeMultiset());
+
+	num++;
+	
+	}
+	
+	
+	
+	System.out.println("Invalid species file after (" + loop+ ") iteration through invalid species list with error bar . . .");
+
+	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_("+loop+")_iteration" + ".txt", true));
+	
+	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies);
+	
+	if(tempInvalidSetOfSpecies.isEmpty()) {
 		
-	System.out.println("Species name: " + s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + " , " + s.getBondTypeMultiset());
+		addedSpeciesToValidSet=false;
+	}
+	
+	/**
+	 * 
+	 * If there are not species added to the list of valid species then iteration process terminates.
+	 * 
+	 */
+	if(addedSpeciesToValidSet) {	
+		
+		System.out.println("After the (" + loop +".) loop through invalid set of species, at least one species is added into valid set of species.");
+		
+		System.out.println();	
+		
+	} else {
+		
+		System.out.println("After the (" + loop +".) loop through invalid set of species, there are not species from invalid set of species that are added into valid set of species.");
+		
+//		addedSpeciesToValidSet=false;
+		
+//		break;
 		
 	}
 	
+	System.out.println("After (" + loop + "), loop remaining invalid species are:");
+	
+	for(Species s: tempInvalidSetOfSpecies) {
+		
+		System.out.println(s.getRef() + " " + s.getHf());
+		
+	}
+	
+	loop++;
+
+	/**
+	 * Size of species could be large. It means we need to change int -> BigInteger
+	 */
+	int validSpeciesSize = validSpecies.size();
+	
+	if(tempValidSpeciesSize==validSpeciesSize) {
+	
+		break;
+	}
+	
+	} ;
+	
+		/**
+		 * Terminate program
+		 */
+//		System.exit(0);
+	}
+	
+	public static boolean containsSpecies(Set<Species> validSpecies, Species currentSpecies) {
+		
+		boolean contains = false;
+		
+	     for(Species vs: validSpecies) {
+	    	 
+	    	 if(currentSpecies.getRef().equals(vs.getRef())) { contains=true; return contains;}
+	    	  
+	     
+	     }
+	     
+	     return contains;
 	}
 }

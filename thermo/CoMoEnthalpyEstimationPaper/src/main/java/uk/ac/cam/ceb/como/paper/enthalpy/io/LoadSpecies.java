@@ -98,8 +98,6 @@ public class LoadSpecies {
         Collection<Species> ref = refParser.getRefSpecies();
         
 		return ref;
-		 
-		
 	}
 	
 	/**

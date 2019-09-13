@@ -37,10 +37,10 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 
 public class InitialDataAnalysis {
 
-	public void getInitialDataAnalysisCrossValidation(int iteration, String destRList, int[] ctrRadicals, int[] ctrRuns, int[] ctrRes,
+	public void getInitialDataAnalysisCrossValidation(int loop, boolean addedSpeciesToValidSet,int iteration, String destRList, int[] ctrRadicals, int[] ctrRuns, int[] ctrRes,
 			List<Species> refSpecies, List<Species> soiSpecies, String srcCompoundsRef,
 			Map<Species, Integer> spinMultiplicity, Map<String, Integer[]> mapElPairing, String tempFolder,
-			Collection<Species> invalids, Set<Species> all, Set<Species> validSpecies, Set<Species> invalidSpecies, double targetSpeciesEnthalpy,
+			Collection<Species> invalids, Set<Species> all, Set<Species> validSpecies, double targetSpeciesEnthalpy,
 			double currentErrorBar) throws Exception {
 
 		for (int z = 0; z < ctrRadicals.length; z++) {
@@ -59,9 +59,9 @@ public class InitialDataAnalysis {
 
 					System.out.println("Process configuration " + config);
 
-					if (new File(destRList  + "initial-analysis" + "\\" + iteration + "\\" + config + ".txt").exists()) {
+					if (new File(destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\" + iteration + "\\" + config + ".txt").exists()) {
 
-						System.out.println("Skipping " + destRList + "initial-analysis" + "\\" + iteration + "\\" + config);
+						System.out.println("Skipping " + destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + config);
 
 						continue;
 
@@ -78,11 +78,11 @@ public class InitialDataAnalysis {
 
 //	                      new File("C:\\Users\\pb556\\temp9\\" + target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
 
-						new File(tempFolder + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
+						new File(tempFolder + "loop_" + loop +"\\" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
 
 //	                      solver.setDirectory(new File("C:\\Users\\pb556\\temp9\\" + target.getRef().replace(".g09", "") + "\\"));
 
-						solver.setDirectory(new File(tempFolder + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\"));
+						solver.setDirectory(new File(tempFolder + "loop_" + loop +"\\" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\"));
 
 //	                        System.out.println("REF: Processing " + ctr + " / " + all.size());
 //	                        ctr++;
@@ -144,7 +144,7 @@ public class InitialDataAnalysis {
 						
 						ctr++;
 
-						if (new File(destRList +  "initial-analysis" + "\\" + iteration + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct")
+						if (new File(destRList +  "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct")
 								.exists()) {
 
 							continue;
@@ -269,14 +269,14 @@ public class InitialDataAnalysis {
 								}
 							}
 
-							if (!new File(destRList + "initial-analysis" + "\\" + iteration + "\\"+ target.getRef() + "\\").exists()) {
-								new File(destRList + "initial-analysis" + "\\"+ iteration + "\\" + target.getRef() + "\\").mkdirs();
+							if (!new File(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\"+ target.getRef() + "\\").exists()) {
+								new File(destRList + "initial-analysis" + "\\"+ "loop_" + loop +"\\"+ iteration + "\\" + target.getRef() + "\\").mkdirs();
 							}
 
 							ReactionListWriter rListWriter = new ReactionListWriter(new File(
-									destRList  + "initial-analysis" + "\\" + iteration + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
 							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(
-									destRList  + "initial-analysis" + "\\" + iteration + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
+									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
 
 							if (!completeRList.isEmpty()) {
 								System.out.println("Writting complete reaction list...");
@@ -291,7 +291,7 @@ public class InitialDataAnalysis {
 
 									if (r.getRef().equals(target.getRef())) {
 
-										System.out.println("Ref species name: " + r.getRef() + " = " + " Target species name : " + target.getRef() + " Target species enthalpy: " + target.getHf());
+										System.out.println("Ref species name: " + r.getRef() + " = " + " Target species name : " + target.getRef() + " Median species enthalpy: " + target.getHf());
 										
 										target.setHf(r.getHf());
 
@@ -318,8 +318,9 @@ public class InitialDataAnalysis {
 									
 								  /**
 								   * Sets target species enthalpy of formation as given in reference set of species.
+								   * TO DO: Check whether output csv file will store median enthalpy of reference enthalpy value.
 								   */
-								  target.setHf(targetSpeciesEnthalpy);
+//								  target.setHf(targetSpeciesEnthalpy);
 
 								  System.out.println(" Reaction(" + ri + "): " + completeRList.get(ri).toString() + " Species (target ref) enthalpy: " + targetSpeciesEnthalpy
 											+ " Calculated Hf for reaction(" + ri + "): " + completeRList.get(ri).calculateHf() + " error: " + error);
@@ -340,6 +341,9 @@ public class InitialDataAnalysis {
 									 * Added species into valid list of species
 									 */
 								 validSpecies.add(target);
+								 
+								 addedSpeciesToValidSet = true;
+								 
 								}
 
 							}
@@ -366,7 +370,7 @@ public class InitialDataAnalysis {
 						StringWriter writer = new StringWriter();
 						writer.setContent("completed!");
 						writer.overwrite(true);
-						writer.set(destRList + "initial-analysis" + "\\" + iteration + "\\" + config + ".txt");
+						writer.set(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + config + ".txt");
 						writer.write();
 						
 						
