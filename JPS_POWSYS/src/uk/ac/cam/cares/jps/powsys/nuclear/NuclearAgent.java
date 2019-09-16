@@ -29,6 +29,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
@@ -90,12 +91,18 @@ public class NuclearAgent extends JPSHttpServlet {
 			try {
 				String lotiri = jofornuc.getString("landlot");
 				String iriofnetwork = jofornuc.getString("electricalnetwork");
+//				ArrayList<String> listofplant= new ArrayList<String>();
+//				for (int c=0;c<jofornuc.getJSONArray("substitutionalpowerplants").length();c++) {
+//					listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+//				}
+				
 				boolean runGams = true;
 				if (!jofornuc.isNull(JPSConstants.RUN_SIMULATION)) {
 					runGams = jofornuc.getBoolean(JPSConstants.RUN_SIMULATION);
 				}
 				
 				String dataPath = QueryBroker.getLocalDataPath();
+				//startSimulation(lotiri, iriofnetwork,listofplant, dataPath, runGams);
 				startSimulation(lotiri, iriofnetwork, dataPath, runGams);
 				
 			} catch (JSONException | InterruptedException e) {
@@ -121,7 +128,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		}	
 	}
 	
-	public void startSimulation(String lotiri, String iriofnetwork, String dataPath, boolean runGams) throws IOException, InterruptedException {
+	public void startSimulation(String lotiri, String iriofnetwork,/*ArrayList<String>plantlist,*/ String dataPath, boolean runGams) throws IOException, InterruptedException {
 		
 		String baseUrl = dataPath + "/" + AGENT_TAG;
 		
@@ -186,6 +193,8 @@ public class NuclearAgent extends JPSHttpServlet {
 		}
 	}
 
+
+	
 	public void prepareCSVLandlot(String lotiri, String baseUrl) {		
 
 		String lotsInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 
