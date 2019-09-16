@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 import javax.servlet.ServletException;
@@ -14,6 +15,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
 public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServlet {
@@ -30,17 +35,15 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {
 
-        JSONObject responseParams = requestParams;
-
         String regionToCityResult = execute("/JPS/RegionToCity", requestParams.toString());
         String city = new JSONObject(regionToCityResult).getString("city");
-        responseParams.put("city", city);
+        requestParams.put("city", city);
         logger.info("city FROM COORDINATION AGENT: " + city);
-        logger.info("overall json= " + responseParams.toString());
+        logger.info("overall json= " + requestParams.toString());
 
-        String result = execute("/JPS/GetBuildingListFromRegion", responseParams.toString());
+        String result = execute("/JPS/GetBuildingListFromRegion", requestParams.toString());
         JSONArray building = new JSONObject(result).getJSONArray("building");
-        responseParams.put("building", building);
+        requestParams.put("building", building);
         logger.info("building FROM COORDINATION AGENT: " + building.toString());
 
         if (city.toLowerCase().contains("kong")) {
@@ -49,7 +52,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
             result = execute("/JPS_COMPOSITION/CityToWeather", regionToCityResult);
         }
         JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
-        responseParams.put("weatherstate", weatherstate);
+        requestParams.put("weatherstate", weatherstate);
 
         logger.info("calling postgres= " + requestParams.toString());
         String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
@@ -57,33 +60,73 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         String resultship = AgentCaller.executeGetWithURLAndJSON(url, requestParams.toString());
 
         JSONObject jsonShip = new JSONObject(resultship);
-        int sizeofshipselected=jsonShip.getJSONObject("collection").getJSONArray("items").length();
-        
-        String waste =""; //temp to test
-        JSONArray newwaste = new JSONArray();
-        for (int i = 0; i < sizeofshipselected; i++) { //temporary solution to check whether the loop is ok
-//        for (int i = 0; i < 5; i++) {
-        	logger.info("=================ship agent is called for "+i+" times========================");
-            JSONObject jsonReactionShip = new JSONObject();
-            String reactionMechanism = requestParams.optString("reactionmechanism");
-            jsonReactionShip.put("reactionmechanism", reactionMechanism);
-            jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
-            
 
-            String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
-             waste = new JSONObject(wasteResult).getString("waste");
-             newwaste.put(waste);
+        String reactionMechanism = requestParams.optString("reactionmechanism");
+        JSONArray newwaste;
+
+        if (reactionMechanism.equals("")) {
+            //@TODO [AC] - Async call will not work untill the above condition is removed.
+            // Queueing third party software calls with limited number of licenses should be handled by agents,
+            // which implement calls to them separately.
+            newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
+        } else {
+            newwaste = getNewWasteSync(reactionMechanism, jsonShip);
         }
-        
-        responseParams.put("waste", newwaste); //temp to test
 
-        responseParams.put(PARAM_KEY_SHIP, jsonShip);
+        requestParams.put("waste", newwaste);
+        requestParams.put(PARAM_KEY_SHIP, jsonShip);
 
-        result = execute("/JPS/ADMSAgent", responseParams.toString(), HttpPost.METHOD_NAME);
+        result = execute("/JPS/ADMSAgent", requestParams.toString(), HttpPost.METHOD_NAME);
         String folder = new JSONObject(result).getString("folder");
-        responseParams.put("folder", folder);
+        requestParams.put("folder", folder);
 
-        return responseParams;
+        return requestParams;
     }
 
+    private JSONArray getNewWasteAsync(String reactionMechanism, JSONObject jsonShip) {
+        JSONArray newwaste = new JSONArray();
+        ArrayList<CompletableFuture> wastes = new ArrayList<>();
+        JSONArray ships = jsonShip.getJSONObject("collection").getJSONArray("items");
+        int sizeofshipselected = ships.length();
+
+        for (int i = 0; i < sizeofshipselected; i++) {
+            logger.info("Ship AGENT called: " + i);
+            JSONObject jsonReactionShip = new JSONObject();
+            jsonReactionShip.put("reactionmechanism", reactionMechanism);
+            jsonReactionShip.put("ship", ships.getJSONObject(i));
+
+            CompletableFuture<String> getAsync = CompletableFuture.supplyAsync(() ->
+                    execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString()));
+
+            CompletableFuture<String> processAsync = getAsync.thenApply(wasteResult ->
+                    new JSONObject(wasteResult).getString("waste"));
+            wastes.add(processAsync);
+        }
+
+        for (CompletableFuture waste : wastes) {
+            try {
+                newwaste.put(waste.get());
+            } catch (InterruptedException | ExecutionException e) {
+                throw new JPSRuntimeException(e.getMessage());
+            }
+        }
+
+        return newwaste;
+    }
+
+    private JSONArray getNewWasteSync(String reactionMechanism, JSONObject jsonShip) {
+        JSONArray newwaste = new JSONArray();
+        int sizeofshipselected = jsonShip.length();
+
+        for (int i = 0; i < sizeofshipselected; i++) {
+            logger.info("Ship AGENT called: " + i);
+            JSONObject jsonReactionShip = new JSONObject();
+            jsonReactionShip.put("reactionmechanism", reactionMechanism);
+            jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
+            String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
+            String waste = new JSONObject(wasteResult).getString("waste");
+            newwaste.put(waste);
+        }
+        return newwaste;
+    }
 }
