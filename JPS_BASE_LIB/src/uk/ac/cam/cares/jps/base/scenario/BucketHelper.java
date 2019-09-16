@@ -122,18 +122,18 @@ public class BucketHelper {
 		String path = uri.getPath();
 		if (path.startsWith(ScenarioHelper.SCENARIO_COMP_URL)) {
 			// insert the host name between scenario name and /data/ or /kb/
-			String relativePath = path;
-			int i = path.indexOf(SLASH_DATA);
+			String relativePath = path.substring(ScenarioHelper.SCENARIO_COMP_URL.length());
+			int i = relativePath.indexOf(SLASH_DATA);
 			if (i>0) {
-				relativePath = path.replace(SLASH_DATA, mapped + SLASH_DATA);
+				relativePath = relativePath.replace(SLASH_DATA, mapped + SLASH_DATA);
 			} else {
-				i = path.indexOf(SLASH_KB);
+				i = relativePath.indexOf(SLASH_KB);
 				if (i>0) {
-					relativePath = path.replace(SLASH_KB, mapped + SLASH_KB);
+					relativePath = relativePath.replace(SLASH_KB, mapped + SLASH_KB);
 				} 
 			}
 			
-			return ScenarioHelper.getJpsWorkingDir() + relativePath;
+			return ScenarioHelper.getScenarioWorkingDir() + relativePath;
 		}
 		
 

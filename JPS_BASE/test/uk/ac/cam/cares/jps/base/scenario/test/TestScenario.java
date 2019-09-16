@@ -4,7 +4,6 @@ import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -71,7 +70,7 @@ public class TestScenario extends TestCase {
 	
 	public void testGetLocalPathBaseScenarioForJPSKB() {
 		
-		String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + JPSConstants.SCENARIO_NAME_BASE;		
+		String root = ScenarioHelper.getScenarioWorkingDir() + "/" + JPSConstants.SCENARIO_NAME_BASE;		
 		String url = "http://www.theworldavatar.com" + ScenarioHelper.SCENARIO_COMP_URL + "/base/kb/sgp/jurongisland/something.owl";
 		String scenarioUrl = null;
 		String path = BucketHelper.getLocalPath(url, scenarioUrl);
@@ -119,8 +118,9 @@ public class TestScenario extends TestCase {
 	}
 	
 	public void testGetLocalDataPathBaseScenario() {
-		String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + JPSConstants.SCENARIO_NAME_BASE;	
-		String path = BucketHelper.getLocalDataPath();		
+		String root = ScenarioHelper.getScenarioWorkingDir() + "/" + JPSConstants.SCENARIO_NAME_BASE;	
+		String path = BucketHelper.getLocalDataPath();	
+		System.out.println(root);
 		System.out.println(path);
 		assertTrue(path.startsWith(root));
 		assertTrue(path.contains(JPSConstants.SCENARIO_SUBDIR_DATA));
@@ -133,8 +133,9 @@ public class TestScenario extends TestCase {
 
 		try {
 			JPSHttpServlet.enableScenario(scenarioUrl);
-			String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;	
-			String path = BucketHelper.getLocalDataPath();		
+			String root = ScenarioHelper.getScenarioWorkingDir() + "/" + scenarioName;	
+			String path = BucketHelper.getLocalDataPath();
+			System.out.println(root);
 			System.out.println(path);
 			assertTrue(path.startsWith(root));
 			assertTrue(path.contains(JPSConstants.SCENARIO_SUBDIR_DATA));

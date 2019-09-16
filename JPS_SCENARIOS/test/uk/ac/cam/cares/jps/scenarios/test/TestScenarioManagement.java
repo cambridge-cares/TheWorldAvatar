@@ -4,7 +4,9 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 
@@ -95,4 +97,12 @@ public class TestScenarioManagement extends TestCase {
 		System.out.println(s);
 	}
 	
+	public void testTmp9() {
+		JPSContext.putScenarioUrl("http://localhost:8080/jps/scenario/13sctax");
+		JPSContext.putUsecaseUrl("http://localhost:8080/jps/scenario/13sctax/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7");
+		
+		String dataPath = QueryBroker.getLocalDataPath();
+		
+		System.out.println("path=" + dataPath);
+	}
 }

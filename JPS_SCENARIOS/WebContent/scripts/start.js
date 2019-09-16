@@ -207,6 +207,7 @@ $(function() {
       var name = params[i].hasName;
       var type = params[i].hasType;
 	  var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
+	  var isarray = params[i].isArray;
 	  var value =  "<input type=\"text\" id=\"inparamvalue" + i + "\">";
 
       if (name === "scenarioagent") {
@@ -220,6 +221,7 @@ $(function() {
         inout,
     	name,
         typelink,
+        isarray,
         value
       ]);
     }
@@ -232,6 +234,7 @@ $(function() {
         "in",
     	"usecaseurl",
         typelink,
+        false,
         value
      ]);
     
@@ -241,6 +244,7 @@ $(function() {
       var name = params[i].hasName;
       var type = params[i].hasType;
       var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
+      var isarray = params[i].isArray;
       var value = "---";
       
       
@@ -251,6 +255,7 @@ $(function() {
         inout,
     	name,
         typelink,
+        isarray,
         value
       ]);
     
@@ -356,7 +361,8 @@ $(function() {
 		        paramvalue = JSON.parse(paramvalue);
 		    } catch (e) {
 		    }	  
-		  	json["" + paramkey] = paramvalue;
+		  	//json["" + paramkey] = paramvalue;
+		  	json["jpscontext"] = {"usecaseurl": paramvalue}
 	  }
 	  
 	  url += "?query=" + JSON.stringify(json);

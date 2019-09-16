@@ -3,18 +3,18 @@
     xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
   <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#Service">
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#Operation_83a62b30-86bb-4937-b84b-b8f69a8b3b1a">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#Operation_e45b3e8d-f8d8-453d-8202-ddbc6500727c">
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessageContent_4ff96b97-570c-4ae0-b876-4db04c904e49">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessageContent_d4086214-55d1-4e6a-a19d-8b6f95e7b788">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_92cd4562-0275-482e-a68d-0f337d13e2ae">
-                <msm:hasName>plant</msm:hasName>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_ff5d2a06-dbb8-440c-a3d5-1245fef15fb4">
+                <msm:hasName>plants</msm:hasName>
                 <msm:isArray>true</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_534ee4ca-0a07-4ff6-a11a-2240cc0fc39f">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_50024828-89a9-48c1-91fe-c55f90335fa3">
                 <msm:hasName>electricalnetwork</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem</msm:hasType>
@@ -22,22 +22,29 @@
             </msm:hasMandatoryPart>
           </msm:MessageContent>
         </msm:hasInput>
-        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_POWSYS/processresult</msm:hasHttpUrl>
+        <msm:hasHttpUrl>http://localhost:8080/JPS_POWSYS/processresult</msm:hasHttpUrl>
       </msm:Operation>
     </msm:hasOperation>
     <msm:hasOperation>
-      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#Operation_651dd485-b9a7-4ba8-b5f6-64128f02036b">
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#Operation_55855fbb-13c3-4601-afc0-88081fd6c55c">
         <msm:hasInput>
-          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessageContent_ce016755-2cf0-4acc-ac6e-5b863b2dc24b">
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessageContent_a95a3daf-6431-49ae-a8df-25e72f427356">
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_91fa3c9a-6be9-458e-abf1-d1bb3b6e1b30">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_015eaeb9-4083-46be-b7a8-8e63edd180c9">
+                <msm:hasName>landlot</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_78e7ed43-0b7d-49ee-95ac-9d2385415fa9">
                 <msm:hasName>carbontax</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/Market.owl#Price</msm:hasType>
               </msm:MessagePart>
             </msm:hasMandatoryPart>
             <msm:hasMandatoryPart>
-              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_1005c437-bc11-4045-ad05-4c36188009bb">
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__CarbonTaxCoord.owl#MessagePart_7a26e645-91c6-4116-a85d-f774b8e164d8">
                 <msm:hasName>electricalnetwork</msm:hasName>
                 <msm:isArray>false</msm:isArray>
                 <msm:hasType>http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem</msm:hasType>
@@ -45,7 +52,7 @@
             </msm:hasMandatoryPart>
           </msm:MessageContent>
         </msm:hasInput>
-        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_POWSYS/startsimulation</msm:hasHttpUrl>
+        <msm:hasHttpUrl>http://localhost:8080/JPS_POWSYS/startsimulation</msm:hasHttpUrl>
       </msm:Operation>
     </msm:hasOperation>
     <msm:isComposed>false</msm:isComposed>

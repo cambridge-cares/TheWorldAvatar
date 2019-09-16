@@ -90,6 +90,7 @@ public class JSONConverter {
 				MessagePart current = it.next();
 				params.add(current.getName());
 				params.add(current.getType().toString());
+				params.add(Boolean.toString(current.isArray()));
 			}
 			String[] array = params.toArray(new String[0]);
 			addParameterSection(writer, array);
@@ -99,9 +100,9 @@ public class JSONConverter {
 	private static void addParameterSection(JSONWriter writer, String... s) throws JSONException {
 		
 		writer.key(s[0]).array();
-		for (int i=1; i<s.length; i=i+2) {
+		for (int i=1; i<s.length; i=i+3) {
 			writer.object();
-			writer.key("hasName").value(s[i]).key("hasType").value(s[i+1]);
+			writer.key("hasName").value(s[i]).key("hasType").value(s[i+1]).key("isArray").value(s[i+2]);
 			writer.endObject();
 		}
 		writer.endArray();
