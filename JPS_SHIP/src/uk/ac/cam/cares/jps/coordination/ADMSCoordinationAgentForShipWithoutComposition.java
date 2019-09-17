@@ -64,14 +64,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         String reactionMechanism = requestParams.optString("reactionmechanism");
         JSONArray newwaste;
 
-        if (reactionMechanism.equals("")) {
-            //@TODO [AC] - Async call will not work untill the above condition is removed.
-            // Queueing third party software calls with limited number of licenses should be handled by agents,
-            // which implement calls to them separately.
-            newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
-        } else {
-            newwaste = getNewWasteSync(reactionMechanism, jsonShip);
-        }
+        newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
 
         requestParams.put("waste", newwaste);
         requestParams.put(PARAM_KEY_SHIP, jsonShip);
@@ -114,19 +107,4 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         return newwaste;
     }
 
-    private JSONArray getNewWasteSync(String reactionMechanism, JSONObject jsonShip) {
-        JSONArray newwaste = new JSONArray();
-        int sizeofshipselected = jsonShip.length();
-
-        for (int i = 0; i < sizeofshipselected; i++) {
-            logger.info("Ship AGENT called: " + i);
-            JSONObject jsonReactionShip = new JSONObject();
-            jsonReactionShip.put("reactionmechanism", reactionMechanism);
-            jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
-            String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
-            String waste = new JSONObject(wasteResult).getString("waste");
-            newwaste.put(waste);
-        }
-        return newwaste;
-    }
 }
