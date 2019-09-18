@@ -346,7 +346,7 @@ public class ADMSAgent extends JPSHttpServlet {
     }
 
 
-    private void startADMS(String targetFolder) {
+    public void startADMS(String targetFolder) {
         String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
         CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
     }
