@@ -4,8 +4,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.UUID;
 
-import org.apache.logging.log4j.ThreadContext;
-
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -22,7 +20,7 @@ public class BucketHelper {
 
 	public static String getScenarioUrl() {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		if (scenarioUrl == null) {
 			scenarioUrl = getScenarioUrl(JPSConstants.SCENARIO_NAME_BASE);
 		}
@@ -45,10 +43,10 @@ public class BucketHelper {
 	
 	public static String getUsecaseUrl() {
 
-		String usecaseUrl = ThreadContext.get(JPSConstants.SCENARIO_USE_CASE_URL);	
+		String usecaseUrl = JPSContext.getUsecaseUrl();	
 		if (usecaseUrl == null) {
 			usecaseUrl = getUsecaseUrl(getScenarioUrl());
-			ThreadContext.put(JPSConstants.SCENARIO_USE_CASE_URL, usecaseUrl);
+			JPSContext.putUsecaseUrl(usecaseUrl);
 		}
 		
 		return usecaseUrl;
@@ -64,7 +62,7 @@ public class BucketHelper {
 	}
 
 	public static String getKbScenarioUrl() {
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		if (scenarioUrl == null) {
 			throw new JPSRuntimeException("can't create a scenario kb url for the base scenario");
 		} 
@@ -96,7 +94,7 @@ public class BucketHelper {
 	}
 	
 	public static String getLocalPath(String url) {
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);
+		String scenarioUrl = JPSContext.getScenarioUrl();
 		return getLocalPath(url, scenarioUrl);
 	}
 	
@@ -124,18 +122,18 @@ public class BucketHelper {
 		String path = uri.getPath();
 		if (path.startsWith(ScenarioHelper.SCENARIO_COMP_URL)) {
 			// insert the host name between scenario name and /data/ or /kb/
-			String relativePath = path;
-			int i = path.indexOf(SLASH_DATA);
+			String relativePath = path.substring(ScenarioHelper.SCENARIO_COMP_URL.length());
+			int i = relativePath.indexOf(SLASH_DATA);
 			if (i>0) {
-				relativePath = path.replace(SLASH_DATA, mapped + SLASH_DATA);
+				relativePath = relativePath.replace(SLASH_DATA, mapped + SLASH_DATA);
 			} else {
-				i = path.indexOf(SLASH_KB);
+				i = relativePath.indexOf(SLASH_KB);
 				if (i>0) {
-					relativePath = path.replace(SLASH_KB, mapped + SLASH_KB);
+					relativePath = relativePath.replace(SLASH_KB, mapped + SLASH_KB);
 				} 
 			}
 			
-			return ScenarioHelper.getJpsWorkingDir() + relativePath;
+			return ScenarioHelper.getScenarioWorkingDir() + relativePath;
 		}
 		
 

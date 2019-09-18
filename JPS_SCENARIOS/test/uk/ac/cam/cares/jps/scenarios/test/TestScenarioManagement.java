@@ -1,12 +1,12 @@
 package uk.ac.cam.cares.jps.scenarios.test;
 
-import java.util.List;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.scenario.ScenarioLog;
 import uk.ac.cam.cares.jps.scenario.ScenarioManagementAgent;
 
@@ -35,14 +35,6 @@ public class TestScenarioManagement extends TestCase {
 		JSONArray joarray = jo.getJSONArray("service");
 		// operations: mock, call, read, query, delete and one from OpenWeatherMap
 		assertEquals(7, joarray.length());
-	}
-	
-	
-	public void testTmp() {
-		List<String> list = new ScenarioManagementAgent().getScenarioIRIsOLD();
-		for (String current : list) {
-			System.out.println(current);
-		}
 	}
 	
 	public void testTmp3() {
@@ -76,20 +68,41 @@ public class TestScenarioManagement extends TestCase {
 //		new ScenarioAgent().createScenarioDescription(scenarioName, agent);
 //	}
 	
-	public void testTmp7() {
 
-		//String plant = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";		
-		String plant = "C://JPS_DATA/workingdir/JPS_SCENARIO/and1/-2043594514_Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan.owl";
-		
-		//String result = new QueryBroker().readFile("C://JPS_DATA/workingdir/JPS_SCENARIO/and1/-2043594514_Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan");
-		
-		String sparqlquery = "PREFIX : <http://www.theworldavatar.com/kb/powerplants/> PREFIX powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#> PREFIX spacetimeext: <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> PREFIX system_realization: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> PREFIX system_performance: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> PREFIX technical_system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> SELECT *  WHERE { ?generation system_performance:hasEmission ?emission . ?emission system:hasValue ?emissionvalue .  ?emissionvalue system:numericalValue ?emissionvaluenum . } LIMIT 100";
-		//String sparqlquery = EmissionTestAgent.SPARQL_EMISSION;
-		
-		String result = new QueryBroker().queryFile(plant , sparqlquery);
-		
-		System.out.println(result);
-	}
+	
+//	public void testTmp6() {
+//		
+//		String path = "/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl";
+//	
+//		String cutPath = ScenarioHelper.cutHash(path);;
+//		String bucket = ScenarioHelper.getScenarioBucket(JPSConstants.SCENARIO_NAME_BASE);
+//		String hostport = KeyValueManager.get(IKeys.HOST) + "_" + KeyValueManager.get(IKeys.PORT);
+//		String localFile = bucket + "/" + hostport + cutPath;				
+//		String result =  new QueryBroker().readFile(localFile); 
+//		
+//		System.out.println(result);
+//	}
 	
 
+	public void testTmp7() {
+		String s = "{\"entries\":[{\"scenario\":\"aasc4\",\"message\":{\"extendsagent\":\"http://www.theworldavatar.com/kb/agents/Service__ScenarioAgent.owl#Service\"},\"timestamp\":\"2019-05-23 19:07:41.045-SGT\"},{\"scenario\":\"aasc4\",\"message\":{\"agent\":\"http://www.theworldavatar.com/kb/agents/Service__Nuclear.owl#Service\",\"operation\":\"mock\"},\"timestamp\":\"2019-09-10 10:31:53.378-SGT\"}]}";
+		JSONObject resultjo = new JSONObject(s);
+		
+		System.out.println(resultjo.toString(2));
+	}
+	
+	public void testTmp8() {
+		
+		String s = BucketHelper.getUsecaseUrl();
+		System.out.println(s);
+	}
+	
+	public void testTmp9() {
+		JPSContext.putScenarioUrl("http://localhost:8080/jps/scenario/13sctax");
+		JPSContext.putUsecaseUrl("http://localhost:8080/jps/scenario/13sctax/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7");
+		
+		String dataPath = QueryBroker.getLocalDataPath();
+		
+		System.out.println("path=" + dataPath);
+	}
 }

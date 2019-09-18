@@ -13,8 +13,10 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 public class TestNuclear extends TestCase {
@@ -34,7 +36,7 @@ public class TestNuclear extends TestCase {
 		new QueryBroker().put(destinationUrl, file);
 		
 		List<String> result = agent.processSimulationResult(dataPath);
-		System.out.println(result);
+		System.out.println("result from processsimulationresult=" + result);
 		assertEquals(4, result.size());
 	}
 	
@@ -42,16 +44,17 @@ public class TestNuclear extends TestCase {
 		
 		JSONObject jo = new JSONObject();
 		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
-		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
-		//usecaseUrl = "http://localhost:8080/JPS_SCENARIO/scenario/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);
+		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put(JPSConstants.RUN_SIMULATION, false);
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		
@@ -68,9 +71,12 @@ public class TestNuclear extends TestCase {
 		
 		// process the simulation result
 		jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);	
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
 		System.out.println("result from processsimulationresult=" + resultProcess);
+		jo = new JSONObject(resultProcess);
+		assertEquals(4, jo.getJSONArray("plants").length());
 	}
 }
