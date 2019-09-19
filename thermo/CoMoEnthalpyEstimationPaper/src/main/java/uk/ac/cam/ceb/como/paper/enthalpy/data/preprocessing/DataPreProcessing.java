@@ -75,6 +75,7 @@ public class DataPreProcessing {
      * @param validReaction  The set of valid reactions that is generated in pre-processing step.
      * @param invalidReaction The set of invalid reactions that is generated in pre-processing step.
      * @throws Exception the exception.
+     * 
      */
     public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, Set<Species> validSpecies,  Set<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
     	 
@@ -92,9 +93,11 @@ public class DataPreProcessing {
                 
         		System.out.println("Process configuration " + config);
                 
-                if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+//                if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+        		  if (new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
                 	
-                    System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
+//                    System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
+        			  System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
                     
                     continue;
                 }
@@ -102,6 +105,8 @@ public class DataPreProcessing {
                 Collections.shuffle(refSpecies);
                 
                 int ctr = 1;  
+                
+                System.out.println("refSpecies.isEmpty() (getPreProcessingCorssValidation) : " +refSpecies.isEmpty());
                 
                 for (Species target : refSpecies) {
 
@@ -112,7 +117,8 @@ public class DataPreProcessing {
                 
                     ctr++;
 
-                    if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+//                    if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+                    if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
                     	continue;
                     }
@@ -120,6 +126,8 @@ public class DataPreProcessing {
                     List<Species> refPool = new ArrayList<>();
                     
                     refPool.addAll(refSpecies);
+                    
+                    System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation) : " +refPool.isEmpty());
                     
                     refPool.remove(target);
                     
@@ -246,13 +254,16 @@ public class DataPreProcessing {
                             }
                         }
 
-                        if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
+//                        if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
+                        if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
-                        new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
+//                        new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
+                        	new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
-                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));                            
+//                      ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));                            
+                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
                          * 
@@ -260,7 +271,8 @@ public class DataPreProcessing {
                          * 
                          */
                         
-                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+//                      SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
                         if (!completeRList.isEmpty()) {
@@ -340,7 +352,8 @@ public class DataPreProcessing {
                     
                     writer.overwrite(true);
                     
-                    writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+//                    writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+                    writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
                     
                     writer.write();
                     

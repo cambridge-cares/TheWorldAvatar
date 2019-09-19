@@ -2,7 +2,6 @@ package uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -102,8 +101,6 @@ public class ErrorBarCalculation {
  * @throws IOException The IO exception.
  */
 public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, Set<Species> invalidSpeciesSet, Set<Species> validSpeciesSet) throws IOException {
-	 	
-	System.out.println("Remaining invalid species after ("+ loop + ") loop: " + invalidSpeciesSet.size());
 	
 	 	for(Species invs: invalidSpeciesSet) {
 	         
@@ -226,23 +223,23 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
      * @param invalidSpeciesErrorBarMap The hash map that contains species names from invalid list of species and their error bars.
      * @return maximum error bar.
      */
-    public double getMaximumErrorBar(Map<Species, Double> invalidSpeciesErrorBarMap) {
-    	
-    	 double maxErrorBar = Collections.max(invalidSpeciesErrorBarMap.values());
-         
-         for(Map.Entry<Species,Double> invspeciesMap : invalidSpeciesErrorBarMap.entrySet()) {
-        
-        	 if(invspeciesMap.getValue()==maxErrorBar) {
-        		 
-       		 System.out.println("Species name : " + invspeciesMap.getKey().getRef() + " error bar from map : " +  invspeciesMap.getValue() + " max error bar: " + maxErrorBar);
-        		 
-        	 break;
-        	 }
-        	 
-        }
-         
-return maxErrorBar;
-
-    }
+//    public double getMaximumErrorBar(Map<Species, Double> invalidSpeciesErrorBarMap) {
+//    	
+//    	 double maxErrorBar = Collections.max(invalidSpeciesErrorBarMap.values());
+//         
+//         for(Map.Entry<Species,Double> invspeciesMap : invalidSpeciesErrorBarMap.entrySet()) {
+//        
+//        	 if(invspeciesMap.getValue()==maxErrorBar) {
+//        		 
+//       		 System.out.println("Species name : " + invspeciesMap.getKey().getRef() + " error bar from map : " +  invspeciesMap.getValue() + " max error bar: " + maxErrorBar);
+//        		 
+//        	 break;
+//        	 }
+//        	 
+//        }
+//         
+//return maxErrorBar;
+//
+//    }
     
 }

@@ -59,9 +59,11 @@ public class InitialDataAnalysis {
 
 					System.out.println("Process configuration " + config);
 
-					if (new File(destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\" + iteration + "\\" + config + ".txt").exists()) {
+//					if (new File(destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_" + iteration + "\\" + config + ".txt").exists()) {
+					if (new File(destRList  + "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_" + iteration + "/" + config + ".txt").exists()) {
 
-						System.out.println("Skipping " + destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + config);
+//						System.out.println("Skipping " + destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + config);
+						System.out.println("Skipping " + destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_"+ iteration + "/" + config);
 
 						continue;
 
@@ -76,13 +78,15 @@ public class InitialDataAnalysis {
 
 						LPSolver solver = new TerminalGLPKSolver(15000, false, true);
 
-//	                      new File("C:\\Users\\pb556\\temp9\\" + target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
 
-						new File(tempFolder + "loop_" + loop +"\\" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
 
-//	                      solver.setDirectory(new File("C:\\Users\\pb556\\temp9\\" + target.getRef().replace(".g09", "") + "\\"));
+//						new File(tempFolder + "loop_" + loop +"\\"+"iteration_" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
+						new File(tempFolder + "loop_" + loop +"/"+"iteration_" + iteration +"/"+ target.getRef().replace(".g09", "") + "/.temp/").mkdirs();
 
-						solver.setDirectory(new File(tempFolder + "loop_" + loop +"\\" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\"));
+
+
+//						solver.setDirectory(new File(tempFolder + "loop_" + loop +"\\"+"iteration_" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\"));
+						solver.setDirectory(new File(tempFolder + "loop_" + loop +"/"+"iteration_" + iteration +"/"+ target.getRef().replace(".g09", "") + "/"));
 
 //	                        System.out.println("REF: Processing " + ctr + " / " + all.size());
 //	                        ctr++;
@@ -144,7 +148,8 @@ public class InitialDataAnalysis {
 						
 						ctr++;
 
-						if (new File(destRList +  "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct")
+//						if (new File(destRList +  "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct")
+						if (new File(destRList +  "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_"+ iteration + "/"+ target.getRef() + "/" + config + "_reaction-list.rct")
 								.exists()) {
 
 							continue;
@@ -269,14 +274,18 @@ public class InitialDataAnalysis {
 								}
 							}
 
-							if (!new File(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\"+ target.getRef() + "\\").exists()) {
-								new File(destRList + "initial-analysis" + "\\"+ "loop_" + loop +"\\"+ iteration + "\\" + target.getRef() + "\\").mkdirs();
+//							if (!new File(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\"+ target.getRef() + "\\").exists()) {
+//								new File(destRList + "initial-analysis" + "\\"+ "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\").mkdirs();
+								if (!new File(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_"+ iteration + "/"+ target.getRef() + "/").exists()) {
+									new File(destRList + "initial-analysis" + "/"+ "loop_" + loop +"/"+"iteration_"+ iteration + "/" + target.getRef() + "/").mkdirs();
 							}
 
 							ReactionListWriter rListWriter = new ReactionListWriter(new File(
-									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+//									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+									destRList  + "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct"));
 							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(
-									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
+//									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
+									destRList  + "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
 
 							if (!completeRList.isEmpty()) {
 								System.out.println("Writting complete reaction list...");
@@ -370,7 +379,8 @@ public class InitialDataAnalysis {
 						StringWriter writer = new StringWriter();
 						writer.setContent("completed!");
 						writer.overwrite(true);
-						writer.set(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ iteration + "\\" + config + ".txt");
+//						writer.set(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + config + ".txt");
+						writer.set(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+"iteration_"+ iteration + "/" + config + ".txt");
 						writer.write();
 						
 						

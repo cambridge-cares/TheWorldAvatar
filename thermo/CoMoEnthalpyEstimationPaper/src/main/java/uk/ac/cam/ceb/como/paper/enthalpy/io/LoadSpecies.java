@@ -12,9 +12,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesP
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.HfSpeciesConverter;
 
-public class LoadSpecies {
-
-	
+public class LoadSpecies {	
 
 	/**
 	 * 
@@ -31,12 +29,14 @@ public class LoadSpecies {
 	
 	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {	
 		 
-		 Collection<Species> invalids = new HashSet<>();
+		Collection<Species> invalids = new HashSet<>();
 		 
 		int ctr = 1;
 		
 	     /**
+	      * 
 	      * Iterates over target species collection.
+	      * 
 	      */
 		for (Species s : ref) {
 			
@@ -97,14 +97,18 @@ public class LoadSpecies {
         
         Collection<Species> ref = refParser.getRefSpecies();
         
+        System.out.println("ref.isEmpty() (LoadSpecies class)" +ref.isEmpty());
+        
 		return ref;
 	}
 	
 	/**
+	 * 
 	 * @param srcRefPoolv The path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
 	 * @param validSpecies  The set of valid species generated in pre-processing step.
 	 * @return The collection of species that are selected as valid species in pre-processing step.
 	 * @throws Exception The exception.
+	 * 
 	 */
 	public List<Species> loadReferenceSpeciesForInitialAnalysis(String srcRefPool, Set<Species> validSpecies) throws Exception{
 		
@@ -116,7 +120,7 @@ public class LoadSpecies {
 
         List<Species> intialAnalysisRefSpecies = new ArrayList<Species>();
         
-        System.out.println("Started reference species: ");
+        System.out.println("Started reference species used in pre-processing step: ");
         
         for(Species r: refSpecies) {
         	
@@ -126,9 +130,9 @@ public class LoadSpecies {
         	
         		if(vs.getRef().equals(r.getRef())) {
         			
-        		intialAnalysisRefSpecies.add(r);
-        		
+        		intialAnalysisRefSpecies.add(r);        		
         	}
+        	
         	}
         }
         
@@ -136,7 +140,7 @@ public class LoadSpecies {
         
         for(Species iars: intialAnalysisRefSpecies) {
         	
-        	System.out.println(iars.getRef());
+        	System.out.println("Species name: " + iars.getRef() + " Enthalpy of formation: " + iars.getHf());
         	
         }
         
@@ -156,14 +160,8 @@ public class LoadSpecies {
 	 * @throws Exception
 	 */
 	public void loadSpeciesPropertiesInitialAnalysis(List<Species> refSpecies, List<Species> soiSpecies, Set<Species> all, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids ) throws Exception {
-		
-//		Collection<Species> invalids = new HashSet<>();
-        
-//        Map<Species, Integer> spinMultiplicity = new HashMap<>();
         
         int ctr = 1;
-
-//        Set<Species> all = new HashSet<>();
         
         all.addAll(soiSpecies);
         all.addAll(refSpecies);
@@ -218,7 +216,7 @@ public class LoadSpecies {
         all.removeAll(invalids);
         soiSpecies.removeAll(invalids);
         
-//        SolverHelper.add(mapElPairing);
+
         
 	}
 	
