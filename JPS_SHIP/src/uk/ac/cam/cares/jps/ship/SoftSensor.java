@@ -168,7 +168,7 @@ public class SoftSensor extends HttpServlet {
 		String timeto=result.getJSONObject("timeinterval").optString("to", "none");
 		String agentiri = result.optString("agent",null);			
 
-			String resultfromfuseki = MetaDataQuery.queryResources(timefrom, timeto, agentiri);
+			String resultfromfuseki = MetaDataQuery.queryResources(agentiri, timefrom, timeto);
 			List<String[]> listmap = MatrixConverter.fromCsvToArray(resultfromfuseki);
 			
 			List<String[]>propercsv=new ArrayList<String[]>();

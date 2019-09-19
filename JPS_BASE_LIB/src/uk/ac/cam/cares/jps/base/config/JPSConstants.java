@@ -12,6 +12,7 @@ public interface JPSConstants {
 	static String SCENARIO_RESOURCE = "scenarioresource";
 	static String SCENARIO_AGENT = "scenarioagent";
 	static String SCENARIO_AGENT_OPERATION = "scenarioagentoperation";
+	static String SCENARIO_SIMULATION_TIME = "simulationtime";
 	
 	static String QUERY_SPARQL_QUERY = "sparqlquery";
 	static String QUERY_SPARQL_UPDATE = "sparqlupdate";

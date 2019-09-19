@@ -1,9 +1,22 @@
 package uk.ac.cam.cares.jps.servicespool;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -13,17 +26,6 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 @WebServlet("/ADMSAgent")
@@ -101,14 +103,18 @@ public class ADMSAgent extends JPSHttpServlet {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
 
-        String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 
-        String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
 
         startADMS(fullPath);
-        File name=new File(fullPath + "/test.levels.gst");
+        String target = fullPath + "/test.levels.gst";
+        File name=new File(target);
         if(name.length()!=0&&name.exists()) {
-        	MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);	
+        	String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
+            //String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
+        	//MetaDataAnnotator.annotateWithTimeAndAgent(target, timestamp, agent);	
+        	List<String> topics = new ArrayList<String>();
+        	topics.add(cityIRI);
+        	MetaDataAnnotator.annotate(target, null, agent, true, topics);
         }
         JSONObject responseParams = new JSONObject();
 

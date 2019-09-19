@@ -58,6 +58,14 @@ public class JPSContext {
 		return get(jo, JPSConstants.SCENARIO_USE_CASE_URL);
 	}
 	
+	public static void putSimulationTime(JSONObject jo, String value) {		
+		put(jo, JPSConstants.SCENARIO_SIMULATION_TIME, value);
+	}
+	
+	public static String getSimulationTime(JSONObject jo) {
+		return get(jo, JPSConstants.SCENARIO_SIMULATION_TIME);
+	}
+	
 	public static void put(String key, String value) {
 		 ThreadContext.put(key, value);
 	}
@@ -92,5 +100,17 @@ public class JPSContext {
 	
 	public static void removeUsecaseUrl() {
 		remove(JPSConstants.SCENARIO_USE_CASE_URL);
+	}
+	
+	public static void  putSimulationTime(String value) {
+		put(JPSConstants.SCENARIO_SIMULATION_TIME, value);
+	}
+	
+	public static String getSimulationTime() {
+		return get(JPSConstants.SCENARIO_SIMULATION_TIME);
+	}
+	
+	public static void removeSimulationTime() {
+		remove(JPSConstants.SCENARIO_SIMULATION_TIME);
 	}
 }

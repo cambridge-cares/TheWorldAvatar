@@ -44,18 +44,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentCaller {
 
-    public enum MediaType {
-        TEXT_CSV("text/csv"),
-        APPLICATION_JSON("application/json"),
-        APLICATION_SPARQL("application/sparql-results+json");
-
-        String type = null;
-
-        private MediaType(String type) {
-            this.type = type;
-        }
-    }
-
     private static final String JSON_PARAMETER_KEY = "query";
     private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
     private static String hostPort = null;
