@@ -24,6 +24,8 @@ public class Reaction {
 	private Map<Species, Double> reactantToStoichiometry = new HashMap<Species, Double>();
 	private Map<Species, Double> productToStoichiometry = new HashMap<Species, Double>();
 	private final Species species;
+	
+	
 
 	/**
 	 * Create an isodesmic reaction using the specified species as a target (whose
@@ -294,9 +296,12 @@ public class Reaction {
 	}
 
 	public boolean equals(Reaction r) {
+		
 		if (!equals(productToStoichiometry, r.getProducts()) || !equals(reactantToStoichiometry, r.getReactants())) {
+			
 			return false;
 		}
+		
 		return true;
 	}
 

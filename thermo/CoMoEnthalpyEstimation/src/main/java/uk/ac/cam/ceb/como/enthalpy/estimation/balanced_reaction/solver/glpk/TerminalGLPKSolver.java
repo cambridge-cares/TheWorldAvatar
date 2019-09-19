@@ -4,9 +4,6 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LpSolverException;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibleSolutionException;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -16,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -25,15 +23,21 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LpSolverException;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibleSolutionException;
+
 /**
  *
  * @author pb556
+ * 
  */
 public class TerminalGLPKSolver extends LPSolver {
 
     private Logger logger = Logger.getLogger(getClass());
 
     public TerminalGLPKSolver() {
+    	
     }
 
     public TerminalGLPKSolver(long timeout) {
@@ -50,6 +54,9 @@ public class TerminalGLPKSolver extends LPSolver {
 
     @Override
     public Map<String, Number> solve(File lpInputFile) throws LpSolverException {
+    	
+    	
+    	
         int exitValue = Integer.MIN_VALUE;
         File tmp = getTempFile();
         Map<String, Object> map = new HashMap<String, Object>();
@@ -57,7 +64,11 @@ public class TerminalGLPKSolver extends LPSolver {
         //map.put("glpsol", "glpsol");
         //new File(getClass().getResource("").getPath());
         
-        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol");
+//          map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); - Philipp's
+//        map.put("./glpsol","glpk-4.65/bin/");
+          map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
+        
+        
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
         map.put("input_par", "--freemps");
@@ -66,12 +77,17 @@ public class TerminalGLPKSolver extends LPSolver {
         map.put("output", tmp.getAbsolutePath());
 
         CommandLine commandLine = CommandLine.parse("${glpsol} ${input_par} ${input} ${output_par} ${output}", map);
+        
+        System.out.println("Command line to be executed --> " + commandLine);
+        
         logger.trace("Command line to be executed --> " + commandLine);
 
         Executor executor = new DefaultExecutor();
+        
         if (lpInputFile.getParentFile().canWrite()) {
             executor.setWorkingDirectory(lpInputFile.getParentFile());
         }
+        
         executor.setExitValue(0);
 
         // create a watchdog if requested
@@ -80,11 +96,17 @@ public class TerminalGLPKSolver extends LPSolver {
         PumpStreamHandler psh = new PumpStreamHandler(stdout);
         executor.setStreamHandler(psh);
         executor.setWatchdog(watchdog);
+        
         try {
+        	
             exitValue = executor.execute(commandLine);
+            
             if (!executor.isFailure(exitValue)) {
+            	
                 return parseLpSolveOutput(stdout, tmp);
+                
             }
+            
             return new HashMap<String, Number>();
         } catch (ExecuteException ex) {
             throw new LpSolverException("Failed to execute the command (exit value = " + exitValue + ") : " + commandLine, ex);

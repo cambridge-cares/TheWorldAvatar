@@ -67,7 +67,7 @@ public class SpeciesPoolParser extends CSVParser {
                         
                         s.setTotalEnergy(Double.parseDouble(line[1]));
                         
-                        System.out.println("inside public void parse(), SpeciesPoolParser: s.getTotalEnergy(): " + s.getTotalEnergy());
+//                        System.out.println("inside public void parse(), SpeciesPoolParser: s.getTotalEnergy(): " + s.getTotalEnergy());
                                               
                         parseMassBalance(s, line[3]);
                         
