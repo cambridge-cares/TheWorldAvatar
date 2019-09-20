@@ -45,7 +45,9 @@ public class ShipAgent extends HttpServlet {
     private void savefile(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
 
         String filePath2= iriOfChimney.replaceAll("http://www.theworldavatar.com/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
+        filePath2= filePath2.replaceAll("http://www.theworldavatar.com:80/JPS_SHIP/kb", "C:/TOMCAT/webapps/ROOT/kb").split("#")[0]; //update the file locally
         System.out.println("filepath2= " + filePath2);
+        //http://www.theworldavatar.com/kb/ships/563041225/Chimney-1.owl
 
         File stockDir = new File(filePath2).getParentFile();
 
@@ -72,7 +74,7 @@ public class ShipAgent extends HttpServlet {
 
         jenaOwlModel.write(out, "RDF/XML-ABBREV");
 
-        linkChimneyToShip(iriOfChimney, mmsi);
+        //linkChimneyToShip(iriOfChimney, mmsi);
     }
 
     /**
@@ -125,6 +127,15 @@ public class ShipAgent extends HttpServlet {
         for (int b = 0; b < hmap.size(); b++) {
             String ks = hmap.get(hmap.keySet().toArray()[b].toString());
             Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + ks + "_EmissionRate");
+            if (valueofspeciesemissionrate == null) {
+            	throw new JPSRuntimeException("error that the emission rate not exist");
+            }
+            else {
+            	System.out.println(valueofspeciesemissionrate+" is exist 1");
+            	System.out.println(numval+" is exist 2");
+            	//System.out.println(jenaOwlModel+" is exist");
+            }
+            logger.info("ks emission= "+iriofchimney);
             valueofspeciesemissionrate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(Double.valueOf(0)));
         }
 
@@ -228,6 +239,9 @@ public class ShipAgent extends HttpServlet {
                     massfractionpartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] + "#MassFraction_Partial-" + a + "OfParticulate-001", massfractionclass);
                     massfractionvaluepartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] + "#V_MassFraction_Partial-" + a + "OfParticulate-001", scalarvalueclass);
                 }
+            	System.out.println(particulate1+" is exist 4");
+            	System.out.println(hasRepresentativeParticle+" is exist 5");
+            	System.out.println(partialparticulate+" is exist 6");
                 particulate1.addProperty(hasRepresentativeParticle, partialparticulate);
 
 
@@ -305,6 +319,7 @@ public class ShipAgent extends HttpServlet {
         String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)
                 + ":" + KeyValueManager.get(IKeys.PORT) + "/JPS_SHIP";
         String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
+        shipKbURL= "http://www.theworldavatar.com/kb/ships/";
         String iri = null;
         String mmsi = null;
 
@@ -392,7 +407,7 @@ public class ShipAgent extends HttpServlet {
     }
 
     private OntModel getModel(String mmsi, String shipKbURL) throws IOException {
-        OntModel jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+        OntModel jenaOwlModel = ModelFactory.createOntologyModel();//OntModelSpec.OWL_MEM);
         String shipKbDir = KeyValueManager.get(IKeys.ABSDIR_ROOT) + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
 
         File source = new File(shipKbDir + "/" + CHIMNEY + "-temp.owl");

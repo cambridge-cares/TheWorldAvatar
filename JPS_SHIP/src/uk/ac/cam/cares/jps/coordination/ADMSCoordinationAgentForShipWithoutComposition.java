@@ -65,6 +65,7 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         JSONArray newwaste;
 
         newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
+        //newwaste = getNewWasteSync(reactionMechanism, jsonShip);
 
         requestParams.put("waste", newwaste);
         requestParams.put(PARAM_KEY_SHIP, jsonShip);
@@ -106,5 +107,22 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
 
         return newwaste;
     }
+    
+    private JSONArray getNewWasteSync(String reactionMechanism, JSONObject jsonShip) {
+    	JSONArray newwaste = new JSONArray();
+        JSONArray ships = jsonShip.getJSONObject("collection").getJSONArray("items");
+        int sizeofshipselected = ships.length();
+    	
+    	        for (int i = 0; i < sizeofshipselected; i++) {
+    	            logger.info("Ship AGENT called: " + i);
+    	            JSONObject jsonReactionShip = new JSONObject();
+    	            jsonReactionShip.put("reactionmechanism", reactionMechanism);
+    	            jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
+    	            String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
+    	            String waste = new JSONObject(wasteResult).getString("waste");
+    	            newwaste.put(waste);
+    	        }
+    	        return newwaste;
+    	    }
 
 }
