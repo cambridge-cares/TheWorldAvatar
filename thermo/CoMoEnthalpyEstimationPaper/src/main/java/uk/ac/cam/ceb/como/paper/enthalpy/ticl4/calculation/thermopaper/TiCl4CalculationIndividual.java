@@ -111,13 +111,8 @@ public class TiCl4CalculationIndividual {
         	
         	Multiset<Element> element = s.getAtomMultiset();
         	
-        	for(Element e: element) {
+        	for(Element e: element) {        		
         		
-        		/**
-        		 * 
-        		 * Q: How data below are represented in csv file and where these data came from?
-        		 * 
-        		 */
         		System.out.println("Atomic number: " + e.getAtomicNumber() + ", weight: " + e.getAtomicWeight() + " group" + e.getGroup() + " mass number:  " + e.getMassNumber() + " name" + e.getName() +  " n. of neutrons : " + e.getNumberOfNeutrons());
         		System.out.println("Num. of paired electrons: " + e.getNumberOfPairedElectrons() + " num. of unpaired electrons: " + e.getNumberOfUnpairedElectrons()+ " period: " + e.getPeriod()+ " symbol: " + e.getSymbol() + " block: " + e.getBlock());
         		System.out.println("Electron configuration :" + e.getElectronConfiguration() + " | Element Category: " + e.getElementCategory() + " | Physical properties: " + e.getPhysicalProperties());

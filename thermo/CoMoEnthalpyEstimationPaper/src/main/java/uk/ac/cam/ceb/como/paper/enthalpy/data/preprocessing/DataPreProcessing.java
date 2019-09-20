@@ -3,7 +3,6 @@ package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +23,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -77,13 +76,14 @@ public class DataPreProcessing {
      * @throws Exception the exception.
      * 
      */
+	
     public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, Set<Species> validSpecies,  Set<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
     	 
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
             int maxRadical = ctrRadicals[z];
             
-//             timeout = 1500; // remove this when call this method
+//          timeout = 1500; // remove this when call this method
         
         for (int i = 0; i < ctrRuns.length; i++) {
         
@@ -102,14 +102,16 @@ public class DataPreProcessing {
                     continue;
                 }
                 
-                Collections.shuffle(refSpecies);
+        		  /**
+        		   * This line of code is used in original code. 
+        		   */
+//                Collections.shuffle(refSpecies);
                 
-                int ctr = 1;  
+                int ctr = 1;
                 
-                System.out.println("refSpecies.isEmpty() (getPreProcessingCorssValidation) : " +refSpecies.isEmpty());
+                System.out.println("refSpecies.isEmpty()(getPreProcessingCorssValidation) : " + refSpecies.isEmpty());
                 
-                for (Species target : refSpecies) {
-
+                for(Species target : refSpecies) {
                 	
                     Map<Species, Collection<ReactionList>> results = new HashMap<>();
                     
@@ -117,10 +119,11 @@ public class DataPreProcessing {
                 
                     ctr++;
 
-//                    if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+//                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                     if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
-                    	continue;
+                    continue;
+                    
                     }
 
                     List<Species> refPool = new ArrayList<>();
@@ -147,11 +150,14 @@ public class DataPreProcessing {
                         }
                     }
                     
-                    Collections.shuffle(refPool);
+                    /**
+                     * This line of code is used in original code
+                     */
+//                    Collections.shuffle(refPool);
                     
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
                     
                     poolModCalc.setMaximumSearchDepth(50);
                     
@@ -288,10 +294,16 @@ public class DataPreProcessing {
                             
                             for(int ri=0; ri<completeRList.size();ri++) {
                              
+                            	/**
+                            	 * Calculates error that is difference between calculated enthalpy of formation (Hf) for currently analyzed species and its reference enthalpy.
+                            	 */
                             double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                             
                         	System.out.println( " Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
                            
+                        	/**
+                            * If the error is lower that maximum error than the currently analyzed species species is added to the set of valid species. Otherwise the species is added into the set of invalid species.
+                            */
                         	if(error<maxErr) {
                             	
                             validReaction.put(completeRList.get(ri), error);

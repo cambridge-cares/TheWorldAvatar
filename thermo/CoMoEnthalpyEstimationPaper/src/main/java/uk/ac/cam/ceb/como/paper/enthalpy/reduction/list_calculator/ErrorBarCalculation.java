@@ -110,10 +110,6 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
 	 	       
 	 	       tempInvalidSetOfSpecies.add(invs);
 	 	       
-//	 	       Double removedSpeciesErrorBar = (Double)sortedInvalidSpeciesErrorBar.remove(invs);
-//	 	       
-//	 	       System.out.println("Removed species : " + invs.getRef() + " with error bar: " + removedSpeciesErrorBar);
-	 	       
 	 	       invalidSpeciesFile.write(invs.getRef());
 	 	       
 	            invalidSpeciesFile.write("\n");
@@ -213,33 +209,5 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
     
     return invalidSpeciesErrorBarMap;
     
-    }
-    
-    /**
-     * 
-     * @author nk510 ( caresssd@hermes.cam.ac.uk )
-     * @author am2145( am2145@cam.ac.uk )
-     * 
-     * @param invalidSpeciesErrorBarMap The hash map that contains species names from invalid list of species and their error bars.
-     * @return maximum error bar.
-     */
-//    public double getMaximumErrorBar(Map<Species, Double> invalidSpeciesErrorBarMap) {
-//    	
-//    	 double maxErrorBar = Collections.max(invalidSpeciesErrorBarMap.values());
-//         
-//         for(Map.Entry<Species,Double> invspeciesMap : invalidSpeciesErrorBarMap.entrySet()) {
-//        
-//        	 if(invspeciesMap.getValue()==maxErrorBar) {
-//        		 
-//       		 System.out.println("Species name : " + invspeciesMap.getKey().getRef() + " error bar from map : " +  invspeciesMap.getValue() + " max error bar: " + maxErrorBar);
-//        		 
-//        	 break;
-//        	 }
-//        	 
-//        }
-//         
-//return maxErrorBar;
-//
-//    }
-    
+    }    
 }

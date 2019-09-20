@@ -37,6 +37,7 @@ import uk.ac.cam.ceb.paper.sort.Sort;
  *         This code requires at least Java 1.8
  *         
  */
+
 public class LeaveOneOutCrossValidationAlgorithm {
 
 //	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
@@ -84,8 +85,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		LoadSpecies ls = new LoadSpecies();
 
-		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing);
-
+		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing);		
+		
 		System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
 		
 		LoadSolver lSolver = new LoadSolver();
@@ -99,7 +100,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		/**
 		 * 
 		 * Data pre-processing step in cross validation algorithm. Determine the error
-		 * metrics for reactions and species. Recommended a list of rejected species.
+		 * metrics for reactions and species. Recommends a list of rejected species and the list of valid species.
 		 * 
 		 */
 		dpp.getPreProcessingCorssValidation(1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
@@ -168,29 +169,16 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
 
-		invalidSpeciesErrorBar
-				.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));
-
-		/**
-		 * 
-		 * Reports a species name and its maximum error bar from the set of all error
-		 * bars of rejected species.
-		 * 
-		 */
-
-//		double error = errorBarCalculation.getMaximumErrorBar(invalidSpeciesErrorBar);
-//
-//		System.out.println("error: " + error);
+		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));	
 
 		/**
 		 * 
 		 * Sorted hash map in decreasing order comparing by error bar value in Java 1.8.
 		 * 
 		 */
-		Map<Species, Double> sortedInvalidSpeciesErrorBar = Sort
-				.sortingSpeciesMapComparingByValue(invalidSpeciesErrorBar);
+		Map<Species, Double> sortedInvalidSpeciesErrorBar = Sort.sortingSpeciesMapComparingByValue(invalidSpeciesErrorBar);
 
-		System.out.println("Sorted species:");
+		System.out.println("Sorted species compared by error bars:");
 
 		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
 
@@ -201,7 +189,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		/**
 		 * 
-		 * The code below is initial data analysis part of cross validation algorithm.
+		 * The code below runs initial data analysis part of cross validation algorithm.
 		 * 
 		 * The code iterates over sorted rejected set of species and their error bars.
 		 * For each species from the hash map the code below runs initial analysis of
@@ -225,6 +213,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * accepted species.
 		 * 
 		 */
+		
 		/**
 		 * Determines whether a species is added into valid set of species
 		 */
@@ -232,6 +221,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		
 		int  loop = 1;
 		
+		/**
+		 * Iteration that terminates when there will be not species added to the set of valid species.
+		 */
 		while(addedSpeciesToValidSet) {
 		
 		int iteration = 1;		
@@ -249,6 +241,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		
 		int tempValidSpeciesSize = tempValidSpecies.size();
 		
+		
+		/**
+		 * Iteration through a set of invalid species. 
+		 */
 		for (Map.Entry<Species, Double> errorMap : sortedInvalidSpeciesErrorBar.entrySet()) {
 			
 			    System.out.println("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
@@ -300,9 +296,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 					System.out.println(s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + s.getBondTypeMultiset());
 				}
 
-				System.out.println("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf()
-						+ " , " + errorMap.getKey().getTotalEnergy() + " , " + errorMap.getKey().getAtomMap() + " , "
-						+ errorMap.getKey().getBondTypeMultiset());
+				System.out.println("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf() + " , " + errorMap.getKey().getTotalEnergy() + " , " + errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
 
 				double targetSpeciesEnthalpy = errorMap.getKey().getHf();
 				
@@ -356,6 +350,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies);
 	
+	/**
+	 * If there are not more invalid species that will be added to valid set of species then addedSpeciesToValidSet=false; 
+	 */
 	if(tempInvalidSetOfSpecies.isEmpty()) {
 		
 		addedSpeciesToValidSet=false;
@@ -368,7 +365,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	if(addedSpeciesToValidSet) {	
 
-		System.out.println();
+		System.out.println("addedSpeciesToValidSet: " + addedSpeciesToValidSet);
 
 	} else {
 		
@@ -377,12 +374,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 	}
 	
-	System.out.println("After (" + loop + ".) it remains the following invalid species:");
+	System.out.println("After (" + loop + ".) loop the set of invalid species is:");
 	
 	for(Species s: tempInvalidSetOfSpecies) {
-		
-		System.out.println(s.getRef() + " " + s.getHf());
-		
+	
+		System.out.println(s.getRef() + " " + s.getHf());		
 	}
 	
 	loop++;
@@ -401,7 +397,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	if(tempValidSpeciesSize==validSpeciesSize) {
 	
-		System.out.println("Cross Validattion algorithm is finished (completed).");
+		System.out.println("Cross Validattion algorithm terminated (completed).");
 		
 		break;
 	}
@@ -410,12 +406,19 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 		/**
 		 * 
-		 * Terminate program
+		 * Terminates program
 		 * 
 		 */
 		System.exit(0);
 	}
 	
+	/**
+	 * 
+	 * @param validSpecies the set of valid species.
+	 * @param currentSpecies the current species.
+	 * @return true if the species that is currently in use is the member of valid set of species.
+	 *  
+	 */
 	public static boolean containsSpecies(Set<Species> validSpecies, Species currentSpecies) {
 		
 		boolean contains = false;
@@ -427,4 +430,5 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	     
 	     return contains;
 	}
+	
 }
