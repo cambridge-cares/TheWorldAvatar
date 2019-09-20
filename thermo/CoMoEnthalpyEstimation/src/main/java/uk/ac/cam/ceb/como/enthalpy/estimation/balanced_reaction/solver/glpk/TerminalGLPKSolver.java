@@ -64,10 +64,15 @@ public class TerminalGLPKSolver extends LPSolver {
         //map.put("glpsol", "glpsol");
         //new File(getClass().getResource("").getPath());
         
-//          map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); - Philipp's
-//        map.put("./glpsol","glpk-4.65/bin/");
-          map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
-        
+        /**
+         * Settings to run the code (LP solver) on local Windows machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper. 
+         */
+        //          map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); - Philipp's
+
+        /**
+         * Settings to runn the code (LP solver) on HPC. The GLPK solver should be installed on user's profile on Unix (Linux) machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/ 
+         */
+        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
         
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
@@ -78,7 +83,7 @@ public class TerminalGLPKSolver extends LPSolver {
 
         CommandLine commandLine = CommandLine.parse("${glpsol} ${input_par} ${input} ${output_par} ${output}", map);
         
-        System.out.println("Command line to be executed --> " + commandLine);
+//      System.out.println("Command line to be executed --> " + commandLine);
         
         logger.trace("Command line to be executed --> " + commandLine);
 
@@ -181,6 +186,7 @@ public class TerminalGLPKSolver extends LPSolver {
                         }
                     }
                 }
+                
                 inputStream.close();
                 bReader.close();
             }
