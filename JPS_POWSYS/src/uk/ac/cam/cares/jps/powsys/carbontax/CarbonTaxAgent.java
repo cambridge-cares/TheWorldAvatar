@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,23 +12,28 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.powsys.nuclear.NuclearGenType;
 
 @WebServlet(urlPatterns = { "/optimizeforcarbontax" })
 public class CarbonTaxAgent extends JPSHttpServlet {
 
 	private static final long serialVersionUID = -2354646810093235777L;
+	List<NuclearGenType>plant =new ArrayList<NuclearGenType>();	
 	private Logger logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
 
 	@Override
@@ -85,7 +91,22 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         System.out.println("Done");
 	}
 	
-	public void prepareCSVGeneratorParameter(String ENiri, String baseUrl) {		
+	public void prepareCSVGeneratorParameter(String ENiri, String baseUrl) {	
+		
+		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+				+ "SELECT ?entity ?vemission "
+				//+ "{graph "+"<"+iri+">"
+				//+ "{?entity  a  cp:PowerPlant  ."
+				+ "WHERE {?entity  a  cp:PowerPlant  ."
+				+ "?entity   j3:realizes ?generation ."
+				+ "?generation j5:hasEmission ?emission ." 
+				+ "?emission   j2:hasValue ?valueemission . "
+				+ "?valueemission   j2:numericalValue ?vemission ."
+				+ "}";
 
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -106,32 +127,72 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
 
 				+ "}";
-   
+		OntModel model = ENAgent.readModelGreedy(ENiri);
 		QueryBroker broker = new QueryBroker();
-		
-    	String result = broker.queryFile(ENiri, genInfo);
-    	String[] keys = {"entity", "Pmaxvalue", "plant"};
-    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+	    	
+    	ResultSet resultSet = JenaHelper.query(model, genInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
     	
 		//logger.info("number of queried lot entities = " + resultList.size());
+
+		
+    	List<String>plantname =new ArrayList<String>();	
+    	List<String[]> resultListforcsv =new ArrayList<String[]>();
+    	String[] header = {"Type","Yr","Cap","Fix","OM","Fuel","Carb","Ri","Ci","a","b","c"};
+    	String[] nuclear = {"n","7","8000000","85000","2.14","7.7","0","2","0","0","0","0"};
+		
+    	for (int i = 0; i < resultListfromquery.size(); i++) {
+    		plantname.add(resultListfromquery.get(i)[1]);
+    	}
     	
-    	IriMapper mapper= new IriMapper();
-		for (int i=0; i<resultList.size(); i++) {
-			String[] current = resultList.get(i);
-			String id = "s"+(i+1);
-			mapper.add(current[0], id, "lot");
-			current[0]=id;
+		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
+		System.out.println("uniqueplant size= "+uniqueplant.size());
+		for(int c=0;c<uniqueplant.size();c++) {
+			NuclearGenType a = new NuclearGenType(uniqueplant.get(c));
+			Double sumofinstance=0.0;
+			for (int i=0; i<resultListfromquery.size(); i++) {
+				if(resultListfromquery.get(i)[1].contentEquals(uniqueplant.get(c))) {
+					sumofinstance=sumofinstance+Double.valueOf(resultListfromquery.get(i)[2]);
+				}
+			}
+			String resultplant = broker.queryFile(uniqueplant.get(c),plantinfo);
+			String[] keysplant = {"entity", "emission"};
+	    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
+	    	
+
+			
+			a.setcapacity(sumofinstance);
+			a.setid("c"+c);
+			plant.add(a);
+			String[]current= new String[12];
+			current[0]="c"+c; //what to write there???or uniqueplant.get(c)
+			current[1]="0";
+			current[2]=""+sumofinstance;
+			current[3]="0";
+			current[4]="0";
+			current[5]="0";
+			current[6]=resultList.get(0)[1];
+			current[7]="0";
+			current[8]="0";
+			current[9]="0";
+			current[10]="0";
+			current[11]="0";
+			resultListforcsv.add(current);
 		}
-    
-		String csv = mapper.serialize();
-	    broker.put(baseUrl + "/mappingforlot.csv", csv);
+		
+	    resultListforcsv.add(0, header);
+	    resultListforcsv.add(1, nuclear);
+	    String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
+	    broker.put(baseUrl + "/Generator_Parameters.csv", s);
 	    
-	    String[] header = {"id","ys","xs","as","dcs"};
-	    resultList.add(0, header);
-	    String s = MatrixConverter.fromArraytoCsv(resultList);
-	    broker.put(baseUrl + "/inputlandlots.csv", s);
-	    
-	    logger.info("landlots input ok"); 
+	    logger.info("generator input ok"); 
 	}
 	
+	public void readResultFile(String outputfiledir) {
+		String content = new QueryBroker().readFile(outputfiledir);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content);
+		
+	}
 }
