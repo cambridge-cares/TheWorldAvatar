@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,6 +31,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
@@ -91,12 +93,18 @@ public class NuclearAgent extends JPSHttpServlet {
 			try {
 				String lotiri = jofornuc.getString("landlot");
 				String iriofnetwork = jofornuc.getString("electricalnetwork");
+//				ArrayList<String> listofplant= new ArrayList<String>();
+//				for (int c=0;c<jofornuc.getJSONArray("substitutionalpowerplants").length();c++) {
+//					listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+//				}
+				
 				boolean runGams = true;
 				if (!jofornuc.isNull(JPSConstants.RUN_SIMULATION)) {
 					runGams = jofornuc.getBoolean(JPSConstants.RUN_SIMULATION);
 				}
 				
 				String dataPath = QueryBroker.getLocalDataPath();
+				//startSimulation(lotiri, iriofnetwork,listofplant, dataPath, runGams);
 				startSimulation(lotiri, iriofnetwork, dataPath, runGams);
 				
 			} catch (JSONException | InterruptedException e) {
@@ -130,7 +138,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		}	
 	}
 	
-	public void startSimulation(String lotiri, String iriofnetwork, String dataPath, boolean runGams) throws IOException, InterruptedException {
+	public void startSimulation(String lotiri, String iriofnetwork,/*ArrayList<String>plantlist,*/ String dataPath, boolean runGams) throws IOException, InterruptedException {
 		
 		String baseUrl = dataPath + "/" + AGENT_TAG;
 		
@@ -195,6 +203,77 @@ public class NuclearAgent extends JPSHttpServlet {
 		}
 	}
 
+	public void prepareCSVPartialRemaining(ArrayList<String>plantlist,String iriofnetwork,String baseUrl) throws IOException {
+		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
+		String genplantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?entity ?plant ?Pmaxvalue ?xval ?yval "
+				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+				+ "?entity   j2:isSubsystemOf ?plant ."
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?pmax ." 
+				+ "?pmax  a  j3:PMax  ." 
+				+ "?pmax  j2:hasValue ?vpmax ."
+				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
+				+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+				+ "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+				+ "?xent j2:hasValue ?vxent ."
+				+ "?vxent   j2:numericalValue ?xval ." // xvalue
+				+ "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+				+ "?yent j2:hasValue ?vyent ."
+				+ "?vyent   j2:numericalValue ?yval ." // xvalue
+				+ "}";
+		
+		ResultSet resultSet = JenaHelper.query(model, genplantinfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		int x=0;
+		double sumcapreplaced=0;
+		List<String[]> csvresult= new ArrayList<String[]>();
+		String[]header= {"type","capacity","x","y"};
+		csvresult.add(header);
+		
+		while(x<resultList.size()) {
+			if(!plantlist.contains(resultList.get(x)[1])) {
+				System.out.println("generator remains= "+resultList.get(x)[0]);
+				System.out.println("P max= "+resultList.get(x)[2]);
+				System.out.println("x= "+resultList.get(x)[3]);
+				System.out.println("y= "+resultList.get(x)[4]);
+				String[]content= new String[4];
+				content[0]="c"+x;
+				content[1]=resultList.get(x)[2];
+				content[2]=resultList.get(x)[3];
+				content[3]=resultList.get(x)[4];
+				csvresult.add(content);
+				
+			}
+			else {
+				sumcapreplaced=sumcapreplaced+Double.valueOf(resultList.get(x)[2]);
+			}
+
+			
+			x++;
+		}
+		System.out.println("sum replaced= "+sumcapreplaced);
+		String[]content2= new String[4];
+		content2[0]="n";
+		content2[1]=""+sumcapreplaced;
+		content2[2]="0.0";
+		content2[3]="0.0";
+		csvresult.add(content2);
+		 String s = MatrixConverter.fromArraytoCsv(csvresult);
+		 QueryBroker broker = new QueryBroker();
+		 broker.put(baseUrl + "/inputgeneratorselection.csv", s);
+		
+	}
+	
 	public void prepareCSVLandlot(String lotiri, String baseUrl) {		
 
 		String lotsInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 

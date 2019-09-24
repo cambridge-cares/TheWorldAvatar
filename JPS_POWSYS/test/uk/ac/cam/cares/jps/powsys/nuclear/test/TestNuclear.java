@@ -3,8 +3,10 @@ package uk.ac.cam.cares.jps.powsys.nuclear.test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -79,4 +81,32 @@ public class TestNuclear extends TestCase {
 		jo = new JSONObject(resultProcess);
 		assertEquals(4, jo.getJSONArray("plants").length());
 	}
+	
+	public void testcallNewNuclearAgentCSVInput() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {
+		JSONObject result = new JSONObject();
+		JSONArray ja = new JSONArray();
+		ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
+		result.put("substitutionalpowerplants", ja);
+		NuclearAgent agent = new NuclearAgent();
+		
+		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
+		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		
+		ArrayList<String> listofplant= new ArrayList<String>();
+		for (int c=0;c<result.getJSONArray("substitutionalpowerplants").length();c++) {
+			listofplant.add(result.getJSONArray("substitutionalpowerplants").getString(c));
+		}
+		
+		String dataPath = QueryBroker.getLocalDataPath();
+		System.out.println("what is dataPath="+dataPath);
+		//agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
+		agent.prepareCSVPartialRemaining(listofplant,iriofnetwork,dataPath);
+		
+
+	}
+	
+	
 }
