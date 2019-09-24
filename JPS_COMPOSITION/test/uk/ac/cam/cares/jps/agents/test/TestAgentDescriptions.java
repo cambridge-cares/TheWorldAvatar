@@ -202,8 +202,10 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_POWSYS + "/NuclearAgent/startsimulation")
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
 			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
-			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plantirilist",true)
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
 			.build();
 	}
 
@@ -275,13 +277,25 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
+	private Service createDescrForAgentCarbonTaxCoord() {
+		return new ServiceBuilder()
+			.operation(null, JPS_POWSYS + "/startsimulation")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
+			.operation(null, JPS_POWSYS + "/processresult")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
+			.build();
+	}
+	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {
 		
-		Service service = createDescrForAgentScenario();
+		Service service = createDescrForAgentCarbonTaxCoord();
 		
 		String json = new Gson().toJson(service);
 		System.out.println(json);
 		
-		backAndforthAndWrite(service, "_Nuclear");
+		backAndforthAndWrite(service, "_CarbonTaxCoord");
 	}
 }

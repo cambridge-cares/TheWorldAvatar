@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.UUID;
 
-import javax.xml.crypto.Data;
-
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -80,7 +78,6 @@ public class MetaDataAnnotator implements Prefixes {
 		return replaceByUUID(sparql.toString(), "?time");
 	}
 	
-	// TODO-AE 20190626 move time method to package base.util, also corresponding test
 	public static String getTimeInXsdTimeStampFormat(long millis) { 
 		Date date = new Date(millis);
 	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
@@ -89,7 +86,6 @@ public class MetaDataAnnotator implements Prefixes {
 	    return timestamp.replace(" ", "T");
 	} 
 	
-	// TODO-AE 20190626 move time method to package base.util, also corresponding test
 	public static long getMillisFromXsdTimeStampFormat(String timestamp) { 
 		timestamp = timestamp.replace("T", " ");	
 	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 

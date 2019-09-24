@@ -40,6 +40,9 @@ public class TestScenarioMockManager extends TestCase {
 		String result = manager.execute(jo, scenarioName, "/getemission", log);
 		System.out.println("Result from first call of getemission = " + result);
 		
+		
+		
+		
 		// check that the result 178.14 was really written to the scenario log
 		List<ScenarioLogEntry> entries = log.search("output", null);
 		assertEquals(1, entries.size());

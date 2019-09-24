@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.powsys.coordination;
+package uk.ac.cam.cares.jps.powsys.retrofit;
 
 public class BusInfo {
 	String busIri;

@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -113,14 +114,22 @@ public class NuclearAgent extends JPSHttpServlet {
 		} else if ("/NuclearAgent/processresult".equals(path)) {
 			
 			try {
+				JSONObject jo = AgentCaller.readJsonParameter(request);
 				String scenarioUrl = BucketHelper.getScenarioUrl();
 				String usecaseUrl = BucketHelper.getUsecaseUrl();
 				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 				
 				String dataPath = QueryBroker.getLocalDataPath();
-				List<String> result = processSimulationResult(dataPath);
-				JSONObject resultjson = new JSONObject().put("plantirilist", result);
-				AgentCaller.printToResponse(resultjson.toString(), response);	
+				List<String> plants = processSimulationResult(dataPath);
+				JSONArray plantsja = new JSONArray(plants);
+				jo.put("plants", plantsja);
+				
+				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
+				AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString());
+				
+				// no need to return jo or plants here; this is just for asserting the simulation result in a junit test
+				AgentCaller.printToResponse(jo, response);	
+				
 			} catch (NumberFormatException | URISyntaxException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
