@@ -6,8 +6,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -15,18 +13,13 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
-import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
-import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 
 public class TestNuclear extends TestCase {
 
@@ -89,7 +82,7 @@ public class TestNuclear extends TestCase {
 		assertEquals(4, jo.getJSONArray("plants").length());
 	}
 	
-	public void testcallNewNuclearAgent() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {
+	public void testcallNewNuclearAgentCSVInput() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {
 		JSONObject result = new JSONObject();
 		JSONArray ja = new JSONArray();
 		ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
@@ -110,79 +103,10 @@ public class TestNuclear extends TestCase {
 		String dataPath = QueryBroker.getLocalDataPath();
 		System.out.println("what is dataPath="+dataPath);
 		//agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
-		prepareCSVPartialRemaining(listofplant,iriofnetwork,dataPath);
+		agent.prepareCSVPartialRemaining(listofplant,iriofnetwork,dataPath);
 		
 
 	}
 	
-	public void prepareCSVPartialRemaining(ArrayList<String>plantlist,String iriofnetwork,String baseUrl) throws IOException {
-		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
-		String genplantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?entity ?plant ?Pmaxvalue ?xval ?yval "
-				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
-				+ "?entity   j2:isSubsystemOf ?plant ."
-				+ "?entity   j2:isModeledBy ?model ."
-				+ "?model   j5:hasModelVariable ?pmax ." 
-				+ "?pmax  a  j3:PMax  ." 
-				+ "?pmax  j2:hasValue ?vpmax ."
-				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
-				+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
-				+ "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
-				+ "?xent j2:hasValue ?vxent ."
-				+ "?vxent   j2:numericalValue ?xval ." // xvalue
-				+ "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
-				+ "?yent j2:hasValue ?vyent ."
-				+ "?vyent   j2:numericalValue ?yval ." // xvalue
-				+ "}";
-		
-		ResultSet resultSet = JenaHelper.query(model, genplantinfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		int x=0;
-		double sumcapreplaced=0;
-		List<String[]> csvresult= new ArrayList<String[]>();
-		String[]header= {"type","capacity","x","y"};
-		csvresult.add(header);
-		
-		while(x<resultList.size()) {
-			if(!plantlist.contains(resultList.get(x)[1])) {
-				System.out.println("generator remains= "+resultList.get(x)[0]);
-				System.out.println("P max= "+resultList.get(x)[2]);
-				System.out.println("x= "+resultList.get(x)[3]);
-				System.out.println("y= "+resultList.get(x)[4]);
-				String[]content= new String[4];
-				content[0]="c"+x;
-				content[1]=resultList.get(x)[2];
-				content[2]=resultList.get(x)[3];
-				content[3]=resultList.get(x)[4];
-				csvresult.add(content);
-				
-			}
-			else {
-				sumcapreplaced=sumcapreplaced+Double.valueOf(resultList.get(x)[2]);
-			}
-
-			
-			x++;
-		}
-		System.out.println("sum replaced= "+sumcapreplaced);
-		String[]content2= new String[4];
-		content2[0]="n";
-		content2[1]=""+sumcapreplaced;
-		content2[2]="0.0";
-		content2[3]="0.0";
-		csvresult.add(content2);
-		 String s = MatrixConverter.fromArraytoCsv(csvresult);
-		 QueryBroker broker = new QueryBroker();
-		 broker.put(baseUrl + "/inputgeneratorselection.csv", s);
-		
-	}
+	
 }
