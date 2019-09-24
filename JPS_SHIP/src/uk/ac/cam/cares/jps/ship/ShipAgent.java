@@ -1,25 +1,5 @@
 package uk.ac.cam.cares.jps.ship;
 
-import org.apache.jena.ontology.*;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.ship.listener.LocalEntityManagerFactory;
-import uk.ac.cam.cares.jps.ship.model.ShipEntity;
-
-import javax.persistence.EntityManager;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +9,38 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import javax.persistence.EntityManager;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
+import org.apache.jena.ontology.OntClass;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.ship.listener.LocalEntityManagerFactory;
+import uk.ac.cam.cares.jps.ship.model.ShipEntity;
 
 /**
  * Servlet implementation class ShipAgent
@@ -61,7 +73,7 @@ public class ShipAgent extends HttpServlet {
             if (listOfFiles != null) {
                 for (File listOfFile : listOfFiles) {
                     if (!listOfFile.delete()) {
-                        throw new IOException("Could not clean up: " + stockdir);
+                        throw new IOException("Could not clean up: " + stockdir+",the fle called= "+listOfFile);
                     }
                 }
             }
@@ -74,7 +86,7 @@ public class ShipAgent extends HttpServlet {
 
         jenaOwlModel.write(out, "RDF/XML-ABBREV");
 
-        //linkChimneyToShip(iriOfChimney, mmsi);
+        //linkChimneyToShip(iriOfChimney, mmsi);  ---->>>need to be disabled for the purpose of test
     }
 
     /**
@@ -239,9 +251,9 @@ public class ShipAgent extends HttpServlet {
                     massfractionpartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] + "#MassFraction_Partial-" + a + "OfParticulate-001", massfractionclass);
                     massfractionvaluepartialparticulate = jenaOwlModel.createIndividual(iriofchimney.split("#")[0] + "#V_MassFraction_Partial-" + a + "OfParticulate-001", scalarvalueclass);
                 }
-            	System.out.println(particulate1+" is exist 4");
-            	System.out.println(hasRepresentativeParticle+" is exist 5");
-            	System.out.println(partialparticulate+" is exist 6");
+//            	System.out.println(particulate1+" is exist 4");
+//            	System.out.println(hasRepresentativeParticle+" is exist 5");
+//            	System.out.println(partialparticulate+" is exist 6");
                 particulate1.addProperty(hasRepresentativeParticle, partialparticulate);
 
 
