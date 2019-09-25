@@ -156,7 +156,7 @@ this.deviceMap = (function initDeviceMap() {
 })();
 this.colorMap = new ColorMap();
 //bind initmap to global
-this.animatedLines = [];
+animatedLines = [];
 window.initMap = this.initMap.bind(this);
 }
 
@@ -776,7 +776,7 @@ drawLines:function(){
 
                 });
                 self.animateCircle(line,1);
-                animatedLines.push(line)
+                animatedLines.push(line);
                 }
             else if(_type === 'transformer'){
                 console.log('_path',_path);
@@ -810,7 +810,8 @@ drawLines:function(){
                     });
 
                 });
-                animatedLines.push(transformer);
+                
+                animatedLines.push(line);
             }
         
 
@@ -839,9 +840,7 @@ animateCircle: function(line,timeOut) {
         line.set('icons', icons);
     }, timeOut);
 },
-clearGenerator: function(){
-    kmlLayer.setMap(null);
-},
+
 /**
 update markers 
 @parans:
@@ -1225,56 +1224,15 @@ drawAnimatedLines : function (list) {
 
     });
 },
-/**
- * Draw a single animated line
- * @param vertexs
- */
-drawAnimatedLine : function (vertexs) {
-    var lineSymbol = {
-        path: "M 0 0 L 0 0 L 0 50 " ,
-        scale: 0.1,
-        strokeColor: '#cc0015',
-        strokeWeight: 10
-    };
-
-    var line = new google.maps.Polyline({
-        path: vertexs,
-        icons: [{
-            icon: lineSymbol,
-            offset: '100%'
-        },
-            {
-                icon: lineSymbol,
-                offset: '100%'
-            },
-            {
-                icon: lineSymbol,
-                offset: '100%'
-            },
-            {
-                icon: lineSymbol,
-                offset: '100%'
-            },{
-                icon: lineSymbol,
-                offset: '100%'
-            }
-
-            ],
-        map: this.googleMap
-    });
-    this.animatedLines = this.animatedLines?this.animatedLines:[];
-    this.animatedLines.push(line);
-    this.animateLine(line)
-},
 
 clearAnimatedLines: function () {
-    if( animatedLines.length != 0){
-        animatedLines.forEach((line)=>
-        {
-            line.setMap(null);
-            line= null;
-        })
-    }
+  animatedLines.forEach((line)=>
+  {
+      line.setMap(null);
+      line= null;
+  })
+
+    animatedLines = []
 },
 animateLine : function (line) {
     var count = 0, step = 20;
