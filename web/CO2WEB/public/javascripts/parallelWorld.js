@@ -20,10 +20,6 @@
         }
     });
 
-    //get each value defined
-    let costFactor = $("#costF")
-    let riskFactor = $("#riskF")
-    let excessFactor = $("#excessF")
 
     //TODO: submit button that sends out simulation
     let runBtn = $("#run-btn");
@@ -45,7 +41,6 @@
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
         console.log('predefinedID = ', predefinedId)
-        ppMap.clearGenerator();
         ppMap.clearAnimatedLines();
         if (predefinedId == '0') {
             ppMap.drawLines( { "electricalnetwork":'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork' });
