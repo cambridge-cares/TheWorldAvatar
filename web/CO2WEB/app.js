@@ -43,8 +43,9 @@ var ppMap = require('./routes/mapPowerPlant');
 
 var semakauMap = require("./routes/mapSemakau")
 //var b3Map = require("./routes/mapB3")
-var b2Map = require("./routes/mapB2")
-var ppalt = require("./routes/mapPPAlt")
+var b2Map = require("./routes/mapB2");
+var ppalt = require("./routes/mapPPAlt");
+var parallelWorld = require('./routes/parallelWorld');
 
 var literalData = require('./agents/GetLiteralData');
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
@@ -77,7 +78,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
 function acHeader(res){
-	  res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
+	  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
 
 }
 app.use('/visualizeAgent', visualizeAgent);
@@ -89,6 +90,7 @@ app.use('/visualizeJurong', visualizeJurong);
 app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
+app.use('/pwScenario', parallelWorld);
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
@@ -241,8 +243,8 @@ app.use(function(err, req, res, next) {
 /********************/
 
 
-http.listen(port, function () {
+app.listen(port, function () {
   console.log('Server listening on port '+port);
 });
 
-module.exports = http;
+module.exports = app;
