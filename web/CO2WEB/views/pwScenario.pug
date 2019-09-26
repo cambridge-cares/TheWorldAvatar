@@ -40,34 +40,13 @@ block content
 
                             div#text-panel
                                 select#predefined-select
-                                    option(value='1') Current Status of OWL Files
+                                    option(value='1') Base Scenario
                                     option(value='2') Optimum PowerFlow (OPF)
                                     option(value='3') PowerFlow (PF)
-                                //- table
-                                //-     tr
-                                //-         td risk factor
-                                //-         td
-                                //-             input(type='text' id='riskF' contenteditable='false')
-                                //-     tr
-                                //-         td cost factor
-                                //-         td
-                                //-             input(type='text' id='costF' contenteditable='false')
-                                //-     tr
-                                //-         td excess factor(%)
-                                //-         td
-                                //-             input(type='text' id='excessF' contenteditable='false')
                             br
                             button#run-btn.btn.btn-primary Run Simulation
                             div#result-panel
                             div#draw-panel
-                            //- | 
-                            //- .btn-group.btn-group-toggle(data-toggle='buttons')
-                            //- label.btn.btn-secondary.active
-                            //-     input#option1(type='radio', name='myRadios', autocomplete='off', value='Current')
-                            //-     |  Current
-                            //- label.btn.btn-secondary
-                            //-     input#option2(type='radio', name='myRadios', autocomplete='off', value="Modified")
-                            //-     |  Modified
                            
     div#map
     script(src="https://code.jquery.com/jquery-2.2.0.min.js")
