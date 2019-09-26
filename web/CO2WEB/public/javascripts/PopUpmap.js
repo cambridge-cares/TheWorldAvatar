@@ -160,7 +160,7 @@ animatedLines = [];
 window.initMap = this.initMap.bind(this);
 }
 
-
+var  kmlLayer;
 function drawGenerator(specificURL){
     var d = new Date();
     var n = d.getTime();
@@ -186,7 +186,7 @@ function drawGenerator(specificURL){
     request.done( function(data) {
     console.log ("success create request");
     kmlLayer = new google.maps.KmlLayer({
-        url: specificURL,
+        url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',
         suppressInfoWindows: false,
         map: map
     });
@@ -675,11 +675,11 @@ initMap: function () {
             console.log("Can not get location")
         }
     });
-    kmlLayer = new google.maps.KmlLayer({
-        url: '',
-        suppressInfoWindows: true,
-        map: map
-      });
+    // kmlLayer = new google.maps.KmlLayer({
+    //     url: '',
+    //     suppressInfoWindows: true,
+    //     map: map
+    //   });
       animatedLines = []
 },
 
@@ -721,7 +721,8 @@ drawLines:function(){
     //console.log('lines',lines);
 
     var infowindow = new google.maps.InfoWindow({
-        content: '<h2>Sup!</h2>'
+        content: '<h2>Sup!</h2>',
+        disableAutoPan: true,
     });
         for (var index in lines){ //this is focused on drawing lines
 

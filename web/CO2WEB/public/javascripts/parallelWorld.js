@@ -53,11 +53,19 @@
             ppMap.drawLines({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSCoordinatePF"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
         
         }
-        
-        var anotherURL = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
-        ppMap.drawKML(anotherURL);
+        refreshLayer();
+        // var anotherURL = 'https://sites.google.com/site/kmlfilescares/kmltest1/test2final.kml';
+        // ppMap.drawKML(anotherURL);
     }
-
+    function refreshLayer(){
+        if (kmlLayer)
+        kmlLayer.setMap(null);
+        kmlLayer = new google.maps.KmlLayer({
+            url: anotherURL+ "?r="+(new Date()).getTime(),
+            suppressInfoWindows: false,
+            map: map
+        });
+    }
     //TODO: validate this
     function validateInput() {
         return true;
