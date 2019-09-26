@@ -61,6 +61,10 @@
 							<directory>WebContent/scripts</directory>
 							<targetPath>/scripts</targetPath>
 						</resource>
+						<resource>
+							<directory>workingdir</directory>
+							<targetPath>workingdir</targetPath>
+						</resource>
 
 						<resource>
            					<directory>WebContent</directory>

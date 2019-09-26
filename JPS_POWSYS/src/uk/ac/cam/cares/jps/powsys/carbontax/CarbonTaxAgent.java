@@ -12,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
@@ -19,12 +20,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearGenType;
@@ -39,75 +40,107 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	@Override
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-	
+		
 		JSONObject jo = AgentCaller.readJsonParameter(request);
+		
+		//put the template file
+		String newdir=QueryBroker.getLocalDataPath() ;
+		String filename="time_profile.csv";
+		copyTemplate(newdir, filename);
+//		copyTemplate(newdir, "Generator_Parameters.csv");
+		prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
+		
 		BigDecimal carbontax = jo.getBigDecimal("carbontax");
-		logger.info("start optimization for carbon tax = " + carbontax);
+		prepareConstantCSV(carbontax,newdir);
 		
-		JSONObject result = new JSONObject();
-		JSONArray ja = new JSONArray();
-		ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
-		ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
-		ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
-		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_OCGT_Power_Plant_Singapore.owl#PowerSeraya_OCGT_Power_Plant_Singapore");
-		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore.owl#PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore");
-		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
-		result.put("substitutionalpowerplants", ja);
+		try {
+			logger.info("start optimization for carbon tax = " + carbontax);
+			runGAMS(newdir);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			logger.error("the gams not running successfully");
+		}
 		
+//		JSONObject result = new JSONObject();
+//		JSONArray ja = new JSONArray();
+//		ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
+//		ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
+//		ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
+//		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_OCGT_Power_Plant_Singapore.owl#PowerSeraya_OCGT_Power_Plant_Singapore");
+//		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore.owl#PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore");
+//		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
+//		result.put("substitutionalpowerplants", ja);
+		
+		JSONObject result=giveResult(newdir+"/results.csv",plant);
 		logger.info("optimization result = " + result);
-		
 		AgentCaller.printToResponse(result, response);
+		plant.clear();
+	}
+
+	public void copyTemplate(String newdir, String filename) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		
+		String destinationUrl = newdir + "/"+filename;
+		new QueryBroker().put(destinationUrl, file);
 	}
 	
-	public void runGAMS() throws IOException, InterruptedException {
-        System.out.println("Start");
-        System.out.println("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe";
-        //String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
-        String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/";
+	public void modifyTemplate(String newdir, String filename) throws IOException { 
+		String destinationUrl = newdir + "/"+filename;
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+        String fileContext = FileUtils.readFileToString(file);
+        fileContext = fileContext.replaceAll("constants.csv",newdir+"/constants.csv output="+newdir+"/constants.gdx");
+        fileContext = fileContext.replaceAll("Generator_Parameters.csv",newdir+"/Generator_Parameters.csv output="+newdir+"/Generator_Parameters.gdx");
+        fileContext = fileContext.replaceAll("time_profile.csv",newdir+"/time_profile output="+newdir+"/time_profile.gdx");
+       
+        fileContext = fileContext.replaceAll("$GDXIN constants.gdx","$GDXIN "+newdir+"/constants.gdx");
+        fileContext = fileContext.replaceAll("$GDXIN Generator_Parameters.gdx","$GDXIN "+newdir+"/Generator_Parameters.gdx");
+        fileContext = fileContext.replaceAll("$GDXIN time_profile.gdx","$GDXIN "+newdir+"/time_profile.gdx");
+        //FileUtils.write(file, fileContext);
+ 
+		
+		new QueryBroker().put(destinationUrl, fileContext);
+	}
+	
+	
+	
+	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 
+		
+		//copyTemplate(baseUrl,"constants.gdx");
+		//copyTemplate(baseUrl,"Generator_Parameters.gdx");
+		//copyTemplate(baseUrl,"time_profile.gdx");
+		//copyTemplate(baseUrl,"Final_parallel_wrld.gms");
+		//copyTemplate(baseUrl,"gmsproj.gpr");
+		
+		
+		modifyTemplate(baseUrl,"Final_parallel_wrld.gms");
+
+		
+		logger.info("Start");
+		logger.info("separator= "+File.separator);
+        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+        String folderlocation =baseUrl+"/";
+        //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
         
         cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + "final.gms";
+        cmdArray[1] = folderlocation + "Final_parallel_wrld.gms";
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
         cmdArray[4] = "LO=2";
-//      cmdArray[2] = "WDIR="+folderlocation + "TMP";
-//      cmdArray[3] = "SCRDIR="+folderlocation + "TMP";
+
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
         
-		//System.out.println(cmdArrayinstring);
-        //Process p = Runtime.getRuntime().exec(cmdArray);
-		   //p.waitFor();
-		String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
-		
-		ArrayList<String> groupcommand= new ArrayList<String>();
-		groupcommand.add("start");
-		groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat");
-		
-		CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
-//		CommandHelper.executeCommands(folderlocation, groupcommand);   
-        System.out.println("Done");
+        logger.info(cmdArrayinstring);
+        Process p = Runtime.getRuntime().exec(cmdArray);
+		   p.waitFor();
+         
+		   logger.info("Done");
 	}
 	
 	public void prepareCSVGeneratorParameter(String ENiri, String baseUrl) {	
 		
-		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-				+ "SELECT ?entity ?vemission "
-				//+ "{graph "+"<"+iri+">"
-				//+ "{?entity  a  cp:PowerPlant  ."
-				+ "WHERE {?entity  a  cp:PowerPlant  ."
-				+ "?entity   j3:realizes ?generation ."
-				+ "?generation j5:hasEmission ?emission ." 
-				+ "?emission   j2:hasValue ?valueemission . "
-				+ "?valueemission   j2:numericalValue ?vemission ."
-				+ "}";
-
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -127,6 +160,21 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
 
 				+ "}";
+		
+		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+				+ "SELECT ?entity ?vemission "
+				+ "WHERE {?entity  a  cp:PowerPlant  ."
+				+ "?entity   j3:realizes ?generation ."
+				+ "?generation j5:hasEmission ?emission ." 
+				+ "?emission   j2:hasValue ?valueemission . "
+				+ "?valueemission   j2:numericalValue ?vemission ."
+				+ "}";
+		
+		
 		OntModel model = ENAgent.readModelGreedy(ENiri);
 		QueryBroker broker = new QueryBroker();
 	    	
@@ -158,9 +206,10 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				}
 			}
 			String resultplant = broker.queryFile(uniqueplant.get(c),plantinfo);
-			String[] keysplant = {"entity", "emission"};
+			String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
 	    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
-	    	
+//	    	System.out.println("1 result name= "+resultList.get(0)[0]);
+//	    	System.out.println("1 result carbon= "+resultList.get(0)[1]);
 
 			
 			a.setcapacity(sumofinstance);
@@ -190,9 +239,41 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	    logger.info("generator input ok"); 
 	}
 	
-	public void readResultFile(String outputfiledir) {
+	public void prepareConstantCSV(BigDecimal tax,String baseUrl) {
+		ArrayList<String[]> constant= new ArrayList<String[]> ();
+		String[]header= {"Parameter","Value"};
+		String[]delta= {"delta","0.05"};
+		String[]tau= {"tau",""+tax};
+		String[]D= {"D","0.1"};
+		String[]L= {"L","30"};
+		constant.add(header);
+		constant.add(delta);
+		constant.add(tau);
+		constant.add(D);
+		constant.add(L);
+	    String s = MatrixConverter.fromArraytoCsv(constant);
+	    new QueryBroker().put(baseUrl + "/Constants.csv", s);
+	}
+	
+	public JSONObject giveResult(String outputfiledir,List<NuclearGenType>plant) {
 		String content = new QueryBroker().readFile(outputfiledir);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content);
-		
+		int index=1;
+		ArrayList<String>removedplant=new ArrayList<String>();
+		JSONObject result = new JSONObject();
+		JSONArray ja = new JSONArray();
+		while(Double.valueOf(simulationResult.get(index)[1])<0) {
+			
+			removedplant.add(simulationResult.get(index)[0]);
+			index++;
+		}
+		for(NuclearGenType ind:plant) {
+			if(removedplant.contains(ind.getid())){
+				ja.put(ind.getnucleargen());
+			}
+			
+		}
+		result.put("substitutionalpowerplants",ja);
+		return result;	
 	}
 }
