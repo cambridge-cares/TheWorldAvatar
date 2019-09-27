@@ -193,22 +193,30 @@ public class LeaveOneOutCrossValidation implements Runnable {
                             
                         	// use Median if ArrayList
                             results.put(s, s.getHf() - sol.get(s).get(0).calculateHf());
+                            
                             resultsDetailed.put(s, sol.get(s).get(0));
                             
                             System.out.println(sol.get(s).get(0).toString());
                             
                         } catch (IndexOutOfBoundsException ioobe) {
+                        	
                             logger.warn("No result obtained for species " + s.getRef());
                         }
+                        
                         //System.out.println(s.getHf() - sol.get(s).get(0).calculateHf());
                     }
+                    
                     resultsDetailedComplete.put(s, sol.get(s));
                 }
+                
             } catch (Exception ex) {
+            	
                 logger.error(ex.getMessage(), ex);
+                
             }
         }
     }
+    
     // create the k samples
     // what algorithm for the subsampling was chosen
 //    protected Map<Integer, ObjectPool> createSubSets() {

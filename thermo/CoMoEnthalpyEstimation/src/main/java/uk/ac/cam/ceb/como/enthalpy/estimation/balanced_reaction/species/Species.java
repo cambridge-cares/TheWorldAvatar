@@ -20,16 +20,18 @@ import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 /**
  *
  * @author pb556
+ * 
  */
 public class Species {
 
     private String ref;
-    private double hf;    
+    private double hf;
     private double totalEnergy;
     private final HashMap<String, Element> atoms = new HashMap<String, Element>();
     private final Collection<Bond> bonds = new HashSet<Bond>();
     private final Multiset<String> msBondTypes = HashMultiset.create();
     private final Multiset<Element> msAtoms = HashMultiset.create();
+    
     private Logger logger = Logger.getLogger(Species.class);
     
 	/**
@@ -312,6 +314,9 @@ public class Species {
         for (Bond b : this.bonds) {
             s.addBond(b.clone());
         }
+        
+        System.out.println("Class Species: method clone(): species name: " + s.getRef() + " Hf: " + s.getHf() + " atom map: " + s.getAtomMap());
+        
         return s;
     }
 

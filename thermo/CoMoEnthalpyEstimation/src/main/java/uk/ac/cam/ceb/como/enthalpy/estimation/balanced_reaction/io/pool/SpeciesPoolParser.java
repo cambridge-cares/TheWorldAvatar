@@ -45,7 +45,7 @@ public class SpeciesPoolParser extends CSVParser {
         speciesOfInterest = new HashSet<>();
         
         CSVReader reader = new CSVReader(new FileReader(f)); //use comma as a separator
-
+        
         String[] line;
         
         int ctrLine = 1;
@@ -95,7 +95,7 @@ public class SpeciesPoolParser extends CSVParser {
                         }
                         
                         refSpecies.add(s);
-                        
+                    
                     }
                     
                 } catch (NumberFormatException nfe) {

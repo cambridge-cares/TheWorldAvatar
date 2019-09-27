@@ -59,20 +59,25 @@ public class TerminalGLPKSolver extends LPSolver {
     	
         int exitValue = Integer.MIN_VALUE;
         File tmp = getTempFile();
+        
         Map<String, Object> map = new HashMap<String, Object>();
         //map.put("glpsol", "glpsol");
         //map.put("glpsol", "glpsol");
         //new File(getClass().getResource("").getPath());
         
         /**
-         * Settings to run the code (LP solver) on local Windows machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper. 
+         * 
+         * Settings to run the code (LP solver) on local Windows machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper.
+         *  
          */
-        //          map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); - Philipp's
+        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
 
         /**
-         * Settings to runn the code (LP solver) on HPC. The GLPK solver should be installed on user's profile on Unix (Linux) machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/ 
+         * 
+         * Settings to run the code (LP solver) on HPC. The GLPK solver should be installed on user's profile on Unix (Linux) machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/
+         *  
          */
-        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
+//        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
         
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
@@ -83,13 +88,14 @@ public class TerminalGLPKSolver extends LPSolver {
 
         CommandLine commandLine = CommandLine.parse("${glpsol} ${input_par} ${input} ${output_par} ${output}", map);
         
-//      System.out.println("Command line to be executed --> " + commandLine);
+//        System.out.println("Command line to be executed --> " + commandLine);
         
         logger.trace("Command line to be executed --> " + commandLine);
 
         Executor executor = new DefaultExecutor();
         
         if (lpInputFile.getParentFile().canWrite()) {
+        	
             executor.setWorkingDirectory(lpInputFile.getParentFile());
         }
         
@@ -209,13 +215,19 @@ public class TerminalGLPKSolver extends LPSolver {
 
     private boolean isFeasible(File output) throws IOException {
         FileInputStream inputStream = new FileInputStream(output);
+        
         BufferedReader bReader = new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)));
+        
         String s;
+        
         while ((s = bReader.readLine()) != null) {
+        	
             if (s.contains("SOLUTION IS INFEASIBLE")) {
+            	
                 return false;
             }
         }
+        
         return true;
     }
 

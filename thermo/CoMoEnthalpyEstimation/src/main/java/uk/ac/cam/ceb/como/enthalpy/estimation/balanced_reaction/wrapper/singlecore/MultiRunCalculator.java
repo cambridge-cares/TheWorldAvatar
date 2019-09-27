@@ -68,22 +68,35 @@ public class MultiRunCalculator extends ObjectPoolCalculator {
 
     @Override
     public void calculate(Collection<Species> targetSpecies) throws Exception {
+    	
         if (pool == null) {
+        	
             throw new Exception("No species pool has been set.");
         }
+        
         HashMap<Species, Collection<ReactionList>> sol = new HashMap<Species, Collection<ReactionList>>();
+        
         for (Species s : targetSpecies) {
+        	
             ArrayList<ReactionList> rList = new ArrayList<ReactionList>();
+            
             for (int i = 0; i < runs; i++) {
+            	
                 calculator.set(pool);
+                
                 calculator.calculate(s);
+                
                 HashMap<Species, ReactionList> res = (HashMap<Species, ReactionList>) calculator.get();
+                
                 for (Species sp : res.keySet()) {
+                	
                     rList.add(res.get(sp));
                 }
             }
+            
             sol.put(s, rList);
         }
+        
         result = sol;
     }
 
@@ -97,38 +110,54 @@ public class MultiRunCalculator extends ObjectPoolCalculator {
 
     @Override
     public void calculate() throws Exception {
+    	
         calculate(pool.getInvalidatedObjects());
+        
     }
 
     @Override
     public Object get() {
         
     	if (selector == null) {
+    		
             return result;
         }
         
         HashMap<Species, Collection<ReactionList>> sol = new HashMap<Species, Collection<ReactionList>>();
         
         for (Species s : result.keySet()) {
-            sol.put(s, selector.select((List<ReactionList>) result.get(s)));
+        	
+        sol.put(s, selector.select((List<ReactionList>) result.get(s)));
+            
         }
         
         return sol;
     }
 
     public HashMap<Species, ReactionList> getCombinedResults() {
+    	
         if (selector == null) {
-            // combine everything to a single ReactionList object
+        	
+            //combine everything to a single ReactionList object
             HashMap<Species, ReactionList> sol = new HashMap<Species, ReactionList>();
+            
             for (Species s : result.keySet()) {
+            	
                 ReactionList combined = new ReactionList();
+                
                 for (ReactionList rList : result.get(s)) {
+                	
                     combined.addAll(rList);
+                    
                 }
+                
                 sol.put(s, combined);
             }
+            
             return sol;
+            
         }
+        
         HashMap<Species, Collection<ReactionList>> sol = new HashMap<Species, Collection<ReactionList>>();
         for (Species s : result.keySet()) {
             sol.put(s, selector.select((List<ReactionList>) result.get(s)));
