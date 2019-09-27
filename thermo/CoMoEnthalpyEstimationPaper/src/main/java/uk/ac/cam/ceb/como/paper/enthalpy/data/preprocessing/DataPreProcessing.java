@@ -15,6 +15,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.reactions.ReactionListWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
@@ -23,7 +24,8 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -38,8 +40,8 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 * 
 * - This code does pre- processing step in cross validation for selected reference set of species.
 * 
-* - In this code inputs are: 
-*    - A set of species (Gaussian files) given as reference list. 
+* - In this code inputs are:
+*    - A set of species (Gaussian files) given as reference list.
 *    - A list of target species  for which enthalpies are given. This list is given as csv file. Comments: List of target and reference species should be the same.
 *    - Maximum error that is compared with error for each generated reaction. If error  for each reaction is smaller that maximum error then that reaction is valid. Otherwise, that reaction is invalid. 
 *    - Number of runs is set to one, and number of allowed reactions that will be generated.
@@ -53,7 +55,6 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 * - Generates an initial list of invalid reactions.
 * - Generates an initial list of valid species
 * - Generates an initial list of invalid species.
-* 
 * 
 */
 
@@ -93,46 +94,131 @@ public class DataPreProcessing {
                 
         		System.out.println("Process configuration " + config);
                 
-//                if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
-        		  if (new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
+                  if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+//        		  if(new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
                 	
-//                    System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
-        			  System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
+                      System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
+//        			  System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
                     
                     continue;
                 }
                 
         		  /**
-        		   * This line of code is used in original code. 
+        		   * Commented line of code below is used in original code. 
         		   */
-//                Collections.shuffle(refSpecies);
+//                Collections.shuffle(refSpecies);  
                 
                 int ctr = 1;
                 
-                System.out.println("refSpecies.isEmpty()(getPreProcessingCorssValidation) : " + refSpecies.isEmpty());
+                System.out.println("refSpecies.isEmpty()(getPreProcessingCorssValidation method i class DataPreProcessing) : " + refSpecies.isEmpty());
                 
                 for(Species target : refSpecies) {
-                	
-                    Map<Species, Collection<ReactionList>> results = new HashMap<>();
+                	/**
+                	 * Added new HashMap<>() -> new HashMap<Species, Collection<ReactionList>>()
+                	 */
+                    Map<Species, Collection<ReactionList>> results = new HashMap<Species, Collection<ReactionList>>();
                     
                     System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                 
                     ctr++;
 
-//                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
-                    if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
+                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+//                if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
                     continue;
                     
                     }
 
-                    List<Species> refPool = new ArrayList<>();
+                  /**
+                   * 
+                   * Added: new ArrayList<>() -> new ArrayList<Species>();
+                   * 
+                   */
+                    List<Species> refPool = new ArrayList<Species>();
+                    
+//                    System.out.println("RefPool before adding refSpecies:");
+                    for(Species refP: refPool) {
+                    	
+//                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
+                    	
+                    	System.out.println("Atom multiset in refPool");
+                    	for(Element refpms : refP.getAtomMultiset()){
+                    		
+//                    		System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+                    	}
+                    	
+                    	System.out.println("Atom map in refPool:");
+                    	for(Map.Entry<String, String> atomM : refP.getAtomMap().entrySet()){
+                    		
+//                    		System.out.println(atomM.getKey() + " " + atomM.getValue());
+           
+                    	}
+                    	
+                    	System.out.println("Bond map in refPool:");
+                    	for(Bond bondM : refP.getBondMap()){
+                    		
+//                    		System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
+           
+                    	}
+                    }
                     
                     refPool.addAll(refSpecies);
                     
-                    System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation) : " +refPool.isEmpty());
+//                    System.out.println("RefPool after adding refSpecies:");
+                    System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation method i class DataPreProcessing) : " +refPool.isEmpty());
+
+                        for(Species refP: refPool) {
+                    	
+//                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
+                    	
+//                    	System.out.println("Atom multiset in refPool");
+                    	for(Element refpms : refP.getAtomMultiset()){
+                    		
+//                    	System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+                    	}
+                    	
+//                    	System.out.println("Atom map in refPool:");
+                    	for(Map.Entry<String, String> atomM : refP.getAtomMap().entrySet()){
+                    		
+//                    	System.out.println(atomM.getKey() + " " + atomM.getValue());
+           
+                    	}
+                    	
+//                    	System.out.println("Bond map in refPool:");
+                    	for(Bond bondM : refP.getBondMap()){
+                    		
+//                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
+           
+                    	}
+                    }
                     
                     refPool.remove(target);
+                    
+//                    System.out.println("RefPool after removing target species:");
+                    for(Species refP: refPool) {
+                    	
+//                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
+//                    	System.out.println("Atom multiset in refPool");
+                    	for(Element refpms : refP.getAtomMultiset()){
+                    		
+//                    		System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+                    	}
+                    	
+//                    	System.out.println("Atom map in refPool:");
+                    	for(Map.Entry<String, String> atomM : refP.getAtomMap().entrySet()){
+                    		
+//                    		System.out.println(atomM.getKey() + " " + atomM.getValue());
+           
+                    	}
+                    	
+//                    	System.out.println("Bond map in refPool:");
+                    	for(Bond bondM : refP.getBondMap()){
+                    		
+//                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
+           
+                    	}
+                    	
+                    }
                     
                     // filter for radicals
                     for (Species sSpin : spinMultiplicity.keySet()) {
@@ -149,17 +235,46 @@ public class DataPreProcessing {
                         	
                         }
                     }
-                    
+//                    System.out.println("refPool after removing species from spinMultiplicity:");
+
+                    for(Species refP: refPool) {
+                    	
+//                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
+                    	
+//                    	System.out.println("Atom multiset in refPool");
+                    	for(Element refpms : refP.getAtomMultiset()){
+                    		
+//                    	System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+                    	
+                    	}
+                    	
+//                    	System.out.println("Atom map in refPool:");
+                    	for(Map.Entry<String, String> atomM : refP.getAtomMap().entrySet()){
+                    		
+//                    	System.out.println(atomM.getKey() + " " + atomM.getValue());
+           
+                    	}
+                    	
+//                    	System.out.println("Bond map in refPool:");
+                    	for(Bond bondM : refP.getBondMap()){
+                    		
+//                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
+           
+                    	}
+                    }
+
                     /**
-                     * This line of code is used in original code
+                     * 
+                     * Commented line of code below is used in original code
+                     * 
                      */
-//                    Collections.shuffle(refPool);
+//                  Collections.shuffle(refPool);
                     
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
+                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
                     
-                    poolModCalc.setMaximumSearchDepth(50);
+                    poolModCalc.setMaximumSearchDepth(50); //50
                     
                     MultiRunCalculator c = new MultiRunCalculator(poolModCalc);
                     
@@ -260,16 +375,16 @@ public class DataPreProcessing {
                             }
                         }
 
-//                        if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
-                        if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
+                        if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
+//                        if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
-//                        new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
-                        	new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
+                        new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
+//                        	new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
-//                      ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));                            
-                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
+                      ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));                            
+//                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
                          * 
@@ -277,8 +392,8 @@ public class DataPreProcessing {
                          * 
                          */
                         
-//                      SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
-                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
+                      SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+//                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
                         if (!completeRList.isEmpty()) {
@@ -364,8 +479,8 @@ public class DataPreProcessing {
                     
                     writer.overwrite(true);
                     
-//                    writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
-                    writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
+                    writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+//                    writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
                     
                     writer.write();
                     

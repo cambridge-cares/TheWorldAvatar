@@ -30,7 +30,7 @@ public class LoadSpecies {
 	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {	
 		 
 		Collection<Species> invalids = new HashSet<>();
-		 
+		
 		int ctr = 1;
 		
 	     /**
@@ -73,9 +73,25 @@ public class LoadSpecies {
             }
         }
 		
+		System.out.println("spinMultiplicity map in LoadSpecies calss: method public List<Species> loadSpeciesProperties:");
+		
+		for(Map.Entry<Species, Integer> sspin: spinMultiplicity.entrySet()) {
+		
+		System.out.println("species name: " + sspin.getKey().getRef() + " species Hf: "+ sspin.getKey().getHf() + " spinMultiplicity value: " + sspin.getValue());
+		
+		}
+		
 		ref.removeAll(invalids);
 		
 		List<Species> refSpecies = new ArrayList<Species>(ref);
+		
+		System.out.println("refSpecies at the end of method loadSpeciesProperties");
+		
+		for(Species rsp: refSpecies) {
+			
+		System.out.println("species name: " + rsp.getRef() + " Hf: " + rsp.getHf());
+		
+		}
 		
 		return refSpecies;
 		

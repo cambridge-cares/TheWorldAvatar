@@ -40,17 +40,17 @@ import uk.ac.cam.ceb.paper.sort.Sort;
 
 public class LeaveOneOutCrossValidationAlgorithm {
 
-//	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
-	static String srcCompoundsRef = "g09/";
+	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+//	static String srcCompoundsRef = "g09/";
 
-//	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
-	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
+	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+//	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
-//	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
-	static String destRList = "ti_isg/";
+	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+//	static String destRList = "ti_isg/";
 
-//	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
-	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
+	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+//	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
@@ -67,26 +67,33 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	public static Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
 
 	/**
+	 * 
 	 * Number of runs.
+	 * 
 	 */
-	static int[] ctrRuns = new int[] { 1 };
+	static int[] ctrRuns = new int[] {1};
 
 	/**
+	 * 
 	 * Number of reactions that will be generated for each species.
+	 * 
 	 */
-	static int[] ctrRes = new int[] { 5 }; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
+	static int[] ctrRes = new int[] {5}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
 
 	/**
+	 * 
 	 * Number of radicals.
+	 * 
 	 */
-	static int[] ctrRadicals = new int[] { 100 }; // 0, 1, 2, 3, 4, 5
+	
+	static int[] ctrRadicals = new int[] {100}; // 0, 1, 2, 3, 4, 5
 
 	public static void main(String[] args) throws Exception {
 
 		LoadSpecies ls = new LoadSpecies();
 
-		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing);		
-		
+		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing);
+
 		System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
 		
 		LoadSolver lSolver = new LoadSolver();
@@ -114,8 +121,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 */
 		BufferedWriter validReactionFile = new BufferedWriter(
 				
-//				new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
-				new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
+				new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
+//				new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
 
 		System.out.println("Valid reactions writing . . . ");
 
@@ -127,8 +134,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
 		BufferedWriter invalidReactionFile = new BufferedWriter(
-//				new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
-				new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
+				new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+//				new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
 		System.out.println("Invalid reactions writing . . .");
 
@@ -142,8 +149,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		System.out.println("Valid species writing . . . ");
 
 		BufferedWriter validSpeciesFile = new BufferedWriter(
-//				new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
-				new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
+				new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
+//				new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
 
 		errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, validSpecies);
 
@@ -155,8 +162,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		System.out.println("Invalid species writing . . .");
 
 		BufferedWriter invalidSpeciesFile = new BufferedWriter(
-//				new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
-				new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+				new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+//				new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
 		errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
 
@@ -182,7 +189,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
 
-			System.out.println(ss.getKey().getRef() + " " + ss.getValue());
+		System.out.println(ss.getKey().getRef() + " " + ss.getValue());
+		
 		}
 
 		System.out.println("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
@@ -345,8 +353,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	System.out.println("Invalid species file after (" + loop+ ".) loop through invalid species list with error bar . . .");
 
-//	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
-	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+//	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies);
 	
