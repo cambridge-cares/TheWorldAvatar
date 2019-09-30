@@ -45,9 +45,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		
 		//put the template file
 		String newdir=QueryBroker.getLocalDataPath() ;
-		String filename="time_profile.csv";
-		copyTemplate(newdir, filename);
-//		copyTemplate(newdir, "Generator_Parameters.csv");
+		copyTemplate(newdir, "time_profile.csv");
 		prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
 		
 		BigDecimal carbontax = jo.getBigDecimal("carbontax");
@@ -61,17 +59,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 			e.printStackTrace();
 			logger.error("the gams not running successfully");
 		}
-		
-//		JSONObject result = new JSONObject();
-//		JSONArray ja = new JSONArray();
-//		ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
-//		ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
-//		ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
-//		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_OCGT_Power_Plant_Singapore.owl#PowerSeraya_OCGT_Power_Plant_Singapore");
-//		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore.owl#PowerSeraya_Pulau_Seraya_Oil_Power_Station_Singapore");
-//		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
-//		result.put("substitutionalpowerplants", ja);
-		
+				
 		JSONObject result=giveResult(newdir+"/results.csv",plant);
 		logger.info("optimization result = " + result);
 		AgentCaller.printToResponse(result, response);
