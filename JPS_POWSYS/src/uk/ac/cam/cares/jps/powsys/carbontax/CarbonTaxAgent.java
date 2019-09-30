@@ -105,7 +105,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 
 		
 		logger.info("Start");
-		logger.info("separator= "+File.separator);
+		//logger.info("separator= "+File.separator);
         String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
@@ -204,15 +204,16 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 			a.setid("c"+c);
 			plant.add(a);
 			String[]current= new String[12];
+			logger.info("plant added= "+a.getnucleargen());
 			current[0]="c"+c; //what to write there???or uniqueplant.get(c)
-			current[1]="0";
-			current[2]=""+sumofinstance;
-			current[3]="0";
-			current[4]="0";
-			current[5]="0";
+			current[1]="2.5"; //for pacific light; 
+			current[2]="1200000000";//pacific light; 525000000 for keppel merlimau
+			current[3]="85000"; //rand
+			current[4]="3";//rand
+			current[5]="8";//rand
 			current[6]=resultList.get(0)[1];
 			current[7]="0";
-			current[8]="0";
+			current[8]=""+sumofinstance;
 			current[9]="0";
 			current[10]="0";
 			current[11]="0";
