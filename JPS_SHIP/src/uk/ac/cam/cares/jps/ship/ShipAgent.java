@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.ship;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
@@ -411,7 +409,7 @@ public class ShipAgent extends HttpServlet {
 		 * cpirilist.add(valueiri); }
 		 */
 		if(iri2!=null) {
-			if(exists(iri2))
+			if(exists("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1"))
 			{
 				cpirilist.add("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1");
 			}
@@ -422,7 +420,7 @@ public class ShipAgent extends HttpServlet {
 				File destiny = new File("C:/TOMCAT/webapps/ROOT/kb/ships/"+iri2+"/Chimney-1.owl");
 		    	Charset charset = StandardCharsets.UTF_8;
 		    	String content = new String(Files.readAllBytes(source.toPath()), charset);		                
-		        content = content.replaceAll("http://www.theworldavatar.com/kb/ships/Chimney-1.owl", "http://www.theworldavatar.comkb/ships/"+iri2+"/Chimney-1.owl");        
+		        content = content.replaceAll("http://www.theworldavatar.com/kb/ships/Chimney-1.owl", "http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl");        
 		        Files.write(destiny.toPath(), content.getBytes(charset));	
 				//finished create owl file based on this iri()
 				cpirilist.add("http://www.theworldavatar.com/kb/ships/"+iri2+"/Chimney-1.owl#Chimney-1");	

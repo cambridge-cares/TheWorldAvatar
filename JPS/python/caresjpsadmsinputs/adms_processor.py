@@ -6,7 +6,6 @@ from collections import namedtuple
 from caresjpsutil import PythonLogger
 from config import Constants
 from adms_apl_builder import AplDirector, AdmsAplPlantBuilder, AdmsAplShipBuilder
-import geopy.distance
 
 pythonLogger = PythonLogger('adms_processor.py')
 
@@ -96,22 +95,14 @@ class AdmsProcessor(object):
 
         self.input[Constants.KEY_INDICATOR_CHEM] = 1
         self.input[Constants.KEY_INDICATOR_WET] = 1
-
-    def set_grid_size(self):
-        """
-        Calculate image resolution based on size of the selected area.
-        X, Y are equal and  calculated as function of the distance between upper and lower corner coordinates.
-        :return: None
-        """
-        distance = geopy.distance.distance(transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MAX_X],
-                                                     self.coords[Constants.KEY_MAX_Y])[::-1],
-                                           transform(self.targetCRS, self.sourceCRS, self.coords[Constants.KEY_MIN_X],
-                                                     self.coords[Constants.KEY_MIN_Y])[::-1]).km
-        # Rounds to 200 for ~35.5km distance, in case of default HK area size,
-        # and to 80 for ~4.5km distance, in case of default SG area size
-        rounded = int(round(distance * 4 + 62, -1))
-        self.input[Constants.GRD_X] = rounded
-        self.input[Constants.GRD_Y] = rounded
+        
+    def set_grid_size(self, args):
+        if str(2326) in args[6][5:]:
+            self.input[Constants.GRD_X] = 80
+            self.input[Constants.GRD_Y] = 80
+        else:
+            self.input[Constants.GRD_X] = 80
+            self.input[Constants.GRD_Y] = 80
 
     def set_input_ship_night(self):
         now = datetime.datetime.now()
@@ -189,7 +180,7 @@ class AdmsProcessor(object):
 
         self.input[Constants.KEY_BDN] = self.BDN
         self.input[Constants.KEY_COORD_SYS] = int(self.coord_sys)
-        self.set_grid_size()
+        self.set_grid_size(args)
 
     def save_apl(self, args):
         self.get_input(args)

@@ -1,19 +1,21 @@
 package uk.ac.cam.cares.jps.coordination;
 
-import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
+
+import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
 public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServlet {
@@ -57,16 +59,14 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         String resultship = AgentCaller.executeGetWithURLAndJSON(url, requestParams.toString());
 
         JSONObject jsonShip = new JSONObject(resultship);
-        int sizeofshipselected=jsonShip.getJSONObject("collection").getJSONArray("items").length();
-        
+        logger.info("amount of ship data ="+jsonShip.getJSONObject("collection").getJSONArray("items").length());
+        JSONObject jsonReactionShip = new JSONObject();
+        String reactionMechanism = requestParams.getString("reactionmechanism");
+        jsonReactionShip.put("reactionmechanism", reactionMechanism);
+        //jsonReactionShip.put(PARAM_KEY_SHIP, jsonShip.getJSONObject("collection").getJSONArray("items").get(0));
 
-
-        for (int i = 0; i < sizeofshipselected; i++) {
-            JSONObject jsonReactionShip = new JSONObject();
-            String reactionMechanism = requestParams.getString("reactionmechanism");
-            jsonReactionShip.put("reactionmechanism", reactionMechanism);
-            jsonReactionShip.put("ship", jsonShip.getJSONObject("collection").getJSONArray("items").getJSONObject(i));
-            
+        for (int i = 0; i < 1; i++) {
+        	
 
             String wasteResult = execute("/JPS_SHIP/ShipAgent", jsonReactionShip.toString());
             String waste = new JSONObject(wasteResult).getString("waste");
