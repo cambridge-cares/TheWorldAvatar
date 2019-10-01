@@ -107,17 +107,15 @@ public class ENVisualization extends JPSHttpServlet {
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
 			
 			logger.info("path called here= "+path);
-
-			
-			
 			JSONObject joforEN = AgentCaller.readJsonParameter(request);
 			String iriofnetwork = joforEN.getString("electricalnetwork");
+			logger.info("Laura   " + iriofnetwork);
 			String n=joforEN.getString("n");
 			OntModel model = readModelGreedy(iriofnetwork);
 			BufferedWriter bufferedWriter = null;
-			
 			String b = null;
-			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal.kml");
+			System.out.println("test");
+			try (FileWriter writer = new FileWriter("C://Users/LONG01/webapps/ROOT/OntoEN/testfinal.kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
 				b = createfinalKML(model);
 
@@ -169,7 +167,7 @@ public class ENVisualization extends JPSHttpServlet {
 			logger.info("uploading file");
 			
 		    //String fileName = "C:/Users/KADIT01/TOMCAT/webapps/ROOT/test2.kml";
-		    String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/en.kml";
+		    String fileName = "C:\\Users\\LONG01\\webapps\\ROOT\\OntoEN\\en.kml";
 		    String fileType = "text/xml; charset=utf-8";
 		    // Find this file id in database to get file name, and file type
 		
@@ -210,7 +208,6 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	public String createfinalKML(OntModel model) throws TransformerException {
 		ENVisualization a = new ENVisualization();
-		
 
 		// ------------FOR GENERATORS-----------------
 		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");

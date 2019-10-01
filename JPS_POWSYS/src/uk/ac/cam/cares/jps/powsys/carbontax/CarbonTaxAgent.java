@@ -118,7 +118,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		
 		logger.info("Start");
 		logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
@@ -275,5 +275,121 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		}
 		result.put("substitutionalpowerplants",ja);
 		return result;	
+	}
+	
+public void prepareCSVGeneratorParameter2(String ENiri, String baseUrl) {	
+	 String genInfo =
+				"PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?entity ?plant ?Pmaxvalue ?valueofx ?valueofy "
+
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j2:isSubsystemOf ?plant ." //plant
+
+				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."
+//				
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?pmax ." 
+				+ "?pmax  a  j3:PMax  ." 
+				+ "?pmax  j2:hasValue ?vpmax ."
+				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
+
+				+ "}";
+		
+		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+				+ "SELECT ?entity ?vemission ?fueltype "
+				+ "WHERE {?entity  a  cp:PowerPlant  ."
+				+ "?entity   j3:realizes ?generation ."
+				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
+				+ "?generation j5:hasEmission ?emission ." 
+				+ "?emission   j2:hasValue ?valueemission . "
+				+ "?valueemission   j2:numericalValue ?vemission ."
+				+ "}";
+		
+		
+		OntModel model = ENAgent.readModelGreedy(ENiri);
+		QueryBroker broker = new QueryBroker();
+	    	
+    	ResultSet resultSet = JenaHelper.query(model, genInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		
+//		logger.info("number of queried lot entities = " + resultListfromquery.size());
+
+		
+    	List<String>plantname =new ArrayList<String>();	
+    	List<String[]> resultListforcsv =new ArrayList<String[]>();
+    	String[] header = {"Type","Yr","Cap","Fix","OM","Fuel","Carb","Ri","Ci","a","b","c"};
+    	String[] nuclear = {"n","7","8000000","85000","2.14","7.7","0","2","0","0","0","0"};
+		
+    	for (int i = 0; i < resultListfromquery.size(); i++) {
+    		plantname.add(resultListfromquery.get(i)[1]);
+    	}
+    	
+		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
+		System.out.println("uniqueplant size= "+uniqueplant.size());
+		
+		for(int c=0;c<uniqueplant.size();c++) { //uniqueplant is a 142 character element
+			NuclearGenType a = new NuclearGenType(uniqueplant.get(c));
+			Double sumofinstance=0.0;
+			for (int i=0; i<resultListfromquery.size(); i++) {
+				if(resultListfromquery.get(i)[1].contentEquals(uniqueplant.get(c))) {
+					System.out.println(resultListfromquery.get(i)[1]);
+					sumofinstance=sumofinstance+Double.valueOf(resultListfromquery.get(i)[2]);
+				}
+			}
+			String resultplant = broker.queryFile(uniqueplant.get(c),plantinfo);
+			System.out.println(resultplant);
+			String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
+	    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
+	    	System.out.println("1 result name= "+resultList.get(0)[0]);
+	    	System.out.println("1 result carbon= "+resultList.get(0)[1]);
+	    	System.out.println("1 result Fuel Type= "+resultList.get(0)[2]);
+	    	
+			
+			a.setcapacity(sumofinstance);
+			a.setid("c"+c);
+			plant.add(a);
+			String[]current= new String[12];
+			current[0]="c"+c; //what to write there???or uniqueplant.get(c)
+			current[1]="0";
+			current[2]=""+sumofinstance;
+			current[3]="0";
+			current[4]="0";
+			current[5]="0";
+			current[6]= "0";
+			current[7]="0";
+			current[8]="0";
+			current[9]="0";
+			current[10]="0";
+			current[11]="0";
+			resultListforcsv.add(current);
+		}
+		
+	    resultListforcsv.add(0, header);
+	    resultListforcsv.add(1, nuclear);
+	    String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
+	    broker.put(baseUrl + "/Generator_Parameters.csv", s);
+	    
+	    logger.info("generator input ok"); 
 	}
 }
