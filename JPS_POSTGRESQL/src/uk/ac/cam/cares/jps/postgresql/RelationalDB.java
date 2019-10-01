@@ -1,12 +1,24 @@
 package uk.ac.cam.cares.jps.postgresql;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import java.sql.*;
-import java.time.Instant;
 
 //@todo: use query builder to build queries (there are many reasons for that)
 public class RelationalDB {
@@ -102,6 +114,8 @@ public class RelationalDB {
                 "ORDER BY ss DESC, al DESC, aw DESC " +
                 "LIMIT 300";
 
+   
+        
         try {
             Instant instant = Instant.now();
             long seconds = instant.getEpochSecond();
@@ -114,6 +128,9 @@ public class RelationalDB {
             pstmt.setDouble(4, xmax);
             pstmt.setLong(5, epoch_back);
             pstmt.setLong(6, epoch_back);
+            
+            System.out.println(pstmt);
+            
             results = preparedStatementResultsToJsonArray(pstmt);
         } catch (SQLException ex) {
             logger.error(ex.getMessage(), ex);
@@ -132,8 +149,69 @@ public class RelationalDB {
             }
         }
 
+        checkResults(new JSONObject(results.toString()));
+        
         return results;
     }
+    
+    private static void checkResults(JSONObject results) {
+    	
+    	System.out.println("checking the ship results set ...");
+    	
+    	try {
+    	
+	        String KEY_LAT = "lat";
+	        String KEY_LON = "lon";
+	        String KEY_MMSI = "mmsi";
+	        
+	        Map<String, Integer> mmsiCount= new HashMap<String, Integer>();
+	        int maxDuplicationNumber = 1;
+	        if (results.has(KEY_COLLECTION)) {
+	            JSONObject entities = results.getJSONObject(KEY_COLLECTION);
+	            if (entities.has(KEY_ITEMS)) {
+	                JSONArray items = entities.getJSONArray(KEY_ITEMS);
+	                for (Iterator<Object> i = items.iterator(); i.hasNext();) {
+	                    JSONObject item = (JSONObject) i.next();
+	                    if (item.has(KEY_MMSI)) {
+	                    	
+	                    	String mmsi = "" + item.getLong(KEY_MMSI);
+	                    	Integer count = mmsiCount.get(mmsi);
+	                    	if (count == null) {
+	                    		mmsiCount.put(mmsi, 1);
+	                    	} else {
+	                    		count = count + 1;
+	                    		mmsiCount.put(mmsi, count);
+	                    		if (count > maxDuplicationNumber) {
+	                    			maxDuplicationNumber = count;
+	                    		}
+	                    	}
+	                    	
+	                    } else {
+	                    	System.out.println("WARNING: no mmsi found for result entry = " + item);
+	                    }
+	                }
+	            }
+	        }
+	        
+	        if (maxDuplicationNumber > 2) {
+	        	System.out.println("WARNING: the ship result set contains a high number of duplicates, maxDuplicationNumber = " + maxDuplicationNumber);
+	        	for (String key : mmsiCount.keySet()) {
+	        		Integer count = mmsiCount.get(key);
+	        		if (count > 2) {
+	        			System.out.println("\t" + key + ", count=" + count);
+	        		}
+	        	}
+	        } else {
+	        	System.out.println("Ship results set is OK, maxDuplicationNumber = " + maxDuplicationNumber);
+	        }
+
+    	} catch (Exception exp) {
+    		System.out.println("Oops, an exepction happened during checking the result for the ship query.");
+    		System.out.println(exp);
+    		exp.printStackTrace();
+    	}
+    }
+    
 
     /**
      * Retrieves results of prepared statement and puts them, one by one, into Json array.
