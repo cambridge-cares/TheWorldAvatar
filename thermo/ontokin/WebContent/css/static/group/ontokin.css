@@ -1,0 +1,18 @@
+body {
+	background-color: #cbe1e4
+}
+.div-left {
+	background-color: #FFFFFF
+}
+
+th {
+    background-color: #cbe1e4;
+    color: #495057;
+} 
+hr.line {
+  border-top: 1px solid #cbe1e4;
+}
+
+.row-query-results {
+	white-space: nowrap;
+}
