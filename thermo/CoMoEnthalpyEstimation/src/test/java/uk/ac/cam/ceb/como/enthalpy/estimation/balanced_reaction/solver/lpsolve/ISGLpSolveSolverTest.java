@@ -4,22 +4,22 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.lpsolve;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.lpsolve.TerminalLPSolveSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
+import java.io.File;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableFactory;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.Solver;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpeciesConnectivity;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LpSolverException;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibleSolutionException;
-import java.io.File;
-
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpeciesConnectivity;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.Solver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
-import org.junit.Ignore;
-import org.junit.Test;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableFactory;
 
 /**
  *

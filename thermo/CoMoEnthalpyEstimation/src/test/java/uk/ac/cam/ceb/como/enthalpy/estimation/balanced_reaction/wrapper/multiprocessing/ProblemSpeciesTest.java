@@ -4,17 +4,22 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing;
 
+
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
@@ -22,14 +27,13 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class ProblemSpeciesTest {
 
@@ -51,8 +55,11 @@ public class ProblemSpeciesTest {
         Collections.shuffle((List<Species>) ref);
 
         ObjectPool refPool = new ObjectPool();
+        
         for (Species s : ref) {
+        	
             refPool.add(s);
+            
         }
 
 //        Model m = new Model();
@@ -67,6 +74,7 @@ public class ProblemSpeciesTest {
             HashMap<Species, ReactionList> list = (HashMap<Species, ReactionList>) calc.get();
 
             double exact = MockSpecies.getC2H4().getHf();
+            
             for (Species sp : list.keySet()) {
                 for (int i = 0; i < list.get(sp).size(); i++) {
                     System.out.println(i + ": " + list.get(sp).get(i).calculateHf());

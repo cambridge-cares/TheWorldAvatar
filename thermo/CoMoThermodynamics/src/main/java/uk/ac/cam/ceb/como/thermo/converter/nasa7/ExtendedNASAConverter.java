@@ -27,7 +27,16 @@ import uk.ac.cam.ceb.como.chem.structure.util.CompoundConverter;
 import org.xmlcml.cml.element.CMLMolecule;
 import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.structure.Atom;
-import uk.ac.cam.ceb.como.descriptor.molecular.CompoundDescriptionBuilderIntf;
+
+/*
+ * comment added 04th-April-2018 
+ */
+/**
+ * @author nk510
+ */
+
+//import uk.ac.cam.ceb.como.descriptor.molecular.CompoundDescriptionBuilderIntf;
+
 import uk.ac.cam.ceb.como.thermo.calculator.StatMechThermoCalculator;
 import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.IRStatMechThermoCalculator;
 
@@ -49,17 +58,31 @@ public class ExtendedNASAConverter {
     private String elements = "";
     private String body = "";
     private Set<Element> elementSet = new HashSet<Element>();
-    private CompoundDescriptionBuilderIntf speciesNameGenerator = null;
+    /*
+     * comment added 04th-April-2018  
+     */
+    /**
+     * @author nk510
+     */
+    
+//    private CompoundDescriptionBuilderIntf speciesNameGenerator = null;
+    
     protected StatMechThermoCalculator thermoCal;
 
     public ExtendedNASAConverter(StatMechThermoCalculator thermoCal) {
         this.thermoCal = thermoCal;
     }
 
-    public void setSpeciesNameGenerator(CompoundDescriptionBuilderIntf spGen) {
+    /**
+     * @author nk510
+     */
+
+/*     comment added 04th-April-2018
+ * 
+ *     public void setSpeciesNameGenerator(CompoundDescriptionBuilderIntf spGen) {
         this.speciesNameGenerator = spGen;
     }
-
+*/
     private void reset(String out_format) {
         out = null;
         elementSet.clear();
@@ -269,9 +292,17 @@ public class ExtendedNASAConverter {
 
                     // Set file name.
                     String sp_str = compound.getEmpiricalFormula();
+
+/**
+ * @author nk510
+ */
+                    
+/*
+ *  comment added 04th-April-2018
                     if (speciesNameGenerator != null) {
                         sp_str = speciesNameGenerator.build(compound);
                     }
+  */                  
                     if (addedSpStr.contains(sp_str)) {
                         boolean verify = true;
                         int ctr = 1;

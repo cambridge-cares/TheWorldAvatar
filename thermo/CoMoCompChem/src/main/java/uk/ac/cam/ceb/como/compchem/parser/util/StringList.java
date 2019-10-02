@@ -10,8 +10,22 @@ import java.util.List;
  */
 public class StringList extends ArrayList<String> {
 
-    public StringList(List<String> lines) {
-        addAll(lines);
+    /**
+	 * @author nk510
+	 * Added serialVersionUID
+	 * Date: 03.05.2018.
+	 */
+	
+	private static final long serialVersionUID = 1L;
+
+	public StringList(List<String> lines) {
+    
+		/**
+		 * @author nk510
+		 * Added this. Date: 03.05.2018.
+		 */
+		
+        this.addAll(lines);
     }
 
     /**

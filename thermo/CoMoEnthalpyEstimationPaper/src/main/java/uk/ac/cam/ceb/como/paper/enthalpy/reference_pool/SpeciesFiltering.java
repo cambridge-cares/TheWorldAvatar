@@ -3,11 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.reference_pool;
 
 import com.cmclinnovations.io.file.FileOperations;
 import com.cmclinnovations.io.file.filter.extension.specific.G09FileFilter;
 import com.cmclinnovations.io.file.filter.extension.specific.SdfFileFilter;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.util.Collection;
  *
  * @author pb556
  */
+
 public class SpeciesFiltering {
     
     private static String srcSdf = "C:\\Users\\pb556\\workspace\\methodology\\nist\\geom\\";

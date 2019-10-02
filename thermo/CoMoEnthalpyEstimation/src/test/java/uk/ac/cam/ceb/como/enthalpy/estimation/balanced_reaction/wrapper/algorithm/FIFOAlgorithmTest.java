@@ -4,8 +4,13 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.algorithm;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.algorithm.FIFOAlgorithm;
 import java.util.Map;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpeciesConnectivity;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
@@ -20,9 +25,6 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.ObjectPoolCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  *

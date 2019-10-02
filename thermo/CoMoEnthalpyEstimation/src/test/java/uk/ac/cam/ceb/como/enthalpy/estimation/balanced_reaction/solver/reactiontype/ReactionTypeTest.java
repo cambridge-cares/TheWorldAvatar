@@ -4,26 +4,27 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+
+import org.junit.Test;
+
+import uk.ac.cam.ceb.como.chem.periodictable.Element;
+import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpeciesConnectivity;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableFactory;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
-import uk.ac.cam.ceb.como.chem.periodictable.Element;
-import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
-import org.junit.Test;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class ReactionTypeTest {
 

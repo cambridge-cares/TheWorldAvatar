@@ -4,6 +4,16 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.validation;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
@@ -11,13 +21,6 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singleco
 import uk.ac.cam.ceb.como.math.sampler.Sampler;
 import uk.ac.cam.ceb.como.math.statistics.validation.CrossValidation;
 import uk.ac.cam.ceb.como.math.statistics.validation.CrossValidationResult;
-import com.cmclinnovations.data.collections.ObjectPool;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import org.apache.log4j.Logger;
 
 /**
  *
@@ -97,6 +100,7 @@ public class KFoldCrossValidation extends CrossValidation {
             val[i] = list.get(i).calculateHf();
             r[i] = list.get(i);
         }
+        
         // sort it
         for (int i = 0; i < val.length; i++) {
             for (int j = i + 1; j < val.length; j++) {

@@ -6,6 +6,7 @@ import uk.ac.cam.ceb.como.chem.structure.Compound;
  *
  * @author pb556
  */
+
 public interface SpeciesNameBuilder {
     /**
      * Build a species name or identifier of a given JChemDocument object.

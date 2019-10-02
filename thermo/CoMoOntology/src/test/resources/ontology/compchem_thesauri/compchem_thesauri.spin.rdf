@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:cc="http://www.xml-cml.org/dictionary/compchem/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:sp="http://spinrdf.org/sp#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:spin="http://spinrdf.org/spin#"
+    xmlns:spl="http://spinrdf.org/spl#"
+    xmlns:arg="http://spinrdf.org/arg#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.xml-cml.org/dictionary/compchem/">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://spinrdf.org/spl"/>
+    <owl:imports rdf:resource="http://topbraid.org/spin/spinmapl"/>
+    <owl:imports rdf:resource="http://www.w3.org/2004/02/skos/core"/>
+    <owl:versionInfo>Created with TopBraid Composer</owl:versionInfo>
+    <owl:imports rdf:resource="http://www.w3.org/2008/05/skos-xl"/>
+  </owl:Ontology>
+  <skos:ConceptScheme rdf:about="http://www.xml-cml.org/dictionary/compchem/csc.0">
+    <skos:prefLabel xml:lang="en">cml</skos:prefLabel>
+    <rdfs:label>Chemical Markup Language - Molecular Convention</rdfs:label>
+  </skos:ConceptScheme>
+  <skos:ConceptScheme rdf:about="http://www.xml-cml.org/dictionary/compchem/csc.1">
+    <skos:prefLabel xml:lang="en">unit type dictionary</skos:prefLabel>
+    <rdfs:label xml:lang="en">unit type dictionary</rdfs:label>
+  </skos:ConceptScheme>
+  <skos:ConceptScheme rdf:about="http://www.xml-cml.org/dictionary/compchem/csc.2">
+    <rdfs:label xml:lang="en">Computational Chemistry - Core Concepts</rdfs:label>
+    <skos:prefLabel xml:lang="en">compchem</skos:prefLabel>
+  </skos:ConceptScheme>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.2">
+    <skos:definition xml:lang="en">A job concept represents a computational job performed by quantum chemistry software, e.g. geometry optimisation job, frequency analysis job. The job concept is the smallest unit which can fully describe a general picture of computational modelling.</skos:definition>
+    <rdfs:label xml:lang="en">Job</rdfs:label>
+    <skos:prefLabel xml:lang="en">job</skos:prefLabel>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.3">
+    <rdfs:label xml:lang="en">ElementType</rdfs:label>
+    <cc:description xml:lang="en">the atomic symbol as in CML:@elementTypeS</cc:description>
+    <rdfs:isDefinedBy rdf:resource="#elementType"/>
+    <skos:prefLabel xml:lang="en">element type</skos:prefLabel>
+  </skos:Concept>
+  <owl:AnnotationProperty rdf:about="http://www.xml-cml.org/dictionary/compchem/description">
+    <skos:prefLabel>description</skos:prefLabel>
+    <rdfs:label>description</rdfs:label>
+    <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2004/02/skos/core#note"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2004/02/skos/core#Concept"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:AnnotationProperty>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.1">
+    <skos:definition xml:lang="en">A list of computational jobs. A Joblist concept in CompChem is represented by a module element with a dictRef="compchem:jobList" attribute on a module element. Such a module will be addressed as a jobList module or a jobList module element in this convention.</skos:definition>
+    <skos:prefLabel xml:lang="en">job list</skos:prefLabel>
+    <cc:description xml:lang="en">A quantum chemistry calculation is often comprised of a series of subtasks, e.g. coarse optimisation -&gt; fine optimisation -&gt; NMR Spectrum Analysis; this is because most quantum chemistry software packages are designed to be modularised and only to perform a single task at a time. The jobList concept is introduced to capture these series of successive subtasks and links the information from one subtask to the next subtask.</cc:description>
+    <rdfs:isDefinedBy rdf:resource="http://www.xml-cml.org/convention/compchem#concepts-joblist"/>
+    <rdfs:label xml:lang="en">Joblist</rdfs:label>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.8">
+    <rdfs:isDefinedBy rdf:resource="#calculation"/>
+    <skos:definition xml:lang="en">A calculation module for a computational job.</skos:definition>
+    <cc:description xml:lang="en">A calculation module represents the concept of the model calculation, optimisation or iteration processes for a computational job. Almost any computational procedure is a calculation, and calculations can be nested to any level. As an example, an SCF calculation consists of an initial guess calculation, and a number of iterative calculations, the output of the final iteration constituting the results. An SCF geometry optimisation process consists of multiple calculation steps, each of which consists of an SCF calculation, followed by a gradient calculation. A calculation must contain an initialization module, which defines&#xD;
+the inputs to the calculation (and therefore the calculation), and a finalization module, which holds all outputs. The calculation module may contain many other modules describing the process  of the calculation, but that may not necessarily be desirable as results.</cc:description>
+    <rdfs:label xml:lang="en">Calculation</rdfs:label>
+    <skos:prefLabel xml:lang="en">calculation</skos:prefLabel>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.9">
+    <cc:description>The computing environment concept refers to a hardware platform, software application, the operating system and any hardware and software configurations used in order to run the job or computational                 task. The environment includes the metadata such as machine id, username, starting and finishing date time, tools, compilers, IP, etc. This information is not related to input and output of the model but is&#xD;
+supplementary to the software application to run properly and may vary from machine to machine. Therefore, the computing environment is OPTIONAL element in the CompChem convention. {@en}&#xD;
+            </cc:description>
+    <skos:definition xml:lang="en">Module holding concepts relating to the environment that the job used or required.</skos:definition>
+    <rdfs:label xml:lang="en">Environment</rdfs:label>
+    <skos:prefLabel xml:lang="en">environment</skos:prefLabel>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.6">
+    <skos:prefLabel xml:lang="en">rotational symmetry</skos:prefLabel>
+    <rdfs:label xml:lang="en">RotationalSymmetry</rdfs:label>
+    <skos:definition xml:lang="en">The symmetry number or symmetry order of an object is the number of different but indistinguishable (or equivalent) arrangements (or views) of the object, i.e. the order of its symmetry group. In statistical&#xD;
+thermodynamics, the symmetry number corrects for any overcounting of equivalent molecular conformations in the partition function and depends on the assumptions made while deriving the partition function. As an example, the Rigid Rotor Harmonic Oscillator (RRHO) approximation treats an object, in this case a molecule, as a rigid body which does not allow certain symmetry operations like reflections or inversion. These forbidden operations need to be subtracted from the point group order in order to obtain a correct symmetry number of an object that is subject to constraints.  Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</skos:definition>
+    <rdfs:isDefinedBy rdf:resource="danieln@cmclinnovations.com"/>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.7">
+    <rdfs:label xml:lang="en">RotationalConstants</rdfs:label>
+    <skos:definition xml:lang="en">These are inversely proportional to moments of inertia and determine the magnitude of spacing between rotational energy levels. The rotational constants can be calculated from molecule's geometry and atoms it contains as eigenvalues of the moments of inertia tensor. Definition given by Dr Daniel Nurkowski &lt;danieln@cmclinnovations.com&gt;.</skos:definition>
+    <skos:prefLabel xml:lang="en">rotational constants</skos:prefLabel>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.4">
+    <rdfs:label xml:lang="en">Task</rdfs:label>
+    <skos:definition xml:lang="en">The task that is being carried out by the job or calculation. Example values are:&#xD;
+        1. energy&#xD;
+        2. frequency&#xD;
+        3. geometry_optimization&#xD;
+        4. gradient&#xD;
+        5. initial_guess&#xD;
+        6. iteration&#xD;
+        7. step</skos:definition>
+    <rdfs:isDefinedBy rdf:resource="#task"/>
+    <skos:prefLabel xml:lang="en">task</skos:prefLabel>
+    <cc:description xml:lang="en">The describes what the job or calcualtion is aiming to do. For a single SCF calculation, the task is an energy, while the task for an individual SCF iteration calculation within the SCF is an iteration.  Jobs and calculation both use the task term, although a job would only be expected to use the more general terms (such as energy or geometry_optimization).</cc:description>
+  </skos:Concept>
+  <skos:Concept rdf:about="http://www.xml-cml.org/dictionary/compchem/c.5">
+    <rdfs:label xml:lang="en">Unit</rdfs:label>
+    <skos:prefLabel xml:lang="en">unit</skos:prefLabel>
+    <skos:definition xml:lang="en">The value of which is a QName referencing the units.</skos:definition>
+    <skos:example>Kelvin, Dalton, kg,cm-1, etc.</skos:example>
+  </skos:Concept>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

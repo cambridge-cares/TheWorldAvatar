@@ -4,19 +4,21 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter;
 
-import com.cmclinnovations.data.collections.ObjectPool;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.OutlierReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 //import uk.ac.cam.ceb.como.enthalpy.calculator.solver.glpk.ISDMPSDoubleFormat;
 //import uk.ac.cam.ceb.como.enthalpy.calculator.solver.glpk.TerminalGLPKSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.validation.LeaveOneOutCrossValidation;
@@ -67,15 +69,13 @@ public class ReactionInfluenceFilter extends SpeciesFilter {
     }
 
     protected void identify() {
+    	
         boolean execute = true;
-
-
+        
         // Check if still all species can be calculated!
         // exclude only species which can be created by others
         // mark essential species which give bad results
-
-
-
+        
         invalidSpecies = new ArrayList<Species>();
         validSpecies = new ArrayList<Species>();
         while (execute) {

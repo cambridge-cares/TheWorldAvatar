@@ -11,6 +11,7 @@ import uk.ac.cam.ceb.como.math.data.DataSpace;
  *
  * @author pb556
  */
+
 public class EuclideanDistance extends NumericDistanceMeasure {
 
     @Override

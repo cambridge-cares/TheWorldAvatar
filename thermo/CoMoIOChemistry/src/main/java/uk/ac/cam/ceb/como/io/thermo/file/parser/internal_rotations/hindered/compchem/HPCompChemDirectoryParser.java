@@ -207,6 +207,7 @@ public class HPCompChemDirectoryParser extends HPDirectoryParser {
     // convert into kJ/mol
     // check if any energy is lower than the GS energy
     //      if so, throw an exception
+    
     @Override
     protected DataSpace getDataSpace() throws Exception {
         DataSpace space = new DataSpace();

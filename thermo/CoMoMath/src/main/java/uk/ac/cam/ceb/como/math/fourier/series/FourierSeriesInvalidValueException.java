@@ -8,6 +8,7 @@ package uk.ac.cam.ceb.como.math.fourier.series;
  *
  * @author pb556
  */
+
 public class FourierSeriesInvalidValueException extends Exception {
 
     public FourierSeriesInvalidValueException(Throwable cause) {

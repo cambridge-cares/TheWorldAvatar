@@ -21,12 +21,18 @@ import org.xmlcml.cml.element.CMLMolecule;
  *
  * @author pb556
  */
+/**
+ * 
+ * @author nk510
+ * Implements methods for parsing job section and archive.
+ */
 public class GeometryParser extends GaussianParser {
-    
+	
     private Logger logger = Logger.getLogger(GeometryParser.class);
 
     @Override
     public void parseSection() throws Exception {
+    	
         JobSection jobsec = this.getGeometryJobSection(this.jSections);
 
         String archiveString = GaussianHelper.extractArchive(jobsec);

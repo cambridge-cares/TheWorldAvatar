@@ -2,13 +2,16 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.io;
 
-import com.cmclinnovations.io.file.FileOperations;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.cmclinnovations.io.file.FileOperations;
+
 import uk.ac.cam.ceb.como.compchem.CompChem;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
@@ -20,7 +23,9 @@ import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWra
 /**
  *
  * @author pb556
+ * 
  */
+
 public class CSVSpeciesFileCreationFromG09 {
 
     private static String destUnscaled = "C:\\Users\\pb556\\workspace\\methodology\\diff_unscaled_kJperMol.csv";
@@ -32,20 +37,32 @@ public class CSVSpeciesFileCreationFromG09 {
     public static void main(String[] args) throws Exception {
 
         System.out.println(srcG09);
+        
         System.out.println(destUnscaled);
 
         Collection<File> files = FileOperations.ls(new File(srcG09), true);
+       
         Map<Species, String> species = new HashMap<>();
+       
         Map<Species, String> species_unscaled = new HashMap<>();
+        
         FrequencyParser parser = new FrequencyParser();
+        
         int fCtr = 1;
+        
         for (File f : files) {
+        	
             double scf = 0.0;
+            
             try {
-                System.out.println("Processing file " + fCtr + " / " + files.size());
+                
+            	System.out.println("Processing file " + fCtr + " / " + files.size());
+                
                 fCtr++;
+                
                 parser.set(f);
                 parser.parse();
+                
                 CompChem cc = (CompChem) parser.get();
                 IRCompChemWrapper ccw = new IRCompChemWrapper(cc);
 
@@ -54,7 +71,7 @@ public class CSVSpeciesFileCreationFromG09 {
                 Species sUnscaled = HfSpeciesConverter.getHfSpecies(ccw.getFinalMolecule(), id); // , id, 0.9684)
                 Species sScaled = HfSpeciesConverter.getHfSpecies(ccw.getFinalMolecule(), id); // , id, 0.9684)
 
-                // check units - all in Ha here
+                // Check units - all in Ha here
                 scf = EnergyConversion.HaTokJPerMol(ccw.getSCFEnergy());
 
                 double g09ZPE = EnergyConversion.HaTokJPerMol(ccw.getG09ZeroPointEnergy());
@@ -64,12 +81,12 @@ public class CSVSpeciesFileCreationFromG09 {
                 double zpe = EnergyConversion.HaTokJPerMol(HfSpeciesConverter.calculateZPE(ccw.getVibrationalNormalModes(), 1.0));
                 double zpeScaled = EnergyConversion.HaTokJPerMol(HfSpeciesConverter.calculateZPE(ccw.getVibrationalNormalModes(), 0.9893));
 
-//                sScaled.setHf(0.0);
-//                sScaled.setTotalEnergy(g09Thermal + scf);
-//                sUnscaled.setHf(0.0);
-//                sUnscaled.setTotalEnergy(g09Thermal + scf);
+//              sScaled.setHf(0.0);
+//              sScaled.setTotalEnergy(g09Thermal + scf);
+//              sUnscaled.setHf(0.0);
+//              sUnscaled.setTotalEnergy(g09Thermal + scf);
 
-//                System.out.println(zpe  + ", " + g09ZPE);
+//              System.out.println(zpe  + ", " + g09ZPE);
                 //System.out.println(g09Diff + ", " + (zpe + scf + g09Diff)  + ", " + (scf + g09Thermal));
                 
                 sScaled.setHf(0.0);
@@ -77,21 +94,23 @@ public class CSVSpeciesFileCreationFromG09 {
                 sUnscaled.setHf(0.0);
                 sUnscaled.setTotalEnergy(zpe + scf + g09Diff);
 //                
-////                System.out.println(zpe  + ", " + g09ZPE);
-//                System.out.println(g09Diff + ", " + (zpe + scf + g09Diff)  + ", " + (scf + g09Thermal));
+////            System.out.println(zpe  + ", " + g09ZPE);
+//              System.out.println(g09Diff + ", " + (zpe + scf + g09Diff)  + ", " + (scf + g09Thermal));
                 
-//                sScaled.setHf(0.0);
-//                sScaled.setTotalEnergy(zpeScaled + scf);
-//                sUnscaled.setHf(0.0);
-//                sUnscaled.setTotalEnergy(zpe + scf);
+//              sScaled.setHf(0.0);
+//              sScaled.setTotalEnergy(zpeScaled + scf);
+//              sUnscaled.setHf(0.0);
+//              sUnscaled.setTotalEnergy(zpe + scf);
                 
-                species.put(sScaled, "");
+                species.put(sScaled, "");                
                 species_unscaled.put(sUnscaled, id);
+                
             } catch (Exception e) {
                 System.out.println("File " + f.getName() + " could not be read!");
                 System.out.println("SCF = " + scf);
             }
         }
+        
         SpeciesPoolWriter writer = new SpeciesPoolWriter(destScaled);
         writer.set(species, true);
         writer.write();

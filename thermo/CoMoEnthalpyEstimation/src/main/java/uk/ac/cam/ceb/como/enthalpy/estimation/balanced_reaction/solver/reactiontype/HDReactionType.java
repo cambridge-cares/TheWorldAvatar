@@ -1,49 +1,65 @@
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * 
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
+import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.BondType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.homodesmotic.HomodesmoticBond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
-import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 
 /**
  *
  * @author pb556
+ * 
  */
+
 public class HDReactionType extends ReactionType {
 
     @Override
     public Collection<String> getAllConservationTypes(Species species) {
+    	
         Set<String> bonds = new HashSet<String>();
+        
         Multiset<HomodesmoticBond> bSpecies = getHomodesmoticOrbitalHybridisation(species);
+        
         for (HomodesmoticBond b : bSpecies) {
+        	
             bonds.add(b.toString());
         }
+        
         return bonds;
     }
 
     @Override
     public Collection<String> getAllConservationTypes(Collection<Species> species) {
+    	
         Set<String> bonds = new HashSet<String>();
+        
         for (Species s : species) {
+        	
             Multiset<HomodesmoticBond> bSpecies = getHomodesmoticOrbitalHybridisation(s);
+            
             for (HomodesmoticBond b : bSpecies) {
+            	
                 bonds.add(b.toString());
             }
         }
+        
         return bonds;
     }
 
@@ -53,35 +69,55 @@ public class HDReactionType extends ReactionType {
         return getConservationConstraints(species, vSet, bondTypes, new HDConservationConstraintMultisetSelector());
     }
 
-    public Multiset<HomodesmoticBond> getHomodesmoticOrbitalHybridisation(Species s) {
-        Multiset<HomodesmoticBond> bonds = HashMultiset.create();
-        for (Bond b : s.getBondMap()) {
+    public Multiset<HomodesmoticBond> getHomodesmoticOrbitalHybridisation(Species s){
+        
+    	Multiset<HomodesmoticBond> bonds = HashMultiset.create();
+        
+        for(Bond b : s.getBondMap()) {
+        	
             String elementA = null;
             String elementB = null;
+            
             String idA = null;
             String idB = null;
+            
             for (String id : s.getAtomMap().keySet()) {
+            	
                 if (b.getRefAtomA().equals(id)) {
+                	
                     elementA = s.getAtomMap().get(id);
+                    
                     idA = id;
+                    
                     continue;
                 }
+                
                 if (b.getRefAtomB().equals(id)) {
+                	
                     elementB = s.getAtomMap().get(id);
+                    
                     idB = id;
                 }
             }
+            
             if (elementA == null || elementB == null) {
-                // error
+                
+            	// error
                 System.out.println("INVALID SPECIES!");
+                
             } else {
-                int numBondsA = 0;
+                
+            	int numBondsA = 0;
                 int numBondsB = 0;
+                
                 for (Bond b1 : s.getBondMap()) {
-                    if (b.getRefAtomA().equals(b1.getRefAtomA()) && b.getRefAtomB().equals(b1.getRefAtomB())) {
+                    
+                	if (b.getRefAtomA().equals(b1.getRefAtomA()) && b.getRefAtomB().equals(b1.getRefAtomB())) {
                         continue;
                     }
+                    
                     if (b1.contains(b.getRefAtomA())) {
+                    	
                         if (b1.getBondType() == BondType.SINGLE || b1.getBondType() == BondType.AROMATIC) {
                             numBondsA++;
                         }
@@ -92,7 +128,9 @@ public class HDReactionType extends ReactionType {
                             numBondsA += 3;
                         }
                     }
+                    
                     if (b1.contains(b.getRefAtomB())) {
+                    	
                         if (b1.getBondType() == BondType.SINGLE || b1.getBondType() == BondType.AROMATIC) {
                             numBondsB++;
                         }
@@ -124,6 +162,7 @@ public class HDReactionType extends ReactionType {
                 }
             }
         }
+     
         Multiset<HomodesmoticBond> filtered = HashMultiset.create();
         for (HomodesmoticBond b : bonds) {
             if (b.getElementA().getSymbol().equalsIgnoreCase("H")
@@ -145,6 +184,7 @@ public class HDReactionType extends ReactionType {
             for (HomodesmoticBond b : bonds) {
                 ms.add(b.toString(), 1);
             }
+            
             return ms;
         }
     }

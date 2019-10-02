@@ -4,19 +4,23 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species;
 
-import com.google.common.collect.HashMultiset;
-import uk.ac.cam.ceb.como.chem.periodictable.Element;
-import com.google.common.collect.Multiset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
+import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class Species {
 
@@ -27,9 +31,10 @@ public class Species {
     private final Collection<Bond> bonds = new HashSet<Bond>();
     private final Multiset<String> msBondTypes = HashMultiset.create();
     private final Multiset<Element> msAtoms = HashMultiset.create();
+    
     private Logger logger = Logger.getLogger(Species.class);
-
-    /**
+    
+	/**
      * Create an ISDSpecies with a supplied ref. The enthalpy of formation and
      * the total energy need to be set separately. Please noted that the
      * temperature used for every ISDSpecies must be the same. This isodesmic
@@ -41,8 +46,9 @@ public class Species {
      */
     public Species(String ref) {
         this.ref = ref;
+    
     }
-
+    
     /**
      * Create an ISDSpecies with a supplied ref, enthalpy of formation and total
      * energy. Please noted that the temperature used for every ISDSpecies must
@@ -117,6 +123,7 @@ public class Species {
      * @return a multiset of atoms
      */
     public Multiset<Element> getAtomMultiset() {
+    	
         return msAtoms;
     }
 
@@ -127,19 +134,28 @@ public class Species {
      * @return a multiset of bond types
      */
     public Multiset<String> getBondTypeMultiset() {
+    	
         return msBondTypes;
+        
     }
 
     public Map<String, String> getAtomMap() {
+    	
         HashMap<String, String> map = new HashMap<String, String>();
+        
         for (String ref : atoms.keySet()) {
+        	
             map.put(ref, atoms.get(ref).getSymbol());
+            
         }
+        
         return map;
     }
 
     public Collection<Bond> getBondMap() {
+    	
         return bonds;
+        
     }
 
     /**
@@ -298,6 +314,9 @@ public class Species {
         for (Bond b : this.bonds) {
             s.addBond(b.clone());
         }
+        
+        System.out.println("Class Species: method clone(): species name: " + s.getRef() + " Hf: " + s.getHf() + " atom map: " + s.getAtomMap());
+        
         return s;
     }
 

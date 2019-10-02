@@ -4,24 +4,23 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.reactions.ReactionListWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.DistinctReactionList;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.ReactionList;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.MADReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.MedianReactionSelector;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.OutlierReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionListValidation;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.RemoveFlaggedReactions;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
@@ -29,9 +28,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibl
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
-import com.cmclinnovations.data.collections.ObjectPool;
-import org.junit.Ignore;
-import org.junit.Test;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *

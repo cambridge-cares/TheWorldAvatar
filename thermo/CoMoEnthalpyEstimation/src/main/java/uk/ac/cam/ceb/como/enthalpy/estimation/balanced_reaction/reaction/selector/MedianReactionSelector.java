@@ -10,17 +10,25 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reactio
 /**
  *
  * @author pb556
+ * 
  */
 public class MedianReactionSelector extends ReactionSelector {
 
     @Override
     public ReactionList select(ReactionList reactions) {
-        double[] val = new double[reactions.size()];
-        Reaction[] r = new Reaction[reactions.size()];
-        for (int i = 0; i < reactions.size(); i++) {
+        
+    	double[] val = new double[reactions.size()];
+        
+    	Reaction[] r = new Reaction[reactions.size()];
+        
+    	for (int i = 0; i < reactions.size(); i++) {
+    		
             val[i] = reactions.get(i).calculateHf();
+            
             r[i] = reactions.get(i);
-        }
+        
+    	}
+        
         // sort it
         for (int i = 0; i < val.length; i++) {
             for (int j = i + 1; j < val.length; j++) {
@@ -36,9 +44,9 @@ public class MedianReactionSelector extends ReactionSelector {
             }
         }
         
-//        for (int i = 0; i < r.length; i++) {
+//      for (int i = 0; i < r.length; i++) {
 //            System.out.println(r[i].calculateHf());
-//        }
+//      }
         
         ReactionList rList = new ReactionList();
         rList.add(r[(int) (r.length / 2.0)]);

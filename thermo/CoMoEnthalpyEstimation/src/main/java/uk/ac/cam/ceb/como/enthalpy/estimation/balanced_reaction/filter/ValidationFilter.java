@@ -8,15 +8,17 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.OutlierReactionSelector;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.validation.LeaveOneOutCrossValidation;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
 
 /**
  *
@@ -31,45 +33,58 @@ public class ValidationFilter extends SpeciesFilter {
 
     @Override
     public Collection<Species> filter() {
+    	
         detValidSpecies = new HashMap<Species, Reaction>();
         detInvalidSpecies = new HashMap<Species, Reaction>();
         identify();
         return validSpecies;
+        
     }
 
     @Override
     public Collection<Species> filter(Collection<Species> species) {
+    	
         this.species = species;
-        return filter();
+        return filter();        
     }
     
     public Map<Species, Reaction> getDetailedValidSpecies() {
+    	
         return detValidSpecies;
+        
     }
     
     public Map<Species, Reaction> getDetailedInvalidSpecies() {
+    	
         return detInvalidSpecies;
+        
     }
 
     protected void identify() {
-        LeaveOneOutCrossValidation validation = new LeaveOneOutCrossValidation(
-                getPool(),
-                new PoolModificationCalculator(numResults, new TerminalGLPKSolver(true, true), new MPSFormat(false, new ISDReactionType())),
-                new OutlierReactionSelector());
+    	
+        LeaveOneOutCrossValidation validation = new LeaveOneOutCrossValidation(getPool(),new PoolModificationCalculator(numResults, new TerminalGLPKSolver(true, true), new MPSFormat(false, new ISDReactionType())),new OutlierReactionSelector());
+        
         validation.validate();
 
         Map<Species, Double> res = validation.getValidationResults();
+        
         Map<Species, Reaction> detRes = validation.getDetailedValidationResults();
+        
         invalidSpecies = new ArrayList<Species>();
         validSpecies = new ArrayList<Species>();
 
         for (Species s : res.keySet()) {
-            if (Math.abs(res.get(s)) > maxErr) {
+        	
+        if (Math.abs(res.get(s)) > maxErr) {
+            	
                 invalidSpecies.add(s);
                 detInvalidSpecies.put(s, detRes.get(s));
+                
             } else {
+            	
                 validSpecies.add(s);
                 detValidSpecies.put(s, detRes.get(s));
+                
             }
         }
     }

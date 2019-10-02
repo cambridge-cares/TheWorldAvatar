@@ -2,6 +2,7 @@ package uk.ac.cam.ceb.como.io.chem.file.parser.g09.util;
 
 import uk.ac.cam.ceb.como.compchem.info.ComputedInfoImpl;
 import uk.ac.cam.ceb.como.compchem.info.MolecularInfoImpl;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -13,12 +14,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
 import uk.ac.cam.ceb.como.tools.parser.util.DoubleTool;
 
 /**
  *
  * @author pb556
  */
+
 public class GaussianHelper {
 
     protected static Logger logger = Logger.getLogger(GaussianHelper.class);
@@ -28,7 +31,8 @@ public class GaussianHelper {
      * @param file
      * @return
      * @throws IOException 
-     */
+     */  
+    
     public static List<JobSection> extractJobSections(File file) throws IOException {
         BufferedReader r = null;
         List<JobSection> l_jobs = new ArrayList<JobSection>();
@@ -69,14 +73,23 @@ public class GaussianHelper {
      * @return null if no archive is found otherwise archive is returned.
      */
     public static String extractArchive(JobSection js) {
-        // Concatenate Archive to String
+
+    	// Concatenate Archive to String
         int fia = -1; // first index of archive
+
+//        /**
+//         * @author nk510
+//         * if() statement is added to prevent for loop to return java.lang.NullPointerException in case of object variable js==null. 
+//         */
+//    	if(js!=null) {
+
         for (int i = 0; i < js.size(); i++) {
             if (js.get(i).matches("^ \\d\\\\\\d\\\\GINC.*")) {
                 fia = i;
                 break;
             }
         }
+//    	}
 
         if (fia >= 0) {
             String archive = "";
@@ -93,7 +106,7 @@ public class GaussianHelper {
         } else {
             return null; // no archive found
         }
-
+    	
     }
 
     public static Archive parseArchive(String archive) {

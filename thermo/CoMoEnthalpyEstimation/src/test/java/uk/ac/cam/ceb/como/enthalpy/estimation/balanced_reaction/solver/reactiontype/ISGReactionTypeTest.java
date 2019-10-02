@@ -24,6 +24,7 @@ import org.junit.Test;
  *
  * @author pb556
  */
+
 public class ISGReactionTypeTest extends ReactionTypeTest {
 
     // Manual check required - OK

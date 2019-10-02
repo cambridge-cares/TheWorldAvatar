@@ -4,11 +4,12 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
 import java.io.File;
-
 import java.util.HashSet;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
@@ -19,19 +20,18 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.Solver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableFactory;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class ISGTerminalGLPKSolverTest {
     
     protected double maxErr = 50;
     
     @Test
-    //@Ignore
+    @Ignore
     public void solveDoubleAdvancedTest()  throws Exception, NoFeasibleSolutionException, LpSolverException {
         // read species pool
         SpeciesPoolParser parser = new SpeciesPoolParser(new File("test_data/test_set.csv"));
@@ -90,6 +90,7 @@ public class ISGTerminalGLPKSolverTest {
     }
     
     @Test
+    @Ignore
     public void solveIntegerExactTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -147,6 +148,7 @@ public class ISGTerminalGLPKSolverTest {
     }
 
     @Test
+    @Ignore
     public void solveIntegerTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -218,6 +220,7 @@ public class ISGTerminalGLPKSolverTest {
     }
     
     @Test
+    @Ignore
     public void solveDoubleExactTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -275,6 +278,7 @@ public class ISGTerminalGLPKSolverTest {
     }
 
     @Test
+    @Ignore
     public void solveDoubleTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -346,7 +350,7 @@ public class ISGTerminalGLPKSolverTest {
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void solveIntegerExactExclUnpairedTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -404,7 +408,7 @@ public class ISGTerminalGLPKSolverTest {
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void solveIntegerExclUnpairedTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -476,7 +480,7 @@ public class ISGTerminalGLPKSolverTest {
     }
     
     @Test
-    //@Ignore
+    @Ignore
     public void solveDoubleExactExclUnpairedTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();
@@ -534,7 +538,7 @@ public class ISGTerminalGLPKSolverTest {
     }
 
     @Test
-    //@Ignore
+    @Ignore
     public void solveDoubleExclUnpairedTest() throws Exception, NoFeasibleSolutionException, LpSolverException {
         Species C2H4 = MockSpecies.getC2H4();
         Species C2H4O = MockSpecies.getC2H4O();

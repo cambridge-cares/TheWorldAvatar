@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
     <modelVersion>4.0.0</modelVersion>
     <groupId>uk.ac.cam.ceb.como</groupId>
     <artifactId>CoMoMath</artifactId>
     <version>0.0.0</version>
     <packaging>jar</packaging>
+    
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -28,20 +30,29 @@
             <version>3.4.1</version>
         </dependency>
         <dependency>
-            <groupId>org.com.cmclinnovations</groupId>
+            
+            <!-- fixed by removing org. -->
+            <groupId>com.cmclinnovations</groupId>
+            
             <artifactId>CMCLData</artifactId>
-            <version>0.0.1</version>
+            
+            <!-- fixed by additing -SNAPSHOT--> 
+            <version>0.0.1-SNAPSHOT</version>
+            
         </dependency>
     </dependencies>
     <repositories>
-        <repository>
+    
+        <!-- commented on April 03rd, 2018.-->
+        <!--repository>
             <id>maven.ch</id>
             <name>ch.cam.ac.uk Maven2</name>
             <url>https://maven.ch.cam.ac.uk/m2repo</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
+        </repository-->
+        
         <repository>
             <id>com.hp.hpl.jena</id>
             <url>http://openjena.org/repo</url>

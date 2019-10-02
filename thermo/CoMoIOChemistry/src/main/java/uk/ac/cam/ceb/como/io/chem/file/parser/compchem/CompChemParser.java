@@ -11,12 +11,14 @@ import uk.ac.cam.ceb.como.compchem.CompChemWrapper;
 import uk.ac.cam.ceb.como.compchem.orm.annotation.processor.CompChemAnnotationProcessor;
 import uk.ac.cam.ceb.como.compchem.property.PMOI;
 import uk.ac.cam.ceb.como.compchem.property.RotationalConstants;
+
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nu.xom.Nodes;
 import org.apache.log4j.Logger;
+
 import org.xmlcml.cml.base.CMLNamespace;
 import org.xmlcml.cml.element.CMLArray;
 import org.xmlcml.cml.element.CMLAtom;
@@ -33,6 +35,7 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.ChemFileParser;
  *
  * @author pb556
  */
+
 public class CompChemParser extends ChemFileParser<Compound> {
 
     protected CompChemWrapper ccw = null;

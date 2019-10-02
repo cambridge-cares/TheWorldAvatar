@@ -11,6 +11,7 @@ import java.util.List;
  *
  * @author pb556
  */
+
 public class EmpiricalFormula {
 
     private HashMap<String, Integer> atoms = new HashMap<String, Integer>();

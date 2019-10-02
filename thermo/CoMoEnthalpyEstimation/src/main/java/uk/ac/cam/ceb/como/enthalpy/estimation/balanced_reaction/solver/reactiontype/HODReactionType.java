@@ -4,21 +4,22 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
+import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.BondType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.homodesmotic.HypohomodesmoticAtom;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.homodesmotic.HypohomodesmoticBond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
-import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 
 /**
  *
@@ -55,14 +56,19 @@ public class HODReactionType extends ReactionType {
     }
 
     public Multiset<HypohomodesmoticAtom> getHypoomodesmoticOrbitalHybridisation(Species s) {
-        Multiset<HypohomodesmoticAtom> bonds = HashMultiset.create();
+        
+    	Multiset<HypohomodesmoticAtom> bonds = HashMultiset.create();
+        
         for (String id : s.getAtomMap().keySet()) {
+        	
             if (s.getAtomMap().get(id).equals("H")) {
+            	
                 continue;
             }
             
             // find all the other bonds
             Multiset<HypohomodesmoticBond> ms = HashMultiset.create();
+            
             for (Bond b : s.getBondMap()) {
                 if (b.getRefAtomA().equals(id)) { // || b.getRefAtomB().equals(id)) {
                     HypohomodesmoticBond key = null;

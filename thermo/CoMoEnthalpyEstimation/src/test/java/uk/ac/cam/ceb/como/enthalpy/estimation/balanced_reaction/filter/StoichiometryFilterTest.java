@@ -4,16 +4,16 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.StoichiometryFilter;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.chem.periodictable.Element;
-import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+
 import org.junit.Test;
+
+import uk.ac.cam.ceb.como.chem.periodictable.Element;
+import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *

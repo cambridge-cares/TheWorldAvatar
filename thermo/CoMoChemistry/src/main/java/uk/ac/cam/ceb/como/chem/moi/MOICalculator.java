@@ -65,6 +65,7 @@ public class MOICalculator {
         if (StructureTools.isMOIZero(I)) {
             I = 0;
         }
+        
         return I * PhysicalConstants.amu;
     }
 

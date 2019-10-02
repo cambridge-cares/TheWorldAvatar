@@ -9,6 +9,7 @@ import org.junit.Test;
 /**
  * Unit test for simple App.
  */
+
 public class OpenBabelWrapperTest {
 
     @Test
@@ -29,4 +30,5 @@ public class OpenBabelWrapperTest {
         
         FileUtils.deleteQuietly(new File("test_data/.jbabel"));
     }
+
 }

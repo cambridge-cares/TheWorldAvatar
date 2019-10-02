@@ -17,6 +17,7 @@ import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.rule.Pitze
  *
  * @author pb556
  */
+
 public class C1DHRIredThermoCalculator extends IRStatMechThermoCalculator {
 
     protected Logger logger = Logger.getLogger(getClass());

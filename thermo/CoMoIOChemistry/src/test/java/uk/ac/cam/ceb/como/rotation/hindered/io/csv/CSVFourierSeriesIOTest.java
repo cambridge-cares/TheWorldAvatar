@@ -27,8 +27,9 @@ import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.p
  *
  * @author pb556
  */
+
 public class CSVFourierSeriesIOTest {
-    
+
     @Test
     @Ignore
     public void writtingTest() throws Exception {

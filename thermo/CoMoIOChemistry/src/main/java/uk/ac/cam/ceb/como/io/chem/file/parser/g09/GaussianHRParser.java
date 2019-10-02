@@ -5,6 +5,7 @@
 package uk.ac.cam.ceb.como.io.chem.file.parser.g09;
 
 import com.cmclinnovations.io.parser.ParserHelper;
+
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.util.Archive;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.util.GaussianHelper;
 import uk.ac.cam.ceb.como.io.chem.file.parser.g09.util.JobSection;
@@ -33,6 +34,7 @@ import uk.ac.cam.ceb.como.chem.property.Vibrations;
  *
  * @author pb556
  */
+
 public class GaussianHRParser extends FrequencyParser {
 
     @Override
@@ -118,8 +120,6 @@ public class GaussianHRParser extends FrequencyParser {
                 //hrBonds.appendChild(torsionalBonds.get(i).bond);
                 hrBonds.appendChild(property_list_hr);
             }
-
-
             //hrBonds.appendChild(bondArray);
             property_list.addProperty(hrBonds);
 
