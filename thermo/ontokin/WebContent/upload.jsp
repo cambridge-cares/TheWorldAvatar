@@ -278,7 +278,7 @@ $( function() {
 				    '?thermoModel22 ontokin:hasMinimumTemperature ?mintemp22 .' + '\n' +
 				    '?thermoModel22 ontokin:hasMaximumTemperature  ?maxtemp22 .' + '\n' +
 				    '?thermoModel22 ontokin:hasPressure  ?pressure22 .' + '\n' +
-				    'FILTER ((?mechanism1 != ?mechanism2) && (STR(?thermoModel11) < STR(?thermoModel12)) && (STR(?thermoModel21) < STR(?thermoModel22)) && !((?mintemp11 = ?mintemp21) && (?mintemp12 = ?mintemp22) && (?maxtemp11 = ?maxtemp21) && (?maxtemp12 = ?maxtemp22) && (?pressure11 = ?pressure21) && (?pressure12 = ?pressure22) && (?coefficientValues11 = ?coefficientValues21) && (?coefficientValues12 = ?coefficientValues22)))' + '\n' +
+				    'FILTER ((STR(?mechanism1) < STR(?mechanism2)) && (STR(?thermoModel11) < STR(?thermoModel12)) && (STR(?thermoModel21) < STR(?thermoModel22)) && !((?mintemp11 = ?mintemp21) && (?mintemp12 = ?mintemp22) && (?maxtemp11 = ?maxtemp21) && (?maxtemp12 = ?maxtemp22) && (?pressure11 = ?pressure21) && (?pressure12 = ?pressure22) && (?coefficientValues11 = ?coefficientValues21) && (?coefficientValues12 = ?coefficientValues22)))' + '\n' +
 				'} ';
 
 			} else if(search_querySelection == 'rateconstant') {
@@ -301,26 +301,24 @@ $( function() {
 				'} ';
 
 			} else if(search_querySelection == 'comparerate') {
-			 
+			 	console.log("comparerate")
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT distinct ?Mechanism1IRI ?Mechanism2IRI ?ReactionIRIinMechanism1 ?ReactionIRIinMechanism2 ?ActivationEnergy1 ?ActivationEnergy2 ?PreExpFactor1 ?PreExpFactor2 ?TempExponent1 ?TempExponent2' + '\n' +
+				'SELECT ?Mechanism1IRI ?Mechanism2IRI ?ReactionIRIinMechanism1 ?ReactionIRIinMechanism2 ?ActivationEnergy1 ?ActivationEnergy2 ?PreExpFactor1 ?PreExpFactor2 ?TempExponent1 ?TempExponent2' + '\n' +
 				'WHERE {' + '\n' +
 					'?ReactionIRIinMechanism1 ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRIinMechanism1 ontokin:belongsToPhase ?Phase1 . ?Phase1 ontokin:containedIn ?Mechanism1IRI .'+ '\n' +
-			    	'?ReactionIRIinMechanism1 rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRIinMechanism1 ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients1 .' + '\n' +
 				    '?ArrheniusRateCoefficients1 ontokin:hasActivationEnergy ?ActivationEnergy1 .' + '\n' +
 				    '?ArrheniusRateCoefficients1 ontokin:hasPreExponentialFactor ?PreExpFactor1 .' + '\n' +
 				    '?ArrheniusRateCoefficients1 ontokin:hasTemperatureExponent ?TempExponent1 .' + '\n' +
 					'?ReactionIRIinMechanism2 ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRIinMechanism2 ontokin:belongsToPhase ?Phase2 . ?Phase2 ontokin:containedIn ?Mechanism2IRI .'+ '\n' +
-			    	'?ReactionIRIinMechanism2 rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRIinMechanism2 ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients2 .' + '\n' +
 				    '?ArrheniusRateCoefficients2 ontokin:hasActivationEnergy ?ActivationEnergy2 .' + '\n' +
 				    '?ArrheniusRateCoefficients2 ontokin:hasPreExponentialFactor ?PreExpFactor2 .' + '\n' +
 				    '?ArrheniusRateCoefficients2 ontokin:hasTemperatureExponent ?TempExponent2 .' + '\n' +
-				    'FILTER ((?ActivationEnergy1 != ?ActivationEnergy2) || (?PreExpFactor1 != ?PreExpFactor2) || (?TempExponent1 != ?TempExponent2))' + '\n' +
+				    'FILTER ((STR(?Mechanism1IRI) < STR(?Mechanism2IRI)) && ((?ActivationEnergy1 != ?ActivationEnergy2) || (?PreExpFactor1 != ?PreExpFactor2) || (?TempExponent1 != ?TempExponent2)))' + '\n' +
 				    		'} ';
 			}
 		
