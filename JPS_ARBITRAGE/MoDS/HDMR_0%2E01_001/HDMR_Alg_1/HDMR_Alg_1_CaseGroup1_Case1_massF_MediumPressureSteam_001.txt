@@ -1,0 +1,41 @@
+% Reduced chi^2:
+0.326412
+% R^2:
+0.999984
+% Dimension (number of independent variables):
+1
+% Variable names:
+x_0 = massF_NaturalGasInput_001
+% Surrogate model type:
+HDMR
+%  Interaction order:
+2
+% Order at each interaction level:
+0: 7
+1: 0
+%
+% First Order Sensitivities:
+1
+% Sum of Variances:
+13246.1
+%
+% Zeroth Order Coefficient:
+11002.1
+% First Order Coefficients:
+162.763*(3/2)^0.5*x_0
+0.266821*(7/2)^0.5*(-1.5*x_0+2.5*x_0^3)
+-0.316079*(9/2)^0.5*(0.375-3.75*x_0^2+4.375*x_0^4)
+0.399417*(11/2)^0.5*(1.875*x_0-8.75*x_0^3+7.875*x_0^5)
+0.217775*(13/2)^0.5*(-0.3125+6.5625*x_0^2-19.6875*x_0^4+14.4375*x_0^6)
+-0.365671*(15/2)^0.5*(-2.1875*x_0+19.6875*x_0^3-43.3125*x_0^5+26.8125*x_0^7)
+%
+% Zeroth Order Terms:
+11001.6
+% First Order Terms:
+202.541*x_0
+6.15801*x_0^2
+-26.664*x_0^3
+-13.8643*x_0^4
+50.7511*x_0^5
+8.01597*x_0^6
+-26.8509*x_0^7

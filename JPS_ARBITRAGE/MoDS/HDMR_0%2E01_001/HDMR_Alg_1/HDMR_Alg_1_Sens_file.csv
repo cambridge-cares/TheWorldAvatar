@@ -1,0 +1,8 @@
+Case,Response,Total Var,massF_NaturalGasInput_001
+CaseGroup1_Case1,massF_MethanolOutput_001,0.027231396491754739,1
+CaseGroup1_Case1,energyF_Electricity_001,71105.166127304503,1
+CaseGroup1_Case1,moleF_FuelGas_001,2634972.1402017884,1
+CaseGroup1_Case1,massF_HighPressureSteam_001,0.53344914505583685,1
+CaseGroup1_Case1,massF_MediumPressureSteam_001,13246.076863865444,1
+CaseGroup1_Case1,massF_CoolingWater_001,34070472.214570858,1
+CaseGroup1_Case1,massF_ProcessWater_001,0.0087810659311066373,1

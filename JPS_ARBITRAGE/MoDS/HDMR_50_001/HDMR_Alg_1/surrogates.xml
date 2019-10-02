@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<surrogates>
+
+  <case name="CaseGroup1_Case1">
+    <response_var name="massF_BiodieselOutput_001">
+      <statistic name="Number of regressors">3</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">24333.656210000001</statistic>
+      <statistic name="Standard deviation of data">748.80125912304891</statistic>
+      <statistic name="R-squared">0.99999920490740468</statistic>
+      <statistic name="Adjusted R-squared">0.9999991113670994</statistic>
+      <statistic name="Chi-squared">0.011311960392747513</statistic>
+      <statistic name="Reduced chi-squared">0.00066540943486750079</statistic>
+      <statistic name="Durbin-Watson">2.0314104441158687</statistic>
+      <statistic name="Total sum of squares">14227.22392333793</statistic>
+      <statistic name="Regression sum of squares">14202.61933115039</statistic>
+      <statistic name="Residual sum of squares">0.011311960392747513</statistic>
+      <statistic name="F-statistic">10690570.245829564</statistic>
+      <statistic name="RMS deviation">0.023782304758735551</statistic>
+      <statistic name="Mean absolute deviation">0.020891938581371505</statistic>
+      <statistic name="Max absolute deviation">0.0370391782016668</statistic>
+    </response_var>
+    <response_var name="energyF_Electricity_001">
+      <statistic name="Number of regressors">3</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">4.4584704989999997</statistic>
+      <statistic name="Standard deviation of data">2.9121671325672317e-006</statistic>
+      <statistic name="R-squared">0.99999887952743627</statistic>
+      <statistic name="Adjusted R-squared">0.99999874770713471</statistic>
+      <statistic name="Chi-squared">6.1997064089422235e-011</statistic>
+      <statistic name="Reduced chi-squared">3.64688612290719e-012</statistic>
+      <statistic name="Durbin-Watson">1.847793448715966</statistic>
+      <statistic name="Total sum of squares">5.5331175518777405e-005</statistic>
+      <statistic name="Regression sum of squares">5.5235467690217888e-005</statistic>
+      <statistic name="Residual sum of squares">6.1997064089422235e-011</statistic>
+      <statistic name="F-statistic">7586076.4028470656</statistic>
+      <statistic name="RMS deviation">1.7606399985434591e-006</statistic>
+      <statistic name="Mean absolute deviation">1.4501274220979355e-006</statistic>
+      <statistic name="Max absolute deviation">3.177111591590176e-006</statistic>
+    </response_var>
+    <response_var name="moleF_FuelGas_001">
+      <statistic name="Number of regressors">3</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">22.296545784999999</statistic>
+      <statistic name="Standard deviation of data">7.5309737195025666e-005</statistic>
+      <statistic name="R-squared">0.99999899502590184</statistic>
+      <statistic name="Adjusted R-squared">0.99999887679365496</statistic>
+      <statistic name="Chi-squared">1.4380023691598509e-009</statistic>
+      <statistic name="Reduced chi-squared">8.4588374656461811e-011</statistic>
+      <statistic name="Durbin-Watson">2.3183365311898814</statistic>
+      <statistic name="Total sum of squares">0.0014308850067054877</statistic>
+      <statistic name="Regression sum of squares">0.0014284101312464215</statistic>
+      <statistic name="Residual sum of squares">1.4380023691598509e-009</statistic>
+      <statistic name="F-statistic">8457920.9289358966</statistic>
+      <statistic name="RMS deviation">8.4793937553337225e-006</statistic>
+      <statistic name="Mean absolute deviation">7.1435229241245681e-006</statistic>
+      <statistic name="Max absolute deviation">1.9220410898412865e-005</statistic>
+    </response_var>
+    <response_var name="massF_HighPressureSteam_001">
+      <statistic name="Number of regressors">1</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">0</statistic>
+      <statistic name="Standard deviation of data">0</statistic>
+      <statistic name="R-squared">1</statistic>
+      <statistic name="Adjusted R-squared">1</statistic>
+      <statistic name="Chi-squared">0</statistic>
+      <statistic name="Reduced chi-squared">0</statistic>
+      <statistic name="Durbin-Watson">0</statistic>
+      <statistic name="Total sum of squares">0</statistic>
+      <statistic name="Regression sum of squares">0</statistic>
+      <statistic name="Residual sum of squares">0</statistic>
+      <statistic name="F-statistic">-1.#IND</statistic>
+      <statistic name="RMS deviation">0</statistic>
+      <statistic name="Mean absolute deviation">0</statistic>
+      <statistic name="Max absolute deviation">0</statistic>
+    </response_var>
+    <response_var name="massF_LowPressureSteam_001">
+      <statistic name="Number of regressors">1</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">0</statistic>
+      <statistic name="Standard deviation of data">0</statistic>
+      <statistic name="R-squared">1</statistic>
+      <statistic name="Adjusted R-squared">1</statistic>
+      <statistic name="Chi-squared">0</statistic>
+      <statistic name="Reduced chi-squared">0</statistic>
+      <statistic name="Durbin-Watson">0</statistic>
+      <statistic name="Total sum of squares">0</statistic>
+      <statistic name="Regression sum of squares">0</statistic>
+      <statistic name="Residual sum of squares">0</statistic>
+      <statistic name="F-statistic">-1.#IND</statistic>
+      <statistic name="RMS deviation">0</statistic>
+      <statistic name="Mean absolute deviation">0</statistic>
+      <statistic name="Max absolute deviation">0</statistic>
+    </response_var>
+    <response_var name="massF_MediumPressureSteam_001">
+      <statistic name="Number of regressors">3</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">10034.412</statistic>
+      <statistic name="Standard deviation of data">9.6725231694743545</statistic>
+      <statistic name="R-squared">0.99999789114486037</statistic>
+      <statistic name="Adjusted R-squared">0.99999764304425576</statistic>
+      <statistic name="Chi-squared">0.00038756105377881048</statistic>
+      <statistic name="Reduced chi-squared">2.2797709045812382e-005</statistic>
+      <statistic name="Durbin-Watson">2.0878406736000619</statistic>
+      <statistic name="Total sum of squares">183.77794022001274</statistic>
+      <statistic name="Regression sum of squares">183.45987322479391</statistic>
+      <statistic name="Residual sum of squares">0.00038756105377881048</statistic>
+      <statistic name="F-statistic">4030614.4860796067</statistic>
+      <statistic name="RMS deviation">0.0044020509639190368</statistic>
+      <statistic name="Mean absolute deviation">0.0038555709344109345</statistic>
+      <statistic name="Max absolute deviation">0.0090119377164228354</statistic>
+    </response_var>
+    <response_var name="massF_CoolingWater_001">
+      <statistic name="Number of regressors">3</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">29191.668534999997</statistic>
+      <statistic name="Standard deviation of data">3.651900828710501</statistic>
+      <statistic name="R-squared">0.99999847859750068</statistic>
+      <statistic name="Adjusted R-squared">0.99999829960897135</statistic>
+      <statistic name="Chi-squared">0.00010556420991416886</statistic>
+      <statistic name="Reduced chi-squared">6.2096594067158152e-006</statistic>
+      <statistic name="Durbin-Watson">1.4533482219608906</statistic>
+      <statistic name="Total sum of squares">69.386115745499524</statistic>
+      <statistic name="Regression sum of squares">69.266068936361194</statistic>
+      <statistic name="Residual sum of squares">0.00010556420991416886</statistic>
+      <statistic name="F-statistic">5586941.7013635142</statistic>
+      <statistic name="RMS deviation">0.0022974356347259094</statistic>
+      <statistic name="Mean absolute deviation">0.0018004775087320014</statistic>
+      <statistic name="Max absolute deviation">0.0046285164353321306</statistic>
+    </response_var>
+    <response_var name="massF_ProcessWater_001">
+      <statistic name="Number of regressors">1</statistic>
+      <statistic name="Number of points fitted to">20</statistic>
+      <statistic name="Mean of data">3062.5976000000001</statistic>
+      <statistic name="Standard deviation of data">0</statistic>
+      <statistic name="R-squared">1</statistic>
+      <statistic name="Adjusted R-squared">1</statistic>
+      <statistic name="Chi-squared">0</statistic>
+      <statistic name="Reduced chi-squared">0</statistic>
+      <statistic name="Durbin-Watson">0</statistic>
+      <statistic name="Total sum of squares">0</statistic>
+      <statistic name="Regression sum of squares">0</statistic>
+      <statistic name="Residual sum of squares">0</statistic>
+      <statistic name="F-statistic">-1.#IND</statistic>
+      <statistic name="RMS deviation">0</statistic>
+      <statistic name="Mean absolute deviation">0</statistic>
+      <statistic name="Max absolute deviation">0</statistic>
+    </response_var>
+  </case>
+
+
+
+
+
+
+
+
+</surrogates>

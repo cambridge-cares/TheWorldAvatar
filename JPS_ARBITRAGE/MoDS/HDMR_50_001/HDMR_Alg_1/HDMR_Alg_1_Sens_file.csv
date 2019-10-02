@@ -1,0 +1,6 @@
+Case,Response,Total Var,massF_CrudePalmOilInput_001
+CaseGroup1_Case1,massF_BiodieselOutput_001,839.45063175169275,1
+CaseGroup1_Case1,energyF_Electricity_001,3.2647110484722074e-006,1
+CaseGroup1_Case1,moleF_FuelGas_001,8.4426665188820876e-005,1
+CaseGroup1_Case1,massF_MediumPressureSteam_001,10.843458019174498,1
+CaseGroup1_Case1,massF_CoolingWater_001,4.093994492978827,1

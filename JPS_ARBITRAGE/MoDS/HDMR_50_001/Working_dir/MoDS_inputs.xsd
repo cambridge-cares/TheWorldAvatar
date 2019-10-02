@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://como.cheng.cam.ac.uk/MoDS" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:complexType name="details">
+    <xs:sequence>
+      <xs:element maxOccurs="unbounded" name="detail">
+        <xs:complexType>
+          <xs:simpleContent>
+            <xs:extension base="xs:string">
+              <xs:attribute name="name" type="xs:string" use="required" />
+            </xs:extension>
+          </xs:simpleContent>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:simpleType name="versionString">
+  <xs:restriction base="xs:string">
+    <xs:pattern value="([0-9]*\.?){3}(-.*)?"/>
+  </xs:restriction>
+</xs:simpleType>
+
+  <xs:element name="mods">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="algorithms">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="algorithm">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="details" type="details" />
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="cases">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="case">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="details" type="details" />
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="files">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="file">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="details" type="details" />
+                  </xs:sequence>
+                  <xs:attribute name="file_name" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="functions" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="function">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="details" type="details" />
+                  </xs:sequence>
+                  <xs:attribute name="name" type="xs:string" use="required" />
+                  <xs:attribute name="usage" type="xs:string" use="required" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="parameters">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="parameter">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="0" name="scaling" type="xs:string" />
+                    <xs:element name="cases">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="case" type="xs:string" />
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="files">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element minOccurs="0" name="initial_read">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="details" type="details" />
+                              </xs:sequence>
+                              <xs:attribute name="file_name" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element minOccurs="0" name="working_read">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="details" type="details" />
+                              </xs:sequence>
+                              <xs:attribute name="file_name" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                          <xs:element minOccurs="0" name="working_write">
+                            <xs:complexType>
+                              <xs:sequence>
+                                <xs:element name="details" type="details" />
+                              </xs:sequence>
+                              <xs:attribute name="file_name" type="xs:string" use="optional" />
+                            </xs:complexType>
+                          </xs:element>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:sequence>
+                  <xs:attribute name="type" type="xs:string" use="required" />
+                  <xs:attribute name="subtype" type="xs:string" use="required" />
+                  <xs:attribute name="case_detail_sep" type="xs:string" use="optional" />
+                  <xs:attribute name="detail_sep" type="xs:string" use="optional" />
+                  <xs:attribute name="n_params_per_case" type="xs:string" use="optional" />
+                  <xs:attribute name="name" type="xs:string" use="optional" />
+                  <xs:attribute name="name_suffix_detail" type="xs:string" use="optional" />
+                  <xs:attribute name="preserve_white_space" type="xs:string" use="optional" />
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="versionString" use="optional" />
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

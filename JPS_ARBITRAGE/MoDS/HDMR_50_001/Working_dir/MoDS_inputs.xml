@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mods xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd">
+  <algorithms>
+    <algorithm name="Sobol_Alg_1">
+      <details>
+        <detail name="optimisable_param_subtypes">subtype_massF_CrudePalmOilInput_001</detail>
+        <detail name="response_param_subtypes">subtype_massF_BiodieselOutput_001 subtype_energyF_Electricity_001 subtype_moleF_FuelGas_001 subtype_massF_HighPressureSteam_001 subtype_massF_LowPressureSteam_001 subtype_massF_MediumPressureSteam_001 subtype_massF_CoolingWater_001 subtype_massF_ProcessWater_001</detail>
+        <detail name="algorithm_type">Sobol</detail>
+        <detail name="model_name">exe</detail>
+        <detail name="objective_function">SumOfSquares</detail>
+        <detail name="output_by_case">false</detail>
+        <detail name="output_values">true</detail>
+        <detail name="n_points">20</detail>
+        <detail name="seed">1</detail>
+        <detail name="output_interval">100</detail>
+      </details>
+    </algorithm>
+    <algorithm name="HDMR_Alg_1">
+      <details>
+        <detail name="optimisable_param_subtypes">subtype_massF_CrudePalmOilInput_001</detail>
+        <detail name="response_param_subtypes">subtype_massF_BiodieselOutput_001 subtype_energyF_Electricity_001 subtype_moleF_FuelGas_001 subtype_massF_HighPressureSteam_001 subtype_massF_LowPressureSteam_001 subtype_massF_MediumPressureSteam_001 subtype_massF_CoolingWater_001 subtype_massF_ProcessWater_001</detail>
+        <detail name="algorithm_type">Surrogate</detail>
+        <detail name="surrogate_type">HDMR</detail>
+        <detail name="fit_to_coded_responses">false</detail>
+        <detail name="global">false</detail>
+        <detail name="order">10</detail>
+        <detail name="HDMRorder">2</detail>
+        <detail name="r_squared_tol">0.99999</detail>
+        <detail name="previous_algorithms">Sobol_Alg_1</detail>
+      </details>
+    </algorithm>
+  </algorithms>
+  <cases>
+    <case name="CaseGroup1_Case1">
+      <details>
+        <detail name="executable_name">cmd.exe</detail>
+        <detail name="working_directory"/>
+        <detail name="args">/c "..\..\..\Run.bat" </detail>
+      </details>
+    </case>
+  </cases>
+  <files>
+    <file file_name="MODS_SIM_INITFILE_cases.csv">
+      <details>
+        <detail name="file_type">DSV</detail>
+        <detail name="delimiter">,</detail>
+      </details>
+    </file>
+    <file file_name="MODS_SIM_INITFILE_AIVarInitReadFile.csv">
+      <details>
+        <detail name="file_type">DSV</detail>
+        <detail name="delimiter">,</detail>
+      </details>
+    </file>
+    <file file_name="IN.csv">
+      <details>
+        <detail name="file_type">DSV</detail>
+        <detail name="delimiter">,</detail>
+      </details>
+    </file>
+    <file file_name="OUT.csv">
+      <details>
+        <detail name="file_type">DSV</detail>
+        <detail name="delimiter">,</detail>
+      </details>
+    </file>
+  </files>
+  <parameters>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="massF_BiodieselOutput_001" preserve_white_space="true" subtype="subtype_massF_BiodieselOutput_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_BiodieselOutput_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_BiodieselOutput_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="energyF_Electricity_001" preserve_white_space="true" subtype="subtype_energyF_Electricity_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">energyF_Electricity_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">energyF_Electricity_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="moleF_FuelGas_001" preserve_white_space="true" subtype="subtype_moleF_FuelGas_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">moleF_FuelGas_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">moleF_FuelGas_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="massF_HighPressureSteam_001" preserve_white_space="true" subtype="subtype_massF_HighPressureSteam_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_HighPressureSteam_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_HighPressureSteam_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="massF_LowPressureSteam_001" preserve_white_space="true" subtype="subtype_massF_LowPressureSteam_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_LowPressureSteam_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_LowPressureSteam_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="massF_MediumPressureSteam_001" preserve_white_space="true" subtype="subtype_massF_MediumPressureSteam_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_MediumPressureSteam_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_MediumPressureSteam_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="massF_CoolingWater_001" preserve_white_space="true" subtype="subtype_massF_CoolingWater_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_CoolingWater_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_CoolingWater_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter case_detail_sep=";" n_params_per_case="1" name="massF_ProcessWater_001" preserve_white_space="true" subtype="subtype_massF_ProcessWater_001" type="active_output">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_cases.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_ProcessWater_001</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_factor">1.0</detail>
+            <detail name="ub_factor">1.0</detail>
+            <detail name="lb_addend">-1.0</detail>
+            <detail name="ub_addend">1.0</detail>
+          </details>
+        </initial_read>
+        <working_read file_name="OUT.csv">
+          <details>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">massF_ProcessWater_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_read>
+      </files>
+    </parameter>
+    <parameter n_params_per_case="1" name="massF_CrudePalmOilInput_001" preserve_white_space="true" subtype="subtype_massF_CrudePalmOilInput_001" type="active_input">
+      <scaling>linear</scaling>
+      <cases>
+        <case>CaseGroup1_Case1</case>
+      </cases>
+      <files>
+        <initial_read>
+          <details>
+            <detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+            <detail name="read_function">Get_DSV_double</detail>
+            <detail name="column">Initial_read_value</detail>
+            <detail name="row">0</detail>
+            <detail name="lb_abs">24170.0656</detail>
+            <detail name="ub_abs">24270.0656</detail>
+          </details>
+        </initial_read>
+        <working_write file_name="IN.csv">
+          <details>
+            <detail name="write_function">Set_DSV_formatted_double</detail>
+            <detail name="format">%.17e</detail>
+            <detail name="column">massF_CrudePalmOilInput_001</detail>
+            <detail name="row">0</detail>
+          </details>
+        </working_write>
+      </files>
+    </parameter>
+  </parameters>
+</mods>
