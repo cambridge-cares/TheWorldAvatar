@@ -2,9 +2,11 @@
 		
     var ppMap = new PopupMap({useCluster:true});
 
-    var anotherURL = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
-    ppMap.drawKML(anotherURL);
+    var anotherURL1 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
+    var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal2.kml';
+    var anotherURL3 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal3.kml';
 
+    
     $(document).on('input', 'input', function () {//when user makes input
         console.log("input changed");
         cleanMsg();
@@ -40,54 +42,38 @@
 
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
+
         console.log('predefinedID = ', predefinedId)
         ppMap.clearAnimatedLines();
         if (predefinedId == '0') {
             ppMap.drawLines( { "electricalnetwork":'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork' });
             // Won't use this method when it refreshes?
+            iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
+            kmlURL = anotherURL1;
         }
         else if (predefinedId == '1') {
             ppMap.drawLines({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSCoordinateOPF"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
+            iriofnetwork = 'http://localhost:8080/jps/scenario/testPOWSYSCoordinateOPF/read?query=%7B%22scenarioresource%22%3A%22http%3A%2F%2Fwww.jparksimulator.com%2Fkb%2Fsgp%2Fjurongisland%2Fjurongislandpowernetwork%2FJurongIslandPowerNetwork.owl%23JurongIsland_PowerNetwork%22+%7D';
+            
+            kmlURL = anotherURL2;
         }
         else if (predefinedId == '2'){
             ppMap.drawLines({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSCoordinatePF"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
-        
+            iriofnetwork = 'http://localhost:8080/jps/scenario/testPOWSYSCoordinatePF/read?query=%7B%22scenarioresource%22%3A%22http%3A%2F%2Fwww.jparksimulator.com%2Fkb%2Fsgp%2Fjurongisland%2Fjurongislandpowernetwork%2FJurongIslandPowerNetwork.owl%23JurongIsland_PowerNetwork%22+%7D'
+            kmlURL = anotherURL3;
         }
-        refreshLayer();
-        // var anotherURL = 'https://sites.google.com/site/kmlfilescares/kmltest1/test2final.kml';
-        // ppMap.drawKML(anotherURL);
+        refreshLayer(iriofnetwork, kmlURL);
     }
-    function refreshLayer(){
+    function refreshLayer(iriofnetwork, kmlURL){
         if (kmlLayer)
-        kmlLayer.setMap(null);
-        kmlLayer = new google.maps.KmlLayer({
-            url: anotherURL+ "?r="+(new Date()).getTime(),
-            suppressInfoWindows: false,
-            map: map
-        });
+        kmlLayer.setMap(null); 
+        drawGenerator(iriofnetwork, kmlURL);
+        console.log('Check that it should have refreshed. ')
     }
     //TODO: validate this
     function validateInput() {
         return true;
     }
-    //change filter according to radio button
-    // $(document).ready(function(){
-    //     $('input[type=radio][name=myRadios]').change(function() {
-    //         if (this.value == 'Current') {
-    //             kmlLayer.setMap(null);
-    //             var anotherURL = 'https://sites.google.com/site/kmlfilescares/kmltest1/test2.kml';
-    //             ppMap.drawLines();
-    //             ppMap.drawKML(anotherURL);
-    //         }
-    //         else if (this.value == 'Modified') {
-    //             kmlLayer.setMap(null);
-    //             var anotherURL = 'https://sites.google.com/site/kmlfilescares/kmltest1/icontest.kml';
-    //             ppMap.drawKML(anotherURL);
-    //         }
-            
-    //     });
-        
-    // });
     /*Msg***/
     let errMsgPanel = $("");
 

@@ -161,12 +161,12 @@ window.initMap = this.initMap.bind(this);
 }
 
 var  kmlLayer;
-function drawGenerator(specificURL){
+function drawGenerator(iriofnetwork, anotherURL){
     var d = new Date();
     var n = d.getTime();
     var kmljson = {};
-    var kmlurl = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile';
-    var electricalnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork'
+    var kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createKMLFile'; //Note: Just need to know if it's created; do not need to actually read from database at this stage. 
+    var electricalnetwork = iriofnetwork//F it's been running all thsi tim nevermind!
     kmljson["electricalnetwork"] = electricalnetwork;
     kmljson["n"] = String(n);
 
@@ -180,13 +180,19 @@ function drawGenerator(specificURL){
         url: kmlurl,
         type: 'GET',
         data: { "electricalnetwork":electricalnetwork,"n":n},
-        contentType: 'application/json; charset=utf-8'
+        contentType: 'application/json; charset=utf-8',
+        success: function(){  
+        },
+        error: function(ts) {
+            alert(ts.responseText);
+        }   
     });
 
     request.done( function(data) {
     console.log ("success create request");
     kmlLayer = new google.maps.KmlLayer({
-        url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',
+        // url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',//In other cases, will eventually be read and overwritten here. NO PROBLEM!
+        url: anotherURL+ "?r="+(new Date()).getTime(),
         suppressInfoWindows: false,
         map: map
     });
@@ -515,7 +521,7 @@ asyncLoop({
         var request = $.ajax({
             url: url,
             type: 'GET',
-            data: { "electricalnetwork":electricalnetwork },
+            data: { "electricalnetwork":'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork' },
             contentType: 'application/json; charset=utf-8'
         });
 
@@ -659,7 +665,8 @@ initMap: function () {
     var jurong ={lat: 1.2624421, lng: 103.7007045};
     this.googleMap = new google.maps.Map(document.getElementById('map'), {
         zoom: 14,
-        center: jurong
+        center: jurong, 
+        
     });
     map = this.googleMap;
     console.log("request to " + self.curPath + "/coordinates")
@@ -675,11 +682,6 @@ initMap: function () {
             console.log("Can not get location")
         }
     });
-    // kmlLayer = new google.maps.KmlLayer({
-    //     url: '',
-    //     suppressInfoWindows: true,
-    //     map: map
-    //   });
       animatedLines = []
 },
 
@@ -688,7 +690,7 @@ drawLines:function(){
     var self = this;
     var lines=[];
     var request = $.ajax({
-        url:'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createLineJS',
+        url:'http://localhost:8080/JPS_POWSYS/ENVisualization/createLineJS',
         type: 'GET',
         async: true,
         data: { "electricalnetwork":'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork' },
@@ -826,10 +828,6 @@ drawLines:function(){
         // your failure code here
     });
 },
-drawKML: function(specificURL){
-    var map = this.googleMap;
-    drawGenerator(specificURL, map);
-},
 
 animateCircle: function(line,timeOut) {
     var count = 0;
@@ -931,7 +929,6 @@ formatContent: function (attrPairs, uri) {
 setMarkers: function (pps, attrPairs) {
     var self = this;
     self.markers = {};
-    self.kmlLayer = {};
     if(!pps || pps.constructor!== Array){
         return;
     }
