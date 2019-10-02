@@ -363,8 +363,10 @@ public class ShipAgent extends HttpServlet {
 		String iri2 = null;
 		try {
 			iri = joforrec.getString("reactionmechanism");
-			iri2=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
-			//iri2 = joforrec.getString("ship");
+			if (joforrec.has("ship")) {
+				iri2=joforrec.getJSONObject("ship").get("mmsi").toString(); //only get the mmsi instead of full iri
+				//iri2 = joforrec.getString("ship");
+			}
 
 		} catch (JSONException e1) {
 			logger.error(e1.getMessage(), e1);
