@@ -4,10 +4,12 @@ import org.apache.jena.ontology.*;
 import org.apache.jena.query.*;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.Lock;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.ship.model.ShipEntity;
+import uk.ac.cam.cares.jps.ship.model.ShipPollutionEntity;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContextEvent;
@@ -26,7 +28,6 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LocalOntologyModelManager implements ServletContextListener {
 
     private static final String CHIMNEY = "Chimney-1";
-    //private static final String ABSDIR_ROOT = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
     private static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
     private static final String PATH_KB_SHIPS = ABSDIR_ROOT + "/kb/ships/";
     private static final String IRI_KB = "http://www.theworldavatar.com/kb/";
@@ -68,15 +69,13 @@ public class LocalOntologyModelManager implements ServletContextListener {
             "{ ?chimney j7:hasOutput ?wasteStream ." +
             "  ?wasteStream a j4:NonReusableWasteProduct ." +
             "}";
-
-    private static OntModel jenaOwlModel;
+    
     private static OntModel baseChimneyModel;
     private static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, String> speciesMap = new ConcurrentHashMap<>();
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         try {
             baseChimneyModel = createBaseChimneyModel();
             setConcepts();
@@ -88,7 +87,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        jenaOwlModel.close();
+        baseChimneyModel.close();
     }
 
     public static OntModel createChimneyModelForMMSI(String mmsi) throws IOException {
@@ -103,7 +102,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     private static OntModel createModelFromString(String content) {
         byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
-        OntModel model = jenaOwlModel;
+        OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
         model.read(new ByteArrayInputStream(contentBytes), null);
         return model;
     }
@@ -159,7 +158,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
 
-        String filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0]; //update the file locally
+        String filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
 
         File stockDir = new File(filePath2).getParentFile();
 
@@ -185,7 +184,6 @@ public class LocalOntologyModelManager implements ServletContextListener {
         FileOutputStream out = new FileOutputStream(filePath2);
 
         jenaOwlModel.write(out, "RDF/XML-ABBREV");
-        jenaOwlModel.close();
         out.close();
 
         linkChimneyToShip(iriOfChimney, mmsi);
@@ -199,10 +197,11 @@ public class LocalOntologyModelManager implements ServletContextListener {
      */
     private static void linkChimneyToShip(String iriOfChimney, String mmsi) {
         EntityManager em = LocalEntityManagerFactory.createEntityManager();
-        ShipEntity ship = em.find(ShipEntity.class, Integer.decode(mmsi));
-        ship.getShipPollutionByMmsi().setChimneyIri(iriOfChimney);
         em.getTransaction().begin();
-        em.persist(ship);
+        ShipEntity ship = em.find(ShipEntity.class, Integer.decode(mmsi));
+        ShipPollutionEntity pollution = ship.getShipPollutionByMmsi();
+        pollution.setChimneyIri(iriOfChimney);
+        em.persist(pollution);
         em.getTransaction().commit();
     }
 
@@ -212,8 +211,14 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     public static ResultSet query(String sparql, OntModel model) {
         Query query = QueryFactory.create(sparql);
-        QueryExecution queryExec = QueryExecutionFactory.create(query, model);
-        ResultSet rs = queryExec.execSelect();
+        ResultSet rs;
+        model.enterCriticalSection(Lock.READ);
+        try {
+            QueryExecution queryExec = QueryExecutionFactory.create(query, model);
+            rs = queryExec.execSelect();
+        } finally {
+            model.leaveCriticalSection() ;
+        }
 
         return ResultSetFactory.copyResults(rs);
     }
