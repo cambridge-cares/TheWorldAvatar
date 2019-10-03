@@ -113,7 +113,7 @@ public class LoadSpecies {
         
         Collection<Species> ref = refParser.getRefSpecies();
         
-        System.out.println("ref.isEmpty() (LoadSpecies class)" +ref.isEmpty());
+//        System.out.println("ref.isEmpty() (LoadSpecies class)" +ref.isEmpty());
         
 		return ref;
 	}
@@ -136,11 +136,11 @@ public class LoadSpecies {
 
         List<Species> intialAnalysisRefSpecies = new ArrayList<Species>();
         
-        System.out.println("Started reference species used in pre-processing step: ");
+//        System.out.println("Started reference species used in pre-processing step: ");
         
         for(Species r: refSpecies) {
         	
-        	System.out.println("species ref name: " +r.getRef() + " species ref  enthalpy: "  + r.getHf());
+//        	System.out.println("species ref name: " +r.getRef() + " species ref  enthalpy: "  + r.getHf());
         	
         	for(Species vs: validSpecies) {
         	
@@ -152,11 +152,11 @@ public class LoadSpecies {
         	}
         }
         
-        System.out.println("Initial Analysis Ref Species: ");
+//        System.out.println("Initial Analysis Ref Species: ");
         
         for(Species iars: intialAnalysisRefSpecies) {
         	
-        	System.out.println("Species name: " + iars.getRef() + " Enthalpy of formation: " + iars.getHf());
+//        	System.out.println("Species name: " + iars.getRef() + " Enthalpy of formation: " + iars.getHf());
         	
         }
         

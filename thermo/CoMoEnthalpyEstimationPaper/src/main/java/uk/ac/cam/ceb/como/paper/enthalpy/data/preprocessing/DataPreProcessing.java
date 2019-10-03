@@ -141,20 +141,20 @@ public class DataPreProcessing {
                     	
 //                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
                     	
-                    	System.out.println("Atom multiset in refPool");
+//                    	System.out.println("Atom multiset in refPool");
                     	for(Element refpms : refP.getAtomMultiset()){
                     		
 //                    		System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
                     	}
                     	
-                    	System.out.println("Atom map in refPool:");
+//                    	System.out.println("Atom map in refPool:");
                     	for(Map.Entry<String, String> atomM : refP.getAtomMap().entrySet()){
                     		
 //                    		System.out.println(atomM.getKey() + " " + atomM.getValue());
            
                     	}
                     	
-                    	System.out.println("Bond map in refPool:");
+//                    	System.out.println("Bond map in refPool:");
                     	for(Bond bondM : refP.getBondMap()){
                     		
 //                    		System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
@@ -165,7 +165,7 @@ public class DataPreProcessing {
                     refPool.addAll(refSpecies);
                     
 //                    System.out.println("RefPool after adding refSpecies:");
-                    System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation method i class DataPreProcessing) : " +refPool.isEmpty());
+//                    System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation method i class DataPreProcessing) : " +refPool.isEmpty());
 
                         for(Species refP: refPool) {
                     	
@@ -243,7 +243,7 @@ public class DataPreProcessing {
                     	
 //                    	System.out.println("Atom multiset in refPool");
                     	for(Element refpms : refP.getAtomMultiset()){
-                    		
+                    	
 //                    	System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
                     	
                     	}
@@ -259,7 +259,7 @@ public class DataPreProcessing {
                     	for(Bond bondM : refP.getBondMap()){
                     		
 //                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
-           
+                    	
                     	}
                     }
 
@@ -268,6 +268,7 @@ public class DataPreProcessing {
                      * Commented line of code below is used in original code
                      * 
                      */
+                    
 //                  Collections.shuffle(refPool);
                     
                     ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -439,29 +440,31 @@ public class DataPreProcessing {
                             	}
                             }
                             
-                            }                         
+                            } 
+                            
+                            System.exit(0);
+                            
                         }
                         
                         if(!ttipSpecies.isEmpty()){
                         	
                         	for(Species sp: ttipSpecies) {
-                                
-                            
+                        		
                         		/**
                             	 * 
                             	 * Species reference enthalpy and species name.
                             	 * 
                             	 */
                             	
-                            System.out.println("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
+                        System.out.println("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
                             
                             }
                         	
-                            System.out.println("Writting species list...");
+                        System.out.println("Writting species list...");
                             
-                            spWriter.set(ttipSpecies, false);
+                        spWriter.set(ttipSpecies, false);
                             
-                            spWriter.write();
+                        spWriter.write();
                             
                         }
                         
@@ -480,9 +483,12 @@ public class DataPreProcessing {
                     writer.overwrite(true);
                     
                     writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
-//                    writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
+//                  writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
                     
                     writer.write();
+                    
+                    
+                    
                     
                 } catch (Exception e) {
                 

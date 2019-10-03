@@ -35,7 +35,7 @@ import uk.ac.cam.ceb.paper.sort.Sort;
  *         College, February 7, 2017.
  * 
  *         This code requires at least Java 1.8
- *         
+ *
  */
 
 public class LeaveOneOutCrossValidationAlgorithm {
@@ -71,6 +71,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Number of runs.
 	 * 
 	 */
+	
 	static int[] ctrRuns = new int[] {1};
 
 	/**
@@ -78,6 +79,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Number of reactions that will be generated for each species.
 	 * 
 	 */
+	
 	static int[] ctrRes = new int[] {5}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
 
 	/**
@@ -90,19 +92,19 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 	public static void main(String[] args) throws Exception {
 
-		LoadSpecies ls = new LoadSpecies();
+	LoadSpecies ls = new LoadSpecies();
 
-		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing);
+	List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing);
 
-		System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
+	System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
 		
-		LoadSolver lSolver = new LoadSolver();
+	LoadSolver lSolver = new LoadSolver();
 
-		DataPreProcessing dpp = new DataPreProcessing();
+	DataPreProcessing dpp = new DataPreProcessing();
 
-		ErrorBarCalculation errorBarCalculation = new ErrorBarCalculation();
+	ErrorBarCalculation errorBarCalculation = new ErrorBarCalculation();
 
-		System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
+    System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
 
 		/**
 		 * 
@@ -110,7 +112,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * metrics for reactions and species. Recommends a list of rejected species and the list of valid species.
 		 * 
 		 */
-		dpp.getPreProcessingCorssValidation(1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
+    
+	dpp.getPreProcessingCorssValidation(1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
 				spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
 				validReaction, invalidReaction);
 
@@ -119,53 +122,59 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * After completing pre-processing step, it prints valid reactions in txt file and on console.
 		 * 
 		 */
-		BufferedWriter validReactionFile = new BufferedWriter(
+	BufferedWriter validReactionFile = new BufferedWriter(
 				
-				new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
-//				new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
+	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
+//	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
 
-		System.out.println("Valid reactions writing . . . ");
+	System.out.println("Valid reactions writing . . . ");
 
-		errorBarCalculation.generateInitialReactionListFile(validReactionFile, validReaction);
+	errorBarCalculation.generateInitialReactionListFile(validReactionFile, validReaction);
 
 		/**
 		 * 
 		 * Printing invalid reactions in txt file and on console.
 		 * 
 		 */
-		BufferedWriter invalidReactionFile = new BufferedWriter(
-				new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
-//				new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
+	
+	BufferedWriter invalidReactionFile = new BufferedWriter(
+	
+    new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+//	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
-		System.out.println("Invalid reactions writing . . .");
+	System.out.println("Invalid reactions writing . . .");
 
-		errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, invalidReaction);
+	errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, invalidReaction);
 
 		/**
 		 * 
 		 * Printing valid species in txt file and on console.
 		 * 
 		 */
-		System.out.println("Valid species writing . . . ");
+	
+	System.out.println("Valid species writing . . . ");
 
-		BufferedWriter validSpeciesFile = new BufferedWriter(
-				new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
-//				new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
+	BufferedWriter validSpeciesFile = new BufferedWriter(
+	
+	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
+//	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
 
-		errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, validSpecies);
+	errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, validSpecies);
 
 		/**
 		 * 
 		 * Printing invalid species in txt file and on console.
 		 * 
 		 */
-		System.out.println("Invalid species writing . . .");
+	
+	System.out.println("Invalid species writing . . .");
 
-		BufferedWriter invalidSpeciesFile = new BufferedWriter(
-				new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
-//				new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+	BufferedWriter invalidSpeciesFile = new BufferedWriter(
+	
+	new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+//	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
-		errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
+	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
 
 		/**
 		 * 
@@ -176,7 +185,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
 
-		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));	
+		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));
 
 		/**
 		 * 
@@ -210,8 +219,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * set of species. The code takes next species from invalid set of species with
 		 * the maximum error bar and repeats the procedure above. 
 		 * 
-		 * Iteration stops (terminates) if there will be no rejected species that are added into valid set of species. 
-		 * 
+		 * Iteration stops (terminates) if there will be no rejected species that are added into valid set of species.  
 		 * 
 		 * If the cross validation algorithm can not find and generate a number of
 		 * reactions for selected species, then that species will stay as a member of
@@ -223,24 +231,31 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 */
 		
 		/**
+		 * 
 		 * Determines whether a species is added into valid set of species
+		 * 
 		 */
+		
 		boolean addedSpeciesToValidSet=true;
 		
 		int  loop = 1;
 		
 		/**
+		 * 
 		 * Iteration that terminates when there will be not species added to the set of valid species.
+		 * 
 		 */
+		
 		while(addedSpeciesToValidSet) {
 		
-		int iteration = 1;		
+		int iteration = 1;
 		
 		/**
 		 * 
 		 * Set of species that are still member of invalid set of species after completed cross validation.
 		 *  
 		 */
+		
 		Set<Species> tempInvalidSetOfSpecies = new HashSet<Species>();
 		
 		Set<Species> tempValidSpecies = new HashSet<Species>();
@@ -249,44 +264,48 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		
 		int tempValidSpeciesSize = tempValidSpecies.size();
 		
-		
 		/**
-		 * Iteration through a set of invalid species. 
+		 * 
+		 * Iteration through a set of invalid species.
+		 * 
 		 */
+		
 		for (Map.Entry<Species, Double> errorMap : sortedInvalidSpeciesErrorBar.entrySet()) {
 			
-			    System.out.println("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
+		System.out.println("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
 			    
 			    /**
 			     * 
-			     * Skips species that are added into valid set of species;
+			     * Skips species that are added into valid set of species.
 			     * 
 			     */
-			    if(containsSpecies(validSpecies, errorMap.getKey())) {System.out.println("Species skipped: " + errorMap.getKey().getRef());continue; }
+			    
+		if(containsSpecies(validSpecies, errorMap.getKey())) {System.out.println("Species skipped: " + errorMap.getKey().getRef());continue;}
 			     
-				System.out.println("Iteration number: " + iteration);
+		System.out.println("Iteration number: " + iteration);
 				
-				List<Species> targetSpecies = new ArrayList<Species>();
+		List<Species> targetSpecies = new ArrayList<Species>();
 
-				LoadSpecies loadSpeciesInitialAnalysis = new LoadSpecies();
+		LoadSpecies loadSpeciesInitialAnalysis = new LoadSpecies();
 
-				Map<String, Integer[]> mapElPairing = new HashMap<>();
+		Map<String, Integer[]> mapElPairing = new HashMap<>();
 
-				Map<Species, Integer> spinMultiplicity = new HashMap<>();
+		Map<Species, Integer> spinMultiplicity = new HashMap<>();
 
-				Set<Species> all = new HashSet<>();
+		Set<Species> all = new HashSet<>();
 
-				List<Species> srcRefPoolSpecies = new ArrayList<Species>();
+		List<Species> srcRefPoolSpecies = new ArrayList<Species>();
 
-				Collection<Species> invalids = new HashSet<>();
+		Collection<Species> invalids = new HashSet<>();
 
 				/**
 				 * 
 				 * Creates reference set of species from valid set of species generated in
 				 * pre-processing step. Also, adds a species from invalid set of species that is under current investigation  (cross validation) to a
-				 * reference set of species. 
+				 * reference set of species.
 				 * 				 
 				 */
+				
 				srcRefPoolSpecies.addAll(ls.loadReferenceSpeciesForInitialAnalysis(srcRefPool, validSpecies));
 
 				/**
@@ -304,7 +323,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 					System.out.println(s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + s.getBondTypeMultiset());
 				}
 
-				System.out.println("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf() + " , " + errorMap.getKey().getTotalEnergy() + " , " + errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
+				System.out.println("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf() + " , " + errorMap.getKey().getTotalEnergy() + " , " 
+				+ errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
 
 				double targetSpeciesEnthalpy = errorMap.getKey().getHf();
 				
@@ -312,7 +332,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				
 				System.out.println("targetSpeciesEnthalpy: " + targetSpeciesEnthalpy);
 				
-				System.out.println("After updated Hf: ");				
+				System.out.println("After updated Hf: ");
 
 				/**
 				 * 
@@ -324,7 +344,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				
 				targetSpecies.add(errorMap.getKey());
 
-				System.out.println("Species of interest (target species): " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf() + " , " + errorMap.getKey().getTotalEnergy() + " , " 	+ errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
+				System.out.println("Species of interest (target species): " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf() + " , " + 
+				errorMap.getKey().getTotalEnergy() + " , " 	+ errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
 
 				loadSpeciesInitialAnalysis.loadSpeciesPropertiesInitialAnalysis(srcRefPoolSpecies, targetSpecies, all,spinMultiplicity, srcCompoundsRef, mapElPairing, invalids);
 				
@@ -336,7 +357,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 						targetSpecies, srcCompoundsRef, spinMultiplicity, mapElPairing, tempFolder, invalids, all, validSpecies, targetSpeciesEnthalpy, currentErrorBar);
 				
 				iteration++;
-				
 			}
 		
 	System.out.println("Updated valid set of species after ("  + loop + ".) loop through the set of invalid species in initial analysis:");
@@ -359,8 +379,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies);
 	
 	/**
-	 * If there are not more invalid species that will be added to valid set of species then addedSpeciesToValidSet=false; 
+	 * 
+	 * If there are not more invalid species that will be added to valid set of species then addedSpeciesToValidSet=false;
+	 *  
 	 */
+	
 	if(tempInvalidSetOfSpecies.isEmpty()) {
 		
 		addedSpeciesToValidSet=false;
@@ -371,22 +394,22 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * If there are not species added to the list of valid species then iteration process terminates.
 	 * 
 	 */
+	
 	if(addedSpeciesToValidSet) {	
 
 		System.out.println("addedSpeciesToValidSet: " + addedSpeciesToValidSet);
 
 	} else {
 		
-		System.out.println("After the (" + loop +".) loop through invalid set of species, there are not species from invalid set of species that are added into valid set of species.");
-		
-
+	System.out.println("After the (" + loop +".) loop through invalid set of species, there are not species from invalid set of species that are added into valid set of species.");
+	
 	}
 	
 	System.out.println("After (" + loop + ".) loop the set of invalid species is:");
 	
 	for(Species s: tempInvalidSetOfSpecies) {
 	
-		System.out.println(s.getRef() + " " + s.getHf());		
+		System.out.println(s.getRef() + " " + s.getHf());
 	}
 	
 	loop++;
@@ -396,6 +419,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Size of species could be large. It means we need to change int -> BigInteger
 	 * 
 	 */
+	
 	int validSpeciesSize = validSpecies.size();
 	
 	/**
@@ -403,6 +427,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * After passing through all invalid species, If there are not more invalid species that are added into valid set of species then the algorithms terminates.
 	 *  
 	 */
+	
 	if(tempValidSpeciesSize==validSpeciesSize) {
 	
 		System.out.println("Cross Validattion algorithm terminated (completed).");
@@ -410,7 +435,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		break;
 	}
 	
-	} ;
+	};
 	
 		/**
 		 * 
@@ -437,6 +462,5 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	     }
 	     
 	     return contains;
-	}
-	
+	}	
 }
