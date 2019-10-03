@@ -1,6 +1,7 @@
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * 
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool;
 
@@ -28,30 +29,29 @@ public class SpeciesPoolParser extends CSVParser {
     public SpeciesPoolParser() {
     	
         super();
-        
+    
     }
 
     public SpeciesPoolParser(File file) throws Exception {
     	
-        super(file);
+    super(file);
         
     }
 
     @Override
     public void parse() throws FileNotFoundException, IOException {
     	
-        refSpecies = new HashSet<>();
+    refSpecies = new HashSet<>();        
+    speciesOfInterest = new HashSet<>();
         
-        speciesOfInterest = new HashSet<>();
+    CSVReader reader = new CSVReader(new FileReader(f)); //use comma as a separator
         
-        CSVReader reader = new CSVReader(new FileReader(f)); //use comma as a separator
+    String[] line;
         
-        String[] line;
-        
-        int ctrLine = 1;
+    int ctrLine = 1;
 
-        // parse body
-        while ((line = reader.readNext()) != null) {
+    // parse body
+    while ((line = reader.readNext()) != null) {
         	
             if (line.length != 5 && line.length != 6) {
             	
@@ -108,12 +108,14 @@ public class SpeciesPoolParser extends CSVParser {
                     
                 }
             }
+            
             ctrLine++;
         }
     }
 
     @Override
     public void clear() throws Exception {
+    	
         refSpecies = new HashSet<>();
         speciesOfInterest = new HashSet<>();
         f = null;

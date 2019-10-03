@@ -4,17 +4,20 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
-import com.cmclinnovations.data.collections.ObjectPool;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.Calculator;
 
 /**
  *
  * @author pb556
+ * 
  */
+
 public abstract class ObjectPoolCalculator extends Calculator {
     
     protected ObjectPool<Species> pool = null;

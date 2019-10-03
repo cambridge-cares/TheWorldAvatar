@@ -5,6 +5,7 @@
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.junit.Ignore;
@@ -36,8 +37,22 @@ public class ISGTerminalGLPKSolverTest {
         // read species pool
         SpeciesPoolParser parser = new SpeciesPoolParser(new File("test_data/test_set.csv"));
         parser.parse();
-        HashSet<Species> allSpecies = (HashSet<Species>) parser.getRefSpecies();
-        HashSet<Species> soi = (HashSet<Species>) parser.getSpeciesOfInterest();
+        
+        /**
+         * @author nk510 (caresssd@hermes.ca.ac.uk)
+         * Two lines below are added. We made changes: 
+         * 1. HashSet<Species> allSpecies - > ArrayList<Species> allSpecies
+         * 2. HashSet<Species> soi -> ArrayList<Species> soi
+         */
+      ArrayList<Species> allSpecies = (ArrayList<Species>) parser.getRefSpecies();
+      ArrayList<Species> soi = (ArrayList<Species>) parser.getSpeciesOfInterest();
+        
+        /**
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Two lines below are commented from original source code.
+         */
+//        HashSet<Species> allSpecies = (HashSet<Species>) parser.getRefSpecies();
+//        HashSet<Species> soi = (HashSet<Species>) parser.getSpeciesOfInterest();
         
         LPSolver solver = new TerminalGLPKSolver(true, true);
         solver.setDirectory(new File("test_data/"));

@@ -22,6 +22,7 @@ import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
  * @author pb556
  * 
  */
+
 public class Species {
 
     private String ref;
@@ -44,6 +45,7 @@ public class Species {
      *
      * @param ref reference of <code>T</code> type for looking up.
      */
+    
     public Species(String ref) {
         this.ref = ref;
     
@@ -315,7 +317,7 @@ public class Species {
             s.addBond(b.clone());
         }
         
-        System.out.println("Class Species: method clone(): species name: " + s.getRef() + " Hf: " + s.getHf() + " atom map: " + s.getAtomMap());
+//        System.out.println("Class Species: method clone(): species name: " + s.getRef() + " Hf: " + s.getHf() + " atom map: " + s.getAtomMap());
         
         return s;
     }
@@ -341,6 +343,8 @@ public class Species {
                 }
             }
         }
+        
         return element + ctr;
+        
     }
 }

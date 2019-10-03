@@ -8,6 +8,15 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species;
  *
  * @author pb556
  */
+
+/**
+ * 
+ * @author nk510 (caresssd@hermes.cam.ac.uk)
+ * mvn message: Some input files use unchecked or unsafe operations.
+ *
+ * @param <T>
+ */
+
 public class Bond<T> {
 
     protected BondType bondType = BondType.SINGLE;

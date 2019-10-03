@@ -6,11 +6,13 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlec
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.cmclinnovations.data.collections.ObjectPool;
 
@@ -36,24 +38,28 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
 
     protected HashMap<Species, ReactionList> result = null;
     protected PoolModificationCalculator calc = null;
-    protected int numResults = 25; 
-    protected int maxDepth = 100; 
+    protected int numResults = 25;
+    protected int maxDepth = 100;
     protected int maxSearches = Integer.MAX_VALUE;
     protected ReactionList reactionList = new ReactionList();
     protected int numSearches = 0;
-
+    
     public PoolModificationCalculator(int numResults) {
+    	
         super();
         this.numResults = numResults;
+        
     }
 
     public PoolModificationCalculator(int numResults, LPSolver solver, LPFormat format, ObjectPool<Species> pool) {
+    	
         super(solver, format);
         this.pool = pool;
         result = new HashMap<Species, ReactionList>();
         this.numResults = numResults;
+        
     }
-
+    
     public PoolModificationCalculator(int numResults, LPSolver solver, LPFormat format) {
     	
         super(solver, format);
@@ -63,56 +69,77 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
     }
 
     public PoolModificationCalculator(int numResults, LPSolver solver, LPFormat format, SpeciesFilter filter) {
+    	
         super(solver, format, filter);
         result = new HashMap<Species, ReactionList>();
         this.numResults = numResults;
+        
     }
 
     public PoolModificationCalculator(int numResults, LPSolver solver, LPFormat format, SpeciesFilter filter, ObjectPool<Species> pool) {
+    	
         super(solver, format, filter);
         this.pool = pool;
         result = new HashMap<Species, ReactionList>();
         this.numResults = numResults;
+        
     }
 
     public int getMaximumNumberOfResults() {
+    	
         return numResults;
+        
     }
 
     public int getMaximumSearchDepth() {
+    	
         return maxDepth;
+        
     }
 
     public int getMaximumNumberOfSearchPools() {
+    	
         return maxSearches;
+        
     }
 
     public void setProperties(int numResults, int depth, int searches) {
+    	
         setMaximumNumberOfResults(numResults);
         setMaximumNumberOfSearchPools(searches);
         setMaximumSearchDepth(depth);
+        
     }
 
     public void setMaximumNumberOfResults(int numResults) {
+    	
         if (numResults > 0) {
+        	
             this.numResults = numResults;
+            
         } else {
+        	
             // logger warning!
+        	
         }
     }
 
     public void setMaximumSearchDepth(int depth) {
-        if (depth > 0) {
+        
+    	if (depth > 0) {
+        	
             this.maxDepth = depth;
+            
         } else {
-            // logger warning!
+        	
+            //logger warning!
         }
     }
 
     public void setMaximumNumberOfSearchPools(int searches) {
     	
         if (searches > 0) {
-        	
+
             this.maxSearches = searches;
             
         } else {
@@ -121,21 +148,21 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
         }
     }
 
-    //(2)
+    //(2.) method
     @Override
     public void calculate(Collection<Species> targetSpecies) throws Exception {
     	
         HashMap<Species, ReactionList> sol = new HashMap<Species, ReactionList>();
         
-        for (Species s : targetSpecies) {
+        for (Species s : targetSpecies){
         	
-        	System.out.println("(2)calculate PoolModificationCalculator(calculate(Collection<Species> targetSpecies)) - speciesRef :  " + s.getRef());
+//        	System.out.println("(2)calculate PoolModificationCalculator(calculate(Collection<Species> targetSpecies)) - speciesRef :  " + s.getRef());
         	
             reactionList = new ReactionList();
             
             numSearches = 0;
             
-            //(3)
+            //(3.) method
             calculate(0, s, pool);
             
             sol.put(s, reactionList);
@@ -143,34 +170,35 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
             Collection<Reaction> reaction = reactionList.getCollection();
             
             //Print products and reactants
-            for(Reaction r: reaction) {
+            for(Reaction r: reaction){
             	
-            	Map<Species, Double> reactants = r.getReactants();
+           Map<Species, Double> reactants = r.getReactants();
             	
-            	System.out.println("(2)calculate - - - - - - - -PoolModificationCalculator(calculate (reactants)- - - - - - - - - - - - - ");
+//         System.out.println("(2)calculate - - - - - - - -PoolModificationCalculator(calculate (reactants)- - - - - - - - - - - - - ");
             	
-            	for(Map.Entry<Species, Double> r1: reactants.entrySet()) {
+           for(Map.Entry<Species, Double> r1: reactants.entrySet()){
             		
-            		System.out.println("(2)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
-               }
+//         System.out.println("(2)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
+           
+           }
+
+//         System.out.println("(2)calculate - - - - - - -  - /end reactants - - - - - - - - - - - - -  ");
                
-               System.out.println("(2)calculate - - - - - - -  - /end reactants - - - - - - - - - - - - -  ");
-               
-               Map<Species,Double> products = r.getProducts();
+           Map<Species,Double> products = r.getProducts();
            	   
-               System.out.println("(2)calculate - - - - - - - -PoolModificationCalculator(calculate (products) - - - - - - - - - - - - - ");
+//         System.out.println("(2)calculate - - - - - - - -PoolModificationCalculator(calculate (products) - - - - - - - - - - - - - ");
            	   
-               for(Map.Entry<Species, Double> r2: products.entrySet()) {
+           for(Map.Entry<Species, Double> r2: products.entrySet()) {
                
-               System.out.println("(2)calculate r2.getKey().getRef(): " + r2.getKey().getRef()+ "  r2.getValue(): " + r2.getValue());
+//         System.out.println("(2)calculate r2.getKey().getRef(): " + r2.getKey().getRef()+ "  r2.getValue(): " + r2.getValue());
                
-               }
+           }
+           
+//         System.out.println("(2)calculate - - - - - - - -/end products - - - - - - - - - - - - -  ");
                
-               System.out.println("(2)calculate - - - - - - - -/end products - - - - - - - - - - - - -  ");
+//         System.out.println();
                
-               System.out.println();
-               
-            }
+           }
         }
         
         result = sol;
@@ -179,270 +207,322 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
         
     }
 
-    //(1)
+    //(1.) method
     @Override
     public void calculate(Species targetSpecies) throws Exception {
     	
-    	System.out.println("PoolModCalc class: ((1)calculate PoolModificationCalculator class) Calculate " + targetSpecies.getRef());
+//    	System.out.println("PoolModCalc class: ((1)calculate PoolModificationCalculator class) Calculate " + targetSpecies.getRef());
     	
         Set<Species> set = new HashSet<Species>();
         
         set.add(targetSpecies);
         
-        System.out.println("PoolModCalc class: (1)calculate set.add("+ targetSpecies.getRef()+ "):");
+//      System.out.println("PoolModCalc class: (1)calculate set.add("+ targetSpecies.getRef()+ "):");
         
         for(Species sset: set) {
         	
-        	System.out.println("PoolModCalc class: Species added to set //(1) calculate method: Species name: " + sset.getRef() + "  " + sset.getHf());
+//      System.out.println("PoolModCalc class: Species added to set //(1) calculate method: Species name: " + sset.getRef() + "  " + sset.getHf());
+        	
         }
         
-        //(2)
+        //(2.) method
         calculate(set);
         
         result.put(targetSpecies, reactionList);
         
-        System.out.println("(1)calculate- - -  - - - -  - - - - - - result.put(targetSpecies, reactionList); - - - - -  - - - - - - - - - - - -");
+//      System.out.println("(1)calculate- - -  - - - -  - - - - - - result.put(targetSpecies, reactionList); - - - - -  - - - - - - - - - - - -");
         
         for(Map.Entry<Species, ReactionList> resultMap : result.entrySet()) {
         	
-        System.out.println("(1)calculate resultMap.getKey().getRef(): " + resultMap.getKey().getRef());
+//      System.out.println("(1)calculate resultMap.getKey().getRef(): " + resultMap.getKey().getRef());
         	
         Collection<Reaction> reactionCollection = resultMap.getValue().getCollection();
         	
         for(Reaction rL1: reactionCollection) {
         		
         Map<Species, Double> reactants1 = rL1.getReactants();
-        		
-        System.out.println("(1)calculate ----------------------Reactants------------------------------");
+       
+//      System.out.println("(1)calculate ----------------------Reactants------------------------------");
 
         for(Map.Entry<Species, Double> r1: reactants1.entrySet()) {
             		
-            		System.out.println("(1)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
+//      System.out.println("(1)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
+        	
             	}
         		
-        		System.out.println("(1)calculate ---------------------/Reactants------------------------------");
+//        		System.out.println("(1)calculate ---------------------/Reactants------------------------------");
         		
-        		System.out.println("(1)calculate ----------------------Products------------------------------");
+//        		System.out.println("(1)calculate ----------------------Products------------------------------");
         		
-        		Map<Species, Double> products1 = rL1.getProducts();
+        Map<Species, Double> products1 = rL1.getProducts();
         		
-        		for(Map.Entry<Species, Double> r2: products1.entrySet()) {
-            		
-            		System.out.println("(1)calculate r2.getKey().getRef(): " + r2.getKey().getRef() + " r2.getValue(): " + r2.getValue());
-            	}
-
-        		System.out.println("(1)calculate ----------------------/Products------------------------------");
-        	}
+        for(Map.Entry<Species, Double> r2: products1.entrySet()) {
+        	
+//      System.out.println("(1)calculate r2.getKey().getRef(): " + r2.getKey().getRef() + " r2.getValue(): " + r2.getValue());
+        	
         }
         
-        System.out.println("- - - - - - - - - - - - - - - - - - - - -(1)calculate- - - - - - - - - - - - - - - - - - - - - - - - - - -");
+//      System.out.println("(1)calculate ----------------------/Products------------------------------");
+        
+        }
+        
+        }
+        
+//      System.out.println("- - - - - - - - - - - - - - - - - - - - -(1)calculate- - - - - - - - - - - - - - - - - - - - - - - - - - -");
         
     }
     
     /**
      * 
-     * @author NK510
+     * @author nk510
      * @param s1 The HashMap that contains reactant species.
      * @param s2 The HashMap that contains products species.
      * @return True if species from reactants and products reference (name) species are equal. Size of products and reactants is one.
      *  
      */
+    
     public static boolean equals(Map<Species,Double> s1, Map<Species, Double> s2) {
 
-    	for(Map.Entry<Species, Double> r1: s1.entrySet()) {
+    for(Map.Entry<Species, Double> r1: s1.entrySet()) {
 
-    	for(Map.Entry<Species, Double> p1: s2.entrySet()) {
+    for(Map.Entry<Species, Double> p1: s2.entrySet()) {
 
-    		if((!r1.getKey().getRef().equalsIgnoreCase(p1.getKey().getRef()))) {
+    if((!r1.getKey().getRef().equalsIgnoreCase(p1.getKey().getRef()))) {
     			
-    			return false;
-    		}
-    	  }
-    	}
-    	
-    	return true;
+    return false;
+    		
+       }
+      }
     }
     
-    //(3)
+   	return true;
+   	
+    }
+    
+    //(3.) method
     protected void calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) throws LpSolverException {
     	
-    	System.out.println("(3)calculate numSearches: " + numSearches + " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "depth : " + depth );
+//    	System.out.println("(3)calculate numSearches: " + numSearches + " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "depth : " + depth );
     	
-    	System.out.println("(3)calculate numSearches: " + numSearches + " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "Species targetSpecies : " + targetSpecies.getRef()  + "  " + targetSpecies.getHf());
+//    	System.out.println("(3)calculate numSearches: " + numSearches + " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "Species targetSpecies : " + targetSpecies.getRef()  + "  " + targetSpecies.getHf());
 
-    	System.out.println("(3)calculate numSearches: " + numSearches + " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "ObjectPool<Species> refPool : refPool.getInvalidatedObjects() " );
+//    	System.out.println("(3)calculate numSearches: " + numSearches + " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "ObjectPool<Species> refPool : refPool.getInvalidatedObjects() " );
     	
     	for(Species refs: refPool.getInvalidatedObjects()) {
     	
-    		System.out.println("(3)calculate numSearches: " + numSearches + " Species name: " + refs.getRef() + "  Hf: " + refs.getHf() +  " refs.getBondTypeMultiset(): "  +refs.getBondTypeMultiset());
+//    	System.out.println("(3)calculate numSearches: " + numSearches + " Species name: " + refs.getRef() + "  Hf: " + refs.getHf() +  " refs.getBondTypeMultiset(): "  +refs.getBondTypeMultiset());
+    	
     	}
 
-    	System.out.println("(3)calculate numSearches: " + numSearches +  " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "ObjectPool<Species> refPool : refPool.getValidatedObjects() " );
+//    	System.out.println("(3)calculate numSearches: " + numSearches +  " PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool)" +  "ObjectPool<Species> refPool : refPool.getValidatedObjects() " );
     	
     	for(Species refs: refPool.getValidatedObjects()) {
     		
-    		System.out.println("(3)calculate numSearches: " + numSearches + " Species name: " + refs.getRef() + "  Hf: " + refs.getHf() +  " refs.getBondTypeMultiset(): "  + refs.getBondTypeMultiset());
-    		
+//    	System.out.println("REF POOL VALIDATED OBJECTS: PoolModificationCalculator class : (3)calculate numSearches: " + numSearches + " Species name: " + refs.getRef() + "  Hf: " + refs.getHf() +  " refs.getBondTypeMultiset(): "  + refs.getBondTypeMultiset());
+    	
     	}
     	
         numSearches++;
         
-        
         /**
-         * Commented line below is used in original code
+         * 
+         * Commented line below is used in original code.
+         * 
          */
-//      Solver enthalpySolver = new Solver(solver, format, new VariableFactory("v"));
         
-        Solver enthalpySolver = new Solver(this.getSolver(), this.getFormat(), new VariableFactory("v"));
-        
+        Solver enthalpySolver = new Solver(solver, format, new VariableFactory("v"));
+      
+//      Solver enthalpySolver = new Solver(this.solver, this.format, new VariableFactory("v"));
+      
         /**
          * 
          * Added: ObjectPool p -> ObjectPool<Species> p
          * 
          */
+    
         ObjectPool<Species> p = SolverHelper.clone(refPool);
+      
+        Collection<Species> species =  (ArrayList<Species>)p.getValidatedObjects();
+    
+     /**
+      * 
+      * @author nk510 (caresssd@hermes.cam.ac.uk)
+      * Sorted list of Species
+      * 
+      */
+     List<Species> sortedList = species.stream()
+    			.sorted(Comparator.comparing(Species::getRef)
+    			.reversed())
+    			.collect(Collectors.toList());
+     
+     /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Below line is commented from original source code.
+         * 
+         */
+     
+//  Collections.shuffle(species);
         
-        ArrayList<Species> species = (ArrayList<Species>) p.getValidatedObjects();
-        
+    for(Species s: sortedList) {
+    	
         /**
          * 
          * @author nk510 (caresssd@hermes.cam.ac.uk)
          * Below line is commented from original source code.
-         *  
-         */
-//        Collections.shuffle(species); 
-        
-        for(Species s: refPool.getValidatedObjects()) {
-        /**
          * 
-         * @author nk510 (caresssd@hermes.cam.ac.uk)
-         * Below line is commented from original source code.
-         *  
          */
-//        for (Species s : species) {
+    	
+//  System.out.println("PoolModificationCalculator: method //(3) calculate(...):  BEFORE enthalpySolver.addReferenceSpecies(s): " + s.getRef() +" , " + s.getHf());
+    
+//  for (Species s : species) {
         
-        System.out.println("PoolModificationCalculator: method //(3) calculate(...): species name: " + s.getRef() +" , " + s.getHf());
+    enthalpySolver.addReferenceSpecies(s);
         
-        enthalpySolver.addReferenceSpecies(s);
-        
-        
-        }
+    }
+//    System.out.println("Sorted species added to reference list:");
 
-        try {
-        	
-            Reaction r = enthalpySolver.solve(targetSpecies);          
+      for(Species s: sortedList) {
+    	
+//    System.out.println("PoolModificationCalculator: method //(3) calculate(...):  AFTER enthalpySolver.addReferenceSpecies(s): " + s.getRef() +" , " + s.getHf());
+    }
+    
+    try {
+        
+    Reaction r = enthalpySolver.solve(targetSpecies);
         	
             /**
              * 
-             * @author NK510
+             * @author nk510 (caresssd@hermes.cam.ac.uk)
              * Checks whether reactants are equal to products.
              * 
              */
             
-            //here adds reactions to reaction list
-            if (!reactionList.has(r)) {
+      //here adds reactions to reaction list
+      if (!reactionList.has(r)){
             	
-         	System.out.println("(3)calculate numSearches after increase: " + numSearches + " PoolModificationCalculator.equals(r.getProducts(), r.getReactants(): - whether products and reactants are equal:  " + PoolModificationCalculator.equals(r.getProducts(), r.getReactants()));
+//    System.out.println("(3)calculate numSearches after increase: " + numSearches + " PoolModificationCalculator.equals(r.getProducts(), r.getReactants(): - whether products and reactants are equal:  " + PoolModificationCalculator.equals(r.getProducts(), r.getReactants()));
             	
-            	if(!PoolModificationCalculator.equals(r.getProducts(), r.getReactants())) {
-            	
-                reactionList.add(r);
+      if(!PoolModificationCalculator.equals(r.getProducts(), r.getReactants())) {
+      
+      reactionList.add(r);
                 
-            	}
-        }            
+      }
+      
+      }            
            
-        Collection<Reaction> reac = reactionList.getCollection();
+      Collection<Reaction> reac = reactionList.getCollection();
             
-        //Print products and reactants
-        for(Reaction r12: reac) {
+      //Print products and reactants
+      for(Reaction r12: reac) {
             	
-            	Map<Species, Double> reactantss = r12.getReactants();
+      Map<Species, Double> reactantss = r12.getReactants();
             	
-            	System.out.println("(3)calculate numSearches after increase: " + numSearches + "- - - - - - - -PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) - - - - - - - - - - - - -");
+//    System.out.println("(3)calculate numSearches after increase: " + numSearches + "- - - - - - - -PoolModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) - - - - - - - - - - - - -");
             	
-            	for(Map.Entry<Species, Double> r1: reactantss.entrySet()) {
+      for(Map.Entry<Species, Double> r1: reactantss.entrySet()) {
             		
-            		System.out.println("(3)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
+//            	System.out.println("(3)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
             	}
             	
-               System.out.println("- - - - - - -  - /reactants - - - - - - - - - - - - -  ");
+//               System.out.println("- - - - - - -  - /reactants - - - - - - - - - - - - -  ");
             	
                Map<Species,Double> productss = r12.getProducts();
 
            	
-               System.out.println("(3)calculate numSearches after increase: " + numSearches + "- - - - - - -  -PoolModificationCalculator(calculate (calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) - - - - - - - - - - - - - ");
+//               System.out.println("(3)calculate numSearches after increase: " + numSearches + "- - - - - - -  -PoolModificationCalculator(calculate (calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) - - - - - - - - - - - - - ");
 
            	
                for(Map.Entry<Species, Double> r2: productss.entrySet()) {
             	   
-            	   System.out.println("(3)calculate numSearches after increase: " + numSearches + " r2.getKey().getRef(): " + r2.getKey().getRef()+ "  r2.getValue(): " + r2.getValue());
+//               System.out.println("(3)calculate numSearches after increase: " + numSearches + " r2.getKey().getRef(): " + r2.getKey().getRef()+ "  r2.getValue(): " + r2.getValue());
                }
             	
-               System.out.println("(3)calculate numSearches after increase: " + numSearches + "- - - - - - -  - /products - - - - - - - - - - - - -  ");
+//               System.out.println("(3)calculate numSearches after increase: " + numSearches + "- - - - - - -  - /products - - - - - - - - - - - - -  ");
                
-            	System.out.println();
+//            	System.out.println();
             }
             
-        System.out.println("(3)calculate numSearches after increase: " + numSearches + " Passed PoolModification Calculator() after listing reactants and products");
+//    System.out.println("(3)calculate numSearches after increase: " + numSearches + " Passed PoolModification Calculator() after listing reactants and products");
             
-        if (reactionList.size() >= numResults || depth >= maxDepth || numSearches > maxSearches) { 
+      if (reactionList.size() >= numResults || depth >= maxDepth || numSearches > maxSearches) { 
           
-        return;
+      return;
           
-        }            
-           ArrayList list = new ArrayList<Species>();
-            
-           for (Species s : r.getProducts().keySet()) {
+      }            
+      
+      ArrayList list = new ArrayList<Species>();
+           
+      for (Species s : r.getProducts().keySet()) {
             	
-           System.out.println("(3)calculate numSearches after increase: " + numSearches + " PollModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) throws LpSolverException) - product: " + s.getRef());
+//    System.out.println("(3)calculate numSearches after increase: " + numSearches + " PollModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) throws LpSolverException) - product: " + s.getRef());
             	
-           if (!s.equals(targetSpecies, false)) {
+      if (!s.equals(targetSpecies, false)) {
                 	
-           list.add(s);
+      list.add(s);
 
-           }
-                
-           //p.invalidate(s);
+      }
+      
+      //p.invalidate(s);
            
            }
             
             for (Species s : r.getReactants().keySet()) {
             
-            System.out.println("(3)calculate numSearches after increase: " + numSearches + "PollModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) throws LpSolverException) - reactant: " + s.getRef());
+//          System.out.println("(3)calculate numSearches after increase: " + numSearches + "PollModificationCalculator(calculate(int depth, Species targetSpecies, ObjectPool<Species> refPool) throws LpSolverException) - reactant: " + s.getRef());
             	
             if (!s.equals(targetSpecies, false)) {
             		
-                    list.add(s);                    
+            list.add(s);
+            
             }
                 
             //p.invalidate(s);
+            
             }
             
             //List combs = any(list.size(), list);
             List combs = Combination.compute(list);
             
             for (int i = 0; i < combs.size(); i++) {
-                List<Species> l = (List<Species>) combs.get(i);
+            	
+                List<Species> l = (ArrayList<Species>) combs.get(i);
+                
                 for (Species s : l) {
+                	
                     p.invalidate(s);
+                    
                 }
+                
                 try {
+                	
                 	//(3)
                     calculate(depth++, targetSpecies, p);
+                    
                 } catch (OutOfMemoryError oome) {
+                	
                     System.gc();
                     return;
+                    
                 } catch (Exception e) {
+                	
                     for (int j = i + 1; j < combs.size(); j++) {
+                    	
                         List<Species> lCheck = (List<Species>) combs.get(i);
+                        
                         boolean identified = true;
+                        
                         for (Species s : l) {
+                        	
                             if (!lCheck.contains(s)) {
+                            	
                                 identified = false;
                                 break;
                             }
                         }
+                        
                         if (identified) {
+                        	
                             combs.remove(j);
                             j--;
                         }
@@ -451,7 +531,7 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
                 
                 for (Species s : l) {
                 	
-                    p.validate(s);
+                p.validate(s);
                     
                 }
                 
@@ -459,7 +539,9 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
                     return;
                 }
             }
-        } catch (Exception e) {
+            
+        }catch (Exception e){
+        
         }
     }
 

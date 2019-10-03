@@ -28,8 +28,11 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 public abstract class CSVParser extends FileParser<Set<Species>> {
     
     private Logger logger = Logger.getLogger(getClass());
+ 
     protected HashSet<Species> refSpecies = new HashSet<Species>();
+    
     protected HashSet<Species> speciesOfInterest = new HashSet<Species>();
+    
     protected HashMap<Species, String> speciesFlags = new HashMap<Species, String>();
     
     /**
@@ -56,7 +59,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
     public Set<Species> getRefSpecies(String validFlag) {
         return get(refSpecies, validFlag);
     }
-
+    
     public Set<Species> getSpeciesOfInterest(String validFlag) {
         return get(speciesOfInterest, validFlag);
     }
@@ -77,6 +80,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
         return valid;
     }
 
+    
     public Set<Species> getRefSpecies() {
         return refSpecies;
     }
@@ -89,7 +93,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
     	
     	return targetSpecies;
     }
-
+    
     public Set<Species> getSpeciesOfInterest() {
         return speciesOfInterest;
     }
@@ -192,6 +196,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
         }
         return null;
     }
+    
     
     protected HashSet<Species> get(HashSet<Species> pool, String flag) {
         HashSet<Species> species = new HashSet<Species>();

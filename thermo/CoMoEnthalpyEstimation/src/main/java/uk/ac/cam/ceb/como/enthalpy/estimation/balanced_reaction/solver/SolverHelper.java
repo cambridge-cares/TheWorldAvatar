@@ -249,9 +249,10 @@ public class SolverHelper {
         	
             Species s = (Species) o;
             
-//            System.out.println("SolverHelper class: ObjectPool clone() method: " + s.getRef() + " , " + s.getHf());
-            
             clone.add(s.clone(), Boolean.FALSE);
+            
+//          System.out.println("SolverHelper class: ObjectPool clone() method: " + s.getRef() + " , " + s.getHf() + " s.clone().getRef(): " + s.clone().getRef());
+            
         }
         
         for (Object o : pool.getInvalidatedObjects()) {

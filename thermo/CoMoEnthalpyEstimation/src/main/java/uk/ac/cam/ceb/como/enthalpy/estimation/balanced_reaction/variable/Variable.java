@@ -23,4 +23,27 @@ public class Variable {
         this(name);
         this.value = value;
     }
+
+    /**
+     * 
+     * @author nk510 (caresssd@hermes.cam.ac.uk)
+     * Getter and setter methods generated.
+     * 
+     * @return
+     */
+	public Number getValue() {
+		return value;
+	}
+
+	public void setValue(Number value) {
+		this.value = value;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getAbsName() {
+		return absName;
+	}
 }

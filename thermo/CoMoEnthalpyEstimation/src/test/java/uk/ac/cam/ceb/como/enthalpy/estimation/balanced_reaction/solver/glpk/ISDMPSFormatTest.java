@@ -4,26 +4,21 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.MockSpecies;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableFactory;
 import java.io.File;
 import java.io.FileNotFoundException;
-
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import org.apache.commons.io.FileUtils;
+
+import org.junit.Ignore;
+import org.junit.Test;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import com.cmclinnovations.data.collections.ObjectPool;
-import org.junit.Ignore;
-import org.junit.Test;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableFactory;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
 
 /**
  *
@@ -45,7 +40,16 @@ public class ISDMPSFormatTest {
         refParser.parse();
         
         Collection<Species> soi = soiParser.getSpeciesOfInterest();
-        Set<Species> ref = (Set<Species>) refParser.getRefSpecies();
+        
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Line below is commented from original source code.
+         * 
+         */
+        
+      HashSet<Species> ref = (HashSet<Species>) refParser.getRefSpecies();
+        
         
         for (Species target : soi) {
             MPSFormat f = new MPSFormat(true, new ISDReactionType());

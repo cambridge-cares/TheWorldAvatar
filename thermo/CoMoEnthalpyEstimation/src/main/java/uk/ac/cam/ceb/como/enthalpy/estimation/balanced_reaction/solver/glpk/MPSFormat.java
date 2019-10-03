@@ -8,11 +8,14 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -36,7 +39,9 @@ public class MPSFormat implements LPFormat {
     protected String description = "enthalpy_estimator";
     private String lineSep = System.getProperty("line.separator");
     private Species targetSpecies;
-    private Set<Species> speciesSet;
+
+    private Set<Species> speciesSet;    
+    
     private VariableSet vSet;
     private boolean intOnly;
     protected ReactionType reactionType;
@@ -61,8 +66,23 @@ public class MPSFormat implements LPFormat {
     
     @Override
     public String getInputString(Species species, Set<Species> speciesSet, VariableSet vSet) {
+    	
         this.targetSpecies = species;
-        this.speciesSet = speciesSet;
+        
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk).
+         * Added sorted species set.
+         * 
+         */
+        Set<Species> sortedSpeciesSet = new HashSet<Species>();
+        
+        sortedSpeciesSet = speciesSet.stream()
+       			.sorted(Comparator.comparing(Species::getRef)
+       			.reversed())
+       			.collect(Collectors.toSet());
+        
+        this.speciesSet = sortedSpeciesSet;
         this.vSet = vSet;
         return buildLpSolveInputString();
     }
@@ -315,5 +335,5 @@ public class MPSFormat implements LPFormat {
             Variable variable = vSet.getVariableOf(sp);
             //logger.trace(sp + " -> " + variable.name);
         }
-    }
+    }   
 }
