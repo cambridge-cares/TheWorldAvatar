@@ -78,10 +78,11 @@ public class LocalOntologyModelManager implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         try {
             baseChimneyModel = createBaseChimneyModel();
+        } catch (IOException e) {
+            throw new JPSRuntimeException("Could not create base model for chimney: " + PATH_BASE_CHIMNEY);
+        } finally {
             setConcepts();
             setSpecies();
-        } catch (IOException e) {
-            throw new JPSRuntimeException("Could not create base model for chimney.");
         }
     }
 
@@ -118,24 +119,28 @@ public class LocalOntologyModelManager implements ServletContextListener {
     }
 
     private void setConcepts() {
-        conceptMap.put(CPT_NUMVAL, baseChimneyModel.getDatatypeProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_NUMVAL));
-        conceptMap.put(CPT_HASPROP, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_HASPROP));
-        conceptMap.put(CPT_HASVAL, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_HASVAL));
-        conceptMap.put(CPT_HASUOM, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_HASUOM));
-        conceptMap.put(CPT_SCLVAL, baseChimneyModel.getOntClass(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_SCLVAL));
-        conceptMap.put(CPT_CONTAINS, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_CONTAINS));
-        conceptMap.put(CPT_PMAMT, baseChimneyModel.getOntClass(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_PMAMT));
-        conceptMap.put(CPT_CONVMFLR, baseChimneyModel.getOntClass(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_CONVMFLR));
-        conceptMap.put(CPT_SINGPART, baseChimneyModel.getOntClass(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_SINGPART));
-        conceptMap.put(CPT_HASREPRPART, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_HASREPRPART));
-        conceptMap.put(CPT_SI_M, baseChimneyModel.getIndividual(OWL_ONTOCAPE_SUP_CONCEPTS_SI + CPT_SI_M));
-        conceptMap.put(CPT_SI_GPS, baseChimneyModel.getIndividual(OWL_ONTOCAPE_SUP_CONCEPTS_SI + CPT_SI_GPS));
-        conceptMap.put(CPT_SI_KGPCM, baseChimneyModel.getIndividual(OWL_ONTOCAPE_SUP_CONCEPTS_SI + CPT_SI_KGPCM));
-        conceptMap.put(CPT_DIAM, baseChimneyModel.getOntClass(OWL_ONTOCAPE_SUP_CONCEPTS_GEOM + CPT_DIAM));
-        conceptMap.put(CPT_HASLEN, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_SUP_CONCEPTS_GEOM + CPT_HASLEN));
-        conceptMap.put(CPT_DENS, baseChimneyModel.getOntClass(OWL_ONTOCAPE_MAT_PS + CPT_DENS));
-        conceptMap.put(CPT_MASSFR, baseChimneyModel.getOntClass(OWL_ONTOCAPE_MAT_PS + CPT_MASSFR));
-        conceptMap.put(CPT_HASDENS, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_MAT_PS + CPT_HASDENS));
+        try {
+            conceptMap.put(CPT_NUMVAL, baseChimneyModel.getDatatypeProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_NUMVAL));
+            conceptMap.put(CPT_HASPROP, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_HASPROP));
+            conceptMap.put(CPT_HASVAL, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_HASVAL));
+            conceptMap.put(CPT_HASUOM, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_HASUOM));
+            conceptMap.put(CPT_SCLVAL, baseChimneyModel.getOntClass(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_SCLVAL));
+            conceptMap.put(CPT_CONTAINS, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_UPPER_SYSTEM + CPT_CONTAINS));
+            conceptMap.put(CPT_PMAMT, baseChimneyModel.getOntClass(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_PMAMT));
+            conceptMap.put(CPT_CONVMFLR, baseChimneyModel.getOntClass(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_CONVMFLR));
+            conceptMap.put(CPT_SINGPART, baseChimneyModel.getOntClass(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_SINGPART));
+            conceptMap.put(CPT_HASREPRPART, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_CPS_BEHAVIOR + CPT_HASREPRPART));
+            conceptMap.put(CPT_SI_M, baseChimneyModel.getIndividual(OWL_ONTOCAPE_SUP_CONCEPTS_SI + CPT_SI_M));
+            conceptMap.put(CPT_SI_GPS, baseChimneyModel.getIndividual(OWL_ONTOCAPE_SUP_CONCEPTS_SI + CPT_SI_GPS));
+            conceptMap.put(CPT_SI_KGPCM, baseChimneyModel.getIndividual(OWL_ONTOCAPE_SUP_CONCEPTS_SI + CPT_SI_KGPCM));
+            conceptMap.put(CPT_DIAM, baseChimneyModel.getOntClass(OWL_ONTOCAPE_SUP_CONCEPTS_GEOM + CPT_DIAM));
+            conceptMap.put(CPT_HASLEN, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_SUP_CONCEPTS_GEOM + CPT_HASLEN));
+            conceptMap.put(CPT_DENS, baseChimneyModel.getOntClass(OWL_ONTOCAPE_MAT_PS + CPT_DENS));
+            conceptMap.put(CPT_MASSFR, baseChimneyModel.getOntClass(OWL_ONTOCAPE_MAT_PS + CPT_MASSFR));
+            conceptMap.put(CPT_HASDENS, baseChimneyModel.getObjectProperty(OWL_ONTOCAPE_MAT_PS + CPT_HASDENS));
+        } catch (Exception e) {
+            throw new JPSRuntimeException("Could not load required " + IRI_ONTOCAPE + " concepts using " + PATH_BASE_CHIMNEY + " model.");
+        }
     }
 
     private void setSpecies() {
