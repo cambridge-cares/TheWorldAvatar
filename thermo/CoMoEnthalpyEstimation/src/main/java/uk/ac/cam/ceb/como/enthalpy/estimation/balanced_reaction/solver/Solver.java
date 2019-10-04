@@ -1,16 +1,16 @@
 /*
+ * 
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
+ * 
  */
+
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -32,8 +32,17 @@ public class Solver {
 
     private Logger logger = Logger.getLogger(getClass());
     
-    private Set<Species> speciesSet;
-    private List<Species> sortedSpeciesSetList;
+    private LinkedHashSet<Species> speciesSet;
+    
+    /**
+     * 
+     * @author nk510 (caresssd@hermes.cam.ac.uk)
+     * Line below is commented because we use Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet;
+     * 
+     */
+    
+//   private List<Species> sortedSpeciesSetList;
+    
     private LPSolver lpSolver;
     private VariableFactory vfactory;
     private VariableSet vSet;
@@ -42,8 +51,16 @@ public class Solver {
     public Solver(LPSolver solver, LPFormat format, VariableFactory factory) {
     	
         this.lpSolver = solver;
-        this.speciesSet = new HashSet<Species>();
-        this.sortedSpeciesSetList=new ArrayList<Species>();
+        this.speciesSet = new LinkedHashSet<Species>();
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Line below is commented because we use Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet;
+         * 
+         */
+        
+//      this.sortedSpeciesSetList=new ArrayList<Species>();
+         
         this.fFormat = format;
         this.vfactory = factory;
         this.vSet = new VariableSet(vfactory);
@@ -61,65 +78,71 @@ public class Solver {
     public void addReferenceSpecies(Species species) {
     
     speciesSet.add(species);
+    
     /**
      * 
      * @author nk510 (caresssd@hermes.cam.ac.uk)
-     * Sorted list of Species
+     * Sorted list of Species.
+     * 
+     * Sorted species set is commneted because we use Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet;
      * 
      */
     
-     sortedSpeciesSetList = speciesSet.stream()
-   			.sorted(Comparator.comparing(Species::getRef)
-   			.reversed())
-   			.collect(Collectors.toList());
+//    sortedSpeciesSetList = speciesSet.stream()
+//   			.sorted(Comparator.comparing(Species::getRef)
+//   			.reversed())
+//   			.collect(Collectors.toList());
     
 //  System.out.println("Solver class: Added species into species set (method : addReferenceSpecies): ");
         
-    for(Species ss: sortedSpeciesSetList) {        
+    for(Species ss: speciesSet) {        
         	
-//    System.out.println(" - Atom name and enthalpy in speciesSet: " + ss.getRef() + " " + ss.getHf()  );
+//  System.out.println(" - Atom name and enthalpy in speciesSet: " + ss.getRef() + " " + ss.getHf()  );
         	
-//    System.out.println(" - Atom multiset in speciesSet");
+//  System.out.println(" - Atom multiset in speciesSet");
     
     for(Element refpms : ss.getAtomMultiset()){
         		
-//    System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+//  System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
         	
     }
-//        	System.out.println(" - Atom map in speciesSet:");
+
+//  System.out.println(" - Atom map in speciesSet:");
         	
-        	for(Map.Entry<String, String> atomM : ss.getAtomMap().entrySet()){
+    for(Map.Entry<String, String> atomM : ss.getAtomMap().entrySet()){
         		
-//        	System.out.println(atomM.getKey() + " " + atomM.getValue());
+//  System.out.println(atomM.getKey() + " " + atomM.getValue());
 
-        	}
+    }
         	
-//        	System.out.println(" - Bond map in speciesSet:");
+//  System.out.println(" - Bond map in speciesSet:");
         	
-        	for(Bond bondM : ss.getBondMap()){
+    for(Bond bondM : ss.getBondMap()){
         	
-//        	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
+//  System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
         	
-        	}
-        }
+    }
+    
+    }
         
-//        System.out.println("SORTED SPECIES SET:");
+//  System.out.println("SORTED SPECIES SET:");
         
-//        System.out.println("sortedSpeciesSetList.isEmpty(): " + sortedSpeciesSetList.isEmpty());
+//  System.out.println("sortedSpeciesSetList.isEmpty(): " + sortedSpeciesSetList.isEmpty());
         
-        int k =1;
+    int k =1;
         
-        for(Species s: sortedSpeciesSetList) {		
+    for(Species s: speciesSet) {		
 
-//      System.out.println(k++ + ". name: " + s.getRef() + " Hf:" + s.getHf());
+//  System.out.println(k++ + ". name: " + s.getRef() + " Hf:" + s.getHf());
         	
-        }
+    }
+    
     }
     
     public void removeReferenceSpecies(Species species) {
     	
-    	sortedSpeciesSetList.remove(species);
-//    	speciesSet.remove(species);
+//    	sortedSpeciesSetList.remove(species);
+    	speciesSet.remove(species);
         
     }
 
@@ -127,7 +150,7 @@ public class Solver {
         
      vSet.getVariableOf(targetSpecies);
       
-     for (Species s : sortedSpeciesSetList) {
+//   for (Species s : sortedSpeciesSetList) {
     	  
         /**
          * 
@@ -136,7 +159,7 @@ public class Solver {
          * 
          */
 
-//  for(Species s: speciesSet) {
+  for(Species s: speciesSet) {
       	  
     vSet.getVariableOf(s);
       
@@ -208,17 +231,24 @@ public class Solver {
     	
         vSet = new VariableSet(vfactory);
         
-        Set<Variable> variableSet = vSet.getSet();
+        LinkedHashSet<Variable> variableSet = vSet.getSet();
         
-//        System.out.println("Variable value inside Solver class: " + " v. set is empty: " + variableSet.isEmpty());
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Lined below is commneted from original source code.
+         */
+//      Set<Variable> variableSet = vSet.getSet();
+        
+//      System.out.println("Variable value inside Solver class: " + " v. set is empty: " + variableSet.isEmpty());
         
         for(Variable v: variableSet) {
         	
-//      	System.out.println("variable value: " + v.value + " variable name: "  + v.name + " Absolute name: " + v.absName);
+//      System.out.println("variable value: " + v.value + " variable name: "  + v.name + " Absolute name: " + v.absName);
       	
         }
         
-//        for (Species ref : speciesSet) {
+//      for (Species ref : speciesSet) {
 //            if (ref.equals(targetSpecies, true)) {
 //                Reaction reaction = new Reaction(targetSpecies);
 //                reaction.addReactant(targetSpecies, 1);
@@ -229,7 +259,7 @@ public class Solver {
         
         Map<String, Number> solutions = solveProblem(targetSpecies);
         
-//        System.out.println("Solver class: Empty solution: " + solutions.isEmpty());
+//      System.out.println("Solver class: Empty solution: " + solutions.isEmpty());
         
         Reaction reaction = new Reaction(targetSpecies);
         
@@ -239,7 +269,7 @@ public class Solver {
             
             Species sp = vSet.findSpeciesByVariableName(varName);
             
-            System.out.println("Inside Solver class: vSet.findSpeciesByVariableName(varName).getRef(): " + vSet.findSpeciesByVariableName(varName).getRef() + " " + varName);
+//            System.out.println("Inside Solver class: vSet.findSpeciesByVariableName(varName).getRef(): " + vSet.findSpeciesByVariableName(varName).getRef() + " " + varName);
             
             if (sp == null) {
                 throw new RuntimeException("Expecting a species for variable name " + varName + " but it was not found. Possible cause is that "
@@ -272,7 +302,7 @@ public class Solver {
 
     private String buildLpSolveInputString(Species targetSpecies) {
      
-    return fFormat.getInputString(targetSpecies, new HashSet<Species>(sortedSpeciesSetList), vSet);
+    return fFormat.getInputString(targetSpecies, speciesSet, vSet);
     
     }
 }

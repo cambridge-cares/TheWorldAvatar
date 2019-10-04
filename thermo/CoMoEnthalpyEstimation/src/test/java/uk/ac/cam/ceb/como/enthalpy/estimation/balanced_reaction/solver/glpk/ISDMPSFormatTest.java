@@ -7,7 +7,7 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,7 +48,7 @@ public class ISDMPSFormatTest {
          * 
          */
         
-      HashSet<Species> ref = (HashSet<Species>) refParser.getRefSpecies();
+      LinkedHashSet<Species> ref = (LinkedHashSet<Species>) refParser.getRefSpecies();
         
         
         for (Species target : soi) {

@@ -12,6 +12,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.commons.exec.CommandLine;
@@ -53,7 +54,7 @@ public class TerminalGLPKSolver extends LPSolver {
     }
 
     @Override
-    public Map<String, Number> solve(File lpInputFile) throws LpSolverException {
+    public LinkedHashMap<String, Number> solve(File lpInputFile) throws LpSolverException {
     	
     	
     	
@@ -118,7 +119,7 @@ public class TerminalGLPKSolver extends LPSolver {
                 
             }
             
-            return new HashMap<String, Number>();
+            return new LinkedHashMap<String, Number>();
         } catch (ExecuteException ex) {
             throw new LpSolverException("Failed to execute the command (exit value = " + exitValue + ") : " + commandLine, ex);
         } catch (IOException ex) {
@@ -136,8 +137,8 @@ public class TerminalGLPKSolver extends LPSolver {
         }
     }
 
-    protected Map<String, Number> parseLpSolveOutput(ByteArrayOutputStream stdout, File output) throws LpSolverException {
-        Map<String, Number> solutions = new HashMap<String, Number>();
+    protected LinkedHashMap<String, Number> parseLpSolveOutput(ByteArrayOutputStream stdout, File output) throws LpSolverException {
+        LinkedHashMap<String, Number> solutions = new LinkedHashMap<String, Number>();
         boolean startParsing = false;
         try {
             if (!output.exists()) {
@@ -232,7 +233,7 @@ public class TerminalGLPKSolver extends LPSolver {
     }
 
     @Override
-    public Map<String, Number> solve() throws LpSolverException {
+    public LinkedHashMap<String, Number> solve() throws LpSolverException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

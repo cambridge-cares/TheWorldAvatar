@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -41,8 +41,8 @@ public class SpeciesPoolParser extends CSVParser {
     @Override
     public void parse() throws FileNotFoundException, IOException {
     	
-    refSpecies = new HashSet<>();        
-    speciesOfInterest = new HashSet<>();
+    refSpecies = new LinkedHashSet<>();        
+    speciesOfInterest = new LinkedHashSet<>();
         
     CSVReader reader = new CSVReader(new FileReader(f)); //use comma as a separator
         
@@ -115,9 +115,11 @@ public class SpeciesPoolParser extends CSVParser {
 
     @Override
     public void clear() throws Exception {
-    	
-        refSpecies = new HashSet<>();
-        speciesOfInterest = new HashSet<>();
+    	/**
+    	 * Here we use HashSet<>() - > LinkedHashSet<Species>();
+    	 */
+        refSpecies = new LinkedHashSet<>();
+        speciesOfInterest = new LinkedHashSet<>();
         f = null;
     }
 

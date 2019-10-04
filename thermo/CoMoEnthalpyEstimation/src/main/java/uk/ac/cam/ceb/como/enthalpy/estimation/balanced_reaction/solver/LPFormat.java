@@ -4,7 +4,7 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver;
 
-import java.util.Set;
+import java.util.LinkedHashSet;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
@@ -16,6 +16,6 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variabl
 public interface LPFormat {
     
 	
-    public String getInputString(Species species, Set<Species> speciesSet, VariableSet vSet);
+    public String getInputString(Species species, LinkedHashSet<Species> speciesSet, VariableSet vSet);
     
 }

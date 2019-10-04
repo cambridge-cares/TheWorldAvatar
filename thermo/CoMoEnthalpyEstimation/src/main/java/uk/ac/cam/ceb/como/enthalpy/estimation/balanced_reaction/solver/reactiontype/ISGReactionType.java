@@ -6,8 +6,8 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reaction
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
@@ -20,6 +20,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variabl
  * @author pb556
  * 
  */
+
 public class ISGReactionType extends ReactionType {
 
     protected boolean includeUnpaired = true;
@@ -47,13 +48,13 @@ public class ISGReactionType extends ReactionType {
     }
 
     @Override
-    public HashMap<Variable, List<Integer>> getConservationTypeConstraints(Collection<Species> species, VariableSet vSet) {
+    public LinkedHashMap<Variable, List<Integer>> getConservationTypeConstraints(Collection<Species> species, VariableSet vSet) {
     	
-        HashMap<Variable, Integer> paired = getElectronenPairConvervationConstraints(species, vSet, true);
+        LinkedHashMap<Variable, Integer> paired = getElectronenPairConvervationConstraints(species, vSet, true);
         
-        HashMap<Variable, Integer> unpaired = getElectronenPairConvervationConstraints(species, vSet, false);
+        LinkedHashMap<Variable, Integer> unpaired = getElectronenPairConvervationConstraints(species, vSet, false);
         
-        HashMap<Variable, List<Integer>> combined = new HashMap<Variable, List<Integer>>();
+        LinkedHashMap<Variable, List<Integer>> combined = new LinkedHashMap<Variable, List<Integer>>();
         
         if (paired.size() != unpaired.size()) {
         	
@@ -100,9 +101,10 @@ public class ISGReactionType extends ReactionType {
         return l;
     }
 
-    protected HashMap<Variable, Integer> getElectronenPairConvervationConstraints(Collection<Species> species, VariableSet vSet, boolean paired) {
+    protected LinkedHashMap<Variable, Integer> getElectronenPairConvervationConstraints(Collection<Species> species, VariableSet vSet, boolean paired) {
     	
-        HashMap<Variable, Integer> constraintBalance = new HashMap<Variable, Integer>();
+        LinkedHashMap<Variable, Integer> constraintBalance = new LinkedHashMap<Variable, Integer>();
+        
         //ISGMPSFormat1.MultisetSelector ms = new ISGMPSFormat1.AtomMultisetSelector();
         //logger.trace("Writing convervation equation for constraint of type : " + constraint);
         // make a string of each term
@@ -117,12 +119,12 @@ public class ISGReactionType extends ReactionType {
             
             if (!paired) {
             	
-                count = SolverHelper.getNumberOfUnpairedElectrons(sp);
-                
+            count = SolverHelper.getNumberOfUnpairedElectrons(sp);
+            
             }
             
             constraintBalance.put(variable, count);
-            
+        
         }
         
         return constraintBalance;

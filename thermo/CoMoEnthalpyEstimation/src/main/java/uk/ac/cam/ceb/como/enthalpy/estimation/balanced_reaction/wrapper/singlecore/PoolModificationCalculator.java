@@ -48,7 +48,7 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
     	
         super();
         this.numResults = numResults;
-        
+
     }
 
     public PoolModificationCalculator(int numResults, LPSolver solver, LPFormat format, ObjectPool<Species> pool) {
@@ -170,13 +170,13 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
             Collection<Reaction> reaction = reactionList.getCollection();
             
             //Print products and reactants
-            for(Reaction r: reaction){
+            for(Reaction r: reaction) {
             	
            Map<Species, Double> reactants = r.getReactants();
             	
 //         System.out.println("(2)calculate - - - - - - - -PoolModificationCalculator(calculate (reactants)- - - - - - - - - - - - - ");
             	
-           for(Map.Entry<Species, Double> r1: reactants.entrySet()){
+           for(Map.Entry<Species, Double> r1: reactants.entrySet()) {
             		
 //         System.out.println("(2)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
            
@@ -248,11 +248,10 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
             		
 //      System.out.println("(1)calculate r1.getKey().getRef(): " + r1.getKey().getRef() + " r1.getValue(): " + r1.getValue());
         	
-            	}
-        		
-//        		System.out.println("(1)calculate ---------------------/Reactants------------------------------");
-        		
-//        		System.out.println("(1)calculate ----------------------Products------------------------------");
+        }		
+        
+//      System.out.println("(1)calculate ---------------------/Reactants------------------------------");        		
+//      System.out.println("(1)calculate ----------------------Products------------------------------");
         		
         Map<Species, Double> products1 = rL1.getProducts();
         		
@@ -331,9 +330,9 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
          */
         
         Solver enthalpySolver = new Solver(solver, format, new VariableFactory("v"));
-      
+        
 //      Solver enthalpySolver = new Solver(this.solver, this.format, new VariableFactory("v"));
-      
+        
         /**
          * 
          * Added: ObjectPool p -> ObjectPool<Species> p
@@ -341,9 +340,9 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
          */
     
         ObjectPool<Species> p = SolverHelper.clone(refPool);
-      
+        
         Collection<Species> species =  (ArrayList<Species>)p.getValidatedObjects();
-    
+        
      /**
       * 
       * @author nk510 (caresssd@hermes.cam.ac.uk)

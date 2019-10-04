@@ -8,14 +8,12 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 
@@ -40,7 +38,10 @@ public class MPSFormat implements LPFormat {
     private String lineSep = System.getProperty("line.separator");
     private Species targetSpecies;
 
-    private Set<Species> speciesSet;    
+    /**
+     * We use here Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet 
+     */
+    private LinkedHashSet<Species> speciesSet;    
     
     private VariableSet vSet;
     private boolean intOnly;
@@ -65,7 +66,7 @@ public class MPSFormat implements LPFormat {
     }
     
     @Override
-    public String getInputString(Species species, Set<Species> speciesSet, VariableSet vSet) {
+    public String getInputString(Species species, LinkedHashSet<Species> speciesSet, VariableSet vSet) {
     	
         this.targetSpecies = species;
         
@@ -74,15 +75,17 @@ public class MPSFormat implements LPFormat {
          * @author nk510 (caresssd@hermes.cam.ac.uk).
          * Added sorted species set.
          * 
+         * Commnented because HashSet<Species> -> LinkedHashSet<Species>
+         * 
          */
-        Set<Species> sortedSpeciesSet = new HashSet<Species>();
+//        LinkedHashSet<Species> sortedSpeciesSet = new LinkedHashSet<Species>();
+//        
+//        sortedSpeciesSet = speciesSet.stream()
+//       			.sorted(Comparator.comparing(Species::getRef)
+//       			.reversed())
+//       			.collect(Collectors.toSet());
         
-        sortedSpeciesSet = speciesSet.stream()
-       			.sorted(Comparator.comparing(Species::getRef)
-       			.reversed())
-       			.collect(Collectors.toSet());
-        
-        this.speciesSet = sortedSpeciesSet;
+        this.speciesSet = speciesSet;
         this.vSet = vSet;
         return buildLpSolveInputString();
     }

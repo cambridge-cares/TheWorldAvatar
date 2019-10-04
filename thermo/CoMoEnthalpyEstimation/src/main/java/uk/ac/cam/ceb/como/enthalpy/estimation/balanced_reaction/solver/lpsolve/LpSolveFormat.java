@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -35,7 +36,7 @@ public class LpSolveFormat implements LPFormat {
     private String lineSep = System.getProperty("line.separator");
     private Species targetSpecies;
     
-    private Set<Species> speciesSet;
+    private LinkedHashSet<Species> speciesSet;
  
     private VariableSet vSet;
     private boolean intOnly;
@@ -57,7 +58,7 @@ public class LpSolveFormat implements LPFormat {
     
     
     @Override
-    public String getInputString(Species species, Set<Species> speciesSet, VariableSet vSet) {
+    public String getInputString(Species species, LinkedHashSet<Species> speciesSet, VariableSet vSet) {
         this.targetSpecies = species;
         this.speciesSet = speciesSet;
         this.vSet = vSet;

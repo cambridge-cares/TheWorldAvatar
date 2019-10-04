@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -29,7 +30,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
     
     private Logger logger = Logger.getLogger(getClass());
  
-    protected HashSet<Species> refSpecies = new HashSet<Species>();
+    protected LinkedHashSet<Species> refSpecies = new LinkedHashSet<Species>();
     
     protected HashSet<Species> speciesOfInterest = new HashSet<Species>();
     
@@ -81,7 +82,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
     }
 
     
-    public Set<Species> getRefSpecies() {
+    public LinkedHashSet<Species> getRefSpecies() {
         return refSpecies;
     }
     

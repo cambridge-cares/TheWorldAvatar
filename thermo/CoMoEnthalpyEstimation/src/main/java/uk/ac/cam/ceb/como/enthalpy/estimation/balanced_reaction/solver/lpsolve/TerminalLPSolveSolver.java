@@ -9,8 +9,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -20,6 +22,7 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LpSolverException;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibleSolutionException;
@@ -48,7 +51,7 @@ public class TerminalLPSolveSolver extends LPSolver {
     }
 
     @Override
-    public Map<String, Number> solve(File lpInputFile) throws LpSolverException {
+    public LinkedHashMap<String, Number> solve(File lpInputFile) throws LpSolverException {
         int exitValue = Integer.MIN_VALUE;
         File input = lpInputFile;
         Map<String, Object> map = new HashMap<String, Object>();
@@ -74,7 +77,7 @@ public class TerminalLPSolveSolver extends LPSolver {
             if (!executor.isFailure(exitValue)) {
                 return parseLpSolveOutput(stdout);
             }
-            return new HashMap<String, Number>();
+            return new LinkedHashMap<String, Number>();
         } catch (ExecuteException ex) {
             throw new LpSolverException("Failed to execute the command (exit value = " + exitValue + ") : " + commandLine, ex);
         } catch (IOException ex) {
@@ -88,8 +91,8 @@ public class TerminalLPSolveSolver extends LPSolver {
         }
     }
 
-    private Map<String, Number> parseLpSolveOutput(ByteArrayOutputStream stdout) throws LpSolverException {
-        Map<String, Number> solutions = new HashMap<String, Number>();
+    private LinkedHashMap<String, Number> parseLpSolveOutput(ByteArrayOutputStream stdout) throws LpSolverException {
+        LinkedHashMap<String, Number> solutions = new LinkedHashMap<String, Number>();
         boolean startParsing = false;
         List<String> readLines;
         try {
@@ -122,7 +125,7 @@ public class TerminalLPSolveSolver extends LPSolver {
     }
 
     @Override
-    public Map<String, Number> solve() throws LpSolverException {
+    public LinkedHashMap<String, Number> solve() throws LpSolverException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }
