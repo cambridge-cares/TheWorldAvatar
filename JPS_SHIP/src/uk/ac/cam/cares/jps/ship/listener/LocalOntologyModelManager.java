@@ -1,13 +1,12 @@
 package uk.ac.cam.cares.jps.ship.listener;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContextEvent;
@@ -42,7 +41,6 @@ public class LocalOntologyModelManager implements ServletContextListener {
     private static final String PATH_KB_SHIPS = ABSDIR_ROOT + "/kb/ships/";
     private static final String IRI_KB = "http://www.theworldavatar.com/kb/";
     private static final String IRI_KB_SHIPS = IRI_KB + "ships/";
-    private static final String IRI_AGENT_SHIP = "/JPS_SHIP";
     private static final String OWL_CHIMNEY = CHIMNEY + ".owl";
     private static final String OWL_CHIMNEY_TEMP = CHIMNEY + "-temp.owl";
     private static final String PATH_BASE_CHIMNEY = PATH_KB_SHIPS + OWL_CHIMNEY_TEMP;
@@ -79,12 +77,13 @@ public class LocalOntologyModelManager implements ServletContextListener {
             "{ ?chimney j7:hasOutput ?wasteStream ." +
             "  ?wasteStream a j4:NonReusableWasteProduct ." +
             "}";
-    
+    private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
+
     private static OntModel baseChimneyModel;
     private static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, String> speciesMap = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(LocalOntologyModelManager.class);
-    
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
@@ -103,8 +102,6 @@ public class LocalOntologyModelManager implements ServletContextListener {
     }
 
     public static OntModel createChimneyModelForMMSI(String mmsi) throws IOException {
-//        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)
-//                + ":" + KeyValueManager.get(IKeys.PORT) + IRI_AGENT_SHIP;
         String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST);
         String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
         String content = getBaseChimneyContent();
@@ -173,14 +170,39 @@ public class LocalOntologyModelManager implements ServletContextListener {
         return speciesMap;
     }
 
-    public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
+    public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) {
+        ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
+        readWriteLock.writeLock().lock();
+        try {
+            saveToOwl(jenaOwlModel, iriOfChimney, mmsi);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(EX_SAVE_OWL + iriOfChimney);
+        } finally {
+            readWriteLock.writeLock().unlock();
+        }
 
-    	String filePath2= iriOfChimney.replaceAll("http://localhost/kb", KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
+        //linkChimneyToShip(iriOfChimney, mmsi);
+    }
+
+    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
+        String filePath2= iriOfChimney.replaceAll("http://localhost/kb", KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
         //String filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
 
+        try {
+            prepareDirectory(filePath2);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(EX_SAVE_OWL + filePath2);
+        } finally {
+            FileOutputStream out = new FileOutputStream(filePath2);
+
+            jenaOwlModel.write(out, "RDF/XML-ABBREV");
+            out.close();
+        }
+
+    }
+
+    public static void prepareDirectory(String filePath2) throws IOException {
         File stockDir = new File(filePath2).getParentFile();
-        
-        logger.info("the stock directory of owl file :"+stockDir);
 
         boolean stockdir = true;
 
@@ -192,7 +214,6 @@ public class LocalOntologyModelManager implements ServletContextListener {
             if (listOfFiles != null) {
                 for (File listOfFile : listOfFiles) {
                     if (!listOfFile.delete()) {
-                    	logger.info("list of files= "+listOfFile.toString());
                         throw new IOException("Could not clean up: " + filePath2);
                     }
                 }
@@ -200,14 +221,6 @@ public class LocalOntologyModelManager implements ServletContextListener {
         } else {
             throw new IOException("No such directory: " + filePath2);
         }
-
-
-        FileOutputStream out = new FileOutputStream(filePath2);
-
-        jenaOwlModel.write(out, "RDF/XML-ABBREV");
-        out.close();
-
-        linkChimneyToShip(iriOfChimney, mmsi);
     }
 
     /**
