@@ -73,11 +73,11 @@ public class LoadSpecies {
             }
         }
 		
-		System.out.println("spinMultiplicity map in LoadSpecies calss: method public List<Species> loadSpeciesProperties:");
+//		System.out.println("spinMultiplicity map in LoadSpecies calss: method public List<Species> loadSpeciesProperties:");
 		
 		for(Map.Entry<Species, Integer> sspin: spinMultiplicity.entrySet()) {
 		
-		System.out.println("species name: " + sspin.getKey().getRef() + " species Hf: "+ sspin.getKey().getHf() + " spinMultiplicity value: " + sspin.getValue());
+//		System.out.println("species name: " + sspin.getKey().getRef() + " species Hf: "+ sspin.getKey().getHf() + " spinMultiplicity value: " + sspin.getValue());
 		
 		}
 		
@@ -85,18 +85,20 @@ public class LoadSpecies {
 		
 		List<Species> refSpecies = new ArrayList<Species>(ref);
 		
-		System.out.println("refSpecies at the end of method loadSpeciesProperties");
+//		System.out.println("refSpecies at the end of method loadSpeciesProperties");
 		
 		for(Species rsp: refSpecies) {
 			
-		System.out.println("species name: " + rsp.getRef() + " Hf: " + rsp.getHf());
+//		System.out.println("species name: " + rsp.getRef() + " Hf: " + rsp.getHf());
 		
 		}
 		
 		return refSpecies;
 		
 	}
+	
 	/**
+	 * 
 	 * @author mk510 (caresssd@hermes.cam.ac.uk)
 	 * @author am2145 ( am2145@cam.ac.uk )
 	 * 
@@ -104,7 +106,9 @@ public class LoadSpecies {
 	 * @param srcRefPool The path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
 	 * @return the collection of Species objects.
 	 * @throws Exception
+	 * 
 	 */
+	
 	public Collection<Species> loadReferenceSpeciesFiles(String srcRefPool) throws Exception{
 		
 		SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
@@ -156,15 +160,13 @@ public class LoadSpecies {
         
         for(Species iars: intialAnalysisRefSpecies) {
         	
-//        	System.out.println("Species name: " + iars.getRef() + " Enthalpy of formation: " + iars.getHf());
+//      System.out.println("Species name: " + iars.getRef() + " Enthalpy of formation: " + iars.getHf());
         	
         }
         
 		return intialAnalysisRefSpecies;
         
 	}
-	
-	
 	
 	/**
 	 * @param refSpecies The collection of reference set of species that is accepted set of species.
@@ -220,19 +222,19 @@ public class LoadSpecies {
                         System.out.println(s.getRef());
                     }
                 }
+            	
             } else {
             	
-                System.out.println("REF: No file found for " + s.getRef());
+            System.out.println("REF: No file found for " + s.getRef());
                 
-                invalids.add(s);
+            invalids.add(s);
+            
             }
         }
         
         refSpecies.removeAll(invalids);
         all.removeAll(invalids);
         soiSpecies.removeAll(invalids);
-        
-
         
 	}
 	

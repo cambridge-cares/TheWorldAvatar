@@ -95,9 +95,16 @@ public class DataPreProcessing {
         		System.out.println("Process configuration " + config);
                 
                   if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+                	  
+                	  /**
+                		 * HPC settings
+                		 */
 //        		  if(new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
                 	
                       System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
+                      /**
+                  	 * HPC settings
+                  	 */  
 //        			  System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
                     
                     continue;
@@ -123,6 +130,9 @@ public class DataPreProcessing {
                     ctr++;
 
                   if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+                    /**
+                	 * HPC settings
+                	 */
 //                if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
                     continue;
@@ -158,7 +168,7 @@ public class DataPreProcessing {
                     	for(Bond bondM : refP.getBondMap()){
                     		
 //                    		System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
-           
+                    		
                     	}
                     }
                     
@@ -175,6 +185,7 @@ public class DataPreProcessing {
                     	for(Element refpms : refP.getAtomMultiset()){
                     		
 //                    	System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+                    		
                     	}
                     	
 //                    	System.out.println("Atom map in refPool:");
@@ -186,16 +197,16 @@ public class DataPreProcessing {
                     	
 //                    	System.out.println("Bond map in refPool:");
                     	for(Bond bondM : refP.getBondMap()){
-                    		
+                    	
 //                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
-           
+
                     	}
                     }
                     
-                    refPool.remove(target);
+                        refPool.remove(target);
                     
-//                    System.out.println("RefPool after removing target species:");
-                    for(Species refP: refPool) {
+//                      System.out.println("RefPool after removing target species:");
+                        for(Species refP: refPool) {
                     	
 //                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
 //                    	System.out.println("Atom multiset in refPool");
@@ -215,9 +226,8 @@ public class DataPreProcessing {
                     	for(Bond bondM : refP.getBondMap()){
                     		
 //                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
-           
+
                     	}
-                    	
                     }
                     
                     // filter for radicals
@@ -235,7 +245,8 @@ public class DataPreProcessing {
                         	
                         }
                     }
-//                    System.out.println("refPool after removing species from spinMultiplicity:");
+                    
+//                  System.out.println("refPool after removing species from spinMultiplicity:");
 
                     for(Species refP: refPool) {
                     	
@@ -377,15 +388,24 @@ public class DataPreProcessing {
                         }
 
                         if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
+                        /**
+                    	 * HPC settings
+                    	 */
 //                        if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
                         new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
-//                        	new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
+                        /**
+                    	 * HPC settings
+                    	 */
+//                      new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
-                      ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));                            
-//                        ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
+                    ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
+                    /**
+                  	 * HPC settings
+                  	 */
+//                    ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
                          * 
@@ -394,7 +414,10 @@ public class DataPreProcessing {
                          */
                         
                       SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
-//                        SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
+                      /**
+                  	 * HPC settings
+                  	 */
+//                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
                         if (!completeRList.isEmpty()) {
@@ -442,7 +465,7 @@ public class DataPreProcessing {
                             
                             } 
                             
-                            System.exit(0);
+//                            System.exit(0);
                             
                         }
                         
@@ -483,6 +506,11 @@ public class DataPreProcessing {
                     writer.overwrite(true);
                     
                     writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+                /**
+                 * 
+              	 * HPC settings
+              	 * 
+              	 */
 //                  writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
                     
                     writer.write();

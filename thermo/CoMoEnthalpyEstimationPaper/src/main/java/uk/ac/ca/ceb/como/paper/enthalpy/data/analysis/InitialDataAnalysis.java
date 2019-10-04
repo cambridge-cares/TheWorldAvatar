@@ -95,9 +95,15 @@ public class InitialDataAnalysis {
 					System.out.println("Process configuration " + config);
 
 					if (new File(destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_" + iteration + "\\" + config + ".txt").exists()) {
+						/**
+						 * HPC settings
+						 */
 //					if (new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config + ".txt").exists()) {
 
 						System.out.println("Skipping " + destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + config);
+						/**
+						 * HPC settings
+						 */
 //						System.out.println("Skipping " + destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
 
 						continue;
@@ -120,9 +126,15 @@ public class InitialDataAnalysis {
 						LPSolver solver = new TerminalGLPKSolver(15000, false, true);//15000
 
 						new File(tempFolder + "loop_" + loop +"\\"+"iteration_" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\.temp\\").mkdirs();
+						/**
+						 * HPC settings
+						 */
 //						new File(tempFolder + "loop_" + loop + "/" + "iteration_" + iteration + "/"+ target.getRef().replace(".g09", "") + "/.temp/").mkdirs();
 
 						solver.setDirectory(new File(tempFolder + "loop_" + loop +"\\"+"iteration_" + iteration +"\\"+ target.getRef().replace(".g09", "") + "\\"));
+						/**
+						 * HPC settings
+						 */
 //						solver.setDirectory(new File(tempFolder + "loop_" + loop + "/" + "iteration_" + iteration + "/"+ target.getRef().replace(".g09", "") + "/"));
 
 //	                        System.out.println("REF: Processing " + ctr + " / " + all.size());
@@ -181,12 +193,14 @@ public class InitialDataAnalysis {
 
 						Map<Species, Collection<ReactionList>> results = new HashMap<>();
 
-						System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / "
-								+ soiSpecies.size() + ")");
+						System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + soiSpecies.size() + ")");
 
 						ctr++;
 
 						if (new File(destRList +  "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+							/**
+							 * HPC settings
+							 */
 //						if (new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
 
 							continue;
@@ -315,15 +329,24 @@ public class InitialDataAnalysis {
 
 							if (!new File(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\"+ target.getRef() + "\\").exists()) {
 								new File(destRList + "initial-analysis" + "\\"+ "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\").mkdirs();
+							/**
+							 * HPC settings
+							 */
 //							if (!new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/").exists()) {
 //								new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"	 + iteration + "/" + target.getRef() + "/").mkdirs();
 							}
 
 							ReactionListWriter rListWriter = new ReactionListWriter(new File(
 									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+							/**
+							 * HPC settings
+							 */
 //									destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct"));
 							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(
 									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
+							/**
+							 * HPC settings
+							 */
 //									destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
 
 							if (!completeRList.isEmpty()) {
@@ -421,6 +444,9 @@ public class InitialDataAnalysis {
 						writer.setContent("completed!");
 						writer.overwrite(true);
 						writer.set(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + config + ".txt");
+						/**
+						 * HPC settings
+						 */
 //						writer.set(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + config + ".txt");
 						writer.write();
 

@@ -41,15 +41,27 @@ import uk.ac.cam.ceb.paper.sort.Sort;
 public class LeaveOneOutCrossValidationAlgorithm {
 
 	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+	/**
+	 * HPC settings
+	 */
 //	static String srcCompoundsRef = "g09/";
 
 	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+	/**
+	 * HPC settings
+	 */
 //	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+	/**
+	 * HPC settings
+	 */
 //	static String destRList = "ti_isg/";
 
 	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+	/**
+	 * HPC settings
+	 */
 //	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
@@ -122,9 +134,13 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * After completing pre-processing step, it prints valid reactions in txt file and on console.
 		 * 
 		 */
+	
 	BufferedWriter validReactionFile = new BufferedWriter(
 				
 	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
+	/**
+	 * HPC settings
+	 */
 //	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
 
 	System.out.println("Valid reactions writing . . . ");
@@ -140,6 +156,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	BufferedWriter invalidReactionFile = new BufferedWriter(
 	
     new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+	/**
+	 * HPC settings
+	 */
 //	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
 	System.out.println("Invalid reactions writing . . .");
@@ -157,6 +176,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	BufferedWriter validSpeciesFile = new BufferedWriter(
 	
 	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
+	
+	/**
+	 * HPC settings
+	 */
 //	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
 
 	errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, validSpecies);
@@ -172,6 +195,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	BufferedWriter invalidSpeciesFile = new BufferedWriter(
 	
 	new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+	/**
+	 * HPC settings
+	 */
 //	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
 	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
@@ -374,6 +400,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	System.out.println("Invalid species file after (" + loop+ ".) loop through invalid species list with error bar . . .");
 
 	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+	/**
+	 * HPC settings
+	 */
 //	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies);
