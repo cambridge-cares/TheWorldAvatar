@@ -207,7 +207,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
         jenaOwlModel.write(out, "RDF/XML-ABBREV");
         out.close();
 
-        //linkChimneyToShip(iriOfChimney, mmsi);
+        linkChimneyToShip(iriOfChimney, mmsi);
     }
 
     /**
