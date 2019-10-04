@@ -89,7 +89,6 @@
                     attrPairs[item.uri] = attrArr
                 })
                 console.log(data)
-                console.log(attrPairs)
                 ppMap.updateMarkers(data, attrPairs)
 
             },

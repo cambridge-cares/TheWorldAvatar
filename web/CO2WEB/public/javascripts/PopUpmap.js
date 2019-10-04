@@ -684,16 +684,70 @@ initMap: function () {
     });
       animatedLines = []
 },
+drawMarkers:function(data){
+    var map = this.googleMap;
+    var self = this;
+    kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
+    console.log(kmlurl);
+    var request = $.ajax({
+        url: kmlurl,
+        type: 'GET',
+        async: true,
+        contentType: 'application/json; charset=utf-8'
+    });     
+    request.done(function(data) {
+        var obj0 = JSON.parse(data);
+        var size=obj0.length;
+        console.log("size="+size);           
+        
+    //We currently know of a few cases:
+    var imageList = ['NaturalGas', 'Oil', 'Waste', 'Nuclear'];
+    var x;
+    self.markers = {}
 
-drawLines:function(){
+    // scan some duplicates
+    
+    for (x=0; x< size; x++){
+        var obj = obj0[x];
+        var fueltype = obj.fueltype;
+        var name = obj.name;
+        var thead  = "<table id='table"+ name+"' class='table-attr'>";
+        thead += "<tr><td>  Name: </td><td>  " + name + "  </td></tr>";
+        thead += "<tr><td>  Fuel Type: </td><td>  " + fueltype + "  </td></tr>";
+        var marker = new google.maps.Marker({
+            position: {lat:obj.coors.lat, lng:obj.coors.lng},
+            map: map,
+            title: name
+          });
+          if (obj.vemission){
+            var emission = obj.vemission;
+            thead += "<tr><td>  Emission Level: </td><td>" + emission + "</td></tr>";
+        }
+ 
+        thead += "</table>";
+        console.log(thead);
+        var infowindow = new google.maps.InfoWindow();
+        google.maps.event.addListener(marker, 'click', (function(marker, thead, infowindow){
+            return function(){
+                infowindow.setContent(thead);
+                infowindow.open(map, marker);
+            }
+        })(marker, thead, infowindow));
+        self.markers[name] = marker;
+        
+        }
+    });
+},
+drawLines:function(data){
     var map = this.googleMap;
     var self = this;
     var lines=[];
+    kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createLineJS?query=' + encodeURIComponent(JSON.stringify(data));      
+    console.log('my kmlurl = '+ kmlurl);
     var request = $.ajax({
-        url:'http://localhost:8080/JPS_POWSYS/ENVisualization/createLineJS',
+        url: kmlurl,
         type: 'GET',
         async: true,
-        data: { "electricalnetwork":'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork' },
         contentType: 'application/json; charset=utf-8'
     });
 
@@ -1056,8 +1110,9 @@ clearMarkers : function () {
         marker=null;
     }
     self.markers = {}
-    self.markerCluster.clearMarkers();
-
+    if (self.markerCluster){
+        self.markerCluster.clearMarkers();
+    }
 },
 
 getMarker: function (key) {
