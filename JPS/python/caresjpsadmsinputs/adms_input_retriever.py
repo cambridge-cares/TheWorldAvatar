@@ -11,6 +11,7 @@ from rdflib.plugins.sparql.results.jsonresults import JSONResult
 from config import Constants, QueryStrings, ExceptionStrings
 from adms_src import AdmsSrc
 from adms_pol import AdmsPol
+import uuid
 
 
 class CliInputContext(object):
@@ -373,7 +374,7 @@ class ShipCliInputStrategy(CliInputStrategy):
 
     def get_new_src(self, src, q1, q2, q3):
         new_src = super(ShipCliInputStrategy, self).get_new_src(src, q1, q2, q3)
-        new_src.set_name(src[Constants.KEY_MMSI])
+        new_src.set_name(src[Constants.KEY_MMSI] + '-' + str(uuid.uuid4()))
         return new_src
 
     def get_src_iri(self, src):
