@@ -1,20 +1,5 @@
 package uk.ac.cam.cares.jps.ship.listener;
 
-import org.apache.jena.ontology.*;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.shared.Lock;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.ship.model.ShipEntity;
-import uk.ac.cam.cares.jps.ship.model.ShipPollutionEntity;
-
-import javax.persistence.EntityManager;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +8,31 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.persistence.EntityManager;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.servlet.annotation.WebListener;
+
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.Lock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.ship.model.ShipEntity;
+import uk.ac.cam.cares.jps.ship.model.ShipPollutionEntity;
 
 @WebListener
 public class LocalOntologyModelManager implements ServletContextListener {
@@ -73,7 +83,8 @@ public class LocalOntologyModelManager implements ServletContextListener {
     private static OntModel baseChimneyModel;
     private static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();
     private static ConcurrentHashMap<String, String> speciesMap = new ConcurrentHashMap<>();
-
+    private static Logger logger = LoggerFactory.getLogger(LocalOntologyModelManager.class);
+    
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         try {
@@ -92,8 +103,9 @@ public class LocalOntologyModelManager implements ServletContextListener {
     }
 
     public static OntModel createChimneyModelForMMSI(String mmsi) throws IOException {
-        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)
-                + ":" + KeyValueManager.get(IKeys.PORT) + IRI_AGENT_SHIP;
+//        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)
+//                + ":" + KeyValueManager.get(IKeys.PORT) + IRI_AGENT_SHIP;
+        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST);
         String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
         String content = getBaseChimneyContent();
         content = content.replaceAll(IRI_KB_SHIPS + OWL_CHIMNEY, shipKbURL + mmsi + "/" + OWL_CHIMNEY);
@@ -163,9 +175,12 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
 
-        String filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
+    	String filePath2= iriOfChimney.replaceAll("http://localhost/kb", KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
+        //String filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
 
         File stockDir = new File(filePath2).getParentFile();
+        
+        logger.info("the stock directory of owl file :"+stockDir);
 
         boolean stockdir = true;
 
@@ -177,6 +192,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
             if (listOfFiles != null) {
                 for (File listOfFile : listOfFiles) {
                     if (!listOfFile.delete()) {
+                    	logger.info("list of files= "+listOfFile.toString());
                         throw new IOException("Could not clean up: " + filePath2);
                     }
                 }
@@ -191,7 +207,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
         jenaOwlModel.write(out, "RDF/XML-ABBREV");
         out.close();
 
-        linkChimneyToShip(iriOfChimney, mmsi);
+        //linkChimneyToShip(iriOfChimney, mmsi);
     }
 
     /**
