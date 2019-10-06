@@ -143,11 +143,11 @@
 </dependency>
 
   
-<dependency>
+<!-- <dependency>
             <groupId>uk.ac.cam.ceb.como</groupId>
             <artifactId>CoMoOntology</artifactId>
             <version>0.0.0</version>
-</dependency>
+</dependency> -->
 <dependency>
     <groupId>xml-apis</groupId>
     <artifactId>xml-apis</artifactId>
@@ -239,10 +239,15 @@
     <artifactId>jmol</artifactId>
     <version>14.29.17</version>
 </dependency>
-		<dependency>
-			<groupId>org.json</groupId>
-			<artifactId>json</artifactId>
-			<version>20180813</version>
-		</dependency>
-  </dependencies>
+<dependency>
+	<groupId>org.json</groupId>
+	<artifactId>json</artifactId>
+	<version>20180813</version>
+</dependency>
+<dependency>
+	<groupId>com.cmclinnovations</groupId>
+	<artifactId>CMCLOntoKin</artifactId>
+	<version>0.0.1</version>
+</dependency>
+</dependencies>
 </project>

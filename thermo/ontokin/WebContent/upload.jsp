@@ -11,6 +11,8 @@
 
 <meta charset="UTF-8">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/Chart.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/utils.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
 
@@ -123,18 +125,22 @@
 							<button id="refresh" theme="bootstrap">Refresh</button>
 							<p></p><span id ="noResult" style="display:none; color:red">No results found.</span>
 						 	<p></p>
-						 	<div class="Container Flipped">
-						 	<div id="table" class="Content">
-						 		<table class="table table-bordered table-hover">
-						 			<thead>
-						    			<tr class="row-header">
-						    			</tr>
-						   			</thead>
-						   			<tbody id="table-query-results">
-						   			</tbody>
-						   		</table>
+						 	<div id="tableMechanism" class="Container Flipped">
+							 	<div id="table" class="Content">
+							 		<table class="table table-bordered table-hover">
+							 			<thead>
+							    			<tr class="row-header">
+							    			</tr>
+							   			</thead>
+							   			<tbody id="table-query-results">
+							   			</tbody>
+							   		</table>
+							   	</div>
 						   	</div>
-						   	</div>
+						   	
+						   	<div id= "chartCanvas" class="">
+								<canvas id="canvas"></canvas>
+							</div>
 					</div>
 					
 	
@@ -197,7 +203,7 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
+				'SELECT ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
 				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
@@ -250,37 +256,36 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?mechanism1 ?mechanism2 ?thermoModel11 ?thermoModel12 ?thermoModel21 ?thermoModel22 ?coefficientValues11 ?coefficientValues12 ?coefficientValues21 ?coefficientValues22 ?mintemp11 ?mintemp12 ?mintemp21 ?mintemp22 ?maxtemp11 ?maxtemp12 ?maxtemp21 ?maxtemp22 ?pressure11 ?pressure12 ?pressure21 ?pressure22' + '\n' +
+				'SELECT ?Mechanism1IRI ?Mechanism1Name ?Mechanism2IRI ?Mechanism2Name ?ThermoModel1inMechanism1 ?ThermoModel2inMechanism1 ?ThermoModel1inMechanism2 ?ThermoModel2inMechanism2 ?CoefficientValues1inMechanism1 ?CoefficientValues1inMechanism2 ?CoefficientValues2inMechanism1 ?CoefficientValues2inMechanism2 ?MinTemp1inMechanism1 ?MinTemp2inMechanism1 ?MinTemp1inMechanism2 ?MinTemp2inMechanism2 ?MaxTemp1inMechanism1 ?MaxTemp2inMechanism1 ?MaxTemp1inMechanism2 ?MaxTemp2inMechanism2 ?Pressure1inMechanism1 ?Pressure2inMechanism1 ?Pressure1inMechanism2 ?Pressure2inMechanism2' + '\n' +
 				'WHERE {' + '\n' +
-			    '?species1 rdfs:label \"' + search_term_name + '\" . ?species1 ontokin:belongsToPhase ?phase1 . ?phase1 ontokin:containedIn ?mechanism1 .' + '\n' +
-			    '?mechanism1 rdf:type ontokin:ReactionMechanism .' + '\n' +
-			    '?mechanism1 rdfs:label ?mechanism1Name .' + '\n' +
-			    '?species1 ontokin:hasThermoModel ?thermoModel11 .' + '\n' +
-			    '?thermoModel11 ontokin:hasCoefficientValues ?coefficientValues11 .' + '\n' +
-			    '?thermoModel11 ontokin:hasMinimumTemperature ?mintemp11 .' + '\n' +
-			    '?thermoModel11 ontokin:hasMaximumTemperature  ?maxtemp11 .' + '\n' +
-			    '?thermoModel11 ontokin:hasPressure  ?pressure11 .' + '\n' +
-			    '?species1 ontokin:hasThermoModel ?thermoModel12 .' + '\n' +
-			    '?thermoModel12 ontokin:hasCoefficientValues ?coefficientValues12 .' + '\n' +
-			    '?thermoModel12 ontokin:hasMinimumTemperature ?mintemp12 .' + '\n' +
-			    '?thermoModel12 ontokin:hasMaximumTemperature  ?maxtemp12 .' + '\n' +
-			    '?thermoModel12 ontokin:hasPressure  ?pressure12 .' + '\n' +
-				    '?species2 rdfs:label \"' + search_term_name + '\" . ?species2 ontokin:belongsToPhase ?phase2 . ?phase2 ontokin:containedIn ?mechanism2 .' + '\n' +
-				    '?mechanism2 rdf:type ontokin:ReactionMechanism .' + '\n' +
-				    '?mechanism2 rdfs:label ?mechanism2Name .' + '\n' +
-				    '?species2 ontokin:hasThermoModel ?thermoModel21 .' + '\n' +
-				    '?thermoModel21 ontokin:hasCoefficientValues ?coefficientValues21 .' + '\n' +
-				    '?thermoModel21 ontokin:hasMinimumTemperature ?mintemp21 .' + '\n' +
-				    '?thermoModel21 ontokin:hasMaximumTemperature  ?maxtemp21 .' + '\n' +
-				    '?thermoModel21 ontokin:hasPressure  ?pressure21 .' + '\n' +
-				    '?species2 ontokin:hasThermoModel ?thermoModel22 .' + '\n' +
-				    '?thermoModel22 ontokin:hasCoefficientValues ?coefficientValues22 .' + '\n' +
-				    '?thermoModel22 ontokin:hasMinimumTemperature ?mintemp22 .' + '\n' +
-				    '?thermoModel22 ontokin:hasMaximumTemperature  ?maxtemp22 .' + '\n' +
-				    '?thermoModel22 ontokin:hasPressure  ?pressure22 .' + '\n' +
-				    'FILTER ((STR(?mechanism1) < STR(?mechanism2)) && (STR(?thermoModel11) < STR(?thermoModel12)) && (STR(?thermoModel21) < STR(?thermoModel22)) && !((?mintemp11 = ?mintemp21) && (?mintemp12 = ?mintemp22) && (?maxtemp11 = ?maxtemp21) && (?maxtemp12 = ?maxtemp22) && (?pressure11 = ?pressure21) && (?pressure12 = ?pressure22) && (?coefficientValues11 = ?coefficientValues21) && (?coefficientValues12 = ?coefficientValues22)))' + '\n' +
+			    '?species1 rdfs:label \"' + search_term_name + '\" . ?species1 ontokin:belongsToPhase ?phase1 . ?phase1 ontokin:containedIn ?Mechanism1IRI .' + '\n' +
+			    '?Mechanism1IRI rdf:type ontokin:ReactionMechanism .' + '\n' +
+			    '?Mechanism1IRI rdfs:label ?Mechanism1Name .' + '\n' +
+			    '?species1 ontokin:hasThermoModel ?ThermoModel1inMechanism1 .' + '\n' +
+			    '?ThermoModel1inMechanism1 ontokin:hasCoefficientValues ?CoefficientValues1inMechanism1 .' + '\n' +
+			    '?ThermoModel1inMechanism1 ontokin:hasMinimumTemperature ?MinTemp1inMechanism1 .' + '\n' +
+			    '?ThermoModel1inMechanism1 ontokin:hasMaximumTemperature  ?MaxTemp1inMechanism1 .' + '\n' +
+			    '?ThermoModel1inMechanism1 ontokin:hasPressure  ?Pressure1inMechanism1 .' + '\n' +
+			    '?species1 ontokin:hasThermoModel ?ThermoModel2inMechanism1 .' + '\n' +
+			    '?ThermoModel2inMechanism1 ontokin:hasCoefficientValues ?CoefficientValues1inMechanism2 .' + '\n' +
+			    '?ThermoModel2inMechanism1 ontokin:hasMinimumTemperature ?MinTemp2inMechanism1 .' + '\n' +
+			    '?ThermoModel2inMechanism1 ontokin:hasMaximumTemperature  ?MaxTemp2inMechanism1 .' + '\n' +
+			    '?ThermoModel2inMechanism1 ontokin:hasPressure  ?Pressure2inMechanism1 .' + '\n' +
+				    '?species2 rdfs:label \"' + search_term_name + '\" . ?species2 ontokin:belongsToPhase ?phase2 . ?phase2 ontokin:containedIn ?Mechanism2IRI .' + '\n' +
+				    '?Mechanism2IRI rdf:type ontokin:ReactionMechanism .' + '\n' +
+				    '?Mechanism2IRI rdfs:label ?Mechanism2Name .' + '\n' +
+				    '?species2 ontokin:hasThermoModel ?ThermoModel1inMechanism2 .' + '\n' +
+				    '?ThermoModel1inMechanism2 ontokin:hasCoefficientValues ?CoefficientValues2inMechanism1 .' + '\n' +
+				    '?ThermoModel1inMechanism2 ontokin:hasMinimumTemperature ?MinTemp1inMechanism2 .' + '\n' +
+				    '?ThermoModel1inMechanism2 ontokin:hasMaximumTemperature  ?MaxTemp1inMechanism2 .' + '\n' +
+				    '?ThermoModel1inMechanism2 ontokin:hasPressure  ?Pressure1inMechanism2 .' + '\n' +
+				    '?species2 ontokin:hasThermoModel ?ThermoModel2inMechanism2 .' + '\n' +
+				    '?ThermoModel2inMechanism2 ontokin:hasCoefficientValues ?CoefficientValues2inMechanism2 .' + '\n' +
+				    '?ThermoModel2inMechanism2 ontokin:hasMinimumTemperature ?MinTemp2inMechanism2 .' + '\n' +
+				    '?ThermoModel2inMechanism2 ontokin:hasMaximumTemperature  ?MaxTemp2inMechanism2 .' + '\n' +
+				    '?ThermoModel2inMechanism2 ontokin:hasPressure  ?Pressure2inMechanism2 .' + '\n' +
+				    'FILTER ((STR(?Mechanism1IRI) < STR(?Mechanism2IRI)) && (STR(?ThermoModel1inMechanism1) < STR(?ThermoModel2inMechanism1)) && (STR(?ThermoModel1inMechanism2) < STR(?ThermoModel2inMechanism2)) && !((?MinTemp1inMechanism1 = ?MinTemp1inMechanism2) && (?MinTemp2inMechanism1 = ?MinTemp2inMechanism2) && (?MaxTemp1inMechanism1 = ?MaxTemp1inMechanism2) && (?MaxTemp2inMechanism1 = ?MaxTemp2inMechanism2) && (?Pressure1inMechanism1 = ?Pressure1inMechanism2) && (?Pressure2inMechanism1 = ?Pressure2inMechanism2) && (?CoefficientValues1inMechanism1 = ?CoefficientValues2inMechanism1) && (?CoefficientValues1inMechanism2 = ?CoefficientValues2inMechanism2)))' + '\n' +
 				'} ';
-
 			} else if(search_querySelection == 'rateconstant') {
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
@@ -329,14 +334,12 @@ $( function() {
 		
 		$.ajax({
 			type: 'GET',
-			url: "http://localhost:8080/RDF4J_SPARQL_GUI/SPARQLEndpointProxy",
+			url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
 			data: {queryString},
 			success: data => {
-				// console.log(data)
 				let trimmedResult = data.slice(1, data.length-2);
 				let resultArray = trimmedResult.split('}');
 				if (resultArray.length == 1) {
-// 					$("#num-results").text("No results found.");
 					$("#noResult").show();
 				} else {
 					resultArray.pop();
@@ -350,23 +353,185 @@ $( function() {
 						console.log(x)
 						var theader = '<th class="row-query-results">' + x +'</th>';
 						$(".row-header").append(theader);
-					}
+					}								
+
+					var chartLabel = [];
+					var co = [];
+ 					var co_1 = [];
+					var co_2 = [];
+					var co_3 = [];
+					var co_4 = [];
+					var co_5 = [];
+					var co_6 = [];
+					var co_7 = [];
 					
-					
+					var mintemp = [];
+					var maxtemp = [];
+					var pressure = [];
 					let count = 1;
 					for (let result of resultArray) {
 						jsonString = result + '}'
 						jsonString = jsonString.replace(/\n +/g, "");
-						resultObj = JSON.parse(jsonString);
-						queryResultsTable.append(getTableResultRowString(count++, resultObj));
+						resultObj = JSON.parse(jsonString);						
+
+						$.each(resultObj, function(i, row) {
+					       
+					        if (i == 'coefficientValues') {
+					        	var coefficients = row.split(',');					        		
+					        	$.each(coefficients, function(index, value) {
+					        		 //console.log(index);
+								     //console.log(value);
+					        		 co[index] = value;
+					        	});	
+					        	
+					        	co_1.push(co[0]); 
+					        	co_2.push(co[1]); 
+					        	co_3.push(co[2]); 
+					        	co_4.push(co[3]); 
+					        	co_5.push(co[4]); 
+					        	co_6.push(co[5]); 
+					        	co_7.push(co[6]); 
+
+					        } else if (i == 'mintemp') {					        	
+					        	mintemp.push(row);
+					        	
+					        } else if (i == 'maxtemp') {
+					        	maxtemp.push(row);
+
+					        } else if (i == 'name') {
+					        	chartLabel.push(row)
+					        	
+					        } else if (i == 'pressure') {
+					        	pressure.push(row)
+					        }				        
+					        
+					      });
+						
+						console.log(co);
+						console.log(mintemp);
+						console.log(maxtemp);
+						console.log(pressure);
+						
+						if (0) {
+							queryResultsTable.append(getTableResultRowString(count++, resultObj));
+							$("#chartCanvas").hide();
+							$("#tableMechanism").show();
+
+						} else { // show chart
+							console.log('show chart');
+							$("#chartCanvas").show();
+							$("#tableMechanism").hide();
+
+							var config = {
+									type: 'line',
+									data: {
+										labels: ['Toluene', 'DF', 'Mech3', 'Mech4', 'May', 'June', 'July', 'DF', 'Mech3', 'Mech4', 'May', 'June', 'July','July'], //chartLabel
+										datasets: [{
+											label: 'Co1',
+											backgroundColor: window.chartColors.red,
+											borderColor: window.chartColors.red,
+											data: co_1,
+											fill: false,
+										}, {
+											label: 'Co2',
+											fill: false,
+											backgroundColor: window.chartColors.blue,
+											borderColor: window.chartColors.blue,
+											data: co_2,
+										}, {
+											label: 'Co3',
+											fill: false,
+											backgroundColor: window.chartColors.orange,
+											borderColor: window.chartColors.orange,
+											data: co_3,
+										}, {
+											label: 'Co4',
+											fill: false,
+											backgroundColor: window.chartColors.orange,
+											borderColor: window.chartColors.orange,
+											data: co_4,
+										}, {
+											label: 'Co5',
+											fill: false,
+											backgroundColor: window.chartColors.orange,
+											borderColor: window.chartColors.orange,
+											data: co_5,
+										}, {
+											label: 'Co6',
+											fill: false,
+											backgroundColor: window.chartColors.orange,
+											borderColor: window.chartColors.orange,
+											data: co_6,
+										}, {
+											label: 'Co7',
+											fill: false,
+											backgroundColor: window.chartColors.orange,
+											borderColor: window.chartColors.orange,
+											data: co_7,
+										}, {
+											label: 'Min temp',
+											fill: false,
+											backgroundColor: window.chartColors.yellow,
+											borderColor: window.chartColors.yellow,
+											data: mintemp,
+										}, {
+											label: 'Max temp',
+											fill: false,
+											backgroundColor: window.chartColors.green,
+											borderColor: window.chartColors.green,
+											data: maxtemp,
+										}, {
+											label: 'Pressure',
+											fill: false,
+											backgroundColor: window.chartColors.red,
+											borderColor: window.chartColors.red,
+											data: pressure,
+										}
+										]
+									},
+									options: {
+										responsive: true,
+										title: {
+											display: true,
+											text: 'Chart.js Line Chart'
+										},
+										tooltips: {
+											mode: 'index',
+											intersect: false,
+										},
+										hover: {
+											mode: 'nearest',
+											intersect: true
+										},
+										scales: {
+											xAxes: [{
+												display: true,
+												scaleLabel: {
+													display: true,
+													labelString: 'Month'
+												}
+											}],
+											yAxes: [{
+												display: true,
+												scaleLabel: {
+													display: true,
+													labelString: 'Value'
+												}
+											}]
+										}
+									}
+								};
+
+								var ctx = document.getElementById('canvas').getContext('2d');
+								var myChart = new Chart(ctx, config);
+								 
+						}
+
 					}
-//					alert(`Your query return ${count-1} results.`);
 					$("#num-results").text(`${count-1} results found.`);
 				}
 			},
 			error: (XMLHttpRequest, textStatus, errorThrown) => { 
-//	            alert("Status: " + textStatus); 
-//	            alert("Error: " + errorThrown);
 				alert("INCORRECT SPARQL QUERY!")
 	        }
 		})
