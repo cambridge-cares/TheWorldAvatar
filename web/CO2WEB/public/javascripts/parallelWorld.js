@@ -4,7 +4,6 @@
 
     var anotherURL1 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
     var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal2.kml';
-    var anotherURL3 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal3.kml';
 
     
     $(document).on('input', 'input', function () {//when user makes input
@@ -26,11 +25,11 @@
     //TODO: submit button that sends out simulation
     let runBtn = $("#run-btn");
     let selectedId = 0 ;
-
+   
     // updatePredefined(selectedId)
     $("select#predefined-select").on('change', function () {
-         selectedId = parseInt($("select#predefined-select option:checked").val()) - 1;
-        // runKML(selectedId)
+         selectedId = parseInt($("select#predefined-select option:checked").val());
+         console.log(selectedId)
 
 
     })
@@ -54,16 +53,11 @@
             kmlURL = anotherURL1;
         }
         else if (predefinedId == '1') {
-            // ppMap.drawLines({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSCoordinateOPF"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
-            ppMap.drawMarkers({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSCoordinateOPF"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
+            // ppMap.drawLines({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
+            iriofnetwork = 'http://localhost:8080/jps/scenario/testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario/read?query=%7B%22scenarioresource%22%3A%22http%3A%2F%2Fwww.jparksimulator.com%2Fkb%2Fsgp%2Fjurongisland%2Fjurongislandpowernetwork%2FJurongIslandPowerNetwork.owl%23JurongIsland_PowerNetwork%22+%7D';
+            ppMap.drawMarkers( { "electricalnetwork":iriofnetwork });
             
-            iriofnetwork = 'http://localhost:8080/jps/scenario/testPOWSYSCoordinateOPF/read?query=%7B%22scenarioresource%22%3A%22http%3A%2F%2Fwww.jparksimulator.com%2Fkb%2Fsgp%2Fjurongisland%2Fjurongislandpowernetwork%2FJurongIslandPowerNetwork.owl%23JurongIsland_PowerNetwork%22+%7D';
             kmlURL = anotherURL2;
-        }
-        else if (predefinedId == '2'){
-            ppMap.drawLines({"jpscontext":{"scenariourl":"http://localhost:8080/jps/scenario/testPOWSYSCoordinatePF"},"electricalnetwork":"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork"});
-            iriofnetwork = 'http://localhost:8080/jps/scenario/testPOWSYSCoordinatePF/read?query=%7B%22scenarioresource%22%3A%22http%3A%2F%2Fwww.jparksimulator.com%2Fkb%2Fsgp%2Fjurongisland%2Fjurongislandpowernetwork%2FJurongIslandPowerNetwork.owl%23JurongIsland_PowerNetwork%22+%7D'
-            kmlURL = anotherURL3;
         }
         refreshLayer(iriofnetwork, kmlURL);
         kmlURL = null;

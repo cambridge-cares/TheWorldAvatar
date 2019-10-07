@@ -701,9 +701,9 @@ drawMarkers:function(data){
         console.log("size="+size);           
         
     //We currently know of a few cases:
-    var imageList = ['NaturalGas', 'Oil', 'Waste', 'Nuclear'];
     var x;
     self.markers = {}
+
 
     // scan some duplicates
     
@@ -711,28 +711,20 @@ drawMarkers:function(data){
         var obj = obj0[x];
         var fueltype = obj.fueltype;
         var name = obj.name;
-        var thead  = "<table id='table"+ name+"' class='table-attr'>";
-        thead += "<tr><td>  Name: </td><td>  " + name + "  </td></tr>";
-        thead += "<tr><td>  Fuel Type: </td><td>  " + fueltype + "  </td></tr>";
-        var marker = new google.maps.Marker({
-            position: {lat:obj.coors.lat, lng:obj.coors.lng},
-            map: map,
-            title: name
-          });
-          if (obj.vemission){
-            var emission = obj.vemission;
-            thead += "<tr><td>  Emission Level: </td><td>" + emission + "</td></tr>";
+
+        if (fueltype== "NaturalGas"){
+            icon = '/images/naturalgas.png'
+        }else if (fueltype == "Nuclear"){
+            icon = '/images/radiation.png'
         }
- 
-        thead += "</table>";
-        console.log(thead);
-        var infowindow = new google.maps.InfoWindow();
-        google.maps.event.addListener(marker, 'click', (function(marker, thead, infowindow){
-            return function(){
-                infowindow.setContent(thead);
-                infowindow.open(map, marker);
-            }
-        })(marker, thead, infowindow));
+        
+        console.log("Coordinates: obj.coors.lat: "+ obj.coors.lat + " obj.coors.lng: "+ obj.coors.lng);
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
+            map: map,
+            title: name,
+            icon: icon
+          });
         self.markers[name] = marker;
         
         }
