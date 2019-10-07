@@ -477,7 +477,8 @@ class ShipCliInputStrategy(CliInputStrategy):
 
     def connect_chimney_db(self, src):
         mmsi = src[Constants.KEY_MMSI]
-        iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        #iri = Constants.IRI_KB_SHIPS + str(mmsi) + Constants.STR_CHIMNEY
+        iri = 'http://localhost:8080/kb/ships/' + str(mmsi) + Constants.STR_CHIMNEY
         self.connect_db(iri, Constants.KEY_PARSE)
 
         return iri
