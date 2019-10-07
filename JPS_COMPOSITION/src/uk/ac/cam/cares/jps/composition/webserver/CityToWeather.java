@@ -297,27 +297,27 @@ public class CityToWeather extends HttpServlet {
 		JSONObject weatherInJSON = new JSONObject(weatherInString.replace("%20", "_"));
 		JSONObject main = weatherInJSON.getJSONObject("main");
 		JSONObject weatherObject = weatherInJSON.getJSONArray("weather").getJSONObject(0);
-		String humidity = main.getString("humidity");
-		String temperature = main.getString("temp");
+		String humidity = main.get("humidity").toString();
+		String temperature = main.get("temp").toString();
 		String precipitationIntensity = "0.0";
-		String cloudCover = weatherInJSON.getJSONObject("clouds").getString("all");
+		String cloudCover = weatherInJSON.getJSONObject("clouds").get("all").toString();
 		JSONObject windInJSON = weatherInJSON.getJSONObject("wind");
-		String wind_speed = windInJSON.getString("speed");
+		String wind_speed = windInJSON.get("speed").toString();
 		String wind_direction = "";
 		String description = weatherObject.getString("description");
 
 		if (windInJSON.has("deg")) {
-			wind_direction = windInJSON.getString("deg");
+			wind_direction = windInJSON.get("deg").toString();
 		} else {
 			wind_direction = "";
 		}
 		if (weatherInJSON.has("rain")) {
 			
 			if(weatherInJSON.getJSONObject("rain").has("3h")) {
-				precipitationIntensity = weatherInJSON.getJSONObject("rain").getString("3h");
+				precipitationIntensity = weatherInJSON.getJSONObject("rain").get("3h").toString();
 			}
 			else if(weatherInJSON.getJSONObject("rain").has("1h")) {
-				precipitationIntensity = weatherInJSON.getJSONObject("rain").optString("1h");
+				precipitationIntensity = weatherInJSON.getJSONObject("rain").get("1h").toString();
 			}
 			
 			
