@@ -7,6 +7,7 @@ class Constants(object):
     IRI_ONTOCAPE = IRI_ONTO + 'ontocape/'
     IRI_KB = BASE_IRI + 'kb/'
     IRI_KB_SHIPS = IRI_KB + 'ships/'
+    #IRI_KB_SHIPS ='http://localhost:8080/kb/ships/' #(only used for testing local)
     BLD_BDN = 'BDN'
     BLD_NUM = 'BldNumBuildings'
     BLD_NAME = 'BldName'
@@ -108,7 +109,7 @@ class Constants(object):
     OWL_O3 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Ozone'
     OWL_HC = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Unburned_Hydrocarbon'
     OWL_NOx = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Nitrogen__oxides'
-    OWL_PART_001 = IRI_KB_SHIPS + 'Chimney-1.owl#Particulate-001'
+    OWL_PART_001 = IRI_KB + 'ships/Chimney-1.owl#Particulate-001'
     KEY_DIAMETER = 'diameter'
     KEY_DENSITY = 'density'
     KEY_MASS_FRACTION = 'massFraction'
@@ -144,6 +145,7 @@ class Constants(object):
                                  'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
                                  'OptCreateComprehensiveFile'])
     KEY_GRPTANK = 'Grouptank001'
+    KEY_SRC_NAMES = 'SrcNames'
 
 
 class QueryStrings(object):
