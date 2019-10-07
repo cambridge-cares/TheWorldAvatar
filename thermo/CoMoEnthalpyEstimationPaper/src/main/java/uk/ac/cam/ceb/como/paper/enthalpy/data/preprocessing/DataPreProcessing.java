@@ -74,6 +74,7 @@ public class DataPreProcessing {
      * @param invalidSpecies The set of invalid species  that is generated in pre-processing step.
      * @param validReaction  The set of valid reactions that is generated in pre-processing step.
      * @param invalidReaction The set of invalid reactions that is generated in pre-processing step.
+     * 
      * @throws Exception the exception.
      * 
      */
@@ -85,7 +86,10 @@ public class DataPreProcessing {
             int maxRadical = ctrRadicals[z];
             
 //          timeout = 1500; // remove this when call this method
-        
+            
+//          Stopping run the code condition
+            int stop = 1;
+            
         for (int i = 0; i < ctrRuns.length; i++) {
         
         	for (int k = 0; k < ctrRes.length; k++) {
@@ -167,7 +171,7 @@ public class DataPreProcessing {
 //                    	System.out.println("Bond map in refPool:");
                     	for(Bond bondM : refP.getBondMap()){
                     		
-//                    		System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
+//                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
                     		
                     	}
                     }
@@ -201,7 +205,8 @@ public class DataPreProcessing {
 //                    	System.out.println("bond type value: " + bondM.getBondType().getValue() + " atom A: " + bondM.getRefAtomA().toString() + " atom B: " + bondM.getRefAtomB().toString());
 
                     	}
-                    }
+                        
+                        }
                     
                         refPool.remove(target);
                     
@@ -212,13 +217,14 @@ public class DataPreProcessing {
 //                    	System.out.println("Atom multiset in refPool");
                     	for(Element refpms : refP.getAtomMultiset()){
                     		
-//                    		System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+//                    	System.out.println("name: " + refpms.getName() + " atom number: " + refpms.getAtomicNumber()+ " group: " + refpms.getGroup() + " mass number: " + refpms.getMassNumber());
+                    	
                     	}
                     	
 //                    	System.out.println("Atom map in refPool:");
                     	for(Map.Entry<String, String> atomM : refP.getAtomMap().entrySet()){
                     		
-//                    		System.out.println(atomM.getKey() + " " + atomM.getValue());
+//                    	System.out.println(atomM.getKey() + " " + atomM.getValue());
            
                     	}
                     	
@@ -331,6 +337,14 @@ public class DataPreProcessing {
                         	
                             System.out.println("Terminated!");
                             
+                            /**
+                             * 
+                             * @author nk510 (caresssd@hermes.cam.ac.uk)
+                             * If generation of reactions for a species is terminated, then the species is added into the list of invalid species.
+                             *  
+                             */
+                            invalidSpecies.add(target);
+                            
                             Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
                             
                             if (re != null) {
@@ -405,7 +419,7 @@ public class DataPreProcessing {
                     /**
                   	 * HPC settings
                   	 */
-//                    ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
+//                  ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
                          * 
@@ -413,14 +427,16 @@ public class DataPreProcessing {
                          * 
                          */
                         
-                      SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
-                      /**
+                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                    
+                    /**
                   	 * HPC settings
                   	 */
-//                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
+                    
+//                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
-                        if (!completeRList.isEmpty()) {
+                    if (!completeRList.isEmpty()) {
                         	
                         	
                             System.out.println("Writting complete reaction list...");
@@ -434,14 +450,17 @@ public class DataPreProcessing {
                             for(int ri=0; ri<completeRList.size();ri++) {
                              
                             	/**
+                            	 * 
                             	 * Calculates error that is difference between calculated enthalpy of formation (Hf) for currently analyzed species and its reference enthalpy.
+                            	 * 
                             	 */
+                            	
                             double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                             
                         	System.out.println( " Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
                            
                         	/**
-                            * If the error is lower that maximum error than the currently analyzed species species is added to the set of valid species. Otherwise the species is added into the set of invalid species.
+                            * If the error is lower than maximum error for currently analyzed species added into the set of valid species. Otherwise the species is added into the set of invalid species.
                             */
                         	if(error<maxErr) {
                             	
@@ -465,13 +484,20 @@ public class DataPreProcessing {
                             
                             } 
                             
+//                            if(stop==3) {
+                            	
 //                            System.exit(0);
+                            
+//                            }
+                            
+                            stop++;
+                            
                             
                         }
                         
                         if(!ttipSpecies.isEmpty()){
                         	
-                        	for(Species sp: ttipSpecies) {
+                        for(Species sp: ttipSpecies) {
                         		
                         		/**
                             	 * 
@@ -506,17 +532,15 @@ public class DataPreProcessing {
                     writer.overwrite(true);
                     
                     writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+                    
                 /**
                  * 
               	 * HPC settings
               	 * 
               	 */
-//                  writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
+//               writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
                     
-                    writer.write();
-                    
-                    
-                    
+                 writer.write();
                     
                 } catch (Exception e) {
                 

@@ -41,24 +41,28 @@ import uk.ac.cam.ceb.paper.sort.Sort;
 public class LeaveOneOutCrossValidationAlgorithm {
 
 	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+	
 	/**
 	 * HPC settings
 	 */
 //	static String srcCompoundsRef = "g09/";
 
 	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+	
 	/**
 	 * HPC settings
 	 */
 //	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+	
 	/**
 	 * HPC settings
 	 */
 //	static String destRList = "ti_isg/";
 
 	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+	
 	/**
 	 * HPC settings
 	 */
@@ -192,9 +196,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	System.out.println("Invalid species writing . . .");
 
-	BufferedWriter invalidSpeciesFile = new BufferedWriter(
-	
-	new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
 	/**
 	 * HPC settings
 	 */

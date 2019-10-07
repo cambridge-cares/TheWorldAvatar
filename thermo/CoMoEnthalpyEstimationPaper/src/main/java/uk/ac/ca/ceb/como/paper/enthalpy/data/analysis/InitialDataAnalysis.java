@@ -263,8 +263,7 @@ public class InitialDataAnalysis {
 
 								System.out.println("Terminated!");
 
-								Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t
-										.getCalculator().get();
+								Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
 
 								if (re != null) {
 
@@ -298,8 +297,7 @@ public class InitialDataAnalysis {
 
 									for (Reaction r : rList) {
 
-										System.out.println("Species name : " + r.getSpecies().getRef() + " enthalpy: "
-												+ r.getSpecies().getHf());
+										System.out.println("Species name : " + r.getSpecies().getRef() + " enthalpy: " + r.getSpecies().getHf());
 									}
 
 									completeRList.addAll(rList);
@@ -323,7 +321,8 @@ public class InitialDataAnalysis {
 									ttipSpecies.add(s);
 
 								} catch (ArrayIndexOutOfBoundsException | NullPointerException aioobe) {
-									System.out.println("No data were calculated for " + s.getRef());
+									
+									System.out.println("No data were calculated for " + s.getRef());									
 								}
 							}
 
