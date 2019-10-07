@@ -10,7 +10,6 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -172,15 +171,14 @@ public class Solver {
         
 //  System.out.println("Solver class: method solveProblem: lpInputString: " + lpInputString);
     
-    //System.exit(0);
-    //System.out.println();
+
     
     try {
             
         	// call lp_solve input:
             Map<String, Number> solutions = lpSolver.solve(lpInputString);
             
-            Set<String> absNamesToBeRemoved = new HashSet<String>();
+            LinkedHashSet<String> absNamesToBeRemoved = new LinkedHashSet<String>();
             
             // speciesToVariables should now be populated:
             for (Map.Entry<String, Number> entry : solutions.entrySet()) {
@@ -231,7 +229,7 @@ public class Solver {
     	
         vSet = new VariableSet(vfactory);
         
-        LinkedHashSet<Variable> variableSet = vSet.getSet();
+        HashSet<Variable> variableSet = vSet.getSet();
         
         /**
          * 
@@ -265,18 +263,18 @@ public class Solver {
         
         for (Map.Entry<String, Number> entry : solutions.entrySet()) {
         	
-        	String varName = entry.getKey();
+        String varName = entry.getKey();
             
-            Species sp = vSet.findSpeciesByVariableName(varName);
+        Species sp = vSet.findSpeciesByVariableName(varName);
             
-//            System.out.println("Inside Solver class: vSet.findSpeciesByVariableName(varName).getRef(): " + vSet.findSpeciesByVariableName(varName).getRef() + " " + varName);
+//      System.out.println("Inside Solver class: vSet.findSpeciesByVariableName(varName).getRef(): " + vSet.findSpeciesByVariableName(varName).getRef() + " " + varName);
             
-            if (sp == null) {
+        if (sp == null) {
                 throw new RuntimeException("Expecting a species for variable name " + varName + " but it was not found. Possible cause is that "
                         + getClass().getSimpleName() + " was modified externally before the solver finished. This solver is not thread-safe");
             }
             
-            Double count = (Double) entry.getValue().doubleValue();
+        Double count = (Double) entry.getValue().doubleValue();
             
             if (count > 0) {
             	

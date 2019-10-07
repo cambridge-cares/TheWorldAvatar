@@ -331,8 +331,6 @@ public class PoolModificationCalculator extends ObjectPoolCalculator {
         
         Solver enthalpySolver = new Solver(solver, format, new VariableFactory("v"));
         
-//      Solver enthalpySolver = new Solver(this.solver, this.format, new VariableFactory("v"));
-        
         /**
          * 
          * Added: ObjectPool p -> ObjectPool<Species> p

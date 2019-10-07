@@ -321,6 +321,12 @@ public class Reaction {
 		return true;
 	}
 
+	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+	 * Prints out a reaction. It Each reaction must have at least one species from both sides of the reaction.
+	 * .
+	 */
 	@Override
 	public String toString() {
 		if (getReactants().size() >= 1 && getProducts().size() >= 1) {
