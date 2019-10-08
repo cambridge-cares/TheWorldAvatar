@@ -18,7 +18,7 @@ public class ShipPollutionEntity {
     private String chimneyIri;
     @JsonBackReference
     @OneToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "ship_mmsi", referencedColumnName = "mmsi")
+    @JoinColumn(name = "ship_mmsi", referencedColumnName = "mmsi", unique=true, nullable=false)
     private ShipEntity shipByShipMmsi;
 
 
