@@ -130,10 +130,10 @@ public class AgentLocator {
 			throw new JPSRuntimeException(e);
 		}
 
-		/**@TODO: FIX NEEDED - below does not work on *nix filesystems **
+		///@TODO: FIX NEEDED - below does not work on *nix filesystems **
 		if ((path.indexOf("/") == 0) || (path.indexOf("\\") == 0)) {
 		path = path.substring(1);
-		} */
+		}
 
 		int index = -1;
 		for (String current : SUBDIRECTORIES_FOR_COMPILED_CLASSES) {
