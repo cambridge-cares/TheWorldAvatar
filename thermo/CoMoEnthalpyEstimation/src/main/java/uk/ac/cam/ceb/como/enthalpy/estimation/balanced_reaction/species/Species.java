@@ -29,9 +29,7 @@ public class Species {
     private String ref;
     private double hf;
     private double totalEnergy;
-    /**
-     * Line below is updated HashMap<String, Element> -> LinkedHashMap<String, Element>
-     */
+    
     private final LinkedHashMap<String, Element> atoms = new LinkedHashMap<String, Element>();
     private final Collection<Bond> bonds = new HashSet<Bond>();
     private final Multiset<String> msBondTypes = HashMultiset.create();

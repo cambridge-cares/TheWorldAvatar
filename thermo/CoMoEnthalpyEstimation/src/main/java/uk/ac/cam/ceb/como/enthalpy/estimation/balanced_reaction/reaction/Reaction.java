@@ -6,6 +6,7 @@ package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
@@ -21,17 +22,25 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
  */
 public class Reaction {
 
-	private Map<Species, Double> reactantToStoichiometry = new HashMap<Species, Double>();
-	private Map<Species, Double> productToStoichiometry = new HashMap<Species, Double>();
+	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+	 * In the following two lines we have changed: Map<Species, Double> -> LinkedHashMap<Species, Double>
+	 * 
+	 */
+	private LinkedHashMap<Species, Double> reactantToStoichiometry = new LinkedHashMap<Species, Double>();
+	private LinkedHashMap<Species, Double> productToStoichiometry = new LinkedHashMap<Species, Double>();
 	private final Species species;
 	
 	
 
 	/**
+	 * 
 	 * Create an isodesmic reaction using the specified species as a target (whose
 	 * enthalpy of formation is unknown).
 	 *
 	 * @param species
+	 * 
 	 */
 	public Reaction(Species species) {
 		this.species = species;
@@ -53,12 +62,16 @@ public class Reaction {
 	}
 
 	/**
+	 * 
 	 * Get a map of reactants with their stoichiometry numbers.
 	 *
 	 * @return a map of reactants (keys) with their stoichiometry numbers (values)
+	 * 
 	 */
 	public Map<Species, Double> getReactants() {
+		
 		return reactantToStoichiometry;
+		
 	}
 
 	/**
@@ -285,9 +298,10 @@ public class Reaction {
 		@Override
 		public double getEnergy(Species species) {
 
-//			System.out.println("{INSIDE getEnergy(Species species) of EnthalpyEnergySelector:  " + " species.getRef(): " + species.getRef() + " species.getHf(): " + species.getHf() + " species.getTotalEnergy(): " + species.getTotalEnergy() + " }");
+//		System.out.println("{INSIDE getEnergy(Species species) of EnthalpyEnergySelector:  " + " species.getRef(): " + species.getRef() + " species.getHf(): " + species.getHf() + " species.getTotalEnergy(): " + species.getTotalEnergy() + " }");
 
-			return species.getHf();
+		return species.getHf();
+		
 		}
 	}
 

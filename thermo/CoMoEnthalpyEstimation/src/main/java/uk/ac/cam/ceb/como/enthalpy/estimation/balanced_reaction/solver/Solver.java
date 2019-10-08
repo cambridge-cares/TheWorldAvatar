@@ -171,8 +171,6 @@ public class Solver {
         
 //  System.out.println("Solver class: method solveProblem: lpInputString: " + lpInputString);
     
-
-    
     try {
             
         	// call lp_solve input:
@@ -211,6 +209,7 @@ public class Solver {
     }
 
     /**
+     * 
      * Solve isodemic reaction problem for the targetSpecies. All energies
      * (except enthalpy of formation must be provided at the same temperature as
      * those of the reference species).
@@ -222,6 +221,7 @@ public class Solver {
      * @throws NoFeasibleSolutionException if there is not solution to the
      * problem.
      * @throws LpSolverException if there is a porblem with IO
+     * 
      */
     public Reaction solve(Species targetSpecies) throws NoFeasibleSolutionException, LpSolverException {
         
@@ -235,6 +235,7 @@ public class Solver {
          * 
          * @author nk510 (caresssd@hermes.cam.ac.uk)
          * Lined below is commneted from original source code.
+         * 
          */
 //      Set<Variable> variableSet = vSet.getSet();
         
@@ -270,32 +271,34 @@ public class Solver {
 //      System.out.println("Inside Solver class: vSet.findSpeciesByVariableName(varName).getRef(): " + vSet.findSpeciesByVariableName(varName).getRef() + " " + varName);
             
         if (sp == null) {
+        	
                 throw new RuntimeException("Expecting a species for variable name " + varName + " but it was not found. Possible cause is that "
                         + getClass().getSimpleName() + " was modified externally before the solver finished. This solver is not thread-safe");
             }
             
         Double count = (Double) entry.getValue().doubleValue();
             
-            if (count > 0) {
+        if (count > 0) {
             	
-                reaction.addReactant(sp, count);
+            reaction.addReactant(sp, count);
                 
             } else if (count < 0) {
             	
-                reaction.addProduct(sp, -count);
+            reaction.addProduct(sp, -count);
                 
             } else if (count == 0) {
             	
-                // do nothing
+            // do nothing
             	
             } else {
-            	
-                throw new RuntimeException("Unexpected count value for species. This should not happen.");
-                
+
+            throw new RuntimeException("Unexpected count value for species. This should not happen.");
+            
             }
         }
         
-        return reaction;
+    return reaction;
+    
     }
 
     private String buildLpSolveInputString(Species targetSpecies) {
