@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 /**
@@ -47,15 +46,17 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		String csv = new QueryBroker().readFile(outputFile);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 		
-
-		
-		
 		int startcontentindex=7;
+		
+		int heightamount=(simulationResult.get(0).length-startcontentindex)/getAllPollutants(simulationResult, startcontentindex).size();//height variation level amount (e.g:0m,10m,20m,30m) currently 4
+		logger.info("number of height= "+heightamount);
+		
+		
+		
 		int numpol = findHowManyPol(simulationResult, startcontentindex);  //number of polluttant (e.g:CO2,CO,NO2,..etc) with ozone and so2
 		logger.info("number of pollutant= "+numpol);
 		
-		int heightamount=(simulationResult.get(0).length-startcontentindex)/numpol;//height variation level amount (e.g:0m,10m,20m,30m) currently 4
-		
+
 		
 //		TODO IS IT NEEDED IN THE FUTURE TO CHANGE THE GST PHYSICALLY????
 		ArrayList<String[]> copier=new ArrayList<String[]>();
@@ -63,8 +64,9 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		
 		//hardcoded =  (numpol=10 then merged to 9), pollostmerging=1
 
-		int pollostmerging = 1;
+		int pollostmerging = 10-numpol;
 		int newarrsize = simulationResult.get(0).length - (heightamount * pollostmerging);// 43
+
 		
 		//the header of a modified file
 		String[] newheader = new String[newarrsize];
@@ -72,6 +74,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		for (int line = 0; line < startcontentindex; line++) {
 			newheader[line] = simulationResult.get(0)[line];
 		}
+		
 		int counter1 = 0;
 		int index=startcontentindex;
 		for (int heightindex = 0; heightindex < heightamount; heightindex++) { // loop 4x based on height level
@@ -86,7 +89,6 @@ public class ADMSOutputAllForShips extends HttpServlet {
 						String headernamepm25 = simulationResult.get(0)[line1 + numpol * heightindex];
 						newheader[index] = headernamepm25.replace(headernamepm25.split("\\|")[2], "PM2.5");
 						flag25 = true;
-						System.out.println("indexa= " + index);
 						index++;
 					}
 
@@ -95,13 +97,11 @@ public class ADMSOutputAllForShips extends HttpServlet {
 						String headernamepm10 = simulationResult.get(0)[line1 + numpol * heightindex];
 						newheader[index] = headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10");
 						flag10 = true;
-						System.out.println("indexb= " + index);
 						index++;
 					}
 
 				} else {
 					newheader[index] = simulationResult.get(0)[line1 + numpol * heightindex + counter1];
-					System.out.println("indexc= " + index);
 					index++;
 				}
 
@@ -109,6 +109,9 @@ public class ADMSOutputAllForShips extends HttpServlet {
 
 			}
 			counter1 += pollostmerging; // how many pol lost after merging
+
+			
+			
 
 		}
 		copier.add(newheader);
@@ -169,6 +172,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		}
 		
 		//make the json array to replace the functionality of gstreader.py
+		JSONObject ans=new JSONObject();
 		JSONArray a = new JSONArray();
 		for (int z = 0; z < heightamount; z++) {
 			JSONArray h = new JSONArray();
@@ -181,6 +185,11 @@ public class ADMSOutputAllForShips extends HttpServlet {
 			}
 			a.put(h);
 		}
+		ans.put("grid", a);
+		ans.put("numpol", numpol);
+		ans.put("listofpol",getAllPollutants(simulationResult,startcontentindex).stream().distinct().collect(Collectors.toList()));
+		ans.put("numheight", heightamount);
+		
 
 		
 		
@@ -207,10 +216,17 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		//logger.debug("=== Result === :" + result);
 		response.setContentType("application/json");
 		//response.getWriter().write(result);
-		response.getWriter().write(a.toString());
+		response.getWriter().write(ans.toString());
 	}
 
-	public int findHowManyPol(List<String[]> simulationResult, int startcontentindex) {
+	public int findHowManyPol(List<String[]> simulationResult, int startcontentindex) { //only the unique
+	       List<String> newList = getAllPollutants(simulationResult,startcontentindex).stream().distinct().collect(Collectors.toList()); //remove duplication
+		int sizeofpol=newList.size();
+		return sizeofpol;
+	}
+	
+	public ArrayList<String> getAllPollutants(List<String[]> simulationResult, int startcontentindex){
+		
 		int sizeofpol2=startcontentindex;
 		ArrayList<String> listofpol = new ArrayList<String>();	
 			
@@ -230,11 +246,8 @@ public class ADMSOutputAllForShips extends HttpServlet {
 				listofpol.add(name);
 			}
 		}
-	       List<String> newList = listofpol.stream().distinct().collect(Collectors.toList()); //remove duplication
 		
-	
-		//int sizeofpol=(sizeofpol2-startcontentindex);
-		int sizeofpol=newList.size();
-		return sizeofpol;
+		
+		return listofpol;
 	}
 }
