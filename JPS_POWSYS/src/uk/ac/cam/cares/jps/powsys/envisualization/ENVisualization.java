@@ -115,7 +115,7 @@ public class ENVisualization extends JPSHttpServlet {
 			logger.info("Laura   " + iriofnetwork);
 			String n=joforEN.getString("n");
 			OntModel model = readModelGreedy(iriofnetwork);
-			BufferedWriter bufferedWriter = null;
+//			BufferedWriter bufferedWriter = null;
 			String b = null;
 			try (FileWriter writer = new FileWriter("C://Users/LONG01/webapps/ROOT/OntoEN/testfinal.kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
@@ -143,6 +143,7 @@ public class ENVisualization extends JPSHttpServlet {
 			String iriofnetwork = joforEN.getString("electricalnetwork");
 			String n=joforEN.getString("n");
 			OntModel model = readModelGreedy(iriofnetwork);
+			System.out.println("CHECK HERE");
 
 			String b = null;
 
@@ -165,13 +166,9 @@ public class ENVisualization extends JPSHttpServlet {
 			logger.info("path called here= " + path);
 			JSONObject joforEN = AgentCaller.readJsonParameter(request);
 			String iriofnetwork = joforEN.getString("electricalnetwork");
-			System.out.println("iriofnetwork: __" + iriofnetwork);
 			OntModel model = readModelGreedy(iriofnetwork);
 			
 			String g=createMarkers(model);
-			logger.info("____________________________________________________\n");
-			logger.info("____________________________________________________\n");
-			logger.info(g);
 			
 			AgentCaller.printToResponse(g, response);
 		}
@@ -227,6 +224,9 @@ public class ENVisualization extends JPSHttpServlet {
 
 		// ------------FOR GENERATORS-----------------
 		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
+		List<String[]> generators2 = a.queryElementCoordinate(model, "NuclearGenerator");
+		generators.addAll(generators2);
+		System.out.println(generators.size());
 		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
