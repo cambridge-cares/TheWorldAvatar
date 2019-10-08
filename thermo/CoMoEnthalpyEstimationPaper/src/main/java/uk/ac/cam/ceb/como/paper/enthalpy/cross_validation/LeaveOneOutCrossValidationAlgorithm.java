@@ -26,7 +26,8 @@ import uk.ac.cam.ceb.paper.sort.Sort;
  * @author am2145(am2145@cam.ac.uk)
  *
  *         This class contains main method that runs Global cross validation
- *         algorithm published in [1].
+ *         algorithm publi
+ *         shed in [1].
  * 
  *         References used in documentation:
  * 
