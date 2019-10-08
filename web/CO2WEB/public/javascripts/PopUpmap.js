@@ -739,10 +739,10 @@ drawMarkers:function(data){
         }
         
         var arr = Array.from(emissions);
-        arrSum = arr.reduce((a,b) => a + b, 0);
+        var arrsum= arr.reduce((a,b) => a + b, 0);
+        arrSum = arrsum;
+        console.log('argSum: '+ arrSum);
     });
-    
-    
 },
 drawLines:function(data){
     var map = this.googleMap;

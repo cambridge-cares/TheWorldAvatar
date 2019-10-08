@@ -5,7 +5,9 @@
     var anotherURL1 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
     var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal2.kml';
     var val =  parseFloat($("#co2Value").text());
-
+    setInterval(function(){
+        distotalemission(arrSum);
+    }, 5000);
     
     $(document).on('input', 'input', function () {//when user makes input
         console.log("input changed");
@@ -59,9 +61,7 @@
         console.log(arrSum);
         refreshLayer(iriofnetwork, kmlURL);
         kmlURL = null;
-        setTimeout(function(){
-            distotalemission(arrSum);
-        }, 5000);
+        
     }
     function refreshLayer(iriofnetwork, kmlURL){
         if (kmlLayer){
