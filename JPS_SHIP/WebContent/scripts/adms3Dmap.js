@@ -146,6 +146,7 @@ const initadms3dmap = (
 	const dataurls = data[0]
 	const POL_LIST = data[1]
 	const POL_NUM = data[2]
+	const HEIGHT_NUM = data[3]
 	makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
     const LEGEND_WRAPPER = 'legendwrapper'
     const SLIDER_WRAPPER = 'sliderwrapper'

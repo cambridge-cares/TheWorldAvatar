@@ -19,8 +19,8 @@ function getContourMaps (address, folder) {
     	data = JSON.parse(data)
 	let d2result = data['grid']
 	let POL_LIST = data['listofpol']  
-	//const POL_NUM = POL_LIST.length
     	let POL_NUM = data['numpol']
+    	let HEIGHT_NUM = data['numheight']
       
       let bands = []
       //calculate global min max per polutant
@@ -155,7 +155,7 @@ function getContourMaps (address, folder) {
         })
         console.log(dataurls)
 
-        resolve([dataurls,POL_LIST,POL_NUM])
+        resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM])
 
       }, err => {//todo: err handling
         reject(err)
@@ -276,5 +276,5 @@ function makeRadios (selector_id, list, legend) {
 //const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
 //const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx','SO2','O3', 'PM10', 'PM2.5']
 //const POL_NUM = POL_LIST.length
-const HEIGHT_NUM = 4
+//const HEIGHT_NUM = 4
 
