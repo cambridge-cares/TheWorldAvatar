@@ -117,7 +117,6 @@ const initadms3dmap = (
   while (optionWrapperNode.firstChild) {
     optionWrapperNode.removeChild(optionWrapperNode.firstChild)
   }
-  makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
 
   var geojson = {
     type: 'FeatureCollection',
@@ -143,7 +142,11 @@ const initadms3dmap = (
       }],
   }
 
-  getContourMaps('/JPS/ADMSOutputAllForShips', folder).then(dataurls => {
+  getContourMaps('/JPS/ADMSOutputAllForShips', folder).then(data => {
+	const dataurls = data[0]
+	const POL_LIST = data[1]
+	const POL_NUM = data[2]
+	makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
     const LEGEND_WRAPPER = 'legendwrapper'
     const SLIDER_WRAPPER = 'sliderwrapper'
     let legendWrapperNode = document.getElementById(LEGEND_WRAPPER)
