@@ -48,6 +48,15 @@ block content
                             div#draw-panel
                            
     div#map
+    br
+    div#co2-sum-panel2
+        p
+            | Jurong Island CO
+            sub 2
+            | &nbsp;Emission:
+        p
+        span#co2Value  #{co2Value}
+        span  tonnes/seconds
     script(src="https://code.jquery.com/jquery-2.2.0.min.js")
     script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
     script(src="/javascripts/PopUpmap.js")

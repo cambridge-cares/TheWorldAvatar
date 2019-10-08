@@ -344,7 +344,13 @@ CO2Page
     font-weight: 300;
 
 }
+#co2-sum-panel2 {
+    padding: 15px 15px;
+    text-align: center;
+    font-size: 40px;
+    font-weight: 100;
 
+}
 
 
 .textsmall{

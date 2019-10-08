@@ -36,11 +36,9 @@ document.addEventListener("click", function(evt) {
 /*Map with Popup markers**/
 function PopupMap(options) {
 //var googleMap;//the map entity
-
 this.curPath = window.location.href;
 console.log("curpath: " + this.curPath);
 this.mergeOptions(options);
-
 
 /**
  * A raw device map of name - SVG Path
@@ -160,13 +158,14 @@ animatedLines = [];
 window.initMap = this.initMap.bind(this);
 }
 
+var arrSum =10.00;
 var  kmlLayer;
 function drawGenerator(iriofnetwork, anotherURL){
     var d = new Date();
     var n = d.getTime();
     var kmljson = {};
-    var kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createKMLFile'; //Note: Just need to know if it's created; do not need to actually read from database at this stage. 
-    var electricalnetwork = iriofnetwork//F it's been running all thsi tim nevermind!
+    var kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createKMLFile'; 
+    var electricalnetwork = iriofnetwork
     kmljson["electricalnetwork"] = electricalnetwork;
     kmljson["n"] = String(n);
 
@@ -695,6 +694,7 @@ drawMarkers:function(data){
         async: true,
         contentType: 'application/json; charset=utf-8'
     });     
+    
     request.done(function(data) {
         var obj0 = JSON.parse(data);
         var size=obj0.length;
@@ -704,6 +704,7 @@ drawMarkers:function(data){
     var x;
     self.markers = {}
 
+    var emissions = new Set();
 
     // scan some duplicates
     
@@ -726,9 +727,22 @@ drawMarkers:function(data){
             icon: icon
           });
         self.markers[name] = marker;
-        
+        //Handle CO2 Emissions per generator. This is on a generator level
+        // if (fueltype != "Nuclear"){ //would thus be removed afterwrds. 
+        //     emissions += obj.vemission;
+        //     console.log('vemission: '+ obj.vemission);
+        // }
+        //Handle CO2 Emissions per powerplant. 
+        if (fueltype != "Nuclear"){
+            emissions.add(parseFloat(obj.vemission));
         }
+        }
+        
+        var arr = Array.from(emissions);
+        arrSum = arr.reduce((a,b) => a + b, 0);
     });
+    
+    
 },
 drawLines:function(data){
     var map = this.googleMap;

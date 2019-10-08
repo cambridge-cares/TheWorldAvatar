@@ -29,7 +29,6 @@ var visualizeAgent = require("./routes/visualizeAgent.js");
 var visualizeOntokin= require("./routes/visualizeOntokin.js");
 
 
-var proxy = require("./routes/proxy");
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
@@ -91,7 +90,6 @@ app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/pwScenario', parallelWorld);
-app.use('/proxy', proxy);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
