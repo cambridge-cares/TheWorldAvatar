@@ -166,6 +166,8 @@ public class ENVisualization extends JPSHttpServlet {
 			logger.info("path called here= " + path);
 			JSONObject joforEN = AgentCaller.readJsonParameter(request);
 			String iriofnetwork = joforEN.getString("electricalnetwork");
+			String fo = joforEN.getString("flag");
+			logger.info(fo);
 			OntModel model = readModelGreedy(iriofnetwork);
 			
 			String g=createMarkers(model);
