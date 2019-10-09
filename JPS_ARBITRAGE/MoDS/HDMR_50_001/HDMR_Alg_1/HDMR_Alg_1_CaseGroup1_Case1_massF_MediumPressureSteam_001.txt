@@ -1,0 +1,30 @@
+% Reduced chi^2:
+2.27977e-005
+% R^2:
+0.999998
+% Dimension (number of independent variables):
+1
+% Variable names:
+x_0 = massF_CrudePalmOilInput_001
+% Surrogate model type:
+HDMR
+%  Interaction order:
+2
+% Order at each interaction level:
+0: 1
+1: 0
+%
+% First Order Sensitivities:
+1
+% Sum of Variances:
+10.8435
+%
+% Zeroth Order Coefficient:
+10034.3
+% First Order Coefficients:
+-4.65692*(3/2)^0.5*x_0
+%
+% Zeroth Order Terms:
+10034.3
+% First Order Terms:
+-5.70354*x_0
