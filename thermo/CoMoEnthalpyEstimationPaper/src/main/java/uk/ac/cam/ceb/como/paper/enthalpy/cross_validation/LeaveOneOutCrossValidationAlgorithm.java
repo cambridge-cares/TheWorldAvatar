@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,41 +42,45 @@ import uk.ac.cam.ceb.paper.sort.Sort;
 
 public class LeaveOneOutCrossValidationAlgorithm {
 
-	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+//	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
 	
 	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
 	 */
-//	static String srcCompoundsRef = "g09/";
+	static String srcCompoundsRef = "g09/";
 
-	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+//	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
 	
 	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
 	 */
-//	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
+	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
-	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+//	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
 	
 	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
 	 */
-//	static String destRList = "ti_isg/";
+	static String destRList = "ti_isg/";
 
-	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+//	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
 	
 	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
 	 */
-//	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
+	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
 	public static Map<Species, Integer> spinMultiplicity = new HashMap<>();
 
-	public static Set<Species> validSpecies = new HashSet<Species>();
+	public static LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
 
-	public static Set<Species> invalidSpecies = new HashSet<Species>();
+	public static LinkedHashSet<Species> invalidSpecies = new LinkedHashSet<Species>();
 
 	public static Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
 
@@ -84,7 +89,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	public static Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
 
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Number of runs.
 	 * 
 	 */
@@ -92,7 +97,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	static int[] ctrRuns = new int[] {1};
 
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Number of reactions that will be generated for each species.
 	 * 
 	 */
@@ -100,7 +105,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	static int[] ctrRes = new int[] {5}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
 
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Number of radicals.
 	 * 
 	 */
@@ -136,17 +141,20 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		/**
 		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * After completing pre-processing step, it prints valid reactions in txt file and on console.
 		 * 
 		 */
 	
-	BufferedWriter validReactionFile = new BufferedWriter(
-				
-	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
+//	BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
+
 	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
+	 * 
 	 */
-//	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
+	BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
 
 	System.out.println("Valid reactions writing . . . ");
 
@@ -154,24 +162,27 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		/**
 		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Printing invalid reactions in txt file and on console.
 		 * 
 		 */
 	
 	BufferedWriter invalidReactionFile = new BufferedWriter(
 	
-    new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+//    new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
 	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
+	 * 
 	 */
-//	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
+	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
 	System.out.println("Invalid reactions writing . . .");
 
 	errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, invalidReaction);
 
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Printing valid species in txt file and on console.
 		 * 
 		 */
@@ -180,33 +191,42 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 	BufferedWriter validSpeciesFile = new BufferedWriter(
 	
-	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
+//	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
 	
 	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
+	 * 
 	 */
-//	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
+	new FileWriter(destRList + "data-pre-processing" + "/"+ "valid_species" + ".txt", true));
 
 	errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, validSpecies);
 
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Printing invalid species in txt file and on console.
 		 * 
 		 */
 	
 	System.out.println("Invalid species writing . . .");
 
-	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
 	/**
-	 * HPC settings
+	 * 
+	 * Settings on PC machine
 	 */
-//	new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+//	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+	
+	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+	 * HPC settings
+	 * 
+	 */
+	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
 	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
 
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Error bar is average of all errors generated for each reaction of given
 		 * species.
 		 * 
@@ -217,7 +237,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies));
 
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Sorted hash map in decreasing order comparing by error bar value in Java 1.8.
 		 * 
 		 */
@@ -234,7 +254,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		System.out.println("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
 
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * The code below runs initial data analysis part of cross validation algorithm.
 		 * 
 		 * The code iterates over sorted rejected set of species and their error bars.
@@ -260,7 +280,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 */
 		
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Determines whether a species is added into valid set of species
 		 * 
 		 */
@@ -270,7 +290,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		int  loop = 1;
 		
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Iteration that terminates when there will be not species added to the set of valid species.
 		 * 
 		 */
@@ -280,7 +300,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		int iteration = 1;
 		
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Set of species that are still member of invalid set of species after completed cross validation.
 		 *  
 		 */
@@ -294,7 +314,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		int tempValidSpeciesSize = tempValidSpecies.size();
 		
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Iteration through a set of invalid species.
 		 * 
 		 */
@@ -305,7 +325,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 			    
 			    /**
 			     * 
-			     * Skips species that are added into valid set of species.
+			     * @author nk510 (caresssd@hermes.cam.ac.uk)
+			     * Skips species from invalid set of species that are already added into valid set of species.
 			     * 
 			     */
 			    
@@ -329,6 +350,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 				/**
 				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
 				 * Creates reference set of species from valid set of species generated in
 				 * pre-processing step. Also, adds a species from invalid set of species that is under current investigation  (cross validation) to a
 				 * reference set of species.
@@ -339,6 +361,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 				/**
 				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
 				 * Adding invalid species with current max error bar into source reference pool
 				 * species list (srcRefPoolSpecies) i.e. set of reference species.
 				 * 
@@ -365,6 +388,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 				/**
 				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
 				 * Enthalpy of formation for target species is set to zero.
 				 * 
 				 */
@@ -402,16 +426,23 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	System.out.println("Invalid species file after (" + loop+ ".) loop through invalid species list with error bar . . .");
 
-	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	/**
-	 * HPC settings
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+	 * Settings for PC machine.
 	 */
-//	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+//	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+	
+	/**
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+	 * HPC settings
+	 * 
+	 */
+	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies);
 	
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * If there are not more invalid species that will be added to valid set of species then addedSpeciesToValidSet=false;
 	 *  
 	 */
@@ -422,7 +453,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	}
 	
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * If there are not species added to the list of valid species then iteration process terminates.
 	 * 
 	 */
@@ -447,7 +478,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	loop++;
 
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Size of species could be large. It means we need to change int -> BigInteger
 	 * 
 	 */
@@ -455,7 +486,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	int validSpeciesSize = validSpecies.size();
 	
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * After passing through all invalid species, If there are not more invalid species that are added into valid set of species then the algorithms terminates.
 	 *  
 	 */
@@ -470,7 +501,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	};
 	
 		/**
-		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Terminates program
 		 * 
 		 */
@@ -478,13 +509,13 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	}
 	
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * @param validSpecies the set of valid species.
 	 * @param currentSpecies the current species.
 	 * @return true if the species that is currently in use is the member of valid set of species.
 	 *  
 	 */
-	public static boolean containsSpecies(Set<Species> validSpecies, Species currentSpecies) {
+	public static boolean containsSpecies(LinkedHashSet<Species> validSpecies, Species currentSpecies) {
 		
 		boolean contains = false;
 		

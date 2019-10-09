@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,8 +28,8 @@ public class LoadSpecies {
 	 * 
 	 */
 	
-	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {	
-		 
+	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {
+		
 		Collection<Species> invalids = new HashSet<>();
 		
 		int ctr = 1;
@@ -130,7 +131,7 @@ public class LoadSpecies {
 	 * @throws Exception The exception.
 	 * 
 	 */
-	public List<Species> loadReferenceSpeciesForInitialAnalysis(String srcRefPool, Set<Species> validSpecies) throws Exception{
+	public List<Species> loadReferenceSpeciesForInitialAnalysis(String srcRefPool, LinkedHashSet<Species> validSpecies) throws Exception{
 		
 		SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
 

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,8 +13,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 public class ErrorBarCalculation {
 
-
-	   /**
+/**
   * @author nk510 ( caresssd@hermes.cam.ac.uk )
   * @author am2145( am2145@cam.ac.uk )
   * 
@@ -46,7 +46,7 @@ public class ErrorBarCalculation {
   * @param validSpeciesSet The set of valid species.
   * @throws IOException the exception.
   */
- public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile,  Set<Species> validSpeciesSet) throws IOException {
+ public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile,  LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
  	for(Species s: validSpeciesSet) {
  		
@@ -72,7 +72,7 @@ public class ErrorBarCalculation {
   * @param validSpeciesSet The set of valid species. 
   * @throws IOException the exception. 
   */
- public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile, Set<Species> invalidSpeciesSet, Set<Species> validSpeciesSet) throws IOException {
+ public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
  	for(Species invs: invalidSpeciesSet) {
          
@@ -100,7 +100,7 @@ public class ErrorBarCalculation {
  * @param validSpeciesSet  Valid set of species.
  * @throws IOException The IO exception.
  */
-public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, Set<Species> invalidSpeciesSet, Set<Species> validSpeciesSet) throws IOException {
+public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
 	
 	 	for(Species invs: invalidSpeciesSet) {
 	         
@@ -138,7 +138,7 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
      * 
      */
     
-    public Map<Species, Double> calculateSpeciesErrorBar(Map<Reaction, Double> invalidReaction, Set<Species> validSpecies, Set<Species> invalidSpecies ) {
+    public Map<Species, Double> calculateSpeciesErrorBar(Map<Reaction, Double> invalidReaction, LinkedHashSet<Species> validSpecies, LinkedHashSet<Species> invalidSpecies ) {
     
       Map<Species, Double> speciesErrorBarMap = new HashMap<Species, Double>();
     	

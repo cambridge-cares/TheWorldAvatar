@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -79,7 +79,7 @@ public class DataPreProcessing {
      * 
      */
 	
-    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, Set<Species> validSpecies,  Set<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
+    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
     	 
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -98,18 +98,18 @@ public class DataPreProcessing {
                 
         		System.out.println("Process configuration " + config);
                 
-                  if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+//                  if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	  
                 	  /**
                 		 * HPC settings
                 		 */
-//        		  if(new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
+        		if(new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
                 	
-                      System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
+//              System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
                       /**
                   	 * HPC settings
                   	 */  
-//        			  System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
+        		System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
                     
                     continue;
                 }
@@ -132,12 +132,16 @@ public class DataPreProcessing {
                     System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                 
                     ctr++;
+                    
+                    /**
+                     * Settings on PC machine
+                     */
 
-                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+//                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                     /**
                 	 * HPC settings
                 	 */
-//                if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
+                if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
                     continue;
                     
@@ -337,27 +341,19 @@ public class DataPreProcessing {
                         	
                             System.out.println("Terminated!");
                             
-                            /**
-                             * 
-                             * @author nk510 (caresssd@hermes.cam.ac.uk)
-                             * If generation of reactions for a species is terminated, then the species is added into the list of invalid species.
-                             *  
-                             */
-                            invalidSpecies.add(target);
-                            
                             Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
                             
                             if (re != null) {
                             	
-                                for (Species sR : re.keySet()) {
+                            for (Species sR : re.keySet()) {
                                 	
-                                    results.put(target, re.get(sR));
+                            results.put(target, re.get(sR));
                                     
-                                }
+                            }
                                 
                             } else {
                             	
-                                results.put(target, null);
+                            results.put(target, null);
                                 
                             }
                         }
@@ -400,40 +396,54 @@ public class DataPreProcessing {
                                 
                             }
                         }
+                        
+                        /**
+                         * PC machine settings.
+                         */
 
-                        if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
+//                   if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
                         /**
                     	 * HPC settings
                     	 */
-//                        if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
+                     if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
-                        new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
+                        	/**
+                        	 * PC machine settings.
+                        	 */
+//                   new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
                         /**
                     	 * HPC settings
                     	 */
-//                      new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
+                      new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
-                    ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
+                     /**
+                      * PC machine settings.
+                      */
+//                   ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
+                     
                     /**
                   	 * HPC settings
                   	 */
-//                  ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
+                     ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
-                         * 
+                         * @author nk510 (caresssd@hermes.cam.ac.uk)
                          * Added ctr in species pool median name.
                          * 
                          */
-                        
-                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                    
+                     /**
+                      * PC machine settings.
+                      */
+//                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
                     
                     /**
                   	 * HPC settings
                   	 */
                     
-//                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
+                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
                     if (!completeRList.isEmpty()) {
@@ -451,6 +461,7 @@ public class DataPreProcessing {
                              
                             	/**
                             	 * 
+                            	 * @author nk510 (caresssd@hermes.cam.ac.uk)
                             	 * Calculates error that is difference between calculated enthalpy of formation (Hf) for currently analyzed species and its reference enthalpy.
                             	 * 
                             	 */
@@ -460,8 +471,10 @@ public class DataPreProcessing {
                         	System.out.println( " Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
                            
                         	/**
-                            * If the error is lower than maximum error for currently analyzed species added into the set of valid species. Otherwise the species is added into the set of invalid species.
-                            */
+                        	 * 
+                        	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+                             * If the error is lower than maximum error for currently analyzed species added into the set of valid species. Otherwise the species is added into the set of invalid species.
+                             */
                         	if(error<maxErr) {
                             	
                             validReaction.put(completeRList.get(ri), error);
@@ -500,7 +513,7 @@ public class DataPreProcessing {
                         for(Species sp: ttipSpecies) {
                         		
                         		/**
-                            	 * 
+                            	 * @author nk510 (caresssd@hermes.cam.ac.uk)
                             	 * Species reference enthalpy and species name.
                             	 * 
                             	 */
@@ -530,15 +543,21 @@ public class DataPreProcessing {
                     writer.setContent("completed!");
                     
                     writer.overwrite(true);
-                    
-                    writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+                
+                    /**
+                     * 
+                     * @author nk510 (caresssd@hermes.cam.ac.uk)
+                     * Settings on PC machine.
+                     * 
+                     */
+//              writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
                     
                 /**
                  * 
               	 * HPC settings
               	 * 
               	 */
-//               writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
+                writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
                     
                  writer.write();
                     
