@@ -53,7 +53,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		
 		
 		
-		int numpol = findHowManyPol(simulationResult, startcontentindex);  //number of polluttant (e.g:CO2,CO,NO2,..etc) with ozone and so2
+		int numpol = findUniquePol(simulationResult, startcontentindex).size();  //number of polluttant (e.g:CO2,CO,NO2,..etc) with ozone and so2
 		logger.info("number of pollutant= "+numpol);
 		
 
@@ -109,6 +109,14 @@ public class ADMSOutputAllForShips extends HttpServlet {
 
 			}
 			counter1 += pollostmerging; // how many pol lost after merging
+			if(flag10==false&&flag25==true) {				
+				String headernamepm10 = simulationResult.get(0)[startcontentindex+10 * heightindex];
+				//System.out.println(headernamepm10);
+				newheader[index] = headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10");
+				flag10 = true;
+				//System.out.println(newheader[index]);
+				index++;
+			}
 
 			
 			
@@ -163,10 +171,23 @@ public class ADMSOutputAllForShips extends HttpServlet {
 
 					line1++;
 				}
-				newcontent[lockindexpm25] = "" + pm25;
-				newcontent[lockindexpm10] = "" + (pm10 + pm25);
+				if (flag25 == true) {
 
-				counter += pollostmerging; // how many pol lost after merging
+					newcontent[lockindexpm25] = "" + pm25;
+					if (flag10 == false) {
+						newcontent[lockindexpm25 + 1] = "" + (pm10 + pm25);
+						indexcontent++;
+					}
+					// System.out.println("index25= "+lockindexpm25);
+
+				}
+				if (flag10 == true) {
+					newcontent[lockindexpm10] = "" + (pm10 + pm25);
+					// System.out.println("index10= "+lockindexpm10);
+				}
+
+				counter += pollostmerging; // how many pol lost after merging.
+
 			}
 			copier.add(newcontent);
 		}
@@ -176,10 +197,10 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		JSONArray a = new JSONArray();
 		for (int z = 0; z < heightamount; z++) {
 			JSONArray h = new JSONArray();
-			for (int y = startcontentindex; y < startcontentindex+findHowManyPol(copier,startcontentindex); y++) { // index0-index 9 for 1 pollutant
+			for (int y = startcontentindex; y < startcontentindex+findUniquePol(copier,startcontentindex).size(); y++) { // index0-index 9 for 1 pollutant
 				JSONArray pol = new JSONArray();
 				for (int x = 1; x < copier.size(); x++) { // 1-the last line
-					pol.put(copier.get(x)[y + findHowManyPol(copier,startcontentindex)*z]);
+					pol.put(copier.get(x)[y + findUniquePol(copier,startcontentindex).size()*z]);
 				}
 				h.put(pol);
 			}
@@ -187,7 +208,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		}
 		ans.put("grid", a);
 		ans.put("numpol", numpol);
-		ans.put("listofpol",getAllPollutants(simulationResult,startcontentindex).stream().distinct().collect(Collectors.toList()));
+		ans.put("listofpol",findUniquePol(copier,startcontentindex));
 		ans.put("numheight", heightamount);
 		
 
@@ -219,10 +240,14 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		response.getWriter().write(ans.toString());
 	}
 
-	public int findHowManyPol(List<String[]> simulationResult, int startcontentindex) { //only the unique
+	public List<String> findUniquePol(List<String[]> simulationResult, int startcontentindex) { //only the unique
 	       List<String> newList = getAllPollutants(simulationResult,startcontentindex).stream().distinct().collect(Collectors.toList()); //remove duplication
-		int sizeofpol=newList.size();
-		return sizeofpol;
+		
+		if(newList.contains("PM2.5")&&!newList.contains("PM10")) {
+			newList.add("PM10");
+		}
+		//int sizeofpol=newList.size();
+		return newList;
 	}
 	
 	public ArrayList<String> getAllPollutants(List<String[]> simulationResult, int startcontentindex){

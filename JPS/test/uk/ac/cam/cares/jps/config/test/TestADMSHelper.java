@@ -2,17 +2,14 @@ package uk.ac.cam.cares.jps.config.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.json.JSONArray;
 
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.adms.ADMSOutputAllForShips;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -47,7 +44,7 @@ public class TestADMSHelper extends TestCase {
 		//String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levels.gst");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 		int startcontentindex=7;
-		int sizeofpol = new ADMSOutputAllForShips().findHowManyPol(simulationResult, startcontentindex);
+		int sizeofpol = new ADMSOutputAllForShips().findUniquePol(simulationResult, startcontentindex).size();
 		int heightamount=(simulationResult.get(0).length-startcontentindex)/sizeofpol;
 		
 		assertEquals(4,heightamount);
@@ -56,9 +53,10 @@ public class TestADMSHelper extends TestCase {
 	}
 	
 	public void testheaderpostprocessing() {
-		
 		ArrayList<String[]> copier=new ArrayList<String[]>();
 		String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levels.gst");
+		//String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levelsVer2.gst");
+		//String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levelscop.gst");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 		
 				
@@ -66,9 +64,13 @@ public class TestADMSHelper extends TestCase {
 	//hardcoded = 14,15,16 (numpol=9)
 	int heightamount=4;
 	int numpol=9;
+	//int numpol=8;
 	int startcontentindex=7;
-	int pollostmerging=1;
+//	int pollostmerging=1;
+	int pollostmerging = 10-numpol;
+	
 	int newarrsize=simulationResult.get(0).length-(heightamount*pollostmerging);//43
+	System.out.println("newarrsizee= "+newarrsize);
 	
 		String[] newheader = new String[newarrsize];
 		for (int line = 0; line < startcontentindex; line++) {
@@ -104,8 +106,9 @@ public class TestADMSHelper extends TestCase {
 					}
 
 				} else {
+					int indexa=line1 + numpol * heightindex + counter1;
 					newheader[index] = simulationResult.get(0)[line1 + numpol * heightindex + counter1];
-					
+					//System.out.println("indexheader= " + newheader[index]+" "+indexa);
 					index++;
 				}
 
@@ -113,11 +116,20 @@ public class TestADMSHelper extends TestCase {
 
 			}
 			counter1 += pollostmerging; // how many pol lost after merging
+			
+			if(flag10==false&&flag25==true) {				
+				String headernamepm10 = simulationResult.get(0)[startcontentindex+10 * heightindex];
+				//System.out.println(headernamepm10);
+				newheader[index] = headernamepm10.replace(headernamepm10.split("\\|")[2], "PM10");
+				flag10 = true;
+				System.out.println(newheader[index]);
+				index++;
+			}
 
 		}
 		copier.add(newheader);
 
-				
+		//the content of a modified file		
 		for (int t = 1; t < totalline; t++) { // row
 			String[] newcontent = new String[newarrsize];
 			for (int line = 0; line < startcontentindex; line++) {
@@ -159,17 +171,29 @@ public class TestADMSHelper extends TestCase {
 //						newcontent[lockindexpm10] = "" + (pm10+pm25);
 
 					} else {
+						int indexa=line1 + numpol * heightindex + counter;
 						newcontent[indexcontent] = simulationResult.get(t)[line1 + numpol * heightindex + counter];
-						// System.out.println("indexc= " + index);
+						// System.out.println("indexcontent= " +newcontent[indexcontent]+" "+ indexa);
 						indexcontent++;
 					}
 
 					line1++;
 
 				}
-				newcontent[lockindexpm25] = "" + pm25;
-				newcontent[lockindexpm10] = "" + (pm10+pm25);
-
+				if (flag25 == true) {
+					
+					newcontent[lockindexpm25] = "" + pm25;
+					if (flag10 == false) {
+						newcontent[lockindexpm25+1] = "" + (pm10+pm25);
+						indexcontent++;
+					}
+					//System.out.println("index25= "+lockindexpm25);
+						
+				}
+				if (flag10 == true) {
+					newcontent[lockindexpm10] = "" + (pm10+pm25);
+					//System.out.println("index10= "+lockindexpm10);
+				}
 				counter += pollostmerging; // how many pol lost after merging
 
 			}
@@ -183,17 +207,17 @@ public class TestADMSHelper extends TestCase {
 		JSONArray a = new JSONArray();
 		for (int z = 0; z < heightamount; z++) {
 			JSONArray h = new JSONArray();
-			for (int y = startcontentindex; y < 16; y++) { // index0-index 9 for 1 pollutant
+			for (int y = startcontentindex; y < startcontentindex+numpol; y++) { // index0-index 9 for 1 pollutant
 				JSONArray pol = new JSONArray();
 				for (int x = 1; x < copier.size(); x++) { // 1-the las line
-					pol.put(copier.get(x)[y + 9*z]);
+					pol.put(copier.get(x)[y + numpol*z]);
 				}
 				h.put(pol);
 			}
 			a.put(h);
 		}
-		System.out.println(a.getJSONArray(0).getJSONArray(8).toString());
-		System.out.println(a.getJSONArray(0).getJSONArray(8).length());
+		System.out.println(a.getJSONArray(0).getJSONArray(7).toString());
+		System.out.println(a.getJSONArray(0).getJSONArray(7).length());
 		broker.put(baseUrl + "/newresult2.csv", MatrixConverter.fromArraytoCsv(copier));
 		
 		
