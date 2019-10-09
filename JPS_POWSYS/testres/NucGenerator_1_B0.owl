@@ -46,6 +46,7 @@
         </j.5:hasProjectedCoordinate_x>
       </j.5:ProjectedCoordinateSystem>
     </j.5:hasGISCoordinateSystem>
+    <j.3:isSubsystemOf rdf:resource="http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucPP_1.owl#NucPP_1"/>
     <j.3:isModeledBy>
       <j.1:PowerFlowModelAgent rdf:about="http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl#ModelOfNucGenerator_1_B0">
         <j.6:hasModelVariable>
