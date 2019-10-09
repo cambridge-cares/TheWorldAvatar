@@ -23,9 +23,6 @@
 /JPS_COMPOSITION/target/
 /JPS_SHIP/classes/
 /JPS/python/caresjpsadmsinputs/caresjpsadmsinputs.iml
-<<<<<<< HEAD
 /JPS_SHIP/workingdir/test.*
-=======
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
->>>>>>> refs/heads/800-create-a-new-branch-for-adding-mock-ship-data-location-if-the-real-ship-data-has-some-error

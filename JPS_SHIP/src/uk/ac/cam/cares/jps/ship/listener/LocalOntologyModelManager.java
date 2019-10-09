@@ -185,7 +185,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
             readWriteLock.writeLock().unlock();
         }
 
-        linkChimneyToShip(iriOfChimney, mmsi);
+        //linkChimneyToShip(iriOfChimney, mmsi);
     }
 
     public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
