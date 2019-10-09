@@ -68,20 +68,23 @@ public class TerminalGLPKSolver extends LPSolver {
         
         /**
          * 
-         * Settings to run the code (LP solver) on local Windows machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper.
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Settings to run the code (LP solver) on local Windows (PC) machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper.
          *  
          */
-        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
+//        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
 
         /**
          * 
-         * Settings to run the code (LP solver) on HPC. The GLPK solver should be installed on user's profile on Unix (Linux) machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Settings to run the code (LP solver) on HPC. The GLPK solver should be installed (copied) on user's profile on Unix (Linux) HPC machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/
          *  
          */
-//        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
+        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
         
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
+        
         map.put("input_par", "--freemps");
         map.put("input", lpInputFile.getAbsolutePath());
         map.put("output_par", "-o");
@@ -89,7 +92,7 @@ public class TerminalGLPKSolver extends LPSolver {
 
         CommandLine commandLine = CommandLine.parse("${glpsol} ${input_par} ${input} ${output_par} ${output}", map);
         
-//        System.out.println("Command line to be executed --> " + commandLine);
+//      System.out.println("Command line to be executed --> " + commandLine);
         
         logger.trace("Command line to be executed --> " + commandLine);
 
