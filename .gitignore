@@ -26,3 +26,5 @@
 /JPS_SHIP/workingdir/test.*
 /JPS_ARBITRAGE/.settings/*
 /JPS_ARBITRAGE/build/*
+target
+*.jar
