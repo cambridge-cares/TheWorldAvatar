@@ -179,7 +179,7 @@ public class AgentLocator {
     //TODO-AE replace original methods after Janusz checked that this method is working
     public static String getNewPathToPythonScript(String pythonScriptName, Object thisObject) {
         String relativePath = getProperty("reldir.python");
-        return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath + "/" + pythonScriptName;
+        return Paths.get(getCurrentJpsAppDirectory(thisObject), relativePath, pythonScriptName).toString();
     }
 
     public static String getPathToWorkingDir(Object thisObject) {
