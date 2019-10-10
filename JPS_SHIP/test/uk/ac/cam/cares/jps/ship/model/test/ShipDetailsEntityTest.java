@@ -1,111 +1,163 @@
 package uk.ac.cam.cares.jps.ship.model.test;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.ship.model.ShipDetailsEntity;
 import uk.ac.cam.cares.jps.ship.model.ShipEntity;
-import uk.ac.cam.cares.jps.ship.model.ShipPollutionEntity;
 
 import javax.persistence.*;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
+
+import static org.junit.Assert.assertNotEquals;
 
 public class ShipDetailsEntityTest extends TestCase {
     private static final int TST_INT = 123;
     private static final String TST_STR = "123";
     private static final Integer TST_INTO = 321;
+    private static final Double TST_DOUBO = 456d;
+    private static final Boolean TST_BOOL = true;
 
-    public void testNewShipEntity() {
-        ShipEntity ship = null;
+    public void testNewShipDetailsEntity() {
+        ShipDetailsEntity sd = null;
         try {
-            ship = new ShipEntity();
+            sd = new ShipDetailsEntity();
         } catch (Exception e) {
             throw new JPSRuntimeException(e);
         } finally {
-            assertNotNull(ship);
-            assertEquals(ship, new ShipEntity());
-            assertEquals(2, ship.getClass().getAnnotations().length);
-            assertTrue(ship.getClass().isAnnotationPresent(Entity.class));
-            assertTrue(ship.getClass().isAnnotationPresent(Table.class));
-            assertEquals("ship", ship.getClass().getAnnotation(Table.class).name());
-            assertEquals("public", ship.getClass().getAnnotation(Table.class).schema());
-            assertEquals("adms_ships", ship.getClass().getAnnotation(Table.class).catalog());
+            assertNotNull(sd);
+            assertEquals(sd, new ShipDetailsEntity());
+            assertEquals(2, sd.getClass().getAnnotations().length);
+            assertTrue(sd.getClass().isAnnotationPresent(Entity.class));
+            assertTrue(sd.getClass().isAnnotationPresent(Table.class));
+            assertEquals("ship_details", sd.getClass().getAnnotation(Table.class).name());
+            assertEquals("public", sd.getClass().getAnnotation(Table.class).schema());
+            assertEquals("adms_ships", sd.getClass().getAnnotation(Table.class).catalog());
         }
     }
 
-    public void testNewShipEntityFields() {
-        ShipEntity ship = new ShipEntity();
-        Field[] fields = ship.getClass().getDeclaredFields();
-        assertEquals(11, ship.getClass().getDeclaredFields().length);
+    public void testNewShipDetailsEntityFields() {
+        ShipDetailsEntity sd = new ShipDetailsEntity();
+        Field[] fields = sd.getClass().getDeclaredFields();
+        assertEquals(17, sd.getClass().getDeclaredFields().length);
 
         for (Field field: fields) {
-            assertEquals(2, field.getAnnotations().length);
             String name = field.getName();
             switch (name) {
-                case "mmsi":
+                case "id":
+                    assertEquals(4, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Id.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("mmsi", field.getAnnotation(Column.class).name());
+                    assertTrue(field.isAnnotationPresent(SequenceGenerator.class));
+                    assertTrue(field.isAnnotationPresent(GeneratedValue.class));
+                    assertEquals("id", field.getAnnotation(Column.class).name());
                     assertFalse(field.getAnnotation(Column.class).nullable());
+                    assertEquals("mySeq", field.getAnnotation(SequenceGenerator.class).name());
+                    assertEquals("MY_SEQ", field.getAnnotation(SequenceGenerator.class).sequenceName());
+                    assertEquals(1, field.getAnnotation(SequenceGenerator.class).allocationSize());
+                    assertEquals(1, field.getAnnotation(SequenceGenerator.class).initialValue());
+                    assertEquals(GenerationType.IDENTITY, field.getAnnotation(GeneratedValue.class).strategy());
+                    assertEquals("mySeq", field.getAnnotation(GeneratedValue.class).generator());
                     break;
-                case "imo":
+                case "dest":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("imo", field.getAnnotation(Column.class).name());
-                    break;
-                case "name":
-                    assertTrue(field.isAnnotationPresent(Basic.class));
-                    assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("name", field.getAnnotation(Column.class).name());
+                    assertEquals("dest", field.getAnnotation(Column.class).name());
                     assertEquals(-1, field.getAnnotation(Column.class).length());
                     break;
-                case "type":
+                case "ss":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("type", field.getAnnotation(Column.class).name());
-                    assertEquals(-1, field.getAnnotation(Column.class).length());
+                    assertEquals("ss", field.getAnnotation(Column.class).name());
                     break;
-                case "y":
+                case "cu":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("y", field.getAnnotation(Column.class).name());
+                    assertEquals("cu", field.getAnnotation(Column.class).name());
                     break;
-                case "country":
+                case "dw":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("country", field.getAnnotation(Column.class).name());
-                    assertEquals(-1, field.getAnnotation(Column.class).length());
+                    assertEquals("dw", field.getAnnotation(Column.class).name());
                     break;
-                case "al":
+                case "draught":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("al", field.getAnnotation(Column.class).name());
+                    assertEquals("draught", field.getAnnotation(Column.class).name());
                     break;
-                case "gt":
+                case "lat":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("gt", field.getAnnotation(Column.class).name());
+                    assertEquals("lat", field.getAnnotation(Column.class).name());
                     break;
-                case "aw":
+                case "lon":
+                    assertEquals(2, field.getAnnotations().length);
                     assertTrue(field.isAnnotationPresent(Basic.class));
                     assertTrue(field.isAnnotationPresent(Column.class));
-                    assertEquals("aw", field.getAnnotation(Column.class).name());
+                    assertEquals("lon", field.getAnnotation(Column.class).name());
                     break;
-                case "shipDetailsByMmsi":
-                    assertTrue(field.isAnnotationPresent(JsonManagedReference.class));
-                    assertTrue(field.isAnnotationPresent(OneToMany.class));
-                    assertEquals(CascadeType.ALL, field.getAnnotation(OneToMany.class).cascade()[0]);
-                    assertEquals(FetchType.LAZY, field.getAnnotation(OneToMany.class).fetch());
-                    assertEquals("shipByShipMmsi", field.getAnnotation(OneToMany.class).mappedBy());
+                case "r":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("r", field.getAnnotation(Column.class).name());
                     break;
-                case "shipPollutionByMmsi":
-                    assertTrue(field.isAnnotationPresent(JsonManagedReference.class));
-                    assertTrue(field.isAnnotationPresent(OneToOne.class));
-                    assertEquals(CascadeType.ALL, field.getAnnotation(OneToOne.class).cascade()[0]);
-                    assertEquals(FetchType.LAZY, field.getAnnotation(OneToOne.class).fetch());
-                    assertEquals("shipByShipMmsi", field.getAnnotation(OneToOne.class).mappedBy());
+                case "lc":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("lc", field.getAnnotation(Column.class).name());
+                    break;
+                case "sl":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("sl", field.getAnnotation(Column.class).name());
+                    break;
+                case "sc":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("sc", field.getAnnotation(Column.class).name());
+                    break;
+                case "heading":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("heading", field.getAnnotation(Column.class).name());
+                    break;
+                case "etats":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("etats", field.getAnnotation(Column.class).name());
+                    break;
+                case "ts":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("ts", field.getAnnotation(Column.class).name());
+                    break;
+                case "tst":
+                    assertEquals(2, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(Basic.class));
+                    assertTrue(field.isAnnotationPresent(Column.class));
+                    assertEquals("tst", field.getAnnotation(Column.class).name());
+                    break;
+                case "shipByShipMmsi":
+                    assertEquals(3, field.getAnnotations().length);
+                    assertTrue(field.isAnnotationPresent(JsonBackReference.class));
+                    assertTrue(field.isAnnotationPresent(ManyToOne.class));
+                    assertTrue(field.isAnnotationPresent(JoinColumn.class));
+                    assertEquals(FetchType.LAZY, field.getAnnotation(ManyToOne.class).fetch());
+                    assertEquals("ship_mmsi", field.getAnnotation(JoinColumn.class).name());
+                    assertEquals("mmsi", field.getAnnotation(JoinColumn.class).referencedColumnName());
                     break;
                 default:
                     throw new JPSRuntimeException("Field name not recognised.");
@@ -114,38 +166,48 @@ public class ShipDetailsEntityTest extends TestCase {
     }
 
     public void testNewShipEntityMethods() {
+        ShipDetailsEntity sd = new ShipDetailsEntity();
         ShipEntity ship = new ShipEntity();
         try {
-            ship.setMmsi(TST_INT);
-            ship.setImo(TST_INTO);
-            ship.setName(TST_STR);
-            ship.setType(TST_STR);
-            ship.setY(TST_INTO);
-            ship.setCountry(TST_STR);
-            ship.setAl(TST_INTO);
-            ship.setGt(TST_INTO);
-            ship.setAw(TST_INTO);
-            ShipDetailsEntity sd = new ShipDetailsEntity();
-            Collection<ShipDetailsEntity> sdCol = new ArrayList<>();
-            sdCol.add(sd);
-            ship.setShipDetailsByMmsi(sdCol);
+            sd.setId(TST_INT);
+            sd.setDest(TST_STR);
+            sd.setSs(TST_DOUBO);
+            sd.setCu(TST_DOUBO);
+            sd.setDw(TST_INTO);
+            sd.setDraught(TST_DOUBO);
+            sd.setLat(TST_DOUBO);
+            sd.setLon(TST_DOUBO);
+            sd.setR(TST_INTO);
+            sd.setLc(TST_INTO);
+            sd.setSl(TST_BOOL);
+            sd.setSc(TST_INTO);
+            sd.setHeading(TST_INTO);
+            sd.setEtats(TST_INTO);
+            sd.setTs(TST_INTO);
+            sd.setTst(TST_INTO);
+            sd.setShipByShipMmsi(ship);
         } catch (Exception e) {
             throw new JPSRuntimeException(e);
         } finally {
-            assertEquals(TST_INT, ship.getMmsi());
-            assertEquals(TST_INTO, ship.getImo());
-            assertEquals(TST_STR, ship.getName());
-            assertEquals(TST_STR, ship.getType());
-            assertEquals(TST_INTO, ship.getY());
-            assertEquals(TST_STR, ship.getCountry());
-            assertEquals(TST_INTO, ship.getAl());
-            assertEquals(TST_INTO, ship.getGt());
-            assertEquals(TST_INTO, ship.getAw());
-            assertNotNull(ship.getShipDetailsByMmsi());
-            assertEquals(1, ship.getShipDetailsByMmsi().size());
-            assertEquals(ship.getShipDetailsByMmsi().toArray()[0], new ShipDetailsEntity());
-            assertNotNull(ship.getShipPollutionByMmsi());
-            assertEquals(ship.getShipPollutionByMmsi(), new ShipPollutionEntity());
+            assertEquals(TST_INT, sd.getId());
+            assertEquals(TST_STR, sd.getDest());
+            assertEquals(TST_DOUBO, sd.getSs());
+            assertEquals(TST_DOUBO, sd.getCu());
+            assertEquals(TST_INTO, sd.getDw());
+            assertEquals(TST_DOUBO, sd.getDraught());
+            assertEquals(TST_DOUBO, sd.getLat());
+            assertEquals(TST_DOUBO  , sd.getLon());
+            assertEquals(TST_INTO, sd.getR());
+            assertEquals(TST_INTO, sd.getLc());
+            assertEquals(TST_BOOL, sd.getSl());
+            assertEquals(TST_INTO, sd.getSc());
+            assertEquals(TST_INTO, sd.getHeading());
+            assertEquals(TST_INTO, sd.getEtats());
+            assertEquals(TST_INTO, sd.getTs());
+            assertEquals(TST_INTO, sd.getTst());
+            assertEquals(sd.getShipByShipMmsi(), ship);
+            assertNotEquals(sd, new ShipDetailsEntity());
+            assertEquals(2103889337, sd.hashCode());
         }
     }
 }
