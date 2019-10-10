@@ -30,6 +30,7 @@ import org.apache.jena.shared.Lock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -40,14 +41,16 @@ import uk.ac.cam.cares.jps.ship.model.ShipPollutionEntity;
 public class LocalOntologyModelManager implements ServletContextListener {
 
     private static final String CHIMNEY = "Chimney-1";
-    //private static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
-    private static final String ABSDIR_ROOT = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
+    private static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
+    private static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
     private static final String PATH_KB_SHIPS = ABSDIR_ROOT + "/kb/ships/";
+    private static final String PATH_KB_SHIPS_TEST = ABSDIR_ROOT_TEST + "/kb/ships/";
     private static final String IRI_KB = "http://www.theworldavatar.com/kb/";
     private static final String IRI_KB_SHIPS = IRI_KB + "ships/";
     private static final String OWL_CHIMNEY = CHIMNEY + ".owl";
     private static final String OWL_CHIMNEY_TEMP = CHIMNEY + "-temp.owl";
     private static final String PATH_BASE_CHIMNEY = PATH_KB_SHIPS + OWL_CHIMNEY_TEMP;
+    private static final String PATH_BASE_CHIMNEY_TEST = PATH_KB_SHIPS_TEST + OWL_CHIMNEY_TEMP;
     private static final String IRI_ONTOLOGY = "http://www.theworldavatar.com/ontology/";
     private static final String IRI_ONTOCAPE = IRI_ONTOLOGY + "ontocape/";
     private static final String OWL_ONTOCAPE_UPPER = IRI_ONTOCAPE + "upper_level/";
@@ -90,9 +93,11 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
+    	logger.info("initializing the local ontology manager");
         try {
             baseChimneyModel = createBaseChimneyModel();
         } catch (IOException e) {
+        	logger.error("initializing the local ontology manager failed");
             throw new JPSRuntimeException("Could not create base model for chimney: " + PATH_BASE_CHIMNEY);
         } finally {
             setConcepts();
@@ -127,7 +132,12 @@ public class LocalOntologyModelManager implements ServletContextListener {
     }
 
     private static String getBaseChimneyContent() throws IOException {
-        File source = new File(PATH_BASE_CHIMNEY);
+    	File source;
+    	if (!AgentLocator.isJPSRunningForTest()) {
+    		source = new File(PATH_BASE_CHIMNEY);
+    	} else {
+    		source = new File(PATH_BASE_CHIMNEY_TEST);
+    	}
         return new String(Files.readAllBytes(source.toPath()), StandardCharsets.UTF_8);
     }
 
@@ -184,14 +194,19 @@ public class LocalOntologyModelManager implements ServletContextListener {
         } finally {
             readWriteLock.writeLock().unlock();
         }
-
-        linkChimneyToShip(iriOfChimney, mmsi);
+        if (!AgentLocator.isJPSRunningForTest()) {
+        	linkChimneyToShip(iriOfChimney, mmsi);
+        }
     }
 
     public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
-        String filePath2= iriOfChimney.replaceAll("http://localhost/kb", ABSDIR_ROOT + "/kb").split("#")[0];
-        //String filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb").split("#")[0];
-
+    	String filePath2;
+    	if (!AgentLocator.isJPSRunningForTest()) {
+    		filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb/").split("#")[0];
+    	} else {
+    		filePath2= iriOfChimney.replaceAll("http://localhost/kb", ABSDIR_ROOT_TEST + "/kb").split("#")[0];
+    	}
+    		logger.info("the filepath created= "+filePath2);
         try {
             prepareDirectory(filePath2);
         } catch (IOException e) {
