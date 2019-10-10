@@ -24,8 +24,8 @@ public class AgentLocator {
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
     private static final String[] SUBDIRECTORIES_FOR_COMPILED_CLASSES = new String[]{
-            "/WEB-INF/classes/", "\\WEB-INF\\classes", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes",
-            "/target/classes/", "\\target\\classes", "/target/test-classes/", "\\target\\test-classes"
+            "/WEB-INF/classes", "\\WEB-INF\\classes", "/bin", "\\bin\\", "/build/classes", "\\build\\classes",
+            "/target/classes", "\\target\\classes", "/target/test-classes", "\\target\\test-classes"
     };
     private String jpsBaseDirectory = null;
     private String url = null;
@@ -179,7 +179,7 @@ public class AgentLocator {
     //TODO-AE replace original methods after Janusz checked that this method is working
     public static String getNewPathToPythonScript(String pythonScriptName, Object thisObject) {
         String relativePath = getProperty("reldir.python");
-        return getCurrentJpsAppDirectory(thisObject) + "/" + relativePath + "/" + pythonScriptName;
+        return Paths.get(getCurrentJpsAppDirectory(thisObject), relativePath, pythonScriptName).toString();
     }
 
     public static String getPathToWorkingDir(Object thisObject) {
