@@ -42,6 +42,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 
@@ -143,7 +144,7 @@ public class ENVisualization extends JPSHttpServlet {
 			String iriofnetwork = joforEN.getString("electricalnetwork");
 			String n=joforEN.getString("n");
 			OntModel model = readModelGreedy(iriofnetwork);
-			System.out.println("CHECK HERE");
+//			System.out.println("CHECK HERE");
 
 			String b = null;
 
@@ -168,9 +169,8 @@ public class ENVisualization extends JPSHttpServlet {
 			String iriofnetwork = joforEN.getString("electricalnetwork");
 			String fo = joforEN.getString("flag");
 			logger.info(fo);
-			OntModel model = readModelGreedy(iriofnetwork);
-			
-			String g=createMarkers(model);
+			logger.info(iriofnetwork);
+			String g=createMarkers(fo, iriofnetwork);
 			
 			AgentCaller.printToResponse(g, response);
 		}
@@ -228,7 +228,7 @@ public class ENVisualization extends JPSHttpServlet {
 		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
 		List<String[]> generators2 = a.queryElementCoordinate(model, "NuclearGenerator");
 		generators.addAll(generators2);
-		System.out.println(generators.size());
+//		System.out.println(generators.size());
 		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
@@ -562,25 +562,38 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	return resultList;
 	}
-	public String createMarkers(OntModel model) throws IOException {
+	public String createMarkers(String flag, String iriofnetwork) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
-		List<String[]>pplants = queryPowerPlant(model);
+
+		JPSHttpServlet.disableScenario();
+		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		OntModel model = readModelGreedy(iriofnetwork);
+		String hashbit = "\n";
+		if (flag.contentEquals("BASE")) {
+			hashbit += "LAURA ONG JIN HUA";
+		}else {
+			hashbit += flag;
+		}
+		List<String[]> pplants = queryPowerPlant(model, flag);
 		for (int i = 0; i < pplants.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+pplants.get(i)[2]+", \"lng\": "+pplants.get(i)[1]
-					+ "}, \"vemission\": ["+Double.valueOf(pplants.get(i)[6])+"], \"fueltype\": \""
-					+ pplants.get(i)[5].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
+					+ "}, \"vemission\": ["+Double.valueOf(pplants.get(i)[5])+"], \"fueltype\": \""
+					+ pplants.get(i)[4].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
 			textcomb.add(content);
 		}
 //		------------FOR NUCLEARPLANTS-----------------
-		List<String[]> nukes = queryNuclearPlant(model, "NuclearGenerator");
-		logger.info("The size of the number of nuclear generators: " + nukes.size());
-		for (int i = 0; i < nukes.size(); i++) {
-			String content="{\"coors\": {\"lat\": "+nukes.get(i)[2]+", \"lng\": "+nukes.get(i)[1]+"}, \"fueltype\": \"Nuclear\", \"name\": \""+nukes.get(i)[0].split("#")[1]+".owl\"}";
-			textcomb.add(content);
-		}
+//		List<String[]> nukes = queryNuclearPlant(model, "NuclearGenerator");
+//		logger.info("The size of the number of nuclear generators: " + nukes.size());
+//		for (int i = 0; i < nukes.size(); i++) {
+//			String content="{\"coors\": {\"lat\": "+nukes.get(i)[2]+", \"lng\": "+nukes.get(i)[1]+"}, \"fueltype\": \"Nuclear\", \"name\": \""+nukes.get(i)[0].split("#")[1]+".owl\"}";
+//			textcomb.add(content);
+//		}
+		
 		return textcomb.toString();
 	}
-	public static List<String[]> queryNuclearPlant(OntModel model, String type) {
+
+public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 						+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 						+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
@@ -590,85 +603,6 @@ public class ENVisualization extends JPSHttpServlet {
 						+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 						+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
 						+ "SELECT ?entity ?valueofx ?valueofy ?plant "
-						+ "WHERE {?entity  a  j1:"+ type +" ."
-						+ "?entity   j2:isSubsystemOf ?plant ."
-						+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-						+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-						+ "?y  j2:hasValue ?vy ." 
-						+ "?vy  j2:numericalValue ?valueofy ."
-		//
-						+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-						+ "?x  j2:hasValue ?vx ." 
-						+ "?vx  j2:numericalValue ?valueofx ."
-						+ "}";
-		
-		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?entity ?valueofx ?valueofy ?fueltype "
-				+ "WHERE {?entity  a  cp:NuclearPlant ."
-				+ "?entity   j3:realizes ?generation ."
-				+ "?generation   j1:consumesPrimaryFuel ?fueltype ."
-//				
-//
-				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-
-				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."
-
-				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."
-
-				+ "}";
-		
-		
-		QueryBroker broker = new QueryBroker();
-	    	
-    	ResultSet resultSet = JenaHelper.query(model, genInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-    	List<String>plantname =new ArrayList<String>();	
-    	for (int i = 0; i < resultListfromquery.size(); i++) {
-    		if (resultListfromquery.get(i)[3] != null) {
-    			plantname.add(resultListfromquery.get(i)[3]);
-    		}
-    	}
-    	
-		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
-		List<String[]> plantDict = new ArrayList<String[]>();
-		for (int i=0; i<resultListfromquery.size(); i++) {
-			if (resultListfromquery.get(i)[3] == null) {
-				continue;
-			}
-			for(int c=0;c<uniqueplant.size();c++) { 
-				String resultplant = broker.queryFile(uniqueplant.get(c),plantinfo);
-				String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
-		    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
-		    	if(resultListfromquery.get(i)[3].contentEquals(uniqueplant.get(c))) {
-					String[] a = Arrays.copyOf(resultListfromquery.get(i), resultListfromquery.get(i).length + 2);
-					a[a.length-2] =  resultList.get(0)[2];
-					a[a.length-1] =  resultList.get(0)[1];
-					plantDict.add(a);
-				}
-			}
-		}
-		return plantDict;
-	}
-public static List<String[]> queryPowerPlant(OntModel model) {
-		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-						+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-						+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-						+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-						+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-						+ "SELECT ?entity ?valueofx ?valueofy ?plant ?fueltype "
 						+ "WHERE {?entity  a  j1:PowerGenerator ."
 						+ "OPTIONAL { ?entity   j2:isSubsystemOf ?plant }"
 						+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
@@ -680,15 +614,21 @@ public static List<String[]> queryPowerPlant(OntModel model) {
 						+ "?x  j2:hasValue ?vx ." 
 						+ "?vx  j2:numericalValue ?valueofx ."
 						+ "}";
-		
+		String prefix;
+		if (flag.contentEquals("BASE")) {
+			prefix = "WHERE {?entity  a  cp:PowerPlant  .";
+		}else {
+			prefix = "WHERE {?entity  a  j1:NuclearPlant  .";
+		}
 		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "SELECT ?entity ?vemission ?fueltype ?valueofx ?valueofy  "
-				+ "WHERE {?entity  a  cp:PowerPlant  ."
+				+ prefix
 				+ "?entity   j3:realizes ?generation ."
 				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
 				+ "?generation j5:hasEmission ?emission ." 
@@ -722,7 +662,7 @@ public static List<String[]> queryPowerPlant(OntModel model) {
     			plantname.add(resultListfromquery.get(i)[3]);
     		}
     	}
-    	
+    	String hash = prefix + "    "+ result + "        "+ flag +'\n';
 		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
 		List<String[]> plantDict = new ArrayList<String[]>();
 		for (int i=0; i<resultListfromquery.size(); i++) {
@@ -732,16 +672,18 @@ public static List<String[]> queryPowerPlant(OntModel model) {
 			for(int c=0;c<uniqueplant.size();c++) { 
 				String resultplant = broker.queryFile(uniqueplant.get(c),plantinfo);
 				String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
+
 		    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
 		    	if(resultListfromquery.get(i)[3].contentEquals(uniqueplant.get(c))) {
 					String[] a = Arrays.copyOf(resultListfromquery.get(i), resultListfromquery.get(i).length + 2);
 					a[a.length-2] =  resultList.get(0)[2];
 					a[a.length-1] =  resultList.get(0)[1];
 					plantDict.add(a);
-				}
+//				}
 			}
 		}
-		return plantDict;
+
+	}return plantDict;
 	}
 		public String createLineJS(OntModel model) throws IOException {
 		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
