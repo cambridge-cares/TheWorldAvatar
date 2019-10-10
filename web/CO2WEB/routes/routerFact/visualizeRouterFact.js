@@ -23,7 +23,8 @@ var visualizationRouterFactory = function (opts) {
     
     router.get('/links', function(req, res, next) {
     
-    
+            opts['showImport'] = false;
+
         connectionsReader.process(opts).then((results)=>{
 
             
