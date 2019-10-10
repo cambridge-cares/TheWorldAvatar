@@ -164,11 +164,23 @@ public class Solver {
       
     }
     
+     /**
+      * 
+      * @author nk510 (caresssd@hermes.cam.ac.uk)
+      * Creates input string for GLPK solver.
+      * 
+      */
     //create equation file
     String lpInputString = buildLpSolveInputString(targetSpecies);
     
 //  logger.debug(lpInputString);
-        
+    
+    /**
+     * 
+     * @author nk510 (caresssd@hermes.cam.ac.uk)
+     * Input string for GLPK solver.
+     *  
+     */
 //  System.out.println("Solver class: method solveProblem: lpInputString: " + lpInputString);
     
     try {
