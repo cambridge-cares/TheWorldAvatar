@@ -44,8 +44,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
-
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" })
 public class ENVisualization extends JPSHttpServlet {
 	
@@ -96,26 +94,23 @@ public class ENVisualization extends JPSHttpServlet {
 		String path = request.getServletPath();
 		logger.info("path called= "+path);
 		
+		JSONObject joforEN = AgentCaller.readJsonParameter(request);
+		String iriofnetwork = joforEN.getString("electricalnetwork");
+		String flag = joforEN.getString("flag");
+		JPSHttpServlet.disableScenario();
+		if (flag.equals("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario")) {
+			String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
+			JPSHttpServlet.enableScenario(scenarioUrl);	
+		}
 
-	
-
+		OntModel model = readModelGreedy(iriofnetwork);
 		if ("/ENVisualization/createLineJS".equals(path)) {
-			
-			JSONObject joforEN = AgentCaller.readJsonParameter(request);
-			String iriofnetwork = joforEN.getString("electricalnetwork");
-			OntModel model = readModelGreedy(iriofnetwork);
-			
 			String g=createLineJS(model);
 			AgentCaller.printToResponse(g, response);
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
 			
-			logger.info("path called here= "+path);
-			JSONObject joforEN = AgentCaller.readJsonParameter(request);
-			String iriofnetwork = joforEN.getString("electricalnetwork");
-			logger.info("Laura   " + iriofnetwork);
 			String n=joforEN.getString("n");
-			OntModel model = readModelGreedy(iriofnetwork);
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
 			try (FileWriter writer = new FileWriter("C://Users/LONG01/webapps/ROOT/OntoEN/testfinal.kml");
@@ -131,46 +126,15 @@ public class ENVisualization extends JPSHttpServlet {
 				}
 				
 			} catch (TransformerException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			AgentCaller.printToResponse(b, response);
 		}
-		else if ("/ENVisualization/getKMLFile".equals(path)) {
-
-			logger.info("path called here= " + path);
-
-			JSONObject joforEN = AgentCaller.readJsonParameter(request);
-			String iriofnetwork = joforEN.getString("electricalnetwork");
-			String n=joforEN.getString("n");
-			OntModel model = readModelGreedy(iriofnetwork);
-//			System.out.println("CHECK HERE");
-
-			String b = null;
-
-				try {
-					b = createfinalKML(model);
-				} catch (TransformerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				if (true) {
-					writeToResponse(response, b,n);
-					AgentCaller.printToResponse(b, response);
-					return;
-				}
-
-			
-		}
+		
 		else if ("/ENVisualization/createMarkers".equals(path)) {
 
 			logger.info("path called here= " + path);
-			JSONObject joforEN = AgentCaller.readJsonParameter(request);
-			String iriofnetwork = joforEN.getString("electricalnetwork");
-			String fo = joforEN.getString("flag");
-			logger.info(fo);
-			logger.info(iriofnetwork);
-			String g=createMarkers(fo, iriofnetwork);
+			String g=createMarkers(flag, model);
 			
 			AgentCaller.printToResponse(g, response);
 		}
@@ -181,7 +145,6 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			logger.info("uploading file");
 			
-		    //String fileName = "C:/Users/KADIT01/TOMCAT/webapps/ROOT/test2.kml";
 		    String fileName = "C:\\Users\\LONG01\\webapps\\ROOT\\OntoEN\\en.kml";
 		    String fileType = "text/xml; charset=utf-8";
 		    // Find this file id in database to get file name, and file type
@@ -191,7 +154,7 @@ public class ENVisualization extends JPSHttpServlet {
 		    response.setContentType(fileType);
 		
 		    // Make sure to show the download dialog
-		    response.setHeader("Content-disposition","attachment; filename=en"+n+".kml");
+//		    response.setHeader("Content-disposition","attachment; filename=en"+n+".kml");
 		
 		    // Assume file name is retrieved from database
 		    // For example D:\\file\\test.pdf
@@ -226,9 +189,6 @@ public class ENVisualization extends JPSHttpServlet {
 
 		// ------------FOR GENERATORS-----------------
 		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
-		List<String[]> generators2 = a.queryElementCoordinate(model, "NuclearGenerator");
-		generators.addAll(generators2);
-//		System.out.println(generators.size());
 		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
@@ -236,7 +196,6 @@ public class ENVisualization extends JPSHttpServlet {
 			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
 			gh.setx(generators.get(e)[1]);
 			gh.sety(generators.get(e)[2]);
-			//System.out.println("/" + generators.get(e)[0].split("#")[1] + ".owl");
 
 			if (coorddata.contains(gh.getx()) && coorddata.contains(gh.gety())) {
 				int index = coorddata.indexOf(gh.getx()) / 2;
@@ -254,9 +213,6 @@ public class ENVisualization extends JPSHttpServlet {
 					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
 			a.addMark(c, "generator");
 		}
-
-		// --------------------------------
-		
 	
 		// ------------FOR BUS-----------------
 		List<String[]> bus = a.queryElementCoordinate(model, "BusNode");
@@ -267,7 +223,6 @@ public class ENVisualization extends JPSHttpServlet {
 			gh.setnamegen("/" + bus.get(e)[0].split("#")[1] + ".owl");
 			gh.setx(bus.get(e)[1]);
 			gh.sety(bus.get(e)[2]);
-			//System.out.println("/" + bus.get(e)[0].split("#")[1] + ".owl");
 
 			if (coorddatabus.contains(gh.getx()) && coorddatabus.contains(gh.gety())) {
 				int index = coorddatabus.indexOf(gh.getx()) / 2;
@@ -286,15 +241,6 @@ public class ENVisualization extends JPSHttpServlet {
 			a.addMark(c, "bus");
 		}
 
-		// --------------------------------
-
-		
-//		int size2 = bus.size();
-//		for (int g = 0; g < size2; g++) {
-//			MapPoint c = new MapPoint(Double.valueOf(bus.get(g)[2]), Double.valueOf(bus.get(g)[1]), 0.0,
-//					"/" + bus.get(g)[0].split("#")[1] + ".owl");
-//			a.addMark(c, "bus");
-//		}
 
 		return a.writeFiletoString();
 	}
@@ -419,18 +365,6 @@ public class ENVisualization extends JPSHttpServlet {
 		LinearRing.appendChild(coords);
 		
 		
-		/*
-		 * Element point = doc.createElement("Point"); placemark.appendChild(point);
-		 * 
-		 * if(mark.getAltitude() > 0) { Element altitudeMode =
-		 * doc.createElement("altitudeMode");
-		 * altitudeMode.appendChild(doc.createTextNode("absolute"));
-		 * point.appendChild(altitudeMode); }
-		 * 
-		 * Element coords = doc.createElement("coordinates");
-		 * coords.appendChild(doc.createTextNode(mark.getLongitude() + ", " +
-		 * mark.getLatitude() + ", " + mark.getAltitude())); point.appendChild(coords);
-		 */
 	}
 	
 	public  void removeMark(int index) {
@@ -562,19 +496,13 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	return resultList;
 	}
-	public String createMarkers(String flag, String iriofnetwork) throws IOException {
+	public String createMarkers(String flag, OntModel model) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
 
-		JPSHttpServlet.disableScenario();
-		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
-		JPSHttpServlet.enableScenario(scenarioUrl);	
-		OntModel model = readModelGreedy(iriofnetwork);
-		String hashbit = "\n";
-		if (flag.contentEquals("BASE")) {
-			hashbit += "LAURA ONG JIN HUA";
-		}else {
-			hashbit += flag;
-		}
+//		JPSHttpServlet.disableScenario();
+//		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
+//		JPSHttpServlet.enableScenario(scenarioUrl);	
+//		OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> pplants = queryPowerPlant(model, flag);
 		for (int i = 0; i < pplants.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+pplants.get(i)[2]+", \"lng\": "+pplants.get(i)[1]
@@ -582,13 +510,6 @@ public class ENVisualization extends JPSHttpServlet {
 					+ pplants.get(i)[4].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
 			textcomb.add(content);
 		}
-//		------------FOR NUCLEARPLANTS-----------------
-//		List<String[]> nukes = queryNuclearPlant(model, "NuclearGenerator");
-//		logger.info("The size of the number of nuclear generators: " + nukes.size());
-//		for (int i = 0; i < nukes.size(); i++) {
-//			String content="{\"coors\": {\"lat\": "+nukes.get(i)[2]+", \"lng\": "+nukes.get(i)[1]+"}, \"fueltype\": \"Nuclear\", \"name\": \""+nukes.get(i)[0].split("#")[1]+".owl\"}";
-//			textcomb.add(content);
-//		}
 		
 		return textcomb.toString();
 	}
@@ -662,7 +583,6 @@ public static List<String[]> queryPowerPlant(OntModel model, String flag) {
     			plantname.add(resultListfromquery.get(i)[3]);
     		}
     	}
-    	String hash = prefix + "    "+ result + "        "+ flag +'\n';
 		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
 		List<String[]> plantDict = new ArrayList<String[]>();
 		for (int i=0; i<resultListfromquery.size(); i++) {
@@ -709,8 +629,6 @@ public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 		List<String[]> resultListbranch = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		ArrayList<String> busdata= new ArrayList<String>();
 		
-		String stropen = " var lines=";
-	    String strend = ";";
 	    ArrayList<String>textcomb=new ArrayList<String>();
 		
 		//for the first line branch only 
@@ -784,7 +702,6 @@ public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 	    if(busdata.get(3).contentEquals(busdata.get(8))&&busdata.get(2).contentEquals(busdata.get(7))) {
 	    	linetype="transformer";
 	    }
-	    //String contentbegin="{coors: [{lat: "+busdata.get(3)+", lng: "+busdata.get(2)+"}, {lat: "+busdata.get(8)+", lng: "+busdata.get(7)+"}], vols: ["+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+","+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+"], thickness: "+tick+", type: '"+linetype+"', name: '/"+resultListbranch.get(0)[0].split("#")[1]+".owl'}"; (temp changes to remove line.js
 	    String contentbegin="{\"coors\": [{\"lat\": "+busdata.get(3)+", \"lng\": "+busdata.get(2)+"}, {\"lat\": "+busdata.get(8)+", \"lng\": "+busdata.get(7)+"}], \"vols\": ["+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+","+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+"], \"thickness\": "+tick+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(0)[0].split("#")[1]+".owl\"}";
 	    if(Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))<Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))) {
 	     contentbegin="{\"coors\": [{\"lat\": "+busdata.get(8)+", \"lng\": "+busdata.get(7)+"}, {\"lat\": "+busdata.get(3)+", \"lng\": "+busdata.get(2)+"}], \"vols\": ["+Double.valueOf(busdata.get(9))*Double.valueOf(busdata.get(6))+","+Double.valueOf(busdata.get(1))*Double.valueOf(busdata.get(4))+"], \"thickness\": "+tick+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(0)[0].split("#")[1]+".owl\"}";
@@ -861,8 +778,7 @@ public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 		    if(busdata.get(3+10*a).contentEquals(busdata.get(8+10*a))&&busdata.get(2+10*a).contentEquals(busdata.get(7+10*a))) {
 		    	linetype="transformer";
 		    }
-//	    	String content="{coors: [{lat: "+busdata.get(3+10*a)+", lng: "+busdata.get(2+10*a)+"}, {lat: "+busdata.get(8+10*a)+", lng: "+busdata.get(7+10*a)+"}], vols: ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], thickness: "+tick2+", type: '"+linetype+"', name: '/"+resultListbranch.get(a)[0].split("#")[1]+".owl'}"; temp changed to remove line.js
-		    String content="{\"coors\": [{\"lat\": "+busdata.get(3+10*a)+", \"lng\": "+busdata.get(2+10*a)+"}, {\"lat\": "+busdata.get(8+10*a)+", \"lng\": "+busdata.get(7+10*a)+"}], \"vols\": ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], \"thickness\": "+tick2+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(a)[0].split("#")[1]+".owl\"}";
+	    	String content="{\"coors\": [{\"lat\": "+busdata.get(3+10*a)+", \"lng\": "+busdata.get(2+10*a)+"}, {\"lat\": "+busdata.get(8+10*a)+", \"lng\": "+busdata.get(7+10*a)+"}], \"vols\": ["+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+","+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+"], \"thickness\": "+tick2+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(a)[0].split("#")[1]+".owl\"}";
 	    	if(Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))<Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))) {
 	    		content="{\"coors\": [{\"lat\": "+busdata.get(8+10*a)+", \"lng\": "+busdata.get(7+10*a)+"}, {\"lat\": "+busdata.get(3+10*a)+", \"lng\": "+busdata.get(2+10*a)+"}], \"vols\": ["+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+","+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+"], \"thickness\": "+tick2+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(a)[0].split("#")[1]+".owl\"}";
 	    	}
@@ -871,13 +787,6 @@ public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 	    	
 	    }
 	    
-	    
-//	    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-//	    writer.write(stropen+textcomb.toString()+strend);
-//	     
-//	    writer.close();
-	    String resultfinal=stropen+textcomb.toString()+strend;
-	    //return resultfinal; change temporarily for removing line.js
 	    return textcomb.toString();
 		
 	}
