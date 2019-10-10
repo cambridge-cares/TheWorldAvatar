@@ -2,6 +2,7 @@ package uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -13,6 +14,13 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 public class ErrorBarCalculation {
 
+	/**
+	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
+	 * df is format of enthalpy of formation, error, error bar set to five digits after "."
+	 * 
+	 */
+	DecimalFormat df = new DecimalFormat("#.#####");
+	
 /**
   * @author nk510 ( caresssd@hermes.cam.ac.uk )
   * @author am2145( am2145@cam.ac.uk )
@@ -28,14 +36,15 @@ public class ErrorBarCalculation {
 
  	for(Map.Entry<Reaction, Double> v: reactionList.entrySet()) {
      	
-     	System.out.println("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
+     	System.out.println("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + df.format(v.getKey().calculateHf()) + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + df.format(v.getValue())+ " )");
      	
-     	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
+     	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + df.format(v.getKey().calculateHf()) + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + df.format(v.getValue())+ " )");
      	
      	reactionFile.write("\n");
      }
  	
      reactionFile.close();
+     
  }
  
  /**
@@ -120,7 +129,6 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
 	 	       
 	 	invalidSpeciesFile.close();
 	 	
-	 	
 	 }
  
 	
@@ -181,7 +189,7 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
      	 
       errorBar=errorSum/errorCount;
       
-      System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
+      System.out.println("Species name: " + usp.getRef() + " , error bar: "  + df.format(errorBar) );
      	 
       speciesErrorBarMap.put(usp, errorBar);
       
@@ -204,7 +212,7 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
       
       for(Map.Entry<Species, Double> invmap: invalidSpeciesErrorBarMap.entrySet()) {
      	 
-     	 System.out.println(invmap.getKey().getRef()+ " " + invmap.getValue()) ;
+     	 System.out.println(invmap.getKey().getRef()+ " " + df.format(invmap.getValue())) ;
       }
     
     return invalidSpeciesErrorBarMap;

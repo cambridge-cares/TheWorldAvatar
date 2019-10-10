@@ -1,6 +1,7 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,7 +25,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
@@ -50,7 +51,7 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 *   Output is:
 * - Calculates EBRs for reference set of species (srcRefPool) by using Gaussian files of that set of species.
 * - Calculates difference  (error) between estimated enthalpy of formation for each species in each generated reaction and reference enthalpy of selected species. Reference enthalpy is given in csv file.
-* - Calculates error bar for each species by using errors for each generated reaction.
+* - Calculates error bar for each species by using errors for each generated reaction. Error is difference between reference enthalpy of formation and calculated enthalpy of formation for selected species.
 * - Generates an initial list of valid reactions.
 * - Generates an initial list of invalid reactions.
 * - Generates an initial list of valid species
@@ -59,8 +60,12 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 */
 
 public class DataPreProcessing {
+
+	
+	
 	
     /**
+     * @author nk510 ( caresssd@hermes.cam.ac.uk )
      * @param timeout Time limited
      * @param maxErr Maximum error that is compared with the error for each generated reaction. 
      * @param destRList The destination folder where information about reactions, enthalpies, valid species, invalid species, valid reactions, invalid reaction are saved.
@@ -78,9 +83,14 @@ public class DataPreProcessing {
      * @throws Exception the exception.
      * 
      */
+
 	
     public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
-    	 
+    	/**
+    	 * df is format of enthalpy of formation for five digits after "."
+    	 */
+    	DecimalFormat df = new DecimalFormat("#.#####");
+    	
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
             int maxRadical = ctrRadicals[z];
@@ -94,19 +104,21 @@ public class DataPreProcessing {
         
         	for (int k = 0; k < ctrRes.length; k++) {
             
-        		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+        		String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                 
         		System.out.println("Process configuration " + config);
                 
 //                  if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	  
                 	  /**
-                		 * HPC settings
-                		 */
+                	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
+                 	   * HPC settings
+                	   */
         		if(new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
                 	
 //              System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
-                      /**
+                   /**
+                     * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * HPC settings
                   	 */  
         		System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
@@ -115,7 +127,9 @@ public class DataPreProcessing {
                 }
                 
         		  /**
-        		   * Commented line of code below is used in original code. 
+        		   * @author nk510 ( caresssd@hermes.cam.ac.uk )
+        		   * Commented line of code below is used in original code.
+        		   *  
         		   */
 //                Collections.shuffle(refSpecies);  
                 
@@ -125,6 +139,7 @@ public class DataPreProcessing {
                 
                 for(Species target : refSpecies) {
                 	/**
+                	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
                 	 * Added new HashMap<>() -> new HashMap<Species, Collection<ReactionList>>()
                 	 */
                     Map<Species, Collection<ReactionList>> results = new HashMap<Species, Collection<ReactionList>>();
@@ -134,12 +149,16 @@ public class DataPreProcessing {
                     ctr++;
                     
                     /**
+                     * @author nk510 ( caresssd@hermes.cam.ac.uk )
                      * Settings on PC machine
+                     * 
                      */
 
 //                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                     /**
+                     * @author nk510 ( caresssd@hermes.cam.ac.uk )
                 	 * HPC settings
+                	 * 
                 	 */
                 if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
@@ -148,7 +167,7 @@ public class DataPreProcessing {
                     }
 
                   /**
-                   * 
+                   * @author nk510 ( caresssd@hermes.cam.ac.uk )
                    * Added: new ArrayList<>() -> new ArrayList<Species>();
                    * 
                    */
@@ -286,6 +305,7 @@ public class DataPreProcessing {
 
                     /**
                      * 
+                     * @author nk510 ( caresssd@hermes.cam.ac.uk )
                      * Commented line of code below is used in original code
                      * 
                      */
@@ -294,7 +314,7 @@ public class DataPreProcessing {
                     
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
                     
                     poolModCalc.setMaximumSearchDepth(50); //50
                     
@@ -398,20 +418,24 @@ public class DataPreProcessing {
                         }
                         
                         /**
+                         * @author nk510 ( caresssd@hermes.cam.ac.uk )
                          * PC machine settings.
                          */
 
 //                   if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
                         /**
+                         * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
                     	 */
                      if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
                         	/**
+                        	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
                         	 * PC machine settings.
                         	 */
 //                   new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
                         /**
+                         * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
                     	 */
                       new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
@@ -419,11 +443,14 @@ public class DataPreProcessing {
                         }
 
                      /**
+                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                       * PC machine settings.
+                      * 
                       */
 //                   ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
                      
                     /**
+                     * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * HPC settings
                   	 */
                      ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
@@ -435,19 +462,22 @@ public class DataPreProcessing {
                          */
                     
                      /**
+                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                       * PC machine settings.
+                      * 
                       */
 //                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
                     
                     /**
-                  	 * HPC settings
+                     * @author nk510 ( caresssd@hermes.cam.ac.uk )
+                  	 * HPC settings.
+                  	 * 
                   	 */
                     
                   SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
-                    if (!completeRList.isEmpty()) {
-                        	
+                  if (!completeRList.isEmpty()) {
                         	
                             System.out.println("Writting complete reaction list...");
                             
@@ -468,12 +498,15 @@ public class DataPreProcessing {
                             	
                             double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                             
-                        	System.out.println( " Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
-                           
+                            double calculatedEnthalpy = completeRList.get(ri).calculateHf();
+                            
+                        	System.out.println(" Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + df.format(calculatedEnthalpy));
+                            
                         	/**
                         	 * 
                         	 * @author nk510 (caresssd@hermes.cam.ac.uk)
                              * If the error is lower than maximum error for currently analyzed species added into the set of valid species. Otherwise the species is added into the set of invalid species.
+                             * 
                              */
                         	if(error<maxErr) {
                             	
@@ -495,17 +528,10 @@ public class DataPreProcessing {
                             	}
                             }
                             
-                            } 
-                            
-//                            if(stop==3) {
-                            	
-//                            System.exit(0);
-                            
-//                            }
+                            }
                             
                             stop++;
-                            
-                            
+                        
                         }
                         
                         if(!ttipSpecies.isEmpty()){
@@ -553,7 +579,7 @@ public class DataPreProcessing {
 //              writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
                     
                 /**
-                 * 
+                 * @author nk510 ( caresssd@hermes.cam.ac.uk )
               	 * HPC settings
               	 * 
               	 */
@@ -566,9 +592,7 @@ public class DataPreProcessing {
                 	
                 }
             }
-        }
+         }
+      }    
     }
-    
-    }
-
 }

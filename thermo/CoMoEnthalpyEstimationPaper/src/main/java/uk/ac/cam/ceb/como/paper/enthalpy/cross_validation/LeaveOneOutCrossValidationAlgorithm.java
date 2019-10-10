@@ -2,6 +2,8 @@ package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -42,6 +44,8 @@ import uk.ac.cam.ceb.paper.sort.Sort;
 
 public class LeaveOneOutCrossValidationAlgorithm {
 
+	
+	
 //	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
 	
 	/**
@@ -113,6 +117,18 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	static int[] ctrRadicals = new int[] {100}; // 0, 1, 2, 3, 4, 5
 
 	public static void main(String[] args) throws Exception {
+
+		/**
+		 * df is format of enthalpy of formation for five digits after "."
+		 */
+		DecimalFormat df = new DecimalFormat("#.#####");
+		
+		/**
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
+		 * The start current time in milliseconds.
+		 *  
+		 * */
+     long startTime = System.currentTimeMillis();
 
 	LoadSpecies ls = new LoadSpecies();
 
@@ -247,7 +263,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
 
-		System.out.println(ss.getKey().getRef() + " " + ss.getValue());
+		System.out.println(ss.getKey().getRef() + " " +  df.format(ss.getValue()));
 		
 		}
 
@@ -305,9 +321,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 *  
 		 */
 		
-		Set<Species> tempInvalidSetOfSpecies = new HashSet<Species>();
+		LinkedHashSet<Species> tempInvalidSetOfSpecies = new LinkedHashSet<Species>();
 		
-		Set<Species> tempValidSpecies = new HashSet<Species>();
+		LinkedHashSet<Species> tempValidSpecies = new LinkedHashSet<Species>();
 		
 		tempValidSpecies.addAll(validSpecies);
 		
@@ -492,23 +508,31 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	
 	if(tempValidSpeciesSize==validSpeciesSize) {
-	
-		System.out.println("Cross Validattion algorithm terminated (completed).");
+
+		NumberFormat formatter = new DecimalFormat("#00.000");
+		
+		final long endTime = System.currentTimeMillis();
+
+		String runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
+		
+		System.out.println("Cross Validattion algorithm terminated (completed) in " + runningTime);
 		
 		break;
 	}
 	
 	};
-	
 		/**
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Terminates program
 		 * 
 		 */
-		System.exit(0);
+	    
+	System.exit(0);
+	
 	}
 	
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * @param validSpecies the set of valid species.
 	 * @param currentSpecies the current species.
