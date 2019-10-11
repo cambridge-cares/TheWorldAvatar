@@ -113,7 +113,7 @@ public class ENVisualization extends JPSHttpServlet {
 			String n=joforEN.getString("n");
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
-			try (FileWriter writer = new FileWriter("C://Users/LONG01/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
+			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
 				b = createfinalKML(model);
 
