@@ -42,6 +42,21 @@ public class TestNuclear extends TestCase {
 		assertEquals(4, result.size());
 	}
 	
+	public void xxxtestProcessResultDirectCallForScenarioaasc5() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+		
+		String scenarioUrl = BucketHelper.getScenarioUrl("aasc5"); 
+		
+		String usecaseUrl = scenarioUrl + "/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7";
+		
+		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);
+		
+		NuclearAgent agent = new NuclearAgent();
+		String dataPath = QueryBroker.getLocalDataPath();
+		List<String> result = agent.processSimulationResult(dataPath);
+		System.out.println("result from processsimulationresult=" + result);
+		assertEquals(4, result.size());
+	}
+	
 	public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
 		
 		JSONObject jo = new JSONObject();

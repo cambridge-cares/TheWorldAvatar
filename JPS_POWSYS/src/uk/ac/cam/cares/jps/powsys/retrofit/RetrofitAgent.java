@@ -149,6 +149,9 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		double x = o.asLiteral().getDouble();
 		o = w.getPropertyValue(powerGenerator, PGISCOORDY);
 		double y = o.asLiteral().getDouble();
+		String[] pathIsSubsystemOf = new String[] {OCPSYST, "isSubsystemOf"};
+		o = w.getPropertyValue(powerGenerator, pathIsSubsystemOf);
+		String plantIRI = o.asResource().getURI();
 		
 		String pgIri = PrefixToUrlMap.getPrefixUrl(OPSMODE) + "Pg";
 		String[] pathPg = new String[] {OCPSYST, "isModeledBy", OCPMATH, "hasModelVariable", pgIri, OCPSYST, "hasValue", OCPSYST, "numericalValue"};
@@ -175,7 +178,8 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		w.setPropertyValue(powerGenerator, x, PGISCOORDX);
 		w.setPropertyValue(powerGenerator, y, PGISCOORDY);
 		w.setPropertyValue(powerGenerator, pgValue, pathPg);
-			
+		w.setPropertyValue(powerGenerator, plantIRI, pathIsSubsystemOf);
+		
 		// overwrite the original OWL file
 		content = JenaHelper.writeToString(model);
 		new QueryBroker().put(powerGenerator, content);
