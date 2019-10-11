@@ -64,7 +64,8 @@ public class TestCarbonTaxAgent extends TestCase {
 		a= new BigDecimal("40"); 
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("carbontax",a );
-		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
+		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
+		System.out.println("output= "+resultProcess);
 	}
 
 }

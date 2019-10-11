@@ -270,20 +270,21 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	public JSONObject giveResult(String outputfiledir,List<NuclearGenType>plant) {
 		String content = new QueryBroker().readFile(outputfiledir);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content);
-		int index=1;
 		ArrayList<String>removedplant=new ArrayList<String>();
 		JSONObject result = new JSONObject();
 		JSONArray ja = new JSONArray();
-		while(Double.valueOf(simulationResult.get(index)[1])<0) {
-			
-			removedplant.add(simulationResult.get(index)[0]);
-			index++;
+		for(int d=1;d<simulationResult.size();d++) {
+			if(Double.valueOf(simulationResult.get(d)[1])<0) {
+				removedplant.add(simulationResult.get(d)[0].replace("\"", ""));
+				//System.out.println("contain= "+simulationResult.get(d)[0].toString());
+			}
 		}
 		for(NuclearGenType ind:plant) {
+			//System.out.println("id= "+ind.getid());
 			if(removedplant.contains(ind.getid())){
+				//System.out.println(ind.getnucleargen());
 				ja.put(ind.getnucleargen());
 			}
-			
 		}
 		result.put("substitutionalpowerplants",ja);
 		return result;	
