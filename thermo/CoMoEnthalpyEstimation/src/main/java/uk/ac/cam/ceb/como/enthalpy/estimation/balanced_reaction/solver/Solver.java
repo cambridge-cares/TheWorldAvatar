@@ -31,16 +31,18 @@ public class Solver {
 
     private Logger logger = Logger.getLogger(getClass());
     
-    private LinkedHashSet<Species> speciesSet;
     
     /**
      * 
      * @author nk510 (caresssd@hermes.cam.ac.uk)
-     * Line below is commented because we use Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet;
+     * Line below is commented. We use Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet;
      * 
      */
     
 //   private List<Species> sortedSpeciesSetList;
+
+    private LinkedHashSet<Species> speciesSet;
+
     
     private LPSolver lpSolver;
     private VariableFactory vfactory;
