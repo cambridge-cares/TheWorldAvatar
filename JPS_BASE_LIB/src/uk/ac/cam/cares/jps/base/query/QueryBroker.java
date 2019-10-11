@@ -81,7 +81,7 @@ public class QueryBroker {
 			return new ScenarioClient().query(scenarioUrl, urlOrPath, sparqlQuery);
 		}
 		
-		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+//		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		ResultSet resultSet = null;
 		if (urlOrPath.startsWith("http")) {
