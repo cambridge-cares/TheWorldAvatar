@@ -63,7 +63,7 @@ public class TestENVisualization extends TestCase {
 		
 		//a.writeFile(new File("C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys not needed/test2.kml"));
 		String res=a.writeFiletoString();
-		System.out.println(res);
+//		System.out.println(res);
 		
 	}
 	
