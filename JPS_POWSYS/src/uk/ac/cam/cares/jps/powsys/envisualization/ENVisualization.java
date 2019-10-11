@@ -145,7 +145,7 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			logger.info("uploading file");
 			
-		    String fileName = "C:\\Users\\LONG01\\webapps\\ROOT\\OntoEN\\en.kml";
+		    String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/OntoEN/en.kml";
 		    String fileType = "text/xml; charset=utf-8";
 		    // Find this file id in database to get file name, and file type
 		
