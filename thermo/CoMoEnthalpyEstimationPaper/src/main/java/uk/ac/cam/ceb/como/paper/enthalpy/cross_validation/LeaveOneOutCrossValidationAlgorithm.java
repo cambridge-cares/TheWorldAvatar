@@ -227,7 +227,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	System.out.println("Invalid species writing . . .");
 
 	/**
-	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Settings on PC machine
 	 */
 //	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
