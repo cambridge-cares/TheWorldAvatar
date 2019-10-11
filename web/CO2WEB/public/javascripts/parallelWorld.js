@@ -2,8 +2,8 @@
 		
     var ppMap = new PopupMap({useCluster:true});
 
-    var anotherURL1 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
-    var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal2.kml';
+    var anotherURL1 = prefix + 'testfinalBASE.kml';
+    var anotherURL2 = prefix + 'OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
     var val =  parseFloat($("#co2Value").text());
     setInterval(function(){
         distotalemission(arrSum);
