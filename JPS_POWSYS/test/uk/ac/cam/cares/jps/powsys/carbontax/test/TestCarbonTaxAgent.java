@@ -61,7 +61,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		BigDecimal a;
-		a= new BigDecimal("20"); 
+		a= new BigDecimal("40"); 
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("carbontax",a );
 		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
