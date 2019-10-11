@@ -3,7 +3,8 @@
  */
 
 //part no written by me-----------------------------------------------------------------------------------//
-
+var prefix = "http://www.theworldavatar.com/";
+iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
@@ -158,27 +159,23 @@ animatedLines = [];
 window.initMap = this.initMap.bind(this);
 }
 
-var arrSum =10.00;
+var arrSum = 0.00;
 var  kmlLayer;
-function drawGenerator(iriofnetwork, anotherURL){
+function drawGenerator(data, anotherURL){
     var d = new Date();
     var n = d.getTime();
     var kmljson = {};
-    var kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createKMLFile'; 
-    var electricalnetwork = iriofnetwork
-    kmljson["electricalnetwork"] = electricalnetwork;
+    var kmlurl = prefix + '/JPS_POWSYS/ENVisualization/createKMLFile'; 
+    kmljson["electricalnetwork"] = data["electricalnetwork"];
     kmljson["n"] = String(n);
-
+    kmljson["flag"] =  data["flag"];
     kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));      
 
-    console.log("my kmlurl=" + kmlurl);
-    console.log("my n=" + n);
-    console.log(electricalnetwork)
 
     var request = $.ajax({
         url: kmlurl,
         type: 'GET',
-        data: { "electricalnetwork":electricalnetwork,"n":n},
+        data: kmljson,
         contentType: 'application/json; charset=utf-8',
         success: function(){  
         },
@@ -191,7 +188,7 @@ function drawGenerator(iriofnetwork, anotherURL){
     console.log ("success create request");
     kmlLayer = new google.maps.KmlLayer({
         // url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',//In other cases, will eventually be read and overwritten here. NO PROBLEM!
-        url: anotherURL+ "?r="+(new Date()).getTime(),
+        url: anotherURL+ "?r="+(new Date()).getTime(), //this is completely necessary for cache-busting. 
         suppressInfoWindows: false,
         map: map
     });
@@ -240,191 +237,183 @@ function setKMLMenu(kmlEvent){
 
 }
 function selectEBus(event) {
-selectedId =  event.srcElement.id;
-var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + event.srcElement.id;
+    selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
+    var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + event.srcElement.id; //will read from here. 
+    // var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + event.srcElement.id;
 
-sendRequest(url,function (response) {
+    sendRequest(url,function (response) {
 
 
-    console.log('response:', response);
-    var inputsHTML = '';
-    response = sortByKey(response,'name');
-    
-    var nameSet = [];
+        console.log('response:', response);
+        var inputsHTML = '';
+        response = sortByKey(response,'name');
+        
+        var nameSet = [];
 
-    for(var item in response)
-    {
-        var pair = response[item];
-
-        if(pair['value'].includes('.owl'))
+        for(var item in response)
         {
+            var pair = response[item];
 
+            if(pair['value'].includes('.owl'))
+            {
+            }
+            else{
+                console.log(pair['name']);
+                if(pair['name'].includes('V_VoltageMagnitude_EBus')||pair['name'].includes('V_Vm_EBus')){   
+            }
+            
+                var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
+                inputsHTML = inputsHTML + inputLine;
+                nameSet.push(pair['name']);
+
+            }
         }
-        else{
 
-        console.log(pair['name']);
-        if(pair['name'].includes('V_VoltageMagnitude_EBus')||pair['name'].includes('V_Vm_EBus')){
+
+        var div = document.getElementById('inputsContainer');
+        div.innerHTML = '<table data-type="kml" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+        '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
+                
+    $(".input_class").change(function(e){
+
+        var label = e.target.parentElement.parentElement.getElementsByTagName("label")[0].innerText;
+        var value = parseInt(e.target.value);
         
-            
-        }
+
         
-        //if(nameSet.includes(pair['name'])){
-        //  console.log('repeated')
-        //}
-        //else{
-            var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
-            inputsHTML = inputsHTML + inputLine;
-            nameSet.push(pair['name'])
-        //}
-        }
-    }
-
-
-    var div = document.getElementById('inputsContainer');
-    div.innerHTML = '<table data-type="kml" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
-       '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
-            
-$(".input_class").change(function(e){
-
-    var label = e.target.parentElement.parentElement.getElementsByTagName("label")[0].innerText;
-    var value = parseInt(e.target.value);
-    
-
-    
-    
-});
-            
-            
-            
-            });
-            
+        
+    });
+                
+                
+                
+                });
+                
 
 }
 function SubmitTable(e) {
 
 
-console.log("-----------------------------------")
-for(var c = 0; c < 15; c++){
-    console.log("\n")
-}
-console.log('e',e.innerHTML)
-console.log("-----------------------------------")
-opt = e.innerHTML;
-var table = document.getElementById('inputsTable');
-var rows = table.firstElementChild.childNodes;
-var url = table.getAttribute('data-url');
-var type = table.getAttribute('data-type');
-console.log('type',type);
+    console.log("-----------------------------------")
+    for(var c = 0; c < 15; c++){
+        console.log("\n")
+    }
+    console.log('e',e.innerHTML)
+    console.log("-----------------------------------")
+    opt = e.innerHTML;
+    var table = document.getElementById('inputsTable');
+    var rows = table.firstElementChild.childNodes;
+    var url = table.getAttribute('data-url');
+    var type = table.getAttribute('data-type');
+    console.log('type',type);
 
-var JSONArray  = {};
+    var JSONArray  = {};
 
-var proceed = true;
+    var proceed = true;
 
-for(var i = 0; i < rows.length; i++)
-{
-    var row = rows[i];
-    var name = row.getElementsByTagName('label')[0].innerText;
-    var value = row.getElementsByTagName('input')[0].value;
-    
-    
-    if(name.includes('EBus-001')){ // This is a slack bus, the magnitude is always 1 and the angle is always 0
-        //console.log("label forbidden= "+label);
-        if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
-            if (value !== 1){
-                alert('The value of the voltage magnitude and Vm for a slack bus should always be 1 kV (in p.u format)')
-                proceed = false;
+    for(var i = 0; i < rows.length; i++)
+    {
+        var row = rows[i];
+        var name = row.getElementsByTagName('label')[0].innerText;
+        var value = row.getElementsByTagName('input')[0].value;
+        
+        
+        if(name.includes('EBus-001')){ // This is a slack bus, the magnitude is always 1 and the angle is always 0
+            //console.log("label forbidden= "+label);
+            if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
+                if (value !== 1){
+                    alert('The value of the voltage magnitude and Vm for a slack bus should always be 1 kV (in p.u format)')
+                    proceed = false;
+                }
             }
+            
+            if (name.includes('VoltageAngle')|| name.includes('Va_EBus')){
+                if (value !== 0){
+                    alert('The value of the voltage angle and Va for a slack bus should always be 0 degree')
+                    proceed = false;
+                }
+            }
+        }
+        else{ // This is a load bus 
+        //console.log("label forbidden= "+label);
+            if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')){
+                if( value > 1.05 || value <= 0.95){
+                    alert('The value of the voltage magnitude and Vm should be between 0.95 and 1.05 kV (in p.u format)')
+                    proceed = false;
+                }
+            }           
         }
         
-        if (name.includes('VoltageAngle')|| name.includes('Va_EBus')){
-            if (value !== 0){
-                alert('The value of the voltage angle and Va for a slack bus should always be 0 degree')
-                proceed = false;
-            }
-        }
+        
+        
+        
+        
+
+        
+        var datatype = row.getElementsByTagName('input')[0].getAttribute('data-dataType');
+        console.log('value',value,'name',name,'url',url);
+        JSONArray[name] = {name: name,value:value, datatype: datatype }
     }
-    else{ // This is a load bus 
-    //console.log("label forbidden= "+label);
-        if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')){
-            if( value > 1.05 || value <= 0.95){
-                alert('The value of the voltage magnitude and Vm should be between 0.95 and 1.05 kV (in p.u format)')
-                proceed = false;
-            }
-        }           
+
+
+
+    if(proceed){
+        var progress = document.getElementById('myProgressBar');
+        progress.style.display = 'block';
+        updateOwlFile(url,JSONArray,type);
     }
-    
-    
-    
-    
-    
-
-    
-    var datatype = row.getElementsByTagName('input')[0].getAttribute('data-dataType');
-    console.log('value',value,'name',name,'url',url);
-    JSONArray[name] = {name: name,value:value, datatype: datatype }
-}
-
-
-
-if(proceed){
-    var progress = document.getElementById('myProgressBar');
-    progress.style.display = 'block';
-    updateOwlFile(url,JSONArray,type);
-}
 
 
 }
 function updateOwlFile(filename,JSONArray,_type) {
 
-console.log('number',Object.keys(JSONArray).length);
-console.log('JSONArray',Object.keys(JSONArray));
-console.log('filename=',filename);
-console.log('type=',_type);
+    console.log('number',Object.keys(JSONArray).length);
+    console.log('JSONArray',Object.keys(JSONArray));
+    console.log('filename=',filename);
+    console.log('type=',_type);
 
-var allItemsArray = [];
-var indexCounter = 0;
-var temp = [];
-for(var item in JSONArray)
-{
-    if(((indexCounter!== 0) && (indexCounter % 10 === 0)) || (indexCounter === parseInt(Object.keys(JSONArray).length - 1)) )
-    {
-        if((indexCounter === parseInt(Object.keys(JSONArray).length - 1)))
-        {
-            //allItemsArray.push(temp);
-            //temp = [];
-            temp.push(item)
-            allItemsArray.push(temp);
+    var allItemsArray = [];
+    var indexCounter = 0;
+    var temp = [];
+    for(var item in JSONArray){
+            if(((indexCounter!== 0) && (indexCounter % 10 === 0)) || (indexCounter === parseInt(Object.keys(JSONArray).length - 1)) )
+            {
+                if((indexCounter === parseInt(Object.keys(JSONArray).length - 1)))
+                {
+                    //allItemsArray.push(temp);
+                    //temp = [];
+                    temp.push(item)
+                    allItemsArray.push(temp);
+                }
+                else
+                {
+                    allItemsArray.push(temp);
+                    temp = [];
+                    temp.push(item)
+                }
+
+
+            }
+            else
+            {
+                temp.push(item)
+            }
+
+            indexCounter++;
         }
-        else
-        {
-            allItemsArray.push(temp);
-            temp = [];
-            temp.push(item)
-        }
+
+    console.log(allItemsArray);
 
 
-    }
-    else
-    {
-        temp.push(item)
-    }
+    var asyncLoop = function(o){
+        var i=-1,
+            length = o.length;
 
-    indexCounter++;
-}
-
-console.log(allItemsArray);
-
-
-var asyncLoop = function(o){
-    var i=-1,
-        length = o.length;
-
-    var loop = function(){
-        i++;
-        if(i===length){o.callback(); return;}
-        o.functionToLoop(loop, i);
-    };
-    loop();//init
+        var loop = function(){
+            i++;
+            if(i===length){o.callback(); return;}
+            o.functionToLoop(loop, i);
+        };
+        loop();//init
 };
 
 
@@ -472,8 +461,8 @@ asyncLoop({
                     
                     
 
-                //console.log('deleteUpdate',deleteUpdate);
-                //console.log('insertUpdate',insertUpdate);
+                console.log('deleteUpdate',deleteUpdate);
+                console.log('insertUpdate',insertUpdate);
 
                 sampleUpdate.push(deleteUpdate);
                 sampleUpdate.push(insertUpdate);
@@ -511,16 +500,15 @@ asyncLoop({
         console.log('all done in callback');
         //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
-        //console.log(path);
 
         //var url = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/startScript?path=' + encodeURIComponent(path);
-        //var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        // var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
         var url = 'http://www.theworldavatar.com/JPS_POWSYS/ENAgent/startsimulation'+opt;
         
         var request = $.ajax({
             url: url,
             type: 'GET',
-            data: { "electricalnetwork":'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork' },
+            data: { "electricalnetwork":iriofnetwork },
             contentType: 'application/json; charset=utf-8'
         });
 
@@ -597,38 +585,38 @@ return array.sort(function(a, b) {
 }
 
 function constructLineMenu(id,callback){
-var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork' + id;
-selectedId =   id;
+    var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork' + id;
+    selectedId =   id;
 
-console.log('url',url);
-sendRequest(url,function (response) {
+    console.log('url',url);
+    sendRequest(url,function (response) {
 
-    var inputsHTML = '';
-    for(var item in response)
-    {
-        var pair = response[item];
-        if(pair['value'].includes('.owl'))
+        var inputsHTML = '';
+        for(var item in response)
         {
+            var pair = response[item];
+            if(pair['value'].includes('.owl'))
+            {
 
+            }
+            else{
+
+                console.log(pair['name']);
+                var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
+                inputsHTML = inputsHTML + inputLine;
+            }
         }
-        else{
-
-            console.log(pair['name']);
-            var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
-            inputsHTML = inputsHTML + inputLine;
-        }
-    }
 
 
-    var div = document.createElement('div');
-    div.id = 'something';
-    div.style='height:500px';
-    
-    div.innerHTML = '<table data-type="line" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
-        '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
-    callback(div);
+        var div = document.createElement('div');
+        div.id = 'something';
+        div.style='height:500px';
+        
+        div.innerHTML = '<table data-type="line" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+        callback(div);
 
-});
+    });
 }
 
 PopupMap.prototype = {
@@ -686,7 +674,7 @@ initMap: function () {
 drawMarkers:function(data){
     var map = this.googleMap;
     var self = this;
-    kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
+    kmlurl =  prefix + 'JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -712,7 +700,7 @@ drawMarkers:function(data){
         var obj = obj0[x];
         var fueltype = obj.fueltype;
         var name = obj.name;
-
+        console.log(fueltype);
         if (fueltype== "NaturalGas"){
             icon = '/images/naturalgas.png'
         }else if (fueltype == "Nuclear"){
@@ -734,6 +722,7 @@ drawMarkers:function(data){
         // }
         //Handle CO2 Emissions per powerplant. 
         if (fueltype != "Nuclear"){
+            console.log(obj.vemission);
             emissions.add(parseFloat(obj.vemission));
         }
         }
@@ -748,7 +737,7 @@ drawLines:function(data){
     var map = this.googleMap;
     var self = this;
     var lines=[];
-    kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createLineJS?query=' + encodeURIComponent(JSON.stringify(data));      
+    kmlurl = prefix + 'JPS_POWSYS/ENVisualization/createLineJS?query=' + encodeURIComponent(JSON.stringify(data));      
     console.log('my kmlurl = '+ kmlurl);
     var request = $.ajax({
         url: kmlurl,

@@ -48,18 +48,19 @@
         ppMap.clearMarkers();
         if (predefinedId == '0') {
             
-            iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
-            // Won't use this method when it refreshes?
             kmlURL = anotherURL1;
+            scenario = "BASE";
         }
         else if (predefinedId == '1') {
-            iriofnetwork = 'http://localhost:8080/jps/scenario/testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario/read?query=%7B%22scenarioresource%22%3A%22http%3A%2F%2Fwww.jparksimulator.com%2Fkb%2Fsgp%2Fjurongisland%2Fjurongislandpowernetwork%2FJurongIslandPowerNetwork.owl%23JurongIsland_PowerNetwork%22+%7D';
             kmlURL = anotherURL2;
+            scenario = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
         }
-        ppMap.drawLines( { "electricalnetwork":iriofnetwork });
-        ppMap.drawMarkers( { "electricalnetwork":iriofnetwork });
+            
+        json = { "electricalnetwork":iriofnetwork ,"flag": scenario }
         console.log(arrSum);
-        refreshLayer(iriofnetwork, kmlURL);
+        ppMap.drawLines(json );
+        ppMap.drawMarkers( json);
+        refreshLayer(json, kmlURL);
         kmlURL = null;
         
     }
