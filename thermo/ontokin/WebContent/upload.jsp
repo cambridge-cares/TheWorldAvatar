@@ -13,6 +13,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/Chart.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/utils.js"></script>
+<script src="${pageContext.request.contextPath}/js/popper.min.js"></script>
+<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
 
@@ -35,124 +37,188 @@
 		<p id="description">
 			A Knowledge Base built with the integration of semantic technologies and software agents for 
 			enhancing the experience of chemists in querying chemical kinetic reaction 
-			mechanisms.
+			mechanisms. This User Interface (UI) demonstrates the query capability of OntoKin.
 		</p>
 </div>
 	<div class="container">
-
-
-            <div class="row">
-
-                <div class="col-md-4 div-left">
-                
-                        <s:actionerror />
-						<s:actionmessage />			
-					
-						<s:form action="upload" method="post"
-							enctype="multipart/form-data" theme="bootstrap" label="Select CHEMKIN files to upload:">
-							<hr class="line">
-							<s:file name="myMechFile" label="Select a mechanism file to upload:"
-								theme="bootstrap" />
-							<s:file name="myThermoFile" label="Select a thermo chemistry file to upload:"
-								theme="bootstrap" />
-							<s:file name="mySurfaceFile" label="Select a surface chemistry file to upload:"
-								theme="bootstrap" />
-							<s:file name="myTransportFile" label="Select a transport file to upload:"
-								theme="bootstrap" />								
-							<s:textfield name="myMechanismName" type="text" label="Provide a name for the mechanism:" theme="bootstrap"/>
-							<s:submit value="Upload" label="Select files" theme="bootstrap" />
-						</s:form>
-						
-					<p></p>				
-						
-					<s:iterator value="column" var="c">
-						<hr class="line">
-						<legend>Mechanism upload report </legend>
-						<table class="table table-bordered table-hover">
-							<tr>
-								<th>Item</th>
-								<th>Result</th>
-							</tr>
-							<tr>
-								<td ><s:property value="column1" /></td>
-								<td><s:property value="myMechanismName" /></td>
-							</tr>
-							<tr>
-								<td ><s:property value="column2" /></td>
-								<td><s:property value="myMechFileFileName" /></td>
-							</tr>
-							<tr>
-								<td ><s:property value="column3" /></td>
-								<td><s:property value="myThermoFileFileName" /></td>
-							</tr>
-							<tr>
-								<td ><s:property value="column4" /></td>
-								<td><s:property value="mySurfaceFileFileName" /></td>
-							</tr>
-							<tr>
-								<td ><s:property value="column5" /></td>
-								<td><s:property value="myTransportFileFileName" /></td>
-							</tr>
-							<tr>
-								<td ><s:property value="column6" /></td>
-								<td><s:property value="myChemkinValidationReport" /></td>
-							</tr>
-								<tr>
-								<td ><s:property value="column7" /></td>
-								<td><s:property value="myOWLConsistencyReport" /></td>
-							</tr>
-						</table>
-						
-					</s:iterator>	
-				 			
-						
+		<div class="row">
+             <div class="col-md-3 div-left">
+             
+                     <s:actionerror />
+			<s:actionmessage />			
+		
+			<s:form action="upload" method="post"
+				enctype="multipart/form-data" theme="bootstrap" label="Select CHEMKIN files to upload:">
+				<hr class="line">
+				<s:file name="myMechFile" label="Select a mechanism file to upload:"
+					theme="bootstrap" />
+				<s:file name="myThermoFile" label="Select a thermo chemistry file to upload:"
+					theme="bootstrap" />
+				<s:file name="mySurfaceFile" label="Select a surface chemistry file to upload:"
+					theme="bootstrap" />
+				<s:file name="myTransportFile" label="Select a transport file to upload:"
+					theme="bootstrap" />								
+				<s:textfield name="myMechanismName" type="text" label="Provide a name for the mechanism:" theme="bootstrap"/>
+				<s:submit value="Upload" label="Select files" theme="bootstrap" />
+			</s:form>
+			
+		<p></p>				
+			
+		<s:iterator value="column" var="c">
+			<hr class="line">
+			<legend>Mechanism upload report </legend>
+			<table class="table table-bordered table-hover">
+				<tr>
+					<th>Item</th>
+					<th>Result</th>
+				</tr>
+				<tr>
+					<td ><s:property value="column1" /></td>
+					<td><s:property value="myMechanismName" /></td>
+				</tr>
+				<tr>
+					<td ><s:property value="column2" /></td>
+					<td><s:property value="myMechFileFileName" /></td>
+				</tr>
+				<tr>
+					<td ><s:property value="column3" /></td>
+					<td><s:property value="myThermoFileFileName" /></td>
+				</tr>
+				<tr>
+					<td ><s:property value="column4" /></td>
+					<td><s:property value="mySurfaceFileFileName" /></td>
+				</tr>
+				<tr>
+					<td ><s:property value="column5" /></td>
+					<td><s:property value="myTransportFileFileName" /></td>
+				</tr>
+				<tr>
+					<td ><s:property value="column6" /></td>
+					<td><s:property value="myChemkinValidationReport" /><br></br>Please see the conversion log <a href="<s:property value="myChemkinValidationReportFile" />">here.</a><br></br>If the conversion fails, check line(s) starting with ERROR for potential reasons. Please contact Prof. Markus Kraft(mk306@cam.ac.uk) and Dr. Jethro Akroyd (jwja2@cam.ac.uk) for reporting any issue.</td>
+				</tr>
+					<tr>
+					<td ><s:property value="column7" /></td>
+					<td><s:property value="myOWLConsistencyReport" /></td>
+				</tr>
+			</table>
+			
+		</s:iterator>	
+		</div>
+		
+		
+			<div class="col-md-9">
+				<s:actionerror/>
+				
+				<span id ="errorQuery" style="display:none; color:red">Please provide a query</span>
+				<div class="row">
+					<div class="col-md-11">
+						<s:textfield name="term" class="form-control"  placeholder="Search OntoKin (to list all the mechanisms, go directly to the following menu)" theme="bootstrap"/>							
 					</div>
-					
-					
-					<div class="col-md-8">
-						<s:actionerror/>
-						
-							<span id ="errorQuery" style="display:none; color:red">Please provide a query</span>
-							<s:textfield name="term" class="form-control"  placeholder="Search OntoKin" theme="bootstrap"/>
-							<span id ="errorType" style="display:none; color:red">Please select a query type</span>
-							<s:select
-		headerKey="-1" headerValue="Select query type"
-		list="#{'mechAll':'Show All Mechanisms', 'mechforSorR':'Show Mechanism(s) Containing Species or Reaction', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodyanmic Data', 'rateconstant':'Show Arrhenius Rate Constant Parameters', 'comparerate':'Compare Arrhenius Rate Constant Parameters'}" 
-		name="querySelection" 
-		value="thermo" theme="bootstrap" />
-<%-- 							<s:submit id="search_btn" value="OntoKin Search" theme="bootstrap"/> --%>
-							<button id="execute" theme="bootstrap">OntoKin Search</button>
-							<button id="refresh" theme="bootstrap">Refresh</button>
-							<p></p><span id ="noResult" style="display:none; color:red">No results found.</span>
-						 	<p></p>
-						 	<div id="tableMechanism" class="Container Flipped">
-							 	<div id="table" class="Content">
-							 		<table class="table table-bordered table-hover">
-							 			<thead>
-							    			<tr class="row-header">
-							    			</tr>
-							   			</thead>
-							   			<tbody id="table-query-results">
-							   			</tbody>
-							   		</table>
-							   	</div>
-						   	</div>
-						   	
-						   	<div id= "chartCanvas" class="">
-								<canvas id="canvas"></canvas>
+					<div class="col-md-1">
+						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="In this search box, you can search for a species (e.g. H2O) or reaction (e.g. O + HO2 [=] O2 + OH). To view all the mechanisms, choose 'Show All Mechanisms' in the 'Select query type' drop-down menu and click on the 'OntoKin Search' button.">?</span>
+					</div>
+				</div>
+				<span id ="errorType" style="display:none; color:red">Please select a query type</span>
+				<div class="row">
+					<div class="col-md-11">
+						<s:select
+headerKey="-1" headerValue="Select query type"
+list="#{'mechAll':'Show All Mechanisms', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodyanmic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters', 'comparerate':'Compare Arrhenius Rate Constant Parameters'}" 
+name="querySelection" 
+value="thermo" theme="bootstrap" />
+					</div>
+					<div class="col-md-1">
+						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="If you have already provided a species (e.g. H2O) in the search box above, please select either 'Show Mechanism(s) Containing Species or Reaction' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. If you have provided a reaction, select either 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters'. Now click on the 'Search OntoKin' button.">?</span>							
+					</div>
+				</div>
+
+					<%-- <s:submit id="search_btn" value="OntoKin Search (to view the list of all mechanisms in the KB, go directly to the following drop-down menu)" theme="bootstrap"/> --%>
+					<button id="execute" theme="bootstrap">OntoKin Search</button>
+					<button id="refresh" theme="bootstrap">Refresh</button>
+					<p></p><span id ="noResult" style="display:none; color:red">No results found.</span>
+				 	<p></p>
+				 	
+				 	<!-- Instruction -->
+					<div class="row">
+					 	<div class="col-md-12">
+						 	<div id="accordion">
+							  <div class="card">
+							    <div class="card-header" id="headingOne">
+							      <h5 class="mb-0">
+							        <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+									    How to search?
+							        </button>
+							      </h5>
+							    </div>
+							
+							    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+							      <div class="card-body">
+										<h5 class="card-title" style="font-size: 18px;">How to search for a species?</h5>
+									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a species (e.g. CH4) by typing in or pasting, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
+									    <h5 class="card-title" style="font-size: 18px;">How to search for a reaction?</h5>
+									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a reaction (e.g. OH [=] H2O + O) by typing in or pasting, select either 'Show Mechanism(s) Containing Reaction' or 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
+									</div>
+							    </div>
+							  </div>
 							</div>
-					</div>
+						  </div>
+						</div>
 					
-	
-   	
-   	
+					<!-- Mechanism Table -->
+				 	<div id="tableMechanism" class="Container Flipped">
+					 	<div id="table" class="Content">
+					 		<table class="table table-bordered table-hover">
+					 			<thead>
+					    			<tr class="row-header">
+					    			</tr>
+					   			</thead>
+					   			<tbody id="table-query-results">
+					   			</tbody>
+					   		</table>
+					   	</div>
+				   	</div>
+				  
+				  <!-- Draw Charts -->
+					<div class="container chart-group">
+					  <div class="row">
+					   	<div id="chartCanvas" class="" style="display:none">
+							<canvas id="canvas" style="width:1200px !important; height:500px"></canvas>
+						</div>
+					   	<div id="chartCanvasRateAE" class="" style="display:none">
+							<canvas id="canvasRateAE" style="width:1200px !important; height:500px"></canvas>
+							<p></p>
+						</div>
+					   	<div id="chartCanvasRatePEF" class="" style="display:none">
+							<canvas id="canvasRatePEF" style="width:1200px !important; height:500px"></canvas>
+							<p></p>
+						</div>
+					   	<div id="chartCanvasRateTE" class="" style="display:none">
+							<canvas id="canvasRateTE" style="width:1200px !important; height:500px"></canvas>							
+						</div>
+					  </div>
+					</div>
+					</div>
 		</div>
-		</div>
+	</div>
 
 
 <script type="text/javascript">
 
 $( function() {
+	function formatLabel(str){
+		if(str.length>30){
+			str = str.slice(0,30) + '...';
+		}
+		return str;
+	}
+	
+	$("a#linkButton").on('click',function(){
+	    window.open('www.google.com', '_blank');
+	});
+	
+	$('[data-toggle="tooltip"]').tooltip({
+	    trigger : 'hover'
+	});  
 	
 	let getTableResultRowString = (index, resultObj) => {
 		let tdNodes = '';
@@ -185,14 +251,26 @@ $( function() {
 		$("#noResult").hide();
 		if (search_querySelection != 'mechAll' && (search_term_name.trim() ==  '' || search_querySelection ==  -1 || search_querySelection ==  undefined || search_querySelection ==  null)) {
 			if(search_term_name ==  '') {
+				$("#chartCanvas").hide();
+				$("#chartCanvasRateAE").hide();
+				$("#chartCanvasRatePEF").hide();
+				$("#chartCanvasRateTE").hide();				
+				$("#tableMechanism").hide();
 				$("#errorQuery").show();
 			}
 			if(search_querySelection ==  -1 || search_querySelection ==  undefined || search_querySelection ==  null) {
+				$("#chartCanvas").hide();
+				$("#chartCanvasRateAE").hide();
+				$("#chartCanvasRatePEF").hide();
+				$("#chartCanvasRateTE").hide();				
+				$("#tableMechanism").hide();
 				$("#errorType").show();
 			}			
 			event.preventDefault(); 
 		}
 		else {
+			search_term_name = search_term_name.toUpperCase();
+			console.log(search_term_name);
 			$("#errorQuery").hide();
 			$("#errorType").hide();
 			$("#noResult").hide();
@@ -203,13 +281,13 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismIRI' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
 				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				'} ';
 								
-			} else if (search_querySelection == 'mechforSorR' && !(search_term_name.indexOf('=') > -1)) {			 
+			} else if (search_querySelection == 'mechforS' && !(search_term_name.indexOf('=') > -1)) {			 
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
@@ -222,13 +300,13 @@ $( function() {
 				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				'} ';
 								
-			} else if (search_querySelection == 'mechforSorR' && search_term_name.indexOf('=') > -1) {
+			} else if (search_querySelection == 'mechforR' && search_term_name.indexOf('=') > -1) {
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismIRI ?MechanismName ' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
 					'?Reaction ontokin:hasEquation \"' + search_term_name + '\" . ?Reaction ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
 				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
@@ -240,14 +318,15 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?coefficientValues ?mintemp ?maxtemp' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp' + '\n' +
 				'WHERE {' + '\n' +
-					'?SpeciesIRI rdfs:label \"' + search_term_name + '\" . ?SpeciesIRI ontokin:belongsToPhase ?phase . ?phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
-				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
+					'?SpeciesIRI rdfs:label \"' + search_term_name + '\" . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+					'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+					'?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
 				    '?SpeciesIRI ontokin:hasThermoModel ?ThermoModelIRI .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasCoefficientValues ?coefficientValues .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasMinimumTemperature ?mintemp .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?maxtemp .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasCoefficientValues ?CoefficientValues .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasMinimumTemperature ?MinTemp .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
 				'} ';
 				
 			} else if(search_querySelection == 'compthermo') {
@@ -256,43 +335,24 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?Mechanism1IRI ?Mechanism1Name ?Mechanism2IRI ?Mechanism2Name ?ThermoModel1inMechanism1 ?ThermoModel2inMechanism1 ?ThermoModel1inMechanism2 ?ThermoModel2inMechanism2 ?CoefficientValues1inMechanism1 ?CoefficientValues1inMechanism2 ?CoefficientValues2inMechanism1 ?CoefficientValues2inMechanism2 ?MinTemp1inMechanism1 ?MinTemp2inMechanism1 ?MinTemp1inMechanism2 ?MinTemp2inMechanism2 ?MaxTemp1inMechanism1 ?MaxTemp2inMechanism1 ?MaxTemp1inMechanism2 ?MaxTemp2inMechanism2 ?Pressure1inMechanism1 ?Pressure2inMechanism1 ?Pressure1inMechanism2 ?Pressure2inMechanism2' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp ?Pressure' + '\n' +
 				'WHERE {' + '\n' +
-			    '?species1 rdfs:label \"' + search_term_name + '\" . ?species1 ontokin:belongsToPhase ?phase1 . ?phase1 ontokin:containedIn ?Mechanism1IRI .' + '\n' +
-			    '?Mechanism1IRI rdf:type ontokin:ReactionMechanism .' + '\n' +
-			    '?Mechanism1IRI rdfs:label ?Mechanism1Name .' + '\n' +
-			    '?species1 ontokin:hasThermoModel ?ThermoModel1inMechanism1 .' + '\n' +
-			    '?ThermoModel1inMechanism1 ontokin:hasCoefficientValues ?CoefficientValues1inMechanism1 .' + '\n' +
-			    '?ThermoModel1inMechanism1 ontokin:hasMinimumTemperature ?MinTemp1inMechanism1 .' + '\n' +
-			    '?ThermoModel1inMechanism1 ontokin:hasMaximumTemperature  ?MaxTemp1inMechanism1 .' + '\n' +
-			    '?ThermoModel1inMechanism1 ontokin:hasPressure  ?Pressure1inMechanism1 .' + '\n' +
-			    '?species1 ontokin:hasThermoModel ?ThermoModel2inMechanism1 .' + '\n' +
-			    '?ThermoModel2inMechanism1 ontokin:hasCoefficientValues ?CoefficientValues1inMechanism2 .' + '\n' +
-			    '?ThermoModel2inMechanism1 ontokin:hasMinimumTemperature ?MinTemp2inMechanism1 .' + '\n' +
-			    '?ThermoModel2inMechanism1 ontokin:hasMaximumTemperature  ?MaxTemp2inMechanism1 .' + '\n' +
-			    '?ThermoModel2inMechanism1 ontokin:hasPressure  ?Pressure2inMechanism1 .' + '\n' +
-				    '?species2 rdfs:label \"' + search_term_name + '\" . ?species2 ontokin:belongsToPhase ?phase2 . ?phase2 ontokin:containedIn ?Mechanism2IRI .' + '\n' +
-				    '?Mechanism2IRI rdf:type ontokin:ReactionMechanism .' + '\n' +
-				    '?Mechanism2IRI rdfs:label ?Mechanism2Name .' + '\n' +
-				    '?species2 ontokin:hasThermoModel ?ThermoModel1inMechanism2 .' + '\n' +
-				    '?ThermoModel1inMechanism2 ontokin:hasCoefficientValues ?CoefficientValues2inMechanism1 .' + '\n' +
-				    '?ThermoModel1inMechanism2 ontokin:hasMinimumTemperature ?MinTemp1inMechanism2 .' + '\n' +
-				    '?ThermoModel1inMechanism2 ontokin:hasMaximumTemperature  ?MaxTemp1inMechanism2 .' + '\n' +
-				    '?ThermoModel1inMechanism2 ontokin:hasPressure  ?Pressure1inMechanism2 .' + '\n' +
-				    '?species2 ontokin:hasThermoModel ?ThermoModel2inMechanism2 .' + '\n' +
-				    '?ThermoModel2inMechanism2 ontokin:hasCoefficientValues ?CoefficientValues2inMechanism2 .' + '\n' +
-				    '?ThermoModel2inMechanism2 ontokin:hasMinimumTemperature ?MinTemp2inMechanism2 .' + '\n' +
-				    '?ThermoModel2inMechanism2 ontokin:hasMaximumTemperature  ?MaxTemp2inMechanism2 .' + '\n' +
-				    '?ThermoModel2inMechanism2 ontokin:hasPressure  ?Pressure2inMechanism2 .' + '\n' +
-				    'FILTER ((STR(?Mechanism1IRI) < STR(?Mechanism2IRI)) && (STR(?ThermoModel1inMechanism1) < STR(?ThermoModel2inMechanism1)) && (STR(?ThermoModel1inMechanism2) < STR(?ThermoModel2inMechanism2)) && !((?MinTemp1inMechanism1 = ?MinTemp1inMechanism2) && (?MinTemp2inMechanism1 = ?MinTemp2inMechanism2) && (?MaxTemp1inMechanism1 = ?MaxTemp1inMechanism2) && (?MaxTemp2inMechanism1 = ?MaxTemp2inMechanism2) && (?Pressure1inMechanism1 = ?Pressure1inMechanism2) && (?Pressure2inMechanism1 = ?Pressure2inMechanism2) && (?CoefficientValues1inMechanism1 = ?CoefficientValues2inMechanism1) && (?CoefficientValues1inMechanism2 = ?CoefficientValues2inMechanism2)))' + '\n' +
-				'} ';
+					'?SpeciesIRI rdfs:label \"' + search_term_name + '\" . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
+				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?SpeciesIRI ontokin:hasThermoModel ?ThermoModelIRI .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasCoefficientValues ?CoefficientValues .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasMinimumTemperature ?MinTemp .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
+				    '?ThermoModelIRI ontokin:hasPressure  ?Pressure .' + '\n' +
+	 				'}';
 			} else if(search_querySelection == 'rateconstant') {
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
 					'?ReactionIRI ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
@@ -306,25 +366,22 @@ $( function() {
 				'} ';
 
 			} else if(search_querySelection == 'comparerate') {
-			 	console.log("comparerate")
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?Mechanism1IRI ?Mechanism2IRI ?ReactionIRIinMechanism1 ?ReactionIRIinMechanism2 ?ActivationEnergy1 ?ActivationEnergy2 ?PreExpFactor1 ?PreExpFactor2 ?TempExponent1 ?TempExponent2' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-					'?ReactionIRIinMechanism1 ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRIinMechanism1 ontokin:belongsToPhase ?Phase1 . ?Phase1 ontokin:containedIn ?Mechanism1IRI .'+ '\n' +
-				    '?ReactionIRIinMechanism1 ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients1 .' + '\n' +
-				    '?ArrheniusRateCoefficients1 ontokin:hasActivationEnergy ?ActivationEnergy1 .' + '\n' +
-				    '?ArrheniusRateCoefficients1 ontokin:hasPreExponentialFactor ?PreExpFactor1 .' + '\n' +
-				    '?ArrheniusRateCoefficients1 ontokin:hasTemperatureExponent ?TempExponent1 .' + '\n' +
-					'?ReactionIRIinMechanism2 ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRIinMechanism2 ontokin:belongsToPhase ?Phase2 . ?Phase2 ontokin:containedIn ?Mechanism2IRI .'+ '\n' +
-				    '?ReactionIRIinMechanism2 ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients2 .' + '\n' +
-				    '?ArrheniusRateCoefficients2 ontokin:hasActivationEnergy ?ActivationEnergy2 .' + '\n' +
-				    '?ArrheniusRateCoefficients2 ontokin:hasPreExponentialFactor ?PreExpFactor2 .' + '\n' +
-				    '?ArrheniusRateCoefficients2 ontokin:hasTemperatureExponent ?TempExponent2 .' + '\n' +
-				    'FILTER ((STR(?Mechanism1IRI) < STR(?Mechanism2IRI)) && ((?ActivationEnergy1 != ?ActivationEnergy2) || (?PreExpFactor1 != ?PreExpFactor2) || (?TempExponent1 != ?TempExponent2)))' + '\n' +
-				    		'} ';
+					'?ReactionIRI ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
 			}
 		
 		let queryResultsTable = $("#table-query-results");
@@ -334,12 +391,18 @@ $( function() {
 		
 		$.ajax({
 			type: 'GET',
-			url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
+			url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
+			//url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
 			data: {queryString},
 			success: data => {
 				let trimmedResult = data.slice(1, data.length-2);
 				let resultArray = trimmedResult.split('}');
 				if (resultArray.length == 1) {
+					$("#chartCanvas").hide();
+					$("#chartCanvasRateAE").hide();
+					$("#chartCanvasRatePEF").hide();
+					$("#chartCanvasRateTE").hide();						
+					$("#tableMechanism").hide();
 					$("#noResult").show();
 				} else {
 					resultArray.pop();
@@ -348,9 +411,7 @@ $( function() {
 					firstResult = firstResult.replace(/\n +/g, "");
 					firstResultObj = JSON.parse(firstResult);
 					$(".row-header").append(`<th class="row-query-results first-column">Index</th>`);
-					console.log(firstResultObj)
 					for (let x in firstResultObj) {
-						console.log(x)
 						var theader = '<th class="row-query-results">' + x +'</th>';
 						$(".row-header").append(theader);
 					}								
@@ -369,18 +430,23 @@ $( function() {
 					var maxtemp = [];
 					var pressure = [];
 					let count = 1;
+					var countCoeffSequence = 0;
+
+					var chartLabelRate = [];
+					var ae = [];
+					var ef = [];
+					var te = [];
+					
 					for (let result of resultArray) {
+						countCoeffSequence = countCoeffSequence + 1;
 						jsonString = result + '}'
 						jsonString = jsonString.replace(/\n +/g, "");
 						resultObj = JSON.parse(jsonString);						
-
 						$.each(resultObj, function(i, row) {
-					       
-					        if (i == 'coefficientValues') {
+						  if(search_querySelection == 'compthermo'){
+							if (i == 'CoefficientValues') {
 					        	var coefficients = row.split(',');					        		
 					        	$.each(coefficients, function(index, value) {
-					        		 //console.log(index);
-								     //console.log(value);
 					        		 co[index] = value;
 					        	});	
 					        	
@@ -392,90 +458,105 @@ $( function() {
 					        	co_6.push(co[5]); 
 					        	co_7.push(co[6]); 
 
-					        } else if (i == 'mintemp') {					        	
+					        } else if (i == 'MinTemp') {					        	
 					        	mintemp.push(row);
 					        	
-					        } else if (i == 'maxtemp') {
+					        } else if (i == 'MaxTemp') {
 					        	maxtemp.push(row);
 
-					        } else if (i == 'name') {
-					        	chartLabel.push(row)
+					        } else if (i == 'MechanismName') {
+					        	if(countCoeffSequence % 2 == 0){
+					        		chartLabel.push(formatLabel(row) + ' (HTR)');
+					        	} else{
+					        		chartLabel.push(formatLabel(row) + ' (LTR)');
+					        	}
 					        	
-					        } else if (i == 'pressure') {
-					        	pressure.push(row)
-					        }				        
-					        
+					        } else if (i == 'Pressure') {
+					        	pressure.push(row);
+					        }
+						  } else if(search_querySelection == 'comparerate'){
+								if (i == 'ActivationEnergy') {					        	
+						        	ae.push(row);
+						        } else if (i == 'PreExpFactor') {
+						        	ef.push(row);
+						        } else if (i == 'TempExponent') {
+						        	te.push(row);
+						        } else if (i == 'MechanismName') {
+						        		chartLabelRate.push(formatLabel(row));
+						        }							  
+						  }
 					      });
 						
-						console.log(co);
-						console.log(mintemp);
-						console.log(maxtemp);
-						console.log(pressure);
-						
-						if (0) {
+						if (search_querySelection != 'compthermo' && search_querySelection != 'comparerate') {
 							queryResultsTable.append(getTableResultRowString(count++, resultObj));
 							$("#chartCanvas").hide();
+							$("#chartCanvasRateAE").hide();
+							$("#chartCanvasRatePEF").hide();
+							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").show();
 
-						} else { // show chart
-							console.log('show chart');
+						} else if(search_querySelection == 'compthermo'){ // show chart
 							$("#chartCanvas").show();
+							$("#chartCanvasRateAE").hide();
+							$("#chartCanvasRatePEF").hide();
+							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").hide();
-
+							$("canvas#canvas").remove();
+							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
 							var config = {
 									type: 'line',
 									data: {
-										labels: ['Toluene', 'DF', 'Mech3', 'Mech4', 'May', 'June', 'July', 'DF', 'Mech3', 'Mech4', 'May', 'June', 'July','July'], //chartLabel
+										labels: chartLabel,
 										datasets: [{
-											label: 'Co1',
+											label: 'a1',
 											backgroundColor: window.chartColors.red,
 											borderColor: window.chartColors.red,
 											data: co_1,
 											fill: false,
 										}, {
-											label: 'Co2',
+											label: 'a2',
 											fill: false,
 											backgroundColor: window.chartColors.blue,
 											borderColor: window.chartColors.blue,
 											data: co_2,
 										}, {
-											label: 'Co3',
+											label: 'a3',
 											fill: false,
 											backgroundColor: window.chartColors.orange,
 											borderColor: window.chartColors.orange,
 											data: co_3,
 										}, {
-											label: 'Co4',
+											label: 'a4',
 											fill: false,
-											backgroundColor: window.chartColors.orange,
-											borderColor: window.chartColors.orange,
+											backgroundColor: 'rgb(139,69,19)',
+											borderColor: 'rgb(139,69,19)',
 											data: co_4,
 										}, {
-											label: 'Co5',
+											label: 'a5',
 											fill: false,
-											backgroundColor: window.chartColors.orange,
-											borderColor: window.chartColors.orange,
+											backgroundColor: 'rgb(255,99,71)',
+											borderColor:  'rgb(255,99,71)',
 											data: co_5,
 										}, {
-											label: 'Co6',
+											label: 'a6',
 											fill: false,
-											backgroundColor: window.chartColors.orange,
-											borderColor: window.chartColors.orange,
+											backgroundColor: 'rgb(46,139,87)',
+											borderColor: 'rgb(46,139,87)',
 											data: co_6,
 										}, {
-											label: 'Co7',
+											label: 'a7',
 											fill: false,
-											backgroundColor: window.chartColors.orange,
-											borderColor: window.chartColors.orange,
+											backgroundColor: 'rgb(30,144,255)',
+											borderColor: 'rgb(30,144,255)',
 											data: co_7,
 										}, {
-											label: 'Min temp',
+											label: 'Minimum Temperature',
 											fill: false,
 											backgroundColor: window.chartColors.yellow,
 											borderColor: window.chartColors.yellow,
 											data: mintemp,
 										}, {
-											label: 'Max temp',
+											label: 'Maximum Temperature',
 											fill: false,
 											backgroundColor: window.chartColors.green,
 											borderColor: window.chartColors.green,
@@ -483,9 +564,10 @@ $( function() {
 										}, {
 											label: 'Pressure',
 											fill: false,
-											backgroundColor: window.chartColors.red,
-											borderColor: window.chartColors.red,
+											backgroundColor: 'rgb(221,160,221)',
+											borderColor: 'rgb(221,160,221)',
 											data: pressure,
+											hidden: true,
 										}
 										]
 									},
@@ -493,7 +575,7 @@ $( function() {
 										responsive: true,
 										title: {
 											display: true,
-											text: 'Chart.js Line Chart'
+											text: ['NASA Polynomial Coefficients for the Low-Temperature and High-Temperature Ranges.', 'Here a1, a2, a3, a4, a5, a6, and a7 are the numerical coefficients.', 'LTR means low-temperature range and HTR means high-temperature range.']
 										},
 										tooltips: {
 											mode: 'index',
@@ -508,14 +590,14 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Month'
+													labelString: 'Mechanism'
 												}
 											}],
 											yAxes: [{
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Value'
+													labelString: 'Coefficients and Temperatures'
 												}
 											}]
 										}
@@ -525,8 +607,166 @@ $( function() {
 								var ctx = document.getElementById('canvas').getContext('2d');
 								var myChart = new Chart(ctx, config);
 								 
-						}
+						} else if(search_querySelection == 'comparerate'){ // show chart
+							$("#chartCanvasRateAE").show();
+							$("#chartCanvasRatePEF").show();
+							$("#chartCanvasRateTE").show();
+							$("#chartCanvas").hide();
+							$("#tableMechanism").hide();
+							$("canvas#canvasRateAE").remove();
+							$("canvas#canvasRatePEF").remove();
+							$("canvas#canvasRateTE").remove();
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
+							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
+							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
+							var configAE = {
+									type: 'line',
+									data: {
+										labels: chartLabelRate,
+										datasets: [{
+											label: 'Activation Energy',
+											backgroundColor: window.chartColors.red,
+											borderColor: window.chartColors.red,
+											data: ae,
+											fill: false,
+										}
+										]
+									},
+									options: {
+										responsive: true,
+										title: {
+											display: true,
+											text: ['Activation Energy for the Given Reaction across Mechanisms.']
+										},
+										tooltips: {
+											mode: 'index',
+											intersect: false,
+										},
+										hover: {
+											mode: 'nearest',
+											intersect: true
+										},
+										scales: {
+											xAxes: [{
+												display: true,
+												scaleLabel: {
+													display: true,
+													labelString: 'Mechanism'
+												}
+											}],
+											yAxes: [{
+												display: true,
+												scaleLabel: {
+													display: true,
+													labelString: 'Activation Energy'
+												}
+											}]
+										}
+									}
+								};
 
+								var ctxAE = document.getElementById('canvasRateAE').getContext('2d');
+								var myChartAE = new Chart(ctxAE, configAE);
+
+								var configPEF = {
+										type: 'line',
+										data: {
+											labels: chartLabelRate,
+											datasets: [{
+												label: 'Pre-exponential Factor',
+												fill: false,
+												backgroundColor: window.chartColors.blue,
+												borderColor: window.chartColors.blue,
+												data: ef,
+											}
+											]
+										},
+										options: {
+											responsive: true,
+											title: {
+												display: true,
+												text: ['Pre-exponential Factor for the Given Reaction across Mechanisms.']
+											},
+											tooltips: {
+												mode: 'index',
+												intersect: false,
+											},
+											hover: {
+												mode: 'nearest',
+												intersect: true
+											},
+											scales: {
+												xAxes: [{
+													display: true,
+													scaleLabel: {
+														display: true,
+														labelString: 'Mechanism'
+													}
+												}],
+												yAxes: [{
+													display: true,
+													scaleLabel: {
+														display: true,
+														labelString: 'Pre-exponential Factor'
+													}
+												}]
+											}
+										}
+									};
+
+									var ctxPEF = document.getElementById('canvasRatePEF').getContext('2d');
+									var myChartPEF = new Chart(ctxPEF, configPEF);
+									
+									var configTE = {
+											type: 'line',
+											data: {
+												labels: chartLabelRate,
+												datasets: [{
+													label: 'Temperature Exponent',
+													fill: false,
+													backgroundColor: window.chartColors.orange,
+													borderColor: window.chartColors.orange,
+													data: te,
+												}
+												]
+											},
+											options: {
+												responsive: true,
+												title: {
+													display: true,
+													text: ['Temperature Exponent for the Given Reaction across Mechanisms.']
+												},
+												tooltips: {
+													mode: 'index',
+													intersect: false,
+												},
+												hover: {
+													mode: 'nearest',
+													intersect: true
+												},
+												scales: {
+													xAxes: [{
+														display: true,
+														scaleLabel: {
+															display: true,
+															labelString: 'Mechanism'
+														}
+													}],
+													yAxes: [{
+														display: true,
+														scaleLabel: {
+															display: true,
+															labelString: 'Temperature Exponent'
+														}
+													}]
+												}
+											}
+										};
+
+										var ctxTE = document.getElementById('canvasRateTE').getContext('2d');
+										var myChartTE = new Chart(ctxTE, configTE);
+						}
+						
 					}
 					$("#num-results").text(`${count-1} results found.`);
 				}
