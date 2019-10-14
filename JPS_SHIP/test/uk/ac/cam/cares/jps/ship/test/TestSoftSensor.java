@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.ship.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -45,6 +46,93 @@ public class TestSoftSensor extends TestCase {
 		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
 		int number=JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").length();
 		assertEquals(36, number); //2time x 3point x 6pollutant  
+		
+	}
+	
+	public void testCallingSoftsensorwithPMmodif() {
+		SoftSensor a= new SoftSensor();
+		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.csv");
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
+//		double x=822082.44;
+//		double y=809548.75;
+//		double z=0.0;
+		double x=823682.44;
+		double y=809548.75;
+		double z=0.0;
+		String timeinst="just general timestamp";
+		
+		//all concentrations in a specific location and time stamp
+		List<String>concentration=a.findtheconcentration(simulationResult,x,y,z);
+		
+		//start creating the csv header before converted to json
+		List<String[]>propercsv=new ArrayList<String[]>();
+		String[]header= {"time","x","y","z","crs","pollutant","observes","value","unit"};
+		propercsv.add(header);
+		
+		
+		double sumpm10=0;
+		double sumpm25=0;
+
+		for (int r = 0; r < concentration.size(); r += 2) {
+			String content[] = new String[9];
+			content[0] = timeinst;
+			content[1] = "" + x;
+			content[2] = "" + y;
+			content[3] = "" + z;
+			content[4] = "EPSG:2326";
+			content[5] = concentration.get(r).split("\\|")[2]; // later need to be mapped to iri
+			content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+			content[7] = concentration.get(r + 1);
+			content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+			
+			
+			if(content[5].toLowerCase().contains("pm2.5")) {
+				sumpm25=sumpm25+Double.valueOf(content[7]);	
+			}
+			else if(content[5].toLowerCase().contains("pm10")){
+				sumpm10=sumpm10+Double.valueOf(content[7]);	
+			} 
+			else {
+				propercsv.add(content);
+			}	
+		}
+		String content[] = new String[9];
+		String content2[] = new String[9];
+		content[0] = timeinst;
+		content[1] = "" + x;
+		content[2] = "" + y;
+		content[3] = "" + z;
+		content[4] = "EPSG:2326";
+		content[5] = "PM10"; // later need to be mapped to iri
+		content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+		content[7] = String.valueOf(sumpm10+sumpm25);
+		content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+		propercsv.add(content);
+		content2[0] = timeinst;
+		content2[1] = "" + x;
+		content2[2] = "" + y;
+		content2[3] = "" + z;
+		content2[4] = "EPSG:2326";
+		content2[5] = "PM2.5"; // later need to be mapped to iri
+		content2[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+		content2[7] = ""+sumpm25;
+		content2[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+		propercsv.add(content2);
+		
+		String arrayinstring = null;
+		for(int n=0;n<propercsv.size();n++) {		
+			arrayinstring=arrayinstring+a.convertArrayToStringMethod(propercsv.get(n))+"\n";
+		}
+
+		String[]headertype= {"xsd:dateTime","xsd:number","xsd:number","xsd:number","literal","literal","uri","xsd:number","uri"};
+		System.out.println("result csv format= "+arrayinstring);
+		
+		JSONObject dataSet = new JSONObject(new JenaResultSetFormatter().createJSONfromCSV(propercsv,headertype));
+		System.out.println(dataSet.toString());
+//		assertEquals(585014.1000000001, Double.valueOf(content2[7])); //pm10 amount
+//		assertEquals(585029.5000000001, Double.valueOf(content[7]));  //pm2.5 amount
+		assertEquals(585013.5399999999, Double.valueOf(content2[7])); //pm10 amount
+		assertEquals(585028.5399999999, Double.valueOf(content[7]));  //pm2.5 amount
 		
 	}
 

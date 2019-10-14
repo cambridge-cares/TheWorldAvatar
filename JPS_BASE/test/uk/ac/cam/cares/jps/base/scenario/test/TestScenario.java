@@ -1,15 +1,16 @@
 package uk.ac.cam.cares.jps.base.scenario.test;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
@@ -69,7 +70,7 @@ public class TestScenario extends TestCase {
 	
 	public void testGetLocalPathBaseScenarioForJPSKB() {
 		
-		String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + JPSConstants.SCENARIO_NAME_BASE;		
+		String root = ScenarioHelper.getScenarioWorkingDir() + "/" + JPSConstants.SCENARIO_NAME_BASE;		
 		String url = "http://www.theworldavatar.com" + ScenarioHelper.SCENARIO_COMP_URL + "/base/kb/sgp/jurongisland/something.owl";
 		String scenarioUrl = null;
 		String path = BucketHelper.getLocalPath(url, scenarioUrl);
@@ -95,7 +96,8 @@ public class TestScenario extends TestCase {
 		
 		String scenarioName = "testmy123";
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
-		String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
+		//String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
+		String root = ScenarioHelper.getScenarioBucket(scenarioName);
 		
 		String url = "http://www.theworldavatar.com/jps/kb/sgp/jurongisland/something.owl";
 		String path = BucketHelper.getLocalPath(url, scenarioUrl);
@@ -116,8 +118,9 @@ public class TestScenario extends TestCase {
 	}
 	
 	public void testGetLocalDataPathBaseScenario() {
-		String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + JPSConstants.SCENARIO_NAME_BASE;	
-		String path = BucketHelper.getLocalDataPath();		
+		String root = ScenarioHelper.getScenarioWorkingDir() + "/" + JPSConstants.SCENARIO_NAME_BASE;	
+		String path = BucketHelper.getLocalDataPath();	
+		System.out.println(root);
 		System.out.println(path);
 		assertTrue(path.startsWith(root));
 		assertTrue(path.contains(JPSConstants.SCENARIO_SUBDIR_DATA));
@@ -130,8 +133,9 @@ public class TestScenario extends TestCase {
 
 		try {
 			JPSHttpServlet.enableScenario(scenarioUrl);
-			String root = AgentLocator.getPathToJpsWorkingDir() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;	
-			String path = BucketHelper.getLocalDataPath();		
+			String root = ScenarioHelper.getScenarioWorkingDir() + "/" + scenarioName;	
+			String path = BucketHelper.getLocalDataPath();
+			System.out.println(root);
 			System.out.println(path);
 			assertTrue(path.startsWith(root));
 			assertTrue(path.contains(JPSConstants.SCENARIO_SUBDIR_DATA));
@@ -210,7 +214,7 @@ public class TestScenario extends TestCase {
 	
 	public void testPingScenarioAgentPerformance() {
 		
-		String url = "http://localhost:8080/JPS_SCENARIO/scenario/testPingScenarioAgentPerformance/ping";
+		String url = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testPingScenarioAgentPerformance/ping";
 		long start = System.currentTimeMillis();
 		for (int i=0; i<10; i++) {
 			String result = AgentCaller.executeGetWithURL(url);
@@ -218,5 +222,20 @@ public class TestScenario extends TestCase {
 		
 		long diff = System.currentTimeMillis() - start;	
 		System.out.println("diff=" + diff);
+	}
+	
+	public void testJPSContext() {
+		
+		JSONObject jo = new JSONObject();
+		jo.put("key1", "value1");
+		jo.put("key2", "value2");
+		JPSContext.putScenarioUrl(jo, "scenarioabc");
+		jo.put("key3", "value3");
+		JPSContext.putScenarioUrl(jo, "scenarioxyz");
+		jo.put("key4", "value4");
+		
+		String actual = JPSContext.getScenarioUrl(jo);
+		assertEquals("scenarioxyz", actual);
+		System.out.println(jo);
 	}
 }

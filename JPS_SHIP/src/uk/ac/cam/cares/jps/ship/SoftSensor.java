@@ -174,12 +174,11 @@ public class SoftSensor extends HttpServlet {
 			List<String[]>propercsv=new ArrayList<String[]>();
 			String[]header= {"time","x","y","z","crs","pollutant","observes","value","unit"};
 			propercsv.add(header);
-			//System.out.println("directorysize= "+map.get("directory").size());
+			logger.info("size= "+listmap.size());
 			for(int v=1;v<listmap.size();v++) {
+				System.out.println("agent involved= "+listmap.get(v)[2]);
 				File name = new File(listmap.get(v)[0]);
 				if(name.exists()&&name.length()!=0) {
-					System.out.println("agent involved= "+listmap.get(v)[2]);
-					
 					String csv = new QueryBroker().readFile(listmap.get(v)[0]);
 					List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 					
@@ -197,6 +196,8 @@ public class SoftSensor extends HttpServlet {
 						List<String>concentration=findtheconcentration(simulationResult,realx,realy,realz);
 						
 						String timeinst=listmap.get(v)[1];
+						double sumpm10=0;
+						double sumpm25=0;
 						for (int r = 0; r < concentration.size(); r += 2) {
 							String content[] = new String[9];
 							content[0] = timeinst;
@@ -208,12 +209,42 @@ public class SoftSensor extends HttpServlet {
 							content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
 							content[7] = concentration.get(r + 1);
 							content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
-							propercsv.add(content);
+							
+							
+							if(content[5].toLowerCase().contains("pm2.5")) {
+								sumpm25=sumpm25+Double.valueOf(content[7]);	
+							}
+							else if(content[5].toLowerCase().contains("pm10")){
+								sumpm10=sumpm10+Double.valueOf(content[7]);	
+							} 
+							else {
+								propercsv.add(content);
+							}	
 						}
+						String content[] = new String[9];
+						content[0] = timeinst;
+						content[1] = "" + x;
+						content[2] = "" + y;
+						content[3] = "" + z;
+						content[4] = "EPSG:2326";
+						content[5] = "PM10"; // later need to be mapped to iri
+						content[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+						content[7] = String.valueOf(sumpm10+sumpm25);
+						content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+						propercsv.add(content);
+						String content2[] = new String[9];
+						content2[0] = timeinst;
+						content2[1] = "" + x;
+						content2[2] = "" + y;
+						content2[3] = "" + z;
+						content2[4] = "EPSG:2326";
+						content2[5] = "PM2.5"; // later need to be mapped to iri
+						content2[6] = "http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MassConcentration";
+						content2[7] = ""+sumpm25;
+						content2[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
+						propercsv.add(content2);
 					}
-					
 				}
-
 			}
 
 			
@@ -227,9 +258,7 @@ public class SoftSensor extends HttpServlet {
 
 			String[]headertype= {"xsd:dateTime","xsd:number","xsd:number","xsd:number","literal","literal","uri","xsd:number","uri"};
 			
-			//System.out.println("result 1st of entities= "+dir.get(0));
-			//System.out.println("result number of entities= "+queryresult);
-			System.out.println("result csv format= "+arrayinstring);
+			//System.out.println("result csv format= "+arrayinstring);
 			
 			//System.out.println("result json format= "+new JenaResultSetFormatter().createJSONfromCSV(propercsv,headertype));
 			JSONObject dataSet = new JSONObject(new JenaResultSetFormatter().createJSONfromCSV(propercsv,headertype));
