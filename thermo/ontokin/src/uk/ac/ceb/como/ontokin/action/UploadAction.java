@@ -86,8 +86,6 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 */
 	Properties kbProperties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("kb.ontokin.management.properties"));
 
-	private String ontoCompChemUri = kbProperties.getProperty("ontokin.kb.tbox.uri").toString();
-	
 	private final String ONTOKIN_KB_URL = kbProperties.getProperty("ontokin.kb.uri").toString();
 
 	private String serverURL = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url").toString();
@@ -131,20 +129,12 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	
 	private String myMechanismName;
 	
-	private String mechanismName;
-	
 	private boolean myChemkinValidationReport;
 	
 	private String myChemkinValidationReportFile;
 	
 	private boolean myOWLConsistencyReport;
 	
-	/** The start time. */
-	final long startTime = System.currentTimeMillis();
-
-	/** The running time. */
-	private String runningTime = null;
-
 	private List<String> column = new ArrayList<String>();
 	private String column1 = new String();
 	private String column2 = new String();
@@ -435,24 +425,6 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 	public void setColumn7(String column7) {
 		this.column7 = column7;
-	}
-
-	/**
-	 * Gets the running time.
-	 *
-	 * @return the running time
-	 */
-	public String getRunningTime() {
-		return runningTime;
-	}
-
-	/**
-	 * Sets the running time.
-	 *
-	 * @param runningTime the new running time
-	 */
-	public void setRunningTime(String runningTime) {
-		this.runningTime = runningTime;
 	}
 
 	/**

@@ -1,49 +1,55 @@
 package uk.ac.ceb.como.ontokin.bean;
 
-// TODO: Auto-generated Javadoc
 /**
- * The Class GaussianUploadReport.
+ * Reports the status of a mechanism upload.
+ * 
+ * @author msff2
+ *
  */
 public class ChemkinUploadReport implements Cloneable{
 
-	/** The uuid. */
+	/** The name of the mechanism */
 	private String mechanismName;
 	
-	/** The mechanism file name. */
+	/** The name of the mechanism file selected by user */
 	private String mechanismFileName;
 	
-	/** The thermo data file name. */
+	/** The name of the thermodata file selected by user */
 	private String thermoDataFileName;
 
-	/** The surface chemistry file name. */
+	/** The name of the surface chemistry file selected by user */
 	private String surfaceChemFileName;
 
-	/** The transport data file name. */
+	/** The name of the transport data file selected by user */
 	private String transportDataFileName;
 	
-	/** The validation compchem file. */
+	/** Maintains info if the uploaded CHEMKIN files is valid */
 	private boolean chemkinValidationReport;
 	
 	/** The validation report file. */
 	private String chemkinValidationReportFile;
 
-	/** The consistency compchem ontology file. */
+	/** Maintains info if the generated OntoKin OWL file is consistent */
 	private boolean owlConsistencyReport;
 	
 	/**
-	 * Instantiates a new gaussian upload report.
+	 * Default constructor of this class.
 	 */
 	public ChemkinUploadReport() {
 		
 	}
 	
 	/**
-	 * Instantiates a new gaussian upload report.
-	 *
-	 * @param uuid the uuid
-	 * @param gaussianFileName the gaussian file name
-	 * @param validationCompchemFile the validation of compchem file
-	 * @param consistencyCompchemOntologyFile the consistency of compchem ontology file
+	 * Creates the report on a new mechanism upload.
+	 * 
+	 * @param mechanismName
+	 * @param mechanismFileName
+	 * @param thermoDataFileName
+	 * @param surfaceChemFileName
+	 * @param transportDataFileName
+	 * @param chemkinValidationReport
+	 * @param chemkinValidationReportFile
+	 * @param owlConsistencyReport
 	 */
 	public ChemkinUploadReport(String mechanismName, String mechanismFileName, String thermoDataFileName, String surfaceChemFileName, String transportDataFileName, boolean chemkinValidationReport, String chemkinValidationReportFile, boolean owlConsistencyReport) {
 		
