@@ -24,6 +24,9 @@ public class ChemkinUploadReport implements Cloneable{
 	/** The validation compchem file. */
 	private boolean chemkinValidationReport;
 	
+	/** The validation report file. */
+	private String chemkinValidationReportFile;
+
 	/** The consistency compchem ontology file. */
 	private boolean owlConsistencyReport;
 	
@@ -42,7 +45,7 @@ public class ChemkinUploadReport implements Cloneable{
 	 * @param validationCompchemFile the validation of compchem file
 	 * @param consistencyCompchemOntologyFile the consistency of compchem ontology file
 	 */
-	public ChemkinUploadReport(String mechanismName, String mechanismFileName, String thermoDataFileName, String surfaceChemFileName, String transportDataFileName, boolean chemkinValidationReport, boolean owlConsistencyReport) {
+	public ChemkinUploadReport(String mechanismName, String mechanismFileName, String thermoDataFileName, String surfaceChemFileName, String transportDataFileName, boolean chemkinValidationReport, String chemkinValidationReportFile, boolean owlConsistencyReport) {
 		
 		this.mechanismName=mechanismName;
 		this.mechanismFileName=mechanismFileName;
@@ -50,6 +53,7 @@ public class ChemkinUploadReport implements Cloneable{
 		this.surfaceChemFileName=surfaceChemFileName;
 		this.transportDataFileName=transportDataFileName;
 		this.chemkinValidationReport=chemkinValidationReport;
+		this.chemkinValidationReportFile=chemkinValidationReportFile;
 		this.owlConsistencyReport=owlConsistencyReport;		
 	}
 
@@ -125,6 +129,14 @@ public class ChemkinUploadReport implements Cloneable{
 
 	public void setChemkinValidationReport(boolean chemkinValidationReport) {
 		this.chemkinValidationReport = chemkinValidationReport;
+	}
+	
+	public String getChemkinValidationReportFile() {
+		return chemkinValidationReportFile;
+	}
+
+	public void setChemkinValidationReportFile(String chemkinValidationReportFile) {
+		this.chemkinValidationReportFile = chemkinValidationReportFile;
 	}
 
 	public boolean isOwlConsistencyReport() {
