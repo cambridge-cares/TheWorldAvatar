@@ -4,17 +4,20 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
 import java.util.ArrayList;
 import java.util.Collection;
+
 import org.apache.log4j.Logger;
+
+import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *
  * @author pb556
  */
+
 public class RadicalsFilter extends SpeciesFilter {
 
     protected int num = -1;
@@ -108,7 +111,9 @@ public class RadicalsFilter extends SpeciesFilter {
                 }
             }
         } else {
+        	
             logger.error("No species are set!");
+            
         }
     }
 

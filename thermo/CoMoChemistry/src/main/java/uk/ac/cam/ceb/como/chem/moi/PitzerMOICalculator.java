@@ -51,6 +51,7 @@ public class PitzerMOICalculator {
      * @param allRotorBonds cannot be null only if level is COUPLING_INTERNAL_ROTATIONS_MOI. For other level, it is not needed.
      * @return
      */
+    
     public double getMOI(MOIApproxLevel level, Bond bond, Collection<Bond> allRotorBonds) {
         switch (level) {
             case TOP_MOI:

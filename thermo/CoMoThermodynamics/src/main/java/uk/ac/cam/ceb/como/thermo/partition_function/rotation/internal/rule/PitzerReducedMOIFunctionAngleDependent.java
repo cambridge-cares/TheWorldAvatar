@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.rule;
 
 import java.util.Collection;
@@ -9,11 +10,11 @@ import uk.ac.cam.ceb.como.chem.structure.Bond;
 import uk.ac.cam.ceb.como.math.function.Function;
 import uk.ac.cam.ceb.como.math.function.FunctionCalculationException;
 
-
 /**
  *
  * @author pb556
  */
+
 public class PitzerReducedMOIFunctionAngleDependent extends Function<Double, Double> {
 
     private Bond bond = null;
@@ -77,6 +78,7 @@ public class PitzerReducedMOIFunctionAngleDependent extends Function<Double, Dou
 //        }
 //        return 0.0;
 //    }
+    
     @Override
     public Double f(Double x, Object... additionalData) throws FunctionCalculationException {
         return rule.getReducedMOI(x, bond, allRotorBonds);

@@ -16,6 +16,7 @@ import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.t
  *
  * @author pb556
  */
+
 public class TDPPIASThermoCalculator extends IRStatMechThermoCalculator {
 
     protected Logger logger = Logger.getLogger(getClass());

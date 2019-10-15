@@ -1,12 +1,15 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.utils;
 
 import java.io.File;
 import java.util.HashMap;
+
 import org.xmlcml.cml.element.CMLMolecule;
 import uk.ac.cam.ceb.como.chem.property.Vibrations;
 import uk.ac.cam.ceb.como.chem.structure.Atom;
@@ -25,6 +28,7 @@ import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWra
  *
  * @author pb556
  */
+
 public class HfSpeciesConverter {
 
     public static Integer[] getNumberOfElectrons(Compound comp) throws Exception {
@@ -130,7 +134,8 @@ public class HfSpeciesConverter {
 //        }
 //        return convS;
 //    }
-//    
+// 
+    
     public static Species getHfSpecies(Molecule mol, String id) {
         return getHfSpecies(mol, id);
     }
@@ -153,6 +158,7 @@ public class HfSpeciesConverter {
 //        Species s = getHfSpecies(ccParser.get(), cc.getId());
 //        return s;
 //    }
+
     public static Species getHfSpecies(CMLMolecule mol) {
         return getHfSpecies((Compound) CompoundConverter.convert(mol), mol.getId());
     }

@@ -4,24 +4,27 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver;
 
-import com.cmclinnovations.data.collections.ObjectPool;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.BondType;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.chem.periodictable.PeriodicTable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.BondType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class SolverHelper {
 
@@ -70,17 +73,26 @@ public class SolverHelper {
     }
 
     public static String concatinate(List<String> terms, String beginning, String delimiter, String ending) {
+    	
         StringBuilder objSb = new StringBuilder(beginning);
+        
         // concaternate all terms
         for (Iterator<String> it = terms.iterator(); it.hasNext();) {
+        	
             String term = it.next();
+            
             objSb.append(term);
+            
             if (it.hasNext()) {
+            	
                 objSb.append(delimiter);
+                
             } else {
+            	
                 objSb.append(ending);
             }
         }
+        
         return objSb.toString();
     }
 
@@ -114,22 +126,29 @@ public class SolverHelper {
                     break;
             }
         }
+        
         if (getNumberOfUnpairedOrbitalElectrons(sp) - bondElectrons * 2 < 0) {
+        	
             return getNumberOfPairedOrbitalElectrons(sp) + 2 * bondElectrons +  2 * (getNumberOfUnpairedOrbitalElectrons(sp) - 2 * bondElectrons);   // electron promotion is regarded
         }
+        
         return getNumberOfPairedOrbitalElectrons(sp) + 2 * bondElectrons;   // + getNumberOfLonePairs(sp);
     }
 
     public static int getNumberOfUnpairedElectrons(Species sp) {
         
         for (String id : isgMap.keySet()) {
+        	
             if (id.compareTo(sp.getRef()) == 0) {
+            	
                 return isgMap.get(id)[1].intValue();
             }
         }
         
         int bondElectrons = 0;
+        
         for (Bond b : sp.getBondMap()) {
+        	
             switch (b.getBondType()) {
                 case AROMATIC:
                     bondElectrons += 1;
@@ -145,8 +164,11 @@ public class SolverHelper {
                     break;
             }
         }
+        
         getNumberOfUnpairedOrbitalElectrons(sp);
+        
         return Math.abs(getNumberOfUnpairedOrbitalElectrons(sp) - bondElectrons * 2); // example C - 2 unpaired but can make 4 bonds CH3 would have -1 unpaired electron otherwise instead of 1 (known as electron promotion)
+        
     }
     
     public static int getNumberOfUnpairedOrbitalElectrons(Species sp) {
@@ -220,15 +242,26 @@ public class SolverHelper {
     }
 
     public synchronized static ObjectPool clone(ObjectPool pool) {
+    	
         ObjectPool<Species> clone = new ObjectPool<Species>();
+        
         for (Object o : pool.getValidatedObjects()) {
+        	
             Species s = (Species) o;
+            
             clone.add(s.clone(), Boolean.FALSE);
+            
+//          System.out.println("SolverHelper class: ObjectPool clone() method: " + s.getRef() + " , " + s.getHf() + " s.clone().getRef(): " + s.clone().getRef());
+            
         }
+        
         for (Object o : pool.getInvalidatedObjects()) {
+        	
             Species s = (Species) o;
+            
             clone.add(s.clone(), Boolean.TRUE);
         }
+        
         return clone;
     }
 //    public static Set<String> getAllBondTypes(Species targetSpecies, Set<Species> refSpecies) {

@@ -4,9 +4,6 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -14,11 +11,18 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variable;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.VariableSet;
@@ -26,21 +30,31 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.variable.Variabl
 /**
  *
  * @author pb556
+ * 
  */
 public class MPSFormat implements LPFormat {
 
     protected String description = "enthalpy_estimator";
     private String lineSep = System.getProperty("line.separator");
     private Species targetSpecies;
-    private Set<Species> speciesSet;
+
+    /**
+     * We use here Set<Species> speciesSet -> LinkedHashSet<Species> speciesSet 
+     */
+    private LinkedHashSet<Species> speciesSet;    
+    
     private VariableSet vSet;
     private boolean intOnly;
     protected ReactionType reactionType;
+    
     private Logger logger = Logger.getLogger(getClass());
 
     public MPSFormat(boolean intOnly, ReactionType reactionType) {
-        this.intOnly = intOnly;
-        this.reactionType = reactionType;
+
+    	this.intOnly = intOnly;
+        
+    	this.reactionType = reactionType;
+    	
     }
     
     public ReactionType getReactionType() {
@@ -52,8 +66,25 @@ public class MPSFormat implements LPFormat {
     }
     
     @Override
-    public String getInputString(Species species, Set<Species> speciesSet, VariableSet vSet) {
+    public String getInputString(Species species, LinkedHashSet<Species> speciesSet, VariableSet vSet) {
+    	
         this.targetSpecies = species;
+        
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk).
+         * Added sorted species set.
+         * 
+         * Commnented because HashSet<Species> -> LinkedHashSet<Species>
+         * 
+         */
+//        LinkedHashSet<Species> sortedSpeciesSet = new LinkedHashSet<Species>();
+//        
+//        sortedSpeciesSet = speciesSet.stream()
+//       			.sorted(Comparator.comparing(Species::getRef)
+//       			.reversed())
+//       			.collect(Collectors.toSet());
+        
         this.speciesSet = speciesSet;
         this.vSet = vSet;
         return buildLpSolveInputString();
@@ -307,5 +338,5 @@ public class MPSFormat implements LPFormat {
             Variable variable = vSet.getVariableOf(sp);
             //logger.trace(sp + " -> " + variable.name);
         }
-    }
+    }   
 }

@@ -2,6 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.io;
 
 import com.cmclinnovations.io.file.FileOperations;
@@ -28,28 +29,40 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringListWriter;
  *
  * @author pb556
  */
+
 public class CSVSpeciesFileCreationFromNIST {
 
     private static String destMissing = "C:\\Users\\pb556\\workspace\\methodology\\energy_missing.txt";
     private static String destUnscaled = "C:\\Users\\pb556\\workspace\\methodology\\energy_unscaled_kJperMol.csv";
     private static String destScaled = "C:\\Users\\pb556\\workspace\\methodology\\energy_scaled_kJperMol.csv";
+    
     private static String srcG09 = "C:\\Users\\pb556\\workspace\\methodology\\g09_reference_filtered\\";
     private static String srcHTML = "C:\\Users\\pb556\\workspace\\methodology\\nist\\html\\";
+    
+    
     private static String destG09 = "C:\\Users\\pb556\\workspace\\methodology\\g09_ref_pool\\";
     private static boolean copy = true;
 
     public static void main(String[] args) throws Exception {
-        // read all files
+        
+    	// read all files
         // convert them
         // create species file
         //G09FileFilter filter = new G09FileFilter(new File(srcG09));
         //Collection<File> files = filter.getValidFiles();
-        Collection<File> files = FileOperations.ls(new File(srcG09), true);
+
+    	Collection<File> files = FileOperations.ls(new File(srcG09), true);
+        
         Map<Species, String> species = new HashMap<Species, String>();
+        
         Map<Species, String> species_unscaled = new HashMap<Species, String>();
+        
         FrequencyParser parser = new FrequencyParser();
+        
         int fCtr = 1;
+        
         ArrayList<String> missing = new ArrayList<String>();
+        
         for (File f : files) {
             System.out.println("Processing file " + fCtr + " / " + files.size());
             fCtr++;
@@ -108,6 +121,7 @@ public class CSVSpeciesFileCreationFromNIST {
         }
 
         SpeciesPoolWriter writer = new SpeciesPoolWriter(destScaled);
+        
         writer.set(species, false);
         writer.write();
 

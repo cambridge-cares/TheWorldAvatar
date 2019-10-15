@@ -6,6 +6,8 @@ package uk.ac.cam.ceb.como.io.chem.filemgmt.gaussian.parser.compact.g09;
 
 import uk.ac.cam.ceb.como.chem.structure.Compound;
 import java.util.Map;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -15,9 +17,11 @@ import org.junit.Test;
 public class CompoundReaderTest {
 
     @Test
-    //@Ignore
+    @Ignore
     public void readerTest() {
+    	
         String path = "test_data/g09/reader_single/";
+        
         try {
             Map<String, Compound> compounds = G09CompactCompoundReader.getCompounds(path);
             assert (compounds.size() == 1);
@@ -26,9 +30,12 @@ public class CompoundReaderTest {
                 c = compounds.get(key);
             }
             assert(CompoundComparison.isCH4(c));
+            
         } catch (Exception e) {
             System.out.println();
         }
+        
+        
     }
 
     @Test
@@ -45,6 +52,7 @@ public class CompoundReaderTest {
             } else {
                 assert(false);
             }
+           
         }
     }
 }

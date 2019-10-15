@@ -1,0 +1,2848 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:table="http://www.daml.org/2003/01/periodictable/PeriodicTable#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.daml.org/2003/01/periodictable/PeriodicTable">
+  <owl:Ontology rdf:about="">
+    <owl:versionInfo>$Id: PeriodicTable.owl,v 1.10 2004/02/05 15:49:58 mdean Exp $</owl:versionInfo>
+    <rdfs:comment>Periodic Table of the Elements</rdfs:comment>
+  </owl:Ontology>
+  <owl:Class rdf:ID="Element">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="color"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="atomicWeight"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Block"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="block"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="group"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty rdf:resource="#block"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#float"/>
+        <owl:onProperty rdf:resource="#atomicWeight"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Period"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="period"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="atomicNumber"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty rdf:resource="#atomicNumber"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="name"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="StandardState"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="standardState"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty rdf:resource="#name"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="symbol"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Group"/>
+        </owl:allValuesFrom>
+        <owl:onProperty rdf:resource="#group"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty rdf:resource="#period"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:cardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger"
+        >1</owl:cardinality>
+        <owl:onProperty rdf:resource="#symbol"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom>
+          <owl:Class rdf:ID="Classification"/>
+        </owl:allValuesFrom>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="classification"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Block">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <table:Block rdf:ID="d-block">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Block>
+          <table:Block rdf:ID="f-block">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Block>
+          <table:Block rdf:ID="p-block">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Block>
+          <table:Block rdf:ID="s-block">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Block>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#StandardState">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <table:StandardState rdf:ID="gas">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:StandardState>
+          <table:StandardState rdf:ID="liquid">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:StandardState>
+          <table:StandardState rdf:ID="solid">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:StandardState>
+          <table:StandardState rdf:ID="state_unknown">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:StandardState>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Classification">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:oneOf rdf:parseType="Collection">
+          <table:Classification rdf:ID="Metallic">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Classification>
+          <table:Classification rdf:ID="Non-metallic">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Classification>
+          <table:Classification rdf:ID="Semi-metallic">
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Classification>
+        </owl:oneOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#Period">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <owl:onProperty>
+          <owl:DatatypeProperty rdf:ID="number"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Element"/>
+        <owl:onProperty>
+          <owl:ObjectProperty rdf:ID="element"/>
+        </owl:onProperty>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Group">
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <owl:onProperty rdf:resource="#number"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+        <owl:onProperty rdf:resource="#name"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+    <rdfs:subClassOf>
+      <owl:Restriction>
+        <owl:allValuesFrom rdf:resource="#Element"/>
+        <owl:onProperty rdf:resource="#element"/>
+      </owl:Restriction>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:DatatypeProperty rdf:ID="casRegistryID">
+    <rdfs:seeAlso rdf:resource="http://www.cas.org"/>
+    <rdfs:comment>Chemical Abstracts Service (CAS) related information</rdfs:comment>
+  </owl:DatatypeProperty>
+  <table:Period rdf:ID="period_3">
+    <table:element>
+      <owl:NamedIndividual rdf:ID="P">
+        <table:group>
+          <owl:NamedIndividual rdf:ID="group_15">
+            <table:element rdf:resource="#P"/>
+            <table:element>
+              <table:Element rdf:ID="Bi">
+                <table:period>
+                  <owl:NamedIndividual rdf:ID="period_6">
+                    <table:element>
+                      <owl:NamedIndividual rdf:ID="Ba">
+                        <table:block rdf:resource="#s-block"/>
+                        <table:symbol>Ba</table:symbol>
+                        <table:period rdf:resource="#period_6"/>
+                        <rdf:type rdf:resource="#Element"/>
+                        <table:casRegistryID>7440-39-3</table:casRegistryID>
+                        <table:color>silvery white</table:color>
+                        <table:name>barium</table:name>
+                        <table:classification rdf:resource="#Metallic"/>
+                        <table:standardState rdf:resource="#solid"/>
+                        <table:group>
+                          <owl:NamedIndividual rdf:ID="group_2">
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Ra">
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:color>metallic</table:color>
+                                <table:casRegistryID>7440-14-4</table:casRegistryID>
+                                <table:symbol>Ra</table:symbol>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >88</table:atomicNumber>
+                                <table:period>
+                                  <table:Period rdf:ID="period_7">
+                                    <table:element>
+                                      <table:Element rdf:ID="Fm">
+                                        <table:atomicWeight rdf:datatype=
+                                        "http://www.w3.org/2001/XMLSchema#float"
+                                        >257.0</table:atomicWeight>
+                                        <table:block rdf:resource="#f-block"/>
+                                        <table:symbol>Fm</table:symbol>
+                                        <table:atomicNumber rdf:datatype=
+                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                        >100</table:atomicNumber>
+                                        <table:casRegistryID>7440-72-4</table:casRegistryID>
+                                        <table:classification rdf:resource="#Metallic"/>
+                                        <table:name>fermium</table:name>
+                                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                        <table:period rdf:resource="#period_7"/>
+                                        <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                        <table:standardState rdf:resource="#solid"/>
+                                        <table:group>
+                                          <table:Group rdf:ID="group_actinoid">
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="Pu">
+                                                <table:color>silvery white</table:color>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >244.0</table:atomicWeight>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:symbol
+                                                >Pu</table:symbol>
+                                                <table:casRegistryID
+                                                >7440-07-5</table:casRegistryID>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >94</table:atomicNumber>
+                                                <table:name>plutonium</table:name>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <rdf:type rdf:resource="#Element"/>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="Md">
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >101</table:atomicNumber>
+                                                <table:casRegistryID
+                                                >7440-11-1</table:casRegistryID>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:symbol
+                                                >Md</table:symbol>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >258.0</table:atomicWeight>
+                                                <table:name>mendelevium</table:name>
+                                                <rdf:type rdf:resource="#Element"/>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="Am">
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >243.0</table:atomicWeight>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:color>silvery white</table:color>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:name>americium</table:name>
+                                                <table:symbol
+                                                >Am</table:symbol>
+                                                <rdf:type rdf:resource="#Element"/>
+                                                <table:casRegistryID
+                                                >7440-35-9</table:casRegistryID>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >95</table:atomicNumber>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <table:element>
+                                              <table:Element rdf:ID="U">
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:color>metallic grey</table:color>
+                                                <table:symbol
+                                                >U</table:symbol>
+                                                <table:name>uranium</table:name>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >238.02892</table:atomicWeight>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:casRegistryID
+                                                >7440-61-1</table:casRegistryID>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >92</table:atomicNumber>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element rdf:resource="#Fm"/>
+                                            <table:element>
+                                              <table:Element rdf:ID="Bk">
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >97</table:atomicNumber>
+                                                <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:casRegistryID
+                                                >7440-40-6</table:casRegistryID>
+                                                <table:symbol
+                                                >Bk</table:symbol>
+                                                <table:name>berkelium</table:name>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >247.0</table:atomicWeight>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="No">
+                                                <table:name>nobelium</table:name>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:casRegistryID
+                                                >10028-14-5</table:casRegistryID>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >259.0</table:atomicWeight>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                                <table:symbol
+                                                >No</table:symbol>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <rdf:type rdf:resource="#Element"/>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >102</table:atomicNumber>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <table:element>
+                                              <table:Element rdf:ID="Th">
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:name>thorium</table:name>
+                                                <table:casRegistryID
+                                                >7440-29-1</table:casRegistryID>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:symbol
+                                                >Th</table:symbol>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >232.0381</table:atomicWeight>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:color>silvery white</table:color>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >90</table:atomicNumber>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="Es">
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >252.0</table:atomicWeight>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:name>einsteinium</table:name>
+                                                <table:casRegistryID
+                                                >7429-92-7</table:casRegistryID>
+                                                <table:symbol
+                                                >Es</table:symbol>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <rdf:type rdf:resource="#Element"/>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >99</table:atomicNumber>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="Pa">
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:symbol
+                                                >Pa</table:symbol>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >91</table:atomicNumber>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:casRegistryID
+                                                >7440-13-3</table:casRegistryID>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >231.03587</table:atomicWeight>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:color>silvery metallic</table:color>
+                                                <rdf:type rdf:resource="#Element"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:name>protactinium</table:name>
+                                                <table:standardState rdf:resource="#solid"/>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <table:element>
+                                              <table:Element rdf:ID="Np">
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >93</table:atomicNumber>
+                                                <table:color>silvery metallic</table:color>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >237.0</table:atomicWeight>
+                                                <table:casRegistryID
+                                                >7439-99-8</table:casRegistryID>
+                                                <table:symbol
+                                                >Np</table:symbol>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:name>neptunium</table:name>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:name>Actinoid</table:name>
+                                            <table:element>
+                                              <table:Element rdf:ID="Cm">
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:color>silver</table:color>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >96</table:atomicNumber>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:name>curium</table:name>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:symbol
+                                                >Cm</table:symbol>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >247.0</table:atomicWeight>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:casRegistryID
+                                                >7440-51-9</table:casRegistryID>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element>
+                                              <table:Element rdf:ID="Ac">
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >89</table:atomicNumber>
+                                                <table:block rdf:resource="#f-block"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >227.0</table:atomicWeight>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:casRegistryID
+                                                >7440-34-8</table:casRegistryID>
+                                                <table:color>silvery</table:color>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:name>actinium</table:name>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:symbol
+                                                >Ac</table:symbol>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element>
+                                              <table:Element rdf:ID="Cf">
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:group rdf:resource="#group_actinoid"/>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >98</table:atomicNumber>
+                                                <table:symbol
+                                                >Cf</table:symbol>
+                                                <table:period rdf:resource="#period_7"/>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:casRegistryID
+                                                >7440-71-3</table:casRegistryID>
+                                                <table:name>californium</table:name>
+                                                <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >251.0</table:atomicWeight>
+                                                <table:block rdf:resource="#f-block"/>
+                                              </table:Element>
+                                            </table:element>
+                                          </table:Group>
+                                        </table:group>
+                                      </table:Element>
+                                    </table:element>
+                                    <table:element>
+                                      <table:Element rdf:ID="Uuh">
+                                        <table:block rdf:resource="#p-block"/>
+                                        <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                                        <table:group>
+                                          <table:Group rdf:ID="group_16">
+                                            <table:number rdf:datatype=
+                                            "http://www.w3.org/2001/XMLSchema#integer"
+                                            >16</table:number>
+                                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                            <table:element>
+                                              <owl:NamedIndividual rdf:ID="Se">
+                                                <table:period>
+                                                  <owl:NamedIndividual rdf:ID="period_4">
+                                                    <table:element>
+                                                      <table:Element rdf:ID="Ca">
+                                                        <table:symbol
+                                                        >Ca</table:symbol>
+                                                        <table:standardState rdf:resource="#solid"/>
+                                                        <table:atomicNumber
+                                                         rdf:datatype=
+                                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                                        >20</table:atomicNumber>
+                                                        <table:period rdf:resource="#period_4"/>
+                                                        <table:group rdf:resource="#group_2"/>
+                                                        <table:atomicWeight
+                                                         rdf:datatype=
+                                                        "http://www.w3.org/2001/XMLSchema#float"
+                                                        >40.078</table:atomicWeight>
+                                                        <table:block rdf:resource="#s-block"/>
+                                                        <table:classification rdf:resource="#Metallic"/>
+                                                        <table:casRegistryID
+                                                        >7440-70-2</table:casRegistryID>
+                                                        <table:color
+                                                        >silvery white</table:color>
+                                                        <table:name
+                                                        >calcium</table:name>
+                                                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                      </table:Element>
+                                                    </table:element>
+                                                    <table:element rdf:resource="#Se"/>
+                                                    <table:element>
+                                                      <owl:NamedIndividual rdf:ID="Ge">
+                                                        <table:atomicNumber
+                                                         rdf:datatype=
+                                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                                        >32</table:atomicNumber>
+                                                        <table:classification rdf:resource="#Semi-metallic"/>
+                                                        <table:group>
+                                                          <table:Group rdf:ID="group_14">
+                                                            <table:number
+                                                             rdf:datatype=
+                                                            "http://www.w3.org/2001/XMLSchema#integer"
+                                                            >14</table:number>
+                                                            <table:element>
+                                                              <table:Element rdf:ID="Uuq">
+    <table:standardState rdf:resource="#solid"/>
+    <table:group rdf:resource="#group_14"/>
+    <table:name>ununquadium</table:name>
+    <table:casRegistryID>54085-16-4</table:casRegistryID>
+    <table:classification rdf:resource="#Metallic"/>
+    <table:symbol>Uuq</table:symbol>
+    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >114</table:atomicNumber>
+    <table:block rdf:resource="#p-block"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <table:period rdf:resource="#period_7"/>
+    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >289.0</table:atomicWeight>                               </table:Element>
+                                                            </table:element>
+                                                            <table:element>
+                                                              <table:Element rdf:ID="Sn">
+    <table:standardState rdf:resource="#solid"/>
+    <table:casRegistryID>7440-31-5</table:casRegistryID>
+    <table:name>tin</table:name>
+    <table:symbol>Sn</table:symbol>
+    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >118.71</table:atomicWeight>
+    <table:group rdf:resource="#group_14"/>
+    <table:block rdf:resource="#p-block"/>
+    <table:color>silvery lustrous grey</table:color>
+    <table:classification rdf:resource="#Metallic"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >50</table:atomicNumber>
+    <table:period>
+      <table:Period rdf:ID="period_5">
+        <table:element>
+          <table:Element rdf:ID="Sb">
+            <table:color>silvery lustrous grey</table:color>
+            <table:group rdf:resource="#group_15"/>
+            <table:block rdf:resource="#p-block"/>
+            <table:symbol>Sb</table:symbol>
+            <table:standardState rdf:resource="#solid"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:name>antimony</table:name>
+            <table:classification rdf:resource="#Semi-metallic"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >51</table:atomicNumber>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >121.76</table:atomicWeight>
+            <table:period rdf:resource="#period_5"/>
+            <table:casRegistryID>7440-36-0</table:casRegistryID>
+          </table:Element>
+        </table:element>
+        <table:element>
+          <table:Element rdf:ID="Rh">
+            <table:group>
+              <table:Group rdf:ID="group_9">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >9</table:number>
+                <table:element rdf:resource="#Rh"/>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Mt">
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:casRegistryID>54038-01-6</table:casRegistryID>
+                    <table:symbol>Mt</table:symbol>
+                    <table:group rdf:resource="#group_9"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >109</table:atomicNumber>
+                    <table:name>meitnerium</table:name>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >268.0</table:atomicWeight>
+                    <rdf:type rdf:resource="#Element"/>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Ir">
+                    <table:symbol>Ir</table:symbol>
+                    <table:name>iridium</table:name>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >77</table:atomicNumber>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >192.217</table:atomicWeight>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:color>silvery white</table:color>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:group rdf:resource="#group_9"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:casRegistryID>7439-88-5</table:casRegistryID>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Co">
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:symbol>Co</table:symbol>
+                    <table:color>lustrous, metallic, greyish tinge</table:color>
+                    <table:group rdf:resource="#group_9"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >27</table:atomicNumber>
+                    <table:name>cobalt</table:name>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >58.9332</table:atomicWeight>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:casRegistryID>7440-48-4</table:casRegistryID>
+                  </owl:NamedIndividual>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:casRegistryID>7440-16-6</table:casRegistryID>
+            <table:period rdf:resource="#period_5"/>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >102.9055</table:atomicWeight>
+            <table:standardState rdf:resource="#solid"/>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >45</table:atomicNumber>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:block rdf:resource="#d-block"/>
+            <table:color>silvery white metallic</table:color>
+            <table:name>rhodium</table:name>
+            <table:symbol>Rh</table:symbol>
+          </table:Element>
+        </table:element>
+        <table:element>
+          <table:Element rdf:ID="Xe">
+            <table:color>colourless</table:color>
+            <table:block rdf:resource="#p-block"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:casRegistryID>7440-63-3</table:casRegistryID>
+            <table:name>xenon</table:name>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >54</table:atomicNumber>
+            <table:period rdf:resource="#period_5"/>
+            <table:classification rdf:resource="#Non-metallic"/>
+            <table:group>
+              <owl:NamedIndividual rdf:ID="group_18">
+                <table:element>
+                  <table:Element rdf:ID="Ne">
+                    <table:standardState rdf:resource="#gas"/>
+                    <table:symbol>Ne</table:symbol>
+                    <table:classification rdf:resource="#Non-metallic"/>
+                    <table:block rdf:resource="#p-block"/>
+                    <table:casRegistryID>7440-01-9</table:casRegistryID>
+                    <table:name>neon</table:name>
+                    <table:color>colourless</table:color>
+                    <table:group rdf:resource="#group_18"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >10</table:atomicNumber>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >20.1797</table:atomicWeight>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:period>
+                      <table:Period rdf:ID="period_2">
+                        <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >2</table:number>
+                        <table:element>
+                          <table:Element rdf:ID="C">
+                            <table:symbol>C</table:symbol>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >6</table:atomicNumber>
+                            <table:classification rdf:resource="#Non-metallic"/>
+                            <table:color>graphite is black, diamond is colourless</table:color>
+                            <table:name>carbon</table:name>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >12.0107</table:atomicWeight>
+                            <table:period rdf:resource="#period_2"/>
+                            <table:standardState rdf:resource="#solid"/>
+                            <table:group rdf:resource="#group_14"/>
+                            <table:block rdf:resource="#p-block"/>
+                            <table:casRegistryID>7440-44-0</table:casRegistryID>
+                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                          </table:Element>
+                        </table:element>
+                        <table:element>
+                          <owl:NamedIndividual rdf:ID="N">
+                            <table:standardState rdf:resource="#gas"/>
+                            <table:period rdf:resource="#period_2"/>
+                            <table:name>nitrogen</table:name>
+                            <table:block rdf:resource="#p-block"/>
+                            <table:symbol>N</table:symbol>
+                            <table:classification rdf:resource="#Non-metallic"/>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >7</table:atomicNumber>
+                            <table:color>colourless</table:color>
+                            <table:group rdf:resource="#group_15"/>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >14.0067</table:atomicWeight>
+                            <rdf:type rdf:resource="#Element"/>
+                            <table:casRegistryID>7727-37-9</table:casRegistryID>
+                          </owl:NamedIndividual>
+                        </table:element>
+                        <table:element>
+                          <owl:NamedIndividual rdf:ID="F">
+                            <table:period rdf:resource="#period_2"/>
+                            <table:classification rdf:resource="#Non-metallic"/>
+                            <table:symbol>F</table:symbol>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >18.998404</table:atomicWeight>
+                            <table:name>fluorine</table:name>
+                            <table:casRegistryID>7782-41-4</table:casRegistryID>
+                            <table:color>pale yellow</table:color>
+                            <table:standardState rdf:resource="#gas"/>
+                            <table:block rdf:resource="#p-block"/>
+                            <table:group>
+                              <owl:NamedIndividual rdf:ID="group_17">
+                                <table:element>
+                                  <table:Element rdf:ID="Uus">
+                                    <table:symbol>Uus</table:symbol>
+                                    <table:name>ununseptium</table:name>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >117</table:atomicNumber>
+                                    <table:standardState rdf:resource="#state_unknown"/>
+                                    <table:period rdf:resource="#period_7"/>
+                                    <table:group rdf:resource="#group_17"/>
+                                    <table:block rdf:resource="#p-block"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                                >17</table:number>
+                                <table:element>
+                                  <owl:NamedIndividual rdf:ID="Cl">
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >17</table:atomicNumber>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >35.453</table:atomicWeight>
+                                    <table:period rdf:resource="#period_3"/>
+                                    <table:name>chlorine</table:name>
+                                    <table:classification rdf:resource="#Non-metallic"/>
+                                    <table:standardState rdf:resource="#gas"/>
+                                    <table:block rdf:resource="#p-block"/>
+                                    <table:group rdf:resource="#group_17"/>
+                                    <table:casRegistryID>7782-50-5</table:casRegistryID>
+                                    <table:symbol>Cl</table:symbol>
+                                    <table:color>yellowish green</table:color>
+                                    <rdf:type rdf:resource="#Element"/>
+                                  </owl:NamedIndividual>
+                                </table:element>
+                                <table:element rdf:resource="#F"/>
+                                <table:name>Halogen</table:name>
+                                <rdf:type rdf:resource="#Group"/>
+                                <table:element>
+                                  <table:Element rdf:ID="I">
+                                    <table:block rdf:resource="#p-block"/>
+                                    <table:symbol>I</table:symbol>
+                                    <table:period rdf:resource="#period_5"/>
+                                    <table:casRegistryID>7553-56-2</table:casRegistryID>
+                                    <table:classification rdf:resource="#Non-metallic"/>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >53</table:atomicNumber>
+                                    <table:group rdf:resource="#group_17"/>
+                                    <table:color>violet-dark grey, lustrous</table:color>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:name>iodine</table:name>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >126.90447</table:atomicWeight>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <table:Element rdf:ID="Br">
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >79.904</table:atomicWeight>
+                                    <table:period rdf:resource="#period_4"/>
+                                    <table:color>red-brown, metallic lustre when solid</table:color>
+                                    <table:casRegistryID>7726-95-6</table:casRegistryID>
+                                    <table:symbol>Br</table:symbol>
+                                    <table:standardState rdf:resource="#liquid"/>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >35</table:atomicNumber>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:block rdf:resource="#p-block"/>
+                                    <table:classification rdf:resource="#Non-metallic"/>
+                                    <table:name>bromine</table:name>
+                                    <table:group rdf:resource="#group_17"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <owl:NamedIndividual rdf:ID="At">
+                                    <table:symbol>At</table:symbol>
+                                    <table:color>metallic</table:color>
+                                    <table:casRegistryID>7440-68-8</table:casRegistryID>
+                                    <table:period rdf:resource="#period_6"/>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >85</table:atomicNumber>
+                                    <table:group rdf:resource="#group_17"/>
+                                    <table:classification rdf:resource="#Semi-metallic"/>
+                                    <rdf:type rdf:resource="#Element"/>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:block rdf:resource="#p-block"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >210.0</table:atomicWeight>
+                                    <table:name>astatine</table:name>
+                                  </owl:NamedIndividual>
+                                </table:element>
+                              </owl:NamedIndividual>
+                            </table:group>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >9</table:atomicNumber>
+                            <rdf:type rdf:resource="#Element"/>
+                          </owl:NamedIndividual>
+                        </table:element>
+                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                        <table:element rdf:resource="#Ne"/>
+                        <table:element>
+                          <table:Element rdf:ID="O">
+                            <table:symbol>O</table:symbol>
+                            <table:classification rdf:resource="#Non-metallic"/>
+                            <table:standardState rdf:resource="#gas"/>
+                            <table:block rdf:resource="#p-block"/>
+                            <table:name>oxygen</table:name>
+                            <table:period rdf:resource="#period_2"/>
+                            <table:group rdf:resource="#group_16"/>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >15.9994</table:atomicWeight>
+                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                            <table:casRegistryID>7782-44-7</table:casRegistryID>
+                            <table:color>colourless as a gas, liquid is pale blue</table:color>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >8</table:atomicNumber>
+                          </table:Element>
+                        </table:element>
+                        <table:element>
+                          <owl:NamedIndividual rdf:ID="Be">
+                            <table:color>lead gray</table:color>
+                            <table:standardState rdf:resource="#solid"/>
+                            <rdf:type rdf:resource="#Element"/>
+                            <table:block rdf:resource="#s-block"/>
+                            <table:classification rdf:resource="#Metallic"/>
+                            <table:group rdf:resource="#group_2"/>
+                            <table:name>beryllium</table:name>
+                            <table:period rdf:resource="#period_2"/>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >9.012182</table:atomicWeight>
+                            <table:symbol>Be</table:symbol>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >4</table:atomicNumber>
+                            <table:casRegistryID>7440-41-7</table:casRegistryID>
+                          </owl:NamedIndividual>
+                        </table:element>
+                        <table:element>
+                          <table:Element rdf:ID="Li">
+                            <table:group>
+                              <table:Group rdf:ID="group_1">
+                                <table:element>
+                                  <table:Element rdf:ID="Cs">
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:casRegistryID>7440-46-2</table:casRegistryID>
+                                    <table:symbol>Cs</table:symbol>
+                                    <table:period rdf:resource="#period_6"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >132.90546</table:atomicWeight>
+                                    <table:group rdf:resource="#group_1"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >55</table:atomicNumber>
+                                    <table:name>caesium</table:name>
+                                    <table:color>silvery gold</table:color>
+                                    <table:block rdf:resource="#s-block"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <table:Element rdf:ID="Fr">
+                                    <table:name>francium</table:name>
+                                    <table:group rdf:resource="#group_1"/>
+                                    <table:casRegistryID>7440-73-5</table:casRegistryID>
+                                    <table:block rdf:resource="#s-block"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >223.0</table:atomicWeight>
+                                    <table:color>metallic</table:color>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >87</table:atomicNumber>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:symbol>Fr</table:symbol>
+                                    <table:period rdf:resource="#period_7"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <table:Element rdf:ID="Na">
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:color>silvery white</table:color>
+                                    <table:casRegistryID>7440-23-5</table:casRegistryID>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >11</table:atomicNumber>
+                                    <table:block rdf:resource="#s-block"/>
+                                    <table:name>sodium</table:name>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >22.98977</table:atomicWeight>
+                                    <table:group rdf:resource="#group_1"/>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:symbol>Na</table:symbol>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:period rdf:resource="#period_3"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <owl:NamedIndividual rdf:ID="Rb">
+                                    <table:period rdf:resource="#period_5"/>
+                                    <table:block rdf:resource="#s-block"/>
+                                    <table:name>rubidium</table:name>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >37</table:atomicNumber>
+                                    <table:color>silvery white</table:color>
+                                    <table:group rdf:resource="#group_1"/>
+                                    <table:symbol>Rb</table:symbol>
+                                    <rdf:type rdf:resource="#Element"/>
+                                    <table:casRegistryID>7440-17-7</table:casRegistryID>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >85.4678</table:atomicWeight>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                  </owl:NamedIndividual>
+                                </table:element>
+                                <table:name>Alkali metal</table:name>
+                                <table:element rdf:resource="#Li"/>
+                                <table:element>
+                                  <table:Element rdf:ID="K">
+                                    <table:group rdf:resource="#group_1"/>
+                                    <table:casRegistryID>7440-09-7</table:casRegistryID>
+                                    <table:symbol>K</table:symbol>
+                                    <table:color>silvery white</table:color>
+                                    <table:period rdf:resource="#period_4"/>
+                                    <table:block rdf:resource="#s-block"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >39.0983</table:atomicWeight>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:name>potassium</table:name>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >19</table:atomicNumber>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <table:Element rdf:ID="H">
+                                    <table:group rdf:resource="#group_1"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >1.00794</table:atomicWeight>
+                                    <table:color>colourless</table:color>
+                                    <table:standardState rdf:resource="#gas"/>
+                                    <table:casRegistryID>1333-74-0</table:casRegistryID>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >1</table:atomicNumber>
+                                    <table:block rdf:resource="#s-block"/>
+                                    <table:period>
+                                      <table:Period rdf:ID="period_1">
+                                        <table:number rdf:datatype=
+                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                        >1</table:number>
+                                        <table:element>
+                                          <table:Element rdf:ID="He">
+                                            <table:atomicNumber
+                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                                            >2</table:atomicNumber>
+                                            <table:block rdf:resource="#p-block"/>
+                                            <table:group rdf:resource="#group_18"/>
+                                            <table:casRegistryID
+                                            >7440-59-7</table:casRegistryID>
+                                            <table:symbol>He</table:symbol>
+                                            <table:color>colourless</table:color>
+                                            <table:standardState rdf:resource="#gas"/>
+                                            <table:name>helium</table:name>
+                                            <table:atomicWeight
+                                             rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                                            >4.002602</table:atomicWeight>
+                                            <table:classification rdf:resource="#Non-metallic"/>
+                                            <table:period rdf:resource="#period_1"/>
+                                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                          </table:Element>
+                                        </table:element>
+                                        <table:element rdf:resource="#H"/>
+                                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                      </table:Period>
+                                    </table:period>
+                                    <table:classification rdf:resource="#Non-metallic"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:symbol>H</table:symbol>
+                                    <table:name>hydrogen</table:name>
+                                  </table:Element>
+                                </table:element>
+                                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                                >1</table:number>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                              </table:Group>
+                            </table:group>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >6.941</table:atomicWeight>
+                            <table:classification rdf:resource="#Metallic"/>
+                            <table:color>silvery white/grey</table:color>
+                            <table:standardState rdf:resource="#solid"/>
+                            <table:casRegistryID>7439-93-2</table:casRegistryID>
+                            <table:name>lithium</table:name>
+                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                            <table:period rdf:resource="#period_2"/>
+                            <table:block rdf:resource="#s-block"/>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >3</table:atomicNumber>
+                            <table:symbol>Li</table:symbol>
+                          </table:Element>
+                        </table:element>
+                        <table:element>
+                          <owl:NamedIndividual rdf:ID="B">
+                            <table:period rdf:resource="#period_2"/>
+                            <table:atomicNumber rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#integer"
+                            >5</table:atomicNumber>
+                            <table:symbol>B</table:symbol>
+                            <table:classification rdf:resource="#Semi-metallic"/>
+                            <table:standardState rdf:resource="#solid"/>
+                            <table:name>boron</table:name>
+                            <table:color>black</table:color>
+                            <rdf:type rdf:resource="#Element"/>
+                            <table:block rdf:resource="#p-block"/>
+                            <table:casRegistryID>7440-42-8</table:casRegistryID>
+                            <table:atomicWeight rdf:datatype=
+                            "http://www.w3.org/2001/XMLSchema#float"
+                            >10.811</table:atomicWeight>
+                            <table:group>
+                              <table:Group rdf:ID="group_13">
+                                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                                >13</table:number>
+                                <table:element>
+                                  <table:Element rdf:ID="Uut">
+                                    <table:symbol>Uut</table:symbol>
+                                    <table:name>ununtrium</table:name>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >113</table:atomicNumber>
+                                    <table:standardState rdf:resource="#state_unknown"/>
+                                    <table:period rdf:resource="#period_7"/>
+                                    <table:group rdf:resource="#group_13"/>
+                                    <table:block rdf:resource="#p-block"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element>
+                                  <owl:NamedIndividual rdf:ID="Tl">
+                                    <table:block rdf:resource="#p-block"/>
+                                    <table:period rdf:resource="#period_6"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >204.3833</table:atomicWeight>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >81</table:atomicNumber>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:symbol>Tl</table:symbol>
+                                    <table:group rdf:resource="#group_13"/>
+                                    <table:color>silvery white</table:color>
+                                    <table:casRegistryID>7440-28-0</table:casRegistryID>
+                                    <table:name>thallium</table:name>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <rdf:type rdf:resource="#Element"/>
+                                  </owl:NamedIndividual>
+                                </table:element>
+                                <table:element>
+                                  <owl:NamedIndividual rdf:ID="In">
+                                    <table:symbol>In</table:symbol>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:group rdf:resource="#group_13"/>
+                                    <table:casRegistryID>7440-74-6</table:casRegistryID>
+                                    <table:block rdf:resource="#p-block"/>
+                                    <table:period rdf:resource="#period_5"/>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >114.818</table:atomicWeight>
+                                    <table:name>indium</table:name>
+                                    <table:color>silvery lustrous grey</table:color>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >49</table:atomicNumber>
+                                    <rdf:type rdf:resource="#Element"/>
+                                  </owl:NamedIndividual>
+                                </table:element>
+                                <table:element>
+                                  <table:Element rdf:ID="Ga">
+                                    <table:group rdf:resource="#group_13"/>
+                                    <table:color>silvery white</table:color>
+                                    <table:casRegistryID>7440-55-3</table:casRegistryID>
+                                    <table:period rdf:resource="#period_4"/>
+                                    <table:symbol>Ga</table:symbol>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >31</table:atomicNumber>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >69.723</table:atomicWeight>
+                                    <table:name>gallium</table:name>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:block rdf:resource="#p-block"/>
+                                  </table:Element>
+                                </table:element>
+                                <table:element rdf:resource="#B"/>
+                                <table:element>
+                                  <owl:NamedIndividual rdf:ID="Al">
+                                    <table:color>silvery</table:color>
+                                    <table:atomicWeight rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#float"
+                                    >26.981539</table:atomicWeight>
+                                    <table:standardState rdf:resource="#solid"/>
+                                    <table:period rdf:resource="#period_3"/>
+                                    <table:symbol>Al</table:symbol>
+                                    <table:name>aluminium</table:name>
+                                    <rdf:type rdf:resource="#Element"/>
+                                    <table:classification rdf:resource="#Metallic"/>
+                                    <table:group rdf:resource="#group_13"/>
+                                    <table:atomicNumber rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >13</table:atomicNumber>
+                                    <table:casRegistryID>7429-90-5</table:casRegistryID>
+                                    <table:block rdf:resource="#p-block"/>
+                                  </owl:NamedIndividual>
+                                </table:element>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                              </table:Group>
+                            </table:group>
+                          </owl:NamedIndividual>
+                        </table:element>
+                      </table:Period>
+                    </table:period>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Ar">
+                    <table:name>argon</table:name>
+                    <table:casRegistryID>7440-37-1</table:casRegistryID>
+                    <table:color>colourless</table:color>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >39.948</table:atomicWeight>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >18</table:atomicNumber>
+                    <table:symbol>Ar</table:symbol>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:standardState rdf:resource="#gas"/>
+                    <table:classification rdf:resource="#Non-metallic"/>
+                    <table:block rdf:resource="#p-block"/>
+                    <table:period rdf:resource="#period_3"/>
+                    <table:group rdf:resource="#group_18"/>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Uuo">
+                    <table:color>unknown, but probably a colourless gas</table:color>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:symbol>Uuo</table:symbol>
+                    <table:casRegistryID>54144-19-3</table:casRegistryID>
+                    <table:group rdf:resource="#group_18"/>
+                    <table:standardState rdf:resource="#gas"/>
+                    <table:block rdf:resource="#p-block"/>
+                    <table:name>ununoctium</table:name>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >118</table:atomicNumber>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:classification rdf:resource="#Non-metallic"/>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element rdf:resource="#He"/>
+                <table:name>Noble gas</table:name>
+                <table:element rdf:resource="#Xe"/>
+                <rdf:type rdf:resource="#Group"/>
+                <table:element>
+                  <table:Element rdf:ID="Rn">
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >86</table:atomicNumber>
+                    <table:symbol>Rn</table:symbol>
+                    <table:color>colourless</table:color>
+                    <table:name>radon</table:name>
+                    <table:standardState rdf:resource="#gas"/>
+                    <table:block rdf:resource="#p-block"/>
+                    <table:casRegistryID>10043-92-2</table:casRegistryID>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >222.0</table:atomicWeight>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:classification rdf:resource="#Non-metallic"/>
+                    <table:group rdf:resource="#group_18"/>
+                  </table:Element>
+                </table:element>
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >18</table:number>
+                <table:element>
+                  <table:Element rdf:ID="Kr">
+                    <table:casRegistryID>7439-90-9</table:casRegistryID>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:symbol>Kr</table:symbol>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >36</table:atomicNumber>
+                    <table:block rdf:resource="#p-block"/>
+                    <table:classification rdf:resource="#Non-metallic"/>
+                    <table:group rdf:resource="#group_18"/>
+                    <table:standardState rdf:resource="#gas"/>
+                    <table:name>krypton</table:name>
+                    <table:color>colourless</table:color>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >83.798</table:atomicWeight>
+                  </table:Element>
+                </table:element>
+              </owl:NamedIndividual>
+            </table:group>
+            <table:symbol>Xe</table:symbol>
+            <table:standardState rdf:resource="#gas"/>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >131.293</table:atomicWeight>
+          </table:Element>
+        </table:element>
+        <table:element rdf:resource="#Sn"/>
+        <table:element>
+          <table:Element rdf:ID="Nb">
+            <table:symbol>Nb</table:symbol>
+            <table:period rdf:resource="#period_5"/>
+            <table:block rdf:resource="#d-block"/>
+            <table:color>grey metallic</table:color>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >92.90638</table:atomicWeight>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:group>
+              <table:Group rdf:ID="group_5">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >5</table:number>
+                <table:element>
+                  <table:Element rdf:ID="V">
+                    <table:symbol>V</table:symbol>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >23</table:atomicNumber>
+                    <table:color>silvery grey metallic</table:color>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:group rdf:resource="#group_5"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >50.9415</table:atomicWeight>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:casRegistryID>7440-62-2</table:casRegistryID>
+                    <table:name>vanadium</table:name>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Ta">
+                    <table:block rdf:resource="#d-block"/>
+                    <table:casRegistryID>7440-25-7</table:casRegistryID>
+                    <table:name>tantalum</table:name>
+                    <table:group rdf:resource="#group_5"/>
+                    <table:color>grey blue</table:color>
+                    <table:symbol>Ta</table:symbol>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >73</table:atomicNumber>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >180.9479</table:atomicWeight>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:standardState rdf:resource="#solid"/>
+                  </table:Element>
+                </table:element>
+                <table:element rdf:resource="#Nb"/>
+                <table:element>
+                  <table:Element rdf:ID="Db">
+                    <table:block rdf:resource="#d-block"/>
+                    <table:casRegistryID>53850-35-4</table:casRegistryID>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:symbol>Db</table:symbol>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:name>dubnium</table:name>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >262.0</table:atomicWeight>
+                    <table:group rdf:resource="#group_5"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >105</table:atomicNumber>
+                  </table:Element>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:standardState rdf:resource="#solid"/>
+            <table:casRegistryID>7440-03-1</table:casRegistryID>
+            <table:name>niobium</table:name>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >41</table:atomicNumber>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+          </table:Element>
+        </table:element>
+        <table:element>
+          <table:Element rdf:ID="Zr">
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >40</table:atomicNumber>
+            <table:symbol>Zr</table:symbol>
+            <table:period rdf:resource="#period_5"/>
+            <table:block rdf:resource="#d-block"/>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >91.224</table:atomicWeight>
+            <table:standardState rdf:resource="#solid"/>
+            <table:color>silvery white</table:color>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:group>
+              <table:Group rdf:ID="group_4">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >4</table:number>
+                <table:element rdf:resource="#Zr"/>
+                <table:element>
+                  <table:Element rdf:ID="Ti">
+                    <table:name>titanium</table:name>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >22</table:atomicNumber>
+                    <table:symbol>Ti</table:symbol>
+                    <table:color>silvery metallic</table:color>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:period rdf:resource="#period_4"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:group rdf:resource="#group_4"/>
+                    <table:casRegistryID>7440-32-6</table:casRegistryID>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >47.867</table:atomicWeight>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Rf">
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:name>rutherfordium</table:name>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >261.0</table:atomicWeight>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:casRegistryID>53850-36-5</table:casRegistryID>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:group rdf:resource="#group_4"/>
+                    <table:symbol>Rf</table:symbol>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >104</table:atomicNumber>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Hf">
+                    <table:standardState rdf:resource="#solid"/>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:casRegistryID>7440-58-6</table:casRegistryID>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:color>grey steel</table:color>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >178.49</table:atomicWeight>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:name>hafnium</table:name>
+                    <table:group rdf:resource="#group_4"/>
+                    <table:symbol>Hf</table:symbol>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >72</table:atomicNumber>
+                  </owl:NamedIndividual>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:name>zirconium</table:name>
+            <table:casRegistryID>7440-67-7</table:casRegistryID>
+          </table:Element>
+        </table:element>
+        <table:element>
+          <owl:NamedIndividual rdf:ID="Te">
+            <table:symbol>Te</table:symbol>
+            <table:standardState rdf:resource="#solid"/>
+            <table:block rdf:resource="#p-block"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >52</table:atomicNumber>
+            <table:period rdf:resource="#period_5"/>
+            <table:classification rdf:resource="#Semi-metallic"/>
+            <table:casRegistryID>13494-80-9</table:casRegistryID>
+            <rdf:type rdf:resource="#Element"/>
+            <table:color>silvery lustrous grey</table:color>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >127.6</table:atomicWeight>
+            <table:group rdf:resource="#group_16"/>
+            <table:name>tellurium</table:name>
+          </owl:NamedIndividual>
+        </table:element>
+        <table:element>
+          <owl:NamedIndividual rdf:ID="Sr">
+            <table:standardState rdf:resource="#solid"/>
+            <table:period rdf:resource="#period_5"/>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:block rdf:resource="#s-block"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >38</table:atomicNumber>
+            <table:group rdf:resource="#group_2"/>
+            <rdf:type rdf:resource="#Element"/>
+            <table:color>silvery white</table:color>
+            <table:symbol>Sr</table:symbol>
+            <table:name>strontium</table:name>
+            <table:casRegistryID>7440-24-6</table:casRegistryID>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >87.62</table:atomicWeight>
+          </owl:NamedIndividual>
+        </table:element>
+        <table:element>
+          <table:Element rdf:ID="Ru">
+            <table:standardState rdf:resource="#solid"/>
+            <table:symbol>Ru</table:symbol>
+            <table:group>
+              <table:Group rdf:ID="group_8">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >8</table:number>
+                <table:element rdf:resource="#Ru"/>
+                <table:element>
+                  <table:Element rdf:ID="Os">
+                    <table:name>osmium</table:name>
+                    <table:symbol>Os</table:symbol>
+                    <table:color>bluish grey</table:color>
+                    <table:group rdf:resource="#group_8"/>
+                    <table:period rdf:resource="#period_6"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >76</table:atomicNumber>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >190.23</table:atomicWeight>
+                    <table:casRegistryID>7440-04-2</table:casRegistryID>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:block rdf:resource="#d-block"/>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Hs">
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >269.0</table:atomicWeight>
+                    <table:symbol>Hs</table:symbol>
+                    <table:casRegistryID>54037-57-9</table:casRegistryID>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:group rdf:resource="#group_8"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >108</table:atomicNumber>
+                    <table:name>hassium</table:name>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:standardState rdf:resource="#solid"/>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Fe">
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:group rdf:resource="#group_8"/>
+                    <table:name>iron</table:name>
+                    <table:color>lustrous, metallic, greyish tinge</table:color>
+                    <table:symbol>Fe</table:symbol>
+                    <table:period rdf:resource="#period_4"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >55.845</table:atomicWeight>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >26</table:atomicNumber>
+                    <table:casRegistryID>7439-89-6</table:casRegistryID>
+                    <table:block rdf:resource="#d-block"/>
+                  </table:Element>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >44</table:atomicNumber>
+            <table:block rdf:resource="#d-block"/>
+            <table:casRegistryID>7440-18-8</table:casRegistryID>
+            <table:name>ruthenium</table:name>
+            <table:color>silvery white metallic</table:color>
+            <table:classification rdf:resource="#Metallic"/>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >101.07</table:atomicWeight>
+            <table:period rdf:resource="#period_5"/>
+          </table:Element>
+        </table:element>
+        <table:element rdf:resource="#I"/>
+        <table:element rdf:resource="#Rb"/>
+        <table:element>
+          <table:Element rdf:ID="Cd">
+            <table:symbol>Cd</table:symbol>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:period rdf:resource="#period_5"/>
+            <table:block rdf:resource="#d-block"/>
+            <table:name>cadmium</table:name>
+            <table:color>silvery grey metallic</table:color>
+            <table:standardState rdf:resource="#solid"/>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >112.411</table:atomicWeight>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >48</table:atomicNumber>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:group>
+              <table:Group rdf:ID="group_12">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >12</table:number>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Zn">
+                    <table:symbol>Zn</table:symbol>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:group rdf:resource="#group_12"/>
+                    <table:name>zinc</table:name>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >30</table:atomicNumber>
+                    <table:casRegistryID>7440-66-6</table:casRegistryID>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >65.409</table:atomicWeight>
+                    <table:color>bluish pale grey</table:color>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Uub">
+                    <table:group rdf:resource="#group_12"/>
+                    <table:symbol>Uub</table:symbol>
+                    <table:casRegistryID>54084-26-3</table:casRegistryID>
+                    <table:block rdf:resource="#d-block"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >112</table:atomicNumber>
+                    <table:standardState rdf:resource="#liquid"/>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >285.0</table:atomicWeight>
+                    <table:name>ununbium</table:name>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Hg">
+                    <table:symbol>Hg</table:symbol>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >80</table:atomicNumber>
+                    <table:name>mercury</table:name>
+                    <table:casRegistryID>7439-97-6</table:casRegistryID>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:group rdf:resource="#group_12"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >200.59</table:atomicWeight>
+                    <table:color>silvery white</table:color>
+                    <table:standardState rdf:resource="#liquid"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:block rdf:resource="#d-block"/>
+                  </table:Element>
+                </table:element>
+                <table:element rdf:resource="#Cd"/>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:casRegistryID>7440-43-9</table:casRegistryID>
+          </table:Element>
+        </table:element>
+        <table:element>
+          <owl:NamedIndividual rdf:ID="Ag">
+            <table:block rdf:resource="#d-block"/>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >47</table:atomicNumber>
+            <table:symbol>Ag</table:symbol>
+            <rdf:type rdf:resource="#Element"/>
+            <table:group>
+              <table:Group rdf:ID="group_11">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >11</table:number>
+                <table:name>Coinage metal</table:name>
+                <table:element>
+                  <table:Element rdf:ID="Uuu">
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:group rdf:resource="#group_11"/>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:casRegistryID>54386-24-2</table:casRegistryID>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >111</table:atomicNumber>
+                    <table:symbol>Uuu</table:symbol>
+                    <table:name>unununium</table:name>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >272.0</table:atomicWeight>
+                    <table:standardState rdf:resource="#solid"/>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Cu">
+                    <table:group rdf:resource="#group_11"/>
+                    <table:name>copper</table:name>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >63.546</table:atomicWeight>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:symbol>Cu</table:symbol>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >29</table:atomicNumber>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:casRegistryID>7440-50-8</table:casRegistryID>
+                    <table:color>copper, metallic</table:color>
+                    <table:standardState rdf:resource="#solid"/>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Au">
+                    <table:casRegistryID>7440-57-5</table:casRegistryID>
+                    <table:color>gold</table:color>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >79</table:atomicNumber>
+                    <table:name>gold</table:name>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >196.96655</table:atomicWeight>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:group rdf:resource="#group_11"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:symbol>Au</table:symbol>
+                    <table:block rdf:resource="#d-block"/>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element rdf:resource="#Ag"/>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:period rdf:resource="#period_5"/>
+            <table:casRegistryID>7440-22-4</table:casRegistryID>
+            <table:name>silver</table:name>
+            <table:color>silver</table:color>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >107.8682</table:atomicWeight>
+            <table:standardState rdf:resource="#solid"/>
+          </owl:NamedIndividual>
+        </table:element>
+        <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >5</table:number>
+        <table:element>
+          <owl:NamedIndividual rdf:ID="Pd">
+            <table:symbol>Pd</table:symbol>
+            <table:name>palladium</table:name>
+            <table:block rdf:resource="#d-block"/>
+            <table:standardState rdf:resource="#solid"/>
+            <rdf:type rdf:resource="#Element"/>
+            <table:group>
+              <table:Group rdf:ID="group_10">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >10</table:number>
+                <table:element>
+                  <table:Element rdf:ID="Uun">
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:symbol>Uun</table:symbol>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:casRegistryID>54083-77-1</table:casRegistryID>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:name>ununnilium</table:name>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >271.0</table:atomicWeight>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:group rdf:resource="#group_10"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >110</table:atomicNumber>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Pt">
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >195.078</table:atomicWeight>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >78</table:atomicNumber>
+                    <table:name>platinum</table:name>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:symbol>Pt</table:symbol>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:group rdf:resource="#group_10"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:color>greyish white</table:color>
+                    <table:casRegistryID>7440-06-4</table:casRegistryID>
+                  </table:Element>
+                </table:element>
+                <table:element rdf:resource="#Pd"/>
+                <table:element>
+                  <table:Element rdf:ID="Ni">
+                    <table:name>nickel</table:name>
+                    <table:color>lustrous, metallic, silvery tinge</table:color>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >28</table:atomicNumber>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >58.6934</table:atomicWeight>
+                    <table:group rdf:resource="#group_10"/>
+                    <table:casRegistryID>7440-02-0</table:casRegistryID>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:symbol>Ni</table:symbol>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                  </table:Element>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >106.42</table:atomicWeight>
+            <table:color>silvery white metallic</table:color>
+            <table:period rdf:resource="#period_5"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >46</table:atomicNumber>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:casRegistryID>7440-05-3</table:casRegistryID>
+          </owl:NamedIndividual>
+        </table:element>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <table:element>
+          <table:Element rdf:ID="Tc">
+            <table:symbol>Tc</table:symbol>
+            <table:block rdf:resource="#d-block"/>
+            <table:casRegistryID>7440-26-8</table:casRegistryID>
+            <table:color>silvery grey metallic</table:color>
+            <table:name>technetium</table:name>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >43</table:atomicNumber>
+            <table:period rdf:resource="#period_5"/>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:group>
+              <table:Group rdf:ID="group_7">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >7</table:number>
+                <table:element rdf:resource="#Tc"/>
+                <table:element>
+                  <table:Element rdf:ID="Re">
+                    <table:group rdf:resource="#group_7"/>
+                    <table:name>rhenium</table:name>
+                    <table:casRegistryID>7440-15-5</table:casRegistryID>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >75</table:atomicNumber>
+                    <table:symbol>Re</table:symbol>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:period rdf:resource="#period_6"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:color>greyish white</table:color>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >186.207</table:atomicWeight>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Mn">
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >54.93805</table:atomicWeight>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:name>manganese</table:name>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:color>silvery metallic</table:color>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >25</table:atomicNumber>
+                    <table:casRegistryID>7439-96-5</table:casRegistryID>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:symbol>Mn</table:symbol>
+                    <table:group rdf:resource="#group_7"/>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Bh">
+                    <table:name>bohrium</table:name>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >264.0</table:atomicWeight>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:group rdf:resource="#group_7"/>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:casRegistryID>54037-14-8</table:casRegistryID>
+                    <table:symbol>Bh</table:symbol>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >107</table:atomicNumber>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                  </table:Element>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >98.0</table:atomicWeight>
+            <table:standardState rdf:resource="#solid"/>
+          </table:Element>
+        </table:element>
+        <table:element>
+          <table:Element rdf:ID="Y">
+            <table:symbol>Y</table:symbol>
+            <table:name>yttrium</table:name>
+            <table:group>
+              <table:Group rdf:ID="group_3">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >3</table:number>
+                <table:element rdf:resource="#Y"/>
+                <table:element>
+                  <table:Element rdf:ID="Sc">
+                    <table:name>scandium</table:name>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:color>silvery white</table:color>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >21</table:atomicNumber>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >44.95591</table:atomicWeight>
+                    <table:group rdf:resource="#group_3"/>
+                    <table:casRegistryID>7440-20-2</table:casRegistryID>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:symbol>Sc</table:symbol>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Lu">
+                    <table:name>lutetium</table:name>
+                    <table:standardState rdf:resource="#solid"/>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >174.967</table:atomicWeight>
+                    <table:symbol>Lu</table:symbol>
+                    <table:casRegistryID>7439-94-3</table:casRegistryID>
+                    <table:color>silvery white</table:color>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:period rdf:resource="#period_6"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:group rdf:resource="#group_3"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >71</table:atomicNumber>
+                  </table:Element>
+                </table:element>
+                <table:element>
+                  <table:Element rdf:ID="Lr">
+                    <table:symbol>Lr</table:symbol>
+                    <table:group rdf:resource="#group_3"/>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:name>lawrencium</table:name>
+                    <table:block rdf:resource="#d-block"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >262.0</table:atomicWeight>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >103</table:atomicNumber>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:casRegistryID>22537-19-5</table:casRegistryID>
+                  </table:Element>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:block rdf:resource="#d-block"/>
+            <table:casRegistryID>7440-65-5</table:casRegistryID>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:color>silvery white</table:color>
+            <table:period rdf:resource="#period_5"/>
+            <table:standardState rdf:resource="#solid"/>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >39</table:atomicNumber>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >88.90585</table:atomicWeight>
+          </table:Element>
+        </table:element>
+        <table:element rdf:resource="#In"/>
+        <table:element>
+          <table:Element rdf:ID="Mo">
+            <table:standardState rdf:resource="#solid"/>
+            <table:group>
+              <table:Group rdf:ID="group_6">
+                <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >6</table:number>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="W">
+                    <table:color>greyish white, lustrous</table:color>
+                    <table:casRegistryID>7440-33-7</table:casRegistryID>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:name>tungsten</table:name>
+                    <table:group rdf:resource="#group_6"/>
+                    <table:period rdf:resource="#period_6"/>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:symbol>W</table:symbol>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >183.84</table:atomicWeight>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >74</table:atomicNumber>
+                    <table:block rdf:resource="#d-block"/>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element>
+                  <owl:NamedIndividual rdf:ID="Sg">
+                    <table:block rdf:resource="#d-block"/>
+                    <table:symbol>Sg</table:symbol>
+                    <rdf:type rdf:resource="#Element"/>
+                    <table:color>unknown, but probably metallic and silvery white or grey in appearance</table:color>
+                    <table:period rdf:resource="#period_7"/>
+                    <table:casRegistryID>54038-81-2</table:casRegistryID>
+                    <table:name>seaborgium</table:name>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:group rdf:resource="#group_6"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >106</table:atomicNumber>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >266.0</table:atomicWeight>
+                    <table:classification rdf:resource="#Metallic"/>
+                  </owl:NamedIndividual>
+                </table:element>
+                <table:element rdf:resource="#Mo"/>
+                <table:element>
+                  <table:Element rdf:ID="Cr">
+                    <table:block rdf:resource="#d-block"/>
+                    <table:casRegistryID>7440-47-3</table:casRegistryID>
+                    <table:symbol>Cr</table:symbol>
+                    <table:period rdf:resource="#period_4"/>
+                    <table:name>chromium</table:name>
+                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >24</table:atomicNumber>
+                    <table:standardState rdf:resource="#solid"/>
+                    <table:classification rdf:resource="#Metallic"/>
+                    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                    >51.9961</table:atomicWeight>
+                    <table:group rdf:resource="#group_6"/>
+                    <table:color>silvery metallic</table:color>
+                  </table:Element>
+                </table:element>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+              </table:Group>
+            </table:group>
+            <table:name>molybdenum</table:name>
+            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+            <table:symbol>Mo</table:symbol>
+            <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >95.94</table:atomicWeight>
+            <table:period rdf:resource="#period_5"/>
+            <table:block rdf:resource="#d-block"/>
+            <table:casRegistryID>7439-98-7</table:casRegistryID>
+            <table:classification rdf:resource="#Metallic"/>
+            <table:color>grey metallic</table:color>
+            <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >42</table:atomicNumber>
+          </table:Element>
+        </table:element>
+      </table:Period>
+    </table:period>                                           </table:Element>
+                                                            </table:element>
+                                                            <table:element>
+                                                              <owl:NamedIndividual rdf:ID="Si">
+    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >14</table:atomicNumber>
+    <table:period rdf:resource="#period_3"/>
+    <table:symbol>Si</table:symbol>
+    <table:casRegistryID>7440-21-3</table:casRegistryID>
+    <table:classification rdf:resource="#Semi-metallic"/>
+    <table:name>silicon</table:name>
+    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >28.0855</table:atomicWeight>
+    <rdf:type rdf:resource="#Element"/>
+    <table:block rdf:resource="#p-block"/>
+    <table:color>dark grey with a bluish tinge</table:color>
+    <table:group rdf:resource="#group_14"/>
+    <table:standardState rdf:resource="#solid"/>              </owl:NamedIndividual>
+                                                            </table:element>
+                                                            <table:element>
+                                                              <table:Element rdf:ID="Pb">
+    <table:classification rdf:resource="#Metallic"/>
+    <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >82</table:atomicNumber>
+    <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+    >207.2</table:atomicWeight>
+    <table:block rdf:resource="#p-block"/>
+    <table:name>lead</table:name>
+    <table:standardState rdf:resource="#solid"/>
+    <table:group rdf:resource="#group_14"/>
+    <table:period rdf:resource="#period_6"/>
+    <table:symbol>Pb</table:symbol>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <table:color>bluish white</table:color>
+    <table:casRegistryID>7439-92-1</table:casRegistryID>      </table:Element>
+                                                            </table:element>
+                                                            <table:element rdf:resource="#Ge"/>
+                                                            <table:element rdf:resource="#C"/>
+                                                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                          </table:Group>
+                                                        </table:group>
+                                                        <table:atomicWeight
+                                                         rdf:datatype=
+                                                        "http://www.w3.org/2001/XMLSchema#float"
+                                                        >72.64</table:atomicWeight>
+                                                        <table:block rdf:resource="#p-block"/>
+                                                        <table:symbol
+                                                        >Ge</table:symbol>
+                                                        <table:casRegistryID
+                                                        >7440-56-4</table:casRegistryID>
+                                                        <table:period rdf:resource="#period_4"/>
+                                                        <table:color
+                                                        >greyish white</table:color>
+                                                        <table:standardState rdf:resource="#solid"/>
+                                                        <table:name
+                                                        >germanium</table:name>
+                                                        <rdf:type rdf:resource="#Element"/>
+                                                      </owl:NamedIndividual>
+                                                    </table:element>
+                                                    <table:element rdf:resource="#Cu"/>
+                                                    <table:element rdf:resource="#K"/>
+                                                    <table:element rdf:resource="#Cr"/>
+                                                    <table:element rdf:resource="#Zn"/>
+                                                    <table:element rdf:resource="#Br"/>
+                                                    <table:element rdf:resource="#Ti"/>
+                                                    <table:element rdf:resource="#Ga"/>
+                                                    <table:element rdf:resource="#Mn"/>
+                                                    <table:number
+                                                     rdf:datatype=
+                                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                                    >4</table:number>
+                                                    <table:element rdf:resource="#Kr"/>
+                                                    <table:element>
+                                                      <owl:NamedIndividual rdf:ID="As">
+                                                        <table:symbol
+                                                        >As</table:symbol>
+                                                        <table:atomicWeight
+                                                         rdf:datatype=
+                                                        "http://www.w3.org/2001/XMLSchema#float"
+                                                        >74.9216</table:atomicWeight>
+                                                        <table:casRegistryID
+                                                        >7440-38-2</table:casRegistryID>
+                                                        <table:period rdf:resource="#period_4"/>
+                                                        <rdf:type rdf:resource="#Element"/>
+                                                        <table:atomicNumber
+                                                         rdf:datatype=
+                                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                                        >33</table:atomicNumber>
+                                                        <table:standardState rdf:resource="#solid"/>
+                                                        <table:group rdf:resource="#group_15"/>
+                                                        <table:name
+                                                        >arsenic</table:name>
+                                                        <table:classification rdf:resource="#Semi-metallic"/>
+                                                        <table:block rdf:resource="#p-block"/>
+                                                        <table:color
+                                                        >metallic grey</table:color>
+                                                      </owl:NamedIndividual>
+                                                    </table:element>
+                                                    <table:element rdf:resource="#Co"/>
+                                                    <rdf:type rdf:resource="#Period"/>
+                                                    <table:element rdf:resource="#V"/>
+                                                    <table:element rdf:resource="#Sc"/>
+                                                    <table:element rdf:resource="#Fe"/>
+                                                    <table:element rdf:resource="#Ni"/>
+                                                  </owl:NamedIndividual>
+                                                </table:period>
+                                                <table:name>selenium</table:name>
+                                                <rdf:type rdf:resource="#Element"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >78.96</table:atomicWeight>
+                                                <table:casRegistryID
+                                                >7782-49-2</table:casRegistryID>
+                                                <table:group rdf:resource="#group_16"/>
+                                                <table:classification rdf:resource="#Non-metallic"/>
+                                                <table:symbol
+                                                >Se</table:symbol>
+                                                <table:block rdf:resource="#p-block"/>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >34</table:atomicNumber>
+                                                <table:color>grey, metallic lustre</table:color>
+                                                <table:standardState rdf:resource="#solid"/>
+                                              </owl:NamedIndividual>
+                                            </table:element>
+                                            <table:name>Chalcogen</table:name>
+                                            <table:element rdf:resource="#Te"/>
+                                            <table:element>
+                                              <table:Element rdf:ID="S">
+                                                <table:color>lemon yellow</table:color>
+                                                <table:period rdf:resource="#period_3"/>
+                                                <table:symbol
+                                                >S</table:symbol>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >16</table:atomicNumber>
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:group rdf:resource="#group_16"/>
+                                                <table:casRegistryID
+                                                >7704-34-9</table:casRegistryID>
+                                                <table:name>sulpher</table:name>
+                                                <table:classification rdf:resource="#Non-metallic"/>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >32.065</table:atomicWeight>
+                                                <table:block rdf:resource="#p-block"/>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element>
+                                              <table:Element rdf:ID="Po">
+                                                <table:standardState rdf:resource="#solid"/>
+                                                <table:period rdf:resource="#period_6"/>
+                                                <table:classification rdf:resource="#Metallic"/>
+                                                <table:casRegistryID
+                                                >7440-08-6</table:casRegistryID>
+                                                <table:atomicNumber
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#integer"
+                                                >84</table:atomicNumber>
+                                                <table:name>polonium</table:name>
+                                                <table:color>silvery</table:color>
+                                                <table:group rdf:resource="#group_16"/>
+                                                <table:block rdf:resource="#p-block"/>
+                                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                                <table:symbol
+                                                >Po</table:symbol>
+                                                <table:atomicWeight
+                                                 rdf:datatype=
+                                                "http://www.w3.org/2001/XMLSchema#float"
+                                                >209.0</table:atomicWeight>
+                                              </table:Element>
+                                            </table:element>
+                                            <table:element rdf:resource="#O"/>
+                                            <table:element rdf:resource="#Uuh"/>
+                                          </table:Group>
+                                        </table:group>
+                                        <table:symbol>Uuh</table:symbol>
+                                        <table:name>ununhexium</table:name>
+                                        <table:classification rdf:resource="#Metallic"/>
+                                        <table:casRegistryID>54100-71-9</table:casRegistryID>
+                                        <table:period rdf:resource="#period_7"/>
+                                        <table:atomicNumber rdf:datatype=
+                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                        >116</table:atomicNumber>
+                                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                        <table:standardState rdf:resource="#solid"/>
+                                      </table:Element>
+                                    </table:element>
+                                    <table:element rdf:resource="#Uuu"/>
+                                    <table:element rdf:resource="#Hs"/>
+                                    <table:element rdf:resource="#No"/>
+                                    <table:element rdf:resource="#Uus"/>
+                                    <table:element rdf:resource="#Uuq"/>
+                                    <table:element rdf:resource="#Sg"/>
+                                    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                    <table:element rdf:resource="#Np"/>
+                                    <table:element rdf:resource="#Uut"/>
+                                    <table:element rdf:resource="#Pa"/>
+                                    <table:element rdf:resource="#Uuo"/>
+                                    <table:element rdf:resource="#Bh"/>
+                                    <table:element>
+                                      <table:Element rdf:ID="Uup">
+                                        <table:symbol>Uup</table:symbol>
+                                        <table:name>ununpentium</table:name>
+                                        <table:atomicNumber rdf:datatype=
+                                        "http://www.w3.org/2001/XMLSchema#integer"
+                                        >115</table:atomicNumber>
+                                        <table:standardState rdf:resource="#state_unknown"/>
+                                        <table:period rdf:resource="#period_7"/>
+                                        <table:group rdf:resource="#group_15"/>
+                                        <table:block rdf:resource="#p-block"/>
+                                        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                      </table:Element>
+                                    </table:element>
+                                    <table:element rdf:resource="#Pu"/>
+                                    <table:element rdf:resource="#Lr"/>
+                                    <table:element rdf:resource="#Cf"/>
+                                    <table:element rdf:resource="#Uun"/>
+                                    <table:element rdf:resource="#Db"/>
+                                    <table:element rdf:resource="#Md"/>
+                                    <table:number rdf:datatype=
+                                    "http://www.w3.org/2001/XMLSchema#integer"
+                                    >7</table:number>
+                                    <table:element rdf:resource="#Mt"/>
+                                    <table:element rdf:resource="#Cm"/>
+                                    <table:element rdf:resource="#U"/>
+                                    <table:element rdf:resource="#Fr"/>
+                                    <table:element rdf:resource="#Ra"/>
+                                    <table:element rdf:resource="#Ac"/>
+                                    <table:element rdf:resource="#Am"/>
+                                    <table:element rdf:resource="#Bk"/>
+                                    <table:element rdf:resource="#Th"/>
+                                    <table:element rdf:resource="#Es"/>
+                                    <table:element rdf:resource="#Rf"/>
+                                    <table:element rdf:resource="#Uub"/>
+                                  </table:Period>
+                                </table:period>
+                                <table:group rdf:resource="#group_2"/>
+                                <table:block rdf:resource="#s-block"/>
+                                <table:name>radium</table:name>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >226.0</table:atomicWeight>
+                                <rdf:type rdf:resource="#Element"/>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <rdf:type rdf:resource="#Group"/>
+                            <table:name>Alkaline earth metal</table:name>
+                            <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                            >2</table:number>
+                            <table:element rdf:resource="#Ca"/>
+                            <table:element rdf:resource="#Ba"/>
+                            <table:element rdf:resource="#Sr"/>
+                            <table:element rdf:resource="#Be"/>
+                            <table:element>
+                              <table:Element rdf:ID="Mg">
+                                <table:casRegistryID>7439-95-4</table:casRegistryID>
+                                <table:group rdf:resource="#group_2"/>
+                                <table:block rdf:resource="#s-block"/>
+                                <table:name>magnesium</table:name>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >12</table:atomicNumber>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                <table:symbol>Mg</table:symbol>
+                                <table:period rdf:resource="#period_3"/>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >24.305</table:atomicWeight>
+                                <table:color>silvery white</table:color>
+                              </table:Element>
+                            </table:element>
+                          </owl:NamedIndividual>
+                        </table:group>
+                        <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >56</table:atomicNumber>
+                        <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                        >137.327</table:atomicWeight>
+                      </owl:NamedIndividual>
+                    </table:element>
+                    <table:element rdf:resource="#Tl"/>
+                    <table:element rdf:resource="#Pt"/>
+                    <table:element>
+                      <owl:NamedIndividual rdf:ID="Gd">
+                        <table:casRegistryID>7440-54-2</table:casRegistryID>
+                        <table:standardState rdf:resource="#solid"/>
+                        <table:period rdf:resource="#period_6"/>
+                        <rdf:type rdf:resource="#Element"/>
+                        <table:color>silvery white</table:color>
+                        <table:group>
+                          <table:Group rdf:ID="group_lanthanoid">
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Nd">
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:color>silvery white, yellowish tinge</table:color>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:casRegistryID>7440-00-8</table:casRegistryID>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >60</table:atomicNumber>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:symbol>Nd</table:symbol>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >144.24</table:atomicWeight>
+                                <table:name>neodymium</table:name>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:period rdf:resource="#period_6"/>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <table:element>
+                              <table:Element rdf:ID="Tm">
+                                <table:color>silvery white</table:color>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:name>thulium</table:name>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                <table:casRegistryID>7440-30-4</table:casRegistryID>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >69</table:atomicNumber>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:symbol>Tm</table:symbol>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >168.9342</table:atomicWeight>
+                              </table:Element>
+                            </table:element>
+                            <table:element>
+                              <table:Element rdf:ID="Pm">
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >61</table:atomicNumber>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:name>promethium</table:name>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:casRegistryID>7440-12-2</table:casRegistryID>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >145.0</table:atomicWeight>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:symbol>Pm</table:symbol>
+                                <table:color>metallic</table:color>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                              </table:Element>
+                            </table:element>
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Er">
+                                <table:name>erbium</table:name>
+                                <table:casRegistryID>7440-52-0</table:casRegistryID>
+                                <table:color>silvery white</table:color>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >68</table:atomicNumber>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >167.259</table:atomicWeight>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:block rdf:resource="#f-block"/>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:symbol>Er</table:symbol>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Dy">
+                                <table:block rdf:resource="#f-block"/>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:casRegistryID>7429-91-6</table:casRegistryID>
+                                <table:symbol>Dy</table:symbol>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >66</table:atomicNumber>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:name>dysprosium</table:name>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >162.5</table:atomicWeight>
+                                <table:color>silvery white</table:color>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <table:element rdf:resource="#Gd"/>
+                            <table:element>
+                              <table:Element rdf:ID="Ho">
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:casRegistryID>7440-60-0</table:casRegistryID>
+                                <table:name>holmium</table:name>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >67</table:atomicNumber>
+                                <table:symbol>Ho</table:symbol>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >164.93031</table:atomicWeight>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:block rdf:resource="#f-block"/>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                <table:color>silvery white</table:color>
+                              </table:Element>
+                            </table:element>
+                            <table:element>
+                              <table:Element rdf:ID="La">
+                                <table:color>silvery white</table:color>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >57</table:atomicNumber>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:casRegistryID>7439-91-0</table:casRegistryID>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >138.9055</table:atomicWeight>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                <table:name>lanthanum</table:name>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:symbol>La</table:symbol>
+                              </table:Element>
+                            </table:element>
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Yb">
+                                <table:name>ytterbium</table:name>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:casRegistryID>7440-64-4</table:casRegistryID>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >173.04</table:atomicWeight>
+                                <table:color>silvery white</table:color>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:symbol>Yb</table:symbol>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >70</table:atomicNumber>
+                                <table:period rdf:resource="#period_6"/>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Eu">
+                                <table:period rdf:resource="#period_6"/>
+                                <table:color>silvery white</table:color>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:symbol>Eu</table:symbol>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:name>europium</table:name>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >151.964</table:atomicWeight>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >63</table:atomicNumber>
+                                <table:casRegistryID>7440-53-1</table:casRegistryID>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Tb">
+                                <table:symbol>Tb</table:symbol>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:casRegistryID>7440-27-9</table:casRegistryID>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:name>terbium</table:name>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >158.92534</table:atomicWeight>
+                                <table:color>silvery white</table:color>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >65</table:atomicNumber>
+                                <table:block rdf:resource="#f-block"/>
+                              </owl:NamedIndividual>
+                            </table:element>
+                            <table:element>
+                              <table:Element rdf:ID="Sm">
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >150.36</table:atomicWeight>
+                                <table:casRegistryID>7440-19-9</table:casRegistryID>
+                                <table:color>silvery white</table:color>
+                                <table:symbol>Sm</table:symbol>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:name>samarium</table:name>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >62</table:atomicNumber>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                              </table:Element>
+                            </table:element>
+                            <table:element>
+                              <table:Element rdf:ID="Pr">
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:color>silvery white, yellowish tinge</table:color>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:symbol>Pr</table:symbol>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >140.90765</table:atomicWeight>
+                                <table:period rdf:resource="#period_6"/>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >59</table:atomicNumber>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:casRegistryID>7440-10-0</table:casRegistryID>
+                                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                                <table:name>praseodymium</table:name>
+                              </table:Element>
+                            </table:element>
+                            <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                            <table:name>Lanthanoid</table:name>
+                            <table:element>
+                              <owl:NamedIndividual rdf:ID="Ce">
+                                <table:color>silvery white</table:color>
+                                <rdf:type rdf:resource="#Element"/>
+                                <table:standardState rdf:resource="#solid"/>
+                                <table:classification rdf:resource="#Metallic"/>
+                                <table:symbol>Ce</table:symbol>
+                                <table:atomicNumber rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#integer"
+                                >58</table:atomicNumber>
+                                <table:block rdf:resource="#f-block"/>
+                                <table:atomicWeight rdf:datatype=
+                                "http://www.w3.org/2001/XMLSchema#float"
+                                >140.116</table:atomicWeight>
+                                <table:name>cerium</table:name>
+                                <table:group rdf:resource="#group_lanthanoid"/>
+                                <table:casRegistryID>7440-45-1</table:casRegistryID>
+                                <table:period rdf:resource="#period_6"/>
+                              </owl:NamedIndividual>
+                            </table:element>
+                          </table:Group>
+                        </table:group>
+                        <table:classification rdf:resource="#Metallic"/>
+                        <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                        >64</table:atomicNumber>
+                        <table:name>gadolinium</table:name>
+                        <table:symbol>Gd</table:symbol>
+                        <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                        >157.25</table:atomicWeight>
+                        <table:block rdf:resource="#f-block"/>
+                      </owl:NamedIndividual>
+                    </table:element>
+                    <table:element rdf:resource="#Pb"/>
+                    <table:element rdf:resource="#Po"/>
+                    <table:element rdf:resource="#Ho"/>
+                    <table:element rdf:resource="#Rn"/>
+                    <table:element rdf:resource="#Lu"/>
+                    <table:element rdf:resource="#Au"/>
+                    <table:element rdf:resource="#Nd"/>
+                    <table:element rdf:resource="#Pr"/>
+                    <table:element rdf:resource="#At"/>
+                    <rdf:type rdf:resource="#Period"/>
+                    <table:element rdf:resource="#Pm"/>
+                    <table:element rdf:resource="#Eu"/>
+                    <table:element rdf:resource="#Tm"/>
+                    <table:element rdf:resource="#Hg"/>
+                    <table:element rdf:resource="#Re"/>
+                    <table:element rdf:resource="#Hf"/>
+                    <table:element rdf:resource="#W"/>
+                    <table:element rdf:resource="#Yb"/>
+                    <table:element rdf:resource="#Tb"/>
+                    <table:element rdf:resource="#Er"/>
+                    <table:element rdf:resource="#Ce"/>
+                    <table:element rdf:resource="#Os"/>
+                    <table:element rdf:resource="#Cs"/>
+                    <table:element rdf:resource="#Ta"/>
+                    <table:element rdf:resource="#Dy"/>
+                    <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                    >6</table:number>
+                    <table:element rdf:resource="#Bi"/>
+                    <table:element rdf:resource="#Sm"/>
+                    <table:element rdf:resource="#La"/>
+                    <table:element rdf:resource="#Ir"/>
+                  </owl:NamedIndividual>
+                </table:period>
+                <table:symbol>Bi</table:symbol>
+                <table:classification rdf:resource="#Metallic"/>
+                <table:standardState rdf:resource="#solid"/>
+                <table:group rdf:resource="#group_15"/>
+                <table:casRegistryID>7440-69-9</table:casRegistryID>
+                <table:color>lustrous reddish white</table:color>
+                <table:block rdf:resource="#p-block"/>
+                <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+                >208.98038</table:atomicWeight>
+                <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+                <table:name>bismuth</table:name>
+                <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+                >83</table:atomicNumber>
+              </table:Element>
+            </table:element>
+            <table:element rdf:resource="#As"/>
+            <table:name>Pnictogen</table:name>
+            <table:element rdf:resource="#Sb"/>
+            <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+            >15</table:number>
+            <rdf:type rdf:resource="#Group"/>
+            <table:element rdf:resource="#N"/>
+            <table:element rdf:resource="#Uup"/>
+          </owl:NamedIndividual>
+        </table:group>
+        <table:name>phosphorus</table:name>
+        <table:color>colourless/red/silvery white</table:color>
+        <table:symbol>P</table:symbol>
+        <table:period rdf:resource="#period_3"/>
+        <table:classification rdf:resource="#Non-metallic"/>
+        <table:atomicNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+        >15</table:atomicNumber>
+        <table:standardState rdf:resource="#solid"/>
+        <table:atomicWeight rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+        >30.97376</table:atomicWeight>
+        <rdf:type rdf:resource="#Element"/>
+        <table:block rdf:resource="#p-block"/>
+        <table:casRegistryID>7723-14-0</table:casRegistryID>
+      </owl:NamedIndividual>
+    </table:element>
+    <table:element rdf:resource="#Al"/>
+    <table:element rdf:resource="#Ar"/>
+    <table:element rdf:resource="#Na"/>
+    <table:number rdf:datatype="http://www.w3.org/2001/XMLSchema#integer"
+    >3</table:number>
+    <table:element rdf:resource="#Si"/>
+    <table:element rdf:resource="#S"/>
+    <table:element rdf:resource="#Mg"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <table:element rdf:resource="#Cl"/>
+  </table:Period>
+</rdf:RDF>
+
+<!-- Created with TopBraid -->

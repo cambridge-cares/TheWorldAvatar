@@ -21,8 +21,8 @@ public class InChI extends Format {
                     "No CMLMolecule object is defined.", new IllegalArgumentException("Molecule is not defined."));
         }
         
-        //return InChIConverter.getAutoInChI(this.mol);
-        return OpenBabelCMLConverter.convert(this.mol.toXML(), "inchi", "");
+//        return InChIConverter.getAutoInChI(this.mol);
+          return OpenBabelCMLConverter.convert(this.mol.toXML(), "inchi", "");
 //                for (String line : ) {
 //                    if (line.startsWith("InChI")) {
 //                        // order and sort the molecule into the correct folder which might need to be created

@@ -4,18 +4,21 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
-import com.cmclinnovations.data.collections.ObjectPool;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPFormat;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.Calculator;
 
 /**
@@ -53,6 +56,7 @@ public class CSVCalculator extends Calculator {
         return pool;
     }
 
+    
     private Set<Species> load(File csv, boolean ref) throws Exception {
         try {
             parser.set(csv);

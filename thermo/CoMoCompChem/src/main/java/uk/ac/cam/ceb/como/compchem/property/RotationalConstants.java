@@ -10,6 +10,7 @@ import uk.ac.cam.ceb.como.math.unit.CompositeProperty;
  *
  * @author pb556
  */
+
 public class RotationalConstants extends CompositeProperty {
 
     private final double[] rot_constants = new double[3];
@@ -38,7 +39,6 @@ public class RotationalConstants extends CompositeProperty {
         double f_conv = PhysicalConstants.hbar / 4 / Math.PI;
         double[] rcs = ArrayMathUtils.copyAndScale(new double[]{1d / pmoiInGSD[0], 1d / pmoiInGSD[1], 1d / pmoiInGSD[2]}, f_conv / f_moi2SI);
         return new RotationalConstants(rcs);
-
     }
 
     public double getValue(int i) {

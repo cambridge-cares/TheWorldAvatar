@@ -27,6 +27,7 @@ import com.cmclinnovations.data.collections.ObjectPool;
  *
  * @author pb556
  */
+
 public class ReactionInfluenceFilterMarking extends SpeciesFilter {
 
     protected LPSolver solver;

@@ -8,16 +8,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.validation.LeaveOneOutCrossValidation;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.ObjectPoolCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
 
 /**
  *
  * @author pb556
+ * 
  */
 public class ReactionInfluenceFilterSimpleExclusion extends SpeciesFilter {
 
@@ -66,12 +69,11 @@ public class ReactionInfluenceFilterSimpleExclusion extends SpeciesFilter {
         validSpecies = new ArrayList<Species>();
 
         while (execute) {
+        	
             execute = false;
 
-            LeaveOneOutCrossValidation validation = new LeaveOneOutCrossValidation(
-                    getPool(invalidSpecies),
-                    calculator,
-                    selector);
+            LeaveOneOutCrossValidation validation = new LeaveOneOutCrossValidation(getPool(invalidSpecies),calculator,selector);
+            
             validation.validate();
             
             Map<Species, Reaction> res = validation.getDetailedValidationResults();

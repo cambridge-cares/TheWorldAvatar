@@ -1,0 +1,46 @@
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+	<constant name="struts.enable.DynamicMethodInvocation"
+		value="false"/>
+	<constant name="struts.devMode" value="false"/>
+	<constant name="struts.custom.i18n.resources" value="ApplicationResources"/>
+
+	<package name="default" extends="struts-default" namespace="/">
+	
+	<action name="login"
+		class="uk.ac.ceb.como.molhub.action.LoginAction">
+		 
+    <result name = "success" type = "redirect">
+            <param name = "location">
+            /upload.jsp
+            </param >
+    </result>
+
+	<result name="error">Login.jsp</result>
+
+	</action>
+
+    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction">
+    
+    <result name="input">/upload.jsp</result>
+    
+    </action>
+ 
+    <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationAction">
+    
+    <result name="success">/calculation.jsp</result>
+    
+    </action>
+   
+      <action name="termValidationAction" class="uk.ac.ceb.como.molhub.action.TermValidationAction" method="execute">
+		<result name="success">/termvalidation.jsp</result>
+		<result name="input">/upload.jsp</result>
+	  </action>
+	  
+   </package>
+      
+</struts>

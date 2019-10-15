@@ -12,6 +12,7 @@ import java.util.Set;
  *
  * @author pb556
  */
+
 class ReflectionUtils {
 
     public static Field[] getAnnotatedDeclaredFields(Class clz, Class<? extends Annotation>... annotationClasses) {
@@ -27,6 +28,7 @@ class ReflectionUtils {
                 }
             }
         }
+        
         return fds.toArray(new Field[fds.size()]);
     }
 
@@ -37,6 +39,7 @@ class ReflectionUtils {
         fds.removeAll(Arrays.asList(Object.class.getFields()));
         return fds.toArray(new Field[fds.size()]);
     }
+    
     /**
      * get only one annotated method. the returning method is not guaranteed to be the first method in the declaration
      * order. only use this if you are sure that you have only one annotated method per class. null is return if nothing
@@ -46,6 +49,7 @@ class ReflectionUtils {
      * @param annotationClasses
      * @return
      */
+    
     public static Method getAnnotatedMethod(Class clz, Class<? extends Annotation>... annotationClasses) {
         Method[] annotatedMethods = getAnnotatedMethods(clz, annotationClasses);
         if (annotatedMethods.length > 0) {
@@ -62,6 +66,7 @@ class ReflectionUtils {
      * @param annotationClasses
      * @return
      */
+    
     public static Method[] getAnnotatedMethods(Class clz, Class<? extends Annotation>... annotationClasses) {
         Set<Method> mt = new HashSet<Method>(Arrays.asList(getMethods(clz)));
         for (Iterator<Method> it = mt.iterator(); it.hasNext();) {
@@ -84,6 +89,7 @@ class ReflectionUtils {
      * @param clz
      * @return
      */
+    
     public static Method[] getMethods(Class clz) {
         Set<Method> mt = new HashSet<Method>();
         // add declared methods first

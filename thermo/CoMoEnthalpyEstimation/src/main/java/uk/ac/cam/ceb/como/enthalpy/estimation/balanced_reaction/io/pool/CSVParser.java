@@ -4,17 +4,21 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool;
 
-import com.cmclinnovations.io.file.parser.FileParser;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.log4j.Logger;
+
+import com.cmclinnovations.io.file.parser.FileParser;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.BondType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
@@ -25,9 +29,18 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 public abstract class CSVParser extends FileParser<Set<Species>> {
     
     private Logger logger = Logger.getLogger(getClass());
-    protected HashSet<Species> refSpecies = new HashSet<Species>();
+ 
+    protected LinkedHashSet<Species> refSpecies = new LinkedHashSet<Species>();
+    
     protected HashSet<Species> speciesOfInterest = new HashSet<Species>();
+    
     protected HashMap<Species, String> speciesFlags = new HashMap<Species, String>();
+    
+    /**
+     * @author NK510
+     * Hash set of targetSpecies
+     */
+    protected HashSet<Species> targetSpecies = new HashSet<Species>();
 
     public CSVParser() {
         super();
@@ -47,7 +60,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
     public Set<Species> getRefSpecies(String validFlag) {
         return get(refSpecies, validFlag);
     }
-
+    
     public Set<Species> getSpeciesOfInterest(String validFlag) {
         return get(speciesOfInterest, validFlag);
     }
@@ -68,10 +81,20 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
         return valid;
     }
 
-    public Set<Species> getRefSpecies() {
+    
+    public LinkedHashSet<Species> getRefSpecies() {
         return refSpecies;
     }
-
+    
+    /**
+     * @author NK510
+     * @return Set of target species
+     */
+    public Set<Species> getTargetSpecies(){
+    	
+    	return targetSpecies;
+    }
+    
     public Set<Species> getSpeciesOfInterest() {
         return speciesOfInterest;
     }
@@ -104,7 +127,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
         for (String item : items) {
             item = removeChars(item, new char[]{'[', ']'});
             String[] subItems = item.split(":");
-            if (subItems.length != 2) {
+            if (subItems.length != 2) { //was 2
                 logger.error("Invalid datatype present in MassBalance column!", new Exception("Invalid datatype!"));
             } else {
                 String[] refs = subItems[1].split(",");
@@ -174,6 +197,7 @@ public abstract class CSVParser extends FileParser<Set<Species>> {
         }
         return null;
     }
+    
     
     protected HashSet<Species> get(HashSet<Species> pool, String flag) {
         HashSet<Species> species = new HashSet<Species>();

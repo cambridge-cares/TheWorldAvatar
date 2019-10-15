@@ -4,9 +4,6 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LpSolverException;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibleSolutionException;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -15,7 +12,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteException;
@@ -25,15 +24,21 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LpSolverException;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.NoFeasibleSolutionException;
+
 /**
  *
  * @author pb556
+ * 
  */
 public class TerminalGLPKSolver extends LPSolver {
 
     private Logger logger = Logger.getLogger(getClass());
 
     public TerminalGLPKSolver() {
+    	
     }
 
     public TerminalGLPKSolver(long timeout) {
@@ -49,29 +54,55 @@ public class TerminalGLPKSolver extends LPSolver {
     }
 
     @Override
-    public Map<String, Number> solve(File lpInputFile) throws LpSolverException {
+    public LinkedHashMap<String, Number> solve(File lpInputFile) throws LpSolverException {
+    	
+    	
+    	
         int exitValue = Integer.MIN_VALUE;
         File tmp = getTempFile();
+        
         Map<String, Object> map = new HashMap<String, Object>();
         //map.put("glpsol", "glpsol");
         //map.put("glpsol", "glpsol");
         //new File(getClass().getResource("").getPath());
         
-        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol");
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Settings to run the code (LP solver) on local Windows (PC) machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper.
+         *  
+         */
+//        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
+
+        /**
+         * 
+         * @author nk510 (caresssd@hermes.cam.ac.uk)
+         * Settings to run the code (LP solver) on HPC. The GLPK solver should be installed (copied) on user's profile on Unix (Linux) HPC machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/
+         *  
+         */
+        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
+        
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
+        
         map.put("input_par", "--freemps");
         map.put("input", lpInputFile.getAbsolutePath());
         map.put("output_par", "-o");
         map.put("output", tmp.getAbsolutePath());
 
         CommandLine commandLine = CommandLine.parse("${glpsol} ${input_par} ${input} ${output_par} ${output}", map);
+        
+//      System.out.println("Command line to be executed --> " + commandLine);
+        
         logger.trace("Command line to be executed --> " + commandLine);
 
         Executor executor = new DefaultExecutor();
+        
         if (lpInputFile.getParentFile().canWrite()) {
+        	
             executor.setWorkingDirectory(lpInputFile.getParentFile());
         }
+        
         executor.setExitValue(0);
 
         // create a watchdog if requested
@@ -80,12 +111,18 @@ public class TerminalGLPKSolver extends LPSolver {
         PumpStreamHandler psh = new PumpStreamHandler(stdout);
         executor.setStreamHandler(psh);
         executor.setWatchdog(watchdog);
+        
         try {
+        	
             exitValue = executor.execute(commandLine);
+            
             if (!executor.isFailure(exitValue)) {
+            	
                 return parseLpSolveOutput(stdout, tmp);
+                
             }
-            return new HashMap<String, Number>();
+            
+            return new LinkedHashMap<String, Number>();
         } catch (ExecuteException ex) {
             throw new LpSolverException("Failed to execute the command (exit value = " + exitValue + ") : " + commandLine, ex);
         } catch (IOException ex) {
@@ -103,8 +140,8 @@ public class TerminalGLPKSolver extends LPSolver {
         }
     }
 
-    protected Map<String, Number> parseLpSolveOutput(ByteArrayOutputStream stdout, File output) throws LpSolverException {
-        Map<String, Number> solutions = new HashMap<String, Number>();
+    protected LinkedHashMap<String, Number> parseLpSolveOutput(ByteArrayOutputStream stdout, File output) throws LpSolverException {
+        LinkedHashMap<String, Number> solutions = new LinkedHashMap<String, Number>();
         boolean startParsing = false;
         try {
             if (!output.exists()) {
@@ -159,6 +196,7 @@ public class TerminalGLPKSolver extends LPSolver {
                         }
                     }
                 }
+                
                 inputStream.close();
                 bReader.close();
             }
@@ -181,18 +219,24 @@ public class TerminalGLPKSolver extends LPSolver {
 
     private boolean isFeasible(File output) throws IOException {
         FileInputStream inputStream = new FileInputStream(output);
+        
         BufferedReader bReader = new BufferedReader(new InputStreamReader(new DataInputStream(inputStream)));
+        
         String s;
+        
         while ((s = bReader.readLine()) != null) {
+        	
             if (s.contains("SOLUTION IS INFEASIBLE")) {
+            	
                 return false;
             }
         }
+        
         return true;
     }
 
     @Override
-    public Map<String, Number> solve() throws LpSolverException {
+    public LinkedHashMap<String, Number> solve() throws LpSolverException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

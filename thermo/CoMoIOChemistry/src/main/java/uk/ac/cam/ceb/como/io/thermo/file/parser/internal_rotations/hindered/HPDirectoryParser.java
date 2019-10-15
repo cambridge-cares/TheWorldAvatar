@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+
 import uk.ac.cam.ceb.como.io.thermo.file.name.internal_rotations.hindered.HPFileNameInfo;
 import uk.ac.cam.ceb.como.io.thermo.file.name.internal_rotations.hindered.HPFileNameInfoDefault;
 import uk.ac.cam.ceb.como.io.thermo.file.name.internal_rotations.hindered.HPFileNameInfoIntf;

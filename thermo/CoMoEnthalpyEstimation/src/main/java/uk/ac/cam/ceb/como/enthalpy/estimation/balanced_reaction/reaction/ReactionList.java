@@ -4,23 +4,23 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 
 /**
  *
  * @author pb556
  */
+
 public class ReactionList extends ArrayList<Reaction> {
 
     public ReactionList() {
     }
 
-    public ReactionList(List<Reaction> reactions) {
+    public ReactionList(ArrayList<Reaction> reactions) {
         addAll(reactions);
     }
 
@@ -38,13 +38,24 @@ public class ReactionList extends ArrayList<Reaction> {
     }
 
     public List<Reaction> get(ReactionSelector selector) {
-        ArrayList list = (ArrayList) selector.select(this);
+    	/**
+    	 * @author NK510
+    	 * Added <Reaction> to ArrayList.
+    	 */
+        ArrayList<Reaction> list = (ArrayList<Reaction>) selector.select(this);
         this.clear();
         this.addAll(list);
         return this;
     }
 
-    public Collection<Reaction> getCollection() {
+    /**
+     * 
+     * @author nk510 (caresssd@hermes.cam.ac.uk)
+     * Collection<Reaction> -> List<Reaction>
+     * @return ArrayList of reactions.
+     * 
+     */
+    public List<Reaction> getCollection() {
         ArrayList<Reaction> list = new ArrayList<Reaction>();
         for (Reaction r : this) {
             list.add(r);

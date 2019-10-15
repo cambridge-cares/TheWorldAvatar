@@ -14,9 +14,11 @@ import org.xmlcml.cml.element.CMLPropertyList;
  */
 public class CompChemWrapper {
 
+	
     private final CompChem compchem;
     private final CMLModule jobList;
     private final CMLModule job;
+    
     private CMLModule initialization = null;
     private CMLModule finalization = null;
     private CMLMolecule initialMolecule = null;
@@ -29,24 +31,30 @@ public class CompChemWrapper {
     }
 
     /**
-     * take the first jobList and the last job of the first job list. if element does not exist create one.
+     * @author nk510
      * @param compchem
+     * Takes the first jobList and the last job of the first job list. if element does not exist then it creates one.
      */
+    
     public CompChemWrapper(CompChem compchem) {
         this.compchem = compchem;
         this.jobList = compchem.getFirstJobListModule();
-        this.job = CompChemElementUtils.getOrAddLastJob(jobList);
+        this.job = CompChemElementUtils.getOrAddLastJob(jobList);        
         if (job == null || jobList == null || compchem == null) {
+        	
             throw new RuntimeException("a compchem element does not have a job module or is null.");
         }
         ensureCompChemStructure();
     }
 
     /**
-     * specify the job your want to be working with.
+     * 
      * @param compchem
      * @param job
+     * Specifies the job your want to be working with.
+     * 
      */
+    
     public CompChemWrapper(CompChem compchem, CMLModule job) {
         this.compchem = compchem;
         this.jobList = (CMLModule) job.getParent();
@@ -120,7 +128,8 @@ public class CompChemWrapper {
     }
 
     /**
-     * be careful! this get all nested properties
+     * @author pb556
+     * Be careful! this get all nested properties
      * @return
      */
     public List<CMLProperty> getProperties() {
@@ -128,7 +137,8 @@ public class CompChemWrapper {
     }
 
     /**
-     * be careful! this get all nested parameters
+     * @author pb556
+     * Be careful! this get all nested parameters
      * @return
      */
     public List<CMLParameter> getParameters() {

@@ -7,6 +7,7 @@ import uk.ac.cam.ceb.como.chem.property.Vibrations;
  *
  * @author pb556
  */
+
 public class VibrationInfoImpl implements VibrationInfo {
 
     /**

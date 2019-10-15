@@ -4,18 +4,22 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.lpsolve;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+
 import org.apache.log4j.Logger;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
@@ -31,7 +35,9 @@ public class LpSolveFormat implements LPFormat {
     
     private String lineSep = System.getProperty("line.separator");
     private Species targetSpecies;
-    private Set<Species> speciesSet;
+    
+    private LinkedHashSet<Species> speciesSet;
+ 
     private VariableSet vSet;
     private boolean intOnly;
     protected ReactionType reactionType;
@@ -50,8 +56,9 @@ public class LpSolveFormat implements LPFormat {
         return intOnly;
     }
     
+    
     @Override
-    public String getInputString(Species species, Set<Species> speciesSet, VariableSet vSet) {
+    public String getInputString(Species species, LinkedHashSet<Species> speciesSet, VariableSet vSet) {
         this.targetSpecies = species;
         this.speciesSet = speciesSet;
         this.vSet = vSet;
@@ -171,13 +178,20 @@ public class LpSolveFormat implements LPFormat {
         }
     }
 
-    private void writeMassBalanceConstraints(StringBuilder sb, Species targetSpecies, Set<Species> species) {
+    /**
+     * Line below is commented from original source code
+     */
+//    private void writeMassBalanceConstraints(StringBuilder sb, Species targetSpecies, Set<Species> species) {
+  private void writeMassBalanceConstraints(StringBuilder sb, Species targetSpecies, Set<Species> species) {
         HashMap<Variable, List<Integer>> vars = reactionType.getMassBalanceConstraints(SolverHelper.combine(targetSpecies, species), vSet);
         Collection<String> constraintSet = reactionType.getAllElementSymbols(targetSpecies, species);
         writeConstraints(sb, constraintSet, vars);
     }
-    
-    private void writeConvervationTypeConstraints(StringBuilder sb, Species targetSpecies, Set<Species> species) {
+    /**
+     * Line below is commented from original source code.
+     */
+//    private void writeConvervationTypeConstraints(StringBuilder sb, Species targetSpecies, Set<Species> species) {
+  private void writeConvervationTypeConstraints(StringBuilder sb, Species targetSpecies, Set<Species> species) {
         HashMap<Variable, List<Integer>> vars = reactionType.getConservationTypeConstraints(SolverHelper.combine(targetSpecies, species), vSet);
         Collection<String> constraintSet = reactionType.getAllConservationTypes(SolverHelper.combine(targetSpecies, species));
         writeConstraints(sb, constraintSet, vars);
@@ -222,6 +236,7 @@ public class LpSolveFormat implements LPFormat {
 //                }
 //            }
     }
+    
 
 //    private void writeBondTypeConvervationConstraints(StringBuilder bondConstSb, Species targetSpecies) {
 //        Collection<String> bondTypes = reactionType.getAllConservationTypes(SolverHelper.combine(targetSpecies, speciesSet));

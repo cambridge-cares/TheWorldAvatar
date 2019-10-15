@@ -8,6 +8,7 @@ import uk.ac.cam.ceb.como.math.constant.PhysicalConstants;
  *
  * @author pb556
  */
+
 public class ComputedInfoImpl implements ComputedInfo {
 
     private double finalSCFEnergyInHartree = 0.0;

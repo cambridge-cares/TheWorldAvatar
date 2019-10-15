@@ -7,6 +7,7 @@ import uk.ac.cam.ceb.como.compchem.CompChem;
 import uk.ac.cam.ceb.como.compchem.CompChemElementUtils;
 import uk.ac.cam.ceb.como.compchem.orm.annotation.processor.AnnotationUtils;
 import uk.ac.cam.ceb.como.compchem.orm.annotation.processor.CompChemAnnotationProcessor;
+
 import nu.xom.Nodes;
 import org.xmlcml.cml.base.CMLElement;
 import org.xmlcml.cml.element.CMLArray;
@@ -22,6 +23,7 @@ import uk.ac.cam.ceb.como.io.chem.file.writer.ChemFileWriter;
  *
  * @author pb556
  */
+
 public class CompChemWriter extends ChemFileWriter<Compound> {
 
     protected CMLIdentifier createCMLIdentifier(String convention, String IDValue) throws RuntimeException {

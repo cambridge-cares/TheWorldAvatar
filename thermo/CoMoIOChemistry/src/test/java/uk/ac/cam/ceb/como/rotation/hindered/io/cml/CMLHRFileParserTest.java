@@ -31,12 +31,14 @@ import uk.ac.cam.ceb.como.thermo.calculator.rotation.internal.util.IRCompChemWra
  *
  * @author pb556
  */
+
 public class CMLHRFileParserTest {
 
     @Test
     @Ignore
     public void getInitMoleculeTest_0232Diff() throws Exception {
-        IRCompChemWrapper hrCCW = getCompChemWrapper(new File("test_data/cml/freq-hr-fine-species-0232-radical-0-restricted_diff_added.cml"));
+
+    	IRCompChemWrapper hrCCW = getCompChemWrapper(new File("test_data/cml/freq-hr-fine-species-0232-radical-0-restricted_diff_added.cml"));
 
         // verify against read data
         assert (verify(hrCCW.getInitialMolecule(), MockSpecies.getSpecies0232Modified(), -1, 2));

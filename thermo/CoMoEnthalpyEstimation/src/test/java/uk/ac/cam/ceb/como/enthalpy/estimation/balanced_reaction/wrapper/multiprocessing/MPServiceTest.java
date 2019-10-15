@@ -4,35 +4,34 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPService;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPManager;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.multiprocessing.MPModel;
 import java.io.File;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
+
+import org.junit.Test;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
-import com.cmclinnovations.data.collections.ObjectPool;
-import org.junit.Ignore;
-import org.junit.Test;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *
  * @author pb556
  */
+
 public class MPServiceTest {
     
     @Test
-    @Ignore
+//    @Ignore
     public void calculatorTest() throws Exception {
         CSVParser parser = new SpeciesPoolParser(new File("test_data/csv/pool_hydrocarbons.csv"));
         parser.parse();

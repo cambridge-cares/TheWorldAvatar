@@ -4,21 +4,18 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter;
 
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.SpeciesFilter;
 import java.io.File;
 import java.io.FileNotFoundException;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
+
 import org.junit.Ignore;
 import org.junit.Test;
+
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.CSVParser;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
  *
@@ -41,7 +38,7 @@ public class ReactionInfluenceFilterTest {
         ref = f.getValidSpecies();
         Collections.shuffle((List<Species>) ref);
          
-//       ReactionInfluenceFilter2 redFilter = new ReactionInfluenceFilter2();
+//       ReactionInfluenceFilter redFilter = new ReactionInfluenceFilter();
 //        redFilter.set(ref);
 //        redFilter.filter();
 //        

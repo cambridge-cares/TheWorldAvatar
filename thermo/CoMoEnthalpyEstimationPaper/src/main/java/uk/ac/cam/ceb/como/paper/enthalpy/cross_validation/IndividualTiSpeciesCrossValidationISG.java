@@ -2,9 +2,9 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation;
 
-import com.cmclinnovations.data.collections.ObjectPool;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,6 +19,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import com.cmclinnovations.data.collections.ObjectPool;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.filter.RadicalsFilter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolParser;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
@@ -42,30 +45,40 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 /**
  *
  * @author pb556
+ * 
  */
+
 public class IndividualTiSpeciesCrossValidationISG {
 
-    private static String srcCompoundsRefTi = "C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\g09\\ti\\";
-    private static String srcCompoundsRefHCO = "C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\g09\\hco\\";
+    private static String srcCompoundsRefTi = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\g09\\" ; //"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\g09\\ti\\";
+    
+    private static String srcCompoundsRefHCO = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; //"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\g09\\hco\\";
     
     public static void main(String[] args) throws Exception {
 
         Map<String, Integer[]> mapElPairing = new HashMap<String, Integer[]>();
         
-        String srcRefHCOPool = "C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\hco_scaled_kJperMols.csv";
-        String srcRefTiPool = "C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\ti_scaled_kJperMols_no-TiO.csv";
-        String destRList = "C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf-x-validation\\dHf-x-validation-isg\\dHf_rct_isg_x-validation-refined-noTiO\\";
+        String srcRefHCOPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";//"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\hco_scaled_kJperMols.csv"; // maybe this is output of LeaveOneOutCrossValidation.java calculations 
+        
+        String srcRefTiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";//"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\ti_scaled_kJperMols_no-TiO.csv";
+        
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\xvalidation\\dHf_rct_isg_x-validation-refined\\";//"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf-x-validation\\dHf-x-validation-isg\\dHf_rct_isg_x-validation-refined-noTiO\\";
         
         int[] ctrRuns = new int[]{1};
         int[] ctrRes = new int[]{5}; // 1, 5, 15, 25
         int[] ctrRadicals = new int[]{100, 1, 2, 3, 4, 5}; // 0, 1, 2, 3, 4, 5
 
         System.out.println("REF-Ti: Processing Ti-reference data");
+        
         SpeciesPoolParser refTiParser = new SpeciesPoolParser(new File(srcRefTiPool));
+
         refTiParser.parse();
+        
         Collection<Species> refTi = refTiParser.getRefSpecies();
         Collection<Species> invalidTi = new HashSet<Species>();
+        
         int ctr = 1;
+        
         for (Species s : refTi) {
             System.out.println("REF-Ti: Processing " + ctr + " / " + refTi.size());
             ctr++;
@@ -84,14 +97,21 @@ public class IndividualTiSpeciesCrossValidationISG {
                 invalidTi.add(s);
             }
         }
+
         refTi.removeAll(invalidTi);
 
         System.out.println("REF-HCO: Processing HCO-reference data");
+        
         SpeciesPoolParser refHCOParser = new SpeciesPoolParser(new File(srcRefHCOPool));
+        
         refHCOParser.parse();
+        
         Collection<Species> refHCO = refHCOParser.getRefSpecies();
+        
         Collection<Species> invalidHCO = new HashSet<Species>();
+        
         ctr = 1;
+        
         for (Species s : refHCO) {
             System.out.println("REF-HCO: Processing " + ctr + " / " + refHCO.size());
             ctr++;
@@ -109,12 +129,16 @@ public class IndividualTiSpeciesCrossValidationISG {
                 invalidHCO.add(s);
             }
         }
+        
         refHCO.removeAll(invalidHCO);
 
         SolverHelper.add(mapElPairing);
         
         LPSolver solver = new TerminalGLPKSolver(15000, true, true);
-        solver.setDirectory(new File("C:\\Users\\pb556\\temp2\\"));
+        
+//        solver.setDirectory(new File("C:\\Users\\pb556\\temp2\\"));
+        
+        solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp"));
 
         for (int z = 0; z < ctrRadicals.length; z++) {
             int maxRadical = ctrRadicals[z];
@@ -159,7 +183,9 @@ public class IndividualTiSpeciesCrossValidationISG {
                                 poolModCalc);
                         c.setNumberOfRuns(ctrRuns[i]);
                         Collections.shuffle(refPool);
+                        
                         EnthalpyEstimationThread t = new EnthalpyEstimationThread(c, target, getPool(filter.filter(refPool), true));
+                        
                         Future<Map<Species, Collection<ReactionList>>> future = executor.submit(t);
                         try {
                             try {
@@ -211,16 +237,22 @@ public class IndividualTiSpeciesCrossValidationISG {
                             }
 
                             ReactionList completeRList = new ReactionList();
+                            
                             Collection<Species> ttipSpecies = new HashSet<Species>();
+                            
                             for (Species s : results.keySet()) {
                                 try {
                                     ReactionList rList = new ReactionList();
+                                    
                                     for (ReactionList l : results.get(s)) {
                                         rList.addAll(l);
                                     }
                                     completeRList.addAll(rList);
+                                    
                                     ReactionSelector selector = new MedianReactionSelector();
+                                    
                                     Reaction r = selector.select(rList).get(0);
+                                    
                                     s.setHf(r.calculateHf());
                                     ttipSpecies.add(s);
                                 } catch (ArrayIndexOutOfBoundsException aioobe) {

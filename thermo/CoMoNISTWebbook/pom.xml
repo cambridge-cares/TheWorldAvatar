@@ -24,14 +24,18 @@
         </dependency>
     </dependencies>
     <repositories>
-        <repository>
+        
+        <!--comment added: 3rd of April, 2018.-->
+        <!--repository>
             <id>maven.ch</id>
             <name>ch.cam.ac.uk Maven2</name>
             <url>https://maven.ch.cam.ac.uk/m2repo</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
-        </repository>
+        </repository-->
+        
+        
         <repository>
             <id>com.hp.hpl.jena</id>
             <url>http://openjena.org/repo</url>

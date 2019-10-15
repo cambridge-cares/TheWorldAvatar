@@ -19,18 +19,27 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.g09.util.StringList;
 public class FrequencyParserInclDisplacements extends FrequencyParser {
 
     @Override
-    protected Vibrations parseVibrationalFrequencies(final List<String> rawFreqs) throws Exception {
-        StringList sl = new StringList(rawFreqs);
-        int from_line = 0;
+	public Vibrations parseVibrationalFrequencies(final List<String> rawFreqs) throws Exception {
+        /**
+         * StringList constructor does not work correctly.
+         */
+    	StringList sl = new StringList(rawFreqs);
+        
+    	int from_line = 0;
         int pos = 0;
         HashMap<Integer, DisplacementList> dispArrayList = new HashMap<>();
         Vibrations normalModes = new Vibrations();
+        
         //normalModes.setUnits("nonSi:cm^-1", "nonSi:amu", "nonSi:A^4/amu", "nonSi:mDyne/A^-1", "nonSi:Angstroms");
+        
         while ((pos = sl.getFirstMatchPosition(from_line, "\\s*Frequencies\\s+--.*")) > -1) {
             int atomHeaderPos = sl.getFirstMatchPosition(pos, "\\s*Atom\\s+AN.*");
+                
             //int local_num_freqs = 0;
 
             List<String> infos = sl.subList(pos, atomHeaderPos);
+
+            
             // parse frequency info
             boolean displacements = false;
             

@@ -14,6 +14,7 @@ import uk.ac.cam.ceb.como.tools.parser.util.DoubleTool;
  *
  * @author pb556
  */
+
 public class HPFileNameInfoDefault implements HPFileNameInfoIntf {
 
     protected HashMap<String, String> prop = new HashMap<>();
