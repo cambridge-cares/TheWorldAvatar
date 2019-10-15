@@ -109,6 +109,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	static int[] ctrRes = new int[] {5}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
 
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Number of radicals.
 	 * 
@@ -116,19 +117,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	static int[] ctrRadicals = new int[] {100}; // 0, 1, 2, 3, 4, 5
 
-	public static void main(String[] args) throws Exception {
-
-		/**
-		 * df is format of enthalpy of formation for five digits after "."
-		 */
-		DecimalFormat df = new DecimalFormat("#.#####");
+	public static void main(String[] args) throws Exception {		
 		
 		/**
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * The start current time in milliseconds.
 		 *  
 		 * */
-     long startTime = System.currentTimeMillis();
+    long startTime = System.currentTimeMillis();
 
 	LoadSpecies ls = new LoadSpecies();
 
@@ -185,8 +181,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	BufferedWriter invalidReactionFile = new BufferedWriter(
 	
-//    new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+//  new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+    
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
 	 * 
@@ -198,6 +196,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, invalidReaction);
 
 		/**
+		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Printing valid species in txt file and on console.
 		 * 
@@ -237,6 +236,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings
 	 * 
 	 */
+	
 	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
 	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, invalidSpecies, validSpecies);
@@ -263,7 +263,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
 
-		System.out.println(ss.getKey().getRef() + " " +  df.format(ss.getValue()));
+		System.out.println(ss.getKey().getRef() + " " +  ss.getValue());
 		
 		}
 

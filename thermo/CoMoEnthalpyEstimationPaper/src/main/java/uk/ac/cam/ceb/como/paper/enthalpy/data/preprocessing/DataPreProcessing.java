@@ -1,7 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -86,10 +85,6 @@ public class DataPreProcessing {
 
 	
     public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
-    	/**
-    	 * df is format of enthalpy of formation for five digits after "."
-    	 */
-    	DecimalFormat df = new DecimalFormat("#.#####");
     	
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -104,7 +99,7 @@ public class DataPreProcessing {
         
         	for (int k = 0; k < ctrRes.length; k++) {
             
-        		String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+        		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                 
         		System.out.println("Process configuration " + config);
                 
@@ -498,16 +493,20 @@ public class DataPreProcessing {
                             	
                             double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                             
-                            double calculatedEnthalpy = completeRList.get(ri).calculateHf();
+                            /**
+                             * Commented line below: double variable 'calculatedEnthalpy' does not save correctly calculated enthalpy of formation (Hf). It has error in decimals.  
+                             */
+//                          double calculatedEnthalpy = completeRList.get(ri).calculateHf();
                             
-                        	System.out.println(" Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + df.format(calculatedEnthalpy));
+                        	System.out.println(" Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
                             
                         	/**
                         	 * 
                         	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-                             * If the error is lower than maximum error for currently analyzed species added into the set of valid species. Otherwise the species is added into the set of invalid species.
+                             * Species is added into set of valid species and reaction is added into valid set of reactions if the error is lower than maximum error for currently analyzed species. Otherwise the species is added into the set of invalid species and the reaction is added into invalid set of reactions.
                              * 
                              */
+                        	
                         	if(error<maxErr) {
                             	
                             validReaction.put(completeRList.get(ri), error);

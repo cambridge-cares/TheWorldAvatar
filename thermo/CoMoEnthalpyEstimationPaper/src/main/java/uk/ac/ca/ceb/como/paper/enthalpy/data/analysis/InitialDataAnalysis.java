@@ -1,7 +1,6 @@
 package uk.ac.ca.ceb.como.paper.enthalpy.data.analysis;
 
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -48,18 +47,14 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  *         The code also generates reactions for target species, calculates error between
  *         estimated and reference enthalpy of formation for target species.
  *         
- *         
+ *         ThiS class include setting that we use to run the code on High Performance Computing (HPC) machine and to run the code on local Windows machine.
  *
  */
 
 public class InitialDataAnalysis {
-
-	/**
-	 * df is format of enthalpy of formation for five digits after "."
-	 */
-	DecimalFormat df = new DecimalFormat("#.#####");
 	
 	/**
+	 * 
 	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
 	 * @param loop the number of loops through a set of invalid species. 
 	 * @param addedSpeciesToValidSet Logical constant that is true is a species is added to the set of valid species. Otherwise is false.  
@@ -80,6 +75,7 @@ public class InitialDataAnalysis {
 	 * @param targetSpeciesEnthalpy the value of enthalpy of target species.
 	 * @param currentErrorBar the current error bar for selected species.
 	 * @throws Exception the exception.
+	 * 
 	 */
 	public void getInitialDataAnalysisCrossValidation(int loop, boolean addedSpeciesToValidSet, int iteration,
 			String destRList, int[] ctrRadicals, int[] ctrRuns, int[] ctrRes, List<Species> refSpecies,
@@ -98,7 +94,7 @@ public class InitialDataAnalysis {
 				for (int k = 0; k < ctrRes.length; k++) {
 
 //	                  int timeout = 60 * ctrRes[k];
-					String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_"
+					String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_"
 							+ timeout + "s";
 
 					System.out.println("Process configuration " + config);
@@ -139,7 +135,7 @@ public class InitialDataAnalysis {
 					/**
 					 * 
 					 * @author nk510 (caresssd@hermes.cam.ac.uk)
-					 * Next two line of the code are commented and were used in original Philipp's code.
+					 * Next two lines of the code are commented and were used in original Philipp's code.
 					 * 
 					 */
 					
@@ -447,14 +443,14 @@ public class InitialDataAnalysis {
 
 										System.out.println("Ref species name: " + r.getRef() + " = "
 												+ " Target species name : " + target.getRef()
-												+ " Median species enthalpy: " + df.format(target.getHf()));
+												+ " Median species enthalpy: " + target.getHf());
 
 										target.setHf(r.getHf());
 
 									}
 								}
 
-								Double errorSum = 0.0;
+								double errorSum = 0d;
 								/**
 								 * 
 								 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -463,7 +459,7 @@ public class InitialDataAnalysis {
 								 */
 								int errorCount = completeRList.size();
 
-								Double errorBar = 0.0;
+								double errorBar = 0d;
 
 								/**
 								 * 
@@ -480,12 +476,12 @@ public class InitialDataAnalysis {
 
 								  Double error = Math.abs(targetSpeciesEnthalpy - completeRList.get(ri).calculateHf());
 
-								  System.out.println("target species name: " + target.getRef() + " ,  target ref enthalpy: " + df.format(targetSpeciesEnthalpy)); 
+								  System.out.println("target species name: " + target.getRef() + " ,  target ref enthalpy: " + targetSpeciesEnthalpy); 
 
 								  System.out.println(" Reaction(" + ri + "): " + completeRList.get(ri).toString()
 											+ " Species (target ref) enthalpy: " + targetSpeciesEnthalpy
 											+ " Calculated Hf for reaction(" + ri + "): "
-											+ df.format(completeRList.get(ri).calculateHf()) + " error: " + df.format(error));
+											+ completeRList.get(ri).calculateHf() + " error: " + error);
 
 									errorSum = errorSum + error;
 
@@ -493,7 +489,7 @@ public class InitialDataAnalysis {
 
 								errorBar = errorSum / errorCount;
 
-								System.out.println("species name: " + target.getRef() + " error bar: " + df.format(errorBar));
+								System.out.println("species name: " + target.getRef() + " error bar: " + errorBar);
 								/**
 								 * 
 								 * @author nk510 (caresssd@hermes.cam.ac.uk)

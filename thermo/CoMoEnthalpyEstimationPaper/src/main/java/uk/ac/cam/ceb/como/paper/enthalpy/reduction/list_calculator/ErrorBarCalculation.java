@@ -22,6 +22,7 @@ public class ErrorBarCalculation {
 	DecimalFormat df = new DecimalFormat("#.#####");
 	
 /**
+ * 
   * @author nk510 ( caresssd@hermes.cam.ac.uk )
   * @author am2145( am2145@cam.ac.uk )
   * 
@@ -36,9 +37,9 @@ public class ErrorBarCalculation {
 
  	for(Map.Entry<Reaction, Double> v: reactionList.entrySet()) {
      	
-     	System.out.println("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + df.format(v.getKey().calculateHf()) + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + df.format(v.getValue())+ " )");
+     	System.out.println("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue() + " )");
      	
-     	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + df.format(v.getKey().calculateHf()) + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + df.format(v.getValue())+ " )");
+     	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
      	
      	reactionFile.write("\n");
      }
@@ -48,12 +49,14 @@ public class ErrorBarCalculation {
  }
  
  /**
+  * 
   * @author nk510 ( caresssd@hermes.cam.ac.uk )
   * @author am2145( am2145@cam.ac.uk )
   * 
   * @param validSpeciesFile Target species file that contains valid species names.
   * @param validSpeciesSet The set of valid species.
   * @throws IOException the exception.
+  * 
   */
  public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile,  LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
@@ -80,6 +83,7 @@ public class ErrorBarCalculation {
   * @param invalidSpeciesSet The set of invalid species.
   * @param validSpeciesSet The set of valid species. 
   * @throws IOException the exception. 
+  * 
   */
  public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
@@ -189,7 +193,7 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
      	 
       errorBar=errorSum/errorCount;
       
-      System.out.println("Species name: " + usp.getRef() + " , error bar: "  + df.format(errorBar) );
+      System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
      	 
       speciesErrorBarMap.put(usp, errorBar);
       
@@ -212,7 +216,7 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
       
       for(Map.Entry<Species, Double> invmap: invalidSpeciesErrorBarMap.entrySet()) {
      	 
-     	 System.out.println(invmap.getKey().getRef()+ " " + df.format(invmap.getValue())) ;
+     	 System.out.println(invmap.getKey().getRef()+ " " + invmap.getValue()) ;
       }
     
     return invalidSpeciesErrorBarMap;
