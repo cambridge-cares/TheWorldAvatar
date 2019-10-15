@@ -4,7 +4,6 @@
  */
 package uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -107,91 +106,44 @@ public class Reaction {
 	}
 
 	/**
+	 * 
 	 * Calculate the enthalpy of formation of a target species.
 	 *
 	 * @return the calculated enthalpy of formation of a target species.
 	 */
 	public double calculateHf() {
 
-		Map<Species, Double> lhsNoTargetMap = new HashMap<Species, Double>();
-
-		Map<Species, Double> rhsMap = new HashMap<Species, Double>();
-		
-//		System.out.println("reactantToStoichiometry map: " );
-		
-		for (Map.Entry<Species, Double> entry : reactantToStoichiometry.entrySet()) {
-
-			Species species = entry.getKey();
-
-			Double value = entry.getValue();
-
-//			System.out.println("[reactantToStoichiometry.getRef(): " + species.getRef() + "], [reactantToStoichiometry.getHf(): " + species.getHf() + "] , [" + "value: " + value + "], [reactantToStoichiometry.getTotalEnergy(): " + species.getTotalEnergy() + "] ");
-
-		}
-		
-//		System.out.println("productToStoichiometry map: ");
-		
-		for (Map.Entry<Species, Double> entry : productToStoichiometry.entrySet()) {
-
-			Species species = entry.getKey();
-
-			Double value = entry.getValue();
-
-//			System.out.println("[productToStoichiometry.getRef(): " + species.getRef() + "], [productToStoichiometry.getHf(): " + species.getHf() + "] , [" + "value: " + value + "], [productToStoichiometry.getTotalEnergy(): " + species.getTotalEnergy() + "] ");
-
-		}
-		
-//		System.out.println("calculateHf(): reactantToStoichiometry.containsKey(species): " + reactantToStoichiometry.containsKey(species));
-		
-//		System.out.println("calculateHf():  productToStoichiometry.containsKey(species): " + productToStoichiometry.containsKey(species));
+		LinkedHashMap<Species, Double> lhsNoTargetMap = new LinkedHashMap<Species, Double>();
+		LinkedHashMap<Species, Double> rhsMap = new LinkedHashMap<Species, Double>();
+		/**
+		 * 
+		 * Next two lines are commented from original source code.
+		 * 
+		 */
+//		Map<Species, Double> lhsNoTargetMap = new HashMap<Species, Double>();
+//		Map<Species, Double> rhsMap = new HashMap<Species, Double>();
 		
 		if (reactantToStoichiometry.containsKey(species)) {
 			
-			lhsNoTargetMap = new HashMap<Species, Double>(reactantToStoichiometry);
+			lhsNoTargetMap = new LinkedHashMap<Species, Double>(reactantToStoichiometry);
 			
-			rhsMap = new HashMap<Species, Double>(productToStoichiometry);			
+			rhsMap = new LinkedHashMap<Species, Double>(productToStoichiometry);			
 			
 		} else if (productToStoichiometry.containsKey(species)) {
 
-			lhsNoTargetMap = new HashMap<Species, Double>(productToStoichiometry);			
+			lhsNoTargetMap = new LinkedHashMap<Species, Double>(productToStoichiometry);			
 			
-			rhsMap = new HashMap<Species, Double>(reactantToStoichiometry);
+			rhsMap = new LinkedHashMap<Species, Double>(reactantToStoichiometry);
 
 		} else {
 
 			throw new RuntimeException("Unable to evaluate the enthalpy of formation because the species is not part of the isodesmic reaction.");
 		}
-
-//		System.out.println("printing rhsMap: ");
-
-		for (Map.Entry<Species, Double> entry : rhsMap.entrySet()) {
-
-			Species species = entry.getKey();
-
-			Double value = entry.getValue();
-
-//			System.out.println("[species.getRef(): " + species.getRef() + "], [species.getHf(): " + species.getHf() + "] , [" + "value: " + value + "], [species.getTotalEnergy(): " + species.getTotalEnergy() + "] ");
-
-		}
-
+		
 		double v = lhsNoTargetMap.get(species);
-
-//		System.out.println( "in calculateHf() - 2. species.getRef(): " + species.getRef() + " species.getHf(): " + species.getHf());
-
+		
 		lhsNoTargetMap.remove(species);
-
-//		System.out.println("Printing lhsNoTargetMap, after removing species: ");
-
-		for (Map.Entry<Species, Double> entry : lhsNoTargetMap.entrySet()) {
-
-			Species species = entry.getKey();
-
-			Double value = entry.getValue();
-
-//			System.out.println("[species.getRef(): " + species.getRef() + "], [species.getHf(): " + species.getHf() + "], [" + "value: " + value + "] , [ species.getTotalEnergy(): " + species.getTotalEnergy() + "]");
-
-		}
-
+		
 		// sum rhs for zpe, hf
 		// sum lhs[!target] for zpe, hf with no target
 		// zpe(sum lhs[!target] - sum rhs) + zpe(target) = hf(sum lhs[!target] - sum
@@ -206,13 +158,13 @@ public class Reaction {
 
 		double enthalpyReaction = rhsSumZPE - (lhsSumZPENoTarget + species.getTotalEnergy() * v);
 
-//		System.out.println("[v: " + v + "], [lhsSumZPENoTarget: " + lhsSumZPENoTarget + "], [species.getTotalEnergy(): " + species.getTotalEnergy() + "], [rhsSumZPE: " + rhsSumZPE + "], [enthalpyReaction = rhsSumZPE - (lhsSumZPENoTarget + species.getTotalEnergy() * v): " + enthalpyReaction + " ] ");
+//		System.out.println("Reaction(calculateHf()): [v: " + v + "], [lhsSumZPENoTarget: " + lhsSumZPENoTarget + "], [species.getTotalEnergy(): " + species.getTotalEnergy() + "], [rhsSumZPE: " + rhsSumZPE + "], [enthalpyReaction = rhsSumZPE - (lhsSumZPENoTarget + species.getTotalEnergy() * v): " + enthalpyReaction + " ] ");
 
 		double rhsSumHf = sumTerms(rhsMap, new EnthalpyEnergySelector());
 
 		double lhsSumHfNoTarget = sumTerms(lhsNoTargetMap, new EnthalpyEnergySelector());
 
-//		System.out.println("[rhsSumHf: " + rhsSumHf + "], [enthalpyReaction: " + enthalpyReaction + "], [lhsSumHfNoTarget: " + lhsSumHfNoTarget + "], [ calculateHf: = (rhsSumHf - enthalpyReaction - lhsSumHfNoTarget) / v: " + (rhsSumHf - enthalpyReaction - lhsSumHfNoTarget) / v + " ] ");
+//		System.out.println("Reaction(calculateHf()): [rhsSumHf: " + rhsSumHf + "], [enthalpyReaction: " + enthalpyReaction + "], [lhsSumHfNoTarget: " + lhsSumHfNoTarget + "], [ calculateHf: = (rhsSumHf - enthalpyReaction - lhsSumHfNoTarget) / v: " + (rhsSumHf - enthalpyReaction - lhsSumHfNoTarget) / v + " ] ");
 
 		return (rhsSumHf - enthalpyReaction - lhsSumHfNoTarget) / v;
 
@@ -236,7 +188,7 @@ public class Reaction {
 
 		double sum = 0d; // 0d
 
-//		System.out.println("sumTerms(Map<Species, Double> terms, EnergySelector selector) method (Reaction class) : ");
+//		System.out.println("Reaction(sumTerms(Map<Species, Double> terms, EnergySelector selector): ");
 
 		int iteration = 1;
 
@@ -338,7 +290,7 @@ public class Reaction {
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Prints out a reaction. It Each reaction must have at least one species from both sides of the reaction.
+	 * Prints out a reaction. Each reaction must have at least one species from both sides of the reaction. We eliminated reactions of the form A <-> A, where A is a species name.
 	 * .
 	 */
 	@Override

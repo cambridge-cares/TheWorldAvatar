@@ -180,7 +180,7 @@ public class Solver {
     /**
      * 
      * @author nk510 (caresssd@hermes.cam.ac.uk)
-     * Input string for GLPK solver.
+     * Printing out input string for GLPK solver.
      *  
      */
 //  System.out.println("Solver class: method solveProblem: lpInputString: " + lpInputString);
