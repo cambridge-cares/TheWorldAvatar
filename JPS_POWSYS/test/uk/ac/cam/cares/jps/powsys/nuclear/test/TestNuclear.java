@@ -23,13 +23,26 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 public class TestNuclear extends TestCase {
 
-	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException { //not tested yet
 		NuclearAgent agent = new NuclearAgent();
+		JSONObject jofornuc = new JSONObject();
+		JSONArray ja = new JSONArray();
+		//ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
+		//ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
+		//ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
+		jofornuc.put("substitutionalpowerplants", ja);
 		
 		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
-		agent.startSimulation(lotiri, iriofnetwork, dataPath, false);
+		ArrayList<String> listofplant= new ArrayList<String>();
+		
+		for (int c=0;c<jofornuc.getJSONArray("substitutionalpowerplants").length();c++) {
+			listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+		}
+		
+		agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
 		
 		// copy existing result file from a previous simulation to the data bucket 
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/results.csv";

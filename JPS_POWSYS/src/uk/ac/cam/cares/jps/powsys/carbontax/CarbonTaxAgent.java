@@ -191,8 +191,8 @@ public class CarbonTaxAgent extends JPSHttpServlet {
     	
     	
     	/*IF IN THE FUTURE NEED TO READ FROM THE TEMPLATE*/
-//		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
-//		List<String[]> inputcontent = MatrixConverter.fromCsvToArray(csv);
+		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
+		List<String[]> inputcontent = MatrixConverter.fromCsvToArray(csv);
 //		int inputsize=inputcontent.size();
 //		int b=1;
 //		while(b<=inputsize) {
@@ -221,8 +221,12 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
 //	    	System.out.println("1 result name= "+resultList.get(0)[0]);
 //	    	System.out.println("1 result carbon= "+resultList.get(0)[1]);
+	    	if(c+2<inputcontent.size()) {
+		    	inputcontent.get(c+2)[0]="c"+Integer.valueOf(c);
+		    	inputcontent.get(c+2)[6]=""+Double.valueOf(resultList.get(0)[1])/sumofinstance;
+				inputcontent.get(c+2)[8]=""+sumofinstance;	
+	    	}
 
-			
 			a.setcapacity(sumofinstance);
 			a.setid("c"+c);
 			plant.add(a);
@@ -246,6 +250,10 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	    resultListforcsv.add(0, header);
 	    resultListforcsv.add(1, nuclear);
 	    String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
+	    if(inputcontent.size()-2==uniqueplant.size()) {
+	    	System.out.println("it has the same number of plant!!!!");
+	    	s=MatrixConverter.fromArraytoCsv(inputcontent);
+	    }
 	    broker.put(baseUrl + "/Generator_Parameters.csv", s);
 	    
 	    logger.info("generator input ok"); 
