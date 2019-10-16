@@ -6,8 +6,8 @@
 // var prefix = "http://www.theworldavatar.com/";
 var prefix = "http://localhost:8080/"
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
-// selectedidnetwork = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/';
-selectedidnetwork = 'http://localhost:8080/kb/sgp/jurongisland/jurongislandpowernetwork/'
+selectedidnetwork = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/';
+// selectedidnetwork = 'http://localhost:8080/kb/sgp/jurongisland/jurongislandpowernetwork/'
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
@@ -239,13 +239,55 @@ function setKMLMenu(kmlEvent){
     kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
 
 }
+function displayItem(event){
+    selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
+    console.log(selectedId);
+    var kmljson = {};
+    var kmlurl = prefix + '/JPS_POWSYS/ENVisualization/readItems'; 
+    kmljson["electricalnetwork"] = data["electricalnetwork"];
+    kmljson["n"] = String(n);
+    kmljson["flag"] =  data["flag"];
+    kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));      
+
+
+    var request = $.ajax({
+        url: kmlurl,
+        type: 'GET',
+        data: kmljson,
+        contentType: 'application/json; charset=utf-8',
+        success: function(){  
+        },
+        error: function(ts) {
+            alert(ts.responseText);
+        }   
+    });
+
+    request.done( function(data) {
+    console.log ("success create request");
+    // kmlLayer = new google.maps.KmlLayer({
+    //     // url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',//In other cases, will eventually be read and overwritten here. NO PROBLEM!
+    //     url: anotherURL+ "?r="+(new Date()).getTime(), //this is completely necessary for cache-busting. 
+    //     suppressInfoWindows: false,
+    //     map: map
+    // });
+
+
+    //     kmlLayer.addListener('click', function(kmlEvent) {
+    //         setKMLMenu(kmlEvent)
+    //     });             
+        
+    });
+
+    request.fail(function(jqXHR, textStatus) {
+    });
+}
 function selectEBus(event) {
     selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
     console.log(selectedId);
     // var url = 'http://localhost:8080/jps/kb/71a60f51-0a6f-47e0-bd0c-5a4e518aee7e/nuclearpowerplants/' + event.srcElement.id; //will read from here. 
     var url = selectedidnetwork + event.srcElement.id;
     if (event.srcElement.id.substring(0,3) == "Nuc"){
-        var url = 'http://localhost:8080/kb/nuclearpowerplants/' + event.srcElement.id;
+        var url = "http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/" + event.srcElement.id;
     }
     console.log(event.srcElement.id.substring(0,3))
     console.log(url);
