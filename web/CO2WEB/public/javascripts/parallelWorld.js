@@ -2,8 +2,10 @@
 		
     var ppMap = new PopupMap({useCluster:true});
 
-    var anotherURL1 = prefix + 'testfinalBASE.kml';
-    var anotherURL2 = prefix + 'OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    // var anotherURL1 = prefix + 'OntoEN/testfinalBASE.kml';
+    // var anotherURL2 = prefix + 'OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    var anotherURL1 =  'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
+    var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal2.kml';
     var val =  parseFloat($("#co2Value").text());
     setInterval(function(){
         distotalemission(arrSum);
@@ -13,7 +15,7 @@
         console.log("input changed");
         cleanMsg();
         let el = $(this), value = el.val();
-        if (value === "") {
+        if (value === "") { 
             return;
         }
 

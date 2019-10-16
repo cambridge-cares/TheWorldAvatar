@@ -3,8 +3,11 @@
  */
 
 //part no written by me-----------------------------------------------------------------------------------//
-var prefix = "http://www.theworldavatar.com/";
+// var prefix = "http://www.theworldavatar.com/";
+var prefix = "http://localhost:8080/"
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
+// selectedidnetwork = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/';
+selectedidnetwork = 'http://localhost:8080/kb/sgp/jurongisland/jurongislandpowernetwork/'
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
@@ -206,7 +209,7 @@ function drawGenerator(data, anotherURL){
 
 function sendRequest(url,callback) {
 console.log(url)
-$.ajax({
+$.ajax({// reads file and return as a json packet. 
     url: "http://www.theworldavatar.com:82/getAttrList",
     method: "POST",
     data: JSON.stringify({uri: url}),
@@ -238,9 +241,14 @@ function setKMLMenu(kmlEvent){
 }
 function selectEBus(event) {
     selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
-    var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + event.srcElement.id; //will read from here. 
-    // var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + event.srcElement.id;
-
+    console.log(selectedId);
+    // var url = 'http://localhost:8080/jps/kb/71a60f51-0a6f-47e0-bd0c-5a4e518aee7e/nuclearpowerplants/' + event.srcElement.id; //will read from here. 
+    var url = selectedidnetwork + event.srcElement.id;
+    if (event.srcElement.id.substring(0,3) == "Nuc"){
+        var url = 'http://localhost:8080/kb/nuclearpowerplants/' + event.srcElement.id;
+    }
+    console.log(event.srcElement.id.substring(0,3))
+    console.log(url);
     sendRequest(url,function (response) {
 
 
@@ -447,7 +455,7 @@ asyncLoop({
 
             var base = filename + '#';
             base = base.replace('/OntoEN','');
-            base=base.replace('theworldavatar','jparksimulator'); //because in electrical it use jparksimulator instead of theworldavatar
+            base=base.replace('theworldavatar.com','jparksimulator.com'); //because in electrical it use jparksimulator instead of theworldavatar
             var value = obj.value;
             console.log(targetIRI);
             console.log(base);
@@ -503,7 +511,7 @@ asyncLoop({
 
         //var url = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/startScript?path=' + encodeURIComponent(path);
         // var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
-        var url = 'http://www.theworldavatar.com/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
         
         var request = $.ajax({
             url: url,
@@ -515,7 +523,7 @@ asyncLoop({
         request.done(function(data) {
             
             console.log('simulation finished');
-            var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId;
+            var url = selectedidnetwork + selectedId;
 
             
             sendRequest(url,function (response) {
@@ -585,7 +593,7 @@ return array.sort(function(a, b) {
 }
 
 function constructLineMenu(id,callback){
-    var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork' + id;
+    var url = selectedidnetwork + id;
     selectedId =   id;
 
     console.log('url',url);
