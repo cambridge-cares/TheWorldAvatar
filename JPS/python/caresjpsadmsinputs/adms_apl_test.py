@@ -136,77 +136,335 @@ class AplTest(unittest.TestCase):
         apl.set_mapper(AdmsMapper())
         apl.set_pollutants([AdmsPold()])
         apl.set_sources([AdmsSrc()])
-        self.assertEqual(AdmsAplTestHelper.get_default_specification(), apl.specification())
+        self.assertEqual(AdmsAplTestHelper.get_default_specification(AdmsAplTestHelper), apl.specification())
 
 class AplPartTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        aplp = AplPart()
+        self.assertEqual(aplp._AplPart__name, '&')
+        self.assertEqual(aplp._AplPart__end, '/')
+
+    def test_to_string(self):
+        aplp = AplPart()
+        aplp._name = aplp._AplPart__name
+        self.assertEqual(aplp.to_string(), AdmsAplTestHelper.get_default_aplp_str())
 
 class AdmsHeaderTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ah = AdmsHeader()
+        self.assertEqual(ah._name, '&ADMS_HEADER')
+        self.assertEqual(ah.Comment, 'This is an ADMS parameter file')
+        self.assertEqual(ah.Model, 'ADMS')
+        self.assertEqual(ah.Version, 5.2)
+        self.assertEqual(ah.FileVersion, 8)
+        self.assertEqual(ah.Complete, 1)
+
+    def test_to_string(self):
+        ah = AdmsHeader()
+        self.assertEqual(ah.to_string(), AdmsAplTestHelper.get_default_adms_header_str())
 
 class AdmsSupTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        asp = AdmsSup()
+        self.assertEqual(asp._name, '&ADMS_PARAMETERS_SUP')
+        self.assertEqual(asp.SupSiteName, 'terrain dispersion site')
+        self.assertEqual(asp.SupProjectName, 'chlorine leakage tank dispersion')
+        self.assertEqual(asp.SupUseAddInput, 0)
+        self.assertEqual(asp.SupAddInputPath, ' ')
+        self.assertEqual(asp.SupReleaseType, 0)
+        self.assertEqual(asp.SupModelBuildings, 1)
+        self.assertEqual(asp.SupModelComplexTerrain, 1)
+        self.assertEqual(asp.SupModelCoastline, 0)
+        self.assertEqual(asp.SupPufType, 0)
+        self.assertEqual(asp.SupCalcChm, 1)
+        self.assertEqual(asp.SupCalcDryDep, 0)
+        self.assertEqual(asp.SupCalcWetDep, 1)
+        self.assertEqual(asp.SupCalcPlumeVisibility, 1)
+        self.assertEqual(asp.SupModelFluctuations, 0)
+        self.assertEqual(asp.SupModelRadioactivity, 0)
+        self.assertEqual(asp.SupModelOdours, 0)
+        self.assertEqual(asp.SupOdourUnits, 'ou_e')
+        self.assertEqual(asp.SupPaletteType, 1)
+        self.assertEqual(asp.SupUseTimeVaryingEmissions, 0)
+        self.assertEqual(asp.SupTimeVaryingEmissionsType, 0)
+        self.assertEqual(asp.SupTimeVaryingVARPath, ' ')
+        self.assertEqual(asp.SupTimeVaryingFACPath, ' ')
+        self.assertEqual(asp.SupTimeVaryingEmissionFactorsWeekday, [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                    1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0])
+        self.assertEqual(asp.SupTimeVaryingEmissionFactorsSaturday, [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                     1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0])
+        self.assertEqual(asp.SupTimeVaryingEmissionFactorsSunday, [1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                   1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                   1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                   1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                   1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0,
+                                                                   1.0e+0, 1.0e+0, 1.0e+0, 1.0e+0])
+
+    def test_to_string(self):
+        asp = AdmsSup()
+        self.assertEqual(asp.to_string(), AdmsAplTestHelper.get_default_adms_sup_str())
 
 class AdmsMetTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        am = AdmsMet()
+        self.assertEqual(am._name, '&ADMS_PARAMETERS_MET')
+        self.assertEqual(am.MetLatitude, 0)
+        self.assertEqual(am.MetDataSource, 0)
+        self.assertEqual(am.MetDataFileWellFormedPath, ' ')
+        self.assertEqual(am.MetWindHeight, 1.0e+1)
+        self.assertEqual(am.MetWindInSectors, 0)
+        self.assertEqual(am.MetWindSectorSizeDegrees, 1.0e+1)
+        self.assertEqual(am.MetDataIsSequential, 0)
+        self.assertEqual(am.MetUseSubset, 0)
+        self.assertEqual(am.MetSubsetHourStart, 1)
+        self.assertEqual(am.MetSubsetDayStart, 1)
+        self.assertEqual(am.MetSubsetMonthStart, 1)
+        self.assertEqual(am.MetSubsetYearStart, 2016)
+        self.assertEqual(am.MetSubsetHourEnd, 0)
+        self.assertEqual(am.MetSubsetDayEnd, 1)
+        self.assertEqual(am.MetSubsetMonthEnd, 1)
+        self.assertEqual(am.MetSubsetYearEnd, 2017)
+        self.assertEqual(am.MetUseVerticalProfile, 0)
+        self.assertEqual(am.MetVerticalProfilePath, ' ')
+        self.assertEqual(am.Met_DS_RoughnessMode, 1)
+        self.assertEqual(am.Met_DS_Roughness, 1.0e+0)
+        self.assertEqual(am.Met_DS_UseAdvancedMet, 0)
+        self.assertEqual(am.Met_DS_SurfaceAlbedoMode, 1)
+        self.assertEqual(am.Met_DS_SurfaceAlbedo, 2.3e-1)
+        self.assertEqual(am.Met_DS_PriestlyTaylorMode, 1)
+        self.assertEqual(am.Met_DS_PriestlyTaylor, 1.0e+0)
+        self.assertEqual(am.Met_DS_MinLmoMode, 1)
+        self.assertEqual(am.Met_DS_MinLmo, 3.45e+1)
+        self.assertEqual(am.Met_DS_PrecipFactorMode, 1)
+        self.assertEqual(am.Met_DS_PrecipFactor, 4.5e-1)
+        self.assertEqual(am.Met_MS_RoughnessMode, 3)
+        self.assertEqual(am.Met_MS_Roughness, 1.0e-1)
+        self.assertEqual(am.Met_MS_UseAdvancedMet, 0)
+        self.assertEqual(am.Met_MS_SurfaceAlbedoMode, 3)
+        self.assertEqual(am.Met_MS_SurfaceAlbedo, 2.3e-1)
+        self.assertEqual(am.Met_MS_PriestlyTaylorMode, 3)
+        self.assertEqual(am.Met_MS_PriestlyTaylor, 1.0e+0)
+        self.assertEqual(am.Met_MS_MinLmoMode, 3)
+        self.assertEqual(am.Met_MS_MinLmo, 1.0e+0)
+        self.assertEqual(am.MetHeatFluxType, 0)
+        self.assertEqual(am.MetInclBoundaryLyrHt, 0)
+        self.assertEqual(am.MetInclSurfaceTemp, 1)
+        self.assertEqual(am.MetInclLateralSpread, 0)
+        self.assertEqual(am.MetInclRelHumidity, 0)
+        self.assertEqual(am.MetHandNumEntries, 1)
+        self.assertEqual(am.MetWindSpeed, [3.06e+0])
+        self.assertEqual(am.MetWindDirection, [6.0e+1])
+        self.assertEqual(am.MetJulianDayNum, [2.47e+2])
+        self.assertEqual(am.MetLocalTime, [5.0e+0])
+        self.assertEqual(am.MetCloudAmount, [5.0e+0])
+        self.assertEqual(am.MetSurfaceHeatFlux, [0.0e+0])
+        self.assertEqual(am.MetBoundaryLayerHeight, [8.00e+2])
+        self.assertEqual(am.MetSurfaceTemp, [2.8e+1])
+        self.assertEqual(am.MetLateralSpread, [7.5e+0])
+        self.assertEqual(am.MetYear, [2017])
+        self.assertEqual(am.MetRelHumidity, [7.4e+1])
+
+    def test_to_string(self):
+        am = AdmsMet()
+        self.assertEqual(am.to_string(), AdmsAplTestHelper.get_default_adms_met_str())
 
 class AdmsHilTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ah = AdmsHil()
+        self.assertEqual(ah._name, '&ADMS_PARAMETERS_HIL')
+        self.assertEqual(ah.HilGridSize, 2)
+        self.assertEqual(ah.HilUseTerFile, 1)
+        self.assertEqual(ah.HilUseRoughFile, 0)
+        self.assertEqual(ah.HilTerrainPath, ' ')
+        self.assertEqual(ah.HilRoughPath, ' ')
+        self.assertEqual(ah.HilCreateFlowField, 1)
+
+    def test_to_string(self):
+        ah = AdmsHil()
+        self.assertEqual(ah.to_string(), AdmsAplTestHelper.get_default_adms_hil_str())
 
 class AdmsCstTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ac = AdmsCst()
+        self.assertEqual(ac._name, '&ADMS_PARAMETERS_CST')
+        self.assertEqual(ac.CstPoint1X, 0.0e+0)
+        self.assertEqual(ac.CstPoint1Y, 0.0e+0)
+        self.assertEqual(ac.CstPoint2X, -1.000e+3)
+        self.assertEqual(ac.CstPoint2Y, 1.000e+3)
+        self.assertEqual(ac.CstLandPointX, 5.00e+2)
+        self.assertEqual(ac.CstLandPointY, 5.00e+2)
+
+    def test_to_string(self):
+        ac = AdmsCst()
+        self.assertEqual(ac.to_string(), AdmsAplTestHelper.get_default_adms_cst_str())
 
 class AdmsFlcTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        af = AdmsFlc()
+        self.assertEqual(af._name, '&ADMS_PARAMETERS_FLC')
+        self.assertEqual(af.FlcAvgTime, 9.00e+2)
+        self.assertEqual(af.FlcUnitsPollutants, 'ug/m3')
+        self.assertEqual(af.FlcUnitsIsotopes, 'Bq/m3')
+        self.assertEqual(af.FlcCalcToxicResponse, 0)
+        self.assertEqual(af.FlcToxicExp, 1.0e+0)
+        self.assertEqual(af.FlcCalcPercentiles, 0)
+        self.assertEqual(af.FlcNumPercentiles, 0)
+        self.assertEqual(af.FlcCalcPDF, 0)
+        self.assertEqual(af.FlcNumPDF, 0)
+
+    def test_to_string(self):
+        af = AdmsFlc()
+        self.assertEqual(af.to_string(), AdmsAplTestHelper.get_default_adms_flc_str())
 
 class AdmsGrdTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ag = AdmsGrd()
+        self.assertEqual(ag._name, '&ADMS_PARAMETERS_GRD')
+        self.assertEqual(ag.GrdType, 0)
+        self.assertEqual(ag.GrdCoordSysType, 0)
+        self.assertEqual(ag.GrdSpacingType, 0)
+        self.assertEqual(ag.GrdRegularMin, [0.00e+0, 0.00e+0, 0.00e+0, 1.0e+1, 0.0e+0, 0.0e+0])
+        self.assertEqual(ag.GrdRegularMax, [0.00e+0, 0.00e+0, 3.00e+1, 1.000e+3, 3.30e+2, 0.0e+0])
+        self.assertEqual(ag.GrdRegularNumPoints, [80, 80, 4, 10, 12, 1])
+        self.assertEqual(ag.GrdVarSpaceNumPointsX, 0)
+        self.assertEqual(ag.GrdVarSpaceNumPointsY, 0)
+        self.assertEqual(ag.GrdVarSpaceNumPointsZ, 0)
+        self.assertEqual(ag.GrdVarSpaceNumPointsR, 0)
+        self.assertEqual(ag.GrdVarSpaceNumPointsTh, 0)
+        self.assertEqual(ag.GrdVarSpaceNumPointsZp, 0)
+        self.assertEqual(ag.GrdPtsNumPoints, [0, 0])
+        self.assertEqual(ag.GrdPolarCentreX, 0.0e+0)
+        self.assertEqual(ag.GrdPolarCentreY, 0.0e+0)
+        self.assertEqual(ag.GrdPtsUsePointsFile, 1)
+        self.assertEqual(ag.GrdPtsPointsFilePath, ' ')
+
+    def test_to_string(self):
+        ag = AdmsGrd()
+        self.assertEqual(ag.to_string(), AdmsAplTestHelper.get_default_adms_grd_str())
 
 class AdmsPufTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ap = AdmsPuf()
+        self.assertEqual(ap._name, '&ADMS_PARAMETERS_PUF')
+        self.assertEqual(ap.PufStart, 1.00e+2)
+        self.assertEqual(ap.PufStep, 1.00e+2)
+        self.assertEqual(ap.PufNumSteps, 10)
+
+    def test_to_string(self):
+        ap = AdmsPuf()
+        self.assertEqual(ap.to_string(), AdmsAplTestHelper.get_default_adms_puf_str())
 
 class AdmsGamTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ag = AdmsGam()
+        self.assertEqual(ag._name, '&ADMS_PARAMETERS_GAM')
+        self.assertEqual(ag.GamCalcDose, 0)
+
+    def test_to_string(self):
+        ag = AdmsGam()
+        self.assertEqual(ag.to_string(), AdmsAplTestHelper.get_default_adms_gam_str())
 
 class AdmsBkgTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ab = AdmsBkg()
+        self.assertEqual(ab._name, '&ADMS_PARAMETERS_BKG')
+        self.assertEqual(ab.BkgFilePath, ' ')
+        self.assertEqual(ab.BkgFixedLevels, 0)
+
+    def test_to_string(self):
+        ab = AdmsBkg()
+        self.assertEqual(ab.to_string(), AdmsAplTestHelper.get_default_adms_bkg_str())
 
 class AdmsEtcTest(unittest.TestCase):
     pass
 
+
 class AdmsChmTest(unittest.TestCase):
     pass
+
 
 class AdmsCoordSysTest(unittest.TestCase):
     pass
 
+
 class AdmsMapperTest(unittest.TestCase):
     pass
+
 
 class AdmsBldTest(unittest.TestCase):
     pass
 
+
 class AdmsOptTest(unittest.TestCase):
     pass
+
 
 class AdmsPoldTest(unittest.TestCase):
     pass
 
+
 class AdmsSrcTest(unittest.TestCase):
     pass
+
 
 class AdmsAplTestHelper(object):
 
     @staticmethod
-    def get_default_specification():
+    def get_default_specification(self):
+        return self.get_default_adms_header_str() + \
+               self.get_default_adms_sup_str() + \
+               self.get_default_adms_met_str() + \
+               self.get_default_adms_bld_str() + \
+               self.get_default_adms_hil_str() + \
+               self.get_default_adms_cst_str() + \
+               self.get_default_adms_flc_str() + \
+               self.get_default_adms_grd_str() + \
+               self.get_default_adms_puf_str() + \
+               self.get_default_adms_gam_str() + \
+               self.get_default_adms_chm_str() + \
+               self.get_default_adms_bkg_str() + \
+               self.get_default_adms_etc_str() + \
+               self.get_default_adms_coords_str() + \
+               self.get_default_adms_map_str() + \
+               self.get_default_adms_pold_str() + \
+               self.get_default_adms_src_str()
+
+    @staticmethod
+    def get_default_aplp_str():
+        return '&\n/\n\n'
+
+    @staticmethod
+    def get_default_adms_header_str():
         return '&ADMS_HEADER\n' \
                'Comment = "This is an ADMS parameter file"\n' \
                'Model = "ADMS"\n' \
                'Version = 5.2\n' \
                'FileVersion = 8\n' \
                'Complete = 1\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_SUP\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_sup_str():
+        return '&ADMS_PARAMETERS_SUP\n' \
                'SupSiteName = "terrain dispersion site"\n' \
                'SupProjectName = "chlorine leakage tank dispersion"\n' \
                'SupUseAddInput = 0\n' \
@@ -250,8 +508,11 @@ class AdmsAplTestHelper(object):
                '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
                '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
                '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_MET\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_met_str():
+        return '&ADMS_PARAMETERS_MET\n' \
                'MetLatitude = 0\n' \
                'MetDataSource = 0\n' \
                'MetDataFileWellFormedPath = " "\n' \
@@ -318,8 +579,11 @@ class AdmsAplTestHelper(object):
                '  2017 \n' \
                'MetRelHumidity = \n' \
                '  7.40e+1 \n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_BLD\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_bld_str():
+        return '&ADMS_PARAMETERS_BLD\n' \
                'BldNumBuildings = 0\n' \
                'BldName = \n  \n' \
                'BldType = \n  \n' \
@@ -329,24 +593,33 @@ class AdmsAplTestHelper(object):
                'BldLength = \n  \n' \
                'BldWidth = \n  \n' \
                'BldAngle = \n  \n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_HIL\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_hil_str():
+        return '&ADMS_PARAMETERS_HIL\n' \
                'HilGridSize = 2\n' \
                'HilUseTerFile = 1\n' \
                'HilUseRoughFile = 0\n' \
                'HilTerrainPath = " "\n' \
                'HilRoughPath = " "\n' \
                'HilCreateFlowField = 1\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_CST\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_cst_str():
+        return '&ADMS_PARAMETERS_CST\n' \
                'CstPoint1X = 0.0\n' \
                'CstPoint1Y = 0.0\n' \
                'CstPoint2X = -1000.0\n' \
                'CstPoint2Y = 1000.0\n' \
                'CstLandPointX = 500.0\n' \
                'CstLandPointY = 500.0\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_FLC\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_flc_str():
+        return '&ADMS_PARAMETERS_FLC\n' \
                'FlcAvgTime = 900.0\n' \
                'FlcUnitsPollutants = "ug/m3"\n' \
                'FlcUnitsIsotopes = "Bq/m3"\n' \
@@ -357,8 +630,11 @@ class AdmsAplTestHelper(object):
                'FlcCalcPDF = 0\n' \
                'FlcPDFMode = 0\n' \
                'FlcNumPDF = 0\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_GRD\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_grd_str():
+        return '&ADMS_PARAMETERS_GRD\n' \
                'GrdType = 0\n' \
                'GrdCoordSysType = 0\n' \
                'GrdSpacingType = 0\n' \
@@ -383,16 +659,25 @@ class AdmsAplTestHelper(object):
                'GrdPolarCentreY = 0.0\n' \
                'GrdPtsUsePointsFile = 1\n' \
                'GrdPtsPointsFilePath = " "\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_PUF\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_puf_str():
+        return '&ADMS_PARAMETERS_PUF\n' \
                'PufStart = 100.0\n' \
                'PufStep = 100.0\n' \
                'PufNumSteps = 10\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_GAM\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_gam_str():
+        return '&ADMS_PARAMETERS_GAM\n' \
                'GamCalcDose = 0\n' \
                '/\n\n' \
-               '&ADMS_PARAMETERS_OPT\n' \
+
+    @staticmethod
+    def get_default_adms_opt_str():
+        return '&ADMS_PARAMETERS_OPT\n' \
                'OptNumOutputs = 8\n' \
                'OptPolName = \n  \n' \
                'OptInclude = \n  \n' \
@@ -411,26 +696,44 @@ class AdmsAplTestHelper(object):
                'OptIncludedGroups = \n  \n' \
                'OptIncludedSource = ""\n' \
                'OptCreateComprehensiveFile = 0\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_CHM\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_chm_str():
+        return '&ADMS_PARAMETERS_CHM\n' \
                'ChmScheme = 2\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_BKG\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_bkg_str():
+        return '&ADMS_PARAMETERS_BKG\n' \
                'BkgFilePath = " "\n' \
                'BkgFixedLevels = 0\n' \
-               '/\n\n' \
-               '&ADMS_PARAMETERS_ETC\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_etc_str():
+        return '&ADMS_PARAMETERS_ETC\n' \
                'SrcNumSources = 1\n' \
                'PolNumPollutants = 19\n' \
                'PolNumIsotopes = 0\n' \
-               '/\n\n' \
-               '&ADMS_COORDINATESYSTEM\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_coords_str():
+        return '&ADMS_COORDINATESYSTEM\n' \
                'ProjectedEPSG = 2\n' \
-               '/\n\n' \
-               '&ADMS_MAPPERPROJECT\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_map_str():
+        return '&ADMS_MAPPERPROJECT\n' \
                'ProjectFilePath = " "\n' \
-               '/\n\n' \
-               '&ADMS_POLLUTANT_DETAILS\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_pold_str():
+        return '&ADMS_POLLUTANT_DETAILS\n' \
                'PolName = ""\n' \
                'PolPollutantType = 0\n' \
                'PolGasDepVelocityKnown = 0\n' \
@@ -455,8 +758,11 @@ class AdmsAplTestHelper(object):
                'PolConvFactor = 0\n' \
                'PolBkgLevel = 0\n' \
                'PolBkgUnits = ""\n' \
-               '/\n\n' \
-               '&ADMS_SOURCE_DETAILS\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_src_str():
+        return '&ADMS_SOURCE_DETAILS\n' \
                'SrcName = ""\n' \
                'SrcMainBuilding = ""\n' \
                'SrcHeight = 0\n' \
