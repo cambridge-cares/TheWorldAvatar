@@ -302,7 +302,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		csvresult.add(header);
 		
 		while(x<resultList.size()) {
-			if(!plantlist.contains(resultList.get(x)[1])) {
+			if(!plantlist.contains(resultList.get(x)[1])) { //TODO later switch to 0 instead of 1 if we use generator scale 
 				System.out.println("generator remains= "+resultList.get(x)[0]);
 				System.out.println("P max= "+resultList.get(x)[2]);
 				System.out.println("x= "+resultList.get(x)[3]);
