@@ -395,36 +395,174 @@ class AdmsBkgTest(unittest.TestCase):
         self.assertEqual(ab.to_string(), AdmsAplTestHelper.get_default_adms_bkg_str())
 
 class AdmsEtcTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        ae = AdmsEtc()
+        self.assertEqual(ae._name, '&ADMS_PARAMETERS_ETC')
+        self.assertEqual(ae.SrcNumSources, 1)
+        self.assertEqual(ae.PolNumPollutants, 19)
+        self.assertEqual(ae.PolNumIsotopes, 0)
+
+    def test_to_string(self):
+        ae = AdmsEtc()
+        self.assertEqual(ae.to_string(), AdmsAplTestHelper.get_default_adms_etc_str())
 
 class AdmsChmTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        ac = AdmsChm()
+        self.assertEqual(ac._name, '&ADMS_PARAMETERS_CHM')
+        self.assertEqual(ac.ChmScheme, 2)
+
+    def test_to_string(self):
+        ac = AdmsChm()
+        self.assertEqual(ac.to_string(), AdmsAplTestHelper.get_default_adms_chm_str())
 
 class AdmsCoordSysTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        acs = AdmsCoordSys()
+        self.assertEqual(acs._name, '&ADMS_COORDINATESYSTEM')
+        self.assertEqual(acs.ProjectedEPSG, 2)
+
+    def test_to_string(self):
+        acs = AdmsCoordSys()
+        self.assertEqual(acs.to_string(), AdmsAplTestHelper.get_default_adms_coords_str())
 
 class AdmsMapperTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        am = AdmsMapper()
+        self.assertEqual(am._name, '&ADMS_MAPPERPROJECT')
+        self.assertEqual(am.ProjectFilePath, ' ')
+
+    def test_to_string(self):
+        am = AdmsMapper()
+        self.assertEqual(am.to_string(), AdmsAplTestHelper.get_default_adms_map_str())
 
 class AdmsBldTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        ab = AdmsBld()
+        self.assertEqual(ab._name, '&ADMS_PARAMETERS_BLD')
+        self.assertEqual(ab.BldNumBuildings, 0)
+        self.assertEqual(ab.BldName, [])
+        self.assertEqual(ab.BldType, [])
+        self.assertEqual(ab.BldX, [])
+        self.assertEqual(ab.BldY, [])
+        self.assertEqual(ab.BldHeight, [])
+        self.assertEqual(ab.BldLength, [])
+        self.assertEqual(ab.BldWidth, [])
+        self.assertEqual(ab.BldAngle, [])
+
+    def test_to_string(self):
+        ab = AdmsBld()
+        self.assertEqual(ab.to_string(), AdmsAplTestHelper.get_default_adms_bld_str())
 
 class AdmsOptTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        ao = AdmsOpt()
+        self.assertEqual(ao._name, '&ADMS_PARAMETERS_OPT')
+        self.assertEqual(ao.OptNumOutputs, 8)
+        self.assertEqual(ao.OptPolName, [])
+        self.assertEqual(ao.OptInclude, [])
+        self.assertEqual(ao.OptShortOrLong, [])
+        self.assertEqual(ao.OptSamplingTime, [])
+        self.assertEqual(ao.OptSamplingTimeUnits, [])
+        self.assertEqual(ao.OptCondition, [])
+        self.assertEqual(ao.OptNumPercentiles, [])
+        self.assertEqual(ao.OptNumExceedences, [])
+        self.assertEqual(ao.OptPercentiles, [])
+        self.assertEqual(ao.OptExceedences, [])
+        self.assertEqual(ao.OptUnits, [])
+        self.assertEqual(ao.OptGroupsOrSource, 0)
+        self.assertEqual(ao.OptAllSources, 0)
+        self.assertEqual(ao.OptNumGroups, 1)
+        self.assertEqual(ao.OptIncludedGroups, [])
+        self.assertEqual(ao.OptIncludedSource, "")
+        self.assertEqual(ao.OptCreateComprehensiveFile, 0)
+
+    def test_to_string(self):
+        ao = AdmsOpt()
+        self.assertEqual(ao.to_string(), AdmsAplTestHelper.get_default_adms_opt_str())
 
 class AdmsPoldTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        ap = AdmsPold()
+        self.assertEqual(ap._name, '&ADMS_POLLUTANT_DETAILS')
+        self.assertEqual(ap.PolName, '')
+        self.assertEqual(ap.PolPollutantType, 0)
+        self.assertEqual(ap.PolGasDepVelocityKnown, 0)
+        self.assertEqual(ap.PolGasDepositionVelocity, 0)
+        self.assertEqual(ap.PolGasType, 0)
+        self.assertEqual(ap.PolParDepVelocityKnown, 1)
+        self.assertEqual(ap.PolParTermVelocityKnown, 1)
+        self.assertEqual(ap.PolParNumDepositionData, 1)
+        self.assertEqual(ap.PolParDepositionVelocity, [0.0e+0])
+        self.assertEqual(ap.PolParTerminalVelocity, [0.0e+0])
+        self.assertEqual(ap.PolParDiameter, [])
+        self.assertEqual(ap.PolParDensity, [1.000e+3])
+        self.assertEqual(ap.PolParMassFraction, [1.0e+0])
+        self.assertEqual(ap.PolWetWashoutKnown, 0)
+        self.assertEqual(ap.PolWetWashout, 0)
+        self.assertEqual(ap.PolWetWashoutA, 1.0e-4)
+        self.assertEqual(ap.PolWetWashoutB, 6.4e-1)
+        self.assertEqual(ap.PolConvFactor, 0)
+        self.assertEqual(ap.PolBkgLevel, 0)
+        self.assertEqual(ap.PolBkgUnits, '')
+
+    def test_to_string(self):
+        ap = AdmsPold()
+        self.assertEqual(ap.to_string(), AdmsAplTestHelper.get_default_adms_pold_str())
 
 class AdmsSrcTest(unittest.TestCase):
-    pass
 
+    def test_init(self):
+        asr = AdmsSrc()
+        self.assertEqual(asr._name, '&ADMS_SOURCE_DETAILS')
+        self.assertEqual(asr.SrcName, '')
+        self.assertEqual(asr.SrcMainBuilding, '')
+        self.assertEqual(asr.SrcHeight, 0)
+        self.assertEqual(asr.SrcDiameter, 0)
+        self.assertEqual(asr.SrcVolFlowRate, 0)
+        self.assertEqual(asr.SrcVertVeloc, 0)
+        self.assertEqual(asr.SrcTemperature, 0)
+        self.assertEqual(asr.SrcMolWeight, 0)
+        self.assertEqual(asr.SrcDensity, 0)
+        self.assertEqual(asr.SrcSpecHeatCap, 0)
+        self.assertEqual(asr.SrcSourceType, 0)
+        self.assertEqual(asr.SrcReleaseAtNTP, 0)
+        self.assertEqual(asr.SrcEffluxType, 0)
+        self.assertEqual(asr.SrcBuoyancyType, 0)
+        self.assertEqual(asr.SrcPercentNOxAsNO2, 0)
+        self.assertEqual(asr.SrcX1, 0)
+        self.assertEqual(asr.SrcY1, 0)
+        self.assertEqual(asr.SrcL1, 0)
+        self.assertEqual(asr.SrcL2, 0)
+        self.assertEqual(asr.SrcFm, 0)
+        self.assertEqual(asr.SrcFb, 0)
+        self.assertEqual(asr.SrcMassFlux, 0)
+        self.assertEqual(asr.SrcAngle1, 0)
+        self.assertEqual(asr.SrcAngle2, 0)
+        self.assertEqual(asr.SrcMassH2O, 0)
+        self.assertEqual(asr.SrcUseVARFile, 0)
+        self.assertEqual(asr.SrcNumGroups, 0)
+        self.assertEqual(asr.SrcGroup, [])
+        self.assertEqual(asr.SrcNumVertices, 0)
+        self.assertEqual(asr.SrcTraNumTrafficFlows, 0)
+        self.assertEqual(asr.SrcNumPollutants, 0)
+        self.assertEqual(asr.SrcPollutants, [])
+        self.assertEqual(asr.SrcPolEmissionRate, [])
+        self.assertEqual(asr.SrcPolTotalemission, [])
+        self.assertEqual(asr.SrcPolStartTime, [])
+        self.assertEqual(asr.SrcPolDuration, [])
+        self.assertEqual(asr.SrcNumIsotopes, 0)
+
+    def test_to_string(self):
+        asr = AdmsSrc()
+        self.assertEqual(asr.to_string(), AdmsAplTestHelper.get_default_adms_src_str())
 
 class AdmsAplTestHelper(object):
 
@@ -440,6 +578,7 @@ class AdmsAplTestHelper(object):
                self.get_default_adms_grd_str() + \
                self.get_default_adms_puf_str() + \
                self.get_default_adms_gam_str() + \
+               self.get_default_adms_opt_str() + \
                self.get_default_adms_chm_str() + \
                self.get_default_adms_bkg_str() + \
                self.get_default_adms_etc_str() + \
