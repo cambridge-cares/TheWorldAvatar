@@ -35,7 +35,7 @@ public class QueryBroker {
 		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
-		if (! urlOrPath.startsWith("http")) {
+		if (!urlOrPath.startsWith("http")) {
 			String localFile = ScenarioHelper.cutHash(urlOrPath);
 			return FileUtil.readFileLocally(localFile);
 		}
@@ -180,8 +180,11 @@ public class QueryBroker {
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
 		String path = destinationUrl;
 		if (destinationUrl.startsWith("http")) {
-			String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
-			path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+			
+			AgentCaller.executePut(destinationUrl, content);
+			
+			//String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
+			//path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 		}
 		
 		FileUtil.writeFileLocally(path, content);

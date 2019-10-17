@@ -8,6 +8,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.base.exception.PythonException;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
@@ -18,6 +21,7 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
  */
 @WebServlet("/ADMSPowerPlantGetter")
 public class ADMSPowerPlantGetter extends HttpServlet {
+	Logger logger = LoggerFactory.getLogger(ADMSPowerPlantGetter.class);
 	private static final long serialVersionUID = 1L;
        
     /**
@@ -60,6 +64,7 @@ public class ADMSPowerPlantGetter extends HttpServlet {
 			response.setContentType("application/json");
 			response.getWriter().write(result);
 		} catch (PythonException e) {
+			logger.error("python error="+e.getMessage());
 			e.printStackTrace();
 		}
 	}

@@ -71,7 +71,13 @@ public class ADMSAgent extends JPSHttpServlet {
         double lowerx = Double.parseDouble("" + region.getJSONObject("lowercorner").get("lowerx"));
         double lowery = Double.parseDouble("" + region.getJSONObject("lowercorner").get("lowery"));
         // for default universal coordinate system that is use in the input browser
-        String sourceCRSName = CRSTransformer.EPSG_3857;
+        //String sourceCRSName = CRSTransformer.EPSG_3857;
+        String sourceCRSName = region.optString("srsname");
+        logger.info("getting crs= "+sourceCRSName);
+        
+      if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+    	sourceCRSName = CRSTransformer.EPSG_4326; 
+    }
         String targetCRSName = getTargetCRS(cityIRI);
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment

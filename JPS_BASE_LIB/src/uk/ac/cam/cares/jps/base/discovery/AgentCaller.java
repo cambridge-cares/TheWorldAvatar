@@ -22,6 +22,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
@@ -100,6 +101,38 @@ public class AgentCaller {
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpPost request = new HttpPost(builder.build());
             request.setEntity(entity);
+            HttpResponse response = httpClient.execute(request);
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                HttpEntity rsp_entity = response.getEntity();
+                response_body = EntityUtils.toString(rsp_entity, "UTF-8");
+            } else {
+                throw new JPSRuntimeException(response.getStatusLine().toString());
+            }
+        } catch (URISyntaxException | IOException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+
+        return response_body;
+    }
+    
+    public static String executePut(String path, String body) {
+    	return executePut(path, body, null);
+    }
+    
+    public static String executePut(String path, String body, String jsonParam) {
+        String response_body;
+        URIBuilder builder = getUriBuilderForPath(path);
+        StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+
+        if (jsonParam != null) {
+        	builder.setParameter(JSON_PARAMETER_KEY, jsonParam);
+        }
+        
+        try {
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpPut request = new HttpPut(builder.build());
+            request.setEntity(entity);
+            
             HttpResponse response = httpClient.execute(request);
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
                 HttpEntity rsp_entity = response.getEntity();
