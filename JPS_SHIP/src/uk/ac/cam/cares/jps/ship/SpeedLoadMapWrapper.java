@@ -27,8 +27,9 @@ public class SpeedLoadMapWrapper extends HttpServlet {
 	
 	private String getSurogateValues(String inputs) {
 		//@todo [AC] - detect if, python virtual environment exists in the slmDir and create it first, if necessary
-		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir;
-		String pythonExec = smlWorkingDir + slmPython;
+		String smlWorkingDir =  AgentLocator.getCurrentJpsAppDirectory(this) + slmDir; 
+		String pythonExec = "C:\\JPS_DATA\\workingdir\\JPS\\SRM\\ADMS-speed-load-map" + slmPython;
+		//String pythonExec = smlWorkingDir + slmPython;change if going to claudius
 
 		ArrayList<String> args = new ArrayList<String>();
 		args.add(pythonExec);

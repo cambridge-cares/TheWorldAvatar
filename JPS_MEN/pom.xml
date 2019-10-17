@@ -65,10 +65,10 @@
 							<directory>WebContent/scripts</directory>
 							<targetPath>/scripts</targetPath>
 						</resource>
-					 	<!--  resource>
+					 	<resource>
 							<directory>WebContent/WEB-INF/lib</directory>
 							<targetPath>/WEB-INF/lib</targetPath>
-						</resource -->
+						</resource>
 						<resource>
            					<directory>WebContent</directory>
 				     			<includes>

@@ -7,7 +7,7 @@ class Constants(object):
     IRI_ONTOCAPE = IRI_ONTO + 'ontocape/'
     IRI_KB = BASE_IRI + 'kb/'
     IRI_KB_SHIPS = IRI_KB + 'ships/'
-    #IRI_KB_SHIPS ='http://localhost:8080/kb/ships/' (only used for testing local)
+    #IRI_KB_SHIPS ='http://localhost:8080/kb/ships/' #(only used for testing local)
     BLD_BDN = 'BDN'
     BLD_NUM = 'BldNumBuildings'
     BLD_NAME = 'BldName'

@@ -1,23 +1,25 @@
 package uk.ac.cam.cares.jps.coordination;
 
-import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.config.IKeys;
-import uk.ac.cam.cares.jps.base.config.KeyValueManager;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+
+import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 
 @WebServlet("/ADMSCoordinationAgentForShipWithoutComposition")
@@ -106,5 +108,6 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
 
         return newwaste;
     }
+    
 
 }

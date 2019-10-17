@@ -15,6 +15,7 @@ public class PythonHelper {
 	private static Logger logger = LoggerFactory.getLogger(PythonHelper.class);
 
 	public static String processCommand(String[] cmd) throws IOException {
+		
 		Process p = Runtime.getRuntime().exec(cmd);
 		BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 		String returnValue = stdInput.readLine();
@@ -51,7 +52,7 @@ public class PythonHelper {
 	public static String callPython(String pythonScriptName, String parameter1, String parameter2, Object thisObject) throws IOException {
 		String pathPythonScript = AgentLocator.getNewPathToPythonScript(pythonScriptName, thisObject);		
 		
-		logger.info(pathPythonScript, parameter1, parameter2);
+		logger.info(pathPythonScript+ parameter1+ parameter2);
 		
 		String[] cmd = { "python", pathPythonScript, parameter1, parameter2 };
 		
