@@ -34,6 +34,24 @@ document.addEventListener("click", function(evt) {
         readmeTextElement.style.display = 'none';
     }
 });
+window.onbeforeunload = function (event) {
+    window.onunload = function(){
+       keys = Object.keys(sessionStorage);
+       i = keys.length;
+       while (i--){
+           var retrievedObject = this.sessionStorage.getItem(keys[i]);
+           this.updateOwlFile(keys[i], JSON.parse(retrievedObject), 'kml');
+       } 
+    }
+    var message = 'Important: Please click on \'Save\' button to leave this page.';
+    if (typeof event == 'undefined') {
+        event = window.event;
+    }
+    if (event) {
+        event.returnValue = message;
+    }
+    return message;
+};
 
 //-----------------------------------------------------------------------------------//
 
@@ -297,7 +315,7 @@ function selectEBus(event) {
         console.log('response:', response);
         var inputsHTML = '';
         response = sortByKey(response,'name');
-        
+        sessionStorage.setItem(event.srcElement.id, JSON.stringify(response));
         var nameSet = [];
 
         for(var item in response)
@@ -612,7 +630,6 @@ asyncLoop({
                 
                 _div.innerHTML = '<table data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>' +
 '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
-                //location.reload(); //temp
             });
 
 
@@ -659,7 +676,7 @@ function constructLineMenu(id,callback){
 
 
         var div = document.createElement('div');
-        div.id = 'something';
+        div.id = 'inputsContainer';
         div.style='height:500px';
         
         div.innerHTML = '<table data-type="line" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
@@ -868,7 +885,7 @@ drawLines:function(data){
                         infowindow.open(map, that);
                         console.log('Set Time Out')
                         setTimeout(function(){
-                            var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
+                            var ggf = document.getElementById('inputsContainer').parentElement.parentElement.parentElement;
                             ggf.style.visibility = 'visible'
                             console.log('--- ggf --- 2', ggf)
                         },2000)
@@ -903,7 +920,7 @@ drawLines:function(data){
                         infowindow.open(this.googleMap, that);
                         
                         setTimeout(function(){
-                            var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
+                            var ggf = document.getElementById('inputsContainer').parentElement.parentElement.parentElement;
                             ggf.style.visibility = 'visible'
                             console.log('--- ggf --- 2', ggf)
                         },2000)
