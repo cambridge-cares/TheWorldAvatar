@@ -163,7 +163,6 @@ class AplBuilderTest(unittest.TestCase):
         self.assertEqual(ab.get_pol_wet_washout_b(Constants.POL_PM25), 5.394e-1)
         self.assertEqual(ab.get_pol_wet_washout_b(Constants.POL_HCl), 6.6e-1)
 
-
 class AplShipBuilderTest(unittest.TestCase):
     pass
 
