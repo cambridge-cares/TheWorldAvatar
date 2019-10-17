@@ -1,5 +1,6 @@
 package uk.ac.ca.ceb.como.paper.enthalpy.data.analysis;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,7 +28,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -81,7 +82,7 @@ public class InitialDataAnalysis {
 			String destRList, int[] ctrRadicals, int[] ctrRuns, int[] ctrRes, List<Species> refSpecies,
 			List<Species> soiSpecies, String srcCompoundsRef, Map<Species, Integer> spinMultiplicity,
 			Map<String, Integer[]> mapElPairing, String tempFolder, Collection<Species> invalids, Set<Species> all,
-			LinkedHashSet<Species> validSpecies, double targetSpeciesEnthalpy, double currentErrorBar) throws Exception {
+			LinkedHashSet<Species> validSpecies, double targetSpeciesEnthalpy, double currentErrorBar, BufferedWriter printedResultsFile) throws Exception {
 
 		for (int z = 0; z < ctrRadicals.length; z++) {
 
@@ -98,6 +99,10 @@ public class InitialDataAnalysis {
 							+ timeout + "s";
 
 					System.out.println("Process configuration " + config);
+					
+					printedResultsFile.write("Process configuration " + config);
+					
+					printedResultsFile.write("\n");
 
 					/**
 					 * 
@@ -128,6 +133,10 @@ public class InitialDataAnalysis {
 						 */
 					System.out.println("Skipping " + destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
 
+					printedResultsFile.write("Skipping " + destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
+					
+					printedResultsFile.write("\n");
+					
 						continue;
 
 					}
@@ -199,8 +208,12 @@ public class InitialDataAnalysis {
 
 								} else {
 
-									System.out
-											.println("REF: e- pairing could not be determined for " + target.getRef());
+									System.out.println("REF: e- pairing could not be determined for " + target.getRef());
+									
+									printedResultsFile.write("REF: e- pairing could not be determined for " + target.getRef());
+									
+									printedResultsFile.write("\n");
+									
 
 									invalids.add(target);
 
@@ -216,13 +229,25 @@ public class InitialDataAnalysis {
 								} else {
 
 									System.out.println(target.getRef());
+									
+
+									printedResultsFile.write(target.getRef());
+									
+									printedResultsFile.write("\n");
+									
 								}
 							}
 
 						} else {
 
 							System.out.println("REF: No file found for " + target.getRef());
+							
+							printedResultsFile.write("REF: No file found for " + target.getRef());
+							
+							printedResultsFile.write("\n");
+							
 							invalids.add(target);
+							
 							continue;
 							
 						}
@@ -237,6 +262,10 @@ public class InitialDataAnalysis {
 
 						System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + soiSpecies.size() + ")");
 
+						printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + soiSpecies.size() + ")");
+						
+						printedResultsFile.write("\n");
+						
 						ctr++;
 
 						/**
@@ -277,7 +306,7 @@ public class InitialDataAnalysis {
 						Collections.shuffle(refPool);
 						ExecutorService executor = Executors.newSingleThreadExecutor();
 
-						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, new ISDReactionType()));
+						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, new ISGReactionType(true)));
 						
 						poolModCalc.setMaximumSearchDepth(50);
 
@@ -311,6 +340,10 @@ public class InitialDataAnalysis {
 							} catch (TimeoutException | InterruptedException | ExecutionException e) {
 
 								System.out.println("Terminated!");
+								
+								printedResultsFile.write("Terminated!");
+								
+								printedResultsFile.write("\n");
 
 								Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
 
@@ -343,10 +376,21 @@ public class InitialDataAnalysis {
 									}
 
 									System.out.println("rList:");
+									
+									printedResultsFile.write("rList:");
+									
+									printedResultsFile.write("\n");
+									
+									
 
 									for (Reaction r : rList) {
 
 										System.out.println("Species name : " + r.getSpecies().getRef() + " enthalpy: " + r.getSpecies().getHf());
+										
+										printedResultsFile.write("Species name : " + r.getSpecies().getRef() + " enthalpy: " + r.getSpecies().getHf());
+										
+										printedResultsFile.write("\n");
+										
 									}
 
 									completeRList.addAll(rList);
@@ -356,11 +400,20 @@ public class InitialDataAnalysis {
 									List<Reaction> reactionList = selector.select(rList);
 
 									System.out.println("reactionList.size(): " + reactionList.size());
+									
+									printedResultsFile.write("reactionList.size(): " + reactionList.size());
+									
+									printedResultsFile.write("\n");
+									
 
 									for (Reaction r : reactionList) {
 
-										System.out.println("Species name : " + r.getSpecies().getRef() + " enthalpy: "
-												+ r.getSpecies().getHf());
+										System.out.println("Species name : " + r.getSpecies().getRef() + " enthalpy: " + r.getSpecies().getHf());
+										
+										printedResultsFile.write("Species name : " + r.getSpecies().getRef() + " enthalpy: " + r.getSpecies().getHf());
+										
+										printedResultsFile.write("\n");
+										
 									}
 
 									Reaction r = selector.select(rList).get(0);
@@ -371,7 +424,12 @@ public class InitialDataAnalysis {
 
 								} catch (ArrayIndexOutOfBoundsException | NullPointerException aioobe) {
 									
-									System.out.println("No data were calculated for " + s.getRef());									
+									System.out.println("No data were calculated for " + s.getRef());	
+									
+									printedResultsFile.write("No data were calculated for " + s.getRef());
+									
+									printedResultsFile.write("\n");
+									
 								}
 							}
 
@@ -429,6 +487,11 @@ public class InitialDataAnalysis {
 
 							if (!completeRList.isEmpty()) {
 								System.out.println("Writting complete reaction list...");
+								
+								printedResultsFile.write("Writting complete reaction list...");
+								
+								printedResultsFile.write("\n");
+								
 								rListWriter.set(completeRList);
 								rListWriter.overwrite(true);
 								rListWriter.write();
@@ -444,6 +507,12 @@ public class InitialDataAnalysis {
 										System.out.println("Ref species name: " + r.getRef() + " = "
 												+ " Target species name : " + target.getRef()
 												+ " Median species enthalpy: " + target.getHf());
+										
+										printedResultsFile.write("Ref species name: " + r.getRef() + " = "
+												+ " Target species name : " + target.getRef()
+												+ " Median species enthalpy: " + target.getHf());
+										
+										printedResultsFile.write("\n");
 
 										target.setHf(r.getHf());
 
@@ -477,12 +546,24 @@ public class InitialDataAnalysis {
 								  Double error = Math.abs(targetSpeciesEnthalpy - completeRList.get(ri).calculateHf());
 
 								  System.out.println("target species name: " + target.getRef() + " ,  target ref enthalpy: " + targetSpeciesEnthalpy); 
+								  
+								  printedResultsFile.write("target species name: " + target.getRef() + " ,  target ref enthalpy: " + targetSpeciesEnthalpy);
+									
+								  printedResultsFile.write("\n");
 
 								  System.out.println(" Reaction(" + ri + "): " + completeRList.get(ri).toString()
 											+ " Species (target ref) enthalpy: " + targetSpeciesEnthalpy
 											+ " Calculated Hf for reaction(" + ri + "): "
 											+ completeRList.get(ri).calculateHf() + " error: " + error);
 
+								  printedResultsFile.write(" Reaction(" + ri + "): " + completeRList.get(ri).toString()
+											+ " Species (target ref) enthalpy: " + targetSpeciesEnthalpy
+											+ " Calculated Hf for reaction(" + ri + "): "
+											+ completeRList.get(ri).calculateHf() + " error: " + error);
+									
+								  printedResultsFile.write("\n");
+
+								  
 									errorSum = errorSum + error;
 
 								}
@@ -490,6 +571,12 @@ public class InitialDataAnalysis {
 								errorBar = errorSum / errorCount;
 
 								System.out.println("species name: " + target.getRef() + " error bar: " + errorBar);
+								
+								printedResultsFile.write("species name: " + target.getRef() + " error bar: " + errorBar);
+								
+								printedResultsFile.write("\n");
+								  
+								
 								/**
 								 * 
 								 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -515,15 +602,31 @@ public class InitialDataAnalysis {
 								
 								System.out.println("Writting species list...");
 								
+
+								printedResultsFile.write("Writting species list...");
+								
+								printedResultsFile.write("\n");
+								
 								spWriter.set(ttipSpecies, false);
 								
 								spWriter.write();
 
 								System.out.println("TTIP Species: ");
 
+
+								printedResultsFile.write("TTIP Species: ");
+								
+								printedResultsFile.write("\n");
+								
 								for (Species ttip : ttipSpecies) {
 
 								System.out.println(ttip.getRef() + " " + ttip.getHf());
+								
+								printedResultsFile.write(ttip.getRef() + " " + ttip.getHf());
+								
+								printedResultsFile.write("\n");
+
+								
 								
 								}
 							}

@@ -1,5 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +25,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
@@ -84,7 +85,7 @@ public class DataPreProcessing {
      */
 
 	
-    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction) throws Exception {
+    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction,  BufferedWriter printedResultsFile) throws Exception {
     	
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -103,6 +104,10 @@ public class DataPreProcessing {
                 
         		System.out.println("Process configuration " + config);
                 
+        		printedResultsFile.write("Process configuration " + config);
+        		
+        		printedResultsFile.write("\n");
+        		
 //                  if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	  
                 	  /**
@@ -117,7 +122,11 @@ public class DataPreProcessing {
                   	 * HPC settings
                   	 */  
         		System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
-                    
+        		
+        		printedResultsFile.write("Skipping " + destRList  + "data-pre-processing" + "/" + config);
+                
+        		printedResultsFile.write("\n");
+        		
                     continue;
                 }
                 
@@ -126,11 +135,15 @@ public class DataPreProcessing {
         		   * Commented line of code below is used in original code.
         		   *  
         		   */
-//                Collections.shuffle(refSpecies);  
+//              Collections.shuffle(refSpecies);  
                 
                 int ctr = 1;
                 
                 System.out.println("refSpecies.isEmpty()(getPreProcessingCorssValidation method i class DataPreProcessing) : " + refSpecies.isEmpty());
+                
+                printedResultsFile.write("refSpecies.isEmpty()(getPreProcessingCorssValidation method i class DataPreProcessing) : " + refSpecies.isEmpty());
+                
+                printedResultsFile.write("\n");
                 
                 for(Species target : refSpecies) {
                 	/**
@@ -141,6 +154,10 @@ public class DataPreProcessing {
                     
                     System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                 
+                    printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
+                    
+                    printedResultsFile.write("\n");
+                    
                     ctr++;
                     
                     /**
@@ -309,7 +326,7 @@ public class DataPreProcessing {
                     
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
+                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
                     
                     poolModCalc.setMaximumSearchDepth(50); //50
                     
@@ -356,6 +373,10 @@ public class DataPreProcessing {
                         	
                             System.out.println("Terminated!");
                             
+                            printedResultsFile.write("Terminated!");
+                            
+                            printedResultsFile.write("\n");
+                            
                             Map<Species, Collection<ReactionList>> re = (Map<Species, Collection<ReactionList>>) t.getCalculator().get();
                             
                             if (re != null) {
@@ -381,6 +402,10 @@ public class DataPreProcessing {
                         
                         	System.out.println("Ref species name: " + s.getRef()+ "  ref species Hf: " + s.getHf());
                         	
+                        	printedResultsFile.write("Ref species name: " + s.getRef()+ "  ref species Hf: " + s.getHf());
+                        	
+                        	printedResultsFile.write("\n");
+                        	
                         	try {
                         		
                                 ReactionList rList = new ReactionList();
@@ -398,9 +423,18 @@ public class DataPreProcessing {
                               
                               System.out.println("reactionList.size(): " + reactionList.size());
                               
+                              printedResultsFile.write("reactionList.size(): " + reactionList.size());
+                              
+                              printedResultsFile.write("\n");
+                              
                               for(Reaction r : reactionList) {
                             	  
                             	  System.out.println("Species name for reaction list : " + r.getSpecies().getRef());
+                            	  
+                                  printedResultsFile.write("Species name for reaction list : " + r.getSpecies().getRef());
+                                  
+                                  printedResultsFile.write("\n");
+                                  
                               }
                               
                               ttipSpecies.add(s);
@@ -408,6 +442,10 @@ public class DataPreProcessing {
                             } catch (ArrayIndexOutOfBoundsException | NullPointerException aioobe) {
                             
                             	System.out.println("No data were calculated for " + s.getRef());
+                            	
+                                printedResultsFile.write("No data were calculated for " + s.getRef());
+                                
+                                printedResultsFile.write("\n");
                                 
                             }
                         }
@@ -476,6 +514,10 @@ public class DataPreProcessing {
                         	
                             System.out.println("Writting complete reaction list...");
                             
+                            printedResultsFile.write("Writting complete reaction list...");
+                            
+                            printedResultsFile.write("\n");
+                            
                             rListWriter.set(completeRList);
                             
                             rListWriter.overwrite(true);
@@ -500,6 +542,10 @@ public class DataPreProcessing {
                             
                         	System.out.println(" Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf() );
                             
+                        	printedResultsFile.write(" Reaction("+ri+"): " + completeRList.get(ri).toString() + " Species (ref) enthalpy: " + completeRList.get(ri).getSpecies().getHf() + " Calculated Hf for reaction("+ri+"): " + completeRList.get(ri).calculateHf());
+                        	
+                        	printedResultsFile.write("\n");
+                        	
                         	/**
                         	 * 
                         	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -545,9 +591,18 @@ public class DataPreProcessing {
                             	
                         System.out.println("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
                             
+                        printedResultsFile.write("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
+                        
+                        printedResultsFile.write("\n");
+                        
                             }
                         	
                         System.out.println("Writting species list...");
+                        
+                        printedResultsFile.write("Writting species list...");
+                        
+                        printedResultsFile.write("\n");
+                        
                             
                         spWriter.set(ttipSpecies, false);
                             

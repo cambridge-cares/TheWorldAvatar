@@ -1,5 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.io;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -28,7 +29,7 @@ public class LoadSpecies {
 	 * 
 	 */
 	
-	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing ) throws Exception {
+	public List<Species> loadSpeciesProperties(Collection<Species> ref, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, BufferedWriter printedResultsFile ) throws Exception {
 		
 		Collection<Species> invalids = new HashSet<>();
 		
@@ -43,6 +44,10 @@ public class LoadSpecies {
 			
         System.out.println("REF: Processing " + ctr + " / " + ref.size());
         
+        printedResultsFile.write("REF: Processing " + ctr + " / " + ref.size());
+        
+        printedResultsFile.write("\n");
+        
         ctr++;
         
         File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
@@ -50,6 +55,9 @@ public class LoadSpecies {
         if (f.exists()) {
                 
             	System.out.print(f.getName() + ": ");
+            	
+            	printedResultsFile.write(f.getName() + ": ");
+            	printedResultsFile.write("\n");
                 
                 Integer[] e = HfSpeciesConverter.getNumberOfElectrons(HfSpeciesConverter.parse(f));
                 
@@ -63,12 +71,20 @@ public class LoadSpecies {
                     
                 	System.out.println("REF: e- pairing could not be determined for " + s.getRef());
                     
+                	printedResultsFile.write("REF: e- pairing could not be determined for " + s.getRef());
+                	
+                	printedResultsFile.write("\n");
+                	
                     invalids.add(s);
                 }
                 
             } else {
             	
                 System.out.println("REF: No file found for " + s.getRef());
+                
+                printedResultsFile.write("REF: No file found for " + s.getRef());
+                
+                printedResultsFile.write("\n");
                 
                 invalids.add(s);
             }
@@ -178,7 +194,7 @@ public class LoadSpecies {
 	 * @param mapElPairing 
 	 * @throws Exception
 	 */
-	public void loadSpeciesPropertiesInitialAnalysis(List<Species> refSpecies, List<Species> soiSpecies, Set<Species> all, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids ) throws Exception {
+	public void loadSpeciesPropertiesInitialAnalysis(List<Species> refSpecies, List<Species> soiSpecies, Set<Species> all, Map<Species, Integer> spinMultiplicity, String srcCompoundsRef, Map<String, Integer[]> mapElPairing, Collection<Species> invalids,BufferedWriter printedResultsFile ) throws Exception {
         
         int ctr = 1;
         
@@ -189,6 +205,10 @@ public class LoadSpecies {
         	
             System.out.println("REF: Processing " + ctr + " / " + refSpecies.size());
             
+            printedResultsFile.write("REF: Processing " + ctr + " / " + refSpecies.size());
+            
+            printedResultsFile.write("\n");
+            
             ctr++;
             
             File f = new File(srcCompoundsRef + s.getRef().replace(".g09", "") + ".g09");
@@ -196,6 +216,11 @@ public class LoadSpecies {
             if (f.exists()) {
             
             	System.out.print(f.getName() + ": ");
+            	
+            	printedResultsFile.write(f.getName() + ": ");
+                
+                printedResultsFile.write("\n");
+                
                 
             	try {
             		
@@ -209,6 +234,11 @@ public class LoadSpecies {
                     } else {
                         
                     	System.out.println("REF: e- pairing could not be determined for " + s.getRef());
+                    	
+                    	printedResultsFile.write("REF: e- pairing could not be determined for " + s.getRef());
+                    	
+                    	printedResultsFile.write("\n");
+                    	 
                         invalids.add(s);
                     }
                     
@@ -221,6 +251,10 @@ public class LoadSpecies {
                     } else {
                     	
                         System.out.println(s.getRef());
+                        
+                        printedResultsFile.write(s.getRef());
+                        
+                        printedResultsFile.write("\n");
                     }
                 }
             	
@@ -228,6 +262,10 @@ public class LoadSpecies {
             	
             System.out.println("REF: No file found for " + s.getRef());
                 
+            printedResultsFile.write("REF: No file found for " + s.getRef());
+            
+            printedResultsFile.write("\n");
+            
             invalids.add(s);
             
             }

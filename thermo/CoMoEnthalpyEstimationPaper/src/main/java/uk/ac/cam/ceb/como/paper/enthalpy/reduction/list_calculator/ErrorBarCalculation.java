@@ -33,7 +33,7 @@ public class ErrorBarCalculation {
   * @throws IOException
   * 
   */
- public void generateInitialReactionListFile(BufferedWriter reactionFile, Map<Reaction, Double> reactionList) throws IOException {
+ public void generateInitialReactionListFile(BufferedWriter reactionFile, BufferedWriter printedResultsFile, Map<Reaction, Double> reactionList) throws IOException {
 
  	for(Map.Entry<Reaction, Double> v: reactionList.entrySet()) {
      	
@@ -42,6 +42,12 @@ public class ErrorBarCalculation {
      	reactionFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
      	
      	reactionFile.write("\n");
+     	
+     	printedResultsFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
+     	
+     	printedResultsFile.write("\n");
+     	
+    	
      }
  	
      reactionFile.close();
@@ -58,7 +64,7 @@ public class ErrorBarCalculation {
   * @throws IOException the exception.
   * 
   */
- public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile,  LinkedHashSet<Species> validSpeciesSet) throws IOException {
+ public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile, BufferedWriter printedResultsFile, LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
  	for(Species s: validSpeciesSet) {
  		
@@ -67,6 +73,11 @@ public class ErrorBarCalculation {
          validSpeciesFile.write(s.getRef());
          
          validSpeciesFile.write("\n");
+         
+         printedResultsFile.write("Species name: " + s.getRef());
+         
+         printedResultsFile.write("\n");
+         
          
         }
  	
@@ -85,7 +96,7 @@ public class ErrorBarCalculation {
   * @throws IOException the exception. 
   * 
   */
- public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
+ public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile,BufferedWriter printedResultsFile, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
  	for(Species invs: invalidSpeciesSet) {
          
@@ -96,6 +107,10 @@ public class ErrorBarCalculation {
  	       invalidSpeciesFile.write(invs.getRef());
  	       
             invalidSpeciesFile.write("\n");
+            
+            printedResultsFile.write("Species name: " + invs.getRef());
+            
+            printedResultsFile.write("\n");
  	       
  	       }
  	       
@@ -113,13 +128,17 @@ public class ErrorBarCalculation {
  * @param validSpeciesSet  Valid set of species.
  * @throws IOException The IO exception.
  */
-public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
+public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet, BufferedWriter printedResultsFile) throws IOException {
 	
 	 	for(Species invs: invalidSpeciesSet) {
 	         
 	 	       if(!validSpeciesSet.contains(invs)) {
 	 	       
 	 	       System.out.println("Species name: " + invs.getRef());
+	 	       
+	 	      printedResultsFile.write("Species name: " + invs.getRef());
+	 	      
+	 	     printedResultsFile.write("\n");
 	 	       
 	 	       tempInvalidSetOfSpecies.add(invs);
 	 	       
@@ -147,10 +166,11 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
      * @param validSpecies The initial set of valid species generated in pre-processing step of cross validation algorithm 
      * @param invalidSpecies The initial set of invalid species generated in pre-processing step of cross validation algorithm.
      * @return The hash map of species and their error bars.
+     * @throws IOException the IO exception 
      * 
      */
     
-    public Map<Species, Double> calculateSpeciesErrorBar(Map<Reaction, Double> invalidReaction, LinkedHashSet<Species> validSpecies, LinkedHashSet<Species> invalidSpecies ) {
+    public Map<Species, Double> calculateSpeciesErrorBar(Map<Reaction, Double> invalidReaction, LinkedHashSet<Species> validSpecies, LinkedHashSet<Species> invalidSpecies, BufferedWriter printedResultsFile ) throws IOException {
     
       Map<Species, Double> speciesErrorBarMap = new HashMap<Species, Double>();
     	
@@ -168,12 +188,25 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
      
       System.out.println("- - - -  - - - Unique species names from invalid reactions:  - - - - - -  - - - - - - ");
       
+      printedResultsFile.write("- - - -  - - - Unique species names from invalid reactions:  - - - - - -  - - - - - - ");
+      
+      printedResultsFile.write("\n");
+      
       for(Species s : uniqueinvSetOfSpecies) {
      	 
-     	 System.out.println("Species name: "  + s.getRef());    
+     	 System.out.println("Species name: "  + s.getRef());
+     	 
+     	printedResultsFile.write("Species name: "  + s.getRef());
+        
+        printedResultsFile.write("\n");
+        
       }
       
       System.out.println("- - - -  - - -  Species names from invalid reactions and their error bars: - - - - - -  - - - - - - ");
+      
+      printedResultsFile.write("- - - -  - - -  Species names from invalid reactions and their error bars: - - - - - -  - - - - - - ");
+      
+      printedResultsFile.write("\n");
       
       for(Species usp: uniqueinvSetOfSpecies ) {
 
@@ -194,7 +227,11 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
       errorBar=errorSum/errorCount;
       
       System.out.println("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
-     	 
+      
+      printedResultsFile.write("Species name: " + usp.getRef() + " , error bar: "  + errorBar );
+      
+      printedResultsFile.write("\n");
+      
       speciesErrorBarMap.put(usp, errorBar);
       
       }
@@ -214,9 +251,20 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
       
       System.out.println("-----------------Species from invalid (rejected) list with error bar: ");
       
+      printedResultsFile.write("-----------------Species from invalid (rejected) list with error bar: ");
+      
+      printedResultsFile.write("\n");
+      
+      
       for(Map.Entry<Species, Double> invmap: invalidSpeciesErrorBarMap.entrySet()) {
      	 
-     	 System.out.println(invmap.getKey().getRef()+ " " + invmap.getValue()) ;
+     	 
+    	  System.out.println(invmap.getKey().getRef()+ " " + invmap.getValue()) ;
+     	 
+     	  printedResultsFile.write(invmap.getKey().getRef()+ " " + invmap.getValue());
+          
+          printedResultsFile.write("\n");
+          
       }
     
     return invalidSpeciesErrorBarMap;
