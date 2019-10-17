@@ -3,8 +3,10 @@ package uk.ac.cam.cares.jps.powsys.nuclear.test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -21,13 +23,26 @@ import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
 public class TestNuclear extends TestCase {
 
-	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+	public void testStartSimulationAndProcessResultDirectCallForBaseScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException { //not tested yet
 		NuclearAgent agent = new NuclearAgent();
+		JSONObject jofornuc = new JSONObject();
+		JSONArray ja = new JSONArray();
+		//ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
+		//ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
+		//ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
+		jofornuc.put("substitutionalpowerplants", ja);
 		
 		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
-		agent.startSimulation(lotiri, iriofnetwork, dataPath, false);
+		ArrayList<String> listofplant= new ArrayList<String>();
+		
+		for (int c=0;c<jofornuc.getJSONArray("substitutionalpowerplants").length();c++) {
+			listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+		}
+		
+		agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
 		
 		// copy existing result file from a previous simulation to the data bucket 
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/results.csv";
@@ -35,6 +50,21 @@ public class TestNuclear extends TestCase {
 		String destinationUrl = dataPath + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
 		new QueryBroker().put(destinationUrl, file);
 		
+		List<String> result = agent.processSimulationResult(dataPath);
+		System.out.println("result from processsimulationresult=" + result);
+		assertEquals(4, result.size());
+	}
+	
+	public void xxxtestProcessResultDirectCallForScenarioaasc5() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+		
+		String scenarioUrl = BucketHelper.getScenarioUrl("aasc5"); 
+		
+		String usecaseUrl = scenarioUrl + "/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7";
+		
+		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);
+		
+		NuclearAgent agent = new NuclearAgent();
+		String dataPath = QueryBroker.getLocalDataPath();
 		List<String> result = agent.processSimulationResult(dataPath);
 		System.out.println("result from processsimulationresult=" + result);
 		assertEquals(4, result.size());
@@ -53,6 +83,7 @@ public class TestNuclear extends TestCase {
 		
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
+		System.out.println(usecaseUrl);
 		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put(JPSConstants.RUN_SIMULATION, false);
@@ -79,4 +110,32 @@ public class TestNuclear extends TestCase {
 		jo = new JSONObject(resultProcess);
 		assertEquals(4, jo.getJSONArray("plants").length());
 	}
+	
+	public void testcallNewNuclearAgentCSVInput() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {
+		JSONObject result = new JSONObject();
+		JSONArray ja = new JSONArray();
+		ja.put("http://www.theworldavatar.com/kb/powerplants/Keppel_Merlimau_Cogen_Power_Plant_Singapore.owl#Keppel_Merlimau_Cogen_Power_Plant_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
+		ja.put("http://www.theworldavatar.com/kb/powerplants/PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore.owl#PowerSeraya_Pulau_Seraya_CCGT_Cogen_Power_Plant_Singapore");
+		result.put("substitutionalpowerplants", ja);
+		NuclearAgent agent = new NuclearAgent();
+		
+		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
+		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+		
+		ArrayList<String> listofplant= new ArrayList<String>();
+		for (int c=0;c<result.getJSONArray("substitutionalpowerplants").length();c++) {
+			listofplant.add(result.getJSONArray("substitutionalpowerplants").getString(c));
+		}
+		
+		String dataPath = QueryBroker.getLocalDataPath();
+		System.out.println("what is dataPath="+dataPath);
+		//agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
+		agent.prepareCSVPartialRemaining(listofplant,iriofnetwork,dataPath);
+		
+
+	}
+	
+	
 }

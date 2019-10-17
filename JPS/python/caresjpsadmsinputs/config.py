@@ -1,4 +1,13 @@
+from collections import namedtuple
+
+
 class Constants(object):
+    BASE_IRI = 'http://www.theworldavatar.com/'
+    IRI_ONTO = BASE_IRI + 'ontology/'
+    IRI_ONTOCAPE = IRI_ONTO + 'ontocape/'
+    IRI_KB = BASE_IRI + 'kb/'
+    IRI_KB_SHIPS = IRI_KB + 'ships/'
+    #IRI_KB_SHIPS ='http://localhost:8080/kb/ships/' (only used for testing local)
     BLD_BDN = 'BDN'
     BLD_NUM = 'BldNumBuildings'
     BLD_NAME = 'BldName'
@@ -9,8 +18,10 @@ class Constants(object):
     BLD_LRNGTH = 'BldLength'
     BLD_WIDTH = 'BldWidth'
     BLD_ANGLE = 'BldAngle'
-    BLD_TOPNODE = "http://www.theworldavatar.com/damecoolquestion/buildingsLite/sparql"
+    BLD_TOPNODE = BASE_IRI + 'damecoolquestion/buildingsLite/sparql'
     BLD_LIMIT = 25
+    SRC_MAIN_BLD = 'SrcMainBuilding'
+    SRC_VERT_VELOC = 'SrcVertVeloc'
     COORD_MAX_CORNER = 'uppercorner'
     COORD_MAX_X = 'upperx'
     COORD_MAX_Y = 'uppery'
@@ -74,23 +85,31 @@ class Constants(object):
     FILEPATH_HIL_HK = 'C:\\JPS_DATA\\workingdir\\JPS\\ADMS\\hkterrainlatestupdated.ter'
     FILEPATH_HIL_SG = 'C:\\Users\\kevin\\Downloads\\A48\\terrain accurate\\singaporeterrain.ter'
     FILEPATH_HIL_BGD = 'D:\\ADMS 5.2\\Test files\\tank1574leakage\\background condition.bgd'
+    FILEPATH_MET = 'C://JPS_DATA/workingdir/JPS/ADMS/test.met'
+    FILEPATH_BKG = 'C://JPS_DATA/workingdir/JPS/ADMS/testbackgrnd.bkg'
     UNIT_PPB = 'ppb'
     UNIT_UGM3 = 'ug/m3'
     GRD_X = 'grid_x'
     GRD_Y = 'grid_y'
-    OWL_BEHAVIOUR = 'http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#'
-    OWL_GEOMETRY = 'http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#'
-    OWL_SYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#'
-    OWL_PHASE_SYSTEM = 'http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#'
-    OWL_TIMESPACE_EXT = 'http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/' + \
-                        'space_and_time_extended.owl#'
-    OWL_PLANT = 'http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#'
-    OWL_TOPOLOGY = 'http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#'
-    OWL_CHEM_PROC_SYS = 'http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/' + \
-                        'chemical_process_system.owl#'
-    OWL_TECH_SYS = 'http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#'
-    OWL_MATERIAL = 'http://www.theworldavatar.com/ontology/ontocape/material/material.owl#'
-    OWL_SUBSTANCE = 'http://www.theworldavatar.com/ontology/ontocape/material/substance/substance.owl#'
+    OWL_BEHAVIOUR = IRI_ONTOCAPE + 'chemical_process_system/CPS_behavior/behavior.owl#'
+    OWL_GEOMETRY = IRI_ONTOCAPE + 'supporting_concepts/geometry/geometry.owl#'
+    OWL_SYSTEM = IRI_ONTOCAPE + 'upper_level/system.owl#'
+    OWL_PHASE_SYSTEM = IRI_ONTOCAPE + 'material/phase_system/phase_system.owl#'
+    OWL_TIMESPACE_EXT = IRI_ONTOCAPE + 'supporting_concepts/space_and_time/space_and_time_extended.owl#'
+    OWL_PLANT = IRI_ONTOCAPE + 'chemical_process_system/CPS_realization/plant.owl#'
+    OWL_TOPOLOGY = IRI_ONTO + 'meta_model/topology/topology.owl#'
+    OWL_CHEM_PROC_SYS = IRI_ONTOCAPE + 'chemical_process_system/chemical_process_system.owl#'
+    OWL_TECH_SYS = IRI_ONTOCAPE + 'upper_level/technical_system.owl#'
+    OWL_MATERIAL = IRI_ONTOCAPE + 'material/material.owl#'
+    OWL_SUBSTANCE = IRI_ONTOCAPE + 'material/substance/substance.owl#'
+    OWL_NO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Nitrogen__dioxide'
+    OWL_CO = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Carbon__monoxide'
+    OWL_CO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Carbon__dioxide'
+    OWL_SO2 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Sulfur__dioxide'
+    OWL_O3 = IRI_ONTOCAPE + 'material/substance/chemical_species.owl#Ozone'
+    OWL_HC = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Unburned_Hydrocarbon'
+    OWL_NOx = IRI_ONTOCAPE + 'material/substance/pseudocomponent.owl#Nitrogen__oxides'
+    OWL_PART_001 = IRI_KB + 'ships/Chimney-1.owl#Particulate-001'
     KEY_DIAMETER = 'diameter'
     KEY_DENSITY = 'density'
     KEY_MASS_FRACTION = 'massFraction'
@@ -101,11 +120,32 @@ class Constants(object):
     KEY_MOLE_WEIGHT = 'moleweight'
     KEY_HEAT_CAP = 'heatcapa'
     KEY_MASS_FLOW = 'massflow'
+    KEY_VELOCITY = 'velocity'
+    KEY_EM_RATES = 'emissionrates'
     KEY_ER = 'er'
     KEY_V = 'v'
     KEY_O = 'o'
+    KEY_X = 'x'
+    KEY_Y = 'y'
     KEY_PARSE = 'parse'
-    IRI_KB_SHIPS = "http://www.theworldavatar.com/kb/ships/"
+    KEY_CONN_PARSE = KEY_PARSE
+    KEY_CONN_ENDPOINT = 'endpoint'
+    KEY_RESULTS = 'results'
+    KEY_BINDINGS = 'bindings'
+    KEY_TYPE = 'type'
+    KEY_LITERAL = 'literal'
+    KEY_TLITERAL = 'typed-' + KEY_LITERAL
+    KEY_DATA_TYPE = 'datatype'
+    KEY_QUERY = 'query'
+    KEY_UAGENT = 'user-agent'
+    KEY_APP_CLIENT = 'my-app/0.0.1'
+    TPL_OPT = namedtuple('OPT', ['OptNumOutputs', 'OptPolName', 'OptInclude', 'OptShortOrLong', 'OptSamplingTime',
+                                 'OptSamplingTimeUnits', 'OptCondition', 'OptNumPercentiles', 'OptNumExceedences',
+                                 'OptPercentiles', 'OptExceedences', 'OptUnits', 'OptGroupsOrSource',
+                                 'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
+                                 'OptCreateComprehensiveFile'])
+    KEY_GRPTANK = 'Grouptank001'
+    KEY_SHIP_OPT_SRCNAME = 'SrcNames'
 
 
 class QueryStrings(object):
@@ -116,7 +156,7 @@ class QueryStrings(object):
                 PREFIX j.1:<''' + Constants.OWL_PHASE_SYSTEM + '''>
                 
                 SELECT distinct ?p ?''' + Constants.KEY_DIAMETER + ''' ?''' + Constants.KEY_DENSITY + ''' ?''' \
-                                   + Constants.KEY_MASS_FRACTION + '''
+                                           + Constants.KEY_MASS_FRACTION + '''
                 
                 WHERE{
                     ?p a j.0:SingleParticle.
@@ -157,8 +197,10 @@ class QueryStrings(object):
                 PREFIX material: <''' + Constants.OWL_MATERIAL + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 
-                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER \
-                        + ''' ?temp ?height ?massflow ?heatcapa ?''' + Constants.KEY_DENSITY + ''' ?moleweight
+                SELECT distinct ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_DIAMETER + ''' ?''' + \
+                                    Constants.KEY_TEMP + ''' ?''' + Constants.KEY_HEIGHT + ''' ?''' + \
+                                    Constants.KEY_MASS_FLOW + ''' ?''' + Constants.KEY_HEAT_CAP + ''' ?''' + \
+                                    Constants.KEY_DENSITY + ''' ?''' + Constants.KEY_MOLE_WEIGHT + '''
                 WHERE {
                 
                     ?o plant:hasHeight ?he.
@@ -211,7 +253,8 @@ class QueryStrings(object):
                     }
                 }
             '''
-    SPARQL_CONTENT = '''
+
+    SPARQL_CONTENT_PARTICULATE = '''
                 PREFIX sys: <''' + Constants.OWL_SYSTEM + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
                 PREFIX part:<''' + Constants.OWL_BEHAVIOUR + '''>
@@ -225,8 +268,8 @@ class QueryStrings(object):
                      ?''' + Constants.KEY_CONTENT + '''   a part:ParticulateMaterialAmount.
                     }}
                 }}
-
             '''
+
     SPARQL_ERATE = '''
                 PREFIX sys: <''' + Constants.OWL_SYSTEM + '''>
                 PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
@@ -240,3 +283,87 @@ class QueryStrings(object):
                     ?erv sys:numericalValue ?''' + Constants.KEY_V + '''
                 }}
             '''
+
+    SPARQL_HEIGHT_DIAMETER_CONTENT_X_Y_VELOCITY_MASSFLOW_TEMP_HEATCAPA_DENSITY_MOLEWEIGHT = '''
+                PREFIX sys: <''' + Constants.OWL_SYSTEM + '''>
+                PREFIX space_and_time_extended: <''' + Constants.OWL_TIMESPACE_EXT + '''>
+                PREFIX plant:<''' + Constants.OWL_PLANT + '''>
+                PREFIX topology:<''' + Constants.OWL_TOPOLOGY + '''>
+                PREFIX behavior: <''' + Constants.OWL_BEHAVIOUR + '''>
+                PREFIX chemical_process_system:<''' + Constants.OWL_CHEM_PROC_SYS + '''>
+                PREFIX phase_system:<''' + Constants.OWL_PHASE_SYSTEM + '''>
+                PREFIX material: <''' + Constants.OWL_MATERIAL + '''>
+                PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
+
+                SELECT ?''' + Constants.KEY_O + ''' ?''' + Constants.KEY_HEIGHT + ''' ?''' + Constants.KEY_DIAMETER \
+                            + ''' ?''' + Constants.KEY_CONTENT + ''' ?x ?y ?''' + Constants.KEY_VELOCITY + ''' ?''' \
+                            + Constants.KEY_MASS_FLOW + ''' ?''' + Constants.KEY_TEMP + ''' ?''' \
+                            + Constants.KEY_MOLE_WEIGHT + ''' ?''' + Constants.KEY_HEAT_CAP + ''' ?''' \
+                            + Constants.KEY_DENSITY + '''
+                WHERE {{
+                ?o plant:hasHeight ?he.
+                ?he sys:numericalValue ?''' + Constants.KEY_HEIGHT + ''' .
+
+                 ?o sys:hasSubsystem ?chm.
+                ?chm plant:hasInsideDiameter ?de . #?dev  sys:hasValue ?de.
+                ?de sys:numericalValue ?''' + Constants.KEY_DIAMETER + ''' .
+
+                ?phase phase_system:has_temperature  ?tempE.
+                ?tempE sys:hasValue ?vte.
+                ?vte sys:numericalValue ?''' + Constants.KEY_TEMP + ''' .
+
+                ?o space_and_time_extended:hasGISCoordinateSystem ?coe .
+                ?coe space_and_time_extended:hasProjectedCoordinate_x ?xe.
+                 ?xe sys:hasValue ?xv.
+                  ?xv sys:numericalValue ?''' + Constants.KEY_X + '''.
+
+                   ?coe space_and_time_extended:hasProjectedCoordinate_y ?ye.
+                 ?ye sys:hasValue ?yv.
+                  ?yv sys:numericalValue ?''' + Constants.KEY_Y + '''.
+
+                  ?stream topology:leaves ?''' + Constants.KEY_O + '''.
+                  ?stream chemical_process_system:refersToGeneralizedAmount ?ga.
+                  ?ga sys:hasSubsystem ?ma.
+                  
+                  ?ma sys:hasProperty ?ve.
+                  ?ve a behavior:Velocity .
+                  ?ve sys:hasValue ?vv.
+                  ?vv sys:numericalValue ?''' + Constants.KEY_VELOCITY + '''.
+                  
+                  ?ma sys:hasProperty ?me.
+                  ?me a behavior:ConvectiveMassFlowrate .
+                  ?me sys:hasValue ?mv.
+                  ?mv sys:numericalValue ?''' + Constants.KEY_MASS_FLOW + ''' .
+    
+                 ?mw a substance:MolecularWeight.
+                 ?mw sys:hasValue ?mwv.
+                 ?mwv  sys:numericalValue ?''' + Constants.KEY_MOLE_WEIGHT + '''.
+    
+                 ?cp a phase_system:ThermodynamicStateProperty.
+                                     ?cp sys:hasValue ?cpv.
+                 ?cpv  sys:numericalValue ?''' + Constants.KEY_HEAT_CAP + '''.
+    
+                 ?den a phase_system:Density.
+                  ?den sys:hasValue ?denv.
+                 ?denv  sys:numericalValue ?''' + Constants.KEY_DENSITY + '''.
+    
+                }}
+                LIMIT 1 
+            '''
+
+    SPARQL_CONTENT = '''
+                PREFIX sys: <''' + Constants.OWL_SYSTEM + '''>
+                PREFIX substance:<''' + Constants.OWL_SUBSTANCE + '''>
+    
+                SELECT DISTINCT  ?''' + Constants.KEY_CONTENT + '''
+                WHERE {{
+                ?mix a substance:Mixture.
+                ?mix sys:containsDirectly  ?''' + Constants.KEY_CONTENT + '''. 
+                }}
+            '''
+
+
+class ExceptionStrings(object):
+    DB_CONN_UNKNOWN = 'Db connection method not defined.'
+    BDN_NOT_FOUND = 'No closed building found for src: '
+    SUBSTANCE_UNDEFINED = 'This substance is not defined.'

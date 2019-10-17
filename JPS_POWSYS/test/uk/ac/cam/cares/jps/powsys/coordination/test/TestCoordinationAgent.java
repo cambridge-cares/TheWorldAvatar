@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -12,6 +13,7 @@ import org.json.JSONObject;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
@@ -85,6 +87,75 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+	}
+	
+	private int calculateNumberOfGenerators(String s, String searchpattern, int namelength) {
+		
+		System.out.println("\n\nscenario = " + JPSContext.getScenarioUrl());
+		
+		StringTokenizer t = new StringTokenizer(s, "\n");
+		int countLines = 0;
+		int countGen = 0;
+		while (t.hasMoreTokens()) {
+			countLines++;
+			String line = t.nextToken();
+			int i = line.indexOf(searchpattern);
+			if (i >= 0) {
+				countGen++;
+				System.out.println(line.substring(i, i + namelength));
+			}
+			
+		}
+		System.out.println("count gen = " + countGen);
+		System.out.println("count lines = " + countLines);
+		
+		return countGen;
+	}
+	
+	/**
+	 * First, run the test methods testCoordinateOPFDirectCall() and  testCoordinatePFDirectCall() 
+	 * to create two scenarios with name testPOWSYSCoordinateOPF and testPOWSYSCoordinatePF, resp.
+	 * 
+	 * This method shows how the EN top node is queried for different scenarios, and checks the
+	 * number of (modified) generators.
+	 */
+	public void testReadElectricalNetwork() {
+		
+		String scenarioName = JPSConstants.SCENARIO_NAME_BASE;
+		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName); 
+		JPSHttpServlet.enableScenario(scenarioUrl, null);	
+		String result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
+		int countgen = calculateNumberOfGenerators(result, "#EGen-", 9);
+		assertEquals(14, countgen);
+		
+		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
+		countgen = calculateNumberOfGenerators(result, "#NucGenerator", 18);
+		assertEquals(0, countgen);
+		
+		
+		scenarioName = "testPOWSYSCoordinateOPF";
+		scenarioUrl = BucketHelper.getScenarioUrl(scenarioName); 
+		JPSHttpServlet.enableScenario(scenarioUrl, null);	
+		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
+		countgen = calculateNumberOfGenerators(result, "#EGen-", 9);
+		// generator for slack bus only, all other generators have been removed
+		assertEquals(1, countgen);
+
+		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
+		countgen = calculateNumberOfGenerators(result, "#NucGenerator", 18);
+		assertEquals(14, countgen);
+		
+		scenarioName = "testPOWSYSCoordinatePF";
+		scenarioUrl = BucketHelper.getScenarioUrl(scenarioName); 
+		JPSHttpServlet.enableScenario(scenarioUrl, null);	
+		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
+		countgen = calculateNumberOfGenerators(result, "#EGen-", 9);
+		// generator for slack bus only, all other generators have been removed
+		assertEquals(1, countgen);
+		
+		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
+		countgen = calculateNumberOfGenerators(result, "#NucGenerator", 18);
+		assertEquals(14, countgen);
 	}
 	
 	public void testCoordinateOPFAgentCall() throws URISyntaxException, IOException {

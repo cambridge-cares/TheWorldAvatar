@@ -23,3 +23,8 @@
 /JPS_COMPOSITION/target/
 /JPS_SHIP/classes/
 /JPS/python/caresjpsadmsinputs/caresjpsadmsinputs.iml
+/JPS_SHIP/workingdir/test.*
+/JPS_ARBITRAGE/.settings/*
+/JPS_ARBITRAGE/build/*
+target
+*.jar

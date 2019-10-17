@@ -13,13 +13,16 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -30,6 +33,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
@@ -38,8 +42,9 @@ public class NuclearAgent extends JPSHttpServlet {
 	private static final long serialVersionUID = -4199209974912271432L;
 	private Logger logger = LoggerFactory.getLogger(NuclearAgent.class);
 	public static final String AGENT_TAG = "GAMS_NuclearAgent";
+	private String modelname="final.gms";
 	
-	public void runGAMS() throws IOException, InterruptedException {
+	public void runGAMSAsync() throws IOException, InterruptedException {
         System.out.println("Start");
         System.out.println("separator= "+File.separator);
         String executablelocation ="C:/GAMS/win64/26.1/gams.exe";
@@ -71,6 +76,46 @@ public class NuclearAgent extends JPSHttpServlet {
         System.out.println("Done");
 	}
 	
+	public void modifyTemplate(String newdir, String filename) throws IOException { 
+		String destinationUrl = newdir + "/"+filename;
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+        String fileContext = FileUtils.readFileToString(file);
+        fileContext = fileContext.replaceAll("parameters_req.gdx",newdir+"/parameters_req.gdx");
+        fileContext = fileContext.replaceAll("constants_req.gdx",newdir+"/constants_req.gdx");
+        
+        fileContext = fileContext.replaceAll("parameters_req.csv",newdir+"/parameters_req.csv output="+newdir+"/parameters_req.gdx");
+        fileContext = fileContext.replaceAll("constants_req.csv",newdir+"/constants_req.csv output="+newdir+"/constants_req.gdx");
+		
+		new QueryBroker().put(destinationUrl, fileContext);
+	}
+	
+	
+	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 
+		
+		modifyTemplate(baseUrl,modelname);
+
+		logger.info("Start");
+		//logger.info("separator= "+File.separator);
+        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+        String folderlocation =baseUrl+"/";
+        //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
+        String[] cmdArray = new String[5];
+        
+        cmdArray[0] = executablelocation;
+        cmdArray[1] = folderlocation + modelname;
+        cmdArray[2] = "WDIR="+folderlocation;
+        cmdArray[3] = "SCRDIR="+folderlocation;
+        cmdArray[4] = "LO=2";
+        
+        String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
+        
+        logger.info(cmdArrayinstring);
+        Process p = Runtime.getRuntime().exec(cmdArray);
+		   p.waitFor();
+         
+		   logger.info("Done");
+	}
+	
 	private void pseudoRunGAMS() {
 		String scenarioUrl = BucketHelper.getScenarioUrl();
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
@@ -85,26 +130,46 @@ public class NuclearAgent extends JPSHttpServlet {
 		System.out.println("path= "+path);
 		
 		if ("/NuclearAgent/startsimulation".equals(path)) {
-		
+
 			JSONObject jofornuc = AgentCaller.readJsonParameter(request);
-			
+
 			try {
 				String lotiri = jofornuc.getString("landlot");
 				String iriofnetwork = jofornuc.getString("electricalnetwork");
+				ArrayList<String> listofplant = new ArrayList<String>();
+				for (int c = 0; c < jofornuc.getJSONArray("substitutionalpowerplants").length(); c++) {
+					listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+				}
+
 				boolean runGams = true;
 				if (!jofornuc.isNull(JPSConstants.RUN_SIMULATION)) {
 					runGams = jofornuc.getBoolean(JPSConstants.RUN_SIMULATION);
 				}
-				
+
 				String dataPath = QueryBroker.getLocalDataPath();
-				startSimulation(lotiri, iriofnetwork, dataPath, runGams);
-				
+				startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
+				// startSimulation(lotiri, iriofnetwork, dataPath, runGams);
+
+				JSONObject jo = new JSONObject();
+				List<String> plants = processSimulationResult(dataPath);
+				JSONArray plantsja = new JSONArray(plants);
+				jo.put("plants", plantsja);
+				AgentCaller.printToResponse(jo, response);
+
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
 			}
-					
-		} else if ("/NuclearAgent/processresult".equals(path)) {
+
+		} else if ("/NuclearAgent/processresult".equals(path)) {//is the process result still used???	
 			
 			try {
 				JSONObject jo = AgentCaller.readJsonParameter(request);
@@ -127,10 +192,10 @@ public class NuclearAgent extends JPSHttpServlet {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			}
-		}	
+		} 
 	}
 	
-	public void startSimulation(String lotiri, String iriofnetwork, String dataPath, boolean runGams) throws IOException, InterruptedException {
+	public void startSimulation(String lotiri, String iriofnetwork,ArrayList<String>plantlist, String dataPath, boolean runGams) throws IOException, InterruptedException {
 		
 		String baseUrl = dataPath + "/" + AGENT_TAG;
 		
@@ -157,10 +222,13 @@ public class NuclearAgent extends JPSHttpServlet {
  
         //-----------------------------------------4th input file finished-------------------------------------------------------------------
 
-        //if (runGams) {
-        //	runGAMS();
-        //}
-        pseudoRunGAMS();
+        prepareCSVPartialRemaining(plantlist,iriofnetwork,dataPath);
+      //-----------------------------------------5th input file finished-------------------------------------------------------------------
+
+        if (runGams) {
+        	runGAMS(baseUrl);
+        }
+//        pseudoRunGAMS();
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
@@ -195,6 +263,78 @@ public class NuclearAgent extends JPSHttpServlet {
 		}
 	}
 
+	
+	public void prepareCSVPartialRemaining(ArrayList<String>plantlist,String iriofnetwork,String baseUrl) throws IOException {
+		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
+		String genplantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?entity ?plant ?Pmaxvalue ?xval ?yval "
+				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+				+ "?entity   j2:isSubsystemOf ?plant ."
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?pmax ." 
+				+ "?pmax  a  j3:PMax  ." 
+				+ "?pmax  j2:hasValue ?vpmax ."
+				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
+				+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+				+ "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+				+ "?xent j2:hasValue ?vxent ."
+				+ "?vxent   j2:numericalValue ?xval ." // xvalue
+				+ "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+				+ "?yent j2:hasValue ?vyent ."
+				+ "?vyent   j2:numericalValue ?yval ." // xvalue
+				+ "}";
+		
+		ResultSet resultSet = JenaHelper.query(model, genplantinfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		int x=0;
+		double sumcapreplaced=0;
+		List<String[]> csvresult= new ArrayList<String[]>();
+		String[]header= {"type","capacity","x","y"};
+		csvresult.add(header);
+		
+		while(x<resultList.size()) {
+			if(!plantlist.contains(resultList.get(x)[1])) {
+				System.out.println("generator remains= "+resultList.get(x)[0]);
+				System.out.println("P max= "+resultList.get(x)[2]);
+				System.out.println("x= "+resultList.get(x)[3]);
+				System.out.println("y= "+resultList.get(x)[4]);
+				String[]content= new String[4];
+				content[0]="c"+x;
+				content[1]=resultList.get(x)[2];
+				content[2]=resultList.get(x)[3];
+				content[3]=resultList.get(x)[4];
+				csvresult.add(content);
+				
+			}
+			else {
+				sumcapreplaced=sumcapreplaced+Double.valueOf(resultList.get(x)[2]);
+			}
+
+			
+			x++;
+		}
+		System.out.println("sum replaced= "+sumcapreplaced);
+		String[]content2= new String[4];
+		content2[0]="n";
+		content2[1]=""+sumcapreplaced;
+		content2[2]="0.0";
+		content2[3]="0.0";
+		csvresult.add(content2);
+		 String s = MatrixConverter.fromArraytoCsv(csvresult);
+		 QueryBroker broker = new QueryBroker();
+		 broker.put(baseUrl + "/inputgeneratorselection.csv", s);
+		
+	}
+	
 	public void prepareCSVLandlot(String lotiri, String baseUrl) {		
 
 		String lotsInfo= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> " 

@@ -102,7 +102,7 @@ public class RelationalDB {
                 "AND (lon BETWEEN ? AND ?) " +
                 "AND (ts >= ? or tst >= ?) " +
                 "ORDER BY ss DESC, al DESC, aw DESC " +
-                "LIMIT 10";
+                "LIMIT 300";
 
         try {
             Instant instant = Instant.now();
