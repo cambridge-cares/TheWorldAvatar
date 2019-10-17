@@ -1,6 +1,8 @@
 import unittest
+from collections import namedtuple
 
 from adms_apl import *
+from config import Constants
 
 
 class AplTest(unittest.TestCase):
@@ -940,3 +942,65 @@ class AdmsAplTestHelper(object):
                'SrcPolDuration = \n  \n' \
                'SrcNumIsotopes = 0\n' \
                '/\n\n'
+
+    @staticmethod
+    def get_default_apl_pollutant_names():
+        return [Constants.POL_CO2, Constants.POL_NOX, Constants.POL_NO2,
+                Constants.POL_NO, Constants.POL_PART_O3, Constants.POL_VOC, Constants.POL_PART_SO2,
+                Constants.POL_PM10, Constants.POL_PM25, Constants.POL_CO, Constants.POL_BENZENE,
+                Constants.POL_BUTADIENE, Constants.POL_HCl, Constants.POL_Cl2, Constants.POL_CH3Cl,
+                Constants.POL_ISOBUTYLENE, Constants.POL_NH3, Constants.POL_HC]
+
+    @staticmethod
+    def get_default_apl_builder_data(self):
+        return {Constants.KEY_SRC: None, Constants.KEY_OPT: self.get_default_apl_opt_data(), Constants.KEY_MET: None,
+                Constants.KEY_GRD: [0, 1, 2, 3], Constants.KEY_POL: None, Constants.KEY_BKG: None,
+                Constants.KEY_BDN: self.get_default_apl_bld_data(), Constants.KEY_COORD_SYS: 2,
+                Constants.GRD_X: 4, Constants.GRD_Y: 5}
+
+    @staticmethod
+    def get_default_apl_bld_data():
+        bdn = namedtuple(Constants.BLD_BDN,
+                         [Constants.BLD_NUM, Constants.BLD_NAME, Constants.BLD_TYPE, Constants.BLD_X,
+                          Constants.BLD_Y, Constants.BLD_HEIGHT, Constants.BLD_LRNGTH, Constants.BLD_WIDTH,
+                          Constants.BLD_ANGLE])
+        bdn.BldName = "test"
+        bdn.BldNumBuildings = len(bdn.BldName)
+        bdn.BldType = "test"
+        bdn.BldX = 1
+        bdn.BldY = 2
+        bdn.BldHeight = 3
+        bdn.BldLength = 4
+        bdn.BldWidth = 5
+        bdn.BldAngle = 6
+
+        return bdn
+
+    @staticmethod
+    def get_default_apl_opt_data():
+        opt = namedtuple('OPT', ['OptNumOutputs', 'OptPolName', 'OptInclude', 'OptShortOrLong', 'OptSamplingTime',
+                       'OptSamplingTimeUnits', 'OptCondition', 'OptNumPercentiles', 'OptNumExceedences',
+                       'OptPercentiles', 'OptExceedences', 'OptUnits', 'OptGroupsOrSource',
+                       'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
+                       'OptCreateComprehensiveFile'])
+
+        opt.OptNumOutputs = 8
+        opt.OptPolName = []
+        opt.OptInclude = []
+        opt.OptShortOrLong = []
+        opt.OptSamplingTime = []
+        opt.OptSamplingTimeUnits = []
+        opt.OptCondition = []
+        opt.OptNumPercentiles = []
+        opt.OptNumExceedences = []
+        opt.OptPercentiles = []
+        opt.OptExceedences = []
+        opt.OptUnits = []
+        opt.OptGroupsOrSource = 0
+        opt.OptAllSources = 0
+        opt.OptNumGroups = 1
+        opt.OptIncludedGroups = []
+        opt.OptIncludedSource = ""
+        opt.OptCreateComprehensiveFile = 0
+
+        return opt
