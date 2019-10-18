@@ -140,6 +140,7 @@ class AplTest(unittest.TestCase):
         apl.set_sources([AdmsSrc()])
         self.assertEqual(AdmsAplTestHelper.get_default_specification(AdmsAplTestHelper), apl.specification())
 
+
 class AplPartTest(unittest.TestCase):
 
     def test_init(self):
@@ -151,6 +152,7 @@ class AplPartTest(unittest.TestCase):
         aplp = AplPart()
         aplp._name = aplp._AplPart__name
         self.assertEqual(aplp.to_string(), AdmsAplTestHelper.get_default_aplp_str())
+
 
 class AdmsHeaderTest(unittest.TestCase):
 
@@ -166,6 +168,7 @@ class AdmsHeaderTest(unittest.TestCase):
     def test_to_string(self):
         ah = AdmsHeader()
         self.assertEqual(ah.to_string(), AdmsAplTestHelper.get_default_adms_header_str())
+
 
 class AdmsSupTest(unittest.TestCase):
 
@@ -216,6 +219,7 @@ class AdmsSupTest(unittest.TestCase):
     def test_to_string(self):
         asp = AdmsSup()
         self.assertEqual(asp.to_string(), AdmsAplTestHelper.get_default_adms_sup_str())
+
 
 class AdmsMetTest(unittest.TestCase):
 
@@ -282,6 +286,7 @@ class AdmsMetTest(unittest.TestCase):
         am = AdmsMet()
         self.assertEqual(am.to_string(), AdmsAplTestHelper.get_default_adms_met_str())
 
+
 class AdmsHilTest(unittest.TestCase):
 
     def test_init(self):
@@ -298,6 +303,7 @@ class AdmsHilTest(unittest.TestCase):
         ah = AdmsHil()
         self.assertEqual(ah.to_string(), AdmsAplTestHelper.get_default_adms_hil_str())
 
+
 class AdmsCstTest(unittest.TestCase):
 
     def test_init(self):
@@ -313,6 +319,7 @@ class AdmsCstTest(unittest.TestCase):
     def test_to_string(self):
         ac = AdmsCst()
         self.assertEqual(ac.to_string(), AdmsAplTestHelper.get_default_adms_cst_str())
+
 
 class AdmsFlcTest(unittest.TestCase):
 
@@ -332,6 +339,7 @@ class AdmsFlcTest(unittest.TestCase):
     def test_to_string(self):
         af = AdmsFlc()
         self.assertEqual(af.to_string(), AdmsAplTestHelper.get_default_adms_flc_str())
+
 
 class AdmsGrdTest(unittest.TestCase):
 
@@ -360,6 +368,7 @@ class AdmsGrdTest(unittest.TestCase):
         ag = AdmsGrd()
         self.assertEqual(ag.to_string(), AdmsAplTestHelper.get_default_adms_grd_str())
 
+
 class AdmsPufTest(unittest.TestCase):
 
     def test_init(self):
@@ -373,6 +382,7 @@ class AdmsPufTest(unittest.TestCase):
         ap = AdmsPuf()
         self.assertEqual(ap.to_string(), AdmsAplTestHelper.get_default_adms_puf_str())
 
+
 class AdmsGamTest(unittest.TestCase):
 
     def test_init(self):
@@ -383,6 +393,7 @@ class AdmsGamTest(unittest.TestCase):
     def test_to_string(self):
         ag = AdmsGam()
         self.assertEqual(ag.to_string(), AdmsAplTestHelper.get_default_adms_gam_str())
+
 
 class AdmsBkgTest(unittest.TestCase):
 
@@ -395,6 +406,7 @@ class AdmsBkgTest(unittest.TestCase):
     def test_to_string(self):
         ab = AdmsBkg()
         self.assertEqual(ab.to_string(), AdmsAplTestHelper.get_default_adms_bkg_str())
+
 
 class AdmsEtcTest(unittest.TestCase):
 
@@ -409,6 +421,7 @@ class AdmsEtcTest(unittest.TestCase):
         ae = AdmsEtc()
         self.assertEqual(ae.to_string(), AdmsAplTestHelper.get_default_adms_etc_str())
 
+
 class AdmsChmTest(unittest.TestCase):
 
     def test_init(self):
@@ -419,6 +432,7 @@ class AdmsChmTest(unittest.TestCase):
     def test_to_string(self):
         ac = AdmsChm()
         self.assertEqual(ac.to_string(), AdmsAplTestHelper.get_default_adms_chm_str())
+
 
 class AdmsCoordSysTest(unittest.TestCase):
 
@@ -431,6 +445,7 @@ class AdmsCoordSysTest(unittest.TestCase):
         acs = AdmsCoordSys()
         self.assertEqual(acs.to_string(), AdmsAplTestHelper.get_default_adms_coords_str())
 
+
 class AdmsMapperTest(unittest.TestCase):
 
     def test_init(self):
@@ -441,6 +456,7 @@ class AdmsMapperTest(unittest.TestCase):
     def test_to_string(self):
         am = AdmsMapper()
         self.assertEqual(am.to_string(), AdmsAplTestHelper.get_default_adms_map_str())
+
 
 class AdmsBldTest(unittest.TestCase):
 
@@ -460,6 +476,7 @@ class AdmsBldTest(unittest.TestCase):
     def test_to_string(self):
         ab = AdmsBld()
         self.assertEqual(ab.to_string(), AdmsAplTestHelper.get_default_adms_bld_str())
+
 
 class AdmsOptTest(unittest.TestCase):
 
@@ -488,6 +505,7 @@ class AdmsOptTest(unittest.TestCase):
     def test_to_string(self):
         ao = AdmsOpt()
         self.assertEqual(ao.to_string(), AdmsAplTestHelper.get_default_adms_opt_str())
+
 
 class AdmsPoldTest(unittest.TestCase):
 
@@ -518,6 +536,7 @@ class AdmsPoldTest(unittest.TestCase):
     def test_to_string(self):
         ap = AdmsPold()
         self.assertEqual(ap.to_string(), AdmsAplTestHelper.get_default_adms_pold_str())
+
 
 class AdmsSrcTest(unittest.TestCase):
 
@@ -565,6 +584,7 @@ class AdmsSrcTest(unittest.TestCase):
     def test_to_string(self):
         asr = AdmsSrc()
         self.assertEqual(asr.to_string(), AdmsAplTestHelper.get_default_adms_src_str())
+
 
 class AdmsAplTestHelper(object):
 
@@ -956,7 +976,8 @@ class AdmsAplTestHelper(object):
         return {Constants.KEY_SRC: [], Constants.KEY_OPT: self.get_default_apl_opt_data(), Constants.KEY_MET: "test",
                 Constants.KEY_GRD: [0, 1, 2, 3], Constants.KEY_POL: [], Constants.KEY_BKG: None,
                 Constants.KEY_BDN: self.get_default_apl_bld_data(), Constants.KEY_COORD_SYS: 2,
-                Constants.GRD_X: 4, Constants.GRD_Y: 5, Constants.KEY_INDICATOR_TERR: 0, Constants.KEY_INDICATOR_CHEM: 0,
+                Constants.GRD_X: 4, Constants.GRD_Y: 5, Constants.KEY_INDICATOR_TERR: 0,
+                Constants.KEY_INDICATOR_CHEM: 0,
                 Constants.KEY_NIGHT: 0, Constants.KEY_DIR_NIGHT: "test", Constants.KEY_INDICATOR_WET: 0,
                 Constants.KEY_MET: "test", Constants.KEY_LAT.title(): 1, Constants.KEY_BKG: "test",
                 Constants.KEY_WASHOUT_SO2: 2.0e-4, Constants.KEY_WASHOUT_PM10: 3.0e-4}
@@ -982,10 +1003,10 @@ class AdmsAplTestHelper(object):
     @staticmethod
     def get_default_apl_opt_data():
         opt = namedtuple('OPT', ['OptNumOutputs', 'OptPolName', 'OptInclude', 'OptShortOrLong', 'OptSamplingTime',
-                       'OptSamplingTimeUnits', 'OptCondition', 'OptNumPercentiles', 'OptNumExceedences',
-                       'OptPercentiles', 'OptExceedences', 'OptUnits', 'OptGroupsOrSource',
-                       'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
-                       'OptCreateComprehensiveFile'])
+                                 'OptSamplingTimeUnits', 'OptCondition', 'OptNumPercentiles', 'OptNumExceedences',
+                                 'OptPercentiles', 'OptExceedences', 'OptUnits', 'OptGroupsOrSource',
+                                 'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
+                                 'OptCreateComprehensiveFile'])
 
         opt.OptNumOutputs = 8
         opt.OptPolName = []
@@ -1007,3 +1028,393 @@ class AdmsAplTestHelper(object):
         opt.OptCreateComprehensiveFile = 0
 
         return opt
+
+    @staticmethod
+    def get_default_apl_builder_specification(self):
+        return self.get_default_adms_header_str() + \
+               self.get_default_adms_sup_str() + \
+               self.get_default_adms_met_str() + \
+               self.get_default_adms_apl_builder_bld_str() + \
+               self.get_default_adms_hil_str() + \
+               self.get_default_adms_cst_str() + \
+               self.get_default_adms_flc_str() + \
+               self.get_default_adms_apl_builder_grd_str() + \
+               self.get_default_adms_puf_str() + \
+               self.get_default_adms_gam_str() + \
+               self.get_default_adms_opt_str() + \
+               self.get_default_adms_chm_str() + \
+               self.get_default_adms_bkg_str() + \
+               self.get_default_adms_etc_str() + \
+               self.get_default_adms_coords_str() + \
+               self.get_default_adms_map_str()
+
+    @staticmethod
+    def get_default_adms_apl_builder_bld_str():
+        return '&ADMS_PARAMETERS_BLD\n' \
+               'BldNumBuildings = 4\n' \
+               'BldName = "test"\n' \
+               'BldType = "test"\n' \
+               'BldX = 1\n' \
+               'BldY = 2\n' \
+               'BldHeight = 3\n' \
+               'BldLength = 4\n' \
+               'BldWidth = 5\n' \
+               'BldAngle = 6\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_builder_grd_str():
+        return '&ADMS_PARAMETERS_GRD\n' \
+               'GrdType = 0\n' \
+               'GrdCoordSysType = 0\n' \
+               'GrdSpacingType = 0\n' \
+               'GrdRegularMin = \n' \
+               '  0 1 0.0e+0 1.0e+1 \n' \
+               '  0.0e+0 0.0e+0 \n' \
+               'GrdRegularMax = \n' \
+               '  2 3 3.0e+1 1.0e+3 \n' \
+               '  3.30e+2 0.0e+0 \n' \
+               'GrdRegularNumPoints = \n' \
+               '  4 5 4 10 \n' \
+               '  12 1 \n' \
+               'GrdVarSpaceNumPointsX = 0\n' \
+               'GrdVarSpaceNumPointsY = 0\n' \
+               'GrdVarSpaceNumPointsZ = 0\n' \
+               'GrdVarSpaceNumPointsR = 0\n' \
+               'GrdVarSpaceNumPointsTh = 0\n' \
+               'GrdVarSpaceNumPointsZp = 0\n' \
+               'GrdPtsNumPoints = \n' \
+               '  0 0 \n' \
+               'GrdPolarCentreX = 0.0\n' \
+               'GrdPolarCentreY = 0.0\n' \
+               'GrdPtsUsePointsFile = 1\n' \
+               'GrdPtsPointsFilePath = " "\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_apl_ship_builder_specification(self):
+        return self.get_default_adms_header_str() + \
+               self.get_default_adms_apl_ship_builder_sup_str() + \
+               self.get_default_adms_apl_ship_builder_met_str() + \
+               self.get_default_adms_apl_builder_bld_str() + \
+               self.get_default_adms_apl_ship_builder_hil_str() + \
+               self.get_default_adms_cst_str() + \
+               self.get_default_adms_flc_str() + \
+               self.get_default_adms_apl_builder_grd_str() + \
+               self.get_default_adms_puf_str() + \
+               self.get_default_adms_gam_str() + \
+               self.get_default_adms_opt_str() + \
+               self.get_default_adms_chm_str() + \
+               self.get_default_adms_apl_ship_builder_bkg_str() + \
+               self.get_default_adms_apl_ship_builder_etc_str() + \
+               self.get_default_adms_coords_str() + \
+               self.get_default_adms_map_str()
+
+    @staticmethod
+    def get_default_adms_apl_ship_builder_sup_str():
+        return '&ADMS_PARAMETERS_SUP\n' \
+               'SupSiteName = "terrain dispersion site"\n' \
+               'SupProjectName = "chlorine leakage tank dispersion"\n' \
+               'SupUseAddInput = 0\n' \
+               'SupAddInputPath = "test"\n' \
+               'SupReleaseType = 0\n' \
+               'SupModelBuildings = 1\n' \
+               'SupModelComplexTerrain = 0\n' \
+               'SupModelCoastline = 0\n' \
+               'SupPufType = 0\n' \
+               'SupCalcChm = 0\n' \
+               'SupCalcDryDep = 0\n' \
+               'SupCalcWetDep = 0\n' \
+               'SupCalcPlumeVisibility = 1\n' \
+               'SupModelFluctuations = 0\n' \
+               'SupModelRadioactivity = 0\n' \
+               'SupModelOdours = 0\n' \
+               'SupOdourUnits = "ou_e"\n' \
+               'SupPaletteType = 1\n' \
+               'SupUseTimeVaryingEmissions = 0\n' \
+               'SupTimeVaryingEmissionsType = 0\n' \
+               'SupTimeVaryingVARPath = " "\n' \
+               'SupTimeVaryingFACPath = " "\n' \
+               'SupTimeVaryingEmissionFactorsWeekday = \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               'SupTimeVaryingEmissionFactorsSaturday = \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               'SupTimeVaryingEmissionFactorsSunday = \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_ship_builder_met_str():
+        return '&ADMS_PARAMETERS_MET\n' \
+               'MetLatitude = 1\n' \
+               'MetDataSource = 0\n' \
+               'MetDataFileWellFormedPath = "test"\n' \
+               'MetWindHeight = 10.0\n' \
+               'MetWindInSectors = 0\n' \
+               'MetWindSectorSizeDegrees = 10.0\n' \
+               'MetDataIsSequential = 0\n' \
+               'MetUseSubset = 0\n' \
+               'MetSubsetHourStart = 1\n' \
+               'MetSubsetDayStart = 1\n' \
+               'MetSubsetMonthStart = 1\n' \
+               'MetSubsetYearStart = 2016\n' \
+               'MetSubsetHourEnd = 0\n' \
+               'MetSubsetDayEnd = 1\n' \
+               'MetSubsetMonthEnd = 1\n' \
+               'MetSubsetYearEnd = 2017\n' \
+               'MetUseVerticalProfile = 0\n' \
+               'MetVerticalProfilePath = " "\n' \
+               'Met_DS_RoughnessMode = 1\n' \
+               'Met_DS_Roughness = 1.0\n' \
+               'Met_DS_UseAdvancedMet = 0\n' \
+               'Met_DS_SurfaceAlbedoMode = 1\n' \
+               'Met_DS_SurfaceAlbedo = 0.23\n' \
+               'Met_DS_PriestlyTaylorMode = 1\n' \
+               'Met_DS_PriestlyTaylor = 1.0\n' \
+               'Met_DS_MinLmoMode = 1\n' \
+               'Met_DS_MinLmo = 34.5\n' \
+               'Met_DS_PrecipFactorMode = 1\n' \
+               'Met_DS_PrecipFactor = 0.45\n' \
+               'Met_MS_RoughnessMode = 3\n' \
+               'Met_MS_Roughness = 0.1\n' \
+               'Met_MS_UseAdvancedMet = 0\n' \
+               'Met_MS_SurfaceAlbedoMode = 3\n' \
+               'Met_MS_SurfaceAlbedo = 0.23\n' \
+               'Met_MS_PriestlyTaylorMode = 3\n' \
+               'Met_MS_PriestlyTaylor = 1.0\n' \
+               'Met_MS_MinLmoMode = 3\n' \
+               'Met_MS_MinLmo = 1.0\n' \
+               'MetHeatFluxType = 0\n' \
+               'MetInclBoundaryLyrHt = 0\n' \
+               'MetInclSurfaceTemp = 1\n' \
+               'MetInclLateralSpread = 0\n' \
+               'MetInclRelHumidity = 0\n' \
+               'MetHandNumEntries = 1\n' \
+               'MetWindSpeed = \n' \
+               '  3.060e+0 \n' \
+               'MetWindDirection = \n' \
+               '  6.0e+1 \n' \
+               'MetJulianDayNum = \n' \
+               '  2.470e+2 \n' \
+               'MetLocalTime = \n' \
+               '  5.0e+0 \n' \
+               'MetCloudAmount = \n' \
+               '  5.0e+0 \n' \
+               'MetSurfaceHeatFlux = \n' \
+               '  0.0e+0 \n' \
+               'MetBoundaryLayerHeight = \n' \
+               '  8.0e+2 \n' \
+               'MetSurfaceTemp = \n' \
+               '  2.80e+1 \n' \
+               'MetLateralSpread = \n' \
+               '  7.50e+0 \n' \
+               'MetYear = \n' \
+               '  2017 \n' \
+               'MetRelHumidity = \n' \
+               '  7.40e+1 \n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_ship_builder_hil_str():
+        return '&ADMS_PARAMETERS_HIL\n' \
+               'HilGridSize = 2\n' \
+               'HilUseTerFile = 1\n' \
+               'HilUseRoughFile = 0\n' \
+               'HilTerrainPath = "' + Constants.FILEPATH_HIL_HK + '"\n' \
+                                                                  'HilRoughPath = " "\n' \
+                                                                  'HilCreateFlowField = 1\n' \
+                                                                  '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_ship_builder_bkg_str():
+        return '&ADMS_PARAMETERS_BKG\n' \
+               'BkgFilePath = "test"\n' \
+               'BkgFixedLevels = 0\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_ship_builder_etc_str():
+        return '&ADMS_PARAMETERS_ETC\n' \
+               'SrcNumSources = 0\n' \
+               'PolNumPollutants = 19\n' \
+               'PolNumIsotopes = 0\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_apl_plant_builder_specification(self):
+        return self.get_default_adms_header_str() + \
+               self.get_default_adms_apl_plant_builder_sup_str() + \
+               self.get_default_adms_apl_plant_builder_met_str() + \
+               self.get_default_adms_apl_builder_bld_str() + \
+               self.get_default_adms_apl_plant_builder_hil_str() + \
+               self.get_default_adms_cst_str() + \
+               self.get_default_adms_flc_str() + \
+               self.get_default_adms_apl_builder_grd_str() + \
+               self.get_default_adms_puf_str() + \
+               self.get_default_adms_gam_str() + \
+               self.get_default_adms_opt_str() + \
+               self.get_default_adms_chm_str() + \
+               self.get_default_adms_apl_plant_builder_bkg_str() + \
+               self.get_default_adms_apl_plant_builder_etc_str() + \
+               self.get_default_adms_coords_str() + \
+               self.get_default_adms_map_str()
+
+    @staticmethod
+    def get_default_adms_apl_plant_builder_sup_str():
+        return '&ADMS_PARAMETERS_SUP\n' \
+               'SupSiteName = "terrain dispersion site"\n' \
+               'SupProjectName = "chlorine leakage tank dispersion"\n' \
+               'SupUseAddInput = 0\n' \
+               'SupAddInputPath = " "\n' \
+               'SupReleaseType = 0\n' \
+               'SupModelBuildings = 1\n' \
+               'SupModelComplexTerrain = 0\n' \
+               'SupModelCoastline = 0\n' \
+               'SupPufType = 0\n' \
+               'SupCalcChm = 0\n' \
+               'SupCalcDryDep = 0\n' \
+               'SupCalcWetDep = 0\n' \
+               'SupCalcPlumeVisibility = 0\n' \
+               'SupModelFluctuations = 0\n' \
+               'SupModelRadioactivity = 0\n' \
+               'SupModelOdours = 0\n' \
+               'SupOdourUnits = "ou_e"\n' \
+               'SupPaletteType = 1\n' \
+               'SupUseTimeVaryingEmissions = 0\n' \
+               'SupTimeVaryingEmissionsType = 0\n' \
+               'SupTimeVaryingVARPath = " "\n' \
+               'SupTimeVaryingFACPath = " "\n' \
+               'SupTimeVaryingEmissionFactorsWeekday = \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               'SupTimeVaryingEmissionFactorsSaturday = \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               'SupTimeVaryingEmissionFactorsSunday = \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '  1.0e+0 1.0e+0 1.0e+0 1.0e+0 \n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_plant_builder_met_str():
+        return '&ADMS_PARAMETERS_MET\n' \
+               'MetLatitude = 1.09\n' \
+               'MetDataSource = 0\n' \
+               'MetDataFileWellFormedPath = "test"\n' \
+               'MetWindHeight = 10.0\n' \
+               'MetWindInSectors = 0\n' \
+               'MetWindSectorSizeDegrees = 10.0\n' \
+               'MetDataIsSequential = 0\n' \
+               'MetUseSubset = 0\n' \
+               'MetSubsetHourStart = 1\n' \
+               'MetSubsetDayStart = 1\n' \
+               'MetSubsetMonthStart = 1\n' \
+               'MetSubsetYearStart = 2016\n' \
+               'MetSubsetHourEnd = 0\n' \
+               'MetSubsetDayEnd = 1\n' \
+               'MetSubsetMonthEnd = 1\n' \
+               'MetSubsetYearEnd = 2017\n' \
+               'MetUseVerticalProfile = 0\n' \
+               'MetVerticalProfilePath = " "\n' \
+               'Met_DS_RoughnessMode = 1\n' \
+               'Met_DS_Roughness = 1.5\n' \
+               'Met_DS_UseAdvancedMet = 0\n' \
+               'Met_DS_SurfaceAlbedoMode = 1\n' \
+               'Met_DS_SurfaceAlbedo = 0.23\n' \
+               'Met_DS_PriestlyTaylorMode = 1\n' \
+               'Met_DS_PriestlyTaylor = 1.0\n' \
+               'Met_DS_MinLmoMode = 1\n' \
+               'Met_DS_MinLmo = 34.5\n' \
+               'Met_DS_PrecipFactorMode = 1\n' \
+               'Met_DS_PrecipFactor = 0.45\n' \
+               'Met_MS_RoughnessMode = 3\n' \
+               'Met_MS_Roughness = 0.1\n' \
+               'Met_MS_UseAdvancedMet = 0\n' \
+               'Met_MS_SurfaceAlbedoMode = 3\n' \
+               'Met_MS_SurfaceAlbedo = 0.23\n' \
+               'Met_MS_PriestlyTaylorMode = 3\n' \
+               'Met_MS_PriestlyTaylor = 1.0\n' \
+               'Met_MS_MinLmoMode = 3\n' \
+               'Met_MS_MinLmo = 1.0\n' \
+               'MetHeatFluxType = 0\n' \
+               'MetInclBoundaryLyrHt = 0\n' \
+               'MetInclSurfaceTemp = 1\n' \
+               'MetInclLateralSpread = 0\n' \
+               'MetInclRelHumidity = 0\n' \
+               'MetHandNumEntries = 1\n' \
+               'MetWindSpeed = \n' \
+               '  3.060e+0 \n' \
+               'MetWindDirection = \n' \
+               '  6.0e+1 \n' \
+               'MetJulianDayNum = \n' \
+               '  2.470e+2 \n' \
+               'MetLocalTime = \n' \
+               '  5.0e+0 \n' \
+               'MetCloudAmount = \n' \
+               '  5.0e+0 \n' \
+               'MetSurfaceHeatFlux = \n' \
+               '  0.0e+0 \n' \
+               'MetBoundaryLayerHeight = \n' \
+               '  8.0e+2 \n' \
+               'MetSurfaceTemp = \n' \
+               '  2.80e+1 \n' \
+               'MetLateralSpread = \n' \
+               '  7.50e+0 \n' \
+               'MetYear = \n' \
+               '  2017 \n' \
+               'MetRelHumidity = \n' \
+               '  7.40e+1 \n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_plant_builder_hil_str():
+        return '&ADMS_PARAMETERS_HIL\n' \
+               'HilGridSize = 2\n' \
+               'HilUseTerFile = 1\n' \
+               'HilUseRoughFile = 0\n' \
+               'HilTerrainPath = "' + Constants.FILEPATH_HIL_SG + '"\n' \
+                                                                  'HilRoughPath = " "\n' \
+                                                                  'HilCreateFlowField = 1\n' \
+                                                                  '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_plant_builder_bkg_str():
+        return '&ADMS_PARAMETERS_BKG\n' \
+               'BkgFilePath = "' + Constants.FILEPATH_HIL_BGD + '"\n' \
+               'BkgFixedLevels = 1\n' \
+               '/\n\n'
+
+    @staticmethod
+    def get_default_adms_apl_plant_builder_etc_str():
+        return '&ADMS_PARAMETERS_ETC\n' \
+               'SrcNumSources = 1\n' \
+               'PolNumPollutants = 18\n' \
+               'PolNumIsotopes = 0\n' \
+               '/\n\n'

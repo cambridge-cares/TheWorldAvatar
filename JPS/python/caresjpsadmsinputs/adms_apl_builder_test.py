@@ -6,7 +6,38 @@ from config import Constants
 
 
 class AplDirectorTest(unittest.TestCase):
-    pass
+
+    def test_init(self):
+        ad = AplDirector()
+        self.assertIsNone(ad._AplDirector__builder)
+
+    def test_set_builder(self):
+        ad = AplDirector()
+        ab = AplBuilder({})
+        ad.set_builder(ab)
+        self.assertIsInstance(ad._AplDirector__builder, AplBuilder)
+
+    def test_get_apl(self):
+        ad = AplDirector()
+        ab = AplBuilder(helper.get_default_apl_builder_data(helper))
+        ad.set_builder(ab)
+        apl = ad.get_apl()
+        # Values for pollutants tested in builder tests. Repeating tests is not necessary here.
+        apl.set_pollutants([])
+        self.assertEqual(apl.specification(), helper.get_default_apl_builder_specification(helper))
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        ad.set_builder(asb)
+        apl = ad.get_apl()
+        # Values for pollutants tested in builder tests. Repeating tests is not necessary here.
+        apl.set_pollutants([])
+        self.assertEqual(apl.specification(), helper.get_default_apl_ship_builder_specification(helper))
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        ad.set_builder(apb)
+        apl = ad.get_apl()
+        # Values for pollutants tested in builder tests. Repeating tests is not necessary here.
+        apl.set_pollutants([])
+        self.maxDiff = None
+        self.assertEqual(apl.specification(), helper.get_default_apl_plant_builder_specification(helper))
 
 
 class AplBuilderTest(unittest.TestCase):
@@ -535,7 +566,7 @@ class AplShipBuilderTest(unittest.TestCase):
 
     def test_get_bkg(self):
         asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
-        tst_etc =  AdmsEtc()
+        tst_etc = AdmsEtc()
         tst_etc.SrcNumSources = len(helper.get_default_apl_builder_data(helper)[Constants.KEY_SRC])
         self.assertEqual(asb.get_etc().to_string(), tst_etc.to_string())
 
@@ -570,7 +601,7 @@ class AplShipBuilderTest(unittest.TestCase):
         self.assertEqual(polls[13].PolName, Constants.POL_ISOBUTYLENE)
         self.assertEqual(polls[14].PolName, Constants.POL_NH3)
         self.assertEqual(polls[15].PolName, Constants.POL_HC)
-        #Values for pollutants same as in superclass. Repeating tests is not necessary here.
+        # Values for pollutants same as in superclass. Repeating tests is not necessary here.
 
 
 class AplPlantBuilderTest(unittest.TestCase):
