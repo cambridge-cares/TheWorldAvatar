@@ -953,10 +953,13 @@ class AdmsAplTestHelper(object):
 
     @staticmethod
     def get_default_apl_builder_data(self):
-        return {Constants.KEY_SRC: None, Constants.KEY_OPT: self.get_default_apl_opt_data(), Constants.KEY_MET: None,
+        return {Constants.KEY_SRC: [], Constants.KEY_OPT: self.get_default_apl_opt_data(), Constants.KEY_MET: None,
                 Constants.KEY_GRD: [0, 1, 2, 3], Constants.KEY_POL: None, Constants.KEY_BKG: None,
                 Constants.KEY_BDN: self.get_default_apl_bld_data(), Constants.KEY_COORD_SYS: 2,
-                Constants.GRD_X: 4, Constants.GRD_Y: 5}
+                Constants.GRD_X: 4, Constants.GRD_Y: 5, Constants.KEY_INDICATOR_TERR: 0, Constants.KEY_INDICATOR_CHEM: 0,
+                Constants.KEY_NIGHT: 0, Constants.KEY_DIR_NIGHT: "test", Constants.KEY_INDICATOR_WET: 0,
+                Constants.KEY_MET: "test", Constants.KEY_LAT.title(): 1, Constants.KEY_BKG: "test",
+                Constants.KEY_WASHOUT_SO2: 2.0e-4, Constants.KEY_WASHOUT_PM10: 3.0e-4}
 
     @staticmethod
     def get_default_apl_bld_data():

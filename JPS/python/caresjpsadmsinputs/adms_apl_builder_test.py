@@ -1,7 +1,6 @@
 import unittest
 
-from adms_apl import *
-from adms_apl_builder import AplBuilder
+from adms_apl_builder import *
 from adms_apl_test import AdmsAplTestHelper as helper
 from config import Constants
 
@@ -504,7 +503,51 @@ class AplBuilderTest(unittest.TestCase):
 
 
 class AplShipBuilderTest(unittest.TestCase):
-    pass
+
+    def test_get_sup(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        tst_sup = AdmsSup()
+        tst_sup.SupModelComplexTerrain = 0
+        tst_sup.SupCalcChm = 0
+        tst_sup.SupUseAddInput = 0
+        tst_sup.SupAddInputPath = "test"
+        tst_sup.SupCalcWetDep = 0
+        self.assertEqual(asb.get_sup().to_string(), tst_sup.to_string())
+
+    def test_get_met(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        tst_met = AdmsMet()
+        tst_met.MetDataFileWellFormedPath = "test"
+        tst_met.MetLatitude = 1
+        self.assertEqual(asb.get_met().to_string(), tst_met.to_string())
+
+    def test_get_hil(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        tst_hil = AdmsHil()
+        tst_hil.HilTerrainPath = Constants.FILEPATH_HIL_HK
+        self.assertEqual(asb.get_hil().to_string(), tst_hil.to_string())
+
+    def test_get_bkg(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        tst_bkg = AdmsBkg()
+        tst_bkg.BkgFilePath = "test"
+        self.assertEqual(asb.get_bkg().to_string(), tst_bkg.to_string())
+
+    def test_get_bkg(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        tst_etc =  AdmsEtc()
+        tst_etc.SrcNumSources = len(helper.get_default_apl_builder_data(helper)[Constants.KEY_SRC])
+        self.assertEqual(asb.get_etc().to_string(), tst_etc.to_string())
+
+    def test_get_pol_wet_washout(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        type_1 = [Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE, Constants.POL_NH3,
+                  Constants.POL_HC]
+        for name in type_1:
+            self.assertEqual(asb.get_pol_wet_washout(name), 1.0e-4)
+        self.assertEqual(asb.get_pol_wet_washout("test"), 0.0e+0)
+        self.assertEqual(asb.get_pol_wet_washout(Constants.POL_PART_SO2), 2.0e-4)
+        self.assertEqual(asb.get_pol_wet_washout(Constants.POL_PM10), 3.0e-4)
 
 
 class AplplantBuilderTest(unittest.TestCase):
