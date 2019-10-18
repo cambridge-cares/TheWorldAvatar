@@ -549,6 +549,125 @@ class AplShipBuilderTest(unittest.TestCase):
         self.assertEqual(asb.get_pol_wet_washout(Constants.POL_PART_SO2), 2.0e-4)
         self.assertEqual(asb.get_pol_wet_washout(Constants.POL_PM10), 3.0e-4)
 
+    def test_get_pollutants(self):
+        asb = AdmsAplShipBuilder(helper.get_default_apl_builder_data(helper))
+        polls = asb.get_pollutants()
+        self.assertIsNotNone(polls)
+        self.assertEqual(len(polls), 16)
+        self.assertEqual(polls[0].PolName, Constants.POL_CO2)
+        self.assertEqual(polls[1].PolName, Constants.POL_NOX)
+        self.assertEqual(polls[2].PolName, Constants.POL_NO2)
+        self.assertEqual(polls[3].PolName, Constants.POL_NO)
+        self.assertEqual(polls[4].PolName, Constants.POL_PART_O3)
+        self.assertEqual(polls[5].PolName, Constants.POL_VOC)
+        self.assertEqual(polls[6].PolName, Constants.POL_PART_SO2)
+        self.assertEqual(polls[7].PolName, Constants.POL_CO)
+        self.assertEqual(polls[8].PolName, Constants.POL_BENZENE)
+        self.assertEqual(polls[9].PolName, Constants.POL_BUTADIENE)
+        self.assertEqual(polls[10].PolName, Constants.POL_HCl)
+        self.assertEqual(polls[11].PolName, Constants.POL_Cl2)
+        self.assertEqual(polls[12].PolName, Constants.POL_CH3Cl)
+        self.assertEqual(polls[13].PolName, Constants.POL_ISOBUTYLENE)
+        self.assertEqual(polls[14].PolName, Constants.POL_NH3)
+        self.assertEqual(polls[15].PolName, Constants.POL_HC)
+        #Values for pollutants same as in superclass. Repeating tests is not necessary here.
 
-class AplplantBuilderTest(unittest.TestCase):
-    pass
+
+class AplPlantBuilderTest(unittest.TestCase):
+
+    def test_get_sup(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        tst_sup = AdmsSup()
+        tst_sup.SupModelComplexTerrain = 0
+        tst_sup.SupCalcChm = 0
+        tst_sup.SupCalcWetDep = 0
+        tst_sup.SupCalcPlumeVisibility = 0
+        self.assertEqual(apb.get_sup().to_string(), tst_sup.to_string())
+
+    def test_get_met(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        tst_met = AdmsMet()
+        tst_met.Met_DS_Roughness = 1.5e+0
+        tst_met.MetDataFileWellFormedPath = "test"
+        tst_met.MetLatitude = 1.09e+0
+        self.assertEqual(apb.get_met().to_string(), tst_met.to_string())
+
+    def test_get_hil(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        tst_hil = AdmsHil()
+        tst_hil.HilTerrainPath = Constants.FILEPATH_HIL_SG
+        self.assertEqual(apb.get_hil().to_string(), tst_hil.to_string())
+
+    def test_get_bkg(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        tst_bkg = AdmsBkg()
+        tst_bkg.BkgFilePath = Constants.FILEPATH_HIL_BGD
+        tst_bkg.BkgFixedLevels = 1
+        self.assertEqual(apb.get_bkg().to_string(), tst_bkg.to_string())
+
+    def test_get_etc(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        tst_etc = AdmsEtc()
+        tst_etc.SrcNumSources = 1
+        tst_etc.PolNumPollutants = 18
+        self.assertEqual(apb.get_etc().to_string(), tst_etc.to_string())
+
+    def test_get_pol_wet_washout_known(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_wet_washout_known("test"), 0)
+        type_1 = [Constants.POL_NO, Constants.POL_PART_O3, Constants.POL_PART_SO2, Constants.POL_PM10,
+                  Constants.POL_BENZENE, Constants.POL_BUTADIENE, Constants.POL_Cl2, Constants.POL_CH3Cl,
+                  Constants.POL_ISOBUTYLENE, Constants.POL_HC, Constants.POL_NH3, Constants.POL_HCl, Constants.POL_CO,
+                  Constants.POL_PM25, Constants.POL_NO2, Constants.POL_NOX, Constants.POL_CO2]
+        for name in type_1:
+            self.assertEqual(apb.get_pol_wet_washout_known(name), 1)
+
+    def test_get_pol_bkg_level(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_CO2), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_NOX), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_NO2), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_NO), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_PART_O3), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_VOC), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_PART_SO2), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_PM10), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_PM25), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_CO), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_BENZENE), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_BUTADIENE), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_HCl), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_Cl2), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_CH3Cl), 6.0e-1)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_ISOBUTYLENE), 0.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_NH3), 6.0e+0)
+        self.assertEqual(apb.get_pol_bkg_level(Constants.POL_HC), 0.0e+0)
+
+    def test_get_pol_gas_dep_velocity_known(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_gas_dep_velocity_known("test"), 1)
+        type_0 = [Constants.POL_Cl2, Constants.POL_CH3Cl, Constants.POL_ISOBUTYLENE, Constants.POL_NH3,
+                  Constants.POL_HC]
+        for name in type_0:
+            self.assertEqual(apb.get_pol_gas_dep_velocity_known(name), 0)
+
+    def test_get_pol_gas_dep_velocity(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_gas_dep_velocity("test"), 0.0e+0)
+        self.assertEqual(apb.get_pol_gas_dep_velocity(Constants.POL_Cl2), 5.0e+0)
+
+    def test_get_pol_par_dep_velocity_known(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_par_dep_velocity_known("test"), 1)
+
+    def test_get_pol_par_term_velocity_known(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_par_term_velocity_known("test"), 1)
+
+    def test_get_pol_wet_washout_a(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_wet_washout_a("test"), 1.0e-4)
+
+    def test_get_pol_wet_washout_b(self):
+        apb = AdmsAplPlantBuilder(helper.get_default_apl_builder_data(helper))
+        self.assertEqual(apb.get_pol_wet_washout_b("test"), 6.4e-1)
