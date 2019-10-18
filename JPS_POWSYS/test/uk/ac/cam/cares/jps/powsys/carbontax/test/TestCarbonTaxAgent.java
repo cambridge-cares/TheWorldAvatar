@@ -47,7 +47,8 @@ public class TestCarbonTaxAgent extends TestCase {
 		System.out.println("what is dataPath="+dataPath);
 		CarbonTaxAgent a= new CarbonTaxAgent();
 		
-		a.prepareCSVGeneratorParameter(iriofnetwork,dataPath);
+		//a.prepareCSVGeneratorParameter(iriofnetwork,dataPath);
+		a.prepareCSVGeneratorParameterUpdatedGenScale(iriofnetwork,dataPath);
 		
 
 		
@@ -56,6 +57,7 @@ public class TestCarbonTaxAgent extends TestCase {
 	public void testCallCarbonTax() {
 		String scenarioName = "testPOWSYSCarbonTax";
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+		System.out.println(scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JSONObject jo = new JSONObject();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
