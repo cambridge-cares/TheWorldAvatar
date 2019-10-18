@@ -47,14 +47,26 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		//put the template file
 		String newdir=QueryBroker.getLocalDataPath() ;
 		copyTemplate(newdir, "time_profile.csv");
-		prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
+		//prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
+		prepareCSVGeneratorParameterUpdatedGenScale(jo.getString("electricalnetwork"),newdir);
 		
 		BigDecimal carbontax = jo.getBigDecimal("carbontax");
 		prepareConstantCSV(carbontax,newdir);
 		
 		try {
 			logger.info("start optimization for carbon tax = " + carbontax);
-			runGAMS(newdir);
+			if (!AgentLocator.isJPSRunningForTest()) {
+				runGAMS(newdir);
+			}else { //18 oct 19
+				//runGAMS(newdir); need to change if we want to run the gams code itself 
+				String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
+				File file = new File(source);
+				String destinationUrl = newdir+"/results.csv";
+				new QueryBroker().put(destinationUrl, file);
+				
+			}
+			
+			
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -136,7 +148,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
@@ -151,7 +163,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				+ "?pmax  j2:hasValue ?vpmax ."
 				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
 				
-				+ "OPTIONAL { ?entity j2:realizes ?genprocess ."
+				+ "OPTIONAL { ?entity j4:realizes ?genprocess ."
 				+ "?genprocess j9:hasEmission ?emm ."
 				+ "?emm a j9:Actual_CO2_Emission ."
 				+ "?emm j2:hasValue ?valueemm ."
@@ -251,12 +263,37 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	    resultListforcsv.add(1, nuclear);
 	    String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
 	    if(inputcontent.size()-2==uniqueplant.size()) {
-	    	System.out.println("it has the same number of plant!!!!");
+	    	System.out.println("it has the same number of gen!!!!");
 	    	s=MatrixConverter.fromArraytoCsv(inputcontent);
 	    }
 	    broker.put(baseUrl + "/Generator_Parameters.csv", s);
 	    
 	    logger.info("generator input ok"); 
+	}
+	
+	public static List<String[]> provideGenlist(String iriofnetwork) {
+		String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "SELECT ?entity " 
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
+				+ "}";
+		
+
+		OntModel model = ENAgent.readModelGreedy(iriofnetwork);
+		ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+
+		return resultListfromquery;
 	}
 	
 	public void prepareCSVGeneratorParameterUpdatedGenScale(String ENiri, String baseUrl) {
@@ -265,52 +302,83 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?plant ?Pmaxvalue ?emissionfactor " // add the emission value as optional
+				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
 				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
-				+ "?entity   j2:isSubsystemOf ?plant ." // plant
+				//+ "?entity   j2:isSubsystemOf ?plant ." // plant
 				+ "?entity   j2:isModeledBy ?model ." 
 				+ "?model   j5:hasModelVariable ?pmax ." 
 				+ "?pmax  a  j3:PMax  ."
 				+ "?pmax  j2:hasValue ?vpmax ." 
 				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
 
-				+ "OPTIONAL { ?entity j2:realizes ?genprocess ." 
+				+ "?entity j4:realizes ?genprocess ." 
 				+ "?genprocess j9:usesGenerationTechnology ?tech ."
 				+ "?tech j9:hasEmissionFactor ?emm ."
 				+ "?emm j2:hasValue ?valueemm ."
 				+ "?valueemm j2:numericalValue ?emissionfactor ." 
-				+ " } "
+				//+ "}"
 				+ "}";
 
-		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-				+ "SELECT ?entity ?vemission ?vcapa " + "WHERE {?entity  a  cp:PowerPlant  ."
-				+ "?entity   j4:designCapacity ?capa ." + "?capa   j2:hasValue ?valuecapa . "
-				+ "?valuecapa   j2:numericalValue ?vcapa ." + "?entity   j3:realizes ?generation ."
-				+ "?generation j5:hasEmission ?emission ." + "?emission   j2:hasValue ?valueemission . "
-				+ "?valueemission   j2:numericalValue ?vemission ." + "}";
 
-		OntModel model = ENAgent.readModelGreedy(ENiri);
+		/*
+		 * String plantinfo =
+		 * "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+		 * +
+		 * "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+		 * +
+		 * "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+		 * +
+		 * "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
+		 * +
+		 * "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+		 * + "SELECT ?entity ?vemission ?vcapa " + "WHERE {?entity  a  cp:PowerPlant  ."
+		 * + "?entity   j4:designCapacity ?capa ." + "?capa   j2:hasValue ?valuecapa . "
+		 * + "?valuecapa   j2:numericalValue ?vcapa ." +
+		 * "?entity   j3:realizes ?generation ." +
+		 * "?generation j5:hasEmission ?emission ." +
+		 * "?emission   j2:hasValue ?valueemission . " +
+		 * "?valueemission   j2:numericalValue ?vemission ." + "}";
+		 */
+
 		QueryBroker broker = new QueryBroker();
-
-		ResultSet resultSet = JenaHelper.query(model, genInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-		// logger.info("number of queried lot entities = " + resultList.size());
-
-		List<String> plantname = new ArrayList<String>();
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
+		List<String[]> genList = provideGenlist(ENiri);	
+			System.out.println("size="+genList.size());	
+		for(int d=0;d<genList.size();d++) {
+			NuclearGenType a = new NuclearGenType(genList.get(d)[0]);
+
+			System.out.println("MYGEN= "+genList.get(d)[0]);
+			String result = broker.queryFile(genList.get(d)[0], genInfo);
+			String[] keys = JenaResultSetFormatter.getKeys(result);
+			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			System.out.println("resultsize= "+resultListfromquery.size());
+			a.setcapacity(Double.valueOf(resultListfromquery.get(0)[1]));
+			a.setid("c"+d);
+			plant.add(a);
+			
+			String[] current = new String[12];
+			current[0] = "c" + d; // what to write there???or uniqueplant.get(c)
+			//current[0] = resultListfromquery.get(0)[0];
+			current[1] = "2.5"; // for pacific light;
+			current[2] = "1200000";// pacific light; 525000000 for keppel merlimau
+			current[3] = "8500"; // rand
+			current[4] = "7.33";// rand
+			current[5] = "0";// rand
+			current[6] = resultListfromquery.get(0)[2]; // in ton/MWh
+			current[7] = "10";// rand
+			current[8] = resultListfromquery.get(0)[1]; //capacity in mw
+			current[9] = "1";// rand
+			current[10] = "2";// rand
+			current[11] = "1";// rand
+			resultListforcsv.add(current);
+		}
+		
 		String[] header = { "Type", "Yr", "Cap", "Fix", "OM", "Fuel", "Carb", "Ri", "Ci", "a", "b", "c" };
 		String[] nuclear = { "n", "7", "1000000", "8000", "2.14", "7.7", "0", "2", "0", "0", "0", "0" };
 
@@ -319,26 +387,6 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		/* IF IN THE FUTURE NEED TO READ FROM THE TEMPLATE */
 		String csv = new QueryBroker()
 				.readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
-
-		List<String> uniqueplant = new ArrayList<>(new HashSet<>(plantname));
-		System.out.println("uniqueplant size= " + uniqueplant.size());
-
-		for (int c = 0; c < resultListfromquery.size(); c++) {
-			String[] current = new String[12];
-			current[0] = "c" + c; // what to write there???or uniqueplant.get(c)
-			current[1] = "2.5"; // for pacific light;
-			current[2] = "1200000";// pacific light; 525000000 for keppel merlimau
-			current[3] = "8500"; // rand
-			current[4] = "7.33";// rand
-			current[5] = "0";// rand
-			current[6] = resultListfromquery.get(c)[3]; // in ton/MWh
-			current[7] = "10";// rand
-			current[8] = resultListfromquery.get(c)[2]; //capacity in mw
-			current[9] = "1";// rand
-			current[10] = "2";// rand
-			current[11] = "1";// rand
-			resultListforcsv.add(current);
-		}
 
 		resultListforcsv.add(0, header);
 		resultListforcsv.add(1, nuclear);
