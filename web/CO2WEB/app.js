@@ -46,6 +46,8 @@ var semakauMap = require("./routes/mapSemakau")
 var b2Map = require("./routes/mapB2")
 var ppalt = require("./routes/mapPPAlt")
 
+var parallelWorld = require('./routes/parallelWorld');
+
 var literalData = require('./agents/GetLiteralData');
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var getChildrenSingle = require('./routes/GetChildrenSingle');
@@ -89,6 +91,7 @@ app.use('/visualizeJurong', visualizeJurong);
 app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
+app.use('/pwScenario', parallelWorld);
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
