@@ -447,7 +447,7 @@ public class TestEN extends TestCase {
 	public void xxxtestupdatelocalgenerator() throws IOException {
 		String resourceDir = "D:\\tmp\\scenario for testing with more generator\\Final Version\\owl file changed";
 		
-		for(int s=2;s<=29;s++) {
+		for(int s=24;s<=29;s++) {
 			String x=String.format("%03d", s);
 			String filePath = resourceDir + "/EGen-"+x+".owl"; // the original owl file
 			FileInputStream inFile = new FileInputStream(filePath);
@@ -463,45 +463,45 @@ public class TestEN extends TestCase {
 			//put the technology and emission 
 			Individual gen = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#EGen-"+x);
 			ObjectProperty realizes=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes");
-			Individual powergenerationgas = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration");
+			Individual powergenerationgas = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OilGeneration");
 
-			gen.addProperty(realizes,powergenerationgas);
+//			gen.addProperty(realizes,powergenerationgas);
 			ObjectProperty hasEmission=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#hasEmission");
 			ObjectProperty usestech=jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#usesGenerationTechnology");
 			ObjectProperty hasvalue = jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 			ObjectProperty hasunit = jenaOwlModel2.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 			DatatypeProperty numval = jenaOwlModel2.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");;
-			Individual ccgt = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine");
-			Individual ocgt = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OpenCycleGasTurbine");
-			Individual subcritical = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SubCriticalThermal");
-			powergenerationgas.addProperty(usestech,ccgt);
-			Individual ccgtval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_CCGT");
-			Individual ocgtval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_OCGT");
+//			Individual ccgt = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine");
+//			Individual ocgt = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OpenCycleGasTurbine");
+//			Individual subcritical = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SubCriticalThermal");
+//			powergenerationgas.addProperty(usestech,ccgt);
+//			Individual ccgtval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_CCGT");
+//			Individual ocgtval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_OCGT");
 			Individual subcritval = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#V_CO2EmissionFactor_SubCritical");
-			
-			
-			Individual Pact = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_PGen_EGen-"+x);
-			double emfact=ccgtval.getPropertyValue(numval).asLiteral().getDouble();
-			double actcap=Pact.getPropertyValue(numval).asLiteral().getDouble();
-			OntClass emissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission");
+//			
+//			
+//			Individual Pact = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_PGen_EGen-"+x);
+			double emfact=subcritval.getPropertyValue(numval).asLiteral().getDouble();
+//			double actcap=Pact.getPropertyValue(numval).asLiteral().getDouble();
+//			OntClass emissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission");
 			OntClass scalarvalueclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
-			Individual emission = emissionclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#Actual_CO2_Emission_EGen-"+x);
-			Individual vemission = scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Actual_CO2_Emission_EGen-"+x);
-			powergenerationgas.addProperty(hasEmission,emission);
-			emission.addProperty(hasvalue,vemission);
-			vemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(emfact*actcap)));
-			Individual t = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
-			vemission.addProperty(hasunit,t);
-
-			Individual process = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#PowerGeneration_EGen-"+x);
-			gen.removeProperty(realizes,process );
+//			Individual emission = emissionclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#Actual_CO2_Emission_EGen-"+x);
+//			Individual vemission = scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Actual_CO2_Emission_EGen-"+x);
+//			powergenerationgas.addProperty(hasEmission,emission);
+//			emission.addProperty(hasvalue,vemission);
+//			vemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(emfact*actcap)));
+//			Individual t = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
+//			vemission.addProperty(hasunit,t);
+//
+//			Individual process = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#PowerGeneration_EGen-"+x);
+//			gen.removeProperty(realizes,process );
 			
-			OntClass designemissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_Emission");
+			OntClass designemissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission");
 			Individual desemission = designemissionclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#Design_CO2_Emission_EGen-"+x);
 			Individual vdesemission = scalarvalueclass.createIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Design_CO2_Emission_EGen-"+x);
 			powergenerationgas.addProperty(hasEmission,desemission);
 			desemission.addProperty(hasvalue,vdesemission);
-			Individual Pmax = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_PMax_EGen-"+x);
+			Individual Pmax = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_Pmax_EGen-"+x);
 			double descap=Pmax.getPropertyValue(numval).asLiteral().getDouble();
 			vdesemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(emfact*descap)));
 			Individual tph = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");

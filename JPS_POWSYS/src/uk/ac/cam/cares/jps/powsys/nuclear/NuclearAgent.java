@@ -150,20 +150,17 @@ public class NuclearAgent extends JPSHttpServlet {
 				startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
 				// startSimulation(lotiri, iriofnetwork, dataPath, runGams);
 
-				JSONObject jo = new JSONObject();
-				List<String> plants = processSimulationResult(dataPath);
-				JSONArray plantsja = new JSONArray(plants);
-				jo.put("plants", plantsja);
-				AgentCaller.printToResponse(jo, response);
+				//later after the model is finished
+//				JSONObject jo = new JSONObject();
+//				List<String> plants = processSimulationResult(dataPath);
+//				JSONArray plantsja = new JSONArray(plants);
+//				jo.put("plants", plantsja);
+				//AgentCaller.printToResponse(jo, response);
 
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage(), e);
-				throw new JPSRuntimeException(e.getMessage(), e);
-			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
@@ -176,6 +173,7 @@ public class NuclearAgent extends JPSHttpServlet {
 				String scenarioUrl = BucketHelper.getScenarioUrl();
 				String usecaseUrl = BucketHelper.getUsecaseUrl();
 				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+				
 				
 				String dataPath = QueryBroker.getLocalDataPath();
 				List<String> plants = processSimulationResult(dataPath);
@@ -225,10 +223,10 @@ public class NuclearAgent extends JPSHttpServlet {
         prepareCSVPartialRemaining(plantlist,iriofnetwork,dataPath);
       //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
-        if (runGams) {
-        	runGAMS(baseUrl);
-        }
-//        pseudoRunGAMS();
+//        if (runGams) {
+//        	runGAMS(baseUrl);
+//        }
+        pseudoRunGAMS();
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
@@ -302,7 +300,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		csvresult.add(header);
 		
 		while(x<resultList.size()) {
-			if(!plantlist.contains(resultList.get(x)[1])) { //TODO later switch to 0 instead of 1 if we use generator scale 
+			if(!plantlist.contains(resultList.get(x)[0])) { //has been switched to 0 instead of 1 cause we use generator scale 
 				System.out.println("generator remains= "+resultList.get(x)[0]);
 				System.out.println("P max= "+resultList.get(x)[2]);
 				System.out.println("x= "+resultList.get(x)[3]);
