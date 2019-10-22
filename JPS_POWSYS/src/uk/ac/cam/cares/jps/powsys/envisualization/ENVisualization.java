@@ -155,7 +155,7 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			logger.info("uploading file");
 			
-		    String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/testfinal.kml";
+		    String fileName = "C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal.kml";
 		    String fileType = "text/xml; charset=utf-8";
 		    // Find this file id in database to get file name, and file type
 		
@@ -723,10 +723,11 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "?vgencostc   j2:numericalValue ?gencostcvalue ." //genCostc0
 				
 				+ "?entity   technical_system:realizes ?generation ."
-				+ "OPTIONAL {?generation   cp:consumesPrimaryFuel ?fueltype }"
-				+ "OPTIONAL {?generation j9:CO2_emission ?emission }" 
-				+ "OPTIONAL {?emission   j2:hasValue ?valueemission }"
-				+ "OPTIONAL {?valueemission   j2:numericalValue ?vemission }" //
+//				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
+				+ "?generation j9:hasEmission ?emission ." 
+				+ "?emission a j9:Actual_CO2_Emission ."
+				+ "?emission   j2:hasValue ?valueemission ."
+				+ "?valueemission   j2:numericalValue ?vemission ." //
 
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 				+ "?y  j2:hasValue ?vy ." 
@@ -826,7 +827,7 @@ public class ENVisualization extends JPSHttpServlet {
 						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 						+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 						+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-						+ "SELECT ?entity ?valueofx ?valueofy ?plant "
+						+ "SELECT ?entity ?valueofx ?valueofy  ?generation ?vemission "
 						+ "WHERE {?entity  a  j1:PowerGenerator ."
 						+ "OPTIONAL { ?entity   j2:isSubsystemOf ?plant }"
 						+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
@@ -837,6 +838,13 @@ public class ENVisualization extends JPSHttpServlet {
 						+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 						+ "?x  j2:hasValue ?vx ." 
 						+ "?vx  j2:numericalValue ?valueofx ."
+						
+						+ "?entity   technical_system:realizes ?generation ."
+						//+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
+						+ "?generation j9:hasEmission ?emission ." 
+						+ "?emission a j9:Actual_CO2_Emission ."
+						+ "?emission   j2:hasValue ?valueemission ."
+						+ "?valueemission   j2:numericalValue ?vemission ." //
 						+ "}";
 		if (flag.contentEquals("BASE")) {
 			prefix = "WHERE {?entity  a  cp:PowerPlant  .";
