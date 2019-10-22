@@ -60,6 +60,10 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
 		
 		logger.info("carbon tax optimization finished with result = " + result);
 	
+		JSONObject jo2= new JSONObject(result);
+		
+		jo.put("substitutionalpowerplants",jo2.getJSONArray("substitutionalpowerplants"));
+		
 		result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
 	
 		logger.info("started npp optimization asynchronously");

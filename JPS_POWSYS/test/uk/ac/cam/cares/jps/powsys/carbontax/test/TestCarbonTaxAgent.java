@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.powsys.carbontax.test;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 
@@ -33,10 +34,12 @@ public class TestCarbonTaxAgent extends TestCase {
 		c= new BigDecimal("40"); 
 		a.prepareConstantCSV(c,dataPath);
 		a.runGAMS(dataPath);
+		File file = new File(dataPath+"/results.csv");
+		assertTrue(file.exists());
 		
 	}
 	
-	public void testGAMSRun() throws IOException, InterruptedException {
+	public void xxxtestGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
 		a.runGAMS("C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/06bc4a0f-f92a-4c59-88c5-eb0bf1f3c978");
 	}
 	
@@ -47,15 +50,18 @@ public class TestCarbonTaxAgent extends TestCase {
 		System.out.println("what is dataPath="+dataPath);
 		CarbonTaxAgent a= new CarbonTaxAgent();
 		
-		a.prepareCSVGeneratorParameter(iriofnetwork,dataPath);
-		
-
+		//a.prepareCSVGeneratorParameter(iriofnetwork,dataPath);
+		a.prepareCSVGeneratorParameterUpdatedGenScale(iriofnetwork,dataPath);
+		//expectation that the csv file should be created correctly with 29 gen
+		File file = new File(dataPath+"/Generator_Parameters.csv");
+		assertTrue(file.exists());
 		
 	}
 	
 	public void testCallCarbonTax() {
 		String scenarioName = "testPOWSYSCarbonTax";
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
+		System.out.println(scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JSONObject jo = new JSONObject();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
@@ -66,6 +72,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		jo.put("carbontax",a );
 		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
 		System.out.println("output= "+resultProcess);
+		assertNotNull(new JSONObject(resultProcess).get("substitutionalpowerplants"));
 	}
 
 }

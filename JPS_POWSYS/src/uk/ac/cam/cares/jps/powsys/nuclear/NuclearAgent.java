@@ -150,11 +150,12 @@ public class NuclearAgent extends JPSHttpServlet {
 				startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
 				// startSimulation(lotiri, iriofnetwork, dataPath, runGams);
 
+				//later after the model is finished
 //				JSONObject jo = new JSONObject();
 //				List<String> plants = processSimulationResult(dataPath);
 //				JSONArray plantsja = new JSONArray(plants);
 //				jo.put("plants", plantsja);
-//				AgentCaller.printToResponse(jo, response);
+				//AgentCaller.printToResponse(jo, response);
 
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
@@ -172,6 +173,7 @@ public class NuclearAgent extends JPSHttpServlet {
 				String scenarioUrl = BucketHelper.getScenarioUrl();
 				String usecaseUrl = BucketHelper.getUsecaseUrl();
 				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+				
 				
 				String dataPath = QueryBroker.getLocalDataPath();
 				List<String> plants = processSimulationResult(dataPath);
@@ -298,7 +300,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		csvresult.add(header);
 		
 		while(x<resultList.size()) {
-			if(!plantlist.contains(resultList.get(x)[1])) {
+			if(!plantlist.contains(resultList.get(x)[0])) { //has been switched to 0 instead of 1 cause we use generator scale 
 				System.out.println("generator remains= "+resultList.get(x)[0]);
 				System.out.println("P max= "+resultList.get(x)[2]);
 				System.out.println("x= "+resultList.get(x)[3]);

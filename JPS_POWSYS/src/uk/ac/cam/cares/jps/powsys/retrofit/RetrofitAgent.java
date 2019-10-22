@@ -151,6 +151,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		double y = o.asLiteral().getDouble();
 		String[] pathIsSubsystemOf = new String[] {OCPSYST, "isSubsystemOf"};
 		o = w.getPropertyValue(powerGenerator, pathIsSubsystemOf);
+		logger.info("power generator in retrofit= "+powerGenerator);
 		String plantIRI = o.asResource().getURI();
 		
 		String pgIri = PrefixToUrlMap.getPrefixUrl(OPSMODE) + "Pg";
@@ -200,7 +201,11 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			if (slackBus.busNumber.equals(busNumberValue)) {
 				logger.info("generator is connected to the slack bus and won't be deleted, generator = " + generator);	
 			} else {
-				delete.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + generator + "> . \r\n");
+				logger.info(" gen in bus to be deleted= "+busNumberValue);
+				if(Double.valueOf(busNumberValue)==3) { //temp to test
+					delete.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + generator + "> . \r\n");	
+				}
+				
 			}
 		}
 		delete.append("} \r\n");		
