@@ -251,7 +251,7 @@ public class NuclearKBCreator {
 		jenaOwlModel2.read(in, null);
 
 		initOWLClasses(jenaOwlModel2);
-		
+		Individual powergeneration = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration");
 		Individual Pggen = Pgclass.createIndividual(iriprefix + generatorname + ".owl#Pg_"+generatorname);
 		Individual Pggenvalue = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Pg_"+generatorname);
 		
@@ -267,6 +267,22 @@ public class NuclearKBCreator {
 		generator.addProperty(isSubsystemOf, plant);
 		model.addProperty(hasModelVariable, Pggen);
 		generator.addProperty(hascoordinatesystem, gencoordinate);
+		generator.addProperty(realizes, powergeneration);
+		OntClass emissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission");
+		OntClass designemissionclass = jenaOwlModel2.getOntClass("http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission");
+		Individual desemission = designemissionclass.createIndividual(iriprefix + generatorname + ".owl#Design_CO2_Emission_"+generatorname);
+		Individual vdesemission = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Design_CO2_Emission_"+generatorname);
+		Individual actemission = emissionclass.createIndividual(iriprefix + generatorname + ".owl#Actual_CO2_Emission_"+generatorname);
+		Individual vactemission = scalarvalueclass.createIndividual(iriprefix + generatorname + ".owl#V_Actual_CO2_Emission_"+generatorname);
+		powergeneration.addProperty(hasEmission,desemission);
+		desemission.addProperty(hasvalue,vdesemission);
+		vdesemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(0.0)));
+		Individual tph = jenaOwlModel2.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr");
+		vdesemission.addProperty(hasunit,tph);
+		powergeneration.addProperty(hasEmission,actemission);
+		actemission.addProperty(hasvalue,vactemission);
+		vactemission.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(0.0)));
+		vdesemission.addProperty(hasunit,tph);
 		
 		gencoordinate.addProperty(hasx, xgencoordinate);
 		xgencoordinate.addProperty(hasvalue, xgencoordinatevalue);
