@@ -33,6 +33,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
@@ -55,6 +56,10 @@ public class ENAgent extends JPSHttpServlet {
 
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		
+		System.out.println("scenario URL = " + JPSContext.getScenarioUrl());
+		
 
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 		String iriofnetwork = joforEN.getString("electricalnetwork");

@@ -150,20 +150,16 @@ public class NuclearAgent extends JPSHttpServlet {
 				startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
 				// startSimulation(lotiri, iriofnetwork, dataPath, runGams);
 
-				JSONObject jo = new JSONObject();
-				List<String> plants = processSimulationResult(dataPath);
-				JSONArray plantsja = new JSONArray(plants);
-				jo.put("plants", plantsja);
-				AgentCaller.printToResponse(jo, response);
+//				JSONObject jo = new JSONObject();
+//				List<String> plants = processSimulationResult(dataPath);
+//				JSONArray plantsja = new JSONArray(plants);
+//				jo.put("plants", plantsja);
+//				AgentCaller.printToResponse(jo, response);
 
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				logger.error(e.getMessage(), e);
-				throw new JPSRuntimeException(e.getMessage(), e);
-			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
@@ -225,10 +221,10 @@ public class NuclearAgent extends JPSHttpServlet {
         prepareCSVPartialRemaining(plantlist,iriofnetwork,dataPath);
       //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
-        if (runGams) {
-        	runGAMS(baseUrl);
-        }
-//        pseudoRunGAMS();
+//        if (runGams) {
+//        	runGAMS(baseUrl);
+//        }
+        pseudoRunGAMS();
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
