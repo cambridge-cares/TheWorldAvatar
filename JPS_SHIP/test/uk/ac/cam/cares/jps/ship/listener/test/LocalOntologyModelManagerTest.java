@@ -31,7 +31,7 @@ public class LocalOntologyModelManagerTest extends TestCase {
 
     public void testLocalOntologyModelManagerFields() {
         LocalOntologyModelManager lomm = new LocalOntologyModelManager();
-        assertEquals(47, lomm.getClass().getDeclaredFields().length);
+        assertEquals(49, lomm.getClass().getDeclaredFields().length);
     }
 
     public void testLocalOntologyModelManagerMethods() {
@@ -134,8 +134,19 @@ public class LocalOntologyModelManagerTest extends TestCase {
             assertTrue(dir.exists());
             dir.delete();
         }
-        //@todo: [AC] Implement tests for: save, saveToOwl
+        //Test saveToOwl
+        String iri = lomm.IRI_KB_SHIPS_TEST + path;
+        File file = new File(lomm.PATH_KB_SHIPS_TEST + path);
+        try {
+            assertFalse(file.exists());
+            assertNotNull(chimney);
+            lomm.saveToOwl(chimney, iri);
+            assertTrue(file.exists());
+        } catch (Exception e) {
+            throw new JPSRuntimeException(e);
+        } finally {
+            file.delete();
+        }
     }
-
 
 }

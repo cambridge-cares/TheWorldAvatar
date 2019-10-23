@@ -229,8 +229,8 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_SCENARIO + "/delete")
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
-			.operation(null, JPS_SCENARIO + "/option")
-				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
+//			.operation(null, JPS_SCENARIO + "/option")
+//				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
 			.build();
 	}
 	

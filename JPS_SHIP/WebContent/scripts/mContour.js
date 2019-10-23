@@ -14,9 +14,14 @@ function getContourMaps (address, folder) {
         folder: folder,
       },
       dataType: 'text',
-    }).done(function (d2result) {
-      d2result = JSON.parse(d2result)
-
+    }).done(function (data) {
+    	
+    	data = JSON.parse(data)
+	let d2result = data['grid']
+	let POL_LIST = data['listofpol']  
+    	let POL_NUM = data['numpol']
+    	let HEIGHT_NUM = data['numheight']
+      
       let bands = []
       //calculate global min max per polutant
       d2result.forEach(
@@ -150,7 +155,7 @@ function getContourMaps (address, folder) {
         })
         console.log(dataurls)
 
-        resolve(dataurls)
+        resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM])
 
       }, err => {//todo: err handling
         reject(err)
@@ -269,7 +274,7 @@ function makeRadios (selector_id, list, legend) {
 //make radio group
 
 //const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx', 'Particulate001','SO2','O3']
-const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx','SO2','O3', 'PM2.5', 'PM10']
-const POL_NUM = POL_LIST.length
-const HEIGHT_NUM = 4
+//const POL_LIST = ['CO2', 'CO', 'NO2', 'HC', 'NOx','SO2','O3', 'PM10', 'PM2.5']
+//const POL_NUM = POL_LIST.length
+//const HEIGHT_NUM = 4
 

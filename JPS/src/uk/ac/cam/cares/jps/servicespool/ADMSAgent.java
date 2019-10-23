@@ -1,9 +1,22 @@
 package uk.ac.cam.cares.jps.servicespool;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -13,17 +26,6 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 @WebServlet("/ADMSAgent")
@@ -69,7 +71,13 @@ public class ADMSAgent extends JPSHttpServlet {
         double lowerx = Double.parseDouble("" + region.getJSONObject("lowercorner").get("lowerx"));
         double lowery = Double.parseDouble("" + region.getJSONObject("lowercorner").get("lowery"));
         // for default universal coordinate system that is use in the input browser
-        String sourceCRSName = CRSTransformer.EPSG_3857;
+        //String sourceCRSName = CRSTransformer.EPSG_3857;
+        String sourceCRSName = region.optString("srsname");
+        logger.info("getting crs= "+sourceCRSName);
+        
+      if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+    	sourceCRSName = CRSTransformer.EPSG_4326; 
+    }
         String targetCRSName = getTargetCRS(cityIRI);
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
