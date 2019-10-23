@@ -79,7 +79,7 @@ public class TestENVisualization extends TestCase {
 		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		String res=a.readGenerator(flag, model,"http://localhost:8080/jps/kb/c7098406-b85c-423f-a4be-166f48e3f99e/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0");
+		String res=a.readGenerator(flag, model,"http://www.jparksimulator.com/kb/sgp/jurongisland/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0");
 		System.out.println("resultjs= "+res);
 	}
 	public void testcreateMarkers() throws IOException {
