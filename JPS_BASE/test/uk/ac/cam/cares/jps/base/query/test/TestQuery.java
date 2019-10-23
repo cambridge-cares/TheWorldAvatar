@@ -126,7 +126,8 @@ public class TestQuery extends TestCase implements ITestConstants{
 	}
 	
 	public void testQueryBrokerLocalSparqlQuery() {			
-		String plantFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);		
+		//String plantFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);		
+		String plantFile = POWER_PLANT_AFG_FILE;	
 		String result = new QueryBroker().queryFile(plantFile, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
 		JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
 		assertEquals("15.75", list.getJSONObject(0).get("emissionvaluenum"));
@@ -193,7 +194,9 @@ public class TestQuery extends TestCase implements ITestConstants{
 	}
 	
 	private void assertEmissionValue(String path, double expected) {
-		String result = new QueryBroker().queryFile(path, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
+		QueryBroker broker = new QueryBroker();
+		String result = broker.queryFile(path, EmissionTestAgent.SPARQL_PLANT_QUERY_EMISSION);
+		System.out.println(result);
 		JSONArray list = JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results");
 		double actual = list.getJSONObject(0).getDouble("emissionvaluenum");
 		assertEquals(expected, actual);
@@ -210,19 +213,15 @@ public class TestQuery extends TestCase implements ITestConstants{
 		new QueryBroker().updateFile(plantIri, query);
 		
 		// check updated value
-		String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
+		//String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
+		String localFile = ResourcePathConverter.convert(POWER_PLANT_AFG_FILE);
 		assertEmissionValue(localFile, newEmissionValue);
 	}
 	
 	public void testQueryBrokerRemoteSparqlDeleteData() {
 		
 		QueryBroker broker = new QueryBroker();
-		//String localFile = ResourcePathConverter.convert(ELECTRICAL_NETWORK_FILE);
-		String localFile = ELECTRICAL_NETWORK_FILE.replace("www.theworldavatar.com", "localhost:8080");
-		
-		
-		System.out.println("localFile = " + localFile);
-		
+		String localFile = ResourcePathConverter.convert(ELECTRICAL_NETWORK_FILE);
 		String sparqlQuery = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
 				"SELECT * \r\n" +
 				"WHERE { ?s OCPSYST:hasSubsystem <%s> . } ";

@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.scenario;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
@@ -25,7 +28,7 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
-public class ScenarioAgent extends HttpServlet {
+public class ScenarioAgent extends KnowledgeBaseManagementAgent {
 	
 	private static final long serialVersionUID = 3746092168199681624L;
 
@@ -59,8 +62,8 @@ public class ScenarioAgent extends HttpServlet {
 		// calling the scenario agent. However, it is needed as soon
 		// as the scenario agent calls other agents.
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
-			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			JPSContext.putScenarioUrl(jo, scenarioUrl);
+			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			JPSContext.putScenarioUrl(jo, scenariourl);
 		}
 				
 		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
@@ -69,11 +72,23 @@ public class ScenarioAgent extends HttpServlet {
 		String result = "";
 		if (operation == null) {
 			
-			// do nothing, the scenario log file has been already created above
+			if (jo.has(JPSConstants.SCENARIO_RESOURCE)) {
+				
+				doGetNew(request, response, scenarioName, copyOnRead);
+				return;
+				
+//				if (jo.has(JPSConstants.QUERY_SPARQL_QUERY)) {
+//					result = queryFile(jo, scenarioName, copyOnRead);
+//				} else {
+//					result = readFile(jo, scenarioName, copyOnRead);
+//				}
+			} else {
 			
-			JSONObject resultjo = new JSONObject(log.getLogAsString());
-			// pretty print with 2 spaces to indent
-			result = resultjo.toString(2);
+				// just return the scenario log
+				JSONObject resultjo = new JSONObject(log.getLogAsString());
+				// pretty print with 2 spaces to indent
+				result = resultjo.toString(2);
+			}
 		
 		} else if ("/option".equals(operation)) {
 			
@@ -373,6 +388,80 @@ public class ScenarioAgent extends HttpServlet {
 				}
 			} 
 			// else skip the scenario log json file
+		}
+	}
+	
+	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
+		if (!kb.exists(resourceUrl)) {
+			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			kb.put(resourceUrl, content);
+		}
+		kb.update(resourceUrl, sparql);
+	}
+	
+	protected String getFromKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, boolean copyOnRead, String accept) {
+		if (kb.exists(resourceUrl)) {
+			return kb.get(resourceUrl, accept);
+		} 
+		
+		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+		if (copyOnRead) {
+			kb.put(resourceUrl, content);
+			if (accept != null) {
+				// read it again but this time form the knowledge base and in the correct format
+				return kb.get(resourceUrl, accept);
+			} 
+		}
+
+		return content;
+	}
+	
+	protected String queryKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql, boolean copyOnRead) {
+		if (kb.exists(resourceUrl)) {
+			return kb.query(resourceUrl, sparql);
+		} 
+		
+		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+		if (copyOnRead) {
+			kb.put(resourceUrl, content);
+		}
+		InputStream inputStream = FileUtil.stringToInputStream(content);
+		return KnowledgeBaseAbstract.query(inputStream, sparql);
+	}
+	
+	private void doGetNew(HttpServletRequest req, HttpServletResponse resp, String scenarioName, boolean copyOnRead) 
+			throws ServletException, IOException {
+		
+		String requestUrl = req.getRequestURL().toString();
+		String path = req.getPathInfo();
+		JSONObject input = Http.readJsonParameter(req);
+		String sparql = input.optString(JPSConstants.QUERY_SPARQL_QUERY);
+		String parameterUrl = input.optString(JPSConstants.SCENARIO_RESOURCE);
+		
+		try {
+			logInputParams("GET", requestUrl, path, parameterUrl, sparql, false);
+			
+			String accept = getAccept(req);
+			
+			String datasetUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			KnowledgeBaseAbstract kb = getKnowledgeBase(datasetUrl);
+			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, parameterUrl);
+			
+			String result = "";	
+			if (sparql.isEmpty()) {
+				//result = kb.get(resourceUrl, accept);
+				result = getFromKnowledgeBase(kb, resourceUrl, copyOnRead, accept);
+			} else {
+				//result = kb.query(resourceUrl, sparql);
+				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
+			}
+			
+			Http.printToResponse(result, resp);
+
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			logInputParams("GET", requestUrl, path, parameterUrl, sparql, true);
+			throw e;
 		}
 	}
 }

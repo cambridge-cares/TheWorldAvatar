@@ -152,6 +152,13 @@ public class TestScenario extends TestCase {
 		assertTrue(path.contains("ROOT"));
 	}
 	
+	public void testGetLocalPathFancyBaseScenario() {
+		JPSHttpServlet.disableScenario();
+		String resource = "http://localhost:9090/fancy/path/some.owl";
+		String path = BucketHelper.getLocalPath(resource);
+		System.out.println(path);
+	}
+	
 	public void testGetIriPrefixBaseScenario() {
 		String prefix = BucketHelper.getIriPrefix();
 		System.out.println(prefix);
@@ -194,7 +201,7 @@ public class TestScenario extends TestCase {
 		System.out.println("diff=" + diff);
 	}
 	
-	public void testReadScenarioAgentPerformance() {
+	public void xxxtestReadScenarioAgentPerformance() {
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testReadScenarioPerformance");
 		JPSHttpServlet.enableScenario(scenarioUrl);	
@@ -214,7 +221,7 @@ public class TestScenario extends TestCase {
 	
 	public void testPingScenarioAgentPerformance() {
 		
-		String url = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testPingScenarioAgentPerformance/ping";
+		String url = KeyValueManager.getServerAddress() + ScenarioHelper.SCENARIO_COMP_URL + "/testPingScenarioAgentPerformance/ping";
 		long start = System.currentTimeMillis();
 		for (int i=0; i<10; i++) {
 			String result = AgentCaller.executeGetWithURL(url);

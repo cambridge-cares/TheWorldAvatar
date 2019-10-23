@@ -16,7 +16,6 @@ public class TestScenarios extends TestCase {
 	//private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";
 	public static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan";
 	
-	
 	private void putToThreadContext() {
 		ThreadContext.put("scenarioname", "abc");
 	}

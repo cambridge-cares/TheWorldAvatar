@@ -19,18 +19,24 @@ public class ResourcePathConverter {
 
 	public static String convert(String path) {
 		
-		String converted = null;
-		
-		//TODO-AE SC URGENT 20190913 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
-//		if (true) {
+		//TODO-AE SC URGENT 20191021 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
+		// maybe change back not necessary any more, because of the solution below
+		//		if (true) {
 //			return path;
 //		}
-		
-		String s = "http://www.theworldavatar.com/kb";
-		if (path.startsWith(s)) {
-			converted = path.replace(s, "http://localhost:8080/kb");
-		} else {
+	
+		String address = KeyValueManager.getServerAddress();
+		if (address.contains("www.theworldavatar.com") || address.contains("www.jparksimulator.com")) {
+			// i.e. the code is running on claudius
 			return path;
+		}
+		
+		// i.e. the code is not running on claudius
+		String converted = path;
+		if (path.contains("http://www.theworldavatar.com")) {
+			converted = path.replace("http://www.theworldavatar.com", address);
+		} else if (path.contains("http://www.jparksimulator.com")) {
+			converted = path.replace("http://www.jparksimulator.com", address);
 		}
 		
 		JPSBaseLogger.info(getInstance(), "converted resource path " + path + " to " + converted);

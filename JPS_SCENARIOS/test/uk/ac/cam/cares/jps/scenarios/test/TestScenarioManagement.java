@@ -37,6 +37,14 @@ public class TestScenarioManagement extends TestCase {
 		assertEquals(7, joarray.length());
 	}
 	
+	public void testListScenariosAndAgentsAsJson() {
+		
+		String result =  new ScenarioManagementAgent().listScenariosAndAgentsAsJson();		
+		//String result = new ScenarioManagementAgent().listAgentsAsJson();
+		//String result = new ScenarioManagementAgent().listScenariosAsJson();
+		System.out.println(result);
+	}
+	
 	public void testTmp3() {
 		
 		//String json = new ScenarioManagementAgent().listScenariosAndAgentsAsJson();
@@ -51,14 +59,7 @@ public class TestScenarioManagement extends TestCase {
 //		}
 	}
 	
-	public void testTmp4() {
-		
-		String result =  new ScenarioManagementAgent().listScenariosAndAgentsAsJson();
-		
-		//String result = new ScenarioManagementAgent().listAgentsAsJson();
-		//String result = new ScenarioManagementAgent().listScenariosAsJson();
-		System.out.println(result);
-	}
+
 	
 //	public void testTmp5() {
 //		

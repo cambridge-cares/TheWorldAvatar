@@ -22,6 +22,7 @@ public class SparqlOverHttpService {
 	public enum RDFStoreType {	
 		FUSEKI,
 		RDF4J,
+		BLAZEGRAPH,
 		OBDA
 	}
 	
@@ -57,6 +58,10 @@ public class SparqlOverHttpService {
 			this.type = RDFStoreType.FUSEKI;
 			this.sparqlServiceURIForQuery = datasetUrl + "/query";
 			this.sparqlServiceURIForUpdate = datasetUrl + "/update";
+		} else if (RDFStoreType.BLAZEGRAPH == rdfStoreType){
+			this.type = RDFStoreType.BLAZEGRAPH;
+			this.sparqlServiceURIForQuery = datasetUrl;
+			this.sparqlServiceURIForUpdate = datasetUrl + "/update"; // update will not work yet
 		} else {
 			throw new JPSRuntimeException("unsupported RDF store type = " + rdfStoreType);
 		}

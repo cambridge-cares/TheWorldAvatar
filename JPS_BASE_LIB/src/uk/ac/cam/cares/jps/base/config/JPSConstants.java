@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.base.config;
 
 public interface JPSConstants {
 
+	static String KNOWLEDGE_BASE_JPS = "jps";
+	
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
 	static String SCENARIO_SUBDIR_DATA = "data";
@@ -10,6 +12,7 @@ public interface JPSConstants {
 	static String SCENARIO_URL = "scenariourl";
 	static String SCENARIO_USE_CASE_URL = "usecaseurl";
 	static String SCENARIO_RESOURCE = "scenarioresource";
+	static String SCENARIO_DATASET = "dataset";
 	static String SCENARIO_AGENT = "scenarioagent";
 	static String SCENARIO_AGENT_OPERATION = "scenarioagentoperation";
 	static String SCENARIO_SIMULATION_TIME = "simulationtime";

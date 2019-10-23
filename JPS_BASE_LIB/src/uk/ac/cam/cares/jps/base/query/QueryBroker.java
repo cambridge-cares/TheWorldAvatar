@@ -27,9 +27,14 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class QueryBroker {
 	
+	public String readFile(String urlOrPath) {
+		String result = KnowledgeBaseClient.get(null, urlOrPath, null);
+		return result;
+	}
+	
 	// TODO-AE SC 20190321 all methods should be extended in such a way that scenario url might passed
 	// directly as a parameter (instead of using the super class JPSHttpServlet and ThreadContext)
-	public String readFile(String urlOrPath) {
+	public String readFileOLD(String urlOrPath) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -68,8 +73,13 @@ public class QueryBroker {
 			return FileUtil.readFileLocally(localFile);
 		}
 	}
+	
+	public String queryFile(String targetUrl, String sparqlQuery) {
+		String result = KnowledgeBaseClient.query(null, targetUrl, sparqlQuery);
+		return result;
+	}
 
-	public String queryFile(String urlOrPath, String sparqlQuery) {
+	public String queryFileOld(String urlOrPath, String sparqlQuery) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();
 		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -139,12 +149,17 @@ public class QueryBroker {
 		return JenaResultSetFormatter.convertToJSONW3CStandard(result);
 	}
 	
+	public String writeFile(String urlOrPath, String content) {
+		String result = KnowledgeBaseClient.put(null, urlOrPath, content);
+		return result;
+	}
+	
 	/**
 	 * @param urlOrPath
 	 * @param content
 	 * @return the URL to access the written file
 	 */
-	public String writeFile(String urlOrPath, String content) {
+	public String writeFileOLD(String urlOrPath, String content) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -196,6 +211,10 @@ public class QueryBroker {
 		put(destinationUrl, content);
 	}
 
+	public void updateFile(String targetUrl, String sparqlUpdate) {
+		KnowledgeBaseClient.update(null, targetUrl, sparqlUpdate);
+	}
+	
 	/**
 	 * Useful links for the question how to update with Jena for future purpose:<br>
 	 * <br> 
@@ -214,7 +233,7 @@ public class QueryBroker {
 	 * @param urlOrPath
 	 * @param sparqlUpdate
 	 */
-	public void updateFile(String urlOrPath, String sparqlUpdate) {
+	public void updateFileOLD(String urlOrPath, String sparqlUpdate) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -247,6 +266,7 @@ public class QueryBroker {
 		}
 		
 		JPSBaseLogger.info(this, "updating local file=" + localFile);
+		JPSBaseLogger.info(this, "SPARQL update =" + sparqlUpdate);
 		
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
 		OntModel model = JenaHelper.createModel(localFile);	
