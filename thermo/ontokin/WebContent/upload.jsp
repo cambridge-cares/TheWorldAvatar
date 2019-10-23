@@ -16,6 +16,7 @@
 <script src="${pageContext.request.contextPath}/js/popper.min.js"></script>
 <script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
 
 <link rel="icon"
@@ -105,36 +106,50 @@
 		</s:iterator>	
 		</div>
 		
-		
-			<div class="col-md-9">
+			<div class="col-md-half">
+			</div>
+			<div class="col-md-eightpointfive div-right">
 				<s:actionerror/>
-				
-				<span id ="errorQuery" style="display:none; color:red">Please provide a query</span>
-				<div class="row">
-					<div class="col-md-11">
-						<s:textfield name="term" class="form-control"  placeholder="Search OntoKin (to list all the mechanisms, go directly to the following menu)" theme="bootstrap"/>							
-					</div>
-					<div class="col-md-1">
-						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="In this search box, you can search for a species (e.g. H2O) or reaction (e.g. O + HO2 [=] O2 + OH). To view all the mechanisms, choose 'Show All Mechanisms' in the 'Select query type' drop-down menu and click on the 'OntoKin Search' button.">?</span>
-					</div>
-				</div>
-				<span id ="errorType" style="display:none; color:red">Please select a query type</span>
+				<legend style="padding-bottom: 10px;">Specify a Query:</legend>
+				<hr class="line !important;">
+				<span id ="queryType" style="">Select a type of query:</span>
+				<span id ="errorType" style="display:none; color:red">No type selected</span>
 				<div class="row">
 					<div class="col-md-11">
 						<s:select
-headerKey="-1" headerValue="Select query type"
-list="#{'mechAll':'Show All Mechanisms', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodyanmic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters', 'comparerate':'Compare Arrhenius Rate Constant Parameters'}" 
-name="querySelection" 
-value="thermo" theme="bootstrap" />
+							headerKey="-1" headerValue="Select query type"
+							list="#{'mechAll':'Show All Mechanisms (no additional input is needed)', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodyanmic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'comparerate':'Compare Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'rateconstantAnyOrder':'Show Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)', 'comparerateAnyOrder':'Compare Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)'}" 
+							name="querySelection" 
+							value="thermo" theme="bootstrap" />
 					</div>
 					<div class="col-md-1">
-						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="If you have already provided a species (e.g. H2O) in the search box above, please select either 'Show Mechanism(s) Containing Species or Reaction' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. If you have provided a reaction, select either 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters'. Now click on the 'Search OntoKin' button.">?</span>							
+						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="To view all the mechanisms, select 'Show All Mechanisms'. To search for a species, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. To search for a reaction, select either 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters'.">?</span>							
+					</div>
+					<div class="col-md-11">
+						<span id ="units" style="">Select the Units of R (gas constant):</span>
+						<s:select
+							headerKey="-1" headerValue="kcalmolk':'kcal / mol. K"
+							list="#{'jmolk':'J / mol. K', 'ergmolk':'erg / mol. K', 'dimensionless':'Dimensionless'}" 
+							name="unitsSelection" 
+							value="unitsR" theme="bootstrap" />
+					</div>
+				</div>
+				<span id ="queryText" style="">Interactive text:</span>
+				<span id ="errorQuery" style="display:none; color:red">No text provided</span>
+				<div class="row">
+					<div class="col-md-11">
+						<s:textfield name="term" class="form-control"  placeholder="Specify the name of a species or reaction" theme="bootstrap"/>							
+					</div>
+					<div class="col-md-1">
+						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="If you have selected 'Show All Mechanisms' in the menu above, click on the 'Search OntoKin' button. If you have selected a species related query, type in or paste a species (e.g. H2O). If you have selected a reaction related query, type in or past a reaction (e.g. O + HO2 [=] O2 + OH). Finally, click on the 'Search OntoKin' button.">?</span>
 					</div>
 				</div>
 
 					<%-- <s:submit id="search_btn" value="OntoKin Search (to view the list of all mechanisms in the KB, go directly to the following drop-down menu)" theme="bootstrap"/> --%>
-					<button id="execute" theme="bootstrap">OntoKin Search</button>
-					<button id="refresh" theme="bootstrap">Refresh</button>
+					<button id="execute" theme="bootstrap">Search OntoKin</button>
+					<button id="refresh" theme="bootstrap">Clear</button>
+					<span id="spinner" style="display: none"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></span>
+					
 					<p></p><span id ="noResult" style="display:none; color:red">No results found.</span>
 				 	<p></p>
 				 	
@@ -182,18 +197,18 @@ value="thermo" theme="bootstrap" />
 					<div class="container chart-group">
 					  <div class="row">
 					   	<div id="chartCanvas" class="" style="display:none">
-							<canvas id="canvas" style="width:1200px !important; height:500px"></canvas>
+							<canvas id="canvas" style="width:800px !important; height:500px"></canvas>
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:1200px !important; height:500px"></canvas>
+							<canvas id="canvasRateAE" style="width:800px !important; height:300px"></canvas>
 							<p></p>
 						</div>
 					   	<div id="chartCanvasRatePEF" class="" style="display:none">
-							<canvas id="canvasRatePEF" style="width:1200px !important; height:500px"></canvas>
+							<canvas id="canvasRatePEF" style="width:800px !important; height:300px"></canvas>
 							<p></p>
 						</div>
 					   	<div id="chartCanvasRateTE" class="" style="display:none">
-							<canvas id="canvasRateTE" style="width:1200px !important; height:500px"></canvas>							
+							<canvas id="canvasRateTE" style="width:800px !important; height:300px"></canvas>							
 						</div>
 					  </div>
 					</div>
@@ -205,7 +220,20 @@ value="thermo" theme="bootstrap" />
 <script type="text/javascript">
 
 $( function() {
-	function formatLabel(str){
+ 
+	 function splitString(string) {
+		  	if (string.indexOf('[=]') > -1) {
+		    	return string.split("[=]");
+		    } else if (string.indexOf('=]') > -1) {
+		    	return string.split("=]");
+		    } else if (string.indexOf('<=>')){
+		    	return string.split("<=>");
+		    } else if (string.indexOf('=>')){
+		    	return string.split("=>");
+		    }
+		  }
+	 
+	 function formatLabel(str){
 		if(str.length>30){
 			str = str.slice(0,30) + '...';
 		}
@@ -239,8 +267,9 @@ $( function() {
 		window.location.href = '/ontokin';
 	});
 
-	$("#execute").on("click", (event) => {
+	$("#execute").on("click", (event) => {		
 		
+		// let chartCanvas =  $("#chartCanvas");
 		let queryString;
 		
 		let search_term_name = $("#term").val(); //cl2
@@ -270,7 +299,15 @@ $( function() {
 		}
 		else {
 			search_term_name = search_term_name.toUpperCase();
-			console.log(search_term_name);
+			let result = splitString(search_term_name);			
+			let reactantArray;
+			let productArray;
+			
+			if (result.length == 2 ) {	
+				reactantArray = result[0].split("+");
+				productArray = result[1].split("+");
+			}
+			
 			$("#errorQuery").hide();
 			$("#errorType").hide();
 			$("#noResult").hide();
@@ -363,7 +400,7 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
-				'} ';
+ 				'}';
 
 			} else if(search_querySelection == 'comparerate') {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
@@ -382,17 +419,210 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
+			} else if(search_querySelection == 'rateconstantAnyOrder' && reactantArray.length == 2 && productArray.length == 2) {
+			 
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		           '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .' + '\n' + 
+		              	   '?Product1 owl:sameAs ?Species1 .' + '\n' +
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .' + '\n' +  
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .' + '\n' +
+		              	   '?Product2 owl:sameAs ?Species2 .' + '\n' +
+		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .' + '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .' + '\n' +
+		              	   '?Reactant1 owl:sameAs ?Species3 .' + '\n' + 
+		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .' + '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .' + '\n' +
+		              	   '?Reactant2 owl:sameAs ?Species4 .' + '\n' + 
+		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .' + '\n' +
+					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+ 				
+ 				console.log("querystring:\n"+queryString);
+ 				console.log("\n reactant1:\n"+reactantArray[0].trim());
+ 				console.log("\n reactant2:\n"+reactantArray[1].trim());
+ 				console.log("\n product1:\n"+productArray[0].trim());
+ 				console.log("\n product2:\n"+productArray[1].trim());
+
+			} else if(search_querySelection == 'rateconstantAnyOrder' && reactantArray.length == 1 && productArray.length == 2) {
+			 
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
+		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .'+ '\n' +
+		              	   '?Product2 owl:sameAs ?Species2 .'+ '\n' +
+		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
+		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
+					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+
+			} else if(search_querySelection == 'rateconstantAnyOrder' && reactantArray.length == 2 && productArray.length == 1) {
+			 
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		           		   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
+		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
+		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .'+ '\n' +
+		              	   '?Reactant2 owl:sameAs ?Species4 .'+ '\n' + 
+		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .'+ '\n' +
+					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+
+			} else if(search_querySelection == 'comparerateAnyOrder' && reactantArray.length == 2 && productArray.length == 2) {
+			 
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>' + '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		           '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .' + '\n' + 
+		              	   '?Product1 owl:sameAs ?Species1 .' + '\n' +
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .' + '\n' +  
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .' + '\n' +
+		              	   '?Product2 owl:sameAs ?Species2 .' + '\n' +
+		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .' + '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .' + '\n' +
+		              	   '?Reactant1 owl:sameAs ?Species3 .' + '\n' + 
+		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .' + '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .' + '\n' +
+		              	   '?Reactant2 owl:sameAs ?Species4 .' + '\n' + 
+		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .' + '\n' +
+					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+ 				
+ 				console.log("querystring:\n"+queryString);
+ 				console.log("\n reactant1:\n"+reactantArray[0].trim());
+ 				console.log("\n reactant2:\n"+reactantArray[1].trim());
+ 				console.log("\n product1:\n"+productArray[0].trim());
+ 				console.log("\n product2:\n"+productArray[1].trim());
+
+			} else if(search_querySelection == 'comparerateAnyOrder' && reactantArray.length == 1 && productArray.length == 2) {
+			 
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
+		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .'+ '\n' +
+		              	   '?Product2 owl:sameAs ?Species2 .'+ '\n' +
+		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
+		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
+					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+
+			} else if(search_querySelection == 'comparerateAnyOrder' && reactantArray.length == 2 && productArray.length == 1) {
+			 
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		           		   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
+		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
+		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .'+ '\n' +
+		              	   '?Reactant2 owl:sameAs ?Species4 .'+ '\n' + 
+		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .'+ '\n' +
+					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+
 			}
+//		}
 		
 		let queryResultsTable = $("#table-query-results");
 		$("#num-results").text("");
 		$(".row-query-results").remove();
 		
-		
+		$("#spinner").show();
 		$.ajax({
 			type: 'GET',
-			url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
-			//url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
+			//url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
+			url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
 			data: {queryString},
 			success: data => {
 				let trimmedResult = data.slice(1, data.length-2);
@@ -474,7 +704,7 @@ $( function() {
 					        } else if (i == 'Pressure') {
 					        	pressure.push(row);
 					        }
-						  } else if(search_querySelection == 'comparerate'){
+						  } else if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){
 								if (i == 'ActivationEnergy') {					        	
 						        	ae.push(row);
 						        } else if (i == 'PreExpFactor') {
@@ -487,7 +717,7 @@ $( function() {
 						  }
 					      });
 						
-						if (search_querySelection != 'compthermo' && search_querySelection != 'comparerate') {
+						if (search_querySelection != 'compthermo' && search_querySelection != 'comparerate' && search_querySelection != 'comparerateAnyOrder') {
 							queryResultsTable.append(getTableResultRowString(count++, resultObj));
 							$("#chartCanvas").hide();
 							$("#chartCanvasRateAE").hide();
@@ -502,7 +732,7 @@ $( function() {
 							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").hide();
 							$("canvas#canvas").remove();
-							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:800px !important; height:500px"></canvas>');
 							var config = {
 									type: 'line',
 									data: {
@@ -607,7 +837,7 @@ $( function() {
 								var ctx = document.getElementById('canvas').getContext('2d');
 								var myChart = new Chart(ctx, config);
 								 
-						} else if(search_querySelection == 'comparerate'){ // show chart
+						} else if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){ // show chart
 							$("#chartCanvasRateAE").show();
 							$("#chartCanvasRatePEF").show();
 							$("#chartCanvasRateTE").show();
@@ -616,9 +846,9 @@ $( function() {
 							$("canvas#canvasRateAE").remove();
 							$("canvas#canvasRatePEF").remove();
 							$("canvas#canvasRateTE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
-							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
-							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:1200px !important; height:500px"></canvas>');
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:800px !important; height:300px"></canvas>');
+							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:800px !important; height:300px"></canvas>');
+							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:800px !important; height:300px"></canvas>');
 							var configAE = {
 									type: 'line',
 									data: {
@@ -658,7 +888,7 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Activation Energy'
+													labelString: 'Activation Energy (J/mol)'
 												}
 											}]
 										}
@@ -707,7 +937,7 @@ $( function() {
 													display: true,
 													scaleLabel: {
 														display: true,
-														labelString: 'Pre-exponential Factor'
+														labelString: 'Pre-exponential Factor (m3/mol/s)'
 													}
 												}]
 											}
@@ -770,14 +1000,15 @@ $( function() {
 					}
 					$("#num-results").text(`${count-1} results found.`);
 				}
+
+				$("#spinner").hide();
 			},
 			error: (XMLHttpRequest, textStatus, errorThrown) => { 
 				alert("INCORRECT SPARQL QUERY!")
 	        }
 		})
-	}
-
-	});
+		}
+	})
 	
 });
 

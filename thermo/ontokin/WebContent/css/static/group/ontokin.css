@@ -4,7 +4,11 @@ body {
 .div-left {
 	background-color: #FFFFFF
 }
-
+.div-right {
+	background-color: #FFFFFF
+}
+.col-md-half{-ms-flex:0 0 4.166666%;flex:0 0 4.166666%;max-width:4.166666%}
+.col-md-eightpointfive{-ms-flex:0 0 70.833333%;flex:0 0 70.833333%;max-width:70.833333%;padding-left:15px;padding-right:15px}
 th {
     background-color: #cbe1e4;
     color: #495057;
