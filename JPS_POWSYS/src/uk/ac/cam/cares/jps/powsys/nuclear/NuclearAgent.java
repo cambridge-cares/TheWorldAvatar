@@ -137,8 +137,8 @@ public class NuclearAgent extends JPSHttpServlet {
 				String lotiri = jofornuc.getString("landlot");
 				String iriofnetwork = jofornuc.getString("electricalnetwork");
 				ArrayList<String> listofplant = new ArrayList<String>();
-				for (int c = 0; c < jofornuc.getJSONArray("substitutionalpowerplants").length(); c++) {
-					listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+				for (int c = 0; c < jofornuc.getJSONArray("substitutionalgenerators").length(); c++) {
+					listofplant.add(jofornuc.getJSONArray("substitutionalgenerators").getString(c));
 				}
 
 				boolean runGams = true;

@@ -72,7 +72,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		jo.put("carbontax",a );
 		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
 		System.out.println("output= "+resultProcess);
-		assertNotNull(new JSONObject(resultProcess).get("substitutionalpowerplants"));
+		assertNotNull(new JSONObject(resultProcess).get("substitutionalgenerators"));
 	}
 
 }

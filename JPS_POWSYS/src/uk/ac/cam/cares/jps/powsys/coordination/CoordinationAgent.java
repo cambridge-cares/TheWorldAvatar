@@ -62,7 +62,7 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
 	
 		JSONObject jo2= new JSONObject(result);
 		
-		jo.put("substitutionalpowerplants",jo2.getJSONArray("substitutionalpowerplants"));
+		jo.put("substitutionalgenerators",jo2.getJSONArray("substitutionalgenerators"));
 		
 		result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
 	

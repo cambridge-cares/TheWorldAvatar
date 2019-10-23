@@ -202,7 +202,7 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_POWSYS + "/NuclearAgent/startsimulation")
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
-			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
 			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
 			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
@@ -287,6 +287,15 @@ public class TestAgentDescriptions extends TestCase {
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
 			.build();
+	}
+	
+	private Service createDescrForAgentCarbonTax() {
+		return new ServiceBuilder()
+				.operation(null, JPS_POWSYS + "/optimizeforcarbontax")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", "substitutionalgenerators")
+				.build();
 	}
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {

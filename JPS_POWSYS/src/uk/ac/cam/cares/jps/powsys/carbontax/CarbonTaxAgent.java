@@ -431,7 +431,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				ja.put(ind.getnucleargen());
 			}
 		}
-		result.put("substitutionalpowerplants",ja);
+		result.put("substitutionalgenerators",ja);
 		return result;	
 	}
 }

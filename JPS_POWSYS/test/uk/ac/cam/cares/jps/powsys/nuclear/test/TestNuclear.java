@@ -31,15 +31,15 @@ public class TestNuclear extends TestCase {
 		//ja.put("http://www.theworldavatar.com/kb/powerplants/SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore.owl#SembCorp_Pulau_Sakra_CCGT_Cogen_Power_Station_Singapore");
 		//ja.put("http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore");
 		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-006.owl#EGen-006");
-		jofornuc.put("substitutionalpowerplants", ja);
+		jofornuc.put("substitutionalgenerators", ja);
 		
 		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
 		ArrayList<String> listofplant= new ArrayList<String>();
 		
-		for (int c=0;c<jofornuc.getJSONArray("substitutionalpowerplants").length();c++) {
-			listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+		for (int c=0;c<jofornuc.getJSONArray("substitutionalgenerators").length();c++) {
+			listofplant.add(jofornuc.getJSONArray("substitutionalgenerators").getString(c));
 		}
 		
 		agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
@@ -80,7 +80,7 @@ public class TestNuclear extends TestCase {
 		JSONObject jo = new JSONObject();
 		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		jo.put("substitutionalpowerplants", ja);
+		jo.put("substitutionalgenerators", ja);
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
@@ -124,15 +124,15 @@ public class TestNuclear extends TestCase {
 		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-007.owl#EGen-007");
 		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-016.owl#EGen-016");
 		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-017.owl#EGen-017");
-		result.put("substitutionalpowerplants", ja);
+		result.put("substitutionalgenerators", ja);
 		NuclearAgent agent = new NuclearAgent();
 		
 		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		
 		ArrayList<String> listofplant= new ArrayList<String>();
-		for (int c=0;c<result.getJSONArray("substitutionalpowerplants").length();c++) {
-			listofplant.add(result.getJSONArray("substitutionalpowerplants").getString(c));
+		for (int c=0;c<result.getJSONArray("substitutionalgenerators").length();c++) {
+			listofplant.add(result.getJSONArray("substitutionalgenerators").getString(c));
 		}
 		
 		String dataPath = QueryBroker.getLocalDataPath();
