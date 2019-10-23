@@ -125,10 +125,10 @@
 					<div class="col-md-1">
 						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="To view all the mechanisms, select 'Show All Mechanisms'. To search for a species, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. To search for a reaction, select either 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters'.">?</span>							
 					</div>
-					<div class="col-md-11">
+					<div id="unitsGasConstant" class="col-md-11" style="display:none;">
 						<span id ="units" style="">Select the Units of R (gas constant):</span>
-						<s:select
-							headerKey="-1" headerValue="kcalmolk':'kcal / mol. K"
+						<s:select 
+							headerKey="-1" headerValue="kcal / mol. K"
 							list="#{'jmolk':'J / mol. K', 'ergmolk':'erg / mol. K', 'dimensionless':'Dimensionless'}" 
 							name="unitsSelection" 
 							value="unitsR" theme="bootstrap" />
@@ -240,7 +240,19 @@ $( function() {
 		return str;
 	}
 	
-	$("a#linkButton").on('click',function(){
+	 $('#querySelection').change(function(){ 
+		    var value = $(this).val();
+
+			if (value == 'compthermo') {
+				$('#unitsGasConstant').show();
+
+			} else {
+
+				$('#unitsGasConstant').hide();
+		}
+	 });
+	
+	 $("a#linkButton").on('click',function(){
 	    window.open('www.google.com', '_blank');
 	});
 	
@@ -267,7 +279,7 @@ $( function() {
 		window.location.href = '/ontokin';
 	});
 
-	$("#execute").on("click", (event) => {		
+	$("#execute").on("click", (event) => {	
 		
 		// let chartCanvas =  $("#chartCanvas");
 		let queryString;
@@ -612,7 +624,6 @@ $( function() {
  				'}';
 
 			}
-//		}
 		
 		let queryResultsTable = $("#table-query-results");
 		$("#num-results").text("");
