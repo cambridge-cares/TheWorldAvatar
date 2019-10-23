@@ -1,11 +1,11 @@
+var scenario;
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-
-    // var anotherURL1 = prefix + 'OntoEN/testfinalBASE.kml';
-    // var anotherURL2 = prefix + 'OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
-    var anotherURL1 =  'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal.kml';
-    var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinal2.kml';
+    var anotherURL1 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml';
+    var anotherURL2 = 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    // var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
+    // var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
     var val =  parseFloat($("#co2Value").text());
     setInterval(function(){
         distotalemission(arrSum);
@@ -29,6 +29,7 @@
 
     //TODO: submit button that sends out simulation
     let runBtn = $("#run-btn");
+    let resetBtn = $("#reset-btn");
     let selectedId = 0 ;
    
     // updatePredefined(selectedId)
@@ -42,6 +43,16 @@
     runBtn.click(function () {
         runKML(selectedId);
     })
+    resetBtn.click(function(){
+        keys = Object.keys(sessionStorage);
+        i = keys.length;
+        console.log("CHECK THIS OUT")
+        while (i--){
+            var retrievedObject = sessionStorage.getItem(keys[i]);
+            console.log(" i: "+ i);
+            updateOwlFile(keys[i], JSON.parse(retrievedObject), 'kml');
+        } 
+    })
 
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
@@ -52,10 +63,12 @@
             
             kmlURL = anotherURL1;
             scenario = "BASE";
+            // appPrefix = prefix1;
         }
         else if (predefinedId == '1') {
             kmlURL = anotherURL2;
             scenario = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
+            // appPrefix = prefix2;
         }
             
         json = { "electricalnetwork":iriofnetwork ,"flag": scenario }

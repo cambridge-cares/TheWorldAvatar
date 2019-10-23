@@ -3,11 +3,8 @@
  */
 
 //part no written by me-----------------------------------------------------------------------------------//
-// var prefix = "http://www.theworldavatar.com/";
-var prefix = "http://localhost:8080/"
+var prefix = "http://localhost:8080";
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
-selectedidnetwork = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/';
-// selectedidnetwork = 'http://localhost:8080/kb/sgp/jurongisland/jurongislandpowernetwork/'
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
@@ -34,24 +31,6 @@ document.addEventListener("click", function(evt) {
         readmeTextElement.style.display = 'none';
     }
 });
-window.onbeforeunload = function (event) {
-    window.onunload = function(){
-       keys = Object.keys(sessionStorage);
-       i = keys.length;
-       while (i--){
-           var retrievedObject = this.sessionStorage.getItem(keys[i]);
-           this.updateOwlFile(keys[i], JSON.parse(retrievedObject), 'kml');
-       } 
-    }
-    var message = 'Important: Please click on \'Save\' button to leave this page.';
-    if (typeof event == 'undefined') {
-        event = window.event;
-    }
-    if (event) {
-        event.returnValue = message;
-    }
-    return message;
-};
 
 //-----------------------------------------------------------------------------------//
 
@@ -226,9 +205,9 @@ function drawGenerator(data, anotherURL){
 }
 
 function sendRequest(url,callback) {
-console.log(url)
-$.ajax({// reads file and return as a json packet. 
-    url: "http://www.theworldavatar.com:82/getAttrList",
+    console.log(url)
+$.ajax({
+    url: "http://theworldavatar.com:82/getAttrList",
     method: "POST",
     data: JSON.stringify({uri: url}),
     contentType: "application/json; charset=utf-8",
@@ -242,13 +221,13 @@ success: function (attrPairs) {
 function setKMLMenu(kmlEvent){
     var data = kmlEvent.featureData;
     var nameString = data.name.substr(1);
-    var names = nameString.split('/');
+    var names = nameString.split('[');
     var buttonsList = '<p>Please select the Entity you would like to modify</p>';
     for(var index in names)
     {
         var name = names[index];
 
-        buttonsList = buttonsList + '<div><label>' + name + '</label>' +
+        buttonsList = buttonsList + '<div><label>' + name.split('#')[1] + '</label>' +
             '<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
     }
 
@@ -257,17 +236,18 @@ function setKMLMenu(kmlEvent){
     kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
 
 }
-function displayItem(event){
+function selectEBus(event) {
     selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
-    console.log(selectedId);
+    data = {"scenarioresource":selectedId}
+    // var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' +selectedId.split('#')[1]; //will read from here. 
+    var url = 'http://localhost:8080/jps/scenario/'+scenario+'/read?query=' + encodeURIComponent(JSON.stringify(data));
     var kmljson = {};
-    var kmlurl = prefix + '/JPS_POWSYS/ENVisualization/readItems'; 
-    kmljson["electricalnetwork"] = data["electricalnetwork"];
-    kmljson["n"] = String(n);
-    kmljson["flag"] =  data["flag"];
-    kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));      
-
-
+    var kmlurl = prefix + '/JPS_POWSYS/ENVisualization/readGenerator'; 
+    kmljson["electricalnetwork"] = iriofnetwork;
+    kmljson["flag"] = scenario;
+    kmljson['selectedID'] = selectedId;
+    kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));   
+    console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
         type: 'GET',
@@ -279,60 +259,28 @@ function displayItem(event){
             alert(ts.responseText);
         }   
     });
-
     request.done( function(data) {
-    console.log ("success create request");
-    // kmlLayer = new google.maps.KmlLayer({
-    //     // url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',//In other cases, will eventually be read and overwritten here. NO PROBLEM!
-    //     url: anotherURL+ "?r="+(new Date()).getTime(), //this is completely necessary for cache-busting. 
-    //     suppressInfoWindows: false,
-    //     map: map
-    // });
-
-
-    //     kmlLayer.addListener('click', function(kmlEvent) {
-    //         setKMLMenu(kmlEvent)
-    //     });             
-        
-    });
-
-    request.fail(function(jqXHR, textStatus) {
-    });
-}
-function selectEBus(event) {
-    selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
-    console.log(selectedId);
-    // var url = 'http://localhost:8080/jps/kb/71a60f51-0a6f-47e0-bd0c-5a4e518aee7e/nuclearpowerplants/' + event.srcElement.id; //will read from here. 
-    var url = selectedidnetwork + event.srcElement.id;
-    if (event.srcElement.id.substring(0,3) == "Nuc"){
-        var url = "http://www.theworldavatar.com/kb/sgp/jurongisland/nuclearpowerplants/" + event.srcElement.id;
-    }
-    console.log(event.srcElement.id.substring(0,3))
-    console.log(url);
-    sendRequest(url,function (response) {
-
-
-        console.log('response:', response);
+        console.log ("success create request");
         var inputsHTML = '';
-        response = sortByKey(response,'name');
-        sessionStorage.setItem(event.srcElement.id, JSON.stringify(response));
+        var obj0 = JSON.parse(data)[0];
+        // response = sortByKey(obj0[0],'name');
+        console.log(obj0)
         var nameSet = [];
 
-        for(var item in response)
+        for(var item in obj0)
         {
-            var pair = response[item];
-
-            if(pair['value'].includes('.owl'))
-            {
-            }
-            else{
-                console.log(pair['name']);
-                if(pair['name'].includes('V_VoltageMagnitude_EBus')||pair['name'].includes('V_Vm_EBus')){   
-            }
+            var pair = obj0[item];
+            console.log(pair);
+            if (pair['value'].includes('vemission')){
+                var inputLine = '<tr><td><label> Actual CO2 Emission </label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td> tonnes/hr   </td></tr>';
             
-                var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
-                inputsHTML = inputsHTML + inputLine;
-                nameSet.push(pair['name']);
+            }
+            else if(!pair['value'].includes('.owl'))
+            {
+            console.log(pair['name']);
+            var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>   </td></tr>';
+            inputsHTML = inputsHTML + inputLine;
+            nameSet.push(pair['name']);
 
             }
         }
@@ -341,21 +289,8 @@ function selectEBus(event) {
         var div = document.getElementById('inputsContainer');
         div.innerHTML = '<table data-type="kml" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
-                
-    $(".input_class").change(function(e){
 
-        var label = e.target.parentElement.parentElement.getElementsByTagName("label")[0].innerText;
-        var value = parseInt(e.target.value);
-        
-
-        
-        
     });
-                
-                
-                
-                });
-                
 
 }
 function SubmitTable(e) {
@@ -515,7 +450,7 @@ asyncLoop({
 
             var base = filename + '#';
             base = base.replace('/OntoEN','');
-            base=base.replace('theworldavatar.com','jparksimulator.com'); //because in electrical it use jparksimulator instead of theworldavatar
+            base=base.replace('theworldavatar','jparksimulator'); //because in electrical it use jparksimulator instead of theworldavatar
             var value = obj.value;
             console.log(targetIRI);
             console.log(base);
@@ -571,7 +506,7 @@ asyncLoop({
 
         //var url = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/startScript?path=' + encodeURIComponent(path);
         // var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
-        var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        var url = 'http://www.theworldavatar.com/JPS_POWSYS/ENAgent/startsimulation'+opt;
         
         var request = $.ajax({
             url: url,
@@ -583,7 +518,7 @@ asyncLoop({
         request.done(function(data) {
             
             console.log('simulation finished');
-            var url = selectedidnetwork + selectedId;
+            var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId;
 
             
             sendRequest(url,function (response) {
@@ -630,6 +565,7 @@ asyncLoop({
                 
                 _div.innerHTML = '<table data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>' +
 '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+                //location.reload(); //temp
             });
 
 
@@ -652,7 +588,7 @@ return array.sort(function(a, b) {
 }
 
 function constructLineMenu(id,callback){
-    var url = selectedidnetwork + id;
+    var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork' + id;
     selectedId =   id;
 
     console.log('url',url);
@@ -676,7 +612,7 @@ function constructLineMenu(id,callback){
 
 
         var div = document.createElement('div');
-        div.id = 'inputsContainer';
+        div.id = 'something';
         div.style='height:500px';
         
         div.innerHTML = '<table data-type="line" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
@@ -741,7 +677,7 @@ initMap: function () {
 drawMarkers:function(data){
     var map = this.googleMap;
     var self = this;
-    kmlurl =  prefix + 'JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
+    kmlurl =  prefix + '/JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -768,10 +704,12 @@ drawMarkers:function(data){
         var fueltype = obj.fueltype;
         var name = obj.name;
         console.log(fueltype);
-        if (fueltype== "NaturalGas"){
+        if (fueltype== "NaturalGasGeneration"){
             icon = '/images/naturalgas.png'
-        }else if (fueltype == "Nuclear"){
+        }else if (fueltype == "NuclearGeneration"){
             icon = '/images/radiation.png'
+        }else if (fueltype== "OilGeneration"){
+            icon = '/images/oil.png'
         }
         
         console.log("Coordinates: obj.coors.lat: "+ obj.coors.lat + " obj.coors.lng: "+ obj.coors.lng);
@@ -784,13 +722,13 @@ drawMarkers:function(data){
         self.markers[name] = marker;
         //Handle CO2 Emissions per generator. This is on a generator level
         // if (fueltype != "Nuclear"){ //would thus be removed afterwrds. 
-        //     emissions += obj.vemission;
+        //     emissions.add(parseFloat(obj.vemission));
         //     console.log('vemission: '+ obj.vemission);
         // }
         //Handle CO2 Emissions per powerplant. 
-        if (fueltype != "Nuclear"){
-            console.log(obj.vemission);
-            emissions.add(parseFloat(obj.vemission));
+        if (fueltype != "NuclearGeneration"){
+            console.log(obj.actual_carbon);
+            emissions.add(parseFloat(obj.actual_carbon));
         }
         }
         
@@ -804,7 +742,7 @@ drawLines:function(data){
     var map = this.googleMap;
     var self = this;
     var lines=[];
-    kmlurl = prefix + 'JPS_POWSYS/ENVisualization/createLineJS?query=' + encodeURIComponent(JSON.stringify(data));      
+    kmlurl = prefix + '/JPS_POWSYS/ENVisualization/createLineJS?query=' + encodeURIComponent(JSON.stringify(data));      
     console.log('my kmlurl = '+ kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -885,7 +823,7 @@ drawLines:function(data){
                         infowindow.open(map, that);
                         console.log('Set Time Out')
                         setTimeout(function(){
-                            var ggf = document.getElementById('inputsContainer').parentElement.parentElement.parentElement;
+                            var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
                             ggf.style.visibility = 'visible'
                             console.log('--- ggf --- 2', ggf)
                         },2000)
@@ -920,7 +858,7 @@ drawLines:function(data){
                         infowindow.open(this.googleMap, that);
                         
                         setTimeout(function(){
-                            var ggf = document.getElementById('inputsContainer').parentElement.parentElement.parentElement;
+                            var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
                             ggf.style.visibility = 'visible'
                             console.log('--- ggf --- 2', ggf)
                         },2000)
@@ -1339,6 +1277,47 @@ drawAnimatedLines : function (list) {
 
     });
 },
+/**
+     * Draw a single animated line
+     * @param vertexs
+     */
+    drawAnimatedLine : function (vertexs) {
+        var lineSymbol = {
+            path: "M 0 0 L 0 0 L 0 50 "	,
+            scale: 0.1,
+            strokeColor: '#cc0015',
+            strokeWeight: 10
+        };
+
+        var line = new google.maps.Polyline({
+            path: vertexs,
+            icons: [{
+                icon: lineSymbol,
+                offset: '100%'
+            },
+                {
+                    icon: lineSymbol,
+                    offset: '100%'
+                },
+                {
+                    icon: lineSymbol,
+                    offset: '100%'
+                },
+                {
+                    icon: lineSymbol,
+                    offset: '100%'
+                },{
+                    icon: lineSymbol,
+                    offset: '100%'
+                }
+
+                ],
+            map: this.googleMap
+        });
+        this.animatedLines = this.animatedLines?this.animatedLines:[];
+        this.animatedLines.push(line);
+        this.animateLine(line)
+    },
 
 clearAnimatedLines: function () {
   animatedLines.forEach((line)=>
@@ -1421,14 +1400,3 @@ console.log(myid)
 return myid.replace(/(:|\.|\[|\]|,|=|@|\/)/g, "\\$1");
 
 }
-
-
-
-
-
-
-
-
-
-
-
