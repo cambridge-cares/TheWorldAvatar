@@ -5,7 +5,7 @@ public interface JPSConstants {
 	static String SCENARIO_NAME_BASE = "base";
 	static String SCENARIO_SUBDIR_KB = "kb";
 	static String SCENARIO_SUBDIR_DATA = "data";
-
+	static String SCENARIO_NAME_TEST = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 	static String SCENARIO_JPS_CONTEXT = "jpscontext";
 	static String SCENARIO_URL = "scenariourl";
 	static String SCENARIO_USE_CASE_URL = "usecaseurl";

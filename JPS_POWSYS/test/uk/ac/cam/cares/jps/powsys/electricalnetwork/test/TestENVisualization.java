@@ -33,7 +33,7 @@ public class TestENVisualization extends TestCase {
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
 			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
+			gh.setnamegen("/" + generators.get(e)[0]+ ".owl");
 			gh.setx(generators.get(e)[1]);
 			gh.sety(generators.get(e)[2]);
 			System.out.println("/" + generators.get(e)[0].split("#")[1] + ".owl");
@@ -59,7 +59,7 @@ public class TestENVisualization extends TestCase {
 		List<String[]> bus=a.queryElementCoordinate(model, "BusNode");
 		int size2=bus.size();
 		for(int g=0;g<size2;g++) {
-		MapPoint c= new MapPoint(Double.valueOf(bus.get(g)[2]),Double.valueOf(bus.get(g)[1]),0.0,"/"+bus.get(g)[0].split("#")[1]+".owl");
+		MapPoint c= new MapPoint(Double.valueOf(bus.get(g)[2]),Double.valueOf(bus.get(g)[1]),0.0,"/"+bus.get(g)[0]+".owl");
 		a.addMark(c,"bus");
 		}
 		
@@ -73,24 +73,29 @@ public class TestENVisualization extends TestCase {
 		String res=a.createLineJS(model);
 		System.out.println("resultjs= "+res);
 	}
+	public void testreadGenerator() throws IOException {
+		String flag = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
+		ENVisualization a=new ENVisualization();
+		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
+		JPSHttpServlet.enableScenario(scenarioUrl);	
+		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		String res=a.readGenerator(flag, model,"http://localhost:8080/jps/kb/fe1fa8a3-523a-4c1a-ba0b-dd798ebb85e8/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0");
+		System.out.println("resultjs= "+res);
+	}
 	public void testcreateMarkers() throws IOException {
 		ENVisualization a=new ENVisualization();
 		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		String res=a.createMarkers("BASE",model);
 		List<String> myList = new ArrayList<String>(Arrays.asList(res.split(",")));
-		System.out.println(myList.get(2));//vemission
-		System.out.println(myList.get(3));//fueltype
-		System.out.println(myList.get(4));//name
+
+		JPSHttpServlet.disableScenario();	
 		String flag = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		
 		res= a.createMarkers(flag,model);
-		myList = new ArrayList<String>(Arrays.asList(res.split(",")));
-		System.out.println(myList.get(2));//vemission
-		System.out.println(myList.get(3));//fueltype
-		System.out.println(myList.get(4));//name
+		System.out.println(res);
 		
 	}
 	public void testcallVisualizationLineJS() throws IOException  {
@@ -110,12 +115,22 @@ public class TestENVisualization extends TestCase {
 
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork","http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-//		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
-		jo.put("flag","BASE");
+		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
+//		jo.put("flag","BASE");
 //		JSONObject jo2 = new JSONObject();
-//		jo2.put("jpscontext", jo);
-		String iriofnetwork = jo.getString("electricalnetwork");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createMarkers", jo.toString());
+		System.out.println("resultStart= "+resultStart);
+	}
+	public static void testcallreadGenerator() throws IOException  {
+
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork","http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
+		jo.put("selectedID", "http://localhost:8080/jps/kb/c7098406-b85c-423f-a4be-166f48e3f99e/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3");
+//		jo.put("flag","BASE");
+//		jo.put("selectedID", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/readGenerator", jo.toString());
 		System.out.println("resultStart= "+resultStart);
 	}
 	public void testcallVisualizationKML() throws IOException  {

@@ -24,8 +24,8 @@ public class AgentLocator {
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
     private static final String[] SUBDIRECTORIES_FOR_COMPILED_CLASSES = new String[]{
-            "/WEB-INF/classes", "\\WEB-INF\\classes", "/bin", "\\bin\\", "/build/classes", "\\build\\classes",
-            "/target/classes", "\\target\\classes", "/target/test-classes", "\\target\\test-classes"
+            "/WEB-INF/classes/", "\\WEB-INF\\classes", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes",
+            "/target/classes/", "\\target\\classes", "/target/test-classes/", "\\target\\test-classes"
     };
     private String jpsBaseDirectory = null;
     private String url = null;
