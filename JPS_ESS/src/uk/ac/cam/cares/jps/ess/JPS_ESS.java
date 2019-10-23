@@ -40,9 +40,9 @@ public class JPS_ESS extends JPSHttpServlet {
 	public static void runGAMS() throws IOException, InterruptedException {
 		System.out.println("Start");
 		System.out.println("separator= " + File.separator);
-		String executablelocation = "C:/GAMS/win64/27.3/gams.exe";
-		// String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
-		String folderlocation = "C:/Users/GKAR01/Documents/gamsdir/projdir/";
+		String executablelocation = "C:/GAMS/win64/28.2/gams.exe";
+		 String folderlocation ="D:/Users/LONG01/Documents/gamsdir/projdir/";
+//		String folderlocation = "C:/Users/GKAR01/Documents/gamsdir/projdir/";
 		String[] cmdArray = new String[5];
 
 		cmdArray[0] = executablelocation;
@@ -113,8 +113,8 @@ public class JPS_ESS extends JPSHttpServlet {
 				text = text + line;
 			}
 		}
-
 		File file = new File("C://Users/GKAR01/Documents/gamsdir/projdir/Pa_high.csv");
+//		File file = new File("C://Users/GKAR01/Documents/gamsdir/projdir/Pa_high.csv");
 		FileWriter writer = new FileWriter(file);
 		writer.write(text);
 		writer.close();

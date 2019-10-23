@@ -124,7 +124,7 @@ public class ENVisualization extends JPSHttpServlet {
 				
 				
 				if (true) {
-					writeToResponse(response, b,n);
+//					writeToResponse(response, b,n);
 					return;
 				}
 				
@@ -583,7 +583,7 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "SELECT ?entity ?BusNumbervalue ?activepowervalue ?activepowervalueunit ?Q_Gen ?Q_Genunit ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue "
 				+ "?Pmaxvalue ?Pmaxvalueunit ?Pminvalue ?Pminvalueunit ?Pc1value ?Pc2value ?Qc1minvalue ?Qc1maxvalue "
 				+ "?Qc2minvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
-				+ "?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue ?valueofx ?valueofxunit ?valueofy ?valueofyunit ?generation ?vemission "
+				+ "?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue ?longitude ?latitude ?valueofyunit ?generation ?vemission "
 
 				+ "WHERE {?entity  a  j1:PowerGenerator  ."
 				+ "?entity   j2:isModeledBy ?model ."
@@ -724,7 +724,6 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "?vgencostc   j2:numericalValue ?gencostcvalue ." //genCostc0
 				
 				+ "?entity   technical_system:realizes ?generation ."
-//				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
 				+ "?generation j9:hasEmission ?emission ." 
 				+ "?emission a j9:Actual_CO2_Emission ."
 				+ "?emission   j2:hasValue ?valueemission ."
@@ -732,13 +731,11 @@ public class ENVisualization extends JPSHttpServlet {
 
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."//longitude
-//				+ "?vy  j2:hasUnitOfMeasure ?valueofyunit ."//longitude
+				+ "?vy  j2:numericalValue ?latitude ."
 
 				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."//latitude
-//				+ "?vx  j2:hasUnitOfMeasure ?valueofxunit ."//latitude
+				+ "?vx  j2:numericalValue ?longitude ."//longitude
 
 				+ "}";
 		String info;
@@ -751,7 +748,6 @@ public class ENVisualization extends JPSHttpServlet {
 		System.out.println(queryResult);
 		String[] keysplant = JenaResultSetFormatter.getKeys(queryResult);
     	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(queryResult, keysplant);
-//    	System.out.println(resultList.size());=
     	JSONObject json = new JSONObject(queryResult);
     	JSONObject v = (JSONObject) json.get("results");
     	JSONArray values = (JSONArray) v.get("bindings");
@@ -858,9 +854,9 @@ public class ENVisualization extends JPSHttpServlet {
 					+ "?valueemission   j2:numericalValue ?actual_carbon ." 
 					
 					+ "?generation j5:hasEmission ?emission ." 
-//					+ "?emission a j5:Design_CO2_Emission ."
-//					+ "?emission   j2:hasValue ?valueemission_d ."
-//					+ "?valueemission_d   j2:numericalValue ?design_carbon ." 
+					+ "OPTIONAL {?emission a j5:Design_CO2_Emission }"
+					+ "OPTIONAL {?emission   j2:hasValue ?valueemission_d }"
+					+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
 					
 					+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
 					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
