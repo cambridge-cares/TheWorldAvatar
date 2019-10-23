@@ -9,9 +9,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -45,7 +43,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
 public class ENVisualization extends JPSHttpServlet {
 	
@@ -115,8 +112,8 @@ public class ENVisualization extends JPSHttpServlet {
 			String n=joforEN.getString("n");
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
-//			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
-			try (FileWriter writer = new FileWriter("C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
+			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
+//			try (FileWriter writer = new FileWriter("C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
 				b = createfinalKML(model);
 
@@ -124,7 +121,7 @@ public class ENVisualization extends JPSHttpServlet {
 				
 				
 				if (true) {
-					writeToResponse(response, b,n);
+//					writeToResponse(response, b,n);
 					return;
 				}
 				

@@ -42,7 +42,7 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		// copy NPP generator OWL test file into the scenario bucket 
-		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/NucGenerator_1_B0.owl";
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/NucGenerator_1_B0.owl";
 		File file = new File(source);
 		String powerGenerator = "http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0";
 		new QueryBroker().put(powerGenerator, file);

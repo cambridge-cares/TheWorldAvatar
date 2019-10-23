@@ -45,7 +45,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		
 		//put the template file
-		String newdir=QueryBroker.getLocalDataPath() ;
+		String newdir=QueryBroker.getLocalDataPath()+ "/GAMS_CarbonTaxAgent";
 		copyTemplate(newdir, "time_profile.csv");
 		//prepareCSVGeneratorParameter(jo.getString("electricalnetwork"),newdir);
 		prepareCSVGeneratorParameterUpdatedGenScale(jo.getString("electricalnetwork"),newdir);

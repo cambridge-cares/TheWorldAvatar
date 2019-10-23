@@ -7,8 +7,6 @@ import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.jena.atlas.json.JsonException;
-import org.apache.jena.atlas.logging.Log;
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
@@ -79,7 +77,7 @@ public class TestENVisualization extends TestCase {
 		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		String res=a.readGenerator(flag, model,"http://localhost:8080/jps/kb/fe1fa8a3-523a-4c1a-ba0b-dd798ebb85e8/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0");
+		String res=a.readGenerator(flag, model,"http://localhost:8080/jps/kb/cdb65d7d-31af-43e2-88da-1462d8a1dc23/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0");
 		System.out.println("resultjs= "+res);
 	}
 	public void testcreateMarkers() throws IOException {
@@ -126,7 +124,7 @@ public class TestENVisualization extends TestCase {
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork","http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
-		jo.put("selectedID", "http://localhost:8080/jps/kb/c7098406-b85c-423f-a4be-166f48e3f99e/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3");
+		jo.put("selectedID", "http://localhost:8080/jps/kb/cdb65d7d-31af-43e2-88da-1462d8a1dc23/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3");
 //		jo.put("flag","BASE");
 //		jo.put("selectedID", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
 		System.out.println(jo.toString());

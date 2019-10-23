@@ -116,11 +116,16 @@ public class NuclearAgent extends JPSHttpServlet {
 		   logger.info("Done");
 	}
 	
-	private void pseudoRunGAMS() {
+	private void pseudoRunGAMS(String baseUrl) {
+		logger.info("RIGHT NOW IT IS STARTING PSEUDOGAMS NUCLEAR");
 		String scenarioUrl = BucketHelper.getScenarioUrl();
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
 		logger.info("starting GAMS for simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 		logger.info("GAMS started successfully, post processing of GAMS results by callback");
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
+		File file = new File(source);
+		String destinationUrl = baseUrl + "/" + "/results.csv";
+		new QueryBroker().put(destinationUrl, file);
 	}
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -148,20 +153,27 @@ public class NuclearAgent extends JPSHttpServlet {
 
 				String dataPath = QueryBroker.getLocalDataPath();
 				startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
-				// startSimulation(lotiri, iriofnetwork, dataPath, runGams);
+				String scenarioUrl = BucketHelper.getScenarioUrl();
+				String usecaseUrl = BucketHelper.getUsecaseUrl();
+				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 
-				//later after the model is finished
-//				JSONObject jo = new JSONObject();
-//				List<String> plants = processSimulationResult(dataPath);
-//				JSONArray plantsja = new JSONArray(plants);
-//				jo.put("plants", plantsja);
-				//AgentCaller.printToResponse(jo, response);
+				List<String> plants = processSimulationResult(dataPath);
+				JSONArray plantsja = new JSONArray(plants);
+				JSONObject jo = new JSONObject();
+				jo.put("plants", plantsja);
+				
+				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
+				//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
+
+				AgentCaller.printToResponse(jo, response);	
 
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+			} catch (URISyntaxException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			}
@@ -181,7 +193,7 @@ public class NuclearAgent extends JPSHttpServlet {
 				jo.put("plants", plantsja);
 				
 				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
-				AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString());
+				//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
 				
 				// no need to return jo or plants here; this is just for asserting the simulation result in a junit test
 				AgentCaller.printToResponse(jo, response);	
@@ -220,13 +232,13 @@ public class NuclearAgent extends JPSHttpServlet {
  
         //-----------------------------------------4th input file finished-------------------------------------------------------------------
 
-        prepareCSVPartialRemaining(plantlist,iriofnetwork,dataPath);
+        prepareCSVPartialRemaining(plantlist,iriofnetwork,baseUrl);
       //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
 //        if (runGams) {
 //        	runGAMS(baseUrl);
 //        }
-        pseudoRunGAMS();
+        pseudoRunGAMS(baseUrl);
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {

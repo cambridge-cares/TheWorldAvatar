@@ -45,7 +45,7 @@ public class TestNuclear extends TestCase {
 		agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
 		
 		// copy existing result file from a previous simulation to the data bucket 
-		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/results.csv";
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
 		File file = new File(source);
 		String destinationUrl = dataPath + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
 		new QueryBroker().put(destinationUrl, file);
@@ -100,20 +100,21 @@ public class TestNuclear extends TestCase {
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
 		System.out.println("result from startsimulation=" + resultStart);
 		
-		// copy existing result file from a previous simulation to the data bucket 
-		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/results.csv";
-		File file = new File(source);
-		String destinationUrl = QueryBroker.getLocalDataPath() + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
-		new QueryBroker().put(destinationUrl, file);
-		
-		// process the simulation result
-		jo = new JSONObject();
-		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
-		System.out.println("result from processsimulationresult=" + resultProcess);
-		jo = new JSONObject(resultProcess);
+		// copy existing result file from a previous simulation to the data bucket
+		//23-10-2019 copying not needed anymore
+//		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
+//		File file = new File(source);
+//		String destinationUrl = QueryBroker.getLocalDataPath() + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
+//		new QueryBroker().put(destinationUrl, file);
+//		
+//		// process the simulation result
+//		jo = new JSONObject();
+//		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+//		JPSContext.putScenarioUrl(jo, scenarioUrl);
+//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
+//		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
+//		System.out.println("result from processsimulationresult=" + resultProcess);
+		jo = new JSONObject(resultStart);
 		assertEquals(4, jo.getJSONArray("plants").length());
 	}
 	
@@ -143,6 +144,5 @@ public class TestNuclear extends TestCase {
 		assertTrue(file.exists());
 
 	}
-	
 	
 }

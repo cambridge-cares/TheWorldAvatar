@@ -54,6 +54,8 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		String electricalNetwork = jo.getString("electricalnetwork");
 		JSONArray ja = jo.getJSONArray("plants");
 		List<String> nuclearPowerPlants = MiscUtil.toList(ja);
+		JSONArray ja2 = jo.getJSONArray("substitutionalgenerators");
+		List<String> removedgenerators = MiscUtil.toList(ja2);
 		
 		retrofit(electricalNetwork, nuclearPowerPlants);
 	}
