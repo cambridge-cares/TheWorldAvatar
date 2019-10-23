@@ -125,14 +125,6 @@
 					<div class="col-md-1">
 						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="To view all the mechanisms, select 'Show All Mechanisms'. To search for a species, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. To search for a reaction, select either 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters'.">?</span>							
 					</div>
-					<div id="unitsGasConstant" class="col-md-11" style="display:none;">
-						<span id ="units" style="">Select the Units of R (gas constant):</span>
-						<s:select 
-							headerKey="-1" headerValue="kcal / mol. K"
-							list="#{'jmolk':'J / mol. K', 'ergmolk':'erg / mol. K', 'dimensionless':'Dimensionless'}" 
-							name="unitsSelection" 
-							value="unitsR" theme="bootstrap" />
-					</div>
 				</div>
 				<span id ="queryText" style="">Interactive text:</span>
 				<span id ="errorQuery" style="display:none; color:red">No text provided</span>
@@ -197,6 +189,14 @@
 					<div class="container chart-group">
 					  <div class="row">
 					   	<div id="chartCanvas" class="" style="display:none">
+							<div id="unitsGasConstant" class="col-md-11" style="display:none;">
+								<span id ="units" style="">Please select the unit system:</span>
+								<s:select 
+									headerKey="-1" headerValue="kcal / mol. K"
+									list="#{'jmolk':'J / mol. K', 'ergmolk':'erg / mol. K', 'dimensionless':'Dimensionless'}" 
+									name="unitsRSelection" 
+									value="unitsR" theme="bootstrap" />
+							</div>
 							<canvas id="canvas" style="width:800px !important; height:500px"></canvas>
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
@@ -232,6 +232,113 @@ $( function() {
 		    	return string.split("=>");
 		    }
 		  }
+	 
+	 function calculateR(unitsR) {
+		  	let R = 1;
+		 	if (unitsR.indexOf('-1') > -1) {
+				multiplyingFactor = Math.pow(10, 3);
+		 		R = 1.98720425864083 * multiplyingFactor;
+		 	} else if (unitsR.indexOf('jmolk') > -1) {
+		    	R = 8.31446261815324;
+		    } else if (unitsR.indexOf('ergmolk')){
+				multiplyingFactor = Math.pow(10, 7);
+		 		R = 8.314462618 * multiplyingFactor;
+		    } else if (unitsR.indexOf('dimensionless')){
+				R = 1;
+		    }
+		 	return R;
+		  }
+
+	 function getTemperatures(minTemp, maxTemp) {
+			let interval = (maxTemp - minTemp);
+			let slices = 16;
+			interval = interval / slices;
+			interval = Math.ceil(interval / 100.0) * 100;
+			var temperatures = [];
+			console.log('In getTemperatures');
+			var T;
+			for(T = 300; T <= 6000; T = T + 300){
+				console.log('T In getTemperatures');
+				console.log(T);
+				temperatures.push(T);
+				console.log('temperatures getTemperatures');
+				console.log(temperatures);
+			}
+			return temperatures;
+		 }
+	 
+	 function calculateMinTemp(minTemps) {
+		 let minTemp = 0;
+		 if(minTemps.length >= 1){
+			 minTemp = minTemps[0];
+		 }
+		 for (temp of minTemps){
+			if(minTemp > temp){
+				minTemp = temp;
+			}
+		 }
+		 return minTemp;
+	 }
+	 
+	 function calculateMaxTemp(maxTemps) {
+		 let maxTemp = 0;
+		 if(maxTemps.length >= 1){
+			 maxTemp = maxTemps[0];
+		 }
+		 for (temp of maxTemps){
+			if(maxTemp < temp){
+				maxTemp = temp;
+			}
+		 }
+		 return maxTemp;
+	 }
+
+	 function calculateInterval(minTemp, maxTemp) {
+		let interval = (maxTemp - minTemp);
+		let slices = 16;
+		interval = interval / slices;
+		return Math.ceil(interval / 100.0) * 100;
+	 }
+	 
+	 function calculateCp(unitsR, aLow, aHigh, minTemp, midTemp, maxTemp) {
+		let R = calculateR(unitsR);
+		let interval = calculateInterval(minTemp, maxTemp);
+		console.log('interval:');
+		console.log(interval);
+		var T = 300;
+		var CpAllTemps = [];
+		if(aLow.length>=7 && aHigh.length>=7){
+			console.log('aHigh');
+			console.log(aHigh);
+			console.log('aLow');
+			console.log(aLow);
+			console.log('minTemp');
+			console.log(minTemp);
+			console.log('midTemp');
+			console.log(midTemp);
+			console.log('maxTemp');
+			console.log(maxTemp);
+			console.log('interval');
+			console.log(interval);
+ 			for(T = 300; T <= 6000; T += 300){
+				console.log('T:');
+				console.log(T);
+ 				if(T<midTemp){
+					Cp = R * (parseFloat(aLow[0]) + parseFloat(aLow[1]) * T + parseFloat(aLow[2]) * Math.pow(T, 2)  + parseFloat(aLow[3]) * Math.pow(T, 3) + parseFloat(aLow[4]) * Math.pow(T, 4));
+					console.log('CpLowInFuction');
+					console.log(Cp);
+				} else{
+					Cp = R * (parseFloat(aHigh[0]) + parseFloat(aHigh[1]) * T + parseFloat(aHigh[2]) * Math.pow(T, 2)  + parseFloat(aHigh[3]) * Math.pow(T, 3) + parseFloat(aHigh[4]) * Math.pow(T, 4));
+					console.log('CpHighInFuction');
+					console.log(Cp);
+				}
+				CpAllTemps.push(Cp);
+				console.log('CpAllTemps');
+				console.log(CpAllTemps); 
+			}
+		}
+		return CpAllTemps;
+	 }
 	 
 	 function formatLabel(str){
 		if(str.length>30){
@@ -286,7 +393,8 @@ $( function() {
 		
 		let search_term_name = $("#term").val(); //cl2
 		let search_querySelection = $("#querySelection").val(); //thermo
-	
+		let search_unitsRSelection = $("#unitsRSelection").val(); //thermo
+		console.log(search_unitsRSelection);
 		$("#errorQuery").hide();
 		$("#errorType").hide();
 		$("#noResult").hide();
@@ -395,6 +503,7 @@ $( function() {
 				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
 				    '?ThermoModelIRI ontokin:hasPressure  ?Pressure .' + '\n' +
 	 				'}';
+ 				console.log("querystring:\n"+queryString);
 			} else if(search_querySelection == 'rateconstant') {
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
@@ -658,6 +767,7 @@ $( function() {
 					}								
 
 					var chartLabel = [];
+					var chartLabelsThermo = [];
 					var co = [];
  					var co_1 = [];
 					var co_2 = [];
@@ -667,9 +777,26 @@ $( function() {
 					var co_6 = [];
 					var co_7 = [];
 					
-					var mintemp = [];
-					var maxtemp = [];
+					var minTemp = [];
+					var maxTemp = [];
+					var midTemp = [];
 					var pressure = [];
+					
+					var minTemperature = 0;
+					var maxTemperature = 0;
+					var midTemperature = 0;
+					var minTempForLabel = 0;
+					var maxTempForLabel = 0;
+					
+					var maxTempInAllMech = -99999;
+					var minTempInAllMech = 100000;
+					
+					var coLow = [];
+					var coHigh = [];
+					var CpAllMechs = [];
+					var datasetsCp = [];
+					var chartLabelMech = '';
+					
 					let count = 1;
 					var countCoeffSequence = 0;
 
@@ -689,9 +816,15 @@ $( function() {
 					        	var coefficients = row.split(',');					        		
 					        	$.each(coefficients, function(index, value) {
 					        		 co[index] = value;
+					        		 if(countCoeffSequence % 2 == 1){
+					        			 coLow[index] = value; 
+					        		 }
+					        		 if(countCoeffSequence % 2 == 0){
+					        			 coHigh[index] = value; 
+					        		 }					        		 
 					        	});	
 					        	
-					        	co_1.push(co[0]); 
+					        	co_1.push(co[0]);
 					        	co_2.push(co[1]); 
 					        	co_3.push(co[2]); 
 					        	co_4.push(co[3]); 
@@ -700,13 +833,37 @@ $( function() {
 					        	co_7.push(co[6]); 
 
 					        } else if (i == 'MinTemp') {					        	
-					        	mintemp.push(row);
+				        		minTemp.push(row);
+					        	if(countCoeffSequence % 2 == 1){
+					        		minTemperature = row;
+					        		if(row < minTempInAllMech){
+					        			minTempInAllMech = row;
+					        		}
+					        	}
+					        	if(countCoeffSequence == 1){
+					        		minTempForLabel = row;
+					        	}
 					        	
 					        } else if (i == 'MaxTemp') {
-					        	maxtemp.push(row);
-
+				        		maxTemp.push(row);
+					        	if(countCoeffSequence % 2 == 0){
+					        		maxTemperature = row;
+					        		if(row > maxTempInAllMech){
+					        			maxTempInAllMech = row;
+					        		}
+					        	}
+					        	if(countCoeffSequence % 2 == 1){
+					        		midTemperature = row;
+					        	}
+					        	if(countCoeffSequence == 2){
+					        		maxTempForLabel = row;
+					        	}
+					        	
 					        } else if (i == 'MechanismName') {
 					        	if(countCoeffSequence % 2 == 0){
+					        		chartLabelMech = row;
+					        		console.log('chartLabelMech');
+					        		console.log(chartLabelMech);
 					        		chartLabel.push(formatLabel(row) + ' (HTR)');
 					        	} else{
 					        		chartLabel.push(formatLabel(row) + ' (LTR)');
@@ -728,6 +885,36 @@ $( function() {
 						  }
 					      });
 						
+						if(countCoeffSequence % 2 == 0 && search_querySelection == 'compthermo'){
+							console.log('countCoeffSequence');
+							let color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+							console.log('color');
+							console.log(color);
+							var Cp = calculateCp(search_unitsRSelection, coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('Cp:' + Cp);
+							datasetsCp.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: Cp,
+								fill: false
+							});
+							console.log('datasetsCp:'+datasetsCp);
+						}
+						
+ 						if(countCoeffSequence >= resultArray.length && search_querySelection == 'compthermo'){
+							console.log('minTempInAllMech');
+							console.log(minTempInAllMech);
+							console.log('maxTempInAllMech');
+							console.log(maxTempInAllMech);
+							chartLabelsThermo = getTemperatures(minTempInAllMech, maxTempInAllMech);
+							console.log('chartLabelsThermo in conditional statement:');
+							console.log(chartLabelsThermo);
+							console.log('datasetsCp:');
+							console.log(datasetsCp[0].label);
+							console.log(datasetsCp[0].data);
+						} 
+						
 						if (search_querySelection != 'compthermo' && search_querySelection != 'comparerate' && search_querySelection != 'comparerateAnyOrder') {
 							queryResultsTable.append(getTableResultRowString(count++, resultObj));
 							$("#chartCanvas").hide();
@@ -736,7 +923,7 @@ $( function() {
 							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").show();
 
-						} else if(search_querySelection == 'compthermo'){ // show chart
+						} else if(search_querySelection == 'compthermo' && countCoeffSequence >= resultArray.length){ // show chart
 							$("#chartCanvas").show();
 							$("#chartCanvasRateAE").hide();
 							$("#chartCanvasRatePEF").hide();
@@ -747,70 +934,8 @@ $( function() {
 							var config = {
 									type: 'line',
 									data: {
-										labels: chartLabel,
-										datasets: [{
-											label: 'a1',
-											backgroundColor: window.chartColors.red,
-											borderColor: window.chartColors.red,
-											data: co_1,
-											fill: false,
-										}, {
-											label: 'a2',
-											fill: false,
-											backgroundColor: window.chartColors.blue,
-											borderColor: window.chartColors.blue,
-											data: co_2,
-										}, {
-											label: 'a3',
-											fill: false,
-											backgroundColor: window.chartColors.orange,
-											borderColor: window.chartColors.orange,
-											data: co_3,
-										}, {
-											label: 'a4',
-											fill: false,
-											backgroundColor: 'rgb(139,69,19)',
-											borderColor: 'rgb(139,69,19)',
-											data: co_4,
-										}, {
-											label: 'a5',
-											fill: false,
-											backgroundColor: 'rgb(255,99,71)',
-											borderColor:  'rgb(255,99,71)',
-											data: co_5,
-										}, {
-											label: 'a6',
-											fill: false,
-											backgroundColor: 'rgb(46,139,87)',
-											borderColor: 'rgb(46,139,87)',
-											data: co_6,
-										}, {
-											label: 'a7',
-											fill: false,
-											backgroundColor: 'rgb(30,144,255)',
-											borderColor: 'rgb(30,144,255)',
-											data: co_7,
-										}, {
-											label: 'Minimum Temperature',
-											fill: false,
-											backgroundColor: window.chartColors.yellow,
-											borderColor: window.chartColors.yellow,
-											data: mintemp,
-										}, {
-											label: 'Maximum Temperature',
-											fill: false,
-											backgroundColor: window.chartColors.green,
-											borderColor: window.chartColors.green,
-											data: maxtemp,
-										}, {
-											label: 'Pressure',
-											fill: false,
-											backgroundColor: 'rgb(221,160,221)',
-											borderColor: 'rgb(221,160,221)',
-											data: pressure,
-											hidden: true,
-										}
-										]
+										labels: chartLabelsThermo,
+										datasets: datasetsCp,
 									},
 									options: {
 										responsive: true,
@@ -831,14 +956,14 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Mechanism'
+													labelString: 'Temperature'
 												}
 											}],
 											yAxes: [{
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Coefficients and Temperatures'
+													labelString: 'Cp'
 												}
 											}]
 										}
