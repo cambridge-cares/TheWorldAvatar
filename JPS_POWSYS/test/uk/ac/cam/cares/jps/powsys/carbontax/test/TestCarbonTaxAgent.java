@@ -24,7 +24,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		System.out.println("what is dataPath="+dataPath);
 		
 		CarbonTaxAgent a= new CarbonTaxAgent();
-		a.prepareCSVGeneratorParameter(iriofnetwork,dataPath);
+		a.prepareCSVGeneratorParameterUpdatedGenScale(iriofnetwork,dataPath);
 		String filename="time_profile.csv";
 		a.copyTemplate(dataPath, filename);
 		//a.copyTemplate(dataPath, "Generator_Parameters.csv");
