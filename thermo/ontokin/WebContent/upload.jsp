@@ -199,23 +199,23 @@
 									name="unitsRSelection" 
 									value="unitsR" theme="bootstrap" />
 							</div>
-							<canvas id="canvas" style="width:450px !important; height:188px"></canvas>
-							<canvas id="canvasJMolK" style="width:450px !important; height:188px; display:none"></canvas>
-							<canvas id="canvasErgMolK" style="width:450px !important; height:188px; display:none"></canvas>
-							<canvas id="canvasNoDimension" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvas" style="width:500px !important; height:280px"></canvas>
+							<canvas id="canvasJMolK" style="width:500px !important; height:280px; display:none"></canvas>
+							<canvas id="canvasErgMolK" style="width:500px !important; height:280px; display:none"></canvas>
+							<canvas id="canvasNoDimension" style="width:500px !important; height:280px; display:none"></canvas>
 							<p></p>
-							<canvas id="canvasH" style="width:450px !important; height:188px"></canvas>
-							<canvas id="canvasHJMolK" style="width:450px !important; height:188px; display:none"></canvas>
-							<canvas id="canvasHErgMolK" style="width:450px !important; height:188px; display:none"></canvas>
-							<canvas id="canvasHNoDimension" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasH" style="width:500px !important; height:280px"></canvas>
+							<canvas id="canvasHJMolK" style="width:500px !important; height:280px; display:none"></canvas>
+							<canvas id="canvasHErgMolK" style="width:500px !important; height:280px; display:none"></canvas>
+							<canvas id="canvasHNoDimension" style="width:500px !important; height:280px; display:none"></canvas>
 							<p></p>
-							<canvas id="canvasS" style="width:450px !important; height:188px"></canvas>
-							<canvas id="canvasSJMolK" style="width:450px !important; height:188px; display:none"></canvas>
-							<canvas id="canvasSErgMolK" style="width:450px !important; height:188px; display:none"></canvas>
-							<canvas id="canvasSNoDimension" style="width:450px !important; height:188px; display:none"></canvas>							
+							<canvas id="canvasS" style="width:500px !important; height:280px"></canvas>
+							<canvas id="canvasSJMolK" style="width:500px !important; height:280px; display:none"></canvas>
+							<canvas id="canvasSErgMolK" style="width:500px !important; height:280px; display:none"></canvas>
+							<canvas id="canvasSNoDimension" style="width:500px !important; height:280px; display:none"></canvas>							
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:1200px !important; height:800px"></canvas>
+							<canvas id="canvasRateAE" style="width:1000px !important; height:500px"></canvas>
 							<p></p>
 						</div>
 					  </div>
@@ -303,7 +303,9 @@ $( function() {
 			for(T = 300; T <= 6000; T = T + 300){
 				console.log('T In getTemperatures');
 				console.log(T);
-				temperatures.push(1000 / T);
+				number = 1000 / T;
+				number = number.toFixed(2);
+				temperatures.push(number);
 				console.log('temperatures getTemperatures');
 				console.log(temperatures);
 			}
@@ -510,7 +512,6 @@ $( function() {
 		let search_term_name = $("#term").val(); //cl2
 		let search_querySelection = $("#querySelection").val(); //thermo
 		let search_unitsRSelection = $("#unitsRSelection").val(); //thermo
-		console.log(search_unitsRSelection);
 		$("#errorQuery").hide();
 		$("#errorQueryReaction").hide();
 		$("#errorType").hide();
@@ -547,6 +548,11 @@ $( function() {
 				reactantArray = result[0].split("+");
 				productArray = result[1].split("+");
 			}
+			
+			console.log('reactantArray');
+			console.log(reactantArray);
+			console.log('productArray');
+			console.log(productArray);
 			
 			$("#errorQuery").hide();
 			$("#errorQueryReaction").hide();
@@ -715,7 +721,7 @@ $( function() {
 		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .'+ '\n' +
 		              	   '?Product2 owl:sameAs ?Species2 .'+ '\n' +
 		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' + 
 		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
 		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
 					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
@@ -741,7 +747,7 @@ $( function() {
 		           		   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
 		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
 		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' +
 		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
 		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
 		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .'+ '\n' +
@@ -805,13 +811,13 @@ $( function() {
 				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
+		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' +
 		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
+		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +
 		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .'+ '\n' +
 		              	   '?Product2 owl:sameAs ?Species2 .'+ '\n' +
-		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' +
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' +
 		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
 		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
 					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
@@ -837,7 +843,7 @@ $( function() {
 		           		   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
 		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
 		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'
+		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' +  
 		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
 		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
 		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .'+ '\n' +
@@ -1212,18 +1218,18 @@ $( function() {
 							$("canvas#canvasSJMolK").remove();
 							$("canvas#canvasSErgMolK").remove();
 							$("canvas#canvasSNoDimension").remove();							
-							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasH" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasS" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasH" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasS" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
 							if (search_unitsRSelection.indexOf('-1') > -1) {
 						 		$("canvas#canvas").show();
 						 		$("canvas#canvasH").show();
@@ -1757,7 +1763,7 @@ $( function() {
 							$("#chartCanvas").hide();
 							$("#tableMechanism").hide();
 							$("canvas#canvasRateAE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1200px !important; height:800px"></canvas>');
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1000px !important; height:500px"></canvas>');
 							var configRateConstant = {
 									type: 'line',
 									data: {
@@ -1787,7 +1793,6 @@ $( function() {
 												}
 											}],
 											yAxes: [{
-												type: 'logarithmic',
 												display: true,
 												scaleLabel: {
 													display: true,
