@@ -60,6 +60,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 			}else { //18 oct 19
 				//runGAMS(newdir); need to change if we want to run the gams code itself 
 				String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
+				//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results2.csv";
 				File file = new File(source);
 				String destinationUrl = newdir+"/results.csv";
 				new QueryBroker().put(destinationUrl, file);
@@ -142,7 +143,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		   logger.info("Done");
 	}
 	
-	public void prepareCSVGeneratorParameter(String ENiri, String baseUrl) {	
+	public void prepareCSVGeneratorParameter(String ENiri, String baseUrl) {	//it's unused for now just for later using part for matching the template value
 		
 		//updated version so that plant owl file won't be used
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
@@ -322,29 +323,9 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				+ "?tech j9:hasEmissionFactor ?emm ."
 				+ "?emm j2:hasValue ?valueemm ."
 				+ "?valueemm j2:numericalValue ?emissionfactor ." 
-				//+ "}"
 				+ "}";
 
 
-		/*
-		 * String plantinfo =
-		 * "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-		 * +
-		 * "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-		 * +
-		 * "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-		 * +
-		 * "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-		 * +
-		 * "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-		 * + "SELECT ?entity ?vemission ?vcapa " + "WHERE {?entity  a  cp:PowerPlant  ."
-		 * + "?entity   j4:designCapacity ?capa ." + "?capa   j2:hasValue ?valuecapa . "
-		 * + "?valuecapa   j2:numericalValue ?vcapa ." +
-		 * "?entity   j3:realizes ?generation ." +
-		 * "?generation j5:hasEmission ?emission ." +
-		 * "?emission   j2:hasValue ?valueemission . " +
-		 * "?valueemission   j2:numericalValue ?vemission ." + "}";
-		 */
 
 		QueryBroker broker = new QueryBroker();
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
