@@ -482,8 +482,8 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 //				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>"
-				+ "SELECT ?entity ?V_Pd ?V_Pdunit ?V_Pd_Gen ?V_Pd_Genunit ?V_Gd ?V_Gdunit ?V_Gd_Gen ?V_Gd_Genunit" 
-				+ "?Gsvalue ?Bsvalue ?V_Vm ?V_Va ?V_Vaunit ?V_BaseKV ?V_BaseKVunit ?VMaxvalue ?VMaxvalueunit ?VMinvalue ?VMinvalueunit  ?valueofx ?valueofxunit ?valueofy ?valueofyunit "
+				+ "SELECT ?entity ?V_Pd ?V_Pd_Gen ?V_Gd_Gen " 
+				+ "?V_Gs ?V_Bs ?V_Vm ?V_Va ?V_BaseKV ?V_VmMax ?V_VmMin ?V_x ?V_y "
 
 				+ "WHERE {?entity  a  j1:BusNode  ." 
 				+ "?entity   j2:isModeledBy ?model ."
@@ -496,76 +496,65 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "?Pd  a  j3:PdBus  ." 
 				+ "?Pd  j2:hasValue ?vpd ."
 				+ "?vpd   j2:numericalValue ?V_Pd ." // pd
-//				+ "?vpd   j2:hasUnitOfMeasure ?V_Pdunit ." // unit
 
 				+ "?model   j5:hasModelVariable ?PdGen ." 
 				+ "?PdGen  a  j3:PdGen  ." 
 				+ "?PdGen  j2:hasValue ?vpdgen ."
 				+ "?vpdgen   j2:numericalValue ?V_Pd_Gen ." // pdgen
-//				+ "?vpdgen   j2:hasUnitOfMeasure ?V_Pd_Genunit ." // unit
 				
 				+ "?model   j5:hasModelVariable ?Gd ." 
 				+ "?Gd  a  j3:GdBus  ." 
 				+ "?Gd  j2:hasValue ?vgd ."
 				+ "?vgd   j2:numericalValue ?V_Gd ." // Gd
-//				+ "?vgd   j2:hasUnitOfMeasure ?V_Gdunit ." // unit
 				
 				+ "?model   j5:hasModelVariable ?Gd_Gen ." 
 				+ "?Gd_Gen  a  j3:GdGen  ." 
 				+ "?Gd_Gen  j2:hasValue ?vgdgen ."
 				+ "?vgdgen   j2:numericalValue ?V_Gd_Gen ." // Gdgen
-//				+ "?vgdgen   j2:hasUnitOfMeasure ?V_Gd_Genunit ." // unit
 
 
 				+ "?model   j5:hasModelVariable ?Gsvar ." 
 				+ "?Gsvar  a  j3:Gs  ." 
 				+ "?Gsvar  j2:hasValue ?vGsvar ."
-				+ "?vGsvar   j2:numericalValue ?Gsvalue ." // Gs (has no unit)
+				+ "?vGsvar   j2:numericalValue ?V_Gs ." // Gs (has no unit)
 
 				+ "?model   j5:hasModelVariable ?Bsvar ." 
 				+ "?Bsvar  a  j3:Bs  ." 
 				+ "?Bsvar  j2:hasValue ?vBsvar ."
-				+ "?vBsvar   j2:numericalValue ?Bsvalue ." // Bs (has no unit)
+				+ "?vBsvar   j2:numericalValue ?V_Bs ." // Bs (has no unit)
 
 				+ "?model   j5:hasModelVariable ?VM ." 
 				+ "?VM  a  j3:Vm  ." 
 				+ "?VM  j2:hasValue ?vVM ."
 				+ "?vVM   j2:numericalValue ?V_Vm ." // Vm
-//				+ "?vVM   j2:hasUnitOfMeasure ?V_Vmunit ." 
 
 				+ "?model   j5:hasModelVariable ?VA ." 
 				+ "?VA  a  j3:Va  ." 
 				+ "?VA  j2:hasValue ?vVA ."
 				+ "?vVA   j2:numericalValue ?V_Va ." // Va
-//				+ "?vVA   j2:hasUnitOfMeasure ?V_Vaunit ." // unit
 
 				+ "?model   j5:hasModelVariable ?BKV ." 
 				+ "?BKV  a  j3:baseKV  ." 
 				+ "?BKV  j2:hasValue ?vBKV ."
 				+ "?vBKV   j2:numericalValue ?V_BaseKV ." // Base KV
-//				+ "?vBKV   j2:hasUnitOfMeasure ?V_BaseKVunit ." // Base KV
 				
 				+ "?model   j5:hasModelVariable ?vmaxvar ." 
 				+ "?vmaxvar  a  j3:VmMax  ."
 				+ "?vmaxvar  j2:hasValue ?vvmaxvar ." 
-				+ "?vvmaxvar   j2:numericalValue ?VMaxvalue ." // Vmax
-//				+ "?vvmaxvar   j2:hasUnitOfMeasure ?VMaxvalueunit ." // Vmax
+				+ "?vvmaxvar   j2:numericalValue ?V_VmMax ." // Vmax
 
 				+ "?model   j5:hasModelVariable ?vminvar ." 
 				+ "?vminvar  a  j3:VmMin  ."
 				+ "?vminvar  j2:hasValue ?vvminvar ." 
-				+ "?vvminvar   j2:numericalValue ?VMinvalue ." // Vmin
-//				+ "?vvminvar   j2:hasUnitOfMeasure ?VMinvalueunit ." // Vmin
+				+ "?vvminvar   j2:numericalValue ?V_VmMin ." // Vmin
 				
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."//longitude
-//				+ "?vy  j2:hasUnitOfMeasure ?valueofyunit ."//longitude
+				+ "?vy  j2:numericalValue ?V_y ."//longitude
 
 				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."//latitude
-//				+ "?vx  j2:hasUnitOfMeasure ?valueofxunit ."//latitude
+				+ "?vx  j2:numericalValue ?V_x ."//latitude
 				
 
 				+ "}";
@@ -581,7 +570,7 @@ public class ENVisualization extends JPSHttpServlet {
 			    + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
 				+ "SELECT ?entity ?BusNumbervalue ?activepowervalue ?activepowervalueunit ?Q_Gen ?Q_Genunit ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue "
-				+ "?Pmaxvalue ?Pmaxvalueunit ?Pminvalue ?Pminvalueunit ?Pc1value ?Pc2value ?Qc1minvalue ?Qc1maxvalue "
+				+ "?Pmaxvalue ?Pminvalue ?Pc1value ?Pc2value ?Qc1minvalue ?Qc1maxvalue "
 				+ "?Qc2minvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
 				+ "?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue ?longitude ?latitude ?valueofyunit ?generation ?vemission "
 
