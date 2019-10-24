@@ -118,7 +118,7 @@
 					<div class="col-md-11">
 						<s:select
 							headerKey="-1" headerValue="Select query type"
-							list="#{'mechAll':'Show All Mechanisms (no additional input is needed)', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodyanmic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'comparerate':'Compare Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'rateconstantAnyOrder':'Show Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)', 'comparerateAnyOrder':'Compare Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)'}" 
+							list="#{'mechAll':'Show All Mechanisms (no additional input is needed)', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodynamic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'comparerate':'Compare Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'rateconstantAnyOrder':'Show Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)', 'comparerateAnyOrder':'Compare Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)'}" 
 							name="querySelection" 
 							value="thermo" theme="bootstrap" />
 					</div>
@@ -199,21 +199,24 @@
 									name="unitsRSelection" 
 									value="unitsR" theme="bootstrap" />
 							</div>
-							<canvas id="canvas" style="width:1200px !important; height:500px"></canvas>
-							<canvas id="canvasJMolK" style="width:1200px !important; height:500px; display:none"></canvas>
-							<canvas id="canvasErgMolK" style="width:1200px !important; height:500px; display:none"></canvas>
-							<canvas id="canvasNoDimension" style="width:1200px !important; height:500px; display:none"></canvas>
+							<canvas id="canvas" style="width:450px !important; height:188px"></canvas>
+							<canvas id="canvasJMolK" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasErgMolK" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasNoDimension" style="width:450px !important; height:188px; display:none"></canvas>
+							<p></p>
+							<canvas id="canvasH" style="width:450px !important; height:188px"></canvas>
+							<canvas id="canvasHJMolK" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasHErgMolK" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasHNoDimension" style="width:450px !important; height:188px; display:none"></canvas>
+							<p></p>
+							<canvas id="canvasS" style="width:450px !important; height:188px"></canvas>
+							<canvas id="canvasSJMolK" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasSErgMolK" style="width:450px !important; height:188px; display:none"></canvas>
+							<canvas id="canvasSNoDimension" style="width:450px !important; height:188px; display:none"></canvas>							
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:1200px !important; height:300px"></canvas>
+							<canvas id="canvasRateAE" style="width:1200px !important; height:800px"></canvas>
 							<p></p>
-						</div>
-					   	<div id="chartCanvasRatePEF" class="" style="display:none">
-							<canvas id="canvasRatePEF" style="width:1200px !important; height:300px"></canvas>
-							<p></p>
-						</div>
-					   	<div id="chartCanvasRateTE" class="" style="display:none">
-							<canvas id="canvasRateTE" style="width:1200px !important; height:300px"></canvas>							
 						</div>
 					  </div>
 					</div>
@@ -289,6 +292,24 @@ $( function() {
 			return temperatures;
 		 }
 	 
+	 function get1000OverTemperatures(minTemp, maxTemp) {
+			let interval = (maxTemp - minTemp);
+			let slices = 16;
+			interval = interval / slices;
+			interval = Math.ceil(interval / 100.0) * 100;
+			var temperatures = [];
+			console.log('In getTemperatures');
+			var T;
+			for(T = 300; T <= 6000; T = T + 300){
+				console.log('T In getTemperatures');
+				console.log(T);
+				temperatures.push(1000 / T);
+				console.log('temperatures getTemperatures');
+				console.log(temperatures);
+			}
+			return temperatures;
+		 }
+	 
 	 function calculateMinTemp(minTemps) {
 		 let minTemp = 0;
 		 if(minTemps.length >= 1){
@@ -349,6 +370,78 @@ $( function() {
 		}
 		return CpAllTemps;
 	 }
+	 
+	 function calculateH(unitsR, aLow, aHigh, minTemp, midTemp, maxTemp) {
+			let R = calculateR(unitsR);
+			let interval = calculateInterval(minTemp, maxTemp);
+			console.log('interval:');
+			console.log(interval);
+			var T = 300;
+			var HAllTemps = [];
+			if(aLow.length>=7 && aHigh.length>=7){
+	 			for(T = 300; T <= 6000; T += 300){
+					console.log('T:');
+					console.log(T);
+	 				if(T<midTemp){
+						H = R * (parseFloat(aLow[0]) * T + parseFloat(aLow[1]) * Math.pow(T, 2) / 2 + parseFloat(aLow[2]) * Math.pow(T, 3) / 3  + parseFloat(aLow[3]) * Math.pow(T, 4) / 4 + parseFloat(aLow[4]) * Math.pow(T, 5) / 5 + parseFloat(aLow[5]));
+						console.log('HLowInFuction');
+						console.log(H);
+					} else{
+						H = R * (parseFloat(aHigh[0]) * T + parseFloat(aHigh[1]) * Math.pow(T, 2) / 2 + parseFloat(aHigh[2]) * Math.pow(T, 3) / 3  + parseFloat(aHigh[3]) * Math.pow(T, 4) / 4 + parseFloat(aHigh[4]) * Math.pow(T, 5) / 5 + parseFloat(aHigh[5]));
+						console.log('CpHighInFuction');
+						console.log(H);
+					}
+					HAllTemps.push(H);
+					console.log('HAllTemps');
+					console.log(HAllTemps); 
+				}
+			}
+			return HAllTemps;
+		 }
+
+	 function calculateS(unitsR, aLow, aHigh, minTemp, midTemp, maxTemp) {
+			let R = calculateR(unitsR);
+			let interval = calculateInterval(minTemp, maxTemp);
+			console.log('interval:');
+			console.log(interval);
+			var T = 300;
+			var SAllTemps = [];
+			if(aLow.length>=7 && aHigh.length>=7){
+	 			for(T = 300; T <= 6000; T += 300){
+					console.log('T:');
+					console.log(T);
+	 				lnT = Math.log(T);
+	 				console.log('lnT');
+	 				console.log(lnT);
+					if(T<midTemp){
+						S = R * (parseFloat(aLow[0]) * lnT + parseFloat(aLow[1]) * T + parseFloat(aLow[2]) * Math.pow(T, 2) / 2  + parseFloat(aLow[3]) * Math.pow(T, 3) / 3 + parseFloat(aLow[4]) * Math.pow(T, 4) / 4 + parseFloat(aLow[6]));
+						console.log('SLowInFuction');
+						console.log(S);
+					} else{
+						S = R * (parseFloat(aHigh[0]) * lnT + parseFloat(aHigh[1]) * T + parseFloat(aHigh[2]) * Math.pow(T, 2) / 2  + parseFloat(aHigh[3]) * Math.pow(T, 3) / 3 + parseFloat(aHigh[4]) * Math.pow(T, 4) / 4 + parseFloat(aHigh[6]));
+						console.log('SHighInFuction');
+						console.log(S);
+					}
+					SAllTemps.push(S);
+					console.log('SAllTemps');
+					console.log(SAllTemps); 
+				}
+			}
+			return SAllTemps;
+		 }
+	 
+	 function calculateRateConstant(unitsR, A, b, E) {
+			let R = calculateR(unitsR);
+			var RateConstantAllTemps = [];
+	 			for(T = 300; T <= 6000; T += 300){
+					RC = A * Math.pow(1000 / T, b) * Math.exp(-E * T /(R * 1000));
+					RateConstantAllTemps.push(RC);
+					console.log('RateConstantAllTemps');
+					console.log(RateConstantAllTemps); 
+				}
+			return RateConstantAllTemps;
+		 }
+	 
 	 
 	 function formatLabel(str){
 		if(str.length>30){
@@ -427,16 +520,12 @@ $( function() {
 			if(search_term_name ==  '') {
 				$("#chartCanvas").hide();
 				$("#chartCanvasRateAE").hide();
-				$("#chartCanvasRatePEF").hide();
-				$("#chartCanvasRateTE").hide();				
 				$("#tableMechanism").hide();
 				$("#errorQuery").show();
 			}
 			if(search_querySelection ==  -1 || search_querySelection ==  undefined || search_querySelection ==  null) {
 				$("#chartCanvas").hide();
 				$("#chartCanvasRateAE").hide();
-				$("#chartCanvasRatePEF").hide();
-				$("#chartCanvasRateTE").hide();				
 				$("#tableMechanism").hide();
 				$("#errorType").show();
 			}			
@@ -783,8 +872,6 @@ $( function() {
 				if (resultArray.length == 1) {
 					$("#chartCanvas").hide();
 					$("#chartCanvasRateAE").hide();
-					$("#chartCanvasRatePEF").hide();
-					$("#chartCanvasRateTE").hide();						
 					$("#tableMechanism").hide();
 					$("#noResult").show();
 				} else {
@@ -801,6 +888,7 @@ $( function() {
 
 					var chartLabel = [];
 					var chartLabelsThermo = [];
+					var chartLabelsRate = [];
 					var co = [];
  					var co_1 = [];
 					var co_2 = [];
@@ -831,8 +919,26 @@ $( function() {
 					var datasetsCpJMolK = [];
 					var datasetsCpErgMolK = [];
 					var datasetsCpNoDimension = [];
-					var chartLabelMech = '';
+					var HAllMechs = [];
+					var datasetsH = [];
+					var datasetsHJMolK = [];
+					var datasetsHErgMolK = [];
+					var datasetsHNoDimension = [];
+					var SAllMechs = [];
+					var datasetsS = [];
+					var datasetsSJMolK = [];
+					var datasetsSErgMolK = [];
+					var datasetsSNoDimension = [];
 					
+					var rateConstantAllMechs = [];
+					
+					var preExponentialFactor = 1;
+					var activationEnergy = 1;
+					var temperatureExponent = 0;
+					var datasetsRCJMolK = [];
+					
+					var chartLabelMech = '';
+					var chartLabelMechRateConstant = '';
 					let count = 1;
 					var countCoeffSequence = 0;
 
@@ -911,13 +1017,17 @@ $( function() {
 						  } else if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){
 								if (i == 'ActivationEnergy') {					        	
 						        	ae.push(row);
+						        	activationEnergy = row;
 						        } else if (i == 'PreExpFactor') {
 						        	ef.push(row);
+						        	preExponentialFactor = row;
 						        } else if (i == 'TempExponent') {
 						        	te.push(row);
+						        	temperatureExponent = row;
 						        } else if (i == 'MechanismName') {
 						        		chartLabelRate.push(formatLabel(row));
-						        }							  
+						        		chartLabelMechRateConstant = row;
+						        }					  
 						  }
 					      });
 						
@@ -966,6 +1076,101 @@ $( function() {
 								fill: false
 							});
 							console.log('datasetsCp:'+datasetsCp);
+							console.log('countCoeffSequence');
+
+							var H = calculateH('-1', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('H:' + H);
+							datasetsH.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: H,
+								fill: false
+							});
+							console.log('datasetsH:'+datasetsH);
+							var HJMolK = calculateH('jmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('HJMolK:' + HJMolK);
+							datasetsHJMolK.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: HJMolK,
+								fill: false
+							});
+							console.log('datasetsH:'+datasetsH);
+							var HErgMolK = calculateH('ergmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('HErgMolK:' + HErgMolK);
+							datasetsHErgMolK.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: HErgMolK,
+								fill: false
+							});
+							console.log('datasetsH:'+datasetsH);
+							var HDimensionLess = calculateH('dimensionless', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('HDimensionLess:' + HDimensionLess);
+							datasetsHNoDimension.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: HDimensionLess,
+								fill: false
+							});
+							console.log('datasetsH:'+datasetsH);
+
+							var S = calculateS('-1', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('S:' + S);
+							datasetsS.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: S,
+								fill: false
+							});
+							console.log('datasetsS:'+datasetsS);
+							var SJMolK = calculateS('jmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('SJMolK:' + SJMolK);
+							datasetsSJMolK.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: SJMolK,
+								fill: false
+							});
+							console.log('datasetsS:'+datasetsS);
+							var SErgMolK = calculateS('ergmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('SErgMolK:' + SErgMolK);
+							datasetsSErgMolK.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: SErgMolK,
+								fill: false
+							});
+							console.log('datasetsS:'+datasetsS);
+							var SDimensionLess = calculateS('dimensionless', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('SDimensionLess:' + SDimensionLess);
+							datasetsSNoDimension.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: SDimensionLess,
+								fill: false
+							});
+							console.log('datasetsS:'+datasetsS);
+						}
+						
+						if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){
+							let color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
+							var RCJMolK = calculateRateConstant('jmolk', parseFloat(preExponentialFactor), parseFloat(temperatureExponent), parseFloat(activationEnergy));
+							datasetsRCJMolK.push({
+								label: chartLabelMechRateConstant,
+								backgroundColor: color,
+								borderColor: color,
+								data: RCJMolK,
+								fill: false,
+							});
 						}
 						
  						if(countCoeffSequence >= resultArray.length && search_querySelection == 'compthermo'){
@@ -981,36 +1186,60 @@ $( function() {
 							console.log(datasetsCp[0].data);
 						} 
 						
+ 						if(countCoeffSequence >= resultArray.length && (search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder')){
+							chartLabelsRate = get1000OverTemperatures(300, 6000);
+						} 
+ 						
 						if (search_querySelection != 'compthermo' && search_querySelection != 'comparerate' && search_querySelection != 'comparerateAnyOrder') {
 							queryResultsTable.append(getTableResultRowString(count++, resultObj));
 							$("#chartCanvas").hide();
 							$("#chartCanvasRateAE").hide();
-							$("#chartCanvasRatePEF").hide();
-							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").show();
 
 						} else if(search_querySelection == 'compthermo' && countCoeffSequence >= resultArray.length){ // show chart
 							$("#chartCanvas").show();
 							$("#chartCanvasRateAE").hide();
-							$("#chartCanvasRatePEF").hide();
-							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").hide();
 							$("canvas#canvas").remove();
 							$("canvas#canvasJMolK").remove();
 							$("canvas#canvasErgMolK").remove();
 							$("canvas#canvasNoDimension").remove();
-							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
-						 	if (search_unitsRSelection.indexOf('-1') > -1) {
+							$("canvas#canvasH").remove();
+							$("canvas#canvasHJMolK").remove();
+							$("canvas#canvasHErgMolK").remove();
+							$("canvas#canvasHNoDimension").remove();							
+							$("canvas#canvasS").remove();
+							$("canvas#canvasSJMolK").remove();
+							$("canvas#canvasSErgMolK").remove();
+							$("canvas#canvasSNoDimension").remove();							
+							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasH" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasS" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:450px !important; height:188px; display:none"></canvas>');
+							if (search_unitsRSelection.indexOf('-1') > -1) {
 						 		$("canvas#canvas").show();
+						 		$("canvas#canvasH").show();
+						 		$("canvas#canvasS").show();
 						 	} else if (search_unitsRSelection.indexOf('jmolk') > -1) {
 						 		$("canvas#canvasJMolK").show();
+						 		$("canvas#canvasHJMolK").show();
+						 		$("canvas#canvasSJMolK").show();
 						    } else if (search_unitsRSelection.indexOf('ergmolk') > -1){
 						    	$("canvas#canvasErgMolK").show();
+						    	$("canvas#canvasHErgMolK").show();
+						    	$("canvas#canvasSErgMolK").show();
 						    } else if (search_unitsRSelection.indexOf('dimensionless') > -1){
 						    	$("canvas#canvasNoDimension").show();
+						    	$("canvas#canvasHNoDimension").show();
+						    	$("canvas#canvasSNoDimension").show();
 						    }
 							var config = {
 									type: 'line',
@@ -1022,7 +1251,7 @@ $( function() {
 										responsive: true,
 										title: {
 											display: true,
-											text: 'Heat capacity calculated as a function of temperature.'
+											text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
 										},
 										tooltips: {
 											mode: 'index',
@@ -1044,7 +1273,7 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Cp (kcal / mol. K)'
+													labelString: 'Cp (kcal / K)'
 												}
 											}]
 										}
@@ -1064,7 +1293,7 @@ $( function() {
 											responsive: true,
 											title: {
 												display: true,
-												text: 'Heat capacity calculated as a function of temperature.'
+												text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
 											},
 											tooltips: {
 												mode: 'index',
@@ -1086,7 +1315,7 @@ $( function() {
 													display: true,
 													scaleLabel: {
 														display: true,
-														labelString: 'Cp (J / mol. K)'
+														labelString: 'Cp (J / K)'
 													}
 												}]
 											}
@@ -1129,7 +1358,7 @@ $( function() {
 														display: true,
 														scaleLabel: {
 															display: true,
-															labelString: 'Cp (erg / mol. K)'
+															labelString: 'Cp (erg / K)'
 														}
 													}]
 												}
@@ -1149,7 +1378,7 @@ $( function() {
 													responsive: true,
 													title: {
 														display: true,
-														text: 'Heat capacity calculated as a function of temperature.'
+														text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
 													},
 													tooltips: {
 														mode: 'index',
@@ -1172,7 +1401,7 @@ $( function() {
 															display: true,
 															scaleLabel: {
 																display: true,
-																labelString: 'Cp'
+																labelString: 'Cp ()'
 															}
 														}]
 													}
@@ -1181,37 +1410,365 @@ $( function() {
 
 											var ctxNoDimension = document.getElementById('canvasNoDimension').getContext('2d');
 											var myChartNoDimension = new Chart(ctxNoDimension, configNoDimension);
-								
-						} else if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){ // show chart
+
+											var configH = {
+													type: 'line',
+													data: {
+														labels: chartLabelsThermo,
+														datasets: datasetsH,
+													},
+													options: {
+														responsive: true,
+														title: {
+															display: true,
+															text: 'Enthalpy evaluated as a function of temperature.'
+														},
+														tooltips: {
+															mode: 'index',
+															intersect: false,
+														},
+														hover: {
+															mode: 'nearest',
+															intersect: true
+														},
+														scales: {
+															xAxes: [{
+																display: true,
+																scaleLabel: {
+																	display: true,
+																	labelString: 'Temperature (K)'
+																}
+															}],
+															yAxes: [{
+																display: true,
+																scaleLabel: {
+																	display: true,
+																	labelString: 'H (kcal)'
+																}
+															}]
+														}
+													}
+												};
+
+												var ctxH = document.getElementById('canvasH').getContext('2d');
+												var myChartH = new Chart(ctxH, configH);
+
+												var configHJMolK = {
+														type: 'line',
+														data: {
+															labels: chartLabelsThermo,
+															datasets: datasetsHJMolK,
+														},
+														options: {
+															responsive: true,
+															title: {
+																display: true,
+																text: 'Enthalpy evaluated as a function of temperature.'
+															},
+															tooltips: {
+																mode: 'index',
+																intersect: false,
+															},
+															hover: {
+																mode: 'nearest',
+																intersect: true
+															},
+															scales: {
+																xAxes: [{
+																	display: true,
+																	scaleLabel: {
+																		display: true,
+																		labelString: 'Temperature (K)'
+																	}
+																}],
+																yAxes: [{
+																	display: true,
+																	scaleLabel: {
+																		display: true,
+																		labelString: 'H (J)'
+																	}
+																}]
+															}
+														}
+													};
+
+													var ctxHJMolK = document.getElementById('canvasHJMolK').getContext('2d');
+													var myChartHJMolK = new Chart(ctxHJMolK, configHJMolK);
+													
+													var configHErgMolK = {
+															type: 'line',
+															data: {
+																labels: chartLabelsThermo,
+																datasets: datasetsHErgMolK,
+															},
+															options: {
+																responsive: true,
+																title: {
+																	display: true,
+																	text: 'Enthalpy evaluated as a function of temperature.'
+																},
+																tooltips: {
+																	mode: 'index',
+																	intersect: false,
+																},
+																hover: {
+																	mode: 'nearest',
+																	intersect: true
+																},
+																scales: {
+																	xAxes: [{
+																		display: true,
+																		scaleLabel: {
+																			display: true,
+																			labelString: 'Temperature (K)'
+																		}
+																	}],
+																	yAxes: [{
+																		type: 'logarithmic',														
+																		display: true,
+																		scaleLabel: {
+																			display: true,
+																			labelString: 'H (erg)'
+																		}
+																	}]
+																}
+															}
+														};
+
+														var ctxHErgMolK = document.getElementById('canvasHErgMolK').getContext('2d');
+														var myChartHErgMolK = new Chart(ctxHErgMolK, configHErgMolK);
+														
+														var configHNoDimension = {
+																type: 'line',
+																data: {
+																	labels: chartLabelsThermo,
+																	datasets: datasetsHNoDimension,
+																},
+																options: {
+																	responsive: true,
+																	title: {
+																		display: true,
+																		text: 'Enthalpy evaluated as a function of temperature.'
+																	},
+																	tooltips: {
+																		mode: 'index',
+																		intersect: false,
+																	},
+																	hover: {
+																		mode: 'nearest',
+																		intersect: true
+																	},
+																	scales: {
+																		xAxes: [{
+																			display: true,
+																			scaleLabel: {
+																				display: true,
+																				labelString: 'Temperature (K)'
+																			}
+																		}],
+																		yAxes: [{
+																			type: 'logarithmic',
+																			display: true,
+																			scaleLabel: {
+																				display: true,
+																				labelString: 'H'
+																			}
+																		}]
+																	}
+																}
+															};
+
+															var ctxHNoDimension = document.getElementById('canvasHNoDimension').getContext('2d');
+															var myChartHNoDimension = new Chart(ctxHNoDimension, configHNoDimension);											
+											
+
+															var configS = {
+																	type: 'line',
+																	data: {
+																		labels: chartLabelsThermo,
+																		datasets: datasetsS,
+																	},
+																	options: {
+																		responsive: true,
+																		title: {
+																			display: true,
+																			text: 'Entropy evaluated as a function of temperature.'
+																		},
+																		tooltips: {
+																			mode: 'index',
+																			intersect: false,
+																		},
+																		hover: {
+																			mode: 'nearest',
+																			intersect: true
+																		},
+																		scales: {
+																			xAxes: [{
+																				display: true,
+																				scaleLabel: {
+																					display: true,
+																					labelString: 'Temperature (K)'
+																				}
+																			}],
+																			yAxes: [{
+																				display: true,
+																				scaleLabel: {
+																					display: true,
+																					labelString: 'S (kcal / K)'
+																				}
+																			}]
+																		}
+																	}
+																};
+
+																var ctxS = document.getElementById('canvasS').getContext('2d');
+																var myChartS = new Chart(ctxS, configS);
+
+																var configSJMolK = {
+																		type: 'line',
+																		data: {
+																			labels: chartLabelsThermo,
+																			datasets: datasetsSJMolK,
+																		},
+																		options: {
+																			responsive: true,
+																			title: {
+																				display: true,
+																				text: 'Entropy evaluated as a function of temperature.'
+																			},
+																			tooltips: {
+																				mode: 'index',
+																				intersect: false,
+																			},
+																			hover: {
+																				mode: 'nearest',
+																				intersect: true
+																			},
+																			scales: {
+																				xAxes: [{
+																					display: true,
+																					scaleLabel: {
+																						display: true,
+																						labelString: 'Temperature (K)'
+																					}
+																				}],
+																				yAxes: [{
+																					display: true,
+																					scaleLabel: {
+																						display: true,
+																						labelString: 'H (J / K)'
+																					}
+																				}]
+																			}
+																		}
+																	};
+
+																	var ctxSJMolK = document.getElementById('canvasSJMolK').getContext('2d');
+																	var myChartSJMolK = new Chart(ctxSJMolK, configSJMolK);
+																	
+																	var configSErgMolK = {
+																			type: 'line',
+																			data: {
+																				labels: chartLabelsThermo,
+																				datasets: datasetsSErgMolK,
+																			},
+																			options: {
+																				responsive: true,
+																				title: {
+																					display: true,
+																					text: 'Entropy evaluated as a function of temperature.'
+																				},
+																				tooltips: {
+																					mode: 'index',
+																					intersect: false,
+																				},
+																				hover: {
+																					mode: 'nearest',
+																					intersect: true
+																				},
+																				scales: {
+																					xAxes: [{
+																						display: true,
+																						scaleLabel: {
+																							display: true,
+																							labelString: 'Temperature (K)'
+																						}
+																					}],
+																					yAxes: [{
+																						type: 'logarithmic',														
+																						display: true,
+																						scaleLabel: {
+																							display: true,
+																							labelString: 'S (erg / K)'
+																						}
+																					}]
+																				}
+																			}
+																		};
+
+																		var ctxSErgMolK = document.getElementById('canvasSErgMolK').getContext('2d');
+																		var myChartSErgMolK = new Chart(ctxSErgMolK, configSErgMolK);
+																		
+																		var configSNoDimension = {
+																				type: 'line',
+																				data: {
+																					labels: chartLabelsThermo,
+																					datasets: datasetsSNoDimension,
+																				},
+																				options: {
+																					responsive: true,
+																					title: {
+																						display: true,
+																						text: 'Entropy evaluated as a function of temperature.'
+																					},
+																					tooltips: {
+																						mode: 'index',
+																						intersect: false,
+																					},
+																					hover: {
+																						mode: 'nearest',
+																						intersect: true
+																					},
+																					scales: {
+																						xAxes: [{
+																							display: true,
+																							scaleLabel: {
+																								display: true,
+																								labelString: 'Temperature (K)'
+																							}
+																						}],
+																						yAxes: [{
+																							type: 'logarithmic',
+																							display: true,
+																							scaleLabel: {
+																								display: true,
+																								labelString: 'S (-)'
+																							}
+																						}]
+																					}
+																				}
+																			};
+
+																			var ctxSNoDimension = document.getElementById('canvasSNoDimension').getContext('2d');
+																			var myChartSNoDimension = new Chart(ctxSNoDimension, configSNoDimension);											
+															
+						} else if((search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder')  && countCoeffSequence >= resultArray.length){ // show chart
 							$("#chartCanvasRateAE").show();
-							$("#chartCanvasRatePEF").show();
-							$("#chartCanvasRateTE").show();
 							$("#chartCanvas").hide();
 							$("#tableMechanism").hide();
 							$("canvas#canvasRateAE").remove();
-							$("canvas#canvasRatePEF").remove();
-							$("canvas#canvasRateTE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1200px !important; height:300px"></canvas>');
-							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:1200px !important; height:300px"></canvas>');
-							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:1200px !important; height:300px"></canvas>');
-							var configAE = {
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1200px !important; height:800px"></canvas>');
+							var configRateConstant = {
 									type: 'line',
 									data: {
-										labels: chartLabelRate,
-										datasets: [{
-											label: 'Activation Energy',
-											backgroundColor: window.chartColors.red,
-											borderColor: window.chartColors.red,
-											data: ae,
-											fill: false,
-										}
-										]
+										labels: chartLabelsRate,
+										datasets: datasetsRCJMolK
 									},
 									options: {
 										responsive: true,
 										title: {
 											display: true,
-											text: ['Activation Energy for the Given Reaction across Mechanisms.']
+											text: ['Rate constant evaluated as a function of temperature.']
 										},
 										tooltips: {
 											mode: 'index',
@@ -1226,120 +1783,23 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Mechanism'
+													labelString: '1000 K/T (-)'
 												}
 											}],
 											yAxes: [{
+												type: 'logarithmic',
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Activation Energy (J/mol)'
+													labelString: 'Rate Constant (m3/mol/s)'
 												}
 											}]
 										}
 									}
 								};
 
-								var ctxAE = document.getElementById('canvasRateAE').getContext('2d');
-								var myChartAE = new Chart(ctxAE, configAE);
-
-								var configPEF = {
-										type: 'line',
-										data: {
-											labels: chartLabelRate,
-											datasets: [{
-												label: 'Pre-exponential Factor',
-												fill: false,
-												backgroundColor: window.chartColors.blue,
-												borderColor: window.chartColors.blue,
-												data: ef,
-											}
-											]
-										},
-										options: {
-											responsive: true,
-											title: {
-												display: true,
-												text: ['Pre-exponential Factor for the Given Reaction across Mechanisms.']
-											},
-											tooltips: {
-												mode: 'index',
-												intersect: false,
-											},
-											hover: {
-												mode: 'nearest',
-												intersect: true
-											},
-											scales: {
-												xAxes: [{
-													display: true,
-													scaleLabel: {
-														display: true,
-														labelString: 'Mechanism'
-													}
-												}],
-												yAxes: [{
-													display: true,
-													scaleLabel: {
-														display: true,
-														labelString: 'Pre-exponential Factor (m3/mol/s)'
-													}
-												}]
-											}
-										}
-									};
-
-									var ctxPEF = document.getElementById('canvasRatePEF').getContext('2d');
-									var myChartPEF = new Chart(ctxPEF, configPEF);
-									
-									var configTE = {
-											type: 'line',
-											data: {
-												labels: chartLabelRate,
-												datasets: [{
-													label: 'Temperature Exponent',
-													fill: false,
-													backgroundColor: window.chartColors.orange,
-													borderColor: window.chartColors.orange,
-													data: te,
-												}
-												]
-											},
-											options: {
-												responsive: true,
-												title: {
-													display: true,
-													text: ['Temperature Exponent for the Given Reaction across Mechanisms.']
-												},
-												tooltips: {
-													mode: 'index',
-													intersect: false,
-												},
-												hover: {
-													mode: 'nearest',
-													intersect: true
-												},
-												scales: {
-													xAxes: [{
-														display: true,
-														scaleLabel: {
-															display: true,
-															labelString: 'Mechanism'
-														}
-													}],
-													yAxes: [{
-														display: true,
-														scaleLabel: {
-															display: true,
-															labelString: 'Temperature Exponent'
-														}
-													}]
-												}
-											}
-										};
-
-										var ctxTE = document.getElementById('canvasRateTE').getContext('2d');
-										var myChartTE = new Chart(ctxTE, configTE);
+								var ctxRateConstant = document.getElementById('canvasRateAE').getContext('2d');
+								var myChartRateConstant = new Chart(ctxRateConstant, configRateConstant);
 						}
 						
 					}
