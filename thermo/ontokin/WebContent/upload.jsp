@@ -186,10 +186,11 @@
 				   	</div>
 				  
 				  <!-- Draw Charts -->
+					<p></p>
 					<div class="container chart-group">
 					  <div class="row">
 					   	<div id="chartCanvas" class="" style="display:none">
-							<div id="unitsGasConstant" class="col-md-11" style="display:none;">
+							<div id="unitsGasConstant" class="col-md-11" style="">
 								<span id ="units" style="">Please select the unit system:</span>
 								<s:select 
 									headerKey="-1" headerValue="kcal / mol. K"
@@ -197,18 +198,21 @@
 									name="unitsRSelection" 
 									value="unitsR" theme="bootstrap" />
 							</div>
-							<canvas id="canvas" style="width:800px !important; height:500px"></canvas>
+							<canvas id="canvas" style="width:1200px !important; height:500px"></canvas>
+							<canvas id="canvasJMolK" style="width:1200px !important; height:500px; display:none"></canvas>
+							<canvas id="canvasErgMolK" style="width:1200px !important; height:500px; display:none"></canvas>
+							<canvas id="canvasNoDimension" style="width:1200px !important; height:500px; display:none"></canvas>
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:800px !important; height:300px"></canvas>
+							<canvas id="canvasRateAE" style="width:1200px !important; height:300px"></canvas>
 							<p></p>
 						</div>
 					   	<div id="chartCanvasRatePEF" class="" style="display:none">
-							<canvas id="canvasRatePEF" style="width:800px !important; height:300px"></canvas>
+							<canvas id="canvasRatePEF" style="width:1200px !important; height:300px"></canvas>
 							<p></p>
 						</div>
 					   	<div id="chartCanvasRateTE" class="" style="display:none">
-							<canvas id="canvasRateTE" style="width:800px !important; height:300px"></canvas>							
+							<canvas id="canvasRateTE" style="width:1200px !important; height:300px"></canvas>							
 						</div>
 					  </div>
 					</div>
@@ -236,14 +240,12 @@ $( function() {
 	 function calculateR(unitsR) {
 		  	let R = 1;
 		 	if (unitsR.indexOf('-1') > -1) {
-				multiplyingFactor = Math.pow(10, 3);
-		 		R = 1.98720425864083 * multiplyingFactor;
+		 		R = 1.98720425864083 * Math.pow(10, -3);
 		 	} else if (unitsR.indexOf('jmolk') > -1) {
 		    	R = 8.31446261815324;
-		    } else if (unitsR.indexOf('ergmolk')){
-				multiplyingFactor = Math.pow(10, 7);
-		 		R = 8.314462618 * multiplyingFactor;
-		    } else if (unitsR.indexOf('dimensionless')){
+		    } else if (unitsR.indexOf('ergmolk') > -1){
+		 		R = 8.314462618 * Math.pow(10, 7);
+		    } else if (unitsR.indexOf('dimensionless') > -1){
 				R = 1;
 		    }
 		 	return R;
@@ -308,18 +310,6 @@ $( function() {
 		var T = 300;
 		var CpAllTemps = [];
 		if(aLow.length>=7 && aHigh.length>=7){
-			console.log('aHigh');
-			console.log(aHigh);
-			console.log('aLow');
-			console.log(aLow);
-			console.log('minTemp');
-			console.log(minTemp);
-			console.log('midTemp');
-			console.log(midTemp);
-			console.log('maxTemp');
-			console.log(maxTemp);
-			console.log('interval');
-			console.log(interval);
  			for(T = 300; T <= 6000; T += 300){
 				console.log('T:');
 				console.log(T);
@@ -347,16 +337,29 @@ $( function() {
 		return str;
 	}
 	
-	 $('#querySelection').change(function(){ 
+	 $('#unitsRSelection').change(function(){ 
 		    var value = $(this).val();
-
-			if (value == 'compthermo') {
-				$('#unitsGasConstant').show();
-
-			} else {
-
-				$('#unitsGasConstant').hide();
-		}
+			if (value == 'jmolk') {
+				$('#canvasJMolK').show();
+				$('#canvas').hide();
+				$('#canvasErgMolK').hide();
+				$('#canvasNoDimension').hide();
+			} else if (value == 'ergmolk') {
+				$('#canvasJMolK').hide();
+				$('#canvas').hide();
+				$('#canvasErgMolK').show();
+				$('#canvasNoDimension').hide();
+			} else if (value == 'dimensionless') {
+				$('#canvasJMolK').hide();
+				$('#canvas').hide();
+				$('#canvasErgMolK').hide();
+				$('#canvasNoDimension').show();
+			} else if (value == '-1') {
+				$('#canvasJMolK').hide();
+				$('#canvas').show();
+				$('#canvasErgMolK').hide();
+				$('#canvasNoDimension').hide();
+			}
 	 });
 	
 	 $("a#linkButton").on('click',function(){
@@ -386,7 +389,7 @@ $( function() {
 		window.location.href = '/ontokin';
 	});
 
-	$("#execute").on("click", (event) => {	
+	$("#execute").on("click", (event) => {
 		
 		// let chartCanvas =  $("#chartCanvas");
 		let queryString;
@@ -504,6 +507,7 @@ $( function() {
 				    '?ThermoModelIRI ontokin:hasPressure  ?Pressure .' + '\n' +
 	 				'}';
  				console.log("querystring:\n"+queryString);
+ 				//$('#unitsRSelection').prop('selectedIndex',0);
 			} else if(search_querySelection == 'rateconstant') {
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
@@ -795,6 +799,9 @@ $( function() {
 					var coHigh = [];
 					var CpAllMechs = [];
 					var datasetsCp = [];
+					var datasetsCpJMolK = [];
+					var datasetsCpErgMolK = [];
+					var datasetsCpNoDimension = [];
 					var chartLabelMech = '';
 					
 					let count = 1;
@@ -900,6 +907,36 @@ $( function() {
 								fill: false
 							});
 							console.log('datasetsCp:'+datasetsCp);
+							var CpJMolK = calculateCp('jmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('CpJMolK:' + CpJMolK);
+							datasetsCpJMolK.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: CpJMolK,
+								fill: false
+							});
+							console.log('datasetsCp:'+datasetsCp);
+							var CpErgMolK = calculateCp('ergmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('CpErgMolK:' + CpErgMolK);
+							datasetsCpErgMolK.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: CpErgMolK,
+								fill: false
+							});
+							console.log('datasetsCp:'+datasetsCp);
+							var CpDimensionLess = calculateCp('dimensionless', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							console.log('CpDimensionLess:' + CpDimensionLess);
+							datasetsCpNoDimension.push({
+								label: chartLabelMech,
+								backgroundColor: color,
+								borderColor: color,
+								data: CpDimensionLess,
+								fill: false
+							});
+							console.log('datasetsCp:'+datasetsCp);
 						}
 						
  						if(countCoeffSequence >= resultArray.length && search_querySelection == 'compthermo'){
@@ -930,7 +967,22 @@ $( function() {
 							$("#chartCanvasRateTE").hide();
 							$("#tableMechanism").hide();
 							$("canvas#canvas").remove();
-							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:800px !important; height:500px"></canvas>');
+							$("canvas#canvasJMolK").remove();
+							$("canvas#canvasErgMolK").remove();
+							$("canvas#canvasNoDimension").remove();
+							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
+							$("div#chartCanvas").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:1200px !important; height:500px; display:none"></canvas>');
+						 	if (search_unitsRSelection.indexOf('-1') > -1) {
+						 		$("canvas#canvas").show();
+						 	} else if (search_unitsRSelection.indexOf('jmolk') > -1) {
+						 		$("canvas#canvasJMolK").show();
+						    } else if (search_unitsRSelection.indexOf('ergmolk') > -1){
+						    	$("canvas#canvasErgMolK").show();
+						    } else if (search_unitsRSelection.indexOf('dimensionless') > -1){
+						    	$("canvas#canvasNoDimension").show();
+						    }
 							var config = {
 									type: 'line',
 									data: {
@@ -941,7 +993,7 @@ $( function() {
 										responsive: true,
 										title: {
 											display: true,
-											text: ['NASA Polynomial Coefficients for the Low-Temperature and High-Temperature Ranges.', 'Here a1, a2, a3, a4, a5, a6, and a7 are the numerical coefficients.', 'LTR means low-temperature range and HTR means high-temperature range.']
+											text: 'Heat capacity calculated as a function of temperature.'
 										},
 										tooltips: {
 											mode: 'index',
@@ -956,14 +1008,14 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Temperature'
+													labelString: 'Temperature (K)'
 												}
 											}],
 											yAxes: [{
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Cp'
+													labelString: 'Cp (kcal / mol. K)'
 												}
 											}]
 										}
@@ -972,7 +1024,135 @@ $( function() {
 
 								var ctx = document.getElementById('canvas').getContext('2d');
 								var myChart = new Chart(ctx, config);
-								 
+
+								var configJMolK = {
+										type: 'line',
+										data: {
+											labels: chartLabelsThermo,
+											datasets: datasetsCpJMolK,
+										},
+										options: {
+											responsive: true,
+											title: {
+												display: true,
+												text: 'Heat capacity calculated as a function of temperature.'
+											},
+											tooltips: {
+												mode: 'index',
+												intersect: false,
+											},
+											hover: {
+												mode: 'nearest',
+												intersect: true
+											},
+											scales: {
+												xAxes: [{
+													display: true,
+													scaleLabel: {
+														display: true,
+														labelString: 'Temperature (K)'
+													}
+												}],
+												yAxes: [{
+													display: true,
+													scaleLabel: {
+														display: true,
+														labelString: 'Cp (J / mol. K)'
+													}
+												}]
+											}
+										}
+									};
+
+									var ctxJMolK = document.getElementById('canvasJMolK').getContext('2d');
+									var myChartJMolK = new Chart(ctxJMolK, configJMolK);
+									
+									var configErgMolK = {
+											type: 'line',
+											data: {
+												labels: chartLabelsThermo,
+												datasets: datasetsCpErgMolK,
+											},
+											options: {
+												responsive: true,
+												title: {
+													display: true,
+													text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
+												},
+												tooltips: {
+													mode: 'index',
+													intersect: false,
+												},
+												hover: {
+													mode: 'nearest',
+													intersect: true
+												},
+												scales: {
+													xAxes: [{
+														display: true,
+														scaleLabel: {
+															display: true,
+															labelString: 'Temperature (K)'
+														}
+													}],
+													yAxes: [{
+														type: 'logarithmic',														
+														display: true,
+														scaleLabel: {
+															display: true,
+															labelString: 'Cp (erg / mol. K)'
+														}
+													}]
+												}
+											}
+										};
+
+										var ctxErgMolK = document.getElementById('canvasErgMolK').getContext('2d');
+										var myChartErgMolK = new Chart(ctxErgMolK, configErgMolK);
+										
+										var configNoDimension = {
+												type: 'line',
+												data: {
+													labels: chartLabelsThermo,
+													datasets: datasetsCpNoDimension,
+												},
+												options: {
+													responsive: true,
+													title: {
+														display: true,
+														text: 'Heat capacity calculated as a function of temperature.'
+													},
+													tooltips: {
+														mode: 'index',
+														intersect: false,
+													},
+													hover: {
+														mode: 'nearest',
+														intersect: true
+													},
+													scales: {
+														xAxes: [{
+															display: true,
+															scaleLabel: {
+																display: true,
+																labelString: 'Temperature (K)'
+															}
+														}],
+														yAxes: [{
+															type: 'logarithmic',
+															display: true,
+															scaleLabel: {
+																display: true,
+																labelString: 'Cp'
+															}
+														}]
+													}
+												}
+											};
+
+											var ctxNoDimension = document.getElementById('canvasNoDimension').getContext('2d');
+											var myChartNoDimension = new Chart(ctxNoDimension, configNoDimension);
+								
 						} else if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){ // show chart
 							$("#chartCanvasRateAE").show();
 							$("#chartCanvasRatePEF").show();
@@ -982,9 +1162,9 @@ $( function() {
 							$("canvas#canvasRateAE").remove();
 							$("canvas#canvasRatePEF").remove();
 							$("canvas#canvasRateTE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:800px !important; height:300px"></canvas>');
-							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:800px !important; height:300px"></canvas>');
-							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:800px !important; height:300px"></canvas>');
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1200px !important; height:300px"></canvas>');
+							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:1200px !important; height:300px"></canvas>');
+							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:1200px !important; height:300px"></canvas>');
 							var configAE = {
 									type: 'line',
 									data: {
