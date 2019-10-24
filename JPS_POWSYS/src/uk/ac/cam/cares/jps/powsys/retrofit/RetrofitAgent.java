@@ -189,16 +189,21 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 	}
 	
 	public void deletePowerGeneratorsFromElectricalNetwork(String electricalNetwork, List<String> substitutionalGenerators) {
-		
-		StringBuffer delete = new StringBuffer("PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n");
-		delete.append("DELETE DATA { \r\n");
+			
+		String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + "DELETE DATA { \r\n";
+		int counter = 1;
+		StringBuffer delete = new StringBuffer();
 		for (String current : substitutionalGenerators) {
 			delete.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
-		}
-		delete.append("} \r\n");		
-		logger.info("deleting current power generators from electrical network top node\n" + delete.toString());
-
-		new QueryBroker().updateFile(electricalNetwork, delete.toString());
+			counter++;
+			if (counter == 5) {
+				String sparql = sparqlStart + delete.toString() + "} \r\n";
+				logger.info("deleting " + counter + " power generators from electrical network top node\n" + delete.toString());
+				new QueryBroker().updateFile(electricalNetwork, sparql);
+				counter = 1;
+				delete = new StringBuffer();
+			}
+		}	
 	}
 	
 	public String getQueryForPowerGenerators() {
@@ -214,15 +219,20 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 	
 	public void addNuclearPowerGeneratorsToElectricalNetwork(String electricalNetwork, List<GeneratorInfo> generators) {
 		
-		StringBuffer insert = new StringBuffer("PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n");
-		insert.append("INSERT DATA { \r\n");
+		String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + "INSERT DATA { \r\n";
+		int counter = 1;
+		StringBuffer insert = new StringBuffer();
 		for (GeneratorInfo current : generators) {
 			insert.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current.generatorIri + "> . \r\n");
-		}
-		insert.append("} \r\n");		
-		logger.info("adding nuclear power generators to electrical network top node\n" + insert.toString());
-
-		new QueryBroker().updateFile(electricalNetwork, insert.toString());
+			counter++;
+			if (counter == 5) {
+				String sparql = sparqlStart + insert.toString() + "} \r\n";
+				logger.info("adding " + counter + " nuclear power generators to electrical network top node\n" + insert.toString());
+				new QueryBroker().updateFile(electricalNetwork, sparql);
+				counter = 1;
+				insert = new StringBuffer();
+			}
+		}	
 	}
 	
 	public void connectNuclearPowerGeneratorsToOptimalBus(List<BusInfo> buses, List<GeneratorInfo> generators, BusInfo slackBus) {
