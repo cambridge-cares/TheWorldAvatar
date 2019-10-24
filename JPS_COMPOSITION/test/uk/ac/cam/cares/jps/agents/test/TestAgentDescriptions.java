@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
@@ -277,7 +276,7 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
-	private Service createDescrForAgentCarbonTaxCoord() {
+	private Service createDescrForAgentCarbonTaxCoordOld() {
 		return new ServiceBuilder()
 			.operation(null, JPS_POWSYS + "/startsimulation")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
@@ -286,6 +285,19 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_POWSYS + "/processresult")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
+			.build();
+	}
+	
+	private Service createDescrForAgentCarbonTaxCoord() {
+		return new ServiceBuilder()
+			.operation(null, JPS_POWSYS + "/startsimulation")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
+			.operation(null, JPS_POWSYS + "/processresult")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant", true, "plants", true)
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
 			.build();
 	}
 	
