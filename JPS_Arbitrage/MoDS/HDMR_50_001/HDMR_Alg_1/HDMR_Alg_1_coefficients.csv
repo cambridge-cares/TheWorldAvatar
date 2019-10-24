@@ -1,5 +1,0 @@
-Terms,CaseGroup1_Case1_massF_BiodieselOutput_001,CaseGroup1_Case1_energyF_Electricity_001,CaseGroup1_Case1_moleF_FuelGas_001,CaseGroup1_Case1_massF_HighPressureSteam_001,CaseGroup1_Case1_massF_LowPressureSteam_001,CaseGroup1_Case1_massF_MediumPressureSteam_001,CaseGroup1_Case1_massF_CoolingWater_001,CaseGroup1_Case1_massF_ProcessWater_001
-Constant,24334.440322240484,4.4584215996565746,22.296794453326125,0,0,10034.322882179931,29191.613776154845,3062.5976000000001
-Order,1,1,1,,,1,1
-(3/2)^0.5*x_0,40.974397658823314,-0.0025552733898634829,0.012994357636206638,,,-4.6569213047193525,-2.8614662300921276
-Interaction Order

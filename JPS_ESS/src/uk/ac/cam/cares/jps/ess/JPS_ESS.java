@@ -41,8 +41,8 @@ public class JPS_ESS extends JPSHttpServlet {
 		System.out.println("Start");
 		System.out.println("separator= " + File.separator);
 		String executablelocation = "C:/GAMS/win64/27.3/gams.exe";
-		// String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
-		String folderlocation = "C:/Users/GKAR01/Documents/gamsdir/projdir/";
+		 String folderlocation ="D:/Users/LONG01/Documents/gamsdir/projdir/";
+//		String folderlocation = "C:/Users/GKAR01/Documents/gamsdir/projdir/";
 		String[] cmdArray = new String[5];
 
 		cmdArray[0] = executablelocation;
@@ -61,7 +61,7 @@ public class JPS_ESS extends JPSHttpServlet {
 
 		ArrayList<String> groupcommand = new ArrayList<String>();
 
-		groupcommand.add("C:/Users/GKAR01/Documents/gamsdir/projdir/gamsexecute.bat");
+		groupcommand.add("D:/Users/LONG01/Documents/gamsdir/projdir/gamsexecute.bat");
 
 		// CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
 		CommandHelper.executeCommands(folderlocation, groupcommand);
@@ -114,14 +114,14 @@ public class JPS_ESS extends JPSHttpServlet {
 			}
 		}
 
-		File file = new File("C://Users/GKAR01/Documents/gamsdir/projdir/Pa_high.csv");
+		File file = new File("D:/Users/LONG01/Documents/gamsdir/projdir/Pa_high.csv");
 		FileWriter writer = new FileWriter(file);
 		writer.write(text);
 		writer.close();
 //        csvWriter.flush();
 //        csvWriter.close();
 		try {
-			JPS_ESS.runGAMS();
+			runGAMS();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
