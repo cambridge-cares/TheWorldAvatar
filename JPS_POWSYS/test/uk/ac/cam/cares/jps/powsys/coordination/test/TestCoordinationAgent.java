@@ -59,7 +59,9 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		List<String> nuclearPowerPlants = MiscUtil.toList(getNuclearPowerPlantsFromScenarioaasc5());
 		System.out.println("nuclear size= "+nuclearPowerPlants.size());
 
-		new RetrofitAgent().retrofit(electricalNetwork, nuclearPowerPlants);
+		List<String> substitutionalGenerators = MiscUtil.toList(getSubstitutionalGenerators());
+		
+		new RetrofitAgent().retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 		
 		JSONObject jo = new JSONObject();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
@@ -81,7 +83,9 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		String electricalNetwork = TestEN.ELECTRICAL_NETWORK;
 		List<String> nuclearPowerPlants =  MiscUtil.toList(getNuclearPowerPlantsFromScenarioaasc5());
 
-		new RetrofitAgent().retrofit(electricalNetwork, nuclearPowerPlants);
+		List<String> substitutionalGenerators = MiscUtil.toList(getSubstitutionalGenerators());
+		
+		new RetrofitAgent().retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 		
 		JSONObject jo = new JSONObject();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
@@ -141,6 +145,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		countgen = calculateNumberOfGenerators(result, "#EGen-", 9);
 		// generator for slack bus only, all other generators have been removed
 		//assertEquals(1, countgen); temporary as the gen cannot all been removed
+		assertEquals(25, countgen);
 
 		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
 		countgen = calculateNumberOfGenerators(result, "#NucGenerator", 18);
@@ -153,11 +158,20 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		countgen = calculateNumberOfGenerators(result, "#EGen-", 9);
 		// generator for slack bus only, all other generators have been removed
 		//assertEquals(1, countgen);temporary as the gen cannot all been removed
-
+		assertEquals(25, countgen);
 		
 		result = new QueryBroker().readFile(TestEN.ELECTRICAL_NETWORK);
 		countgen = calculateNumberOfGenerators(result, "#NucGenerator", 18);
 		assertEquals(14, countgen);
+	}
+	
+	private JSONArray getSubstitutionalGenerators() {
+		JSONArray ja = new JSONArray();
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-006.owl#EGen-006");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-007.owl#EGen-007");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-016.owl#EGen-016");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-017.owl#EGen-017");
+		return ja;
 	}
 	
 	public void testCoordinateOPFAgentCall() throws URISyntaxException, IOException { //request header too large
@@ -170,11 +184,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		System.out.println("usecaseUrl=" + usecaseUrl);
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
-		JSONArray ja = new JSONArray();
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-006.owl#EGen-006");
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-007.owl#EGen-007");
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-016.owl#EGen-016");
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-017.owl#EGen-017");
+		JSONArray ja = getSubstitutionalGenerators();
 		
 		JSONObject jo = new JSONObject();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
@@ -209,7 +219,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 	}
 	
 	public void testCoordinateStartSimulation() { //worked after the old scenario folder is deleted; only worked one time (no more working???)
-		
+			
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSCoordinateStartSimulation");
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	

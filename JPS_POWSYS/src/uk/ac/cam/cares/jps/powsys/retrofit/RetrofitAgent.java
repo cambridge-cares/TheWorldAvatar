@@ -55,12 +55,12 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		JSONArray ja = jo.getJSONArray("plants");
 		List<String> nuclearPowerPlants = MiscUtil.toList(ja);
 		JSONArray ja2 = jo.getJSONArray("substitutionalgenerators");
-		List<String> removedgenerators = MiscUtil.toList(ja2);
+		List<String> substitutionalGenerators = MiscUtil.toList(ja2);
 		
-		retrofit(electricalNetwork, nuclearPowerPlants);
+		retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 	}
 	
-	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants) {
+	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
 		
 		// the hasSubsystem triples of the electrical network top node itself are not part of the model
 		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
@@ -69,7 +69,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		
 		BusInfo slackBus = findFirstSlackBus(buses);		
 				
-		deletePowerGeneratorsFromElectricalNetwork(model, electricalNetwork, slackBus);
+		deletePowerGeneratorsFromElectricalNetwork(electricalNetwork, substitutionalGenerators);
 				
 		completeNuclearPowerGenerators(nuclearPowerPlants);
 		
@@ -188,27 +188,12 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		new QueryBroker().put(powerGenerator, content);
 	}
 	
-	public void deletePowerGeneratorsFromElectricalNetwork(OntModel model, String electricalNetwork, BusInfo slackBus) {
-				
-		String query = getQueryForPowerGenerators();
-		ResultSet resultSet = JenaHelper.query(model, query);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result,  "entity", "busnumber", "busnumbervalue");
+	public void deletePowerGeneratorsFromElectricalNetwork(String electricalNetwork, List<String> substitutionalGenerators) {
 		
 		StringBuffer delete = new StringBuffer("PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n");
 		delete.append("DELETE DATA { \r\n");
-		for (String[] current : resultList) {
-			String generator = current[0];
-			String busNumberValue = current[2];
-			if (slackBus.busNumber.equals(busNumberValue)) {
-				logger.info("generator is connected to the slack bus and won't be deleted, generator = " + generator);	
-			} else {
-				logger.info(" gen in bus to be deleted= "+busNumberValue);
-				if(Double.valueOf(busNumberValue)==3) { //temp to test
-					delete.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + generator + "> . \r\n");	
-				}
-				
-			}
+		for (String current : substitutionalGenerators) {
+			delete.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
 		}
 		delete.append("} \r\n");		
 		logger.info("deleting current power generators from electrical network top node\n" + delete.toString());
