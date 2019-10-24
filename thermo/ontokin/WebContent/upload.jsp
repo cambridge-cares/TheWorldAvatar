@@ -128,6 +128,7 @@
 				</div>
 				<span id ="queryText" style="">Interactive text:</span>
 				<span id ="errorQuery" style="display:none; color:red">No text provided</span>
+				<span id ="errorQueryReaction" style="display:none; color:red">Provide a valid reaction</span>
 				<div class="row">
 					<div class="col-md-11">
 						<s:textfield name="term" class="form-control"  placeholder="Specify the name of a species or reaction" theme="bootstrap"/>							
@@ -188,7 +189,7 @@
 				  <!-- Draw Charts -->
 					<p></p>
 					<div class="container chart-group">
-					  <div class="row">
+					  <div id="resultBlock" class="row">
 					   	<div id="chartCanvas" class="" style="display:none">
 							<div id="unitsGasConstant" class="col-md-11" style="">
 								<span id ="units" style="">Please select the unit system:</span>
@@ -230,11 +231,30 @@ $( function() {
 		    	return string.split("[=]");
 		    } else if (string.indexOf('=]') > -1) {
 		    	return string.split("=]");
-		    } else if (string.indexOf('<=>')){
+		    } else if (string.indexOf('<=>') > -1){
 		    	return string.split("<=>");
-		    } else if (string.indexOf('=>')){
+		    } else if (string.indexOf('=>') > -1){
 		    	return string.split("=>");
+		    } else if (string.indexOf('=') > -1){
+		    	return string.split("=");
 		    }
+		  	return string;
+		  }
+	 
+	 function isReactionValid(string) {
+		  	if (string.indexOf('[=]') > -1) {
+		    	return 1;
+		    } else if (string.indexOf('=]') > -1) {
+		    	return 1;
+		    } else if (string.indexOf('<=>') > -1){
+		    	return 1;
+		    } else if (string.indexOf('=>') > -1){
+		    	return 1;
+		    } else if (string.indexOf('=') > -1){
+		    	return 1;
+		    }
+		  	// Return 0 if the given reaction is not valid
+		  	return 0;
 		  }
 	 
 	 function calculateR(unitsR) {
@@ -399,9 +419,11 @@ $( function() {
 		let search_unitsRSelection = $("#unitsRSelection").val(); //thermo
 		console.log(search_unitsRSelection);
 		$("#errorQuery").hide();
+		$("#errorQueryReaction").hide();
 		$("#errorType").hide();
 		$("#noResult").hide();
 		if (search_querySelection != 'mechAll' && (search_term_name.trim() ==  '' || search_querySelection ==  -1 || search_querySelection ==  undefined || search_querySelection ==  null)) {
+			$("#resultBlock").hide();
 			if(search_term_name ==  '') {
 				$("#chartCanvas").hide();
 				$("#chartCanvasRateAE").hide();
@@ -419,6 +441,12 @@ $( function() {
 				$("#errorType").show();
 			}			
 			event.preventDefault(); 
+		} else if ((search_querySelection == 'mechforR' || search_querySelection == 'rateconstant' || search_querySelection == 'comparerate'
+				|| search_querySelection == 'rateconstantAnyOrder' || search_querySelection == 'comparerateAnyOrder') 
+				&& isReactionValid(search_term_name) == 0){
+			$("#errorQueryReaction").show();
+			$("#resultBlock").hide();
+			event.preventDefault(); 
 		}
 		else {
 			search_term_name = search_term_name.toUpperCase();
@@ -432,9 +460,10 @@ $( function() {
 			}
 			
 			$("#errorQuery").hide();
+			$("#errorQueryReaction").hide();
 			$("#errorType").hide();
 			$("#noResult").hide();
-		
+			$("#resultBlock").show();
 			if (search_querySelection == 'mechAll') {			 
 				 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
@@ -897,7 +926,7 @@ $( function() {
 							let color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
 							console.log('color');
 							console.log(color);
-							var Cp = calculateCp(search_unitsRSelection, coLow, coHigh, minTemperature, midTemperature, maxTemperature);
+							var Cp = calculateCp('-1', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
 							console.log('Cp:' + Cp);
 							datasetsCp.push({
 								label: chartLabelMech,
