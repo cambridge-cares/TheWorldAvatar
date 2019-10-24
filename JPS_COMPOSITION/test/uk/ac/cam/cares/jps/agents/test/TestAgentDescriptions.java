@@ -294,10 +294,10 @@ public class TestAgentDescriptions extends TestCase {
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
 			.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
-			.operation(null, JPS_POWSYS + "/processresult")
-			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
-			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant", true, "plants", true)
-			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
+//			.operation(null, JPS_POWSYS + "/processresult")
+//			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant", true, "plants", true)
+//			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
 			.build();
 	}
 	

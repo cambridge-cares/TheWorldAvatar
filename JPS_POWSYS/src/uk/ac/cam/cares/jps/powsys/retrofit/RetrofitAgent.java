@@ -77,7 +77,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 
 		addNuclearPowerGeneratorsToElectricalNetwork(electricalNetwork, newGenerators);
 		
-		initVoltageMagnitudeInPUForBuses(buses);
+		//initVoltageMagnitudeInPUForBuses(buses);
 		
 		connectNuclearPowerGeneratorsToOptimalBus(buses, newGenerators, slackBus);
 	}
