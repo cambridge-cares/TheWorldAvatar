@@ -447,17 +447,19 @@ public class SRMAgent extends HttpServlet  {
 		File folder = new File("C:/JPS_DATA/workingdir/JPS/SRM");
 				
 		File[] listOfFiles = folder.listFiles();
-		
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
-					&& !listOfFiles[i].getName().equals("InputParams.xml")
-					&& !listOfFiles[i].getName().equals("InputEngineML.xml")
-					&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
-					&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
-					&& !listOfFiles[i].getName().equals("convert.exe")
-					&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
 
-				listOfFiles[i].delete();
+		if (listOfFiles != null) {
+			for (int i = 0; i < listOfFiles.length; i++) {
+				if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
+						&& !listOfFiles[i].getName().equals("InputParams.xml")
+						&& !listOfFiles[i].getName().equals("InputEngineML.xml")
+						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
+						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
+						&& !listOfFiles[i].getName().equals("convert.exe")
+						&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
+
+					listOfFiles[i].delete();
+				}
 			}
 		}
 	}

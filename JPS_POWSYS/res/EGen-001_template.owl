@@ -1,507 +1,1035 @@
-<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF
-  xmlns:ns1="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
-  xmlns:EN_behavior="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#"
-  xmlns:space_and_time_extended="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
-  xmlns:EN_realization="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
-  xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
-  xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
-  xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
-  xmlns:owl="http://www.w3.org/2002/07/owl#"
-  xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
-  xmlns:ns3="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#"
-  xmlns:topology="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
-  xmlns:ns4="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
-  xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
->
-  <owl:Ontology rdf:about="http://www.theworldavatar.com/EGen-001_template.owl">
-    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
-    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
-    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl"/>
-  </owl:Ontology>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#EGen-001">
-    <EN_behavior:hasReactivePowerGenerated>
-      <EN_behavior:GeneratedReactivePower rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#GeneratedReactivePower">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedReactivePower"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </EN_behavior:GeneratedReactivePower>
-    </EN_behavior:hasReactivePowerGenerated>
-    <EN_behavior:hasActualVoltage>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Voltage">
-        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#VoltageAngle"/>
-        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#VoltageMagnitude"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Voltage"/>
-      </owl:NamedIndividual>
-    </EN_behavior:hasActualVoltage>
-    <EN_realization:hasRatedVoltage>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedVoltage">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedVoltage"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedVoltage"/>
-      </owl:NamedIndividual>
-    </EN_realization:hasRatedVoltage>
-    <EN_behavior:hasActivePowerGenerated>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#GeneratedActivePower">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedActivePower"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower"/>
-      </owl:NamedIndividual>
-    </EN_behavior:hasActivePowerGenerated>
-    <EN_behavior:hasCurrent>
-      <EN_behavior:Current rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Current">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#CurrentAngle"/>
-        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#CurrentMagnitude"/>
-      </EN_behavior:Current>
-    </EN_behavior:hasCurrent>
-    <system:isModeledBy>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Model">
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-1"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#QMin"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#BusNumber"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#QMax"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#QGen"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostc0"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Status"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Max"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#ShutdownCost"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_agc"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pmin"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostn"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#APF"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Min"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_10"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#mBase"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Format_CostEq"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Max"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pc1"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Vg"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#PGen"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#StartupCost"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pmax"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-2"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_30"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_q"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Min"/>
-        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pc2"/>
-      </owl:NamedIndividual>
-    </system:isModeledBy>
-    <EN_realization:hasRatedCurrent>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedCurrent">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedCurrent"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedCurrent"/>
-      </owl:NamedIndividual>
-    </EN_realization:hasRatedCurrent>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator"/>
-    <technical_system:realizes>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#PowerGeneration">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerGeneration"/>
-      </owl:NamedIndividual>
-    </technical_system:realizes>
-    <EN_behavior:hasEfficiency>
-      <EN_behavior:Efficiency rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Efficiency">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Efficiency"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </EN_behavior:Efficiency>
-    </EN_behavior:hasEfficiency>
-    <EN_realization:hasRatedFrequency>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedFrequency">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedFrequency"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedFrequency"/>
-      </owl:NamedIndividual>
-    </EN_realization:hasRatedFrequency>
-    <EN_behavior:hasPowerFactor>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#PowerFactor">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#PowerFactor"/>
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_PowerFactor"/>
-      </owl:NamedIndividual>
-    </EN_behavior:hasPowerFactor>
-    <EN_realization:hasRatedPowerFactor>
-      <EN_realization:RatedPowerFactor rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedPowerFactor">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPowerFactor"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </EN_realization:RatedPowerFactor>
-    </EN_realization:hasRatedPowerFactor>
-    <EN_behavior:hasFrequency>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Frequency">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Frequency"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Frequency"/>
-      </owl:NamedIndividual>
-    </EN_behavior:hasFrequency>
-    <EN_realization:hasRatedEfficiency>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedEfficiency">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedEfficiency"/>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedEfficiency"/>
-      </owl:NamedIndividual>
-    </EN_realization:hasRatedEfficiency>
-    <topology:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-001.owl#EBus-001"/>
-    <EN_realization:hasRatedPower>
-      <EN_realization:RatedPower rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedPower">
-        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPower"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </EN_realization:RatedPower>
-    </EN_realization:hasRatedPower>
-    <space_and_time_extended:hasGISCoordinateSystem>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#CoordinateSystem">
-        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#y"/>
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/EGen-001_template.owl#"
+     xml:base="http://www.theworldavatar.com/EGen-001_template.owl"
+     xmlns:space_and_time_extended="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:topology="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+     xmlns:ns2="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+     xmlns:ns1="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
+     xmlns:ns4="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+     xmlns:ns3="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#"
+     xmlns:EN_behavior="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#"
+     xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:EN_realization="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
+     xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
+     xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+     xmlns:system_performance="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/EGen-001_template.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-001.owl#EBus-001 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-001.owl#EBus-001"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#APF -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#APF">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#APF"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_APF"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Actual_CO2_Emission -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Actual_CO2_Emission">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#Actual_CO2_Emission"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Actual_CO2_Emission"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#BusNumber -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#BusNumber">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_BusNumber"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#CoordinateSystem">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem"/>
         <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#x"/>
-      </owl:NamedIndividual>
-    </space_and_time_extended:hasGISCoordinateSystem>
-  </owl:NamedIndividual>
-  <ns1:Vg rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Vg">
-    <system:hasValue>
-      <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Vg">
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#y"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Current -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Current">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Current"/>
+        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#CurrentAngle"/>
+        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#CurrentMagnitude"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#CurrentAngle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#CurrentAngle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CurrentAngle"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentAngle"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#CurrentMagnitude -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#CurrentMagnitude">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CurrentMagnitude"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentMagnitude"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Design_CO2_Emission -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Design_CO2_Emission">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#CO2_emission"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Design_CO2_Emission"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#EGen-001 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#EGen-001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-001.owl#EBus-001"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#CoordinateSystem"/>
+        <system:isModeledBy rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Model"/>
+        <system:isSubsystemOf rdf:resource="http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration"/>
+        <EN_behavior:hasActivePowerGenerated rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#GeneratedActivePower"/>
+        <EN_behavior:hasActualVoltage rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Voltage"/>
+        <EN_behavior:hasCurrent rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Current"/>
+        <EN_behavior:hasEfficiency rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Efficiency"/>
+        <EN_behavior:hasFrequency rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Frequency"/>
+        <EN_behavior:hasPowerFactor rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#PowerFactor"/>
+        <EN_behavior:hasReactivePowerGenerated rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#GeneratedReactivePower"/>
+        <EN_realization:hasRatedCurrent rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#RatedCurrent"/>
+        <EN_realization:hasRatedEfficiency rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#RatedEfficiency"/>
+        <EN_realization:hasRatedFrequency rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#RatedFrequency"/>
+        <EN_realization:hasRatedPower rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#RatedPower"/>
+        <EN_realization:hasRatedPowerFactor rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#RatedPowerFactor"/>
+        <EN_realization:hasRatedVoltage rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#RatedVoltage"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Efficiency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Efficiency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Efficiency"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Efficiency"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Format_CostEq -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Format_CostEq">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#CostModel"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Format_CostEq"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Frequency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Frequency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Frequency"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Frequency"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#GeneratedActivePower -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#GeneratedActivePower">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedActivePower"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedActivePower"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#GeneratedReactivePower -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#GeneratedReactivePower">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#GeneratedReactivePower"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedReactivePower"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Model -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Model">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#APF"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#BusNumber"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Format_CostEq"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#PGen"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pc1"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pc2"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pmax"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Pmin"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#QGen"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#QMax"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#QMin"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Max"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Min"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Max"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Min"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_10"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_30"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_agc"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_q"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#ShutdownCost"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#StartupCost"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Status"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Vg"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostc0"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostn"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-1"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-2"/>
+        <mathematical_model:hasModelVariable rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#mBase"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#PGen -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#PGen">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_PGen"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Pc1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pc1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc1"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Pc2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pc2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc2"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Pmax -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pmax">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMax"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Pmax"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Pmin -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pmin">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMin"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Pmin"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#PowerFactor -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#PowerFactor">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#PowerFactor"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_PowerFactor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#PowerGeneration -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#PowerGeneration">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerGeneration"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#QGen -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#QGen">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Qg"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_QGen"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#QMax -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#QMax">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMax"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_QMax"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#QMin -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#QMin">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMin"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_QMin"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Qc1Max -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Max">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Max"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Max"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Qc1Min -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Min">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Min"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Min"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Qc2Max -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Max">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Max"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Max"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Qc2Min -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Min">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Min"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Min"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Ramp_10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_10">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp10"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_10"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Ramp_30 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_30">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp30"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_30"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Ramp_agc -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_agc">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampagc"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_agc"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Ramp_q -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_q">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampq"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_q"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#RatedCurrent -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedCurrent">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedCurrent"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedCurrent"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#RatedEfficiency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedEfficiency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedEfficiency"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedEfficiency"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#RatedFrequency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedFrequency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedFrequency"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedFrequency"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#RatedPower -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedPower">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPower"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPower"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#RatedPowerFactor -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedPowerFactor">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedPowerFactor"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPowerFactor"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#RatedVoltage -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#RatedVoltage">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#RatedVoltage"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedVoltage"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#ShutdownCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#ShutdownCost">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StopCost"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_ShutdownCost"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#StartupCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#StartupCost">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StartCost"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_StartupCost"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Status -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Status">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Status"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Status"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_APF -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_APF">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Actual_CO2_Emission -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Actual_CO2_Emission">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_BusNumber -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_BusNumber">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </mathematical_model:ModelVariableSpecification>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </ns1:Vg>
-  <ns1:Ramp10 rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_10">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_10">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </ns1:Ramp10>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_q">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_q">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Rampq"/>
-  </owl:NamedIndividual>
-  <ns1:genCostcn-1 rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-1">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-1">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.002</system:numericalValue>
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </ns1:genCostcn-1>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc1">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-2">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.103</system:numericalValue>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Max">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPower">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </system:ScalarValue>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#QGen">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Qg"/>
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_QGen">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-  </owl:NamedIndividual>
-  <ns4:StraightCoordinate rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#x">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_x">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.111</system:numericalValue>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-  </ns4:StraightCoordinate>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pmax">
-    <system:hasValue>
-      <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pmax">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">400</system:numericalValue>
-      </mathematical_model:ModelVariableSpecification>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PMax"/>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_BusNumber">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedEfficiency">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Max">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_y">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.222</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Format_CostEq">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#VoltageAngle">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle"/>
-    <system:hasValue>
-      <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageAngle">
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentAngle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentAngle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </system:ScalarValue>
-    </system:hasValue>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-2">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-2"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-2"/>
-  </owl:NamedIndividual>
-  <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedActivePower">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-  </system:ScalarValue>
-  <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentMagnitude">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </system:ScalarValue>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_PGen">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostn">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn">
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentMagnitude -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentMagnitude">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Design_CO2_Emission -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Design_CO2_Emission">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Efficiency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Efficiency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Format_CostEq -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Format_CostEq">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.0</system:numericalValue>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostn"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Max">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Max"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC2Max"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Max">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Max"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Max"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedCurrent">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#StartupCost">
-    <system:hasValue>
-      <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_StartupCost">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">66.8</system:numericalValue>
-      </mathematical_model:ModelVariableSpecification>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StartCost"/>
-  </owl:NamedIndividual>
-  <ns1:genCostc0 rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostc0">
-    <system:hasValue>
-      <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostc0">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">395.95</system:numericalValue>
-      </mathematical_model:ModelVariableSpecification>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </ns1:genCostc0>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#VoltageMagnitude">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude"/>
-    <system:hasValue>
-      <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageMagnitude">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Frequency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Frequency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Hz"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedActivePower -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedActivePower">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedReactivePower -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedReactivePower">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_PGen -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_PGen">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Pc1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Pc2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Pmax -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pmax">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">400</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Pmin -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pmin">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_PowerFactor -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_PowerFactor">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_QGen -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_QGen">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_QMax -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_QMax">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">400</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_QMin -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_QMin">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-400</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Max -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Max">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Min -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Min">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Max -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Max">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Min -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Min">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_10 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_10">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_30 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_30">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_agc -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_agc">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_q -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_q">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_RatedCurrent -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedCurrent">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_RatedEfficiency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedEfficiency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_RatedFrequency -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedFrequency">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Hz"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPower -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPower">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPowerFactor -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPowerFactor">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_RatedVoltage -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedVoltage">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
         <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-      </system:ScalarValue>
-    </system:hasValue>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Status">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Min">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_30">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_ShutdownCost">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <ns1:PMin rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pmin">
-    <system:hasValue>
-      <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pmin">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-      </mathematical_model:ModelVariableSpecification>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </ns1:PMin>
-  <ns1:QC2Min rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc2Min">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc2Min">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_ShutdownCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_ShutdownCost">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-  </ns1:QC2Min>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Format_CostEq">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Format_CostEq"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#CostModel"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_GeneratedReactivePower">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_APF">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedVoltage">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-  </owl:NamedIndividual>
-  <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_mBase">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MVA"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</system:numericalValue>
-  </mathematical_model:ModelVariableSpecification>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#CurrentAngle">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CurrentAngle"/>
-    <system:hasValue>
-      <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentAngle">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
         <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-      </system:ScalarValue>
-    </system:hasValue>
-  </owl:NamedIndividual>
-  <ns1:Pc2 rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pc2">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc2">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_StartupCost -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_StartupCost">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-  </ns1:Pc2>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_PowerFactor">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_30">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Ramp30"/>
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_30"/>
-  </owl:NamedIndividual>
-  <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Efficiency">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </system:ScalarValue>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_QMin">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-400</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Qc1Min">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Qc1Min"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QC1Min"/>
-  </owl:NamedIndividual>
-  <ns1:QMin rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#QMin">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_QMin"/>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </ns1:QMin>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#QMax">
-    <system:hasValue>
-      <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_QMax">
-        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">400</system:numericalValue>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">66.8</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Status -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Status">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
-      </owl:NamedIndividual>
-    </system:hasValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QMax"/>
-  </owl:NamedIndividual>
-  <system:ScalarValue rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedFrequency">
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Hz"/>
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  </system:ScalarValue>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_RatedPowerFactor">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-  </owl:NamedIndividual>
-  <ns4:StraightCoordinate rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#y">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_y"/>
-  </ns4:StraightCoordinate>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#CurrentMagnitude">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CurrentMagnitude"/>
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_CurrentMagnitude"/>
-  </owl:NamedIndividual>
-  <ns1:Rampagc rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Ramp_agc">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-    <system:hasValue>
-      <mathematical_model:ModelVariableSpecification rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Ramp_agc">
-        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-      </mathematical_model:ModelVariableSpecification>
-    </system:hasValue>
-  </ns1:Rampagc>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#ShutdownCost">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_ShutdownCost"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#StopCost"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#BusNumber">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_BusNumber"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusNumber"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#PGen">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_PGen"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pg"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Status">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Status"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Status"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Pc1">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Pc1"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Pc1"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Frequency">
-    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
-    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Hz"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#APF">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_APF"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#APF"/>
-  </owl:NamedIndividual>
-  <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#mBase">
-    <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_mBase"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#mBase"/>
-  </owl:NamedIndividual>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_Vg -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_Vg">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageAngle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageAngle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageMagnitude -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageMagnitude">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_genCostc0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostc0">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">395.95</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">3.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.002</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">2.103</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_mBase -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_mBase">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MVA"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">100</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_x -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_x">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">11.111</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#V_y -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#V_y">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">22.222</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Vg -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Vg">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#Vg"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_Vg"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#Voltage -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#Voltage">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Voltage"/>
+        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#VoltageAngle"/>
+        <mereology:isComposedOf rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#VoltageMagnitude"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#VoltageAngle -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#VoltageAngle">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageAngle"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#VoltageMagnitude -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#VoltageMagnitude">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_VoltageMagnitude"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#genCostc0 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostc0">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostc0"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostc0"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#genCostn -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostn">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostn"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#genCostn-1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-1"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#genCostn-2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#genCostn-2">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#genCostcn-2"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_genCostn-2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#mBase -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#mBase">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#mBase"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_mBase"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#x -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#x">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_x"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/EGen-001_template.owl#y -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/EGen-001_template.owl#y">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <system:hasValue rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#V_y"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/powerplants/Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore.owl#Jurong_Island_-_PLP_CCGT_Power_Plant_Singapore"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NuclearGeneration">
+        <system_performance:hasEmission rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Actual_CO2_Emission"/>
+        <system_performance:hasEmission rdf:resource="http://www.theworldavatar.com/EGen-001_template.owl#Design_CO2_Emission"/>
+    </rdf:Description>
 </rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+

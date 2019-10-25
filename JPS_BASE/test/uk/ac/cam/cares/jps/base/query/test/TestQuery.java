@@ -217,7 +217,11 @@ public class TestQuery extends TestCase implements ITestConstants{
 	public void testQueryBrokerRemoteSparqlDeleteData() {
 		
 		QueryBroker broker = new QueryBroker();
-		String localFile = ResourcePathConverter.convert(ELECTRICAL_NETWORK_FILE);
+		//String localFile = ResourcePathConverter.convert(ELECTRICAL_NETWORK_FILE);
+		String localFile = ELECTRICAL_NETWORK_FILE.replace("www.theworldavatar.com", "localhost:8080");
+		
+		
+		System.out.println("localFile = " + localFile);
 		
 		String sparqlQuery = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
 				"SELECT * \r\n" +

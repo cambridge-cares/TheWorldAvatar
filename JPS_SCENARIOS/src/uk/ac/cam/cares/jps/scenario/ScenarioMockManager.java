@@ -19,6 +19,9 @@ public class ScenarioMockManager {
 		}
 		
 		String agent = jo.getString(JPSConstants.SCENARIO_AGENT);
+		if (agent.isEmpty()) {
+			return;
+		}
 
 		JSONObject message = new JSONObject().put("operation", "mock").put("agent", agent);
 		log.logMessage(scenarioName, message);
@@ -49,11 +52,11 @@ public class ScenarioMockManager {
 		
 		JSONObject message = new JSONObject();
 		String agent = getLatestMockedAgent(log);
-		message.put("agent", agent);
-		message.put("operation", operation);
-		// TODO-AE SC 20190220 only log the input and output parameters for the mocked operation
-		message.put("input", jo);
 		message.put("output", joresult);
+		message.put("input", jo);
+		message.put("operation", operation);
+		message.put("agent", agent);
+
 		log.logMessage(scenarioName, message);
 		
 		return result;
@@ -91,12 +94,13 @@ public class ScenarioMockManager {
 	
 	private JSONObject findResultInScenarioLog(JSONObject jo, String scenarioName, String operation, ScenarioLog log) {
 		
-		// TODO-AE SC URGENT 20190427 This is a dummy for getting the mocking result and returns only the last result
-		List<ScenarioLogEntry> entries = log.search("operation", operation);
-		if (entries.size() > 0) {
-			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
-			return latestEntry.message.getJSONObject("output");
-		}
+		// TODO-AE SC URGENT 20190913 dummy mock is commented
+		// This is a dummy for getting the mocking result and returns only the last result
+//		List<ScenarioLogEntry> entries = log.search("operation", operation);
+//		if (entries.size() > 0) {
+//			ScenarioLogEntry latestEntry = entries.get(entries.size()-1);
+//			return latestEntry.message.getJSONObject("output");
+//		}
 		return null;
 	}
 }
