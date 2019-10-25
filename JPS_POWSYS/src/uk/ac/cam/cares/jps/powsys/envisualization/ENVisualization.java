@@ -558,6 +558,87 @@ public class ENVisualization extends JPSHttpServlet {
 				
 
 				+ "}";
+		
+		String lineInfo = "PREFIX mathematical_model:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl>"
+				+ "PREFIX ns1:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?entity ?V_Pd ?V_Pd_Gen ?V_Gd_Gen " 
+				+ "?V_Gs ?V_Bs ?V_Vm ?V_Va ?V_BaseKV ?V_VmMax ?V_VmMin ?V_x ?V_y "
+
+				+ "WHERE {?entity  a  j1:BusNode  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?num ." 
+				+ "?num  a  j3:BusNumber  ." 
+				+ "?num  j2:hasValue ?vnum ."
+				+ "?vnum   j2:numericalValue ?V_num ." // number
+
+				+ "?model   j5:hasModelVariable ?Pd ." 
+				+ "?Pd  a  j3:PdBus  ." 
+				+ "?Pd  j2:hasValue ?vpd ."
+				+ "?vpd   j2:numericalValue ?V_Pd ." // pd
+
+				+ "?model   j5:hasModelVariable ?PdGen ." 
+				+ "?PdGen  a  j3:PdGen  ." 
+				+ "?PdGen  j2:hasValue ?vpdgen ."
+				+ "?vpdgen   j2:numericalValue ?V_Pd_Gen ." // pdgen
+				
+				+ "?model   j5:hasModelVariable ?Gd ." 
+				+ "?Gd  a  j3:GdBus  ." 
+				+ "?Gd  j2:hasValue ?vgd ."
+				+ "?vgd   j2:numericalValue ?V_Gd ." // Gd
+				
+				+ "?model   j5:hasModelVariable ?Gd_Gen ." 
+				+ "?Gd_Gen  a  j3:GdGen  ." 
+				+ "?Gd_Gen  j2:hasValue ?vgdgen ."
+				+ "?vgdgen   j2:numericalValue ?V_Gd_Gen ." // Gdgen
+
+
+				+ "?model   j5:hasModelVariable ?Gsvar ." 
+				+ "?Gsvar  a  j3:Gs  ." 
+				+ "?Gsvar  j2:hasValue ?vGsvar ."
+				+ "?vGsvar   j2:numericalValue ?V_Gs ." // Gs (has no unit)
+
+				+ "?model   j5:hasModelVariable ?Bsvar ." 
+				+ "?Bsvar  a  j3:Bs  ." 
+				+ "?Bsvar  j2:hasValue ?vBsvar ."
+				+ "?vBsvar   j2:numericalValue ?V_Bs ." // Bs (has no unit)
+
+				+ "?model   j5:hasModelVariable ?VM ." 
+				+ "?VM  a  j3:Vm  ." 
+				+ "?VM  j2:hasValue ?vVM ."
+				+ "?vVM   j2:numericalValue ?V_Vm ." // Vm
+
+				+ "?model   j5:hasModelVariable ?VA ." 
+				+ "?VA  a  j3:Va  ." 
+				+ "?VA  j2:hasValue ?vVA ."
+				+ "?vVA   j2:numericalValue ?V_Va ." // Va
+
+				+ "?model   j5:hasModelVariable ?BKV ." 
+				+ "?BKV  a  j3:baseKV  ." 
+				+ "?BKV  j2:hasValue ?vBKV ."
+				+ "?vBKV   j2:numericalValue ?V_BaseKV ." // Base KV
+				
+				+ "?model   j5:hasModelVariable ?vmaxvar ." 
+				+ "?vmaxvar  a  j3:VmMax  ."
+				+ "?vmaxvar  j2:hasValue ?vvmaxvar ." 
+				+ "?vvmaxvar   j2:numericalValue ?V_VmMax ." // Vmax
+
+				+ "?model   j5:hasModelVariable ?vminvar ." 
+				+ "?vminvar  a  j3:VmMin  ."
+				+ "?vminvar  j2:hasValue ?vvminvar ." 
+				+ "?vvminvar   j2:numericalValue ?V_VmMin ." // Vmin
+				
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?V_y ."//longitude
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?V_x ."//latitude
+				
+
+				+ "}";
+		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -572,7 +653,7 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "SELECT ?entity ?V_BusNumber ?V_PGen ?V_QGen ?V_Qmax ?V_Qmin ?V_Vg ?V_mBase "
 				+ "?V_Pmax ?V_Pmin ?V_Pc1 ?V_Pc2 ?V_Qc1Min ?V_Qc1Max "
 				+ "?V_Qc2Min ?V_Qc2Max ?V_Ramp_agc ?V_Ramp_10 ?V_Ramp_30 ?V_Ramp_q ?V_APF "
-				+ "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 ?V_x ?V_y ?V_Actual_CO2_Emission"
+				+ "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 ?V_x ?V_y ?actual_carbon ?design_carbon"
 
 				+ "WHERE {?entity  a  j1:PowerGenerator  ."
 				+ "?entity   j2:isModeledBy ?model ."
@@ -707,11 +788,15 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "?gencostc  j2:hasValue ?vgencostc ." 
 				+ "?vgencostc   j2:numericalValue ?V_genCostc0 ." //genCostc0
 				
-				+ "?entity   technical_system:realizes ?generation ."
 				+ "?generation j9:hasEmission ?emission ." 
 				+ "?emission a j9:Actual_CO2_Emission ."
 				+ "?emission   j2:hasValue ?valueemission ."
-				+ "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
+				+ "?valueemission   j2:numericalValue ?actual_carbon ." 
+				
+				+ "?generation j9:hasEmission ?emission ." 
+				+ "OPTIONAL {?emission a j9:Design_CO2_Emission }"
+				+ "OPTIONAL {?emission   j2:hasValue ?valueemission_d }"
+				+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
 
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 				+ "?y  j2:hasValue ?vy ." 
