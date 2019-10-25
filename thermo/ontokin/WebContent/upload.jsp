@@ -300,7 +300,7 @@ $( function() {
 			var temperatures = [];
 			console.log('In getTemperatures');
 			var T;
-			for(T = 300; T <= 6000; T = T + 300){
+			for(T = 6000; T >=300 ; T = T - 300){
 				console.log('T In getTemperatures');
 				console.log(T);
 				number = 1000 / T;
@@ -436,7 +436,8 @@ $( function() {
 			let R = calculateR(unitsR);
 			var RateConstantAllTemps = [];
 	 			for(T = 300; T <= 6000; T += 300){
-					RC = A * Math.pow(1000 / T, b) * Math.exp(-E * T /(R * 1000));
+					var x = 1000 / T; 
+	 				RC = A * Math.pow(1000 / x, b) * Math.exp(-E * x /(R * 1000));
 					RateConstantAllTemps.push(RC);
 					console.log('RateConstantAllTemps');
 					console.log(RateConstantAllTemps); 
@@ -1793,6 +1794,7 @@ $( function() {
 												}
 											}],
 											yAxes: [{
+												type: 'logarithmic',												
 												display: true,
 												scaleLabel: {
 													display: true,
