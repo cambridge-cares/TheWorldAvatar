@@ -1,7 +1,254 @@
 var scenario;
 var prefix = "http://localhost:8080";
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
+var busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+    + "SELECT ?entity ?V_Pd ?V_Pd_Gen ?V_Gd_Gen " 
+    + "?V_Gs ?V_Bs ?V_Vm ?V_Va ?V_BaseKV ?V_VmMax ?V_VmMin ?V_x ?V_y "
 
+    + "WHERE {?entity  a  j1:BusNode  ." 
+    + "?entity   j2:isModeledBy ?model ."
+    + "?model   j5:hasModelVariable ?num ." 
+    + "?num  a  j3:BusNumber  ." 
+    + "?num  j2:hasValue ?vnum ."
+    + "?vnum   j2:numericalValue ?V_num ." // number
+
+    + "?model   j5:hasModelVariable ?Pd ." 
+    + "?Pd  a  j3:PdBus  ." 
+    + "?Pd  j2:hasValue ?vpd ."
+    + "?vpd   j2:numericalValue ?V_Pd ." // pd
+
+    + "?model   j5:hasModelVariable ?PdGen ." 
+    + "?PdGen  a  j3:PdGen  ." 
+    + "?PdGen  j2:hasValue ?vpdgen ."
+    + "?vpdgen   j2:numericalValue ?V_Pd_Gen ." // pdgen
+    
+    + "?model   j5:hasModelVariable ?Gd ." 
+    + "?Gd  a  j3:GdBus  ." 
+    + "?Gd  j2:hasValue ?vgd ."
+    + "?vgd   j2:numericalValue ?V_Gd ." // Gd
+    
+    + "?model   j5:hasModelVariable ?Gd_Gen ." 
+    + "?Gd_Gen  a  j3:GdGen  ." 
+    + "?Gd_Gen  j2:hasValue ?vgdgen ."
+    + "?vgdgen   j2:numericalValue ?V_Gd_Gen ." // Gdgen
+
+
+    + "?model   j5:hasModelVariable ?Gsvar ." 
+    + "?Gsvar  a  j3:Gs  ." 
+    + "?Gsvar  j2:hasValue ?vGsvar ."
+    + "?vGsvar   j2:numericalValue ?V_Gs ." // Gs (has no unit)
+
+    + "?model   j5:hasModelVariable ?Bsvar ." 
+    + "?Bsvar  a  j3:Bs  ." 
+    + "?Bsvar  j2:hasValue ?vBsvar ."
+    + "?vBsvar   j2:numericalValue ?V_Bs ." // Bs (has no unit)
+
+    + "?model   j5:hasModelVariable ?VM ." 
+    + "?VM  a  j3:Vm  ." 
+    + "?VM  j2:hasValue ?vVM ."
+    + "?vVM   j2:numericalValue ?V_Vm ." // Vm
+
+    + "?model   j5:hasModelVariable ?VA ." 
+    + "?VA  a  j3:Va  ." 
+    + "?VA  j2:hasValue ?vVA ."
+    + "?vVA   j2:numericalValue ?V_Va ." // Va
+
+    + "?model   j5:hasModelVariable ?BKV ." 
+    + "?BKV  a  j3:baseKV  ." 
+    + "?BKV  j2:hasValue ?vBKV ."
+    + "?vBKV   j2:numericalValue ?V_BaseKV ." // Base KV
+    
+    + "?model   j5:hasModelVariable ?vmaxvar ." 
+    + "?vmaxvar  a  j3:VmMax  ."
+    + "?vmaxvar  j2:hasValue ?vvmaxvar ." 
+    + "?vvmaxvar   j2:numericalValue ?V_VmMax ." // Vmax
+
+    + "?model   j5:hasModelVariable ?vminvar ." 
+    + "?vminvar  a  j3:VmMin  ."
+    + "?vminvar  j2:hasValue ?vvminvar ." 
+    + "?vvminvar   j2:numericalValue ?V_VmMin ." // Vmin
+    
+    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+    + "?y  j2:hasValue ?vy ." 
+    + "?vy  j2:numericalValue ?V_y ."//longitude
+
+    + "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+    + "?x  j2:hasValue ?vx ." 
+    + "?vx  j2:numericalValue ?V_x ."//latitude
+    
+
+    + "}";
+var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+    + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+    + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+    + "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+    + "SELECT ?entity ?V_BusNumber ?V_PGen ?V_QGen ?V_Qmax ?V_Qmin ?V_Vg ?V_mBase "
+    + "?V_Pmax ?V_Pmin ?V_Pc1 ?V_Pc2 ?V_Qc1Min ?V_Qc1Max "
+    + "?V_Qc2Min ?V_Qc2Max ?V_Ramp_agc ?V_Ramp_10 ?V_Ramp_30 ?V_Ramp_q ?V_APF "
+    + "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 ?V_x ?V_y ?V_Actual_CO2_Emission"
+
+    + "WHERE {?entity  a  j1:PowerGenerator  ."
+    + "?entity   j2:isModeledBy ?model ."
+
+    + "?model   j5:hasModelVariable ?num ." 
+    + "?num  a  j3:BusNumber  ." 
+    + "?num  j2:hasValue ?vnum ."
+    + "?vnum   j2:numericalValue ?V_BusNumber ." // number
+
+    + "?model   j5:hasModelVariable ?Pg ." 
+    + "?Pg  a  j3:Pg  ." 
+    + "?Pg  j2:hasValue ?vpg ."
+    + "?vpg   j2:numericalValue ?V_PGen ." // pg
+
+    + "?model   j5:hasModelVariable ?Qg ." 
+    + "?Qg  a  j3:Qg  ." 
+    + "?Qg  j2:hasValue ?vqg ."
+    + "?vqg   j2:numericalValue ?VQ_Gen ." // qg
+
+    + "?model   j5:hasModelVariable ?qmax ." 
+    + "?qmax  a  j3:QMax  ." 
+    + "?qmax  j2:hasValue ?vqmax ."
+    + "?vqmax   j2:numericalValue ?V_Qmax ." // qmax
+
+    + "?model   j5:hasModelVariable ?qmin ." 
+    + "?qmin  a  j3:QMin  ." 
+    + "?qmin  j2:hasValue ?vqmin ."
+    + "?vqmin   j2:numericalValue ?V_Qmin ." // qmin
+
+    + "?model   j5:hasModelVariable ?Vg ." 
+    + "?Vg  a  j3:Vg  ." 
+    + "?Vg  j2:hasValue ?vVg ."
+    + "?vVg   j2:numericalValue ?V_Vg ." // vg
+
+    + "?model   j5:hasModelVariable ?mbase ." 
+    + "?mbase  a  j3:mBase  ." 
+    + "?mbase  j2:hasValue ?vmbase ."
+    + "?vmbase   j2:numericalValue ?V_mBase ." // mbase
+
+    + "?model   j5:hasModelVariable ?pmax ." 
+    + "?pmax  a  j3:PMax  ." 
+    + "?pmax  j2:hasValue ?vpmax ."
+    + "?vpmax   j2:numericalValue ?V_Pmax ." // pmax
+
+    + "?model   j5:hasModelVariable ?pmin ." 
+    + "?pmin  a  j3:PMin  ." 
+    + "?pmin  j2:hasValue ?vpmin ."
+    + "?vpmin   j2:numericalValue ?V_Pmin ." // pmin
+
+    + "?model   j5:hasModelVariable ?pc1 ." 
+    + "?pc1  a  j3:Pc1  ." 
+    + "?pc1  j2:hasValue ?vpc1 ."
+    + "?vpc1   j2:numericalValue ?V_Pc1 ." // pc1
+
+    + "?model   j5:hasModelVariable ?pc2 ." 
+    + "?pc2  a  j3:Pc2  ." 
+    + "?pc2  j2:hasValue ?vpc2 ."
+    + "?vpc2   j2:numericalValue ?V_Pc2 ." // pc2
+
+    + "?model   j5:hasModelVariable ?qc1min ." 
+    + "?qc1min  a  j3:QC1Min  ."
+    + "?qc1min  j2:hasValue ?vqc1min ." 
+    + "?vqc1min   j2:numericalValue ?V_Qc1Min ." // qc1min
+
+    + "?model   j5:hasModelVariable ?Qc1max ." 
+    + "?Qc1max  a  j3:QC1Max  ."
+    + "?Qc1max  j2:hasValue ?vQc1max ." 
+    + "?vQc1max   j2:numericalValue ?V_Qc1Max ." // qc1max
+
+    + "?model   j5:hasModelVariable ?qc2min ." 
+    + "?qc2min  a  j3:QC2Min  ."
+    + "?qc2min  j2:hasValue ?vqc2min ."
+    + "?vqc2min   j2:numericalValue ?V_Qc2Min ." // qc2min
+
+    + "?model   j5:hasModelVariable ?Qc2max ."
+    + "?Qc2max  a  j3:QC2Max  ."
+    + "?Qc2max  j2:hasValue ?vQc2max ." 
+    + "?vQc2max   j2:numericalValue ?V_Qc2Max ." // qc2max
+
+    + "?model   j5:hasModelVariable ?rampagc ." 
+    + "?rampagc  a  j3:Rampagc  ."
+    + "?rampagc  j2:hasValue ?vrampagc ." 
+    + "?vrampagc   j2:numericalValue ?V_Ramp_agc ." // rampagc
+
+    + "?model   j5:hasModelVariable ?ramp10 ." 
+    + "?ramp10  a  j3:Ramp10  ."
+    + "?ramp10  j2:hasValue ?vramp10 ."
+    + "?vramp10   j2:numericalValue ?V_Ramp_10 ." // ramp10
+
+    + "?model   j5:hasModelVariable ?ramp30 ." 
+    + "?ramp30  a  j3:Ramp30  ."
+    + "?ramp30  j2:hasValue ?vramp30 ." 
+    + "?vramp30   j2:numericalValue ?V_Ramp_30 ." // ramp30
+
+    + "?model   j5:hasModelVariable ?rampq ." 
+    + "?rampq  a  j3:Rampq  ." 
+    + "?rampq  j2:hasValue ?vrampq ."
+    + "?vrampq   j2:numericalValue ?V_Ramp_q ." // rampq
+
+    + "?model   j5:hasModelVariable ?apf ."
+    + "?apf  a  j3:APF  ." 
+    + "?apf  j2:hasValue ?vapf ."
+    + "?vapf   j2:numericalValue ?V_APF ." // apf
+    
+    + "?model   j5:hasModelVariable ?startup ." 
+    + "?startup  a  j3:StartCost  ."
+    + "?startup  j2:hasValue ?vstartup ." 
+    + "?vstartup   j2:numericalValue ?V_StartupCost ." //startup cost
+
+    + "?model   j5:hasModelVariable ?shutdown ." 
+    + "?shutdown  a  j3:StopCost  ."
+    + "?shutdown  j2:hasValue ?vshutdown ." 
+    + "?vshutdown   j2:numericalValue ?V_ShutdownCost ."  //shutdown cost
+    
+    + "?model   j5:hasModelVariable ?gencostn ." 
+    + "?gencostn  a  j3:genCostn  ."
+    + "?gencostn  j2:hasValue ?vgencostn ." 
+    + "?vgencostn   j2:numericalValue ?V_genCostn ." //genCostn
+
+    + "?model   j5:hasModelVariable ?gencostn1 ." 
+    + "?gencostn1  a  j3:genCostcn-1  ."
+    + "?gencostn1  j2:hasValue ?vgencostn1 ." 
+    + "?vgencostn1   j2:numericalValue ?V_genCostn1 ." //genCostn-1
+
+    + "?model   j5:hasModelVariable ?gencostn2 ." 
+    + "?gencostn2  a  j3:genCostcn-2  ."
+    + "?gencostn2  j2:hasValue ?vgencostn2 ." 
+    + "?vgencostn2   j2:numericalValue ?V_genCostn2 ."//genCostn-2
+
+    + "?model   j5:hasModelVariable ?gencostc ." 
+    + "?gencostc  a  j3:genCostc0  ."
+    + "?gencostc  j2:hasValue ?vgencostc ." 
+    + "?vgencostc   j2:numericalValue ?V_genCostc0 ." //genCostc0
+    
+    + "?entity   technical_system:realizes ?generation ."
+    + "?generation j9:hasEmission ?emission ." 
+    + "?emission a j9:Actual_CO2_Emission ."
+    + "?emission   j2:hasValue ?valueemission ."
+    + "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
+
+    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+    + "?y  j2:hasValue ?vy ." 
+    + "?vy  j2:numericalValue ?V_y ."
+
+    + "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+    + "?x  j2:hasValue ?vx ." 
+    + "?vx  j2:numericalValue ?V_x ."//longitude
+
+    + "}";
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
@@ -65,7 +312,7 @@ iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpo
         if (predefinedId == '0') {
             
             kmlURL = anotherURL1;
-            scenario = "BASE";
+            scenario = "base";
             // appPrefix = prefix1;
         }
         else if (predefinedId == '1') {
@@ -192,22 +439,24 @@ function setKMLMenu(kmlEvent){
 
 }
 function selectEBus(event) {
-    selectedId =  event.srcElement.id; //this needs to be saved on a local version, and not towards here. 
-    data = {"scenarioresource":selectedId}
-    console.log()
-    // var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' +selectedId.split('#')[1]; //will read from here. 
-    var url = 'http://localhost:8080/jps/scenario/'+scenario+'/read?query=' + encodeURIComponent(JSON.stringify(data));
+    selectedId =  event.srcElement.id;
+    openWindow(selectedId);
+}
+function openWindow(id){
+    selectedId =  id; //this needs to be saved on a local version, and not towards here. 
     var kmljson = {};
-    var kmlurl = prefix + '/JPS_POWSYS/ENVisualization/readGenerator'; 
-    kmljson["electricalnetwork"] = iriofnetwork;
-    kmljson["flag"] = scenario;
-    kmljson['selectedID'] = selectedId;
-    kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));   
+    if (selectedId.includes("Bus")){
+        kmljson["sparqlquery"] = busInfo;
+    }else if (selectedId.includes("Gen")){
+        kmljson["sparqlquery"] = genInfo;
+    }
+    kmljson["scenarioresource"] = selectedId;
+    // var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' +selectedId.split('#')[1]; //will read from here. 
+    var kmlurl = 'http://localhost:8080/jps/scenario/'+scenario+'/query?query=' + encodeURIComponent(JSON.stringify(kmljson));
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
         type: 'GET',
-        data: kmljson,
         contentType: 'application/json; charset=utf-8',
         success: function(){  
         },
@@ -216,34 +465,29 @@ function selectEBus(event) {
         }   
     });
     request.done( function(data) {
-        console.log ("success create request");
         var inputsHTML = '';
-        var obj0 = JSON.parse(data)[0];
-        // response = sortByKey(obj0[0],'name');
-        console.log(obj0)
-        var nameSet = [];
-
-        for(var item in obj0)
+        var obj0 = JSON.parse(data);
+        var obj0 = obj0['results']['bindings'][0];
+        var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+        nameSet = [];
+        console.log(selectedId);
+        var owlName = selectedId.split('#')[1].split('.')[0];
+        for(var item in result)
         {
-            var pair = obj0[item];
-            console.log(pair);
-            if (pair['value'].includes('vemission')){
-                var inputLine = '<tr><td><label> Actual CO2 Emission </label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td> tonnes/hr   </td></tr>';
-            
-            }
-            else if(!pair['value'].includes('.owl'))
+            var pair = result[item];
+            if(!pair[1]['value'].includes('.owl'))
             {
-            console.log(pair['name']);
-            var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>   </td></tr>';
-            inputsHTML = inputsHTML + inputLine;
-            nameSet.push(pair['name']);
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"> </td><td> </td></tr>';
+                inputsHTML = inputsHTML + inputLine;
+                nameSet.push(pair[0]);
+                
 
             }
         }
 
-
+        console.log(inputsHTML);
         var div = document.getElementById('inputsContainer');
-        div.innerHTML = '<table data-type="kml" data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+        div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
 
     });
@@ -366,10 +610,15 @@ function updateOwlFile(filename,JSONArray,_type) {
     var asyncLoop = function(o){
         var i=-1,
             length = o.length;
-
+            console.log(length);
         var loop = function(){
             i++;
-            if(i===length){o.callback(); return;}
+            console.log(i);
+            if(i===length){
+                console.log("CALLBACK called? ");
+                o.callback(); 
+                return;
+            }
             o.functionToLoop(loop, i);
         };
         loop();//init
@@ -390,33 +639,31 @@ asyncLoop({
         {
             var item = Session[j];
             var obj = JSONArray[item];
-
-            console.log('obj',obj,i,j);
-
             var targetIRI = obj.name;
             var dataType = obj.datatype;
-
             if(dataType === 'int')
             {
                 dataType = 'integer'
             }
-
-
             console.log('dataType',dataType);
-
-            var base = filename + '#';
+            var base = filename.split('#')[0] + '#';
             base = base.replace('/OntoEN','');
             base=base.replace('theworldavatar','jparksimulator'); //because in electrical it use jparksimulator instead of theworldavatar
             var value = obj.value;
-            console.log(targetIRI);
-            console.log(base);
-            
             if(targetIRI)
             {
 
-                             
+                if (targetIRI.includes("Costn1")){
+                    targetIRI = targetIRI.replace("Costn1","Costn-1" );
+                    
+                    console.log(targetIRI);
+                }else if (targetIRI.includes("Costn2")){
+                    targetIRI = targetIRI.replace("Costn2","Costn-2" );
+                    
+                    console.log(typeof targetIRI);
+                }
                 var deleteUpdate = "DELETE WHERE {<" + base + targetIRI + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " + "?o.}";
-                var insertUpdate = "INSERT DATA {<" + base + targetIRI + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " + "\""+value + "\"^^<http://www.w3.org/2001/XMLSchema#"+dataType+">.}";
+                var insertUpdate = "INSERT DATA {<" + base + targetIRI + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " +value +".}";
                     
                     
 
@@ -431,17 +678,15 @@ asyncLoop({
                 
             }
         }
-
-        var myUrl = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint?uri='
-            + encodeURIComponent(JSON.stringify(uri)) + '&update='
-            + encodeURIComponent(JSON.stringify(sampleUpdate)) + '&mode=update';
-            console.log("url="+myUrl);
+        console.log(scenario);
+        console.log(sampleUpdate); 
+        var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
         var request = $.ajax({
             url: myUrl,
             type: 'GET',
             contentType: 'application/json; charset=utf-8'
         });
-
+        console.log(myUrl);
         request.done(function(data) {
             console.log('data received', data);
             loop();
@@ -456,81 +701,78 @@ asyncLoop({
 
     },
     callback : function(){
+
         console.log('all done in callback');
         //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
 
         //var url = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/startScript?path=' + encodeURIComponent(path);
-        // var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
-        var url = 'http://www.theworldavatar.com/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        var url = 'http://localhost:8080/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        var agent = "testPOWSYSENSimulation"+opt + "CallAgent"
+        // var url = 'http://www.theworldavatar.com/JPS_POWSYS/ENAgent/startsimulation'+opt;
         
         var request = $.ajax({
             url: url,
             type: 'GET',
-            data: { "electricalnetwork":iriofnetwork },
+            data: { "electricalnetwork":iriofnetwork , "jpscontext":{"scenariourl": agent}},
             contentType: 'application/json; charset=utf-8'
         });
 
         request.done(function(data) {
             
-            console.log('simulation finished');
-            var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId;
-
+//             console.log('simulation finished');
+            openWindow(filename);
+//             sendRequest(url,function (response) {
             
-            sendRequest(url,function (response) {
-            
-                console.log('simulation finished url', url)
-                response = sortByKey(response,'name');
-                var inputsHTML = '';
+//                 console.log('simulation finished url', url)
+//                 response = sortByKey(response,'name');
+//                 var inputsHTML = '';
                 
-                var nameSet = [];
+//                 var nameSet = [];
                 
-                for(var item in response){
-                    var pair = response[item];
+//                 for(var item in response){
+//                     var pair = response[item];
 
-                    if(pair['value'].includes('.owl'))
-                    {
+//                     if(pair['value'].includes('.owl'))
+//                     {
 
-                    }
-                    else{
+//                     }
+//                     else{
                     
-                    if(nameSet.includes(pair['name'])){
+//                     if(nameSet.includes(pair['name'])){
                         
-                    }
-                    else{
+//                     }
+//                     else{
                     
                                                 
-                    console.log(pair['name']);
-                    var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
-                        inputsHTML = inputsHTML + inputLine;
-                        nameSet.push(pair['name'])                              
-                    }
+//                     console.log(pair['name']);
+//                     var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
+//                         inputsHTML = inputsHTML + inputLine;
+//                         nameSet.push(pair['name'])                              
+//                     }
 
-                    }
-                }
+//                     }
+//                 }
 
-                var _div;
-                if(_type==='kml'){
-                    console.log('---kml');
-                    _div = document.getElementById('inputsContainer');
-                }
-                else{
-                    console.log('---line');
-                    _div = document.getElementById('something');
-                }
+//                 var _div;
+//                 if(_type==='kml'){
+//                     console.log('---kml');
+//                     _div = document.getElementById('inputsContainer');
+//                 }
+//                 else{
+//                     console.log('---line');
+//                     _div = document.getElementById('something');
+//                 }
                 
-                _div.innerHTML = '<table data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>' +
-'<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
-                //location.reload(); //temp
-            });
+//                 _div.innerHTML = '<table data-url='+ url +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>' +
+// '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+//                 //location.reload(); //temp
+//             });
 
 
 
         });
 
-        request.fail(function(jqXHR, textStatus) {
-            // your failure code here
-        });
 
     }
 });
@@ -576,4 +818,32 @@ function constructLineMenu(id,callback){
         callback(div);
 
     });
+
+    
+}
+function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
+
+        var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
+        urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
+        url2 += encodeURIComponent(JSON.stringify(urljson)); 
+        //url2 += JSON.stringify(urljson); 
+        return url2;    
+    }
+function createUrlForSparqlQuery(scenarioname, iri, sparql) {
+
+        var url2 = prefix + '/jps/scenario/' + scenarioname + '/query?query=';
+        urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
+        url2 += encodeURIComponent(JSON.stringify(urljson)); 
+        //url2 += JSON.stringify(urljson); 
+        return url2;    
+    }
+
+function injectJpsContext(scenarioname, data) {
+
+    var scenariourl = prefix + '/jps/scenario/' + scenarioname;
+
+    data["jpscontext"] = {
+        "scenariourl": scenariourl
+    };
+    
 }

@@ -170,31 +170,31 @@ PopupMap.prototype = {
 
     },
     Branch: function(coors, vols, thickness,type,name) {
-    this.name = name;
-    this.vols = vols;
-    this.thickness = thickness;
-    this.type = type;
-    this.coors = coors;
-    },
+        this.name = name;
+        this.vols = vols;
+        this.thickness = thickness;
+        this.type = type;
+        this.coors = coors;
+        },
     point: function (lat, lng) {
-    this.lat = lat;
-    this.lng = lng;
-    },
+        this.lat = lat;
+        this.lng = lng;
+        },
 
 /*main func: initMap*/
 /**
  * init Google map
  */
-initMap: function () {
-    var self = this;
-    console.log("init map:" + self.curPath)
-    //initiate map, set center on Jurong
-    var jurong ={lat: 1.2624421, lng: 103.7007045};
-    this.googleMap = new google.maps.Map(document.getElementById('map'), {
-        zoom: 14,
-        center: jurong, 
-        
-    });
+    initMap: function () {
+        var self = this;
+        console.log("init map:" + self.curPath)
+        //initiate map, set center on Jurong
+        var jurong ={lat: 1.2624421, lng: 103.7007045};
+        this.googleMap = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            center: jurong, 
+            
+        });
     map = this.googleMap;
     console.log("request to " + self.curPath + "/coordinates")
     $.ajax({
