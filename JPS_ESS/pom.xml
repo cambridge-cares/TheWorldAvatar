@@ -42,8 +42,8 @@
         <configuration>
           <webResources>
 						<resource>
-           					<directory>res</directory>
-           					<targetPath>res</targetPath>
+           					<directory>workingdir</directory>
+           					<targetPath>workingdir</targetPath>
            				</resource>
            				<resource>
            					<directory>python</directory>
