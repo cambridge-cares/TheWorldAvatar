@@ -346,7 +346,7 @@ drawMarkers:function(data){
                     });
 
 
-                    line.addListener('click', function() {
+                    line.addListener('click', function(lineEvent) {
                         var that = this;
                         var content = constructLineMenu(this.title,function (_content) {
                             console.log('content',_content);
