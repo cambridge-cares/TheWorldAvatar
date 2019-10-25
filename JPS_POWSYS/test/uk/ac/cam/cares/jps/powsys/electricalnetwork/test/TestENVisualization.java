@@ -71,7 +71,7 @@ public class TestENVisualization extends TestCase {
 		String res=a.createLineJS(model);
 		System.out.println("resultjs= "+res);
 	}
-	public void testreadGenerator() throws IOException {
+	public void xxxtestreadGenerator() throws IOException { //pre requisite : need to prepare http://localhost:8080/jps/kb/cdb65d7d-31af-43e2-88da-1462d8a1dc23/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0
 		String flag = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 		ENVisualization a=new ENVisualization();
 		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
@@ -123,10 +123,10 @@ public class TestENVisualization extends TestCase {
 
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork","http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
-		jo.put("selectedID", "http://localhost:8080/jps/kb/cdb65d7d-31af-43e2-88da-1462d8a1dc23/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3");
-//		jo.put("flag","BASE");
-//		jo.put("selectedID", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
+//		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
+//		jo.put("selectedID", "http://localhost:8080/jps/kb/cdb65d7d-31af-43e2-88da-1462d8a1dc23/nuclearpowerplants/NucGenerator_3_B3.owl#NucGenerator_3_B3");
+		jo.put("flag","BASE");
+		jo.put("selectedID", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
 		System.out.println(jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/readGenerator", jo.toString());
 		System.out.println("resultStart= "+resultStart);

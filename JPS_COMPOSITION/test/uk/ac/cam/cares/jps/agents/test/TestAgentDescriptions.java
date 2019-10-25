@@ -115,6 +115,16 @@ public class TestAgentDescriptions extends TestCase {
 			.build();
 	}
 	
+	private Service createDescrForAgentEN() {
+		return new ServiceBuilder()
+				.operation(null, JPS_POWSYS + "/ENAgent/startsimulationPF")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.operation(null, JPS_POWSYS + "/ENAgent/startsimulationOPF")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			
+			.build();
+	}
+	
 	private Service createDescrForAgentShip() {
 		return new ServiceBuilder().operation(null, JPS + "/ShipAgent")
 			.input("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship", "ship")
