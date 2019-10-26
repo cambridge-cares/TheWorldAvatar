@@ -150,7 +150,7 @@ public class QueryBroker {
 	}
 	
 	public String writeFile(String urlOrPath, String content) {
-		String result = KnowledgeBaseClient.put(null, urlOrPath, content);
+		String result = KnowledgeBaseClient.put(null, urlOrPath, content, null);
 		return result;
 	}
 	

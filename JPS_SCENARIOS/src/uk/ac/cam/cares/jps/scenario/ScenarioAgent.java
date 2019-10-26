@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +29,7 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
-public class ScenarioAgent extends KnowledgeBaseManagementAgent {
+public class ScenarioAgent extends KnowledgeBaseAgent {
 	
 	private static final long serialVersionUID = 3746092168199681624L;
 
@@ -394,7 +395,7 @@ public class ScenarioAgent extends KnowledgeBaseManagementAgent {
 	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
 		if (!kb.exists(resourceUrl)) {
 			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
-			kb.put(resourceUrl, content);
+			kb.put(resourceUrl, content, null);
 		}
 		kb.update(resourceUrl, sparql);
 	}
@@ -404,9 +405,9 @@ public class ScenarioAgent extends KnowledgeBaseManagementAgent {
 			return kb.get(resourceUrl, accept);
 		} 
 		
-		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+		String content = KnowledgeBaseClient.get(null, resourceUrl, accept);
 		if (copyOnRead) {
-			kb.put(resourceUrl, content);
+			kb.put(resourceUrl, content, accept);
 			if (accept != null) {
 				// read it again but this time form the knowledge base and in the correct format
 				return kb.get(resourceUrl, accept);
@@ -423,10 +424,11 @@ public class ScenarioAgent extends KnowledgeBaseManagementAgent {
 		
 		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
 		if (copyOnRead) {
-			kb.put(resourceUrl, content);
+			kb.put(resourceUrl, content, null);
 		}
 		InputStream inputStream = FileUtil.stringToInputStream(content);
-		return KnowledgeBaseAbstract.query(inputStream, sparql);
+		RDFFormat format =  KnowledgeBaseAbstract.getRDFFormatFromFileType(resourceUrl);
+		return KnowledgeBaseAbstract.query(inputStream, format, sparql);
 	}
 	
 	private void doGetNew(HttpServletRequest req, HttpServletResponse resp, String scenarioName, boolean copyOnRead) 
@@ -437,14 +439,15 @@ public class ScenarioAgent extends KnowledgeBaseManagementAgent {
 		JSONObject input = Http.readJsonParameter(req);
 		String sparql = input.optString(JPSConstants.QUERY_SPARQL_QUERY);
 		String parameterUrl = input.optString(JPSConstants.SCENARIO_RESOURCE);
+		String contentType = req.getContentType();
 		
 		try {
-			logInputParams("GET", requestUrl, path, parameterUrl, sparql, false);
+			logInputParams("GET", requestUrl, path, parameterUrl, contentType, sparql, false);
 			
 			String accept = getAccept(req);
 			
 			String datasetUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			KnowledgeBaseAbstract kb = getKnowledgeBase(datasetUrl);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
 			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, parameterUrl);
 			
 			String result = "";	
@@ -460,7 +463,7 @@ public class ScenarioAgent extends KnowledgeBaseManagementAgent {
 
 		} catch (RuntimeException e) {
 			e.printStackTrace();
-			logInputParams("GET", requestUrl, path, parameterUrl, sparql, true);
+			logInputParams("GET", requestUrl, path, parameterUrl, contentType, sparql, true);
 			throw e;
 		}
 	}

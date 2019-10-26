@@ -31,7 +31,7 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseFileBased.class);
 	
 	@Override
-	public void put(String resourceUrl, String content) {
+	public void put(String resourceUrl, String content, String contentType) {
 		logger.info("put resourceUrl=" + resourceUrl);
 		String filePath = BucketHelper.getLocalPath(resourceUrl);
 		FileUtil.writeFileLocally(filePath, content);
@@ -68,12 +68,6 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 	}
 
 	@Override
-	public boolean exists(String resourceUrl) {
-		String filePath = BucketHelper.getLocalPath(resourceUrl);
-		return new File(filePath).exists();
-	}
-	
-	@Override
 	public String get(String resourceUrl, String accept) {
 		logger.info("get resourceUrl=" + resourceUrl);
 		String result = null;
@@ -81,7 +75,7 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 		
 		RDFFormat format = null;
 		if (accept != null) {
-			format = getRDFFormat(accept);
+			format = getRDFFormatFromMediaType(accept);
 		}
 		
 		if (format == null) {
@@ -122,6 +116,15 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
 		
-		return query(inputStream, sparql);
+		RDFFormat format = getRDFFormatFromFileType(resourceUrl);
+		
+		return query(inputStream, format, sparql);
+	}
+	
+	@Override
+	public boolean exists(String resourceUrl) {
+		logger.info("exists resourceUrl=" + resourceUrl);
+		String filePath = BucketHelper.getLocalPath(resourceUrl);
+		return new File(filePath).exists();
 	}
 }

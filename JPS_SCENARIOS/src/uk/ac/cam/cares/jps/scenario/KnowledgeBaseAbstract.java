@@ -27,7 +27,7 @@ public abstract class KnowledgeBaseAbstract {
 	public static final RDFFormat[] SUPPORTED_RDF_FORMATS = new RDFFormat[] {
 			RDFFormat.RDFXML, RDFFormat.TURTLE, RDFFormat.JSONLD, RDFFormat.NQUADS};
 	
-	public abstract void put(String resourceUrl, String content);
+	public abstract void put(String resourceUrl, String content, String contentType);
 	
 	public abstract void update(String resourceUrl, String sparql);
 	
@@ -60,9 +60,20 @@ public abstract class KnowledgeBaseAbstract {
 		return result;
 	}
 	
-	public RDFFormat getRDFFormat(String contentType) {
+	/**
+	 * getDefaultFileExtension(), getFileExtensions(), current.getDefaultMIMEType(), current.getMIMETypes(), supportsContexts());
+	 * 
+	 * rdf, [rdf, rdfs, owl, xml], application/rdf+xml, [application/rdf+xml, application/xml, text/xml], false
+	 * ttl, [ttl], text/turtle, [text/turtle, application/x-turtle], false
+	 * jsonld, [jsonld], application/ld+json, [application/ld+json], true
+	 * nq, [nq], application/n-quads, [application/n-quads, text/x-nquads, text/nquads], true
+	 * 
+	 * @param mediaType
+	 * @return
+	 */
+	public static RDFFormat getRDFFormatFromMediaType(String mediaType) {
 		for (RDFFormat current : KnowledgeBaseAbstract.SUPPORTED_RDF_FORMATS) {
-			if (current.getDefaultMIMEType().equals(contentType)) {
+			if (current.getDefaultMIMEType().equals(mediaType)) {
 				return current;
 			}
 		}
@@ -70,13 +81,25 @@ public abstract class KnowledgeBaseAbstract {
 		return null;
 	}
 	
-	public static String query(InputStream inputStream, String sparql) {
+	public static RDFFormat getRDFFormatFromFileType(String fileName) {
+		for (RDFFormat current : KnowledgeBaseAbstract.SUPPORTED_RDF_FORMATS) {
+			for (String currentExt : current.getFileExtensions()) {
+				if (fileName.endsWith("." + currentExt)) {
+					return current;
+				}
+			}
+		}
+
+		return null;
+	}
+	
+	public static String query(InputStream inputStream, RDFFormat inputFormat, String sparql) {
 		MemoryStore memStore = new MemoryStore();
 		Repository repo = new SailRepository(memStore);
 		repo.init();
 		
 		try (RepositoryConnection conn = repo.getConnection()) {
-			conn.add(inputStream, "", RDFFormat.RDFXML);
+			conn.add(inputStream, "", inputFormat);
 			TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, sparql);	
 
 			ByteArrayOutputStream outputStream = null;

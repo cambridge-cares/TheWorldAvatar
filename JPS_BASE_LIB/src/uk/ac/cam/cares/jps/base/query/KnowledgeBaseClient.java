@@ -33,14 +33,14 @@ public class KnowledgeBaseClient {
 	 * @param content
 	 * @return
 	 */
-	public static String put(String datasetUrl, String targetUrl, String content) {
+	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(getInstance(), "put is called for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + scenarioUrl);
 		
 		if (datasetUrl == null) {
 			String requestUrl = cutHashFragment(targetUrl);
-			return Http.execute(Http.put(requestUrl, content, null, null));
+			return Http.execute(Http.put(requestUrl, content, contentType, null));
 		} 
 
 		JSONObject jo = null;
@@ -49,7 +49,7 @@ public class KnowledgeBaseClient {
 			jo.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);	
 		}		
 		
-		return Http.execute(Http.put(datasetUrl, content, null, null, jo));
+		return Http.execute(Http.put(datasetUrl, content, contentType, null, jo));
 	}
 	
 	/**

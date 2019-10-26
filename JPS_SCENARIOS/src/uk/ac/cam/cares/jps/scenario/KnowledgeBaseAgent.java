@@ -18,11 +18,11 @@ import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 
-@WebServlet(urlPatterns = {"/kb/*", "/data/*"})
-public class KnowledgeBaseManagementAgent extends HttpServlet {
+@WebServlet(urlPatterns = {"/kb/*", "/data/*", "/dataset/*"})
+public class KnowledgeBaseAgent extends HttpServlet {
 
 	private static final long serialVersionUID = -4195274773048314961L;
-	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseManagementAgent.class);
+	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseAgent.class);
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -32,14 +32,15 @@ public class KnowledgeBaseManagementAgent extends HttpServlet {
 		JSONObject input = Http.readJsonParameter(req);
 		String sparql = input.optString(JPSConstants.QUERY_SPARQL_QUERY);
 		String parameterUrl = input.optString(JPSConstants.SCENARIO_RESOURCE);
+		String contentType = req.getContentType();
 		
 		try {
-			logInputParams("GET", requestUrl, path, parameterUrl, sparql, false);
+			logInputParams("GET", requestUrl, path, parameterUrl, contentType, sparql, false);
 			
 			String accept = getAccept(req);
 			
-			String datasetUrl = getDatasetUrl(requestUrl);
-			KnowledgeBaseAbstract kb = getKnowledgeBase(datasetUrl);
+			String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
 			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, parameterUrl);
 			
 			String result = "";	
@@ -53,7 +54,7 @@ public class KnowledgeBaseManagementAgent extends HttpServlet {
 
 		} catch (RuntimeException e) {
 			e.printStackTrace();
-			logInputParams("GET", requestUrl, path, parameterUrl, sparql, true);
+			logInputParams("GET", requestUrl, path, parameterUrl, contentType, sparql, true);
 			throw e;
 		}
 	}
@@ -76,52 +77,27 @@ public class KnowledgeBaseManagementAgent extends HttpServlet {
 		JSONObject input = Http.readJsonParameter(req);
 		String sparql = input.optString(JPSConstants.QUERY_SPARQL_UPDATE);
 		String parameterUrl = input.optString(JPSConstants.SCENARIO_RESOURCE);
+		String contentType = req.getContentType();
 		
 		try {
-			logInputParams("PUT", requestUrl, path, parameterUrl, sparql, false);
+			logInputParams("PUT", requestUrl, path, parameterUrl, contentType, sparql, false);
 			
 			if (!sparql.isEmpty()) {
 				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is not allowed");
 			}
 			
-			String datasetUrl = getDatasetUrl(requestUrl);
-			KnowledgeBaseAbstract kb = getKnowledgeBase(datasetUrl);
+			String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
 			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, parameterUrl);
 			String body = Http.getRequestBody(req);
 			
-			kb.put(resourceUrl, body);
+			kb.put(resourceUrl, body, contentType);
 
 		} catch (RuntimeException e) {
 			e.printStackTrace();
-			logInputParams("PUT", requestUrl, path, parameterUrl, sparql, true);
+			logInputParams("PUT", requestUrl, path, parameterUrl, contentType, sparql, true);
 			throw e;
 		}
-	}
-	
-	/**
-	 * @param requestUrl is of the form http:// host:port/<jps>/data/<datasetname>/...
-	 * @return
-	 */
-	public String getDatasetUrl(String requestUrl) {
-		String jps = "/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/";
-		int i = requestUrl.indexOf(jps) + jps.length();
-		String rest = requestUrl.substring(i);
-		if (rest.startsWith("data/")) {
-			i += "data/".length();
-		} else if (rest.startsWith("kb/")) {
-			i += "kb/".length();
-		} else if (rest.startsWith("scenario/")) {
-			i += "scenario/".length();
-		}
-		String datasetUrl = requestUrl.substring(0, i);
-		rest = requestUrl.substring(i);
-		i = rest.indexOf("/");
-		if (i >= 0) {
-			datasetUrl += rest.substring(0, i);
-		} else {
-			datasetUrl = requestUrl;
-		}
-		return datasetUrl;
 	}
 	
 	@Override
@@ -133,23 +109,24 @@ public class KnowledgeBaseManagementAgent extends HttpServlet {
 		String parameterUrl = input.optString(JPSConstants.SCENARIO_RESOURCE);
 		JSONObject body = new JSONObject(Http.getRequestBody(req));
 		String sparql = body.optString(JPSConstants.QUERY_SPARQL_UPDATE);
+		String contentType = req.getContentType();
 
 		try {
-			logInputParams("POST", requestUrl, path, parameterUrl, sparql, false);
+			logInputParams("POST", requestUrl, path, parameterUrl, contentType, sparql, false);
 	
 			if (sparql.isEmpty()) {
 				throw new JPSRuntimeException("parameter " + JPSConstants.QUERY_SPARQL_QUERY + " is missing");
 			}
 			
-			String datasetUrl = getDatasetUrl(requestUrl);
-			KnowledgeBaseAbstract kb = getKnowledgeBase(datasetUrl);
+			String datasetUrl = KnowledgeBaseManager.getDatasetUrl(requestUrl);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
 			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, parameterUrl);
 
 			updateKnowledgeBase(kb, resourceUrl, sparql);
 			
 		} catch (RuntimeException e) {
 			e.printStackTrace();
-			logInputParams("POST", requestUrl, path, parameterUrl, sparql, true);
+			logInputParams("POST", requestUrl, path, parameterUrl, contentType, sparql, true);
 			throw e;
 		}
 	}
@@ -160,10 +137,22 @@ public class KnowledgeBaseManagementAgent extends HttpServlet {
 	
 	public String getResourceUrl(String datasetUrl, String requestUrl, String parameterUrl) {
 
-		if ((parameterUrl == null) || parameterUrl.isEmpty()) {
-			return requestUrl;
-		} else if (requestUrl.equals(datasetUrl)) {
-			return parameterUrl;
+		// Example: datasetUrl = http://www.thw.com/jps/data/test
+		
+		if (requestUrl.equals(datasetUrl)) {
+			
+			if ((parameterUrl == null) || parameterUrl.isEmpty()) {
+				return null;
+			} else {
+				// case 2: indirect query
+				return parameterUrl;
+			}
+			
+		} else {
+			if ((parameterUrl == null) || parameterUrl.isEmpty()) {
+				// case 3: direct query
+				return requestUrl;
+			}
 		}
 		
 		String message = "A URL was given by the query parameter " + JPSConstants.SCENARIO_RESOURCE 
@@ -172,27 +161,12 @@ public class KnowledgeBaseManagementAgent extends HttpServlet {
 		throw new JPSRuntimeException(message);
 	}
 	
-	protected KnowledgeBaseAbstract getKnowledgeBase(String datasetUrl) {
-		
-		String[] preexistingDatasets = new String[] {"misc", "meta", "test"};
-		for (String current: preexistingDatasets) {
-			if (datasetUrl.endsWith(current)) {
-				return new KnowledgeBaseFileBased();
-			}
-		}
-		
-		if (datasetUrl.contains("/scenario/")) {		
-			return new KnowledgeBaseFileBased();
-		}
-		
-		throw new JPSRuntimeException("unknown datasetUrl = " + datasetUrl);
-	}
-	
-	protected void logInputParams(String httpVerb, String requestUrl, String path, String parameterUrl, String sparql, boolean hasErrorOccured) {
+	protected void logInputParams(String httpVerb, String requestUrl, String path, String parameterUrl, String contentType, String sparql, boolean hasErrorOccured) {
 		StringBuffer b = new StringBuffer(httpVerb);
 		b.append(" with requestedUrl=").append(requestUrl);
 		b.append(", path=").append(path);
 		b.append(", parameterUrl=").append(parameterUrl);
+		b.append(", contentType=").append(contentType);
 		if (hasErrorOccured) {
 			b.append(", sparql=" + sparql);
 			logger.error(b.toString());
