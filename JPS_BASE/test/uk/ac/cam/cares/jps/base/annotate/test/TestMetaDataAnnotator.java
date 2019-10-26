@@ -3,13 +3,16 @@ package uk.ac.cam.cares.jps.base.annotate.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 	
@@ -29,12 +32,14 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		String sparql = "DELETE { ?s ?p ?o . } \r\n" +
 				"WHERE { ?s ?p ?o . FILTER ( CONTAINS(STR(?s), \"example.com\") )}";
 		
-		MetaDataAnnotator.getSparqlService().executePost(sparql);
+		//MetaDataAnnotator.getSparqlService().executePost(sparql);
+		MetaDataAnnotator.update(sparql);
 		
 		sparql = "DELETE { ?s ?p ?o . } \r\n" +
 				"WHERE { ?s ?p ?o . FILTER ( CONTAINS(STR(?o), \"example.com\") )}";
 		
-		MetaDataAnnotator.getSparqlService().executePost(sparql);
+		//MetaDataAnnotator.getSparqlService().executePost(sparql);
+		MetaDataAnnotator.update(sparql);
 	}
 	
 	public void testXsdTimeStampFormat() {	
@@ -46,11 +51,16 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		assertEquals(millis, actualMillis);
 	}
 	
-	private int getNumberOfResultsWithoutHeader(String sparqlcsvresult) {
+	private int getNumberOfResultsWithoutHeader(String sparqlresult) {
 		// -1 because of the header line
 		//return (sparqlcsvresult.split("\n").length - 1);
-		List<String[]> list = MatrixConverter.fromCsvToArray(sparqlcsvresult);
-		return (list.size() - 1);
+		
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(sparqlresult);
+		System.out.println(simplified);
+		return (simplified.getJSONArray("results").length());
+		
+		//List<String[]> list = MatrixConverter.fromCsvToArray(sparqlcsvresult);
+		//return (list.size() - 1);
 	}
 	
 	private String getSparqlInsertExample(String target, String scenario, String creationTime) {
@@ -70,16 +80,18 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		return MetaDataAnnotator.getSparqlInsert(target, mediaType, creationTime, agent, true, topics, prefixes, triples);
 	}
 	
-	public void testSparqlInsert() {		
-		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output.csv", "http://example.com/scenario/xyz", null);
+	public void testSparqlInsert() {	
+		String scenario = BucketHelper.getScenarioUrl("testSparqlInsert");
+		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output.csv", scenario, null);
 		System.out.println(sparql);
 		assertEquals(17, sparql.split("\n").length);
 	}
 	
 	public void testAnnotate() {
-		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output.csv", "http://example.com/scenario/xyz", null);
+		String scenario = BucketHelper.getScenarioUrl("testAnnotate");
+		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output.csv", scenario, null);
 		System.out.println(sparql);
-		MetaDataAnnotator.annotate(sparql);
+		MetaDataAnnotator.update(sparql);
 		sparql = "SELECT ?s ?p ?o WHERE {?s ?p ?o } LIMIT 100";
 		String result = MetaDataQuery.query(sparql);
 		System.out.println(result);
@@ -87,18 +99,22 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 	}
 	
 	public void testSparqlQueryResources() {
-		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output1.csv", "http://example.com/scenario/xyz1", "2019-09-18T11:26:26.419");
-		MetaDataAnnotator.annotate(sparql);
-		sparql = getSparqlInsertExample("http://example.com/jps/some/path/output2.csv", "http://example.com/scenario/xyz1", "2019-09-19T11:26:26.419");
-		MetaDataAnnotator.annotate(sparql);
-		sparql = getSparqlInsertExample("http://example.com/jps/some/path/output3.csv", "http://example.com/scenario/xyz2", "2019-09-19T11:26:29");
-		MetaDataAnnotator.annotate(sparql);
+		String scenario1 = BucketHelper.getScenarioUrl("testSparqlQueryResource1");
+		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output1.csv", scenario1, "2019-09-18T11:26:26.419");
+		MetaDataAnnotator.update(sparql);
+		String scenario2 = BucketHelper.getScenarioUrl("testSparqlQueryResource2");
+		sparql = getSparqlInsertExample("http://example.com/jps/some/path/output2.csv", scenario2, "2019-09-19T11:26:26.419");
+		MetaDataAnnotator.update(sparql);
+		String scenario3 = BucketHelper.getScenarioUrl("testSparqlQueryResource3");
+		sparql = getSparqlInsertExample("http://example.com/jps/some/path/output3.csv", scenario3, "2019-09-19T11:26:29");
+		MetaDataAnnotator.update(sparql);
 		
+		JPSContext.removeScenarioUrl();
 		sparql = "SELECT ?s ?p ?o WHERE {?s ?p ?o } LIMIT 100";
 		String result = MetaDataQuery.query(sparql);
 		System.out.println(result);
-		// 2 triples for agent + 9 triples * 3 resources
-		assertEquals(29, getNumberOfResultsWithoutHeader(result));
+		// 11 triples * 3 resources / scenarios
+		assertEquals(33, getNumberOfResultsWithoutHeader(result));
 		
 		sparql = MetaDataQuery.getSparqlQueryResources(null, "2019-09-18T11:26:26", "2019-09-19T11:26:28", null, null, null, null, null);
 		System.out.println(sparql);
@@ -115,7 +131,7 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		List<String> topics = new ArrayList<String>();
 		topics.add("http://dbpedia.org/resource/Singapore");
 		sparql = MetaDataQuery.getSparqlQueryResources(null, null, null, "http://example.com/jps/agents/myfancyagent", 
-				"2019-09-18T11:26:27", "2019-09-19T11:27:00", "http://example.com/scenario/xyz2", topics);
+				"2019-09-18T11:26:27", "2019-09-19T11:27:00", scenario2, topics);
 		System.out.println(sparql);
 		result = MetaDataQuery.query(sparql);
 		System.out.println(result);
@@ -173,7 +189,7 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		String srmAgent = "http://example.com/jps/agents/srmagent";
 		
 		// first scenario for Berlin
-		String scenarioNameBerlin = "http://example.com/scenario/admstestberlin";
+		String scenarioNameBerlin = BucketHelper.getScenarioUrl("testadmsberlin");
 		JPSContext.putScenarioUrl(scenarioNameBerlin);
 		
 		// first scenario, first simulation
@@ -187,7 +203,7 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		MetaDataAnnotator.annotate("http://example.com/jps/333/data/srmdata.csv", mediaType, srmAgent, true, topicsBerlin);
 
 		// second scenario for Singapore
-		String scenarioNameSingapore = "http://example.com/scenario/admstestsingapore";
+		String scenarioNameSingapore = BucketHelper.getScenarioUrl("testadmssingapore");
 		JPSContext.putScenarioUrl(scenarioNameSingapore);
 		
 		// second scenario, first simulation
@@ -195,6 +211,8 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		MetaDataAnnotator.annotate("http://example.com/jps/222xxx/adms/outputadms.gst", mediaType, admsAgent, true, topicsSingapore);
 		MetaDataAnnotator.annotate("http://example.com/jps/222xxx/data/srmdata.csv", mediaType, srmAgent, true, topicsSingapore);
 		
+		
+		JPSContext.removeScenarioUrl();
 		// check: 4 resources for scenario Berlin and 2 resources for scenario Singapore
 		String result = MetaDataQuery.queryResources(null, null, null, null, null, null, scenarioNameBerlin, null);
 		assertEquals(4, getNumberOfResultsWithoutHeader(result));

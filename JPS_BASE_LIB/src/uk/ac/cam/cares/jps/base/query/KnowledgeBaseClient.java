@@ -118,7 +118,11 @@ public class KnowledgeBaseClient {
 			// another agent might have updated the file within the same scenario 
 			joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
 			if (datasetUrl != null) {
-				joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
+				if (targetUrl == null) {
+					joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
+				} else {
+					joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
+				}
 			}
 			
 			String requestUrl = ResourcePathConverter.convert(scenarioUrl);
@@ -172,7 +176,11 @@ public class KnowledgeBaseClient {
 				joparams = new JSONObject();
 				joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
 				if (datasetUrl != null) {
-					joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
+					if (targetUrl == null) {
+						joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
+					} else {
+						joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
+					}
 				}
 				requestUrl = scenarioUrl;
 			// case 2

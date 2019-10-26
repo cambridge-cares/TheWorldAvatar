@@ -101,5 +101,12 @@ public class KnowledgeBaseRdf4jLocalInMemory extends KnowledgeBaseAbstract {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+
+	@Override
+	public String getDatasetUrl() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -17,6 +17,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -393,6 +394,14 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	}
 	
 	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
+		
+		String datasetUrl = kb.getDatasetUrl();
+		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
+			KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
+			return;
+		}
+		
 		if (!kb.exists(resourceUrl)) {
 			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
 			kb.put(resourceUrl, content, null);
@@ -418,6 +427,13 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	}
 	
 	protected String queryKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql, boolean copyOnRead) {
+
+		String datasetUrl = kb.getDatasetUrl();
+		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
+			return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
+		}
+		
 		if (kb.exists(resourceUrl)) {
 			return kb.query(resourceUrl, sparql);
 		} 

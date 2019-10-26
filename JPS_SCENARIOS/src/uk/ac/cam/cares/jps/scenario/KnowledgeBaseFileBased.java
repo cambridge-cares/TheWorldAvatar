@@ -30,6 +30,12 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseFileBased.class);
 	
+	private String datasetUrl = null;
+	
+	public KnowledgeBaseFileBased(String datasetUrl) {
+		this.datasetUrl = datasetUrl;
+	}
+	
 	@Override
 	public void put(String resourceUrl, String content, String contentType) {
 		logger.info("put resourceUrl=" + resourceUrl);
@@ -126,5 +132,11 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 		logger.info("exists resourceUrl=" + resourceUrl);
 		String filePath = BucketHelper.getLocalPath(resourceUrl);
 		return new File(filePath).exists();
+	}
+	
+
+	@Override
+	public String getDatasetUrl() {
+		return datasetUrl;
 	}
 }

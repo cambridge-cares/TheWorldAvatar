@@ -37,16 +37,24 @@ public class KnowledgeBaseManager {
 		String datasetName = getDatasetName(datasetUrl);
 	
 		if (datasetUrl.contains("/scenario/")) {		
-			result = new KnowledgeBaseFileBased();
-		} else if (datasetUrl.contains("/testnative")) {
-			result =  KnowledgeBaseRdf4jLocalInMemory.getInstance();
-		} else if (datasetUrl.contains("/perfinmemory")) {
-			result = new KnowledgeBaseRdf4jServer(datasetName);
+			result = new KnowledgeBaseFileBased(datasetUrl);
+//		} else if (datasetUrl.contains("/testnative")) {
+//			result =  KnowledgeBaseRdf4jLocalInMemory.getInstance();
+//		} else if (datasetUrl.contains("/perfinmemory")) {
+//			result = new KnowledgeBaseRdf4jServer(datasetName);
+		} else if (datasetUrl.contains("/testrdf4jinmemory")) {
+			result = new KnowledgeBaseRdf4jServer(datasetUrl, datasetName);
+		} else if (datasetUrl.contains("/testrdf4jnative")) {
+			result = new KnowledgeBaseRdf4jServer(datasetUrl, datasetName);
+		} else if (datasetUrl.contains("/meta")) {
+			result = new KnowledgeBaseRdf4jServer(datasetUrl, datasetName);
+		} else if (datasetUrl.contains("/testrdf4jmeta")) {
+			result = new KnowledgeBaseRdf4jServer(datasetUrl, datasetName);
 		} else {
-			String[] preexistingDatasets = new String[] {"misc", "meta", "test", "testfilebased"};
+			String[] preexistingDatasets = new String[] {"misc", "test", "testfilebased"};
 			for (String current: preexistingDatasets) {
 				if (datasetUrl.endsWith(current)) {
-					result = new KnowledgeBaseFileBased();
+					result = new KnowledgeBaseFileBased(datasetUrl);
 					break;
 				}
 			} 

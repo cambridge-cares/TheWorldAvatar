@@ -9,7 +9,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
-public class TestKnowledgeBaseAllImplementations extends TestKnowledgeBaseHelper {
+public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeBaseHelper {
 	
 	protected static final String SPARQL_COUNT_TRIPLES = "SELECT (COUNT(?s) as ?count) WHERE { ?s ?p ?o }";
 	protected static final String SPARQL_COUNT_BUILDINGS = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" 
@@ -22,29 +22,32 @@ public class TestKnowledgeBaseAllImplementations extends TestKnowledgeBaseHelper
 			"PREFIX ex: <http://www.example.com/fancyprops/>\r\n" + 
 			"SELECT ?person WHERE { ?person rdf:type foaf:Person . }";
 	
-	private void setUpRdf4jInMemoryDirect() {
+	private void setUpRdf4jNativeDirect() {
 		if (client() == null) {
-			//String datasetUrl = "http://localhost:8081/jps/data/testnative";
-			String datasetUrl = "http://localhost:8081/jps/data/perfinmemory";
+			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/testrdf4jnative";
 			System.out.println("creating client for datasetUrl=" + datasetUrl);
 			createClient(datasetUrl, true);
 		}
 	}
 	
-	private void setUpRdf4jInMemoryRemote() {
+	protected void setUpRdf4jInMemoryDirect() {
 		if (client() == null) {
-			//String datasetUrl = "http://localhost:8081/jps/data/testnative";
-			// "http://localhost:8081/jps/data/perfinmemory"
-			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/perfinmemory";
+			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/testrdf4jinmemory";
+			System.out.println("creating client for datasetUrl=" + datasetUrl);
+			createClient(datasetUrl, true);
+		}
+	}
+	
+	protected void setUpRdf4jInMemoryRemote() {
+		if (client() == null) {
+			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/testrdf4jinmemory";
 			System.out.println("creating client for datasetUrl=" + datasetUrl);
 			createClient(datasetUrl, false);
 		}
 	}
 	
-	private void setUpFileBasedRemote() {
+	protected void setUpFileBasedRemote() {
 		if (client() == null) {
-			//String datasetUrl = "http://localhost:8081/jps/data/testnative";
-			// "http://localhost:8081/jps/data/perfinmemory"
 			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/dataset/testfilebased";
 			System.out.println("creating client for datasetUrl=" + datasetUrl);
 			createClient(datasetUrl, false);
@@ -52,6 +55,7 @@ public class TestKnowledgeBaseAllImplementations extends TestKnowledgeBaseHelper
 	}
 	
 	public void setUp() {
+		//setUpRdf4jNativeDirect();
 		//setUpRdf4jInMemoryDirect();
 		//setUpRdf4jInMemoryRemote();
 		setUpFileBasedRemote();

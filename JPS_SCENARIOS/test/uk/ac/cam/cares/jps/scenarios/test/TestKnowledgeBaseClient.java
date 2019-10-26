@@ -22,6 +22,11 @@ import uk.ac.cam.cares.jps.scenario.KnowledgeBaseManager;
 
 public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations {
 	
+	public void setUp() {
+		setUpFileBasedRemote();
+		printTime(null);
+	}
+	
 	private String putE303Load(String path) {
 		return putE303Load(null, path);
 	}

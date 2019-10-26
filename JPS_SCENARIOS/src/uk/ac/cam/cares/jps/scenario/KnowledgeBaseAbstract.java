@@ -37,6 +37,8 @@ public abstract class KnowledgeBaseAbstract {
 	
 	public abstract boolean exists(String resourceUrl);
 	
+	public abstract String getDatasetUrl();
+	
 	public String convert(URL resourceUrl, RDFFormat outputFormat) throws IOException {
 		
 		String result = null;
@@ -90,7 +92,7 @@ public abstract class KnowledgeBaseAbstract {
 			}
 		}
 
-		return null;
+		return RDFFormat.RDFXML;
 	}
 	
 	public static String query(InputStream inputStream, RDFFormat inputFormat, String sparql) {

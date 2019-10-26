@@ -3,15 +3,16 @@ package uk.ac.cam.cares.jps.base.annotate;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
-import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
 public class MetaDataQuery implements Prefixes {
 	
 	public static String query(String sparql) {
-		SparqlOverHttpService sparqlService =  MetaDataAnnotator.getSparqlService();
-		return sparqlService.executeGet(sparql);
+		//SparqlOverHttpService sparqlService =  MetaDataAnnotator.getSparqlService();
+		//return sparqlService.executeGet(sparql);
+		return KnowledgeBaseClient.query(MetaDataAnnotator.getMetadataSetUrl(), null, sparql);
 	}
 	
 	public static String getSparqlQueryResources(MediaType mediaType, String fromCreationTime, String toCreationTime, 

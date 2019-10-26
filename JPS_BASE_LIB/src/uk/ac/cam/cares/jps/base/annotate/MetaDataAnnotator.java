@@ -12,6 +12,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
 import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
@@ -22,6 +23,7 @@ public class MetaDataAnnotator implements Prefixes {
 	
 	private static MetaDataAnnotator instance = null;
 	private SparqlOverHttpService sparqlService = null;
+	private String datasetUrl = null;
 	
 	static synchronized MetaDataAnnotator getInstance() {
 		if (instance == null) {
@@ -31,27 +33,35 @@ public class MetaDataAnnotator implements Prefixes {
 	}
 	
 	private MetaDataAnnotator() {
-		// String datasetUrl = "http://localhost:8081/rdfdataset/jpsmetadata";
-		String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
-		sparqlService = new SparqlOverHttpService(RDFStoreType.FUSEKI, datasetUrl);
+		//String datasetUrl = "http://localhost:8080/rdfdataset/jpsmetadata";
+		//String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
+		String oldDatasetUrl = "http://localhost:8080/rdf4j-server/repositories/jpsmetadata";
+		sparqlService = new SparqlOverHttpService(RDFStoreType.RDF4J, oldDatasetUrl);
+		datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
 	}
 	
 	public static SparqlOverHttpService getSparqlService() {
-		return getInstance().sparqlService;
+		//return getInstance().sparqlService;
+		return null;
 	}
 	
-	public static void annotate(String sparql) {
-		MetaDataAnnotator.getInstance().sparqlService.executePost(sparql);		
+	public static String getMetadataSetUrl() {
+		return getInstance().datasetUrl;
+	}
+	
+	public static void update(String sparql) {
+		//MetaDataAnnotator.getInstance().sparqlService.executePost(sparql);
+		KnowledgeBaseClient.update(getMetadataSetUrl(), null, sparql);
 	}
 	
 	public static void annotateWithTimeAndAgent(String iriTarget, String time, String iriCreatingAgent) {
 		String sparql = getSparqlInsertFull(iriTarget, null, time, iriCreatingAgent, time, null, null, null, null);
-		annotate(sparql);	
+		update(sparql);	
 	}
 	
 	public static void annotate(String iriTarget, MediaType mediaType, String iriCreatingAgent, boolean addJPSContext, List<String> topics) {
 		String sparql = getSparqlInsert(iriTarget, null, null, iriCreatingAgent, addJPSContext, topics, null, null);
-		annotate(sparql);	
+		update(sparql);	
 	}
 
 	public static String getSparqlInsert(String iriTarget, MediaType mediaType, String creationTime, String iriCreatingAgent, 
