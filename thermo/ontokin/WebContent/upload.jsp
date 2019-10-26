@@ -199,23 +199,59 @@
 									name="unitsRSelection" 
 									value="unitsR" theme="bootstrap" />
 							</div>
-							<canvas id="canvas" style="width:500px !important; height:280px"></canvas>
-							<canvas id="canvasJMolK" style="width:500px !important; height:280px; display:none"></canvas>
-							<canvas id="canvasErgMolK" style="width:500px !important; height:280px; display:none"></canvas>
-							<canvas id="canvasNoDimension" style="width:500px !important; height:280px; display:none"></canvas>
+							<div id="canvasBox" style="max-width:800px; max-height:500px">	
+								<canvas id="canvas" style="display:none"></canvas>
+							</div>
+							<div id="canvasJMolKBox" style="max-width:800px; max-height:500px">	
+								<canvas id="canvasJMolK" style="display:none"></canvas>
+							</div>
+							<div id="canvasErgMolKBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasErgMolK" style="display:none"></canvas>
+							</div>
+							<div id="canvasNoDimensionBox" style="max-width:800px; max-height:500px">	
+								<canvas id="canvasNoDimension" style="width:800px; height:500px; display:none"></canvas>
+							</div>
 							<p></p>
-							<canvas id="canvasH" style="width:500px !important; height:280px"></canvas>
-							<canvas id="canvasHJMolK" style="width:500px !important; height:280px; display:none"></canvas>
-							<canvas id="canvasHErgMolK" style="width:500px !important; height:280px; display:none"></canvas>
-							<canvas id="canvasHNoDimension" style="width:500px !important; height:280px; display:none"></canvas>
+
+							<div id="canvasHBox" style="max-width:800px; max-height:500px">	
+								<canvas id="canvasH" style="width:800px; height:500px; display:none"></canvas>
+							</div>
+							<div id="canvasHJMolKBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasHJMolK" style="width:800px; height:500px; display:none"></canvas>
+							</div>
+							<div id="canvasHErgMolKBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasHErgMolK" style="width:800px; height:500px; display:none"></canvas>
+							</div>
+							<div id="canvasHNoDimensionBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasHNoDimension" style="width:800px; height:500px; display:none"></canvas>
+							</div>
 							<p></p>
-							<canvas id="canvasS" style="width:500px !important; height:280px"></canvas>
-							<canvas id="canvasSJMolK" style="width:500px !important; height:280px; display:none"></canvas>
-							<canvas id="canvasSErgMolK" style="width:500px !important; height:280px; display:none"></canvas>
-							<canvas id="canvasSNoDimension" style="width:500px !important; height:280px; display:none"></canvas>							
+							<div id="canvasSBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasS" style="width:800px; height:500px; display:none"></canvas>
+							</div>
+							<div id="canvasSJMolKBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasSJMolK" style="width:800px; height:500px; display:none"></canvas>
+							</div>
+							<div id="canvasSErgMolKBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasSErgMolK" style="width:800px; height:500px; display:none"></canvas>
+							</div>
+							<div id="canvasSNoDimensionBox" style="max-width:800px; max-height:500px">							
+								<canvas id="canvasSNoDimension" style="width:800px; height:500px; display:none"></canvas>
+							</div>
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:1000px !important; height:500px"></canvas>
+							<canvas id="canvasRateAE" style="width:800px !important; height:300px !important"></canvas>
+							<p></p>
+						</div>
+					   	<div id="chartCanvasRatePEF" class="" style="display:none">
+							<canvas id="canvasRatePEF" style="width:800px !important; height:300px !important"></canvas>
+							<p></p>
+						</div>
+					   	<div id="chartCanvasRateTE" class="" style="display:none">
+							<canvas id="canvasRateTE" style="width:800px !important; height:300px !important"></canvas>							
+						</div>
+					   	<div id="chartCanvasRateConstant" class="" style="display:none">
+							<canvas id="canvasRateConstant" style="width:800px !important; height:300px !important"></canvas>
 							<p></p>
 						</div>
 					  </div>
@@ -452,29 +488,42 @@ $( function() {
 		}
 		return str;
 	}
-	
+
+	 function hideAllCanvas(){
+			$('#canvas').hide();
+			$('#canvasH').hide();
+			$('#canvasS').hide();
+		    $('#canvasJMolK').hide();
+			$('#canvasHJMolK').hide();
+			$('#canvasSJMolK').hide();
+			$('#canvasErgMolK').hide();
+			$('#canvasHErgMolK').hide();
+			$('#canvasSErgMolK').hide();
+			$('#canvasNoDimension').hide();
+			$('#canvasHNoDimension').hide();
+			$('#canvasSNoDimension').hide();
+	 }
+	 
 	 $('#unitsRSelection').change(function(){ 
-		    var value = $(this).val();
-			if (value == 'jmolk') {
+		 	hideAllCanvas();
+		 	var value = $(this).val();
+		    console.log('clicked on the unit system change option.');
+ 			if (value == 'jmolk') {
 				$('#canvasJMolK').show();
-				$('#canvas').hide();
-				$('#canvasErgMolK').hide();
-				$('#canvasNoDimension').hide();
+				$('#canvasHJMolK').show();
+				$('#canvasSJMolK').show();
 			} else if (value == 'ergmolk') {
-				$('#canvasJMolK').hide();
-				$('#canvas').hide();
 				$('#canvasErgMolK').show();
-				$('#canvasNoDimension').hide();
+				$('#canvasHErgMolK').show();
+				$('#canvasSErgMolK').show();
 			} else if (value == 'dimensionless') {
-				$('#canvasJMolK').hide();
-				$('#canvas').hide();
-				$('#canvasErgMolK').hide();
 				$('#canvasNoDimension').show();
+				$('#canvasHNoDimension').show();
+				$('#canvasSNoDimension').show();
 			} else if (value == '-1') {
-				$('#canvasJMolK').hide();
 				$('#canvas').show();
-				$('#canvasErgMolK').hide();
-				$('#canvasNoDimension').hide();
+				$('#canvasH').show();
+				$('#canvasS').show();
 			}
 	 });
 	
@@ -522,12 +571,18 @@ $( function() {
 			if(search_term_name ==  '') {
 				$("#chartCanvas").hide();
 				$("#chartCanvasRateAE").hide();
+				$("#chartCanvasRatePEF").hide();
+				$("#chartCanvasRateTE").hide();
+				$("#chartCanvasRateConstant").hide();
 				$("#tableMechanism").hide();
 				$("#errorQuery").show();
 			}
 			if(search_querySelection ==  -1 || search_querySelection ==  undefined || search_querySelection ==  null) {
 				$("#chartCanvas").hide();
 				$("#chartCanvasRateAE").hide();
+				$("#chartCanvasRatePEF").hide();
+				$("#chartCanvasRateTE").hide();				
+				$("#chartCanvasRateConstant").hide();
 				$("#tableMechanism").hide();
 				$("#errorType").show();
 			}			
@@ -879,6 +934,9 @@ $( function() {
 				if (resultArray.length == 1) {
 					$("#chartCanvas").hide();
 					$("#chartCanvasRateAE").hide();
+					$("#chartCanvasRatePEF").hide();
+					$("#chartCanvasRateTE").hide();					
+					$("#chartCanvasRateConstant").hide();
 					$("#tableMechanism").hide();
 					$("#noResult").show();
 				} else {
@@ -1201,11 +1259,17 @@ $( function() {
 							queryResultsTable.append(getTableResultRowString(count++, resultObj));
 							$("#chartCanvas").hide();
 							$("#chartCanvasRateAE").hide();
+							$("#chartCanvasRatePEF").hide();
+							$("#chartCanvasRateTE").hide();							
+							$("#chartCanvasRateConstant").hide();
 							$("#tableMechanism").show();
 
 						} else if(search_querySelection == 'compthermo' && countCoeffSequence >= resultArray.length){ // show chart
 							$("#chartCanvas").show();
 							$("#chartCanvasRateAE").hide();
+							$("#chartCanvasRatePEF").hide();
+							$("#chartCanvasRateTE").hide();
+							$("#chartCanvasRateConstant").hide();
 							$("#tableMechanism").hide();
 							$("canvas#canvas").remove();
 							$("canvas#canvasJMolK").remove();
@@ -1219,18 +1283,18 @@ $( function() {
 							$("canvas#canvasSJMolK").remove();
 							$("canvas#canvasSErgMolK").remove();
 							$("canvas#canvasSNoDimension").remove();							
-							$("div#chartCanvas").append('<canvas id="canvas" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasH" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasS" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
-							$("div#chartCanvas").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:500px !important; height:280px; display:none"></canvas>');
+							$("div#canvasBox").append('<canvas id="canvas" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasJMolKBox").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasErgMolKBox").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasNoDimensionBox").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasHBox").append('<canvas id="canvasH" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasHJMolKBox").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasHErgMolKBox").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasHNoDimensionBox").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasSBox").append('<canvas id="canvasS" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasSJMolKBox").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasSErgMolKBox").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasSNoDimensionBox").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
 							if (search_unitsRSelection.indexOf('-1') > -1) {
 						 		$("canvas#canvas").show();
 						 		$("canvas#canvasH").show();
@@ -1408,7 +1472,7 @@ $( function() {
 															display: true,
 															scaleLabel: {
 																display: true,
-																labelString: 'Cp ()'
+																labelString: 'Cp (-)'
 															}
 														}]
 													}
@@ -1578,7 +1642,7 @@ $( function() {
 																			display: true,
 																			scaleLabel: {
 																				display: true,
-																				labelString: 'H'
+																				labelString: 'H (-)'
 																			}
 																		}]
 																	}
@@ -1663,7 +1727,7 @@ $( function() {
 																					display: true,
 																					scaleLabel: {
 																						display: true,
-																						labelString: 'H (J / K)'
+																						labelString: 'S (J / K)'
 																					}
 																				}]
 																			}
@@ -1761,10 +1825,167 @@ $( function() {
 															
 						} else if((search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder')  && countCoeffSequence >= resultArray.length){ // show chart
 							$("#chartCanvasRateAE").show();
+							$("#chartCanvasRatePEF").show();
+							$("#chartCanvasRateTE").show();
+							$("#chartCanvasRateConstant").show();
 							$("#chartCanvas").hide();
 							$("#tableMechanism").hide();
+							$("canvas#canvasRateConstant").remove();
 							$("canvas#canvasRateAE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1000px !important; height:500px"></canvas>');
+							$("canvas#canvasRatePEF").remove();
+							$("canvas#canvasRateTE").remove();
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
+							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
+							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
+							$("div#chartCanvasRateConstant").append('<canvas id="canvasRateConstant" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
+							var configAE = {
+									type: 'line',
+									data: {
+										labels: chartLabelRate,
+										datasets: [{
+											label: 'Activation Energy',
+											backgroundColor: window.chartColors.red,
+											borderColor: window.chartColors.red,
+											data: ae,
+											fill: false,
+										}
+										]
+									},
+									options: {
+										responsive: true,
+										title: {
+											display: true,
+											text: ['Activation Energy for the Given Reaction across Mechanisms.']
+										},
+										tooltips: {
+											mode: 'index',
+											intersect: false,
+										},
+										hover: {
+											mode: 'nearest',
+											intersect: true
+										},
+										scales: {
+											xAxes: [{
+												display: true,
+												scaleLabel: {
+													display: true,
+													labelString: 'Mechanism'
+												}
+											}],
+											yAxes: [{
+												display: true,
+												scaleLabel: {
+													display: true,
+													labelString: 'Activation Energy (J / mol)'
+												}
+											}]
+										}
+									}
+								};
+
+								var ctxAE = document.getElementById('canvasRateAE').getContext('2d');
+								var myChartAE = new Chart(ctxAE, configAE);
+
+								var configPEF = {
+										type: 'line',
+										data: {
+											labels: chartLabelRate,
+											datasets: [{
+												label: 'Pre-exponential Factor',
+												fill: false,
+												backgroundColor: window.chartColors.blue,
+												borderColor: window.chartColors.blue,
+												data: ef,
+											}
+											]
+										},
+										options: {
+											responsive: true,
+											title: {
+												display: true,
+												text: ['Pre-exponential Factor for the Given Reaction across Mechanisms.']
+											},
+											tooltips: {
+												mode: 'index',
+												intersect: false,
+											},
+											hover: {
+												mode: 'nearest',
+												intersect: true
+											},
+											scales: {
+												xAxes: [{
+													display: true,
+													scaleLabel: {
+														display: true,
+														labelString: 'Mechanism'
+													}
+												}],
+												yAxes: [{
+													type: 'logarithmic',
+													display: true,
+													scaleLabel: {
+														display: true,
+														labelString: 'Pre-exponential Factor (m3 / mol / s)'
+													}
+												}]
+											}
+										}
+									};
+
+									var ctxPEF = document.getElementById('canvasRatePEF').getContext('2d');
+									var myChartPEF = new Chart(ctxPEF, configPEF);
+									
+									var configTE = {
+											type: 'line',
+											data: {
+												labels: chartLabelRate,
+												datasets: [{
+													label: 'Temperature Exponent',
+													fill: false,
+													backgroundColor: window.chartColors.orange,
+													borderColor: window.chartColors.orange,
+													data: te,
+												}
+												]
+											},
+											options: {
+												responsive: true,
+												title: {
+													display: true,
+													text: ['Temperature Exponent for the Given Reaction across Mechanisms.']
+												},
+												tooltips: {
+													mode: 'index',
+													intersect: false,
+												},
+												hover: {
+													mode: 'nearest',
+													intersect: true
+												},
+												scales: {
+													xAxes: [{
+														display: true,
+														scaleLabel: {
+															display: true,
+															labelString: 'Mechanism'
+														}
+													}],
+													yAxes: [{
+														display: true,
+														scaleLabel: {
+															display: true,
+															labelString: 'Temperature Exponent'
+														}
+													}]
+												}
+											}
+										};
+
+										var ctxTE = document.getElementById('canvasRateTE').getContext('2d');
+										var myChartTE = new Chart(ctxTE, configTE);
+
 							var configRateConstant = {
 									type: 'line',
 									data: {
@@ -1790,7 +2011,7 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: '1000 K/T (-)'
+													labelString: '1000 K / T (-)'
 												}
 											}],
 											yAxes: [{
@@ -1798,14 +2019,14 @@ $( function() {
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Rate Constant (m3/mol/s)'
+													labelString: 'Rate Constant (m3 / mol / s)'
 												}
 											}]
 										}
 									}
 								};
 
-								var ctxRateConstant = document.getElementById('canvasRateAE').getContext('2d');
+								var ctxRateConstant = document.getElementById('canvasRateConstant').getContext('2d');
 								var myChartRateConstant = new Chart(ctxRateConstant, configRateConstant);
 						}
 						
