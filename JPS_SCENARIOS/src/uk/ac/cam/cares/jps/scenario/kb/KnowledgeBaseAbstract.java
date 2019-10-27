@@ -27,6 +27,8 @@ public abstract class KnowledgeBaseAbstract {
 	public static final RDFFormat[] SUPPORTED_RDF_FORMATS = new RDFFormat[] {
 			RDFFormat.RDFXML, RDFFormat.TURTLE, RDFFormat.JSONLD, RDFFormat.NQUADS};
 	
+	protected String datasetUrl = null;
+	
 	public abstract void put(String resourceUrl, String content, String contentType);
 	
 	public abstract void update(String resourceUrl, String sparql);
@@ -37,7 +39,9 @@ public abstract class KnowledgeBaseAbstract {
 	
 	public abstract boolean exists(String resourceUrl);
 	
-	public abstract String getDatasetUrl();
+	public String getDatasetUrl() {
+		return datasetUrl;
+	}
 	
 	public String convert(URL resourceUrl, RDFFormat outputFormat) throws IOException {
 		

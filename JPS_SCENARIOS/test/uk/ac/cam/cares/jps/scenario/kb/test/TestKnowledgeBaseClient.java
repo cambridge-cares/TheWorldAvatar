@@ -21,7 +21,7 @@ import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
 public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations {
-	
+		
 	public void setUp() {
 		setUpFileBasedRemote();
 		printTime(null);

@@ -67,14 +67,12 @@ public class KnowledgeBaseRdf4jLocalInMemory extends KnowledgeBaseAbstract {
 
 	@Override
 	public void update(String resourceUrl, String sparql) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
 	public String get(String resourceUrl, String accept) {
-		// TODO Auto-generated method stub
-		return null;
+		throw new UnsupportedOperationException();
 	}
 
 	@Override
@@ -98,15 +96,6 @@ public class KnowledgeBaseRdf4jLocalInMemory extends KnowledgeBaseAbstract {
 
 	@Override
 	public boolean exists(String resourceUrl) {
-		// TODO Auto-generated method stub
-		return false;
+		throw new UnsupportedOperationException();
 	}
-	
-
-	@Override
-	public String getDatasetUrl() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

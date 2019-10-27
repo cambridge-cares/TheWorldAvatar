@@ -19,25 +19,12 @@ public class TestKnowledgeBaseTripleStore extends TestKnowledgeBaseAllImplementa
 	
 	public void setUp() {
 		setUpRdf4jInMemoryRemote();
+		//setUpBlazegraphDirect();
 		printTime(null);
 	}
 	
-	private int queryCount(String sparql) {
-
-		String result = client().query(null, sparql);
-		//System.out.println(result);
-		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
-		return simplified.getJSONArray("results").getJSONObject(0).getInt("count");
-	}
-	
-	protected int countTriples() {
-		int count = queryCount(SPARQL_COUNT_TRIPLES);
-		System.out.println("count triples=" + count);
-		return count;
-	}
-	
 	protected int countBuildings() {
-		int count = queryCount(SPARQL_COUNT_BUILDINGS);
+		int count = queryCount(null, SPARQL_COUNT_BUILDINGS);
 		System.out.println("count buildings=" + count);
 		return count;
 	}
@@ -62,7 +49,7 @@ public class TestKnowledgeBaseTripleStore extends TestKnowledgeBaseAllImplementa
 				+ "SELECT (COUNT(?g) as ?count) \n"
 				+ "WHERE { GRAPH ?g { ?bdn a citygml:BuildingType . } }";
 		
-		int numberOfBuildingsInNamedGraphs = queryCount(sparql);
+		int numberOfBuildingsInNamedGraphs = queryCount(null, sparql);
 		System.out.println("number of buildings in named graphs = " + numberOfBuildingsInNamedGraphs);
 	
 		assertEquals(numberOfBuildingsInNamedGraphs, numberOfBuildings - 1);
@@ -85,7 +72,7 @@ public class TestKnowledgeBaseTripleStore extends TestKnowledgeBaseAllImplementa
 			
 			String body = FileUtil.readFileLocally(current.getAbsolutePath());
 			client().put(namedGraph, body, MediaType.APPLICATION_RDF_XML.type);
-			countTriples = countTriples();
+			countTriples = countAllTriples();
 		}
 		
 		int numberOfBuildings = countBuildings();
@@ -109,7 +96,10 @@ public class TestKnowledgeBaseTripleStore extends TestKnowledgeBaseAllImplementa
 	 * 
 	 * @throws RDFParseException
 	 * @throws RepositoryException
-	 * @throws IOException
+	 * @throws IOException<br>
+	 * <br>
+	 * (3) setUpBlazegraphDirect(), all building files (11444)<br>
+	 * 2019-10-27 06:59:01
 	 */
 	public void xxxtestPerformancePutxFilesAsNamedGraphs() throws RDFParseException, RepositoryException, IOException {
 		

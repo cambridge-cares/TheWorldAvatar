@@ -20,7 +20,6 @@ public class KnowledgeBaseRdf4jServer extends KnowledgeBaseAbstract {
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseRdf4jServer.class);
 	
 	private String datasetName = null;
-	private String datasetUrl = null;
 	
 	public KnowledgeBaseRdf4jServer(String datasetUrl, String datasetName) {
 		this.datasetUrl = datasetUrl;
@@ -123,11 +122,6 @@ public class KnowledgeBaseRdf4jServer extends KnowledgeBaseAbstract {
 	@Override
 	public boolean exists(String resourceUrl) {
 		logger.info("exists resourceUrl=" + resourceUrl);
-		throw new JPSRuntimeException("Method 'exists' is not supported");
-	}
-
-	@Override
-	public String getDatasetUrl() {
-		return datasetUrl;
+		throw new UnsupportedOperationException();
 	}
 }

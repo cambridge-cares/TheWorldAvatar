@@ -3,13 +3,18 @@ package uk.ac.cam.cares.jps.scenario.kb.test;
 import java.io.File;
 import java.util.Arrays;
 
+import org.json.JSONObject;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public abstract class TestKnowledgeBaseHelper extends TestCase {
 
+	protected static final String SPARQL_COUNT_TRIPLES = "SELECT (COUNT(?s) as ?count) WHERE { ?s ?p ?o }";
+	
 	private KnowledgeBaseSwitchClient client = null;
 	protected String datasetUrl = null;
 	private long startTime = -1;
@@ -70,5 +75,25 @@ public abstract class TestKnowledgeBaseHelper extends TestCase {
 	protected void assertMarkerInE303Load(String content, String numbermarker) {
 		String match = numbermarker + "</system:numericalValue>";
 		assertTrue(content.contains(match));
+	}
+	
+	protected int queryCount(String resourceUrl, String sparql) {
+
+		String result = client().query(resourceUrl, sparql);
+		//System.out.println(result);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		return simplified.getJSONArray("results").getJSONObject(0).getInt("count");
+	}
+	
+	protected int countAllTriples() {
+		int count = queryCount(null, SPARQL_COUNT_TRIPLES);
+		System.out.println("count triples=" + count);
+		return count;
+	}
+	
+	protected int countTriples(String resourceUrl) {
+		int count = queryCount(resourceUrl, SPARQL_COUNT_TRIPLES);
+		System.out.println("count triples=" + count);
+		return count;
 	}
 }

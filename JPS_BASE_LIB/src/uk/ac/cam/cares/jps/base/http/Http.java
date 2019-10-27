@@ -18,6 +18,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -299,6 +300,16 @@ public class Http {
     public static HttpPost post(String urlOrPathOrKey, Object body,  String contentType, String accept, Object... params) {
     	//request.setHeader(HttpHeaders.CONTENT_TYPE, "application/rdf+xml;charset=UTF-8");
     	return (HttpPost) putOrPost(new HttpPost(), urlOrPathOrKey, body, contentType, accept, params);
+    }
+    
+    public static HttpDelete delete(String urlOrPathOrKey, Object... params) {
+    	try {
+	        URI uri = createURIFlex(urlOrPathOrKey, params);
+	        HttpDelete request = new HttpDelete(uri);
+	        return request;
+    	} catch(URISyntaxException e) {
+	    	throw new JPSRuntimeException(e.getMessage(), e);
+	    }
     }
     
     private static HttpEntityEnclosingRequestBase putOrPost( HttpEntityEnclosingRequestBase request, 

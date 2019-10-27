@@ -50,6 +50,8 @@ public class KnowledgeBaseManager {
 			result = new KnowledgeBaseRdf4jServer(datasetUrl, datasetName);
 		} else if (datasetUrl.contains("/testrdf4jmeta")) {
 			result = new KnowledgeBaseRdf4jServer(datasetUrl, datasetName);
+		} else if (datasetUrl.contains("/testblazegraph")) {
+			result = new KnowledgeBaseBlazegraph(datasetUrl, datasetName);
 		} else {
 			String[] preexistingDatasets = new String[] {"misc", "test", "testfilebased"};
 			for (String current: preexistingDatasets) {

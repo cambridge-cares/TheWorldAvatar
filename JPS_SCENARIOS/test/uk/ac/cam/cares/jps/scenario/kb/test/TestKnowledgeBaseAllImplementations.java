@@ -11,7 +11,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
 public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeBaseHelper {
 	
-	protected static final String SPARQL_COUNT_TRIPLES = "SELECT (COUNT(?s) as ?count) WHERE { ?s ?p ?o }";
 	protected static final String SPARQL_COUNT_BUILDINGS = "PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>\n" 
 			+ "PREFIX citygml:<http://www.theworldavatar.com/CityGMLOntology.owl#>\n"
 			+ "SELECT (COUNT(?bdn) as ?count) \n"
@@ -46,6 +45,14 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		}
 	}
 	
+	protected void setUpBlazegraphDirect() {
+		if (client() == null) {
+			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/testblazegraph";
+			System.out.println("creating client for datasetUrl=" + datasetUrl);
+			createClient(datasetUrl, true);
+		}
+	}
+	
 	protected void setUpFileBasedRemote() {
 		if (client() == null) {
 			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/dataset/testfilebased";
@@ -55,9 +62,10 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 	}
 	
 	public void setUp() {
-		setUpRdf4jNativeDirect();
+		//setUpRdf4jNativeDirect();
 		//setUpRdf4jInMemoryDirect();
-		//setUpRdf4jInMemoryRemote();
+		setUpRdf4jInMemoryRemote();
+		//setUpBlazegraphDirect();
 		//setUpFileBasedRemote();
 		printTime(null);
 	}
@@ -103,9 +111,11 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		return value;
 	}
 	
-	private String[] createRandomIriAndTurtleContent() {
+	private String[] createRandomIriAndTurtleContent(String iri, int from, int to) {
 		
-		String iri = datasetUrl + "/" + UUID.randomUUID().toString().replace("-", "") + ".ttl";
+		if (iri == null) {
+			iri = datasetUrl + "/" + UUID.randomUUID().toString().replace("-", "") + ".ttl";
+		}
 		String iriInBrackets = "<" + iri + ">";
 		
 		StringBuffer turtle = new StringBuffer("@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> . ")
@@ -113,7 +123,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 				.append("@prefix ex: <http://www.example.com/fancyprops/> . ")
 				.append(iriInBrackets).append(" rdf:type foaf:Person . ");
 		
-		for (int i=1; i<=100; i++) {
+		for (int i=from; i<=to; i++) {
 			turtle.append(iriInBrackets).append(" ex:prop").append(i).append(" \"" + i + "\" . ");
 		}
 		
@@ -121,31 +131,44 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 	}
 	
 	public void testQueryOneRandomNamedGraphInTurtle() {
-		
-		String[] a = createRandomIriAndTurtleContent();
+		int numberExampleProperties = 100;
+		String[] a = createRandomIriAndTurtleContent(null, 1, numberExampleProperties);
 		System.out.println(a[0]);
 		System.out.println(a[1]);
-		
 		client().put(a[0], a[1], MediaType.TEXT_TURTLE.type);
 		
-		System.out.println(SPARQL_COUNT_TRIPLES);
-		
+		int resultCount = queryCount(a[0], SPARQL_COUNT_TRIPLES);
+		// one additional statement "a[0] is a Person"
+		assertEquals(numberExampleProperties + 1, resultCount);
+		 
 		String result = client().query(a[0], SPARQL_RANDOM_NAMED);
 		System.out.println("RESULT = " + result);
 		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
 		System.out.println(simplified);
 		String person = simplified.getJSONArray("results").getJSONObject(0).getString("person");
 		assertEquals(a[0], person);
+		
+		// check that put really replaces all existing triples for the same named graph
+		// and not just adds new triples
+		a = createRandomIriAndTurtleContent(a[0], 201, 210);
+		System.out.println(a[0]);
+		System.out.println(a[1]);
+		client().put(a[0], a[1], MediaType.TEXT_TURTLE.type);
+		
+		resultCount = queryCount(a[0], SPARQL_COUNT_TRIPLES);
+		// one additional statement "a[0] is a Person"
+		assertEquals(11, resultCount);
 	}
 	
 	public void testQueryxRandomNamedGraphsInTurtle() {
 		
 		printTime(null);
 		
-		int number = 100;
+		int numberExampleProperties = 100;
+		int number = 10;
 		for (int i=1; i<=number; i++) {
 			System.out.println("random graph" + i);
-			String[] a = createRandomIriAndTurtleContent();		
+			String[] a = createRandomIriAndTurtleContent(null, 1, numberExampleProperties);		
 			client().put(a[0], a[1], MediaType.TEXT_TURTLE.type);		
 			String result = client().query(a[0], SPARQL_RANDOM_NAMED);
 			JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
@@ -164,9 +187,11 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 
 		String sparqlupdate = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " + 
-				"INSERT DATA { " + 
+				"INSERT DATA { " +
+				//"GRAPH <" + target + "> { " +
 				"<http://example.com/" + provenanceName + "> dcterms:created \"2019-10-20T13:25:13.857\"^^xsd:dateTime . " + 
-				"}";
+				//"}" +
+				" }";
 		
 		client().update(target, sparqlupdate);
 		
