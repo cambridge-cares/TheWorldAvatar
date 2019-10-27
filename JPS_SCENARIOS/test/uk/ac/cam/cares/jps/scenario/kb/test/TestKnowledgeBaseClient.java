@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenarios.test;
+package uk.ac.cam.cares.jps.scenario.kb.test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -17,8 +17,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
-import uk.ac.cam.cares.jps.scenario.KnowledgeBaseAbstract;
-import uk.ac.cam.cares.jps.scenario.KnowledgeBaseManager;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
 public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations {
 	

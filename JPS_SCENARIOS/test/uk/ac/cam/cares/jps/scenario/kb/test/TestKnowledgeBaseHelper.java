@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenarios.test;
+package uk.ac.cam.cares.jps.scenario.kb.test;
 
 import java.io.File;
 import java.util.Arrays;

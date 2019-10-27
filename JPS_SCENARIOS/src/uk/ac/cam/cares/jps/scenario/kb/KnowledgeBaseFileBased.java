@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenario;
+package uk.ac.cam.cares.jps.scenario.kb;
 
 import java.io.File;
 import java.io.FileInputStream;

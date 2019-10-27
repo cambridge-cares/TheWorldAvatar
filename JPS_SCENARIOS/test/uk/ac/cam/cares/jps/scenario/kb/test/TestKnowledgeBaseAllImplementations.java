@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.scenarios.test;
+package uk.ac.cam.cares.jps.scenario.kb.test;
 
 import java.io.FileNotFoundException;
 import java.util.UUID;
@@ -55,10 +55,10 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 	}
 	
 	public void setUp() {
-		//setUpRdf4jNativeDirect();
+		setUpRdf4jNativeDirect();
 		//setUpRdf4jInMemoryDirect();
 		//setUpRdf4jInMemoryRemote();
-		setUpFileBasedRemote();
+		//setUpFileBasedRemote();
 		printTime(null);
 	}
 	

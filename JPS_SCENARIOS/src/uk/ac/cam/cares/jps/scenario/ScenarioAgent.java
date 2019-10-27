@@ -28,6 +28,9 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
 public class ScenarioAgent extends KnowledgeBaseAgent {
