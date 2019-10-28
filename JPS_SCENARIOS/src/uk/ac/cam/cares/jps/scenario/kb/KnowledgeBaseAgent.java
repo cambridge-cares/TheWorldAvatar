@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 @WebServlet(urlPatterns = {"/kb/*", "/data/*", "/dataset/*"})
@@ -149,7 +150,7 @@ public class KnowledgeBaseAgent extends HttpServlet {
 				return null;
 			} else {
 				// case 2: indirect query
-				return parameterUrl;
+				return KnowledgeBaseClient.cutHashFragment(parameterUrl);
 			}
 			
 		} else {

@@ -146,6 +146,11 @@ public class TestQuery extends TestCase implements ITestConstants{
 	}
 	
 	public void testQueryBrokerQueryFilesGreedy() {
+		
+//		String scenarioUrl = BucketHelper.getScenarioUrl("testGREEDY");
+//		JPSHttpServlet.enableScenario(scenarioUrl);
+//		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		
 		String greedySparqlQuery = "PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
 				+ "WHERE {?entity a sys:CompositeSystem . " 

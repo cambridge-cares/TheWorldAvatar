@@ -21,7 +21,7 @@ public class ResourcePathConverter {
 		
 		//TODO-AE SC URGENT 20191021 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
 		// maybe change back not necessary any more, because of the solution below
-		//		if (true) {
+//		if (true) {
 //			return path;
 //		}
 	
@@ -35,11 +35,12 @@ public class ResourcePathConverter {
 		String converted = path;
 		if (path.contains("http://www.theworldavatar.com")) {
 			converted = path.replace("http://www.theworldavatar.com", address);
+			JPSBaseLogger.info(getInstance(), "converted resource path " + path + " to " + converted);
 		} else if (path.contains("http://www.jparksimulator.com")) {
 			converted = path.replace("http://www.jparksimulator.com", address);
+			JPSBaseLogger.info(getInstance(), "converted resource path " + path + " to " + converted);
 		}
 		
-		JPSBaseLogger.info(getInstance(), "converted resource path " + path + " to " + converted);
 		return converted;
 	}
 	

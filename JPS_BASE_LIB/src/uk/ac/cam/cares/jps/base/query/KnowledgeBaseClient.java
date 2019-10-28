@@ -52,7 +52,7 @@ public class KnowledgeBaseClient {
 	}	
 	
 	/**
-	 *  * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
+	 * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
 	 * The method also allows to get non-RDF resources. 
 	 * 
 	 * @param datasetUrl 
@@ -232,7 +232,7 @@ public class KnowledgeBaseClient {
 	 * 
 	 * @return
 	 */
-	private static String cutHashFragment(String url) {
+	public static String cutHashFragment(String url) {
 		int i = url.lastIndexOf("#");
 		if (i >= 0) {
 			return url.substring(0, i);

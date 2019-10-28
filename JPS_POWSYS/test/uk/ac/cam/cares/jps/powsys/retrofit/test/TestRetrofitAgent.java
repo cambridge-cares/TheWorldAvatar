@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.RDFNode;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
@@ -44,7 +45,7 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		// copy NPP generator OWL test file into the scenario bucket 
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/NucGenerator_1_B0.owl";
 		File file = new File(source);
-		String powerGenerator = "http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0";
+		String powerGenerator = KeyValueManager.getServerAddress() +"/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0";
 		new QueryBroker().put(powerGenerator, file);
 
 		assertPropertyValue(1.270333, powerGenerator, PGISCOORDX);

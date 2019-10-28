@@ -188,6 +188,10 @@ public class QueryBroker {
 	}
 	
 	public void put(String destinationUrl, String content) {
+		KnowledgeBaseClient.put(null, destinationUrl, content, null);
+	}
+	
+	public void putOld(String destinationUrl, String content) {
 		
 		//String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		//JPSBaseLogger.info(this, "put for destinationUrl=" + destinationUrl + ", scenarioUrl=" + scenarioUrl);
