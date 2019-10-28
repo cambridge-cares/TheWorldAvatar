@@ -118,12 +118,12 @@
 					<div class="col-md-11">
 						<s:select
 							headerKey="-1" headerValue="Select query type"
-							list="#{'mechAll':'Show All Mechanisms (no additional input is needed)', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodynamic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'comparerate':'Compare Arrhenius Rate Constant Parameters (Matching Reaction Exactly)', 'rateconstantAnyOrder':'Show Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)', 'comparerateAnyOrder':'Compare Arrhenius Rate Constant Parameters (Matching Reactants and Products, may take several minutes)'}" 
+							list="#{'mechAll':'Show All Mechanisms (no additional input is needed)', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodynamic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters', 'comparerate':'Compare Arrhenius Parameters and Rate Constants'}" 
 							name="querySelection" 
 							value="thermo" theme="bootstrap" />
 					</div>
 					<div class="col-md-1">
-						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="To view all the mechanisms, select 'Show All Mechanisms'. To search for a species, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. To search for a reaction, select either 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters'.">?</span>							
+						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="To view all the mechanisms, select 'Show All Mechanisms'. To search for a species, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. To search for a reaction, select either 'Show Arrhenius Parameters and Rate Constants' or 'Compare Arrhenius Parameters and Rate Constants'.">?</span>							
 					</div>
 				</div>
 				<span id ="queryText" style="">Interactive text:</span>
@@ -134,11 +134,10 @@
 						<s:textfield name="term" class="form-control"  placeholder="Specify the name of a species or reaction" theme="bootstrap"/>							
 					</div>
 					<div class="col-md-1">
-						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="If you have selected 'Show All Mechanisms' in the menu above, click on the 'Search OntoKin' button. If you have selected a species related query, type in or paste a species (e.g. H2O). If you have selected a reaction related query, type in or past a reaction (e.g. O + HO2 [=] O2 + OH). Finally, click on the 'Search OntoKin' button.">?</span>
+						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="If you have selected 'Show All Mechanisms' in the menu above, click on the 'Search OntoKin' button. If you have selected a species related query, type in or paste a species (e.g. H2O). If you have selected a reaction related query, type in or paste a reaction (e.g. O + HO2 [=] O2 + OH). Finally, click on the 'Search OntoKin' button.">?</span>
 					</div>
 				</div>
 
-					<%-- <s:submit id="search_btn" value="OntoKin Search (to view the list of all mechanisms in the KB, go directly to the following drop-down menu)" theme="bootstrap"/> --%>
 					<button id="execute" theme="bootstrap">Search OntoKin</button>
 					<button id="refresh" theme="bootstrap">Clear</button>
 					<span id="spinner" style="display: none"><i class="fa fa-spinner fa-spin" style="font-size:24px"></i></span>
@@ -162,9 +161,9 @@
 							    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
 							      <div class="card-body">
 										<h5 class="card-title" style="font-size: 18px;">How to search for a species?</h5>
-									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a species (e.g. CH4) by typing in or pasting, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
+									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a species (e.g. O2) by typing in or pasting, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
 									    <h5 class="card-title" style="font-size: 18px;">How to search for a reaction?</h5>
-									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a reaction (e.g. OH [=] H2O + O) by typing in or pasting, select either 'Show Mechanism(s) Containing Reaction' or 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
+									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a reaction (e.g. O2 + N [=] O + NO) by typing in or pasting, select either 'Show Mechanism(s) Containing Reaction' or 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
 									</div>
 							    </div>
 							  </div>
@@ -198,61 +197,63 @@
 									list="#{'jmolk':'J / mol. K', 'ergmolk':'erg / mol. K', 'dimensionless':'Dimensionless'}" 
 									name="unitsRSelection" 
 									value="unitsR" theme="bootstrap" />
+							<p></p>
+							<span id ="mechOnOrOff" style="">Clicking on a mechanism, its visualisation can be deactivated or activated.</span>
 							</div>
-							<div id="canvasBox" style="max-width:800px; max-height:500px">	
+							<div id="canvasBox" style="max-width:1000px; max-height:666px">
 								<canvas id="canvas" style="display:none"></canvas>
 							</div>
-							<div id="canvasJMolKBox" style="max-width:800px; max-height:500px">	
+							<div id="canvasJMolKBox" style="max-width:1000px; max-height:666px">	
 								<canvas id="canvasJMolK" style="display:none"></canvas>
 							</div>
-							<div id="canvasErgMolKBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasErgMolK" style="display:none"></canvas>
+							<div id="canvasErgMolKBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasErgMolK" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasNoDimensionBox" style="max-width:800px; max-height:500px">	
-								<canvas id="canvasNoDimension" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasNoDimensionBox" style="max-width:1000px; max-height:666px">	
+								<canvas id="canvasNoDimension" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
 							<p></p>
 
-							<div id="canvasHBox" style="max-width:800px; max-height:500px">	
-								<canvas id="canvasH" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasHBox" style="max-width:1000px; max-height:666px">	
+								<canvas id="canvasH" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasHJMolKBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasHJMolK" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasHJMolKBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasHJMolK" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasHErgMolKBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasHErgMolK" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasHErgMolKBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasHErgMolK" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasHNoDimensionBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasHNoDimension" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasHNoDimensionBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasHNoDimension" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
 							<p></p>
-							<div id="canvasSBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasS" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasSBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasS" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasSJMolKBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasSJMolK" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasSJMolKBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasSJMolK" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasSErgMolKBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasSErgMolK" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasSErgMolKBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasSErgMolK" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
-							<div id="canvasSNoDimensionBox" style="max-width:800px; max-height:500px">							
-								<canvas id="canvasSNoDimension" style="width:800px; height:500px; display:none"></canvas>
+							<div id="canvasSNoDimensionBox" style="max-width:1000px; max-height:666px">							
+								<canvas id="canvasSNoDimension" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
 						</div>
 					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:800px !important; height:300px !important"></canvas>
-							<p></p>
+							<canvas id="canvasRateAE" style="width:1000px !important; height:666px !important"></canvas>
 						</div>
+						<hr class="line !important;">
 					   	<div id="chartCanvasRatePEF" class="" style="display:none">
-							<canvas id="canvasRatePEF" style="width:800px !important; height:300px !important"></canvas>
-							<p></p>
+							<canvas id="canvasRatePEF" style="width:1000px !important; height:666px !important"></canvas>
 						</div>
+					   	<hr class="line !important;">
 					   	<div id="chartCanvasRateTE" class="" style="display:none">
-							<canvas id="canvasRateTE" style="width:800px !important; height:300px !important"></canvas>							
+							<canvas id="canvasRateTE" style="width:1000px !important; height:666px !important"></canvas>							
 						</div>
+					   	<hr class="line !important;">
 					   	<div id="chartCanvasRateConstant" class="" style="display:none">
-							<canvas id="canvasRateConstant" style="width:800px !important; height:300px !important"></canvas>
-							<p></p>
+							<canvas id="canvasRateConstant" style="width:1000px !important; height:800px !important"></canvas>
 						</div>
 					  </div>
 					</div>
@@ -316,14 +317,9 @@ $( function() {
 			interval = interval / slices;
 			interval = Math.ceil(interval / 100.0) * 100;
 			var temperatures = [];
-			console.log('In getTemperatures');
 			var T;
 			for(T = 300; T <= 6000; T = T + 300){
-				console.log('T In getTemperatures');
-				console.log(T);
 				temperatures.push(T);
-				console.log('temperatures getTemperatures');
-				console.log(temperatures);
 			}
 			return temperatures;
 		 }
@@ -334,16 +330,11 @@ $( function() {
 			interval = interval / slices;
 			interval = Math.ceil(interval / 100.0) * 100;
 			var temperatures = [];
-			console.log('In getTemperatures');
 			var T;
 			for(T = 6000; T >=300 ; T = T - 300){
-				console.log('T In getTemperatures');
-				console.log(T);
 				number = 1000 / T;
 				number = number.toFixed(2);
 				temperatures.push(number);
-				console.log('temperatures getTemperatures');
-				console.log(temperatures);
 			}
 			return temperatures;
 		 }
@@ -384,26 +375,16 @@ $( function() {
 	 function calculateCp(unitsR, aLow, aHigh, minTemp, midTemp, maxTemp) {
 		let R = calculateR(unitsR);
 		let interval = calculateInterval(minTemp, maxTemp);
-		console.log('interval:');
-		console.log(interval);
 		var T = 300;
 		var CpAllTemps = [];
 		if(aLow.length>=7 && aHigh.length>=7){
  			for(T = 300; T <= 6000; T += 300){
-				console.log('T:');
-				console.log(T);
  				if(T<midTemp){
 					Cp = R * (parseFloat(aLow[0]) + parseFloat(aLow[1]) * T + parseFloat(aLow[2]) * Math.pow(T, 2)  + parseFloat(aLow[3]) * Math.pow(T, 3) + parseFloat(aLow[4]) * Math.pow(T, 4));
-					console.log('CpLowInFuction');
-					console.log(Cp);
 				} else{
 					Cp = R * (parseFloat(aHigh[0]) + parseFloat(aHigh[1]) * T + parseFloat(aHigh[2]) * Math.pow(T, 2)  + parseFloat(aHigh[3]) * Math.pow(T, 3) + parseFloat(aHigh[4]) * Math.pow(T, 4));
-					console.log('CpHighInFuction');
-					console.log(Cp);
 				}
 				CpAllTemps.push(Cp);
-				console.log('CpAllTemps');
-				console.log(CpAllTemps); 
 			}
 		}
 		return CpAllTemps;
@@ -412,26 +393,16 @@ $( function() {
 	 function calculateH(unitsR, aLow, aHigh, minTemp, midTemp, maxTemp) {
 			let R = calculateR(unitsR);
 			let interval = calculateInterval(minTemp, maxTemp);
-			console.log('interval:');
-			console.log(interval);
 			var T = 300;
 			var HAllTemps = [];
 			if(aLow.length>=7 && aHigh.length>=7){
 	 			for(T = 300; T <= 6000; T += 300){
-					console.log('T:');
-					console.log(T);
 	 				if(T<midTemp){
 						H = R * (parseFloat(aLow[0]) * T + parseFloat(aLow[1]) * Math.pow(T, 2) / 2 + parseFloat(aLow[2]) * Math.pow(T, 3) / 3  + parseFloat(aLow[3]) * Math.pow(T, 4) / 4 + parseFloat(aLow[4]) * Math.pow(T, 5) / 5 + parseFloat(aLow[5]));
-						console.log('HLowInFuction');
-						console.log(H);
 					} else{
 						H = R * (parseFloat(aHigh[0]) * T + parseFloat(aHigh[1]) * Math.pow(T, 2) / 2 + parseFloat(aHigh[2]) * Math.pow(T, 3) / 3  + parseFloat(aHigh[3]) * Math.pow(T, 4) / 4 + parseFloat(aHigh[4]) * Math.pow(T, 5) / 5 + parseFloat(aHigh[5]));
-						console.log('CpHighInFuction');
-						console.log(H);
 					}
 					HAllTemps.push(H);
-					console.log('HAllTemps');
-					console.log(HAllTemps); 
 				}
 			}
 			return HAllTemps;
@@ -440,29 +411,17 @@ $( function() {
 	 function calculateS(unitsR, aLow, aHigh, minTemp, midTemp, maxTemp) {
 			let R = calculateR(unitsR);
 			let interval = calculateInterval(minTemp, maxTemp);
-			console.log('interval:');
-			console.log(interval);
 			var T = 300;
 			var SAllTemps = [];
 			if(aLow.length>=7 && aHigh.length>=7){
 	 			for(T = 300; T <= 6000; T += 300){
-					console.log('T:');
-					console.log(T);
 	 				lnT = Math.log(T);
-	 				console.log('lnT');
-	 				console.log(lnT);
 					if(T<midTemp){
 						S = R * (parseFloat(aLow[0]) * lnT + parseFloat(aLow[1]) * T + parseFloat(aLow[2]) * Math.pow(T, 2) / 2  + parseFloat(aLow[3]) * Math.pow(T, 3) / 3 + parseFloat(aLow[4]) * Math.pow(T, 4) / 4 + parseFloat(aLow[6]));
-						console.log('SLowInFuction');
-						console.log(S);
 					} else{
 						S = R * (parseFloat(aHigh[0]) * lnT + parseFloat(aHigh[1]) * T + parseFloat(aHigh[2]) * Math.pow(T, 2) / 2  + parseFloat(aHigh[3]) * Math.pow(T, 3) / 3 + parseFloat(aHigh[4]) * Math.pow(T, 4) / 4 + parseFloat(aHigh[6]));
-						console.log('SHighInFuction');
-						console.log(S);
 					}
 					SAllTemps.push(S);
-					console.log('SAllTemps');
-					console.log(SAllTemps); 
 				}
 			}
 			return SAllTemps;
@@ -475,8 +434,6 @@ $( function() {
 					var x = 1000 / T; 
 	 				RC = A * Math.pow(1000 / x, b) * Math.exp(-E * x /(R * 1000));
 					RateConstantAllTemps.push(RC);
-					console.log('RateConstantAllTemps');
-					console.log(RateConstantAllTemps); 
 				}
 			return RateConstantAllTemps;
 		 }
@@ -507,7 +464,6 @@ $( function() {
 	 $('#unitsRSelection').change(function(){ 
 		 	hideAllCanvas();
 		 	var value = $(this).val();
-		    console.log('clicked on the unit system change option.');
  			if (value == 'jmolk') {
 				$('#canvasJMolK').show();
 				$('#canvasHJMolK').show();
@@ -538,7 +494,6 @@ $( function() {
 	let getTableResultRowString = (index, resultObj) => {
 		let tdNodes = '';
 		
-		//console.log(resultObj);
 		for (let x in resultObj) {
 			tdNodes += '<td>' + resultObj[x] + '</td>';
 		}
@@ -605,11 +560,6 @@ $( function() {
 				productArray = result[1].split("+");
 			}
 			
-			console.log('reactantArray');
-			console.log(reactantArray);
-			console.log('productArray');
-			console.log(productArray);
-			
 			$("#errorQuery").hide();
 			$("#errorQueryReaction").hide();
 			$("#errorType").hide();
@@ -640,18 +590,68 @@ $( function() {
 				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				'} ';
 								
-			} else if (search_querySelection == 'mechforR' && search_term_name.indexOf('=') > -1) {
+			} else if (search_querySelection == 'mechforR' && search_term_name.indexOf('=') > -1 && reactantArray.length == 2 && productArray.length == 2) {
 			 
+			    let p1 = productArray[0].trim();
+			    let p2 = productArray[1].trim();
+			    let r1 = reactantArray[0].trim();
+			    let r2 = reactantArray[1].trim();
+			    let maxLength = p1.length + p2.length + r1.length + r2.length + 11;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
-					'?Reaction ontokin:hasEquation \"' + search_term_name + '\" . ?Reaction ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
-				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
-				'} ';
-							
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+              	    'FILTER regex(?Equation, \" ' + productArray[1].trim() + '\")' + '\n' + 
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER regex(?Equation, \"' + reactantArray[1].trim() + ' \")' + '\n' +
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+ 				'}';
+			} else if (search_querySelection == 'mechforR' && search_term_name.indexOf('=') > -1 && reactantArray.length == 1 && productArray.length == 2) {
+			 
+			    let p1 = productArray[0].trim();
+			    let p2 = productArray[1].trim();
+			    let r1 = reactantArray[0].trim();
+			    let maxLength = p1.length + p2.length + r1.length + 8;
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
+				'WHERE {' + '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+              	    'FILTER regex(?Equation, \" ' + productArray[1].trim() + '\")' + '\n' + 
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+ 				'}';
+			} else if (search_querySelection == 'mechforR' && search_term_name.indexOf('=') > -1 && reactantArray.length == 2 && productArray.length == 1) {
+			 
+			    let p1 = productArray[0].trim();
+			    let r1 = reactantArray[0].trim();
+			    let r2 = reactantArray[1].trim();
+			    let maxLength = p1.length + r1.length + r2.length + 8;
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER regex(?Equation, \"' + reactantArray[1].trim() + ' \")' + '\n' +
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+ 				'}';
 			} else if(search_querySelection == 'thermo') {
 			 
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
@@ -686,17 +686,52 @@ $( function() {
 				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
 				    '?ThermoModelIRI ontokin:hasPressure  ?Pressure .' + '\n' +
 	 				'}';
- 				console.log("querystring:\n"+queryString);
- 				//$('#unitsRSelection').prop('selectedIndex',0);
-			} else if(search_querySelection == 'rateconstant') {
+			} else if(search_querySelection == 'rateconstant' && reactantArray.length == 2 && productArray.length == 2) {
+			    let p1 = productArray[0].trim();
+			    let p2 = productArray[1].trim();
+			    let r1 = reactantArray[0].trim();
+			    let r2 = reactantArray[1].trim();
+			    let maxLength = p1.length + p2.length + r1.length + r2.length + 11;
+				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+				'PREFIX ontokin:' + '\n' +
+				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'WHERE {' + '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+              	    'FILTER regex(?Equation, \" ' + productArray[1].trim() + '\")' + '\n' + 
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER regex(?Equation, \"' + reactantArray[1].trim() + ' \")' + '\n' +
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
+				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
+ 				'}';
+			} else if(search_querySelection == 'rateconstant' && reactantArray.length == 1 && productArray.length == 2) {
 			 
+			    let p1 = productArray[0].trim();
+			    let p2 = productArray[1].trim();
+			    let r1 = reactantArray[0].trim();
+			    let maxLength = p1.length + p2.length + r1.length + 8;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-					'?ReactionIRI ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+              	    'FILTER regex(?Equation, \" ' + productArray[1].trim() + '\")' + '\n' + 
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -706,46 +741,24 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
-
-			} else if(search_querySelection == 'comparerate') {
-				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
-			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
-				'PREFIX ontokin:' + '\n' +
-				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
-				'WHERE {' + '\n' +
-					'?ReactionIRI ontokin:hasEquation \"' + search_term_name + '\" . ?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
-			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
-				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
-				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
-				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergyUnits ?ActivationEnergyUnits .' + '\n' +
-				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactor ?PreExpFactor .' + '\n' +
-				    '?ArrheniusRateCoefficients ontokin:hasPreExponentialFactorUnits ?PreExpFactorUnits .' + '\n' +
-				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
-				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
- 				'}';
-			} else if(search_querySelection == 'rateconstantAnyOrder' && reactantArray.length == 2 && productArray.length == 2) {
+			} else if(search_querySelection == 'rateconstant' && reactantArray.length == 2 && productArray.length == 1) {
 			 
+			    let p1 = productArray[0].trim();
+			    let r1 = reactantArray[0].trim();
+			    let r2 = reactantArray[1].trim();
+			    let maxLength = p1.length + r1.length + r2.length + 8;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>' + '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		           '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .' + '\n' + 
-		              	   '?Product1 owl:sameAs ?Species1 .' + '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .' + '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .' + '\n' +
-		              	   '?Product2 owl:sameAs ?Species2 .' + '\n' +
-		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .' + '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .' + '\n' +
-		              	   '?Reactant1 owl:sameAs ?Species3 .' + '\n' + 
-		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .' + '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .' + '\n' +
-		              	   '?Reactant2 owl:sameAs ?Species4 .' + '\n' + 
-		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .' + '\n' +
-					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER regex(?Equation, \"' + reactantArray[1].trim() + ' \")' + '\n' +
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -755,32 +768,22 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
- 				
- 				console.log("querystring:\n"+queryString);
- 				console.log("\n reactant1:\n"+reactantArray[0].trim());
- 				console.log("\n reactant2:\n"+reactantArray[1].trim());
- 				console.log("\n product1:\n"+productArray[0].trim());
- 				console.log("\n product2:\n"+productArray[1].trim());
-
-			} else if(search_querySelection == 'rateconstantAnyOrder' && reactantArray.length == 1 && productArray.length == 2) {
+			} else if(search_querySelection == 'rateconstant' && reactantArray.length == 1 && productArray.length == 1) {
 			 
+			    let p1 = productArray[0].trim();
+			    let r1 = reactantArray[0].trim();
+			    let maxLength = p1.length + r1.length + 5;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
-		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .'+ '\n' +
-		              	   '?Product2 owl:sameAs ?Species2 .'+ '\n' +
-		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' + 
-		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
-		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
-					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -790,26 +793,26 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
-
-			} else if(search_querySelection == 'rateconstantAnyOrder' && reactantArray.length == 2 && productArray.length == 1) {
+			} else if(search_querySelection == 'comparerate' && reactantArray.length == 2 && productArray.length == 2) {
 			 
+			    let p1 = productArray[0].trim();
+			    let p2 = productArray[1].trim();
+			    let r1 = reactantArray[0].trim();
+			    let r2 = reactantArray[1].trim();
+			    let maxLength = p1.length + p2.length + r1.length + r2.length + 11;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		           		   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
-		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' +
-		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
-		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .'+ '\n' +
-		              	   '?Reactant2 owl:sameAs ?Species4 .'+ '\n' + 
-		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .'+ '\n' +
-					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+              	    'FILTER regex(?Equation, \" ' + productArray[1].trim() + '\")' + '\n' + 
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER regex(?Equation, \"' + reactantArray[1].trim() + ' \")' + '\n' +
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -819,29 +822,24 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
-
-			} else if(search_querySelection == 'comparerateAnyOrder' && reactantArray.length == 2 && productArray.length == 2) {
+			} else if(search_querySelection == 'comparerate' && reactantArray.length == 1 && productArray.length == 2) {
 			 
+			    let p1 = productArray[0].trim();
+			    let p2 = productArray[1].trim();
+			    let r1 = reactantArray[0].trim();
+			    let maxLength = p1.length + p2.length + r1.length + 8;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>' + '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		           '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .' + '\n' + 
-		              	   '?Product1 owl:sameAs ?Species1 .' + '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .' + '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .' + '\n' +
-		              	   '?Product2 owl:sameAs ?Species2 .' + '\n' +
-		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .' + '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .' + '\n' +
-		              	   '?Reactant1 owl:sameAs ?Species3 .' + '\n' + 
-		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .' + '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .' + '\n' +
-		              	   '?Reactant2 owl:sameAs ?Species4 .' + '\n' + 
-		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .' + '\n' +
-					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+              	    'FILTER regex(?Equation, \" ' + productArray[1].trim() + '\")' + '\n' + 
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -851,32 +849,24 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
- 				
- 				console.log("querystring:\n"+queryString);
- 				console.log("\n reactant1:\n"+reactantArray[0].trim());
- 				console.log("\n reactant2:\n"+reactantArray[1].trim());
- 				console.log("\n product1:\n"+productArray[0].trim());
- 				console.log("\n product2:\n"+productArray[1].trim());
-
-			} else if(search_querySelection == 'comparerateAnyOrder' && reactantArray.length == 1 && productArray.length == 2) {
+			} else if(search_querySelection == 'comparerate' && reactantArray.length == 2 && productArray.length == 1) {
 			 
+			    let p1 = productArray[0].trim();
+			    let r1 = reactantArray[0].trim();
+			    let r2 = reactantArray[1].trim();
+			    let maxLength = p1.length + r1.length + r2.length + 8;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' +
-		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +
-		                   '?ReactionIRI reaction_mechanism:hasProduct ?Product2 .'+ '\n' +
-		              	   '?Product2 owl:sameAs ?Species2 .'+ '\n' +
-		              	   '?Species2 rdfs:label \"' + productArray[1].trim() + '\" .'+ '\n' +
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' +
-		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
-		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
-					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER regex(?Equation, \"' + reactantArray[1].trim() + ' \")' + '\n' +
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -886,26 +876,22 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
-
-			} else if(search_querySelection == 'comparerateAnyOrder' && reactantArray.length == 2 && productArray.length == 1) {
+			} else if(search_querySelection == 'comparerate' && reactantArray.length == 1 && productArray.length == 1) {
 			 
+			    let p1 = productArray[0].trim();
+			    let r1 = reactantArray[0].trim();
+			    let maxLength = p1.length + r1.length + 5;
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
 				'WHERE {' + '\n' +
-		           		   '?ReactionIRI reaction_mechanism:hasProduct ?Product1 .'+ '\n' + 
-		              	   '?Product1 owl:sameAs ?Species1 .'+ '\n' +
-		            	   '?Species1 rdfs:label \"' + productArray[0].trim() + '\" .'+ '\n' +  
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant1 .'+ '\n' +  
-		              	   '?Reactant1 owl:sameAs ?Species3 .'+ '\n' + 
-		            	   '?Species3 rdfs:label \"' + reactantArray[0].trim() + '\" .'+ '\n' + 
-		                   '?ReactionIRI reaction_mechanism:hasReactant ?Reactant2 .'+ '\n' +
-		              	   '?Reactant2 owl:sameAs ?Species4 .'+ '\n' + 
-		              	   '?Species4 rdfs:label \"' + reactantArray[1].trim() + '\" .'+ '\n' +
-					'?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
+            	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
+            	    'FILTER regex(?Equation, \"' + reactantArray[0].trim() + ' \")' + '\n' + 
+              	    'FILTER (STRLEN(?Equation)='+maxLength+ ' || STRLEN(?Equation)=' + (maxLength-1) + ')' + '\n' +
+              	    '?ReactionIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .' + '\n' +
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
 				    '?ReactionIRI ontokin:hasArrheniusCoefficient ?ArrheniusRateCoefficients .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasActivationEnergy ?ActivationEnergy .' + '\n' +
@@ -915,7 +901,6 @@ $( function() {
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponent ?TempExponent .' + '\n' +
 				    '?ArrheniusRateCoefficients ontokin:hasTemperatureExponentUnits ?TempExpUnits .' + '\n' +
  				'}';
-
 			}
 		
 		let queryResultsTable = $("#table-query-results");
@@ -925,8 +910,8 @@ $( function() {
 		$("#spinner").show();
 		$.ajax({
 			type: 'GET',
-			//url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
-			url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
+			url: "http://www.theworldavatar.com/OntoKinGUI/OntoKinEndpointProxy",
+			//url: "http://localhost:8080/OntoKinGUI/OntoKinEndpointProxy",
 			data: {queryString},
 			success: data => {
 				let trimmedResult = data.slice(1, data.length-2);
@@ -1069,8 +1054,6 @@ $( function() {
 					        } else if (i == 'MechanismName') {
 					        	if(countCoeffSequence % 2 == 0){
 					        		chartLabelMech = row;
-					        		console.log('chartLabelMech');
-					        		console.log(chartLabelMech);
 					        		chartLabel.push(formatLabel(row) + ' (HTR)');
 					        	} else{
 					        		chartLabel.push(formatLabel(row) + ' (LTR)');
@@ -1097,12 +1080,8 @@ $( function() {
 					      });
 						
 						if(countCoeffSequence % 2 == 0 && search_querySelection == 'compthermo'){
-							console.log('countCoeffSequence');
 							let color = '#'+(Math.random()*0xFFFFFF<<0).toString(16);
-							console.log('color');
-							console.log(color);
 							var Cp = calculateCp('-1', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('Cp:' + Cp);
 							datasetsCp.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1110,9 +1089,7 @@ $( function() {
 								data: Cp,
 								fill: false
 							});
-							console.log('datasetsCp:'+datasetsCp);
 							var CpJMolK = calculateCp('jmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('CpJMolK:' + CpJMolK);
 							datasetsCpJMolK.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1120,9 +1097,7 @@ $( function() {
 								data: CpJMolK,
 								fill: false
 							});
-							console.log('datasetsCp:'+datasetsCp);
 							var CpErgMolK = calculateCp('ergmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('CpErgMolK:' + CpErgMolK);
 							datasetsCpErgMolK.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1130,9 +1105,7 @@ $( function() {
 								data: CpErgMolK,
 								fill: false
 							});
-							console.log('datasetsCp:'+datasetsCp);
 							var CpDimensionLess = calculateCp('dimensionless', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('CpDimensionLess:' + CpDimensionLess);
 							datasetsCpNoDimension.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1140,11 +1113,7 @@ $( function() {
 								data: CpDimensionLess,
 								fill: false
 							});
-							console.log('datasetsCp:'+datasetsCp);
-							console.log('countCoeffSequence');
-
 							var H = calculateH('-1', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('H:' + H);
 							datasetsH.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1152,9 +1121,7 @@ $( function() {
 								data: H,
 								fill: false
 							});
-							console.log('datasetsH:'+datasetsH);
 							var HJMolK = calculateH('jmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('HJMolK:' + HJMolK);
 							datasetsHJMolK.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1162,9 +1129,7 @@ $( function() {
 								data: HJMolK,
 								fill: false
 							});
-							console.log('datasetsH:'+datasetsH);
 							var HErgMolK = calculateH('ergmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('HErgMolK:' + HErgMolK);
 							datasetsHErgMolK.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1172,9 +1137,7 @@ $( function() {
 								data: HErgMolK,
 								fill: false
 							});
-							console.log('datasetsH:'+datasetsH);
 							var HDimensionLess = calculateH('dimensionless', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('HDimensionLess:' + HDimensionLess);
 							datasetsHNoDimension.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1182,10 +1145,7 @@ $( function() {
 								data: HDimensionLess,
 								fill: false
 							});
-							console.log('datasetsH:'+datasetsH);
-
 							var S = calculateS('-1', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('S:' + S);
 							datasetsS.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1193,9 +1153,7 @@ $( function() {
 								data: S,
 								fill: false
 							});
-							console.log('datasetsS:'+datasetsS);
 							var SJMolK = calculateS('jmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('SJMolK:' + SJMolK);
 							datasetsSJMolK.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1203,9 +1161,7 @@ $( function() {
 								data: SJMolK,
 								fill: false
 							});
-							console.log('datasetsS:'+datasetsS);
 							var SErgMolK = calculateS('ergmolk', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('SErgMolK:' + SErgMolK);
 							datasetsSErgMolK.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1213,9 +1169,7 @@ $( function() {
 								data: SErgMolK,
 								fill: false
 							});
-							console.log('datasetsS:'+datasetsS);
 							var SDimensionLess = calculateS('dimensionless', coLow, coHigh, minTemperature, midTemperature, maxTemperature);
-							console.log('SDimensionLess:' + SDimensionLess);
 							datasetsSNoDimension.push({
 								label: chartLabelMech,
 								backgroundColor: color,
@@ -1223,7 +1177,6 @@ $( function() {
 								data: SDimensionLess,
 								fill: false
 							});
-							console.log('datasetsS:'+datasetsS);
 						}
 						
 						if(search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder'){
@@ -1239,16 +1192,7 @@ $( function() {
 						}
 						
  						if(countCoeffSequence >= resultArray.length && search_querySelection == 'compthermo'){
-							console.log('minTempInAllMech');
-							console.log(minTempInAllMech);
-							console.log('maxTempInAllMech');
-							console.log(maxTempInAllMech);
 							chartLabelsThermo = getTemperatures(minTempInAllMech, maxTempInAllMech);
-							console.log('chartLabelsThermo in conditional statement:');
-							console.log(chartLabelsThermo);
-							console.log('datasetsCp:');
-							console.log(datasetsCp[0].label);
-							console.log(datasetsCp[0].data);
 						} 
 						
  						if(countCoeffSequence >= resultArray.length && (search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder')){
@@ -1283,18 +1227,18 @@ $( function() {
 							$("canvas#canvasSJMolK").remove();
 							$("canvas#canvasSErgMolK").remove();
 							$("canvas#canvasSNoDimension").remove();							
-							$("div#canvasBox").append('<canvas id="canvas" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasJMolKBox").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasErgMolKBox").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasNoDimensionBox").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasHBox").append('<canvas id="canvasH" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasHJMolKBox").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasHErgMolKBox").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasHNoDimensionBox").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasSBox").append('<canvas id="canvasS" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasSJMolKBox").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasSErgMolKBox").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
-							$("div#canvasSNoDimensionBox").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:800px; height:500px; display:none"></canvas>');
+							$("div#canvasBox").append('<canvas id="canvas" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasJMolKBox").append('<canvas id="canvasJMolK" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasErgMolKBox").append('<canvas id="canvasErgMolK" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasNoDimensionBox").append('<canvas id="canvasNoDimension" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasHBox").append('<canvas id="canvasH" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasHJMolKBox").append('<canvas id="canvasHJMolK" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasHErgMolKBox").append('<canvas id="canvasHErgMolK" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasHNoDimensionBox").append('<canvas id="canvasHNoDimension" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasSBox").append('<canvas id="canvasS" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasSJMolKBox").append('<canvas id="canvasSJMolK" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasSErgMolKBox").append('<canvas id="canvasSErgMolK" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
+							$("div#canvasSNoDimensionBox").append('<canvas id="canvasSNoDimension" class="animated fadeIn" style="width:1000px; height:666px; display:none"></canvas>');
 							if (search_unitsRSelection.indexOf('-1') > -1) {
 						 		$("canvas#canvas").show();
 						 		$("canvas#canvasH").show();
@@ -1834,10 +1778,10 @@ $( function() {
 							$("canvas#canvasRateAE").remove();
 							$("canvas#canvasRatePEF").remove();
 							$("canvas#canvasRateTE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
-							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
-							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
-							$("div#chartCanvasRateConstant").append('<canvas id="canvasRateConstant" class="animated fadeIn" style="width:800px !important; height:300px !important"></canvas>');
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
+							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
+							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
+							$("div#chartCanvasRateConstant").append('<canvas id="canvasRateConstant" class="animated fadeIn" style="width:1000px !important; height:800px !important"></canvas>');
 							var configAE = {
 									type: 'line',
 									data: {
@@ -1923,7 +1867,6 @@ $( function() {
 													}
 												}],
 												yAxes: [{
-													type: 'logarithmic',
 													display: true,
 													scaleLabel: {
 														display: true,
@@ -2015,7 +1958,7 @@ $( function() {
 												}
 											}],
 											yAxes: [{
-												type: 'logarithmic',												
+												type: 'logarithmic',
 												display: true,
 												scaleLabel: {
 													display: true,
