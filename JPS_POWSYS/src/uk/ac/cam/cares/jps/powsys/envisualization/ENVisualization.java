@@ -9,9 +9,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -30,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +43,13 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-@WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" })
+@WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
 public class ENVisualization extends JPSHttpServlet {
 	
 	private Document doc;
 	private Element root;
 	private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
+	String SCENARIO_NAME_TEST = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 	
 	/**
 	 * Create a KML object.
@@ -92,18 +92,17 @@ public class ENVisualization extends JPSHttpServlet {
 			throws ServletException, IOException {
 		
 		String path = request.getServletPath();
-		logger.info("path called= "+path);
-		
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
+
 		String iriofnetwork = joforEN.getString("electricalnetwork");
 		String flag = joforEN.getString("flag");
 		JPSHttpServlet.disableScenario();
-		if (flag.equals("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario")) {
+		if (flag.equals(SCENARIO_NAME_TEST)) {
 			String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
 			JPSHttpServlet.enableScenario(scenarioUrl);	
 		}
-
 		OntModel model = readModelGreedy(iriofnetwork);
+		logger.info("path called= "+path);
 		if ("/ENVisualization/createLineJS".equals(path)) {
 			String g=createLineJS(model);
 			AgentCaller.printToResponse(g, response);
@@ -114,6 +113,7 @@ public class ENVisualization extends JPSHttpServlet {
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
 			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
+//			try (FileWriter writer = new FileWriter("C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
 				b = createfinalKML(model);
 
@@ -121,7 +121,7 @@ public class ENVisualization extends JPSHttpServlet {
 				
 				
 				if (true) {
-					writeToResponse(response, b,n);
+//					writeToResponse(response, b,n);
 					return;
 				}
 				
@@ -138,6 +138,14 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			AgentCaller.printToResponse(g, response);
 		}
+		else if ("/ENVisualization/readGenerator".equals(path)) {
+
+			logger.info("path called here= " + path);
+
+			String iriofObject = joforEN.getString("selectedID");
+			String g=readGenerator(flag, model, iriofObject);
+			AgentCaller.printToResponse(g, response);
+		}
 	}
 	
 	public void writeToResponse(HttpServletResponse response, String content,String n) {
@@ -145,7 +153,7 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			logger.info("uploading file");
 			
-		    String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/OntoEN/en.kml";
+		    String fileName = "C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal.kml";
 		    String fileType = "text/xml; charset=utf-8";
 		    // Find this file id in database to get file name, and file type
 		
@@ -193,7 +201,7 @@ public class ENVisualization extends JPSHttpServlet {
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
 			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
+			gh.setnamegen("[" + generators.get(e)[0] + ".owl");
 			gh.setx(generators.get(e)[1]);
 			gh.sety(generators.get(e)[2]);
 
@@ -220,7 +228,7 @@ public class ENVisualization extends JPSHttpServlet {
 		ArrayList<String> coorddatabus = new ArrayList<String>();
 		for (int e = 0; e < bus.size(); e++) {
 			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + bus.get(e)[0].split("#")[1] + ".owl");
+			gh.setnamegen("/" + bus.get(e)[0] + ".owl");
 			gh.setx(bus.get(e)[1]);
 			gh.sety(bus.get(e)[2]);
 
@@ -245,7 +253,7 @@ public class ENVisualization extends JPSHttpServlet {
 		return a.writeFiletoString();
 	}
 	
-	 public class StaticobjectgenClass {
+	public class StaticobjectgenClass {
 		private String genname = "";
 		private String x = "0";
 		private String y = "0";
@@ -276,7 +284,7 @@ public class ENVisualization extends JPSHttpServlet {
 		
 	}
 	
-		public static OntModel readModelGreedy(String iriofnetwork) {
+	public static OntModel readModelGreedy(String iriofnetwork) {
 			String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "SELECT ?component "
@@ -457,11 +465,304 @@ public class ENVisualization extends JPSHttpServlet {
 	}
 	
 	/**
-	 * Read the KML file into this object.
-	 * @param file
+	 * Read the OWL file into this object.
+	 * @param String flag
+	 * @param OntModel model
 	 */
-	public  void readFile(File file) {
-		// TODO read KML file
+	public  String readGenerator(String flag, OntModel model, String iriOfObject) {
+		String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+//				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>"
+				+ "SELECT ?entity ?V_Pd ?V_Pdunit ?V_Pd_Gen ?V_Pd_Genunit ?V_Gd ?V_Gdunit ?V_Gd_Gen ?V_Gd_Genunit" 
+				+ "?Gsvalue ?Bsvalue ?V_Vm ?V_Va ?V_Vaunit ?V_BaseKV ?V_BaseKVunit ?VMaxvalue ?VMaxvalueunit ?VMinvalue ?VMinvalueunit  ?valueofx ?valueofxunit ?valueofy ?valueofyunit "
+
+				+ "WHERE {?entity  a  j1:BusNode  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?num ." 
+				+ "?num  a  j3:BusNumber  ." 
+				+ "?num  j2:hasValue ?vnum ."
+				+ "?vnum   j2:numericalValue ?V_num ." // number
+
+				+ "?model   j5:hasModelVariable ?Pd ." 
+				+ "?Pd  a  j3:PdBus  ." 
+				+ "?Pd  j2:hasValue ?vpd ."
+				+ "?vpd   j2:numericalValue ?V_Pd ." // pd
+//				+ "?vpd   j2:hasUnitOfMeasure ?V_Pdunit ." // unit
+
+				+ "?model   j5:hasModelVariable ?PdGen ." 
+				+ "?PdGen  a  j3:PdGen  ." 
+				+ "?PdGen  j2:hasValue ?vpdgen ."
+				+ "?vpdgen   j2:numericalValue ?V_Pd_Gen ." // pdgen
+//				+ "?vpdgen   j2:hasUnitOfMeasure ?V_Pd_Genunit ." // unit
+				
+				+ "?model   j5:hasModelVariable ?Gd ." 
+				+ "?Gd  a  j3:GdBus  ." 
+				+ "?Gd  j2:hasValue ?vgd ."
+				+ "?vgd   j2:numericalValue ?V_Gd ." // Gd
+//				+ "?vgd   j2:hasUnitOfMeasure ?V_Gdunit ." // unit
+				
+				+ "?model   j5:hasModelVariable ?Gd_Gen ." 
+				+ "?Gd_Gen  a  j3:GdGen  ." 
+				+ "?Gd_Gen  j2:hasValue ?vgdgen ."
+				+ "?vgdgen   j2:numericalValue ?V_Gd_Gen ." // Gdgen
+//				+ "?vgdgen   j2:hasUnitOfMeasure ?V_Gd_Genunit ." // unit
+
+
+				+ "?model   j5:hasModelVariable ?Gsvar ." 
+				+ "?Gsvar  a  j3:Gs  ." 
+				+ "?Gsvar  j2:hasValue ?vGsvar ."
+				+ "?vGsvar   j2:numericalValue ?Gsvalue ." // Gs (has no unit)
+
+				+ "?model   j5:hasModelVariable ?Bsvar ." 
+				+ "?Bsvar  a  j3:Bs  ." 
+				+ "?Bsvar  j2:hasValue ?vBsvar ."
+				+ "?vBsvar   j2:numericalValue ?Bsvalue ." // Bs (has no unit)
+
+				+ "?model   j5:hasModelVariable ?VM ." 
+				+ "?VM  a  j3:Vm  ." 
+				+ "?VM  j2:hasValue ?vVM ."
+				+ "?vVM   j2:numericalValue ?V_Vm ." // Vm
+//				+ "?vVM   j2:hasUnitOfMeasure ?V_Vmunit ." 
+
+				+ "?model   j5:hasModelVariable ?VA ." 
+				+ "?VA  a  j3:Va  ." 
+				+ "?VA  j2:hasValue ?vVA ."
+				+ "?vVA   j2:numericalValue ?V_Va ." // Va
+//				+ "?vVA   j2:hasUnitOfMeasure ?V_Vaunit ." // unit
+
+				+ "?model   j5:hasModelVariable ?BKV ." 
+				+ "?BKV  a  j3:baseKV  ." 
+				+ "?BKV  j2:hasValue ?vBKV ."
+				+ "?vBKV   j2:numericalValue ?V_BaseKV ." // Base KV
+//				+ "?vBKV   j2:hasUnitOfMeasure ?V_BaseKVunit ." // Base KV
+				
+				+ "?model   j5:hasModelVariable ?vmaxvar ." 
+				+ "?vmaxvar  a  j3:VmMax  ."
+				+ "?vmaxvar  j2:hasValue ?vvmaxvar ." 
+				+ "?vvmaxvar   j2:numericalValue ?VMaxvalue ." // Vmax
+//				+ "?vvmaxvar   j2:hasUnitOfMeasure ?VMaxvalueunit ." // Vmax
+
+				+ "?model   j5:hasModelVariable ?vminvar ." 
+				+ "?vminvar  a  j3:VmMin  ."
+				+ "?vminvar  j2:hasValue ?vvminvar ." 
+				+ "?vvminvar   j2:numericalValue ?VMinvalue ." // Vmin
+//				+ "?vvminvar   j2:hasUnitOfMeasure ?VMinvalueunit ." // Vmin
+				
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."//longitude
+//				+ "?vy  j2:hasUnitOfMeasure ?valueofyunit ."//longitude
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."//latitude
+//				+ "?vx  j2:hasUnitOfMeasure ?valueofxunit ."//latitude
+				
+
+				+ "}";
+		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+			    + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "SELECT ?entity ?BusNumbervalue ?activepowervalue ?activepowervalueunit ?Q_Gen ?Q_Genunit ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue "
+				+ "?Pmaxvalue ?Pmaxvalueunit ?Pminvalue ?Pminvalueunit ?Pc1value ?Pc2value ?Qc1minvalue ?Qc1maxvalue "
+				+ "?Qc2minvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
+				+ "?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue ?valueofx ?valueofxunit ?valueofy ?valueofyunit ?generation ?vemission "
+
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j2:isModeledBy ?model ."
+
+				+ "?model   j5:hasModelVariable ?num ." 
+				+ "?num  a  j3:BusNumber  ." 
+				+ "?num  j2:hasValue ?vnum ."
+				+ "?vnum   j2:numericalValue ?BusNumbervalue ." // number
+
+				+ "?model   j5:hasModelVariable ?Pg ." 
+				+ "?Pg  a  j3:Pg  ." 
+				+ "?Pg  j2:hasValue ?vpg ."
+				+ "?vpg   j2:numericalValue ?activepowervalue ." // pg
+//				+ "?vpg   j2:hasUnitOfMeasure ?activepowervalueunit ." // pg
+
+				+ "?model   j5:hasModelVariable ?Qg ." 
+				+ "?Qg  a  j3:Qg  ." 
+				+ "?Qg  j2:hasValue ?vqg ."
+				+ "?vqg   j2:numericalValue ?Q_Gen ." // qg
+//				+ "?vqg   j2:hasUnitOfMeasure ?Q_Genunit  ." // qg
+
+				+ "?model   j5:hasModelVariable ?qmax ." 
+				+ "?qmax  a  j3:QMax  ." 
+				+ "?qmax  j2:hasValue ?vqmax ."
+				+ "?vqmax   j2:numericalValue ?Qmaxvalue ." // qmax
+
+				+ "?model   j5:hasModelVariable ?qmin ." 
+				+ "?qmin  a  j3:QMin  ." 
+				+ "?qmin  j2:hasValue ?vqmin ."
+				+ "?vqmin   j2:numericalValue ?Qminvalue ." // qmin
+
+				+ "?model   j5:hasModelVariable ?Vg ." 
+				+ "?Vg  a  j3:Vg  ." 
+				+ "?Vg  j2:hasValue ?vVg ."
+				+ "?vVg   j2:numericalValue ?Vgvalue ." // vg
+
+				+ "?model   j5:hasModelVariable ?mbase ." 
+				+ "?mbase  a  j3:mBase  ." 
+				+ "?mbase  j2:hasValue ?vmbase ."
+				+ "?vmbase   j2:numericalValue ?mBasevalue ." // mbase
+
+				+ "?model   j5:hasModelVariable ?pmax ." 
+				+ "?pmax  a  j3:PMax  ." 
+				+ "?pmax  j2:hasValue ?vpmax ."
+				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
+//				+ "?vpmax   j2:hasUnitOfMeasure ?Pmaxvalueunit ." // pmax
+
+				+ "?model   j5:hasModelVariable ?pmin ." 
+				+ "?pmin  a  j3:PMin  ." 
+				+ "?pmin  j2:hasValue ?vpmin ."
+				+ "?vpmin   j2:numericalValue ?Pminvalue ." // pmin
+//				+ "?vpmin   j2:hasUnitOfMeasure ?Pminvalueunit ." // pmin
+
+				+ "?model   j5:hasModelVariable ?pc1 ." 
+				+ "?pc1  a  j3:Pc1  ." 
+				+ "?pc1  j2:hasValue ?vpc1 ."
+				+ "?vpc1   j2:numericalValue ?Pc1value ." // pc1
+
+				+ "?model   j5:hasModelVariable ?pc2 ." 
+				+ "?pc2  a  j3:Pc2  ." 
+				+ "?pc2  j2:hasValue ?vpc2 ."
+				+ "?vpc2   j2:numericalValue ?Pc2value ." // pc2
+
+				+ "?model   j5:hasModelVariable ?qc1min ." 
+				+ "?qc1min  a  j3:QC1Min  ."
+				+ "?qc1min  j2:hasValue ?vqc1min ." 
+				+ "?vqc1min   j2:numericalValue ?Qc1minvalue ." // qc1min
+
+				+ "?model   j5:hasModelVariable ?Qc1max ." 
+				+ "?Qc1max  a  j3:QC1Max  ."
+				+ "?Qc1max  j2:hasValue ?vQc1max ." 
+				+ "?vQc1max   j2:numericalValue ?Qc1maxvalue ." // qc1max
+
+				+ "?model   j5:hasModelVariable ?qc2min ." 
+				+ "?qc2min  a  j3:QC2Min  ."
+				+ "?qc2min  j2:hasValue ?vqc2min ."
+				+ "?vqc2min   j2:numericalValue ?Qc2minvalue ." // qc2min
+
+				+ "?model   j5:hasModelVariable ?Qc2max ."
+				+ "?Qc2max  a  j3:QC2Max  ."
+				+ "?Qc2max  j2:hasValue ?vQc2max ." 
+				+ "?vQc2max   j2:numericalValue ?Qc2maxvalue ." // qc2max
+
+				+ "?model   j5:hasModelVariable ?rampagc ." 
+				+ "?rampagc  a  j3:Rampagc  ."
+				+ "?rampagc  j2:hasValue ?vrampagc ." 
+				+ "?vrampagc   j2:numericalValue ?Rampagcvalue ." // rampagc
+
+				+ "?model   j5:hasModelVariable ?ramp10 ." 
+				+ "?ramp10  a  j3:Ramp10  ."
+				+ "?ramp10  j2:hasValue ?vramp10 ."
+				+ "?vramp10   j2:numericalValue ?Ramp10value ." // ramp10
+
+				+ "?model   j5:hasModelVariable ?ramp30 ." 
+				+ "?ramp30  a  j3:Ramp30  ."
+				+ "?ramp30  j2:hasValue ?vramp30 ." 
+				+ "?vramp30   j2:numericalValue ?Ramp30value ." // ramp30
+
+				+ "?model   j5:hasModelVariable ?rampq ." 
+				+ "?rampq  a  j3:Rampq  ." 
+				+ "?rampq  j2:hasValue ?vrampq ."
+				+ "?vrampq   j2:numericalValue ?Rampqvalue ." // rampq
+
+				+ "?model   j5:hasModelVariable ?apf ."
+				+ "?apf  a  j3:APF  ." 
+				+ "?apf  j2:hasValue ?vapf ."
+				+ "?vapf   j2:numericalValue ?apfvalue ." // apf
+				
+				+ "?model   j5:hasModelVariable ?startup ." 
+				+ "?startup  a  j3:StartCost  ."
+				+ "?startup  j2:hasValue ?vstartup ." 
+				+ "?vstartup   j2:numericalValue ?startupcostvalue ." //startup cost
+
+				+ "?model   j5:hasModelVariable ?shutdown ." 
+				+ "?shutdown  a  j3:StopCost  ."
+				+ "?shutdown  j2:hasValue ?vshutdown ." 
+				+ "?vshutdown   j2:numericalValue ?shutdowncostvalue ."  //shutdown cost
+				
+				+ "?model   j5:hasModelVariable ?gencostn ." 
+				+ "?gencostn  a  j3:genCostn  ."
+				+ "?gencostn  j2:hasValue ?vgencostn ." 
+				+ "?vgencostn   j2:numericalValue ?gencostnvalue ." //genCostn
+
+				+ "?model   j5:hasModelVariable ?gencostn1 ." 
+				+ "?gencostn1  a  j3:genCostcn-1  ."
+				+ "?gencostn1  j2:hasValue ?vgencostn1 ." 
+				+ "?vgencostn1   j2:numericalValue ?gencostn1value ." //genCostn-1
+
+				+ "?model   j5:hasModelVariable ?gencostn2 ." 
+				+ "?gencostn2  a  j3:genCostcn-2  ."
+				+ "?gencostn2  j2:hasValue ?vgencostn2 ." 
+				+ "?vgencostn2   j2:numericalValue ?gencostn2value ."//genCostn-2
+
+
+				+ "?model   j5:hasModelVariable ?gencostc ." 
+				+ "?gencostc  a  j3:genCostc0  ."
+				+ "?gencostc  j2:hasValue ?vgencostc ." 
+				+ "?vgencostc   j2:numericalValue ?gencostcvalue ." //genCostc0
+				
+				+ "?entity   technical_system:realizes ?generation ."
+//				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
+				+ "?generation j9:hasEmission ?emission ." 
+				+ "?emission a j9:Actual_CO2_Emission ."
+				+ "?emission   j2:hasValue ?valueemission ."
+				+ "?valueemission   j2:numericalValue ?vemission ." //
+
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."//longitude
+//				+ "?vy  j2:hasUnitOfMeasure ?valueofyunit ."//longitude
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."//latitude
+//				+ "?vx  j2:hasUnitOfMeasure ?valueofxunit ."//latitude
+
+				+ "}";
+		String info;
+		if (iriOfObject.contains("Gen")){
+			info = genInfo;
+		}else {
+			info = busInfo;
+		}
+		String queryResult = new QueryBroker().queryFile(iriOfObject, info);
+		System.out.println(queryResult);
+		String[] keysplant = JenaResultSetFormatter.getKeys(queryResult);
+    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(queryResult, keysplant);
+//    	System.out.println(resultList.size());=
+    	JSONObject json = new JSONObject(queryResult);
+    	JSONObject v = (JSONObject) json.get("results");
+    	JSONArray values = (JSONArray) v.get("bindings");
+		JSONObject post_id = values.getJSONObject(0);
+		for (String keyStr: post_id.keySet()) {
+	    	 JSONObject keyvalue = (JSONObject) post_id.get(keyStr);
+	    	 keyvalue.put("name", keyStr);
+	    	 keyvalue.remove("type");
+	    }
+//		
+	    String jo = post_id.toString();
+	    jo = "[" + jo + "]";
+	    return jo;
+		
 	}
 	
 	public List<String[]> queryElementCoordinate(OntModel model,String type) {
@@ -498,114 +799,89 @@ public class ENVisualization extends JPSHttpServlet {
 	}
 	public String createMarkers(String flag, OntModel model) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
-
-//		JPSHttpServlet.disableScenario();
-//		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
-//		JPSHttpServlet.enableScenario(scenarioUrl);	
-//		OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> pplants = queryPowerPlant(model, flag);
 		for (int i = 0; i < pplants.size(); i++) {
-			String content="{\"coors\": {\"lat\": "+pplants.get(i)[2]+", \"lng\": "+pplants.get(i)[1]
-					+ "}, \"vemission\": ["+Double.valueOf(pplants.get(i)[5])+"], \"fueltype\": \""
-					+ pplants.get(i)[4].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
+			String content="{\"coors\": {\"lat\": "+pplants.get(i)[3]+", \"lng\": "+pplants.get(i)[2]
+					+ "}, \"actual_carbon\": ["+Double.valueOf(pplants.get(i)[4])+"], \"fueltype\": \""
+					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
 			textcomb.add(content);
 		}
 		
 		return textcomb.toString();
 	}
-
-public static List<String[]> queryPowerPlant(OntModel model, String flag) {
+	
+	public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-						+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-						+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-						+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-						+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-						+ "SELECT ?entity ?valueofx ?valueofy ?plant "
-						+ "WHERE {?entity  a  j1:PowerGenerator ."
-						+ "OPTIONAL { ?entity   j2:isSubsystemOf ?plant }"
-						+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-						+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-						+ "?y  j2:hasValue ?vy ." 
-						+ "?vy  j2:numericalValue ?valueofy ."
-		//
-						+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-						+ "?x  j2:hasValue ?vx ." 
-						+ "?vx  j2:numericalValue ?valueofx ."
-						+ "}";
-		String prefix;
-		if (flag.contentEquals("BASE")) {
-			prefix = "WHERE {?entity  a  cp:PowerPlant  .";
-		}else {
-			prefix = "WHERE {?entity  a  j1:NuclearPlant  .";
-		}
-		String plantinfo = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?entity ?vemission ?fueltype ?valueofx ?valueofy  "
-				+ prefix
-				+ "?entity   j3:realizes ?generation ."
-				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
-				+ "?generation j5:hasEmission ?emission ." 
-				+ "?emission   j2:hasValue ?valueemission . "
-				+ "?valueemission   j2:numericalValue ?vemission ."
-				
-
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "SELECT DISTINCT ?entity ?valueofx ?valueofy "
+				+ "WHERE {?entity  a  j1:PowerGenerator ."
 				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
 				+ "?y  j2:hasValue ?vy ." 
 				+ "?vy  j2:numericalValue ?valueofy ."
-
+//
 				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 				+ "?x  j2:hasValue ?vx ." 
 				+ "?vx  j2:numericalValue ?valueofx ."
-
+				
 				+ "}";
-		
-		
-		QueryBroker broker = new QueryBroker();
-	    	
-    	ResultSet resultSet = JenaHelper.query(model, genInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		
-    	List<String>plantname =new ArrayList<String>();	
-    	for (int i = 0; i < resultListfromquery.size(); i++) {
-    		if (resultListfromquery.get(i)[3] != null) {
-    			plantname.add(resultListfromquery.get(i)[3]);
-    		}
-    	}
-		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
-		List<String[]> plantDict = new ArrayList<String[]>();
-		for (int i=0; i<resultListfromquery.size(); i++) {
-			if (resultListfromquery.get(i)[3] == null) {
-				continue;
-			}
-			for(int c=0;c<uniqueplant.size();c++) { 
-				String resultplant = broker.queryFile(uniqueplant.get(c),plantinfo);
+			
+			ENVisualization a=new ENVisualization();
+			
+			ResultSet resultSet = JenaHelper.query(model, genInfo);
+			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+			System.out.println(result);
+			String[] keys = JenaResultSetFormatter.getKeys(result);
+			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			//used to get distinct emissions and fuel types
+			String plantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "SELECT ?entity ?generation ?valueofx ?valueofy ?actual_carbon ?design_carbon  "
+					+ "WHERE {?entity  a  j1:PowerGenerator ."
+					+ "?entity   j3:realizes ?generation ."
+					
+					+ "?generation j5:hasEmission ?emission ." 
+					+ "?emission a j5:Actual_CO2_Emission ."
+					+ "?emission   j2:hasValue ?valueemission ."
+					+ "?valueemission   j2:numericalValue ?actual_carbon ." 
+					
+					+ "?generation j5:hasEmission ?emission ." 
+//					+ "?emission a j5:Design_CO2_Emission ."
+//					+ "?emission   j2:hasValue ?valueemission_d ."
+//					+ "?valueemission_d   j2:numericalValue ?design_carbon ." 
+					
+					+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+					+ "?y  j2:hasValue ?vy ." 
+					+ "?vy  j2:numericalValue ?valueofy ."
+					+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+					+ "?x  j2:hasValue ?vx ." 
+					+ "?vx  j2:numericalValue ?valueofx ."
+
+					+ "}";
+			QueryBroker broker = new QueryBroker();
+			List<String[]> plantDict = new ArrayList<String[]>();
+			for (int i=0; i<resultListfromquery.size(); i++) {
+				if (resultListfromquery.get(i)[0].contains("EGen-001")) continue;
+				String resultplant = broker.queryFile(resultListfromquery.get(i)[0],plantinfo);
+				System.out.println(resultplant);
 				String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
-
-		    	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
-		    	if(resultListfromquery.get(i)[3].contentEquals(uniqueplant.get(c))) {
-					String[] a = Arrays.copyOf(resultListfromquery.get(i), resultListfromquery.get(i).length + 2);
-					a[a.length-2] =  resultList.get(0)[2];
-					a[a.length-1] =  resultList.get(0)[1];
-					plantDict.add(a);
-//				}
+				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
+				plantDict.add(resultList.get(0));
 			}
-		}
 
-	}return plantDict;
+			return plantDict;
 	}
-		public String createLineJS(OntModel model) throws IOException {
+	public String createLineJS(OntModel model) throws IOException {
 		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -783,10 +1059,12 @@ public static List<String[]> queryPowerPlant(OntModel model, String flag) {
 	    		content="{\"coors\": [{\"lat\": "+busdata.get(8+10*a)+", \"lng\": "+busdata.get(7+10*a)+"}, {\"lat\": "+busdata.get(3+10*a)+", \"lng\": "+busdata.get(2+10*a)+"}], \"vols\": ["+Double.valueOf(busdata.get(6+10*a))*Double.valueOf(busdata.get(9+10*a))+","+Double.valueOf(busdata.get(1+10*a))*Double.valueOf(busdata.get(4+10*a))+"], \"thickness\": "+tick2+", \"type\": \""+linetype+"\", \"name\": \"/"+resultListbranch.get(a)[0].split("#")[1]+".owl\"}";
 	    	}
 		    
-		    textcomb.add(content);
-	    	
+		    textcomb.add(content);  
 	    }
-	    
+	    String content2="{\"coors\": [{\"lat\": "+1.28135+", \"lng\": "+103.72386+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-220.owl\"}";
+	    String content3="{\"coors\": [{\"lat\": "+1.27646+", \"lng\": "+103.7266+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
+	    textcomb.add(content2);
+	    textcomb.add(content3);
 	    return textcomb.toString();
 		
 	}

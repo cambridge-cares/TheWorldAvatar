@@ -21,7 +21,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 			"PREFIX ex: <http://www.example.com/fancyprops/>\r\n" + 
 			"SELECT ?person WHERE { ?person rdf:type foaf:Person . }";
 	
-	private void setUpRdf4jNativeDirect() {
+	protected void setUpRdf4jNativeDirect() {
 		if (client() == null) {
 			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/testrdf4jnative";
 			System.out.println("creating client for datasetUrl=" + datasetUrl);
@@ -72,7 +72,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 	
 	public void testPutAndGetRdfFileWithAcceptAndWithoutConversion() {
 		String resourceUrl = getE303LoadUrl();		
-		putE303Load(datasetUrl, resourceUrl);
+		putE303Load(resourceUrl);
 		String accept = MediaType.APPLICATION_RDF_XML.type;
 		String result = client().get(resourceUrl, accept);
 		System.out.println(result);
@@ -90,7 +90,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 	public void testPutAndQueryRdfFileWithFancyParameterUrl() throws FileNotFoundException {
 		String marker = "4.42";
 		String resourceUrl = "http://www.myhost.com:7777/fancyquerypath/testE-303load.owl";
-		putE303Load(datasetUrl, resourceUrl, marker);
+		putE303Load(resourceUrl, marker);
 		String value = queryE303MarkerValue(resourceUrl);
 		assertEquals(marker, value);
 	}
@@ -179,9 +179,9 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		printTime("testQueryxRandomNamedGraphs with x=" + number);
 	}
 	
-	private void putAndUpdateE303Provenance(String dataset, String target, String provenanceName) throws FileNotFoundException {
+	private void putAndUpdateE303Provenance(String target, String provenanceName) throws FileNotFoundException {
 		String marker = "2.98";
-		putE303Load(dataset, target, marker);
+		putE303Load(target, marker);
 		String value = queryE303MarkerValue(target);
 		assertEquals(marker, value);
 
@@ -207,6 +207,6 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 	public void testPutAndUpdateRdfFile() throws FileNotFoundException {
 		String provenanceName = UUID.randomUUID().toString();
 		String resourceUrl = "http://www.myhost.com:7778/fancyquerypath/testE-303load.owl";
-		putAndUpdateE303Provenance(datasetUrl, resourceUrl, provenanceName);
+		putAndUpdateE303Provenance(resourceUrl, provenanceName);
 	}
 }

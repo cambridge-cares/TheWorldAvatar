@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
@@ -35,22 +36,20 @@ public class KnowledgeBaseClient {
 	 */
 	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
 		
-		String scenarioUrl = JPSContext.getScenarioUrl();	
-		JPSBaseLogger.info(getInstance(), "put is called for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + scenarioUrl);
-		
-		if (datasetUrl == null) {
-			String requestUrl = cutHashFragment(targetUrl);
-			return Http.execute(Http.put(requestUrl, content, contentType, null));
-		} 
+		JPSBaseLogger.info(getInstance(), "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
-		JSONObject jo = null;
-		if (targetUrl != null) {
-			jo = new JSONObject(); 
-			jo.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);	
-		}		
+		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
 		
-		return Http.execute(Http.put(datasetUrl, content, contentType, null, jo));
-	}
+		if (a != null) {
+			String requestUrl = (String) a[0];
+			JSONObject joparams = (JSONObject) a[1];
+			return Http.execute(Http.put(requestUrl, content, contentType, null, joparams));
+		} 
+		
+		// case 1b
+		// this case can only happen if datasetUrl AND targetUrl is null which must not be the case when calling this method
+		throw new JPSRuntimeException("No requestUrl was created");
+	}	
 	
 	/**
 	 *  * cf. https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-get<br>
@@ -63,21 +62,19 @@ public class KnowledgeBaseClient {
 	 */
 	public static String get(String datasetUrl, String targetUrl, String accept) {
 		
-		String scenarioUrl = JPSContext.getScenarioUrl();	
-		JPSBaseLogger.info(getInstance(), "get is called for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + scenarioUrl);
+		JPSBaseLogger.info(getInstance(), "get for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
-		if (datasetUrl == null) {
-			String requestUrl = cutHashFragment(targetUrl);
-			return Http.execute(Http.get(requestUrl, accept));
-		} 
-
-		JSONObject jo = null;
-		if (targetUrl != null) {
-			jo = new JSONObject(); 
-			jo.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);	
-		}
+		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
 		
-		return Http.execute(Http.get(datasetUrl, accept, jo));
+		if (a != null) {
+			String requestUrl = (String) a[0];
+			JSONObject joparams = (JSONObject) a[1];
+			return Http.execute(Http.get(requestUrl, accept, joparams));
+		} 
+		
+		// case 1b
+		// this case can only happen if datasetUrl AND targetUrl is null which must not be the case when calling this method
+		throw new JPSRuntimeException("No requestUrl was created");
 	}
 	
 	/**
@@ -96,7 +93,7 @@ public class KnowledgeBaseClient {
 		// 1) no datasetUrl is given, no scenarioUrl in the JPS context
 		// 1a) HTTP GET on target resource allows to perform SPARQL at the server 
 		// 1b) HTTP GET on target resource to download its content but the SPARQL query must be performed at this client
-		//	   (this is the case for most of resource outside JPS control but also for files residing 
+		//	   (this is the case for most of the resources outside JPS control but also for files residing 
 		//     in /kb or /data within Tomcat´s ROOT directory)
 		// 2) the datasetUrl is given, no scenarioUrl in the JPS context
 		//	  This means that the target resource is only requested indirectly via the datasetUrl 
@@ -104,43 +101,19 @@ public class KnowledgeBaseClient {
 		// 3) scnearioUrl in the JPS context
 		// 	  in combination with corresponding cases from 1) and 2)
 		
-		String scenarioUrl = JPSContext.getScenarioUrl();	
-		JPSBaseLogger.info(getInstance(), "query is called for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + scenarioUrl);
-		
-		JSONObject joparams = new JSONObject();
-		joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
+		JPSBaseLogger.info(getInstance(), "query for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
 
-		// case 3
-		if (scenarioUrl != null)  {	
-			
-			// redirect the request to the scenario agent
-			// the scenario agent has to be called even for copy-on-write since in previous calls
-			// another agent might have updated the file within the same scenario 
-			joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
-			if (datasetUrl != null) {
-				if (targetUrl == null) {
-					joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
-				} else {
-					joparams.put(JPSConstants.SCENARIO_DATASET, datasetUrl);
-				}
+		boolean sparqlAbility = hasSparqlAbility(targetUrl);
+		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
+		
+		if (a != null) {
+			String requestUrl = (String) a[0];
+			JSONObject joparams = (JSONObject) a[1];
+			if (joparams == null) {
+				joparams = new JSONObject();
 			}
-			
-			String requestUrl = ResourcePathConverter.convert(scenarioUrl);
-			return Http.execute(Http.get(requestUrl, null, joparams));	
-		} 
-		
-		// case 2
-		if (datasetUrl != null) {
-			joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
-			String requestUrl = ResourcePathConverter.convert(datasetUrl);
+			joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
 			return Http.execute(Http.get(requestUrl, null, joparams));
-		}
-		
-		// case 1a
-		if (hasSparqlAbility(targetUrl))  {		
-			String requestUrl = cutHashFragment(targetUrl);
-			requestUrl = ResourcePathConverter.convert(requestUrl);
-			return Http.execute(Http.get(requestUrl, null, joparams));		
 		} 
 		
 		// case 1b
@@ -149,30 +122,27 @@ public class KnowledgeBaseClient {
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	
-	/**
-	 * Performs a SPARQL update on the resource identified by its target url (if this possible). 
-	 * If a scenario url is given in the JPS context, then the SPARQL update is redirected to the scenario url.
-	 * 
-	 * @param targetUrl
-	 * @param sparqlUpdate
-	 */
-	public static void update(String datasetUrl, String targetUrl, String sparqlUpdate) {
+	public static Object[] createRequestUrl(String datasetUrl, String targetUrl, boolean targetHasSparqlAbility) {
 		
 		// the same cases as described in method query have to be distinguished
 		
-		String scenarioUrl = JPSContext.getScenarioUrl();	
-		JPSBaseLogger.info(getInstance(), "update is called for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + scenarioUrl);
-		
+		String scenarioUrl = JPSContext.getScenarioUrl();			
 		String requestUrl = null;
 		
+		if ((datasetUrl != null) && datasetUrl.isEmpty()) {
+			datasetUrl = null;
+		}
+		
 		// case 3 or case 2 or case 1a
-		if ((scenarioUrl != null) || (datasetUrl != null) || hasSparqlAbility(targetUrl))  {	
+		if ((scenarioUrl != null) || (datasetUrl != null) || targetHasSparqlAbility)  {	
 		
 			JSONObject joparams = null;
 		
 			// case 3
 			if (scenarioUrl != null)  {				
 				// redirect the request to the scenario agent
+				// the scenario agent has to be called even for get / query in combination with copy-on-write since in previous calls
+				// another agent might have updated the file within the same scenario 
 				joparams = new JSONObject();
 				joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
 				if (datasetUrl != null) {
@@ -195,21 +165,48 @@ public class KnowledgeBaseClient {
 		
 			//requestUrl = ScenarioHelper.cutHash(requestUrl);
 			requestUrl = ResourcePathConverter.convert(requestUrl);
+		
+			Object[] a = new Object[] {requestUrl, joparams};			
+			return a;
+		} 
+		
+		// case 1b
+		return null;
+	}	
+	
+	
+	/**
+	 * Performs a SPARQL update on the resource identified by its target url (if this possible). 
+	 * If a scenario url is given in the JPS context, then the SPARQL update is redirected to the scenario url.
+	 * 
+	 * @param targetUrl
+	 * @param sparqlUpdate
+	 */
+	public static void update(String datasetUrl, String targetUrl, String sparqlUpdate) {
+		
+		JPSBaseLogger.info(getInstance(), "update for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
+
+		boolean sparqlAbility = hasSparqlAbility(targetUrl);
+		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
+		
+		if (a != null) {
+			String requestUrl = (String) a[0];
+			JSONObject joparams = (JSONObject) a[1];
 			
 			// According to the W3C standard http://www.w3.org/TR/2013/REC-sparql11-protocol-20130321/
-			// there are two ways to send a SPARQL update string. Both ways used a HTTP POST with
+			// there are two ways to send a SPARQL update string. Both ways use an HTTP POST with
 			// the SPARQL update string in the message body. They are distinguished by the contentType.
 			// However, here we use JSON as content type!
-		
 			JSONObject jobody = new JSONObject();
 			jobody.put(JPSConstants.QUERY_SPARQL_UPDATE, sparqlUpdate);
 			String contentType = MediaType.APPLICATION_JSON.type;
-			Http.execute(Http.post(requestUrl, jobody.toString(), contentType, null, joparams));
+			
+			Http.execute(Http.post(requestUrl, jobody.toString(), contentType, null, joparams));	
 			return;
 		} 
 		
 		// case 1b
-		requestUrl = ScenarioHelper.cutHash(targetUrl);
+		String requestUrl = ScenarioHelper.cutHash(targetUrl);
 		requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl);
 		JPSBaseLogger.info(getInstance(), "SPARQL update is performed locally for requestUrl=" + requestUrl);
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
@@ -219,6 +216,9 @@ public class KnowledgeBaseClient {
 	}
 	
 	private static boolean hasSparqlAbility(String targetUrl) {
+		if (targetUrl == null) {
+			return false;
+		}
 		return targetUrl.contains("/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/");
 	}
 	

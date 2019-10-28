@@ -6,12 +6,13 @@ import java.net.URISyntaxException;
 import java.util.UUID;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class ScenarioHelper {
 	
 	private static final String JPS_WORKING_DIR = AgentLocator.getPathToJpsWorkingDir();
-	public static final String SCENARIO_COMP_URL = "/jps/scenario";
+	public static final String SCENARIO_COMP_URL = "/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/scenario";
 	
 	public static String getJpsWorkingDir() {
 		return JPS_WORKING_DIR;

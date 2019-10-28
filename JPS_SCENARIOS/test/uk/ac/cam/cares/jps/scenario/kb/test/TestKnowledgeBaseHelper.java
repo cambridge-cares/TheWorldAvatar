@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public abstract class TestKnowledgeBaseHelper extends TestCase {
@@ -58,17 +59,27 @@ public abstract class TestKnowledgeBaseHelper extends TestCase {
 		return datasetUrl + "/some/path/testE-303load.owl";
 	}
 	
-	protected String putE303Load(String datasetUrl, String targetUrl) {
-		return putE303Load(datasetUrl, targetUrl, null);
+	protected String putE303Load(String targetUrl) {
+		return putE303Load(targetUrl, null);
 	}
 	
-	protected String putE303Load(String datasetUrl, String targetUrl, String numbermarker) {
+	protected String putE303Load(String targetUrl, String numbermarker) {
 		String filePath = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/E-303load.owl";
 		String body = FileUtil.readFileLocally(filePath);
 		if (numbermarker != null) {
 			body = body.replace("0.27", numbermarker);
 		}
 		client().put(targetUrl, body, MediaType.APPLICATION_RDF_XML.type);
+		return body;
+	}
+	
+	protected String putE303LoadRemoteKBCOnly(String datasetUrl, String targetUrl, String numbermarker) {
+		String filePath = AgentLocator.getCurrentJpsAppDirectory(this) + "/testres" + "/E-303load.owl";
+		String body = FileUtil.readFileLocally(filePath);
+		if (numbermarker != null) {
+			body = body.replace("0.27", numbermarker);
+		}
+		KnowledgeBaseClient.put(datasetUrl, targetUrl, body, MediaType.APPLICATION_RDF_XML.type);
 		return body;
 	}
 	

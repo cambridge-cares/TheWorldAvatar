@@ -28,7 +28,7 @@ public class KnowledgeBaseBlazegraph extends KnowledgeBaseAbstract {
 	
 	@Override
 	public void put(String resourceUrl, String content, String contentType) {
-		logger.info("put resourceUrl=" + resourceUrl);
+		logger.info("put resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		String url = getEndpointUrl();
 		if (contentType == null) {
 			contentType = MediaType.APPLICATION_RDF_XML.type; 
@@ -47,7 +47,7 @@ public class KnowledgeBaseBlazegraph extends KnowledgeBaseAbstract {
 
 	@Override
 	public void update(String resourceUrl, String sparql) {
-		logger.info("update resourceUrl=" + resourceUrl);
+		logger.info("update resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		
 		String url = getEndpointUrl();
 		if (resourceUrl == null) {
@@ -64,7 +64,7 @@ public class KnowledgeBaseBlazegraph extends KnowledgeBaseAbstract {
 
 	@Override
 	public String get(String resourceUrl, String accept) {
-		logger.info("get resourceUrl=" + resourceUrl);
+		logger.info("get resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		String url = getEndpointUrl();
 		if (resourceUrl == null) {
 			
@@ -102,7 +102,7 @@ public class KnowledgeBaseBlazegraph extends KnowledgeBaseAbstract {
 
 	@Override
 	public String query(String resourceUrl, String sparql) {
-		logger.info("query resourceUrl=" + resourceUrl);
+		logger.info("query resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		String url = getEndpointUrl();
 		String result = null;
 		if (resourceUrl == null) {
@@ -123,7 +123,7 @@ public class KnowledgeBaseBlazegraph extends KnowledgeBaseAbstract {
 
 	@Override
 	public boolean exists(String resourceUrl) {
-		logger.info("exists resourceUrl=" + resourceUrl);
+		logger.info("exists resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		throw new UnsupportedOperationException();
 	}
 }

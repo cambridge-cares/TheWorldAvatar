@@ -30,23 +30,21 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseFileBased.class);
 	
-	private String datasetUrl = null;
-	
 	public KnowledgeBaseFileBased(String datasetUrl) {
 		this.datasetUrl = datasetUrl;
 	}
 	
 	@Override
 	public void put(String resourceUrl, String content, String contentType) {
-		logger.info("put resourceUrl=" + resourceUrl);
-		String filePath = BucketHelper.getLocalPath(resourceUrl);
+		logger.info("put resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
+		String filePath = BucketHelper.getLocalPath(resourceUrl, datasetUrl);
 		FileUtil.writeFileLocally(filePath, content);
 	}
 
 	@Override
 	public void update(String resourceUrl, String sparql) {
-		logger.info("update resourceUrl=" + resourceUrl);
-		String filePath = BucketHelper.getLocalPath(resourceUrl);
+		logger.info("update resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
+		String filePath = BucketHelper.getLocalPath(resourceUrl, datasetUrl);
 		File file = new File(filePath);
 		
 		MemoryStore memStore = new MemoryStore();
@@ -75,9 +73,9 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 
 	@Override
 	public String get(String resourceUrl, String accept) {
-		logger.info("get resourceUrl=" + resourceUrl);
+		logger.info("get resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		String result = null;
-		String filePath = BucketHelper.getLocalPath(resourceUrl);
+		String filePath = BucketHelper.getLocalPath(resourceUrl, datasetUrl);
 		
 		RDFFormat format = null;
 		if (accept != null) {
@@ -112,8 +110,8 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 
 	@Override
 	public String query(String resourceUrl, String sparql) {
-		logger.info("query resourceUrl=" + resourceUrl);
-		String filePath = BucketHelper.getLocalPath(resourceUrl);
+		logger.info("query resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
+		String filePath = BucketHelper.getLocalPath(resourceUrl, datasetUrl);
 		File file = new File(filePath);
 		InputStream inputStream = null;
 		try {
@@ -129,8 +127,8 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 	
 	@Override
 	public boolean exists(String resourceUrl) {
-		logger.info("exists resourceUrl=" + resourceUrl);
-		String filePath = BucketHelper.getLocalPath(resourceUrl);
+		logger.info("exists resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
+		String filePath = BucketHelper.getLocalPath(resourceUrl, datasetUrl);
 		return new File(filePath).exists();
 	}
 	

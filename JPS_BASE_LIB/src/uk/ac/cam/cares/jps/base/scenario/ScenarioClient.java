@@ -75,12 +75,19 @@ public class ScenarioClient {
 	
 	public URI getReadUrl(String scenarioUrl, String resourceUrl) {
 		
-		String json = new JSONStringer().object()
-				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
-				.endObject().toString();
-	
-		String url = scenarioUrl + "/read";
-		return AgentCaller.createURIWithURLandJSON(url, json);
+		throw new UnsupportedOperationException();
+		
+		
+//		String requestUrl = cutHashFragment(resourceUrl);
+//		return Http.execute(Http.get(requestUrl, accept));
+		
+//		OLD IMPLEMENTATION: 
+//		String json = new JSONStringer().object()
+//				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+//				.endObject().toString();
+//	
+//		String url = scenarioUrl + "/read";
+//		return AgentCaller.createURIWithURLandJSON(url, json);
 	}
 	
 	public String query(String scenarioUrl, String resourceUrl, String sparqlQuery) {

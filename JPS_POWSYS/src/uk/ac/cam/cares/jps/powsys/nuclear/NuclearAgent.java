@@ -116,11 +116,16 @@ public class NuclearAgent extends JPSHttpServlet {
 		   logger.info("Done");
 	}
 	
-	private void pseudoRunGAMS() {
+	private void pseudoRunGAMS(String baseUrl) {
+		logger.info("RIGHT NOW IT IS STARTING PSEUDOGAMS NUCLEAR");
 		String scenarioUrl = BucketHelper.getScenarioUrl();
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
 		logger.info("starting GAMS for simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 		logger.info("GAMS started successfully, post processing of GAMS results by callback");
+		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
+		File file = new File(source);
+		String destinationUrl = baseUrl + "/" + "/results.csv";
+		new QueryBroker().put(destinationUrl, file);
 	}
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -137,8 +142,8 @@ public class NuclearAgent extends JPSHttpServlet {
 				String lotiri = jofornuc.getString("landlot");
 				String iriofnetwork = jofornuc.getString("electricalnetwork");
 				ArrayList<String> listofplant = new ArrayList<String>();
-				for (int c = 0; c < jofornuc.getJSONArray("substitutionalpowerplants").length(); c++) {
-					listofplant.add(jofornuc.getJSONArray("substitutionalpowerplants").getString(c));
+				for (int c = 0; c < jofornuc.getJSONArray("substitutionalgenerators").length(); c++) {
+					listofplant.add(jofornuc.getJSONArray("substitutionalgenerators").getString(c));
 				}
 
 				boolean runGams = true;
@@ -148,23 +153,27 @@ public class NuclearAgent extends JPSHttpServlet {
 
 				String dataPath = QueryBroker.getLocalDataPath();
 				startSimulation(lotiri, iriofnetwork, listofplant, dataPath, runGams);
-				// startSimulation(lotiri, iriofnetwork, dataPath, runGams);
+				String scenarioUrl = BucketHelper.getScenarioUrl();
+				String usecaseUrl = BucketHelper.getUsecaseUrl();
+				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 
-				JSONObject jo = new JSONObject();
 				List<String> plants = processSimulationResult(dataPath);
 				JSONArray plantsja = new JSONArray(plants);
+				JSONObject jo = new JSONObject();
 				jo.put("plants", plantsja);
-				AgentCaller.printToResponse(jo, response);
+				
+				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
+				//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
+
+				AgentCaller.printToResponse(jo, response);	
 
 			} catch (JSONException | InterruptedException e) {
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
 				logger.error(e.getMessage(), e);
 				throw new JPSRuntimeException(e.getMessage(), e);
 			}
@@ -177,13 +186,14 @@ public class NuclearAgent extends JPSHttpServlet {
 				String usecaseUrl = BucketHelper.getUsecaseUrl();
 				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 				
+				
 				String dataPath = QueryBroker.getLocalDataPath();
 				List<String> plants = processSimulationResult(dataPath);
 				JSONArray plantsja = new JSONArray(plants);
 				jo.put("plants", plantsja);
 				
 				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
-				AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString());
+				//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
 				
 				// no need to return jo or plants here; this is just for asserting the simulation result in a junit test
 				AgentCaller.printToResponse(jo, response);	
@@ -222,13 +232,13 @@ public class NuclearAgent extends JPSHttpServlet {
  
         //-----------------------------------------4th input file finished-------------------------------------------------------------------
 
-        prepareCSVPartialRemaining(plantlist,iriofnetwork,dataPath);
+        prepareCSVPartialRemaining(plantlist,iriofnetwork,baseUrl);
       //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
-        if (runGams) {
-        	runGAMS(baseUrl);
-        }
-//        pseudoRunGAMS();
+//        if (runGams) {
+//        	runGAMS(baseUrl);
+//        }
+        pseudoRunGAMS(baseUrl);
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
@@ -302,7 +312,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		csvresult.add(header);
 		
 		while(x<resultList.size()) {
-			if(!plantlist.contains(resultList.get(x)[1])) {
+			if(!plantlist.contains(resultList.get(x)[0])) { //has been switched to 0 instead of 1 cause we use generator scale 
 				System.out.println("generator remains= "+resultList.get(x)[0]);
 				System.out.println("P max= "+resultList.get(x)[2]);
 				System.out.println("x= "+resultList.get(x)[3]);

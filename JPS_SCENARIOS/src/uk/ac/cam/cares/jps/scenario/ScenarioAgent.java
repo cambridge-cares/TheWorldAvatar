@@ -28,6 +28,7 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
@@ -412,12 +413,12 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		kb.update(resourceUrl, sparql);
 	}
 	
-	protected String getFromKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, boolean copyOnRead, String accept) {
+	protected String getFromKnowledgeBase(KnowledgeBaseAbstract kb, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
 		if (kb.exists(resourceUrl)) {
 			return kb.get(resourceUrl, accept);
 		} 
 		
-		String content = KnowledgeBaseClient.get(null, resourceUrl, accept);
+		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
 		if (copyOnRead) {
 			kb.put(resourceUrl, content, accept);
 			if (accept != null) {
@@ -456,23 +457,24 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		String requestUrl = req.getRequestURL().toString();
 		String path = req.getPathInfo();
 		JSONObject input = Http.readJsonParameter(req);
-		String sparql = input.optString(JPSConstants.QUERY_SPARQL_QUERY);
-		String parameterUrl = input.optString(JPSConstants.SCENARIO_RESOURCE);
+		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_QUERY);
+		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
+		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
 		String contentType = req.getContentType();
 		
 		try {
-			logInputParams("GET", requestUrl, path, parameterUrl, contentType, sparql, false);
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
 			
 			String accept = getAccept(req);
 			
-			String datasetUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(datasetUrl);
-			String resourceUrl = getResourceUrl(datasetUrl, requestUrl, parameterUrl);
+			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
 			
 			String result = "";	
-			if (sparql.isEmpty()) {
+			if (sparql == null) {
 				//result = kb.get(resourceUrl, accept);
-				result = getFromKnowledgeBase(kb, resourceUrl, copyOnRead, accept);
+				result = getFromKnowledgeBase(kb, paramDatasetUrl, resourceUrl, copyOnRead, accept);
 			} else {
 				//result = kb.query(resourceUrl, sparql);
 				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
@@ -482,7 +484,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 
 		} catch (RuntimeException e) {
 			e.printStackTrace();
-			logInputParams("GET", requestUrl, path, parameterUrl, contentType, sparql, true);
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
 			throw e;
 		}
 	}

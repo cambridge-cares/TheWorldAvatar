@@ -16,6 +16,7 @@ import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
@@ -23,12 +24,9 @@ import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations {
 		
 	public void setUp() {
+		JPSHttpServlet.disableScenario();
 		setUpFileBasedRemote();
 		printTime(null);
-	}
-	
-	private String putE303Load(String path) {
-		return putE303Load(null, path);
 	}
 	
 	public void testPrintSupportedRdfFormats() {
@@ -81,7 +79,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	}
 	
 	public void testPutAndGetNonRdfFile() {
-		String path = "/jps/data/test/testputandget";
+		String path = "/jps/dataset/test/testputandget";
 		String body = UUID.randomUUID().toString();
 		KnowledgeBaseClient.put(null, path, body, null);
 
@@ -91,8 +89,8 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	}
 	
 	public void testPutAndGetRdfFileWithAcceptAndWithoutConversionForPath() {
-		String path = complete("/jps/kb/test/testE-303load.owl");
-		String body = putE303Load(path);
+		String path = complete("/jps/dataset/testfilebased/testE-303load.owl");
+		String body = putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_RDF_XML.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
 		assertEquals(body, result);
@@ -103,16 +101,16 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
     }
 	
 	public void testPutAndGetRdfFileWithAcceptAndWithConversionToTurtle() {
-		String path = complete("/jps/kb/test/testE-303load.owl");
-		putE303Load(path);
+		String path = complete("/jps/dataset/testfilebased/testE-303load.owl");
+		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.TEXT_TURTLE.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
 		assertEquals("@prefix", result.substring(0,7));
 	}
 	
 	public void testPutAndGetRdfFileWithAcceptAndConversionToJSONLD() {
-		String path = complete("/jps/kb/test/testE-303load.owl");
-		putE303Load(path);
+		String path = complete("/jps/dataset/testfilebased/testE-303load.owl");
+		putE303LoadRemoteKBCOnly(null, path, null);
 		String accept = MediaType.APPLICATION_LD_JSON.type;
 		String result = KnowledgeBaseClient.get(null, path, accept);
 		assertTrue(result.contains("@id"));
@@ -120,7 +118,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	}
 	
 	public void internClientSparqlQueryDirect(String dataset, String target) {
-		putE303Load(dataset, target);
+		putE303LoadRemoteKBCOnly(dataset, target, null);
 		String sparql = "SELECT ?s ?p ?o WHERE { ?s ?p <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerLoad> } ";
 		String result = KnowledgeBaseClient.query(dataset, target, sparql);
 		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
@@ -131,12 +129,12 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	
 	public void testClientSparqlQueryDirect() {
 		String dataset = null;
-		String target = complete("/jps/kb/test/testE-303load.owl");
+		String target = complete("/jps/dataset/testfilebased/testE-303load.owl");
 		internClientSparqlQueryDirect(dataset, target);
 	}	
 	
 	public void internClientSparqlUpdateDirect(String dataset, String target) {
-		putE303Load(dataset, target);
+		putE303LoadRemoteKBCOnly(dataset, target, null);
 
 		String sparqlupdate = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " + 
@@ -158,25 +156,23 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	
 	public void testClientSparqlUpdateDirect() {
 		String dataset = null;
-		String target = complete("/jps/kb/test/testupdate/testE-303load.owl");
+		String target = complete("/jps/dataset/testfilebased/testupdate/testE-303load.owl");
 		internClientSparqlUpdateDirect(dataset, target);
 	}
 	
 	public void testClientSparqlUpdateDirectWithFancyParameterUrl() {
-		String dataset = "/jps/data/test";
 		String target = "http://localhost:9090/fancyupdatepath/testE-303load.owl";
-		internClientSparqlUpdateDirect(dataset, target);
+		internClientSparqlUpdateDirect(datasetUrl, target);
 	}
 	
 	public void testPutAndGetNonRdfFileWithFancyParameterUrl() {
 
-		String dataset = "/jps/data/test";
 		String target = "http://localhost:9090/fancy/path/some.owl";
 		String body = UUID.randomUUID().toString();
-		KnowledgeBaseClient.put(dataset, target, body, null);
+		KnowledgeBaseClient.put(datasetUrl, target, body, null);
 
 		String accept = null;
-		String result = KnowledgeBaseClient.get(dataset, target, accept);
+		String result = KnowledgeBaseClient.get(datasetUrl, target, accept);
 		assertEquals(body, result);
 	}
 	

@@ -19,6 +19,7 @@ public class TestKnowledgeBaseTripleStore extends TestKnowledgeBaseAllImplementa
 	
 	public void setUp() {
 		setUpRdf4jInMemoryRemote();
+		//setUpRdf4jNativeDirect();
 		//setUpBlazegraphDirect();
 		printTime(null);
 	}

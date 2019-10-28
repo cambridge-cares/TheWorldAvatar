@@ -98,7 +98,29 @@ public class BucketHelper {
 		return getLocalPath(url, scenarioUrl);
 	}
 	
-	public static String getLocalPath(String url, String scenarioUrl) {
+	public static String getLocalPath(String url, String datasetUrl) {
+		
+		URI uri;
+		try {
+			uri = new URI(url);			
+		} catch (URISyntaxException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+		String mapped = "/" + mapHost(uri);
+		
+		if ((datasetUrl != null) && !isScenarioUrl(datasetUrl)) {
+			// check whether scenarioUrl is datasetUrl
+			int i = datasetUrl.indexOf(JPSConstants.KNOWLEDGE_BASE_PATH_JPS_DATASET);
+			if (i >= 0) {
+				String datasetName = datasetUrl.substring(1 + i + JPSConstants.KNOWLEDGE_BASE_PATH_JPS_DATASET.length());
+				String dir = ScenarioHelper.getJpsWorkingDir() + "/JPS_SCENARIO/dataset/" + datasetName;
+				return dir + mapped + uri.getPath();
+			} else {
+				throw new JPSRuntimeException("unknown datasetUrl=" + datasetUrl + ", url=" + url);
+			}
+		}
+		
+		String scenarioUrl = datasetUrl;
 
 		if (scenarioUrl == null) {
 			scenarioUrl = getScenarioUrl(JPSConstants.SCENARIO_NAME_BASE);
@@ -110,14 +132,6 @@ public class BucketHelper {
 		if (url.startsWith(scenarioBucket)) {
 			return url;
 		}
-		
-		URI uri;
-		try {
-			uri = new URI(url);			
-		} catch (URISyntaxException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
-		String mapped = "/" + mapHost(uri);
 		
 		String path = uri.getPath();
 		if (path.startsWith(ScenarioHelper.SCENARIO_COMP_URL)) {

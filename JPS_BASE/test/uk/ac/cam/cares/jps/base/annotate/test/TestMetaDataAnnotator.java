@@ -13,6 +13,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 	
@@ -99,6 +100,7 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 	}
 	
 	public void testSparqlQueryResources() {
+		JPSHttpServlet.disableScenario();
 		String scenario1 = BucketHelper.getScenarioUrl("testSparqlQueryResource1");
 		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output1.csv", scenario1, "2019-09-18T11:26:26.419");
 		MetaDataAnnotator.update(sparql);
