@@ -22,9 +22,9 @@ public class ResourcePathConverter {
 		String converted = null;
 		
 		//TODO-AE SC URGENT 20190913 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
-//		if (true) {
-//			return path;
-//		}
+		if (true) {
+			return path;
+		}
 		
 		String s = "http://www.theworldavatar.com/kb";
 		if (path.startsWith(s)) {
