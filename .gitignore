@@ -30,3 +30,4 @@ target
 *.jar
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
+/JPS_ESS/target
