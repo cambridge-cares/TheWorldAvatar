@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.query.QuerySolution;
@@ -131,6 +132,16 @@ public class JPS_ESS extends JPSHttpServlet {
 		new QueryBroker().put(destinationUrl, file);
 	}
 	
+	public static OntModel readModelGreedy(String iriofnetwork) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
+	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_ESS";
@@ -138,6 +149,36 @@ public class JPS_ESS extends JPSHttpServlet {
 		String PVNetworkiri=jofornuc.getString("PVNetwork");
 		
 		System.out.println("parameter got= "+jofornuc.toString());
+		
+		
+//		OntModel model = readModelGreedy(PVNetworkiri);
+		
+//		String batteryquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+//				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+//				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+//				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+//				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+//				+ "SELECT ?Pa_low ?Pa_high ?Da_high ?Da_low "
+//				+ "WHERE {?entity  a  j1:PhotovoltaicGenerator  ." 
+//				
+//				+ "?entity   j6:hasMaximumActivePowerGenerated ?Pmax ."
+//				+ "?Pmax     j2:hasValue ?vPmax ." 
+//				+ "?vPmax  j5:upperLimit ?Pa_high ."
+//
+//				+ "?entity   j6:hasMinimumActivePowerGenerated ?Pmin ."
+//				+ "?Pmin     j2:hasValue ?vPmin ." 
+//				+ "?vPmin  j5:lowerLimit ?Pa_low ."
+//
+//				+ "?entity   j6:hasStateOfCharge ?dt ."
+//				+ "?dt     j2:hasValue ?vdt ." 
+//				+ "?vdt  j5:upperLimit ?Da_high ."
+//				+ "?vdt  j5:lowerLimit ?Da_low ."
+//
+//				+ "}";
+		
 
 		String sparqlQuery = "PREFIX rdf:<http://www.w3.org/2001/XMLSchema#>\r\n"
 				+ "PREFIX App:<http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#>\r\n"
@@ -145,6 +186,7 @@ public class JPS_ESS extends JPSHttpServlet {
 				+ "PREFIX PV:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator>\r\n"
 				+ "\r\n" + "SELECT ?Pa_low ?Pa_high  ?Da_high ?Da_low \r\n" + "WHERE \r\n" + "{ \r\n"
 				+ "  ?pv a <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator> .\r\n"
+				
 				+ "  ?pv  <http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#hasMaximumActivePowerGenerated> ?apg .\r\n"
 				+ "  ?apg  <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue> ?v_apg.\r\n"
 				+ "  ?v_apg  <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#upperLimit> ?Pa_high.\r\n"
@@ -180,10 +222,10 @@ public class JPS_ESS extends JPSHttpServlet {
 
 //		File file = new File(baseUrl+"/Pa_high.csv");
 //		FileWriter writer = new FileWriter(file);
-		new QueryBroker().put(baseUrl+"/Pa_high.csv", text);
+
 //        csvWriter.flush();
 //        csvWriter.close();
-		
+		new QueryBroker().put(baseUrl+"/Pa_high.csv", text);
 		copyTemplate(baseUrl, "Ptlow.csv");
 		copyTemplate(baseUrl, "Pthigh.csv");
 		copyTemplate(baseUrl, "Dtlow.csv");
