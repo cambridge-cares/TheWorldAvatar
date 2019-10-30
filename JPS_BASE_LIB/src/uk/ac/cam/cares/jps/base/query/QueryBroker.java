@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.descriptor.JspConfigDescriptor;
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
@@ -126,6 +128,7 @@ public class QueryBroker {
 			if (count % 50 == 0) {
 				JPSBaseLogger.info(this, "reading file number=" + count + ", name=" + current);
 			}
+			current = ResourcePathConverter.convert(current);
 			model.read(current, null); 
 		}
 		

@@ -26,10 +26,11 @@ public class ResourcePathConverter {
 //			return path;
 //		}
 		
-		String s = "http://www.theworldavatar.com/kb";
-		if (path.startsWith(s)) {
-			converted = path.replace(s, "http://localhost:8080/kb");
-		} else {
+		if (path.startsWith("http://www.theworldavatar.com/kb")) {
+			converted = path.replace("http://www.theworldavatar.com/kb", "http://localhost:8080/kb");
+		} else if (path.startsWith("http://www.jparksimulator.com/kb")) {
+				converted = path.replace("http://www.jparksimulator.com/kb", "http://localhost:8080/kb");
+		} else {	
 			return path;
 		}
 		
