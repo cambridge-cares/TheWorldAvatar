@@ -61,7 +61,7 @@ public class JPS_ESS extends JPSHttpServlet {
 
 		ArrayList<String> groupcommand = new ArrayList<String>();
 
-		groupcommand.add("C:/Users/GKAR01/Documents/gamsdir/projdir/gamsexecute.bat");
+		groupcommand.add("C:/Users/LONG01/Documents/gamsdir/projdir/gamsexecute.bat");
 
 		// CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
 		CommandHelper.executeCommands(folderlocation, groupcommand);
@@ -113,7 +113,7 @@ public class JPS_ESS extends JPSHttpServlet {
 				text = text + line;
 			}
 		}
-		File file = new File("C://Users/GKAR01/Documents/gamsdir/projdir/Pa_high.csv");
+		File file = new File("C://Users/LONG01/Documents/gamsdir/projdir/Pa_high.csv");
 //		File file = new File("C://Users/GKAR01/Documents/gamsdir/projdir/Pa_high.csv");
 		FileWriter writer = new FileWriter(file);
 		writer.write(text);

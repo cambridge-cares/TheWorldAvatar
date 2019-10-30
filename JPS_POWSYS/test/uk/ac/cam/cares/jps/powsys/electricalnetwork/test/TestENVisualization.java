@@ -76,7 +76,7 @@ public class TestENVisualization extends TestCase {
 		String flag = "Base";
 		String res = "";
 		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		res=a.readGenerator(flag, model,"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-050.owl#ELine-050");
+		res=a.readGenerator(flag, model,"http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-006.owl#EGen-006");
 		System.out.println("resultjs= "+res);
 //		flag = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 //		
@@ -137,6 +137,7 @@ public class TestENVisualization extends TestCase {
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/readGenerator", jo.toString());
 		System.out.println("resultStart= "+resultStart);
 	}
+	
 	public void testcallVisualizationKML() throws IOException  {
 
 		JSONObject jo = new JSONObject();

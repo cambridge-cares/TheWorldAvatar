@@ -202,7 +202,7 @@ public class ScenarioAgent extends HttpServlet {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (fileWithinBucket.exists()) {
+	    if (fileWithinBucket.exists()) { 	
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
 	    	String content = new QueryBroker().readFile(resource);

@@ -631,173 +631,40 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "}";
 		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+			    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+			    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+			    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+			    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+			    + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
 			    + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?V_BusNumber ?V_PGen ?V_QGen ?V_Qmax ?V_Qmin ?V_Vg ?V_mBase "
-				+ "?V_Pmax ?V_Pmin ?V_Pc1 ?V_Pc2 ?V_Qc1Min ?V_Qc1Max "
-				+ "?V_Qc2Min ?V_Qc2Max ?V_Ramp_agc ?V_Ramp_10 ?V_Ramp_30 ?V_Ramp_q ?V_APF "
-				+ "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 ?V_x ?V_y ?actual_carbon ?design_carbon"
+			    + "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
+			    
+			    + "WHERE {?entity  a  j1:PowerGenerator  ."
+			    + "?entity   technical_system:realizes ?generation ."
+			    + "?generation j9:hasEmission ?emission ." 
+			    + "?emission a j9:Actual_CO2_Emission ."
+			    + "?emission   j2:hasValue ?valueemission ."
+			    + "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
+			    + "?valueemission   j2:hasUnitOfMeasure ?V_Actual_CO2_Emission_unit ." //
+//
+//			    
+//			    + "?emission a j9:Design_CO2_Emission ."
+//			    + "?emission   j2:hasValue ?valueemission ."
+//			    + "?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission ." //
+//			    + "?valueemission_d   j2:hasUnitOfMeasure ?V_Design_CO2_Emission_unit ." //
+//
+			    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+			    + "?y  j2:hasValue ?vy ." 
+			    + "?vy  j2:numericalValue ?V_y ."
+			    + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."
+//
+			    + "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+			    + "?x  j2:hasValue ?vx ." 
+			    + "?vx  j2:numericalValue ?V_x ."//longitude
+			    + "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
+			    
 
-				+ "WHERE {?entity  a  j1:PowerGenerator  ."
-				+ "?entity   j2:isModeledBy ?model ."
-
-				+ "?model   j5:hasModelVariable ?num ." 
-				+ "?num  a  j3:BusNumber  ." 
-				+ "?num  j2:hasValue ?vnum ."
-				+ "?vnum   j2:numericalValue ?V_BusNumber ." // number
-
-				+ "?model   j5:hasModelVariable ?Pg ." 
-				+ "?Pg  a  j3:Pg  ." 
-				+ "?Pg  j2:hasValue ?vpg ."
-				+ "?vpg   j2:numericalValue ?V_PGen ." // pg
-
-				+ "?model   j5:hasModelVariable ?Qg ." 
-				+ "?Qg  a  j3:Qg  ." 
-				+ "?Qg  j2:hasValue ?vqg ."
-				+ "?vqg   j2:numericalValue ?VQ_Gen ." // qg
-
-				+ "?model   j5:hasModelVariable ?qmax ." 
-				+ "?qmax  a  j3:QMax  ." 
-				+ "?qmax  j2:hasValue ?vqmax ."
-				+ "?vqmax   j2:numericalValue ?V_Qmax ." // qmax
-
-				+ "?model   j5:hasModelVariable ?qmin ." 
-				+ "?qmin  a  j3:QMin  ." 
-				+ "?qmin  j2:hasValue ?vqmin ."
-				+ "?vqmin   j2:numericalValue ?V_Qmin ." // qmin
-
-				+ "?model   j5:hasModelVariable ?Vg ." 
-				+ "?Vg  a  j3:Vg  ." 
-				+ "?Vg  j2:hasValue ?vVg ."
-				+ "?vVg   j2:numericalValue ?V_Vg ." // vg
-
-				+ "?model   j5:hasModelVariable ?mbase ." 
-				+ "?mbase  a  j3:mBase  ." 
-				+ "?mbase  j2:hasValue ?vmbase ."
-				+ "?vmbase   j2:numericalValue ?V_mBase ." // mbase
-
-				+ "?model   j5:hasModelVariable ?pmax ." 
-				+ "?pmax  a  j3:PMax  ." 
-				+ "?pmax  j2:hasValue ?vpmax ."
-				+ "?vpmax   j2:numericalValue ?V_Pmax ." // pmax
-
-				+ "?model   j5:hasModelVariable ?pmin ." 
-				+ "?pmin  a  j3:PMin  ." 
-				+ "?pmin  j2:hasValue ?vpmin ."
-				+ "?vpmin   j2:numericalValue ?V_Pmin ." // pmin
-
-				+ "?model   j5:hasModelVariable ?pc1 ." 
-				+ "?pc1  a  j3:Pc1  ." 
-				+ "?pc1  j2:hasValue ?vpc1 ."
-				+ "?vpc1   j2:numericalValue ?V_Pc1 ." // pc1
-
-				+ "?model   j5:hasModelVariable ?pc2 ." 
-				+ "?pc2  a  j3:Pc2  ." 
-				+ "?pc2  j2:hasValue ?vpc2 ."
-				+ "?vpc2   j2:numericalValue ?V_Pc2 ." // pc2
-
-				+ "?model   j5:hasModelVariable ?qc1min ." 
-				+ "?qc1min  a  j3:QC1Min  ."
-				+ "?qc1min  j2:hasValue ?vqc1min ." 
-				+ "?vqc1min   j2:numericalValue ?V_Qc1Min ." // qc1min
-
-				+ "?model   j5:hasModelVariable ?Qc1max ." 
-				+ "?Qc1max  a  j3:QC1Max  ."
-				+ "?Qc1max  j2:hasValue ?vQc1max ." 
-				+ "?vQc1max   j2:numericalValue ?V_Qc1Max ." // qc1max
-
-				+ "?model   j5:hasModelVariable ?qc2min ." 
-				+ "?qc2min  a  j3:QC2Min  ."
-				+ "?qc2min  j2:hasValue ?vqc2min ."
-				+ "?vqc2min   j2:numericalValue ?V_Qc2Min ." // qc2min
-
-				+ "?model   j5:hasModelVariable ?Qc2max ."
-				+ "?Qc2max  a  j3:QC2Max  ."
-				+ "?Qc2max  j2:hasValue ?vQc2max ." 
-				+ "?vQc2max   j2:numericalValue ?V_Qc2Max ." // qc2max
-
-				+ "?model   j5:hasModelVariable ?rampagc ." 
-				+ "?rampagc  a  j3:Rampagc  ."
-				+ "?rampagc  j2:hasValue ?vrampagc ." 
-				+ "?vrampagc   j2:numericalValue ?V_Ramp_agc ." // rampagc
-
-				+ "?model   j5:hasModelVariable ?ramp10 ." 
-				+ "?ramp10  a  j3:Ramp10  ."
-				+ "?ramp10  j2:hasValue ?vramp10 ."
-				+ "?vramp10   j2:numericalValue ?V_Ramp_10 ." // ramp10
-
-				+ "?model   j5:hasModelVariable ?ramp30 ." 
-				+ "?ramp30  a  j3:Ramp30  ."
-				+ "?ramp30  j2:hasValue ?vramp30 ." 
-				+ "?vramp30   j2:numericalValue ?V_Ramp_30 ." // ramp30
-
-				+ "?model   j5:hasModelVariable ?rampq ." 
-				+ "?rampq  a  j3:Rampq  ." 
-				+ "?rampq  j2:hasValue ?vrampq ."
-				+ "?vrampq   j2:numericalValue ?V_Ramp_q ." // rampq
-
-				+ "?model   j5:hasModelVariable ?apf ."
-				+ "?apf  a  j3:APF  ." 
-				+ "?apf  j2:hasValue ?vapf ."
-				+ "?vapf   j2:numericalValue ?V_APF ." // apf
-				
-				+ "?model   j5:hasModelVariable ?startup ." 
-				+ "?startup  a  j3:StartCost  ."
-				+ "?startup  j2:hasValue ?vstartup ." 
-				+ "?vstartup   j2:numericalValue ?V_StartupCost ." //startup cost
-
-				+ "?model   j5:hasModelVariable ?shutdown ." 
-				+ "?shutdown  a  j3:StopCost  ."
-				+ "?shutdown  j2:hasValue ?vshutdown ." 
-				+ "?vshutdown   j2:numericalValue ?V_ShutdownCost ."  //shutdown cost
-				
-				+ "?model   j5:hasModelVariable ?gencostn ." 
-				+ "?gencostn  a  j3:genCostn  ."
-				+ "?gencostn  j2:hasValue ?vgencostn ." 
-				+ "?vgencostn   j2:numericalValue ?V_genCostn ." //genCostn
-
-				+ "?model   j5:hasModelVariable ?gencostn1 ." 
-				+ "?gencostn1  a  j3:genCostcn-1  ."
-				+ "?gencostn1  j2:hasValue ?vgencostn1 ." 
-				+ "?vgencostn1   j2:numericalValue ?V_genCostn1 ." //genCostn-1
-
-				+ "?model   j5:hasModelVariable ?gencostn2 ." 
-				+ "?gencostn2  a  j3:genCostcn-2  ."
-				+ "?gencostn2  j2:hasValue ?vgencostn2 ." 
-				+ "?vgencostn2   j2:numericalValue ?V_genCostn2 ."//genCostn-2
-
-				+ "?model   j5:hasModelVariable ?gencostc ." 
-				+ "?gencostc  a  j3:genCostc0  ."
-				+ "?gencostc  j2:hasValue ?vgencostc ." 
-				+ "?vgencostc   j2:numericalValue ?V_genCostc0 ." //genCostc0
-				
-				+ "?generation j9:hasEmission ?emission ." 
-				+ "?emission a j9:Actual_CO2_Emission ."
-				+ "?emission   j2:hasValue ?valueemission ."
-				+ "?valueemission   j2:numericalValue ?actual_carbon ." 
-				
-				+ "?generation j9:hasEmission ?emission ." 
-				+ "OPTIONAL {?emission a j9:Design_CO2_Emission }"
-				+ "OPTIONAL {?emission   j2:hasValue ?valueemission_d }"
-				+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
-
-				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
-				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?V_y ."
-
-				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?V_x ."//longitude
-
-				+ "}";
+			    + "}";
 		String info;
 		if (iriOfObject.contains("Gen")){
 			info = genInfo;
