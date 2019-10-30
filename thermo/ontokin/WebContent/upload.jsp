@@ -118,7 +118,7 @@
 					<div class="col-md-11">
 						<s:select
 							headerKey="-1" headerValue="Select query type"
-							list="#{'mechAll':'Show All Mechanisms (no additional input is needed)', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Thermodynamic Data', 'compthermo':'Compare Thermodynamic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters', 'comparerate':'Compare Arrhenius Parameters and Rate Constants'}" 
+							list="#{'mechAll':'Show All Mechanisms', 'mechforS':'Show Mechanism(s) Containing Species', 'thermo':'Show Thermodynamic Coefficients', 'compthermo':'Compare Thermodynamic Data', 'mechforR':'Show Mechanism(s) Containing Reaction', 'rateconstant':'Show Arrhenius Rate Constant Parameters', 'comparerate':'Compare Arrhenius Parameters and Rate Constants'}" 
 							name="querySelection" 
 							value="thermo" theme="bootstrap" />
 					</div>
@@ -126,12 +126,12 @@
 						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="To view all the mechanisms, select 'Show All Mechanisms'. To search for a species, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data'. To search for a reaction, select either 'Show Arrhenius Parameters and Rate Constants' or 'Compare Arrhenius Parameters and Rate Constants'.">?</span>							
 					</div>
 				</div>
-				<span id ="queryText" style="">Interactive text:</span>
-				<span id ="errorQuery" style="display:none; color:red">No text provided</span>
+				<span id ="queryText" style="">Select a query type (above):</span>
+				<span id ="errorQuery" style="display:none; color:red">No input provided</span>
 				<span id ="errorQueryReaction" style="display:none; color:red">Provide a valid reaction</span>
 				<div class="row">
 					<div class="col-md-11">
-						<s:textfield name="term" class="form-control"  placeholder="Specify the name of a species or reaction" theme="bootstrap"/>							
+						<s:textfield name="term" class="form-control"  placeholder="No additional input is required" theme="bootstrap"/>							
 					</div>
 					<div class="col-md-1">
 						<span class="btn btn-sm btn-info btn-help" data-toggle="tooltip" data-placement="right" title="If you have selected 'Show All Mechanisms' in the menu above, click on the 'Search OntoKin' button. If you have selected a species related query, type in or paste a species (e.g. H2O). If you have selected a reaction related query, type in or paste a reaction (e.g. O + HO2 [=] O2 + OH). Finally, click on the 'Search OntoKin' button.">?</span>
@@ -161,9 +161,9 @@
 							    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
 							      <div class="card-body">
 										<h5 class="card-title" style="font-size: 18px;">How to search for a species?</h5>
-									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a species (e.g. O2) by typing in or pasting, select either 'Show Mechanism(s) Containing Species' or 'Thermodynamic Data' or 'Compare Thermodynamic Data' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
+									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a species (e.g. O2) by typing in or pasting, select either 'Show Mechanism(s) Containing Species' or 'Show Thermodynamic Data' or 'Compare Thermodynamic Data' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
 									    <h5 class="card-title" style="font-size: 18px;">How to search for a reaction?</h5>
-									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a reaction (e.g. O2 + N [=] O + NO) by typing in or pasting, select either 'Show Mechanism(s) Containing Reaction' or 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Rate Constant Parameters' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
+									    <p class="card-text" style="font-size: 14px;">In the 'OntoKin Search' box above, provide a reaction (e.g. O2 + N =] O + NO) by typing in or pasting, select either 'Show Mechanism(s) Containing Reaction' or 'Show Arrhenius Rate Constant Parameters' or 'Compare Arrhenius Parameters and Rate Constants' in the 'Select query type' drop-down menu and click on the 'Search OntoKin' button.</p>
 									</div>
 							    </div>
 							  </div>
@@ -482,7 +482,37 @@ $( function() {
 				$('#canvasS').show();
 			}
 	 });
-	
+
+	 $('#querySelection').change(function(){ 
+		 console.log('In query selection');	
+		 var value = $(this).val();
+			if (value == '-1') {
+				$('#queryText').text("Select a query type (above)");
+				$('#term').attr("placeholder", "No additional input is required");
+			} else if (value == 'mechAll') {
+				$('#queryText').text("No additional input is required. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder", "No additional input is required");
+			} else if (value == 'mechforS') {
+				$('#queryText').text("Specify the name of a species, e.g. O2. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder","Specify the name of a species, e.g. O2");
+			} else if (value == 'thermo') {
+				$('#queryText').text("Specify the name of a species, e.g. O2. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder","Specify the name of a species, e.g. O2");
+			} else if (value == 'compthermo') {
+				$('#queryText').text("Specify the name of a species, e.g. O2. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder","Specify the name of a species, e.g. O2");
+			} else if (value == 'mechforR') {
+				$('#queryText').text("Specify a reaction, e.g. O2 + N =] O + NO. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder", "Specify a reaction, e.g. O2 + N =] O + NO");
+			} else if (value == 'rateconstant') {
+				$('#queryText').text("Specify a reaction, e.g. O2 + N =] O + NO. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder", "Specify a reaction, e.g. O2 + N =] O + NO");
+			} else if (value == 'comparerate') {
+				$('#queryText').text("Specify a reaction, e.g. O2 + N =] O + NO. Click the \"Search OntoKin\" button.");
+				$('#term').attr("placeholder", "Specify a reaction, e.g. O2 + N =] O + NO");
+			}
+	 });
+	 
 	 $("a#linkButton").on('click',function(){
 	    window.open('www.google.com', '_blank');
 	});
@@ -658,7 +688,7 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp' + '\n' +
+				'SELECT ?MechanismName ?CoefficientValues ?MinTemp ?MaxTemp ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI' + '\n' +
 				'WHERE {' + '\n' +
 					'?SpeciesIRI rdfs:label \"' + search_term_name + '\" . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
 					'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
@@ -696,7 +726,7 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
             	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
@@ -724,7 +754,7 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
             	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
@@ -751,7 +781,7 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
             	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
@@ -777,7 +807,7 @@ $( function() {
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI ?ReactionIRI ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits' + '\n' +
+				'SELECT ?MechanismName ?ActivationEnergy ?ActivationEnergyUnits ?PreExpFactor ?PreExpFactorUnits ?TempExponent ?TempExpUnits ?MechanismIRI ?ReactionIRI' + '\n' +
 				'WHERE {' + '\n' +
 		            '?ReactionIRI ontokin:hasEquation ?Equation .' + '\n' + 
             	    'FILTER regex(?Equation, \" ' + productArray[0].trim() + '\")' + '\n' +  
