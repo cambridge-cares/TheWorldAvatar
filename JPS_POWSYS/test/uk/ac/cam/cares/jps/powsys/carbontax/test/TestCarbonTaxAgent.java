@@ -75,4 +75,9 @@ public class TestCarbonTaxAgent extends TestCase {
 		assertNotNull(new JSONObject(resultProcess).get("substitutionalgenerators"));
 	}
 
+	public void testQueryEmissionFactor() {
+		String technology = "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine";
+		String factor = new CarbonTaxAgent().queryEmissionFactor(technology);
+		assertEquals("0.181", factor);
+	}
 }

@@ -309,7 +309,8 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
+				//+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
+				+ "SELECT ?entity ?Pmaxvalue ?tech " 
 				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
 				//+ "?entity   j2:isSubsystemOf ?plant ." // plant
 				+ "?entity   j2:isModeledBy ?model ." 
@@ -320,9 +321,9 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 
 				+ "?entity j4:realizes ?genprocess ." 
 				+ "?genprocess j9:usesGenerationTechnology ?tech ."
-				+ "?tech j9:hasEmissionFactor ?emm ."
-				+ "?emm j2:hasValue ?valueemm ."
-				+ "?valueemm j2:numericalValue ?emissionfactor ." 
+//				+ "?tech j9:hasEmissionFactor ?emm ."
+//				+ "?emm j2:hasValue ?valueemm ."
+//				+ "?valueemm j2:numericalValue ?emissionfactor ." 
 				+ "}";
 
 
@@ -343,6 +344,9 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 			a.setid("c"+d);
 			plant.add(a);
 			
+			String technology = resultListfromquery.get(0)[2];
+			String emissionFactor = queryEmissionFactor(technology);
+			
 			String[] current = new String[12];
 			current[0] = "c" + d; // what to write there???or uniqueplant.get(c)
 			//current[0] = resultListfromquery.get(0)[0];
@@ -351,7 +355,8 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 			current[3] = "8500"; // rand
 			current[4] = "7.33";// rand
 			current[5] = "0";// rand
-			current[6] = resultListfromquery.get(0)[2]; // in ton/MWh
+			//current[6] = resultListfromquery.get(0)[2]; // in ton/MWh
+			current[6] = emissionFactor; // in ton/MWh
 			current[7] = "10";// rand
 			current[8] = resultListfromquery.get(0)[1]; //capacity in mw
 			current[9] = "1";// rand
@@ -375,6 +380,23 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		broker.putLocal(baseUrl + "/Generator_Parameters.csv", s);
 
 		logger.info("generator input ok");
+	}
+	
+	public String queryEmissionFactor(String technology) {
+		
+		String sparql = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "SELECT ?emissionfactor " // add the emission value as optional
+				+ "WHERE { " 
+				+ "<" + technology + "> j9:hasEmissionFactor ?emm ."
+				+ "?emm j2:hasValue ?valueemm ."
+				+ "?valueemm j2:numericalValue ?emissionfactor ." 
+				+ "}";		
+		
+		String result = new QueryBroker().queryFile(technology, sparql);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		return resultList.get(0)[0];
 	}
 	
 	public void prepareConstantCSV(BigDecimal tax,String baseUrl) {
