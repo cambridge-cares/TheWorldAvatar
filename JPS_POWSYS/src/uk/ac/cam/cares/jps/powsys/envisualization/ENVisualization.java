@@ -640,22 +640,24 @@ public class ENVisualization extends JPSHttpServlet {
 			    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			    + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
 			    + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-			    + "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
+			    + "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?v_emission ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
 			    
 			    + "WHERE {?entity  a  j1:PowerGenerator  ."
 			    + "?entity   technical_system:realizes ?generation ."
 			    + "?generation j9:hasEmission ?emission ." 
+			    
 			    + "?emission a j9:Actual_CO2_Emission ."
 			    + "?emission   j2:hasValue ?valueemission ."
 			    + "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
 			    + "?valueemission   j2:hasUnitOfMeasure ?V_Actual_CO2_Emission_unit ." //
-//
-//			    
-//			    + "?emission a j9:Design_CO2_Emission ."
-//			    + "?emission   j2:hasValue ?valueemission ."
-//			    + "?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission ." //
-//			    + "?valueemission_d   j2:hasUnitOfMeasure ?V_Design_CO2_Emission_unit ." //
-//
+
+			    
+			    + "?generation j9:hasEmission ?v_emission ." 
+//			    + "?v_emission a j9:Design_CO2_Emission ."
+			    + "?v_emission   j2:hasValue ?valueemission ."
+			    + "?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission ." //
+			    + "?valueemission_d   j2:hasUnitOfMeasure ?V_Design_CO2_Emission_unit ." //
+
 			    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 			    + "?y  j2:hasValue ?vy ." 
 			    + "?vy  j2:numericalValue ?V_y ."
