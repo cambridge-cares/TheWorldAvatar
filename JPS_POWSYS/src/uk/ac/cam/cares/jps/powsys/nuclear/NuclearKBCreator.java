@@ -136,7 +136,7 @@ public class NuclearKBCreator {
 //	    List<IriMapping> original=map2.deserialize(csvfileoutput);
 	    	
 	    //reading from output file and put that to owl file
-		String csv = new QueryBroker().readFile(csvfileoutput);
+		String csv = new QueryBroker().readFileLocal(csvfileoutput);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
     	
     	for (int i=1; i<simulationResult.size(); i++) {
@@ -227,7 +227,7 @@ public class NuclearKBCreator {
 		
         ArrayList<NuclearGenType> nucleargeneratorlisted = new ArrayList<NuclearGenType>();
         
-		String csv = new QueryBroker().readFile(csvfileinputparam);
+		String csv = new QueryBroker().readFileLocal(csvfileinputparam);
 		List<String[]> genTypes = MatrixConverter.fromCsvToArray(csv);
 		for (int i=1; i<genTypes.size(); i++) {
 			String[] data = genTypes.get(i);

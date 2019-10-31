@@ -27,9 +27,20 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class QueryBroker {
 	
-	public String readFile(String urlOrPath) {
-		String result = KnowledgeBaseClient.get(null, urlOrPath, null);
+	public String readFile(String url) {
+		if (!url.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must be a URL");
+		}
+		String result = KnowledgeBaseClient.get(null, url, null);
 		return result;
+	}
+	
+	public String readFileLocal(String path) {
+		if (path.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must not be a URL");
+		}
+		String localFile = ScenarioHelper.cutHash(path);
+		return FileUtil.readFileLocally(localFile);
 	}
 	
 	// TODO-AE SC 20190321 all methods should be extended in such a way that scenario url might passed
@@ -188,7 +199,17 @@ public class QueryBroker {
 	}
 	
 	public void put(String destinationUrl, String content) {
+		if (!destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must be a URL");
+		}
 		KnowledgeBaseClient.put(null, destinationUrl, content, null);
+	}
+	
+	public void putLocal(String destinationUrl, String content) {
+		if (destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must not be a URL");
+		}
+		FileUtil.writeFileLocally(destinationUrl, content);
 	}
 	
 	public void putOld(String destinationUrl, String content) {
@@ -210,9 +231,20 @@ public class QueryBroker {
 	}
 	
 	public void put(String destinationUrl, File file) {
+		if (!destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must be a URL");
+		}
 		
 		String content = FileUtil.readFileLocally(file.getAbsolutePath());
 		put(destinationUrl, content);
+	}
+	
+	public void putLocal(String destinationUrl, File file) {
+		if (destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must not be a URL");
+		}
+		String content = FileUtil.readFileLocally(file.getAbsolutePath());
+		FileUtil.writeFileLocally(destinationUrl, content);
 	}
 
 	public void updateFile(String targetUrl, String sparqlUpdate) {

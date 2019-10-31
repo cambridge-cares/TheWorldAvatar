@@ -226,7 +226,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	    if (fileWithinBucket.exists()) {
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
-	    	String content = new QueryBroker().readFile(resource);
+	    	String content = new QueryBroker().readFileLocal(resource);
 	    	FileUtil.writeFileLocally(completePathWithinBucket, content);
 	    	return completePathWithinBucket;
 	    }  
@@ -248,7 +248,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		String resource = getResourcePath(jo, scenarioName, copyOnRead);
 		// TODO-AE SC the prepare method might create a scenario copy; in this case prepare method already reads the content; i.e. in this case
 		// we read it here a second time --> refactor the code such that this is not required; the same for queryFile
-		return new QueryBroker().readFile(resource);
+		return new QueryBroker().readFileLocal(resource);
 	}
 	
 	private String queryFile(JSONObject jo, String scenarioName, boolean copyOnRead) {
@@ -399,6 +399,8 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	
 	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
 		
+		logger.info("updateKnowledgeBase");
+		
 		String datasetUrl = kb.getDatasetUrl();
 		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
 		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
@@ -432,6 +434,8 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	
 	protected String queryKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql, boolean copyOnRead) {
 
+		logger.info("queryKnowledgeBase");
+		
 		String datasetUrl = kb.getDatasetUrl();
 		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
 		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
@@ -445,10 +449,13 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
 		if (copyOnRead) {
 			kb.put(resourceUrl, content, null);
+			return kb.query(resourceUrl, sparql);
+		} else {
+			logger.info("query from KnowledgeBaseAbstract");
+			InputStream inputStream = FileUtil.stringToInputStream(content);
+			RDFFormat format =  KnowledgeBaseAbstract.getRDFFormatFromFileType(resourceUrl);
+			return KnowledgeBaseAbstract.query(inputStream, format, sparql);
 		}
-		InputStream inputStream = FileUtil.stringToInputStream(content);
-		RDFFormat format =  KnowledgeBaseAbstract.getRDFFormatFromFileType(resourceUrl);
-		return KnowledgeBaseAbstract.query(inputStream, format, sparql);
 	}
 	
 	private void doGetNew(HttpServletRequest req, HttpServletResponse resp, String scenarioName, boolean copyOnRead) 

@@ -118,7 +118,9 @@ public class KnowledgeBaseClient {
 		
 		// case 1b
 		JPSBaseLogger.info(getInstance(), "SPARQL query is performed locally for targetUrl=" + targetUrl);
-		ResultSet resultSet = JenaHelper.queryUrl(targetUrl, sparqlQuery);
+		String localUrl = ScenarioHelper.cutHash(targetUrl);
+		localUrl = ResourcePathConverter.convert(localUrl);
+		ResultSet resultSet = JenaHelper.queryUrl(localUrl, sparqlQuery);
 		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	}
 	

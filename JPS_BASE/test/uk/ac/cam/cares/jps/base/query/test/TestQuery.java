@@ -114,7 +114,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 			assertEquals(5, size);
 			size = model.size();
 			System.out.println("size triples=" + size);
-			assertEquals(7728, size);
+			assertEquals(7810, size);
 		} finally {
 			JPSHttpServlet.disableScenario();
 		}
@@ -215,40 +215,12 @@ public class TestQuery extends TestCase implements ITestConstants{
 		String plantIri = POWER_PLANT_AFG_IRI;
 		double newEmissionValue = 255.55;
 		String query = MiscUtil.format(EmissionTestAgent.SPARQL_PLANT_UPDATE_EMISSION, newEmissionValue, plantIri);
-		new QueryBroker().updateFile(plantIri, query);
+		new QueryBroker().updateFile(POWER_PLANT_AFG_FILE, query);
 		
 		// check updated value
 		//String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
-		String localFile = ResourcePathConverter.convert(POWER_PLANT_AFG_FILE);
-		assertEmissionValue(localFile, newEmissionValue);
-	}
-	
-	public void testQueryBrokerRemoteSparqlDeleteData() {
-		
-		QueryBroker broker = new QueryBroker();
-		String localFile = ResourcePathConverter.convert(ELECTRICAL_NETWORK_FILE);
-		String sparqlQuery = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
-				"SELECT * \r\n" +
-				"WHERE { ?s OCPSYST:hasSubsystem <%s> . } ";
-		sparqlQuery = MiscUtil.format(sparqlQuery, "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
-		System.out.println(sparqlQuery);
-		String result = broker.queryFile(localFile, sparqlQuery);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "s");
-		// we queried for a specific instance; thus we expect only one result row
-		assertEquals(1, resultList.size());
-		
-		// delete instance
-		String sparqlUpdate =  "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
-				"DELETE DATA { <%s> OCPSYST:hasSubsystem <%s> . } \r\n";
-		sparqlUpdate = MiscUtil.format(sparqlUpdate, ELECTRICAL_NETWORK_IRI, "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-009.owl#EGen-009");
-		System.out.println(sparqlUpdate);
-		broker.updateFile(ELECTRICAL_NETWORK_IRI, sparqlUpdate);
-
-		// check whether the triple was deleted
-		result =  broker.queryFile(localFile, sparqlQuery);
-		resultList = JenaResultSetFormatter.convertToListofStringArrays(result, "s");
-		// we queried for a specific instance that was deleted; thus we expect zero result rows
-		assertEquals(0, resultList.size());
+		//String localFile = ResourcePathConverter.convert(POWER_PLANT_AFG_FILE);
+		assertEmissionValue(POWER_PLANT_AFG_FILE, newEmissionValue);
 	}
 	
 	public void testQueryBrokerGetLocalDataPath() {

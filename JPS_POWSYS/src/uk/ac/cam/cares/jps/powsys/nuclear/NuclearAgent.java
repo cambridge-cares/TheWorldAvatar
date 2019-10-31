@@ -86,7 +86,7 @@ public class NuclearAgent extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("parameters_req.csv",newdir+"/parameters_req.csv output="+newdir+"/parameters_req.gdx");
         fileContext = fileContext.replaceAll("constants_req.csv",newdir+"/constants_req.csv output="+newdir+"/constants_req.gdx");
 		
-		new QueryBroker().put(destinationUrl, fileContext);
+		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
 	
 	
@@ -125,7 +125,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
 		File file = new File(source);
 		String destinationUrl = baseUrl + "/" + "/results.csv";
-		new QueryBroker().put(destinationUrl, file);
+		new QueryBroker().putLocal(destinationUrl, file);
 	}
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -223,12 +223,12 @@ public class NuclearAgent extends JPSHttpServlet {
 	
         String resourceDir = Util.getResourceDir(this);
         File file = new File(resourceDir + "/constants_req.csv");
-        broker.put(baseUrl + "/constants_req.csv", file);
+        broker.putLocal(baseUrl + "/constants_req.csv", file);
 
         //-----------------------------------------3rd input file finished-------------------------------------------------------------------
     
         file = new File(resourceDir + "/parameters_req.csv");
-        broker.put(baseUrl + "/parameters_req.csv", file);
+        broker.putLocal(baseUrl + "/parameters_req.csv", file);
  
         //-----------------------------------------4th input file finished-------------------------------------------------------------------
 
@@ -341,7 +341,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		csvresult.add(content2);
 		 String s = MatrixConverter.fromArraytoCsv(csvresult);
 		 QueryBroker broker = new QueryBroker();
-		 broker.put(baseUrl + "/inputgeneratorselection.csv", s);
+		 broker.putLocal(baseUrl + "/inputgeneratorselection.csv", s);
 		
 	}
 	
@@ -394,12 +394,12 @@ public class NuclearAgent extends JPSHttpServlet {
 		}
     
 		String csv = mapper.serialize();
-	    broker.put(baseUrl + "/mappingforlot.csv", csv);
+	    broker.putLocal(baseUrl + "/mappingforlot.csv", csv);
 	    
 	    String[] header = {"id","ys","xs","as","dcs"};
 	    resultList.add(0, header);
 	    String s = MatrixConverter.fromArraytoCsv(resultList);
-	    broker.put(baseUrl + "/inputlandlots.csv", s);
+	    broker.putLocal(baseUrl + "/inputlandlots.csv", s);
 	    
 	    logger.info("landlots input ok"); 
 	}
@@ -473,12 +473,12 @@ public class NuclearAgent extends JPSHttpServlet {
 		}
 		
 		String csv = mapper.serialize();
-	    broker.put(baseUrl + "/mappingforbus.csv", csv);
+	    broker.putLocal(baseUrl + "/mappingforbus.csv", csv);
 		
 	    String[] header= {"id","yp","xp","Dp","rhop"};
 	    resultList.add(0, header);
 	    String s = MatrixConverter.fromArraytoCsv(resultList);
-	    broker.put(baseUrl + "/inputloadpoints.csv", s);
+	    broker.putLocal(baseUrl + "/inputloadpoints.csv", s);
 	    
 	    logger.info("bus input ok");
 	}

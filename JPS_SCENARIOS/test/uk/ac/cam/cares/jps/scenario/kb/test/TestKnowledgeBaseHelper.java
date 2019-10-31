@@ -46,7 +46,9 @@ public abstract class TestKnowledgeBaseHelper extends TestCase {
 	}
 	
 	public File[] getBuildingFiles(int from, int to) {
-		File dir = new File("D:/myTemp/cityGML/cityGML/buildingsthehaguenamedgraphs");
+		//File dir = new File("D:/myTemp/cityGML/cityGML/buildingsthehaguenamedgraphs");
+		File dir = new File("C:/Users/Andreas/TMP/buildingsthehaguenamedgraphs");
+		
 		File[] files = dir.listFiles();
 		return Arrays.copyOfRange(files, from, to);
 	}

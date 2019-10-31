@@ -100,6 +100,15 @@ public abstract class KnowledgeBaseAbstract {
 	}
 	
 	public static String query(InputStream inputStream, RDFFormat inputFormat, String sparql) {
+		
+		// this is the solution with Jena that was used originally in QueryBroker.queryFile 
+		// and that is still used in KnowledgeBaseClient when querying a file on the clien-side.
+//		ResultSet resultSet = JenaHelper.queryInputStream(inputStream, sparql);
+//		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		
+		
+		// the following implementation with RDF4j will not always return the queried information 
+		// since - contrary to Jena - RDF4j does not load OWL imports automatically
 		MemoryStore memStore = new MemoryStore();
 		Repository repo = new SailRepository(memStore);
 		repo.init();

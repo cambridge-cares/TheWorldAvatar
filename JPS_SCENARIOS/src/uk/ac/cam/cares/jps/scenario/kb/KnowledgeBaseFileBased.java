@@ -127,9 +127,10 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 	
 	@Override
 	public boolean exists(String resourceUrl) {
-		logger.info("exists resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
 		String filePath = BucketHelper.getLocalPath(resourceUrl, datasetUrl);
-		return new File(filePath).exists();
+		boolean exists = new File(filePath).exists();
+		logger.info("exists=" + exists + " for resourceUrl=" + resourceUrl + " (kb url=" + datasetUrl + ")");
+		return exists;
 	}
 	
 

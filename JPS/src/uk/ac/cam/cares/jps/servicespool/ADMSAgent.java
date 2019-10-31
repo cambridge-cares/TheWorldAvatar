@@ -92,7 +92,7 @@ public class ADMSAgent extends JPSHttpServlet {
             if (requestParams.has(PARAM_KEY_SHIP)) {
                 JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
-                broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
+                broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
 
                 writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation);

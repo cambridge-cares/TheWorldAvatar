@@ -215,7 +215,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
 		
 		
 		
-		new QueryBroker().put(folder +"/testmod.levels.gst", MatrixConverter.fromArraytoCsv(copier));
+		new QueryBroker().putLocal(folder +"/testmod.levels.gst", MatrixConverter.fromArraytoCsv(copier));
 //============================================================================================		
 		
 		

@@ -218,7 +218,7 @@ public class TestADMSHelper extends TestCase {
 		}
 		System.out.println(a.getJSONArray(0).getJSONArray(7).toString());
 		System.out.println(a.getJSONArray(0).getJSONArray(7).length());
-		broker.put(baseUrl + "/newresult2.csv", MatrixConverter.fromArraytoCsv(copier));
+		broker.putLocal(baseUrl + "/newresult2.csv", MatrixConverter.fromArraytoCsv(copier));
 		
 		
 		

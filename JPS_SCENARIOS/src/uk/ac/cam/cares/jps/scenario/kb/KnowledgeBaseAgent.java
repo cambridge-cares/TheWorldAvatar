@@ -177,8 +177,14 @@ public class KnowledgeBaseAgent extends HttpServlet {
 			b.append(", sparql=" + sparql);
 			logger.error(b.toString());
 		} else {
-			if ((sparql != null) && sparql.length() > 100) {
-				sparql = sparql.substring(0, 100);
+			if (sparql != null) {
+				int i = sparql.toLowerCase().indexOf("select");
+				if (i > 0) {
+					sparql = sparql.substring(i);
+				}
+				if (sparql.length() > 150) {
+					sparql = sparql.substring(0, 150);
+				}
 			}
 			b.append(", sparql (short)=" + sparql);
 			logger.info(b.toString());

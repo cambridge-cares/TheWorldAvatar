@@ -63,7 +63,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results2.csv";
 				File file = new File(source);
 				String destinationUrl = newdir+"/results.csv";
-				new QueryBroker().put(destinationUrl, file);
+				new QueryBroker().putLocal(destinationUrl, file);
 				
 			}
 			
@@ -84,7 +84,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
 		
 		String destinationUrl = newdir + "/"+filename;
-		new QueryBroker().put(destinationUrl, file);
+		new QueryBroker().putLocal(destinationUrl, file);
 	}
 	
 	public void modifyTemplate(String newdir, String filename) throws IOException { 
@@ -103,7 +103,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         //FileUtils.write(file, fileContext);
  
 		
-		new QueryBroker().put(destinationUrl, fileContext);
+		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
 	
 	
@@ -212,7 +212,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
     	
     	
     	/*IF IN THE FUTURE NEED TO READ FROM THE TEMPLATE*/
-		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
+		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
 		List<String[]> inputcontent = MatrixConverter.fromCsvToArray(csv);
     	
 		List<String>uniqueplant=new ArrayList<>(new HashSet<>(plantname));
@@ -267,7 +267,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	    	System.out.println("it has the same number of gen!!!!");
 	    	s=MatrixConverter.fromArraytoCsv(inputcontent);
 	    }
-	    broker.put(baseUrl + "/Generator_Parameters.csv", s);
+	    broker.putLocal(baseUrl + "/Generator_Parameters.csv", s);
 	    
 	    logger.info("generator input ok"); 
 	}
@@ -367,12 +367,12 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 
 		/* IF IN THE FUTURE NEED TO READ FROM THE TEMPLATE */
 		String csv = new QueryBroker()
-				.readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
+				.readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Generator_Parameters.csv");
 
 		resultListforcsv.add(0, header);
 		resultListforcsv.add(1, nuclear);
 		String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
-		broker.put(baseUrl + "/Generator_Parameters.csv", s);
+		broker.putLocal(baseUrl + "/Generator_Parameters.csv", s);
 
 		logger.info("generator input ok");
 	}
@@ -390,11 +390,11 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		constant.add(D);
 		constant.add(L);
 	    String s = MatrixConverter.fromArraytoCsv(constant);
-	    new QueryBroker().put(baseUrl + "/Constants.csv", s);
+	    new QueryBroker().putLocal(baseUrl + "/Constants.csv", s);
 	}
 	
 	public JSONObject giveResult(String outputfiledir,List<NuclearGenType>plant) {
-		String content = new QueryBroker().readFile(outputfiledir);
+		String content = new QueryBroker().readFileLocal(outputfiledir);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content);
 		ArrayList<String>removedplant=new ArrayList<String>();
 		JSONObject result = new JSONObject();

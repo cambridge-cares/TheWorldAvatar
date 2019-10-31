@@ -148,6 +148,13 @@ public class JenaHelper {
 		return resultSet;
 	}
 	
+	public static ResultSet queryInputStream(InputStream is, String sparql) {
+		OntModel model = createModel();
+		read(is, model);
+		ResultSet resultSet = query(model, sparql);
+		return resultSet;
+	}
+	
 	public static void writeAsFile(Model model, String path) {
 		FileOutputStream fos;
 		try {
