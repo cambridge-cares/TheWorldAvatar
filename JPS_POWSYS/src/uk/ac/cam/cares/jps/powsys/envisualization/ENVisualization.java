@@ -506,6 +506,7 @@ public class ENVisualization extends JPSHttpServlet {
 			if (resultList.size() == 0) { //temporary method just in case this generator does not have co2 emission
 				actual += 0;
 				System.out.println(generators.get(i)[0] +'\n');
+				actual += 0;
 				design += 0; 
 			}
 			else{
