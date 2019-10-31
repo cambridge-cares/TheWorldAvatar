@@ -153,7 +153,7 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			logger.info("uploading file");
 			
-		    String fileName = "C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal.kml";
+		    String fileName = "C:/TOMCAT/webapps/ROOT/OntoEN/testfinal.kml";
 		    String fileType = "text/xml; charset=utf-8";
 		    // Find this file id in database to get file name, and file type
 		
@@ -479,8 +479,8 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 //				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#>"
-				+ "SELECT ?entity ?V_Pd ?V_Pdunit ?V_Pd_Gen ?V_Pd_Genunit ?V_Gd ?V_Gdunit ?V_Gd_Gen ?V_Gd_Genunit" 
-				+ "?Gsvalue ?Bsvalue ?V_Vm ?V_Va ?V_Vaunit ?V_BaseKV ?V_BaseKVunit ?VMaxvalue ?VMaxvalueunit ?VMinvalue ?VMinvalueunit  ?valueofx ?valueofxunit ?valueofy ?valueofyunit "
+				+ "SELECT ?entity ?V_Pd ?V_Pd_Gen ?V_Gd_Gen " 
+				+ "?V_Gs ?V_Bs ?V_Vm ?V_Va ?V_BaseKV ?V_VmMax ?V_VmMin ?V_x ?V_y "
 
 				+ "WHERE {?entity  a  j1:BusNode  ." 
 				+ "?entity   j2:isModeledBy ?model ."
@@ -493,79 +493,143 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "?Pd  a  j3:PdBus  ." 
 				+ "?Pd  j2:hasValue ?vpd ."
 				+ "?vpd   j2:numericalValue ?V_Pd ." // pd
-//				+ "?vpd   j2:hasUnitOfMeasure ?V_Pdunit ." // unit
 
 				+ "?model   j5:hasModelVariable ?PdGen ." 
 				+ "?PdGen  a  j3:PdGen  ." 
 				+ "?PdGen  j2:hasValue ?vpdgen ."
 				+ "?vpdgen   j2:numericalValue ?V_Pd_Gen ." // pdgen
-//				+ "?vpdgen   j2:hasUnitOfMeasure ?V_Pd_Genunit ." // unit
 				
 				+ "?model   j5:hasModelVariable ?Gd ." 
 				+ "?Gd  a  j3:GdBus  ." 
 				+ "?Gd  j2:hasValue ?vgd ."
 				+ "?vgd   j2:numericalValue ?V_Gd ." // Gd
-//				+ "?vgd   j2:hasUnitOfMeasure ?V_Gdunit ." // unit
 				
 				+ "?model   j5:hasModelVariable ?Gd_Gen ." 
 				+ "?Gd_Gen  a  j3:GdGen  ." 
 				+ "?Gd_Gen  j2:hasValue ?vgdgen ."
 				+ "?vgdgen   j2:numericalValue ?V_Gd_Gen ." // Gdgen
-//				+ "?vgdgen   j2:hasUnitOfMeasure ?V_Gd_Genunit ." // unit
 
 
 				+ "?model   j5:hasModelVariable ?Gsvar ." 
 				+ "?Gsvar  a  j3:Gs  ." 
 				+ "?Gsvar  j2:hasValue ?vGsvar ."
-				+ "?vGsvar   j2:numericalValue ?Gsvalue ." // Gs (has no unit)
+				+ "?vGsvar   j2:numericalValue ?V_Gs ." // Gs (has no unit)
 
 				+ "?model   j5:hasModelVariable ?Bsvar ." 
 				+ "?Bsvar  a  j3:Bs  ." 
 				+ "?Bsvar  j2:hasValue ?vBsvar ."
-				+ "?vBsvar   j2:numericalValue ?Bsvalue ." // Bs (has no unit)
+				+ "?vBsvar   j2:numericalValue ?V_Bs ." // Bs (has no unit)
 
 				+ "?model   j5:hasModelVariable ?VM ." 
 				+ "?VM  a  j3:Vm  ." 
 				+ "?VM  j2:hasValue ?vVM ."
 				+ "?vVM   j2:numericalValue ?V_Vm ." // Vm
-//				+ "?vVM   j2:hasUnitOfMeasure ?V_Vmunit ." 
 
 				+ "?model   j5:hasModelVariable ?VA ." 
 				+ "?VA  a  j3:Va  ." 
 				+ "?VA  j2:hasValue ?vVA ."
 				+ "?vVA   j2:numericalValue ?V_Va ." // Va
-//				+ "?vVA   j2:hasUnitOfMeasure ?V_Vaunit ." // unit
 
 				+ "?model   j5:hasModelVariable ?BKV ." 
 				+ "?BKV  a  j3:baseKV  ." 
 				+ "?BKV  j2:hasValue ?vBKV ."
 				+ "?vBKV   j2:numericalValue ?V_BaseKV ." // Base KV
-//				+ "?vBKV   j2:hasUnitOfMeasure ?V_BaseKVunit ." // Base KV
 				
 				+ "?model   j5:hasModelVariable ?vmaxvar ." 
 				+ "?vmaxvar  a  j3:VmMax  ."
 				+ "?vmaxvar  j2:hasValue ?vvmaxvar ." 
-				+ "?vvmaxvar   j2:numericalValue ?VMaxvalue ." // Vmax
-//				+ "?vvmaxvar   j2:hasUnitOfMeasure ?VMaxvalueunit ." // Vmax
+				+ "?vvmaxvar   j2:numericalValue ?V_VmMax ." // Vmax
 
 				+ "?model   j5:hasModelVariable ?vminvar ." 
 				+ "?vminvar  a  j3:VmMin  ."
 				+ "?vminvar  j2:hasValue ?vvminvar ." 
-				+ "?vvminvar   j2:numericalValue ?VMinvalue ." // Vmin
-//				+ "?vvminvar   j2:hasUnitOfMeasure ?VMinvalueunit ." // Vmin
+				+ "?vvminvar   j2:numericalValue ?V_VmMin ." // Vmin
 				
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."//longitude
-//				+ "?vy  j2:hasUnitOfMeasure ?valueofyunit ."//longitude
+				+ "?vy  j2:numericalValue ?V_y ."//longitude
 
 				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."//latitude
-//				+ "?vx  j2:hasUnitOfMeasure ?valueofxunit ."//latitude
+				+ "?vx  j2:numericalValue ?V_x ."//latitude
 				
 
 				+ "}";
+		
+		String lineInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?entity ?V_R ?V_X ?V_B ?V_RateA ?V_RateB ?V_RateC ?V_RatioCoeff ?V_Angle ?V_Angle_unit ?V_Status ?V_AngleMin ?V_AngleMin_unit ?V_AngleMax ?V_AngleMax_unit "
+
+				+ "WHERE {?entity  a  j1:UndergroundCable  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?res ." 
+
+				+ "?res  a  j3:R  ." 
+				+ "?res  j2:hasValue ?vres ."
+				+ "?vres   j2:numericalValue ?V_R ." // resistance
+				+ "?vres   j2:hasUnitOfMeasure ?V_R_unit ." // resistance
+
+				+ "?model   j5:hasModelVariable ?rea ." 
+				+ "?rea  a  j3:X  ." 
+				+ "?rea  j2:hasValue ?vrea ."
+				+ "?vrea   j2:numericalValue ?V_X ." // reactance
+
+				+ "?model   j5:hasModelVariable ?sus ." 
+				+ "?sus  a  j3:B  ." 
+				+ "?sus  j2:hasValue ?vsus ."
+				+ "?vsus   j2:numericalValue ?V_B ." // susceptance
+
+				+ "?model   j5:hasModelVariable ?ratea ." 
+				+ "?ratea  a  j3:RateA  ." 
+				+ "?ratea  j2:hasValue ?vratea ."
+				+ "?vratea   j2:numericalValue ?V_RateA ." // rateA
+
+				+ "?model   j5:hasModelVariable ?rateb ." 
+				+ "?rateb  a  j3:RateB  ." 
+				+ "?rateb  j2:hasValue ?vrateb ."
+				+ "?vrateb   j2:numericalValue ?V_RateB ." // rateB
+
+				+ "?model   j5:hasModelVariable ?ratec ." 
+				+ "?ratec  a  j3:RateC  ." 
+				+ "?ratec  j2:hasValue ?vratec ."
+				+ "?vratec   j2:numericalValue ?V_RateC ." // rateC
+
+				+ "?model   j5:hasModelVariable ?ratio ." 
+				+ "?ratio  a  j3:RatioCoefficient  ."
+				+ "?ratio  j2:hasValue ?vratio ." 
+				+ "?vratio   j2:numericalValue ?V_RatioCoeff ." // ratio
+
+				+ "?model   j5:hasModelVariable ?ang ." 
+				+ "?ang  a  j3:Angle  ." 
+				+ "?ang  j2:hasValue ?vang ."
+				+ "?vang   j2:numericalValue ?V_Angle ." // angle
+				+ "?vang   j2:hasUnitOfMeasure ?V_Angle_unit ." // angle
+
+				+ "?model   j5:hasModelVariable ?stat ." 
+				+ "?stat  a  j3:BranchStatus ." 
+				+ "?stat  j2:hasValue ?vstat ."
+				+ "?vstat   j2:numericalValue ?V_Status ." // status
+
+				+ "?model   j5:hasModelVariable ?angmin ." 
+				+ "?angmin  a  j3:AngleMin  ."
+				+ "?angmin  j2:hasValue ?vangmin ." 
+				+ "?vangmin   j2:numericalValue ?V_AngleMin ." // anglemin
+				+ "?vangmin   j2:hasUnitOfMeasure ?V_AngleMin_unit ." // anglemin
+
+				+ "?model   j5:hasModelVariable ?angmax ." 
+				+ "?angmax  a  j3:AngleMax  ."
+				+ "?angmax  j2:hasValue ?vangmax ." 
+				+ "?vangmax   j2:numericalValue ?V_AngleMax ." // anglemax
+				+ "?vangmax   j2:hasUnitOfMeasure ?V_AngleMax_unit ." // anglemin
+
+				+ "}";
+		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -577,10 +641,10 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
 			    + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
 				+ "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "SELECT ?entity ?BusNumbervalue ?activepowervalue ?activepowervalueunit ?Q_Gen ?Q_Genunit ?Qmaxvalue ?Qminvalue ?Vgvalue ?mBasevalue "
-				+ "?Pmaxvalue ?Pmaxvalueunit ?Pminvalue ?Pminvalueunit ?Pc1value ?Pc2value ?Qc1minvalue ?Qc1maxvalue "
-				+ "?Qc2minvalue ?Qc2maxvalue ?Rampagcvalue ?Ramp10value ?Ramp30value ?Rampqvalue ?apfvalue "
-				+ "?startupcostvalue ?shutdowncostvalue ?gencostnvalue ?gencostn1value ?gencostn2value ?gencostcvalue ?valueofx ?valueofxunit ?valueofy ?valueofyunit ?generation ?vemission "
+				+ "SELECT ?entity ?V_BusNumber ?V_PGen ?V_QGen ?V_Qmax ?V_Qmin ?V_Vg ?V_mBase "
+				+ "?V_Pmax ?V_Pmin ?V_Pc1 ?V_Pc2 ?V_Qc1Min ?V_Qc1Max "
+				+ "?V_Qc2Min ?V_Qc2Max ?V_Ramp_agc ?V_Ramp_10 ?V_Ramp_30 ?V_Ramp_q ?V_APF "
+				+ "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 ?V_x ?V_y ?actual_carbon ?design_carbon"
 
 				+ "WHERE {?entity  a  j1:PowerGenerator  ."
 				+ "?entity   j2:isModeledBy ?model ."
@@ -588,167 +652,162 @@ public class ENVisualization extends JPSHttpServlet {
 				+ "?model   j5:hasModelVariable ?num ." 
 				+ "?num  a  j3:BusNumber  ." 
 				+ "?num  j2:hasValue ?vnum ."
-				+ "?vnum   j2:numericalValue ?BusNumbervalue ." // number
+				+ "?vnum   j2:numericalValue ?V_BusNumber ." // number
 
 				+ "?model   j5:hasModelVariable ?Pg ." 
 				+ "?Pg  a  j3:Pg  ." 
 				+ "?Pg  j2:hasValue ?vpg ."
-				+ "?vpg   j2:numericalValue ?activepowervalue ." // pg
-//				+ "?vpg   j2:hasUnitOfMeasure ?activepowervalueunit ." // pg
+				+ "?vpg   j2:numericalValue ?V_PGen ." // pg
 
 				+ "?model   j5:hasModelVariable ?Qg ." 
 				+ "?Qg  a  j3:Qg  ." 
 				+ "?Qg  j2:hasValue ?vqg ."
-				+ "?vqg   j2:numericalValue ?Q_Gen ." // qg
-//				+ "?vqg   j2:hasUnitOfMeasure ?Q_Genunit  ." // qg
+				+ "?vqg   j2:numericalValue ?VQ_Gen ." // qg
 
 				+ "?model   j5:hasModelVariable ?qmax ." 
 				+ "?qmax  a  j3:QMax  ." 
 				+ "?qmax  j2:hasValue ?vqmax ."
-				+ "?vqmax   j2:numericalValue ?Qmaxvalue ." // qmax
+				+ "?vqmax   j2:numericalValue ?V_Qmax ." // qmax
 
 				+ "?model   j5:hasModelVariable ?qmin ." 
 				+ "?qmin  a  j3:QMin  ." 
 				+ "?qmin  j2:hasValue ?vqmin ."
-				+ "?vqmin   j2:numericalValue ?Qminvalue ." // qmin
+				+ "?vqmin   j2:numericalValue ?V_Qmin ." // qmin
 
 				+ "?model   j5:hasModelVariable ?Vg ." 
 				+ "?Vg  a  j3:Vg  ." 
 				+ "?Vg  j2:hasValue ?vVg ."
-				+ "?vVg   j2:numericalValue ?Vgvalue ." // vg
+				+ "?vVg   j2:numericalValue ?V_Vg ." // vg
 
 				+ "?model   j5:hasModelVariable ?mbase ." 
 				+ "?mbase  a  j3:mBase  ." 
 				+ "?mbase  j2:hasValue ?vmbase ."
-				+ "?vmbase   j2:numericalValue ?mBasevalue ." // mbase
+				+ "?vmbase   j2:numericalValue ?V_mBase ." // mbase
 
 				+ "?model   j5:hasModelVariable ?pmax ." 
 				+ "?pmax  a  j3:PMax  ." 
 				+ "?pmax  j2:hasValue ?vpmax ."
-				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
-//				+ "?vpmax   j2:hasUnitOfMeasure ?Pmaxvalueunit ." // pmax
+				+ "?vpmax   j2:numericalValue ?V_Pmax ." // pmax
 
 				+ "?model   j5:hasModelVariable ?pmin ." 
 				+ "?pmin  a  j3:PMin  ." 
 				+ "?pmin  j2:hasValue ?vpmin ."
-				+ "?vpmin   j2:numericalValue ?Pminvalue ." // pmin
-//				+ "?vpmin   j2:hasUnitOfMeasure ?Pminvalueunit ." // pmin
+				+ "?vpmin   j2:numericalValue ?V_Pmin ." // pmin
 
 				+ "?model   j5:hasModelVariable ?pc1 ." 
 				+ "?pc1  a  j3:Pc1  ." 
 				+ "?pc1  j2:hasValue ?vpc1 ."
-				+ "?vpc1   j2:numericalValue ?Pc1value ." // pc1
+				+ "?vpc1   j2:numericalValue ?V_Pc1 ." // pc1
 
 				+ "?model   j5:hasModelVariable ?pc2 ." 
 				+ "?pc2  a  j3:Pc2  ." 
 				+ "?pc2  j2:hasValue ?vpc2 ."
-				+ "?vpc2   j2:numericalValue ?Pc2value ." // pc2
+				+ "?vpc2   j2:numericalValue ?V_Pc2 ." // pc2
 
 				+ "?model   j5:hasModelVariable ?qc1min ." 
 				+ "?qc1min  a  j3:QC1Min  ."
 				+ "?qc1min  j2:hasValue ?vqc1min ." 
-				+ "?vqc1min   j2:numericalValue ?Qc1minvalue ." // qc1min
+				+ "?vqc1min   j2:numericalValue ?V_Qc1Min ." // qc1min
 
 				+ "?model   j5:hasModelVariable ?Qc1max ." 
 				+ "?Qc1max  a  j3:QC1Max  ."
 				+ "?Qc1max  j2:hasValue ?vQc1max ." 
-				+ "?vQc1max   j2:numericalValue ?Qc1maxvalue ." // qc1max
+				+ "?vQc1max   j2:numericalValue ?V_Qc1Max ." // qc1max
 
 				+ "?model   j5:hasModelVariable ?qc2min ." 
 				+ "?qc2min  a  j3:QC2Min  ."
 				+ "?qc2min  j2:hasValue ?vqc2min ."
-				+ "?vqc2min   j2:numericalValue ?Qc2minvalue ." // qc2min
+				+ "?vqc2min   j2:numericalValue ?V_Qc2Min ." // qc2min
 
 				+ "?model   j5:hasModelVariable ?Qc2max ."
 				+ "?Qc2max  a  j3:QC2Max  ."
 				+ "?Qc2max  j2:hasValue ?vQc2max ." 
-				+ "?vQc2max   j2:numericalValue ?Qc2maxvalue ." // qc2max
+				+ "?vQc2max   j2:numericalValue ?V_Qc2Max ." // qc2max
 
 				+ "?model   j5:hasModelVariable ?rampagc ." 
 				+ "?rampagc  a  j3:Rampagc  ."
 				+ "?rampagc  j2:hasValue ?vrampagc ." 
-				+ "?vrampagc   j2:numericalValue ?Rampagcvalue ." // rampagc
+				+ "?vrampagc   j2:numericalValue ?V_Ramp_agc ." // rampagc
 
 				+ "?model   j5:hasModelVariable ?ramp10 ." 
 				+ "?ramp10  a  j3:Ramp10  ."
 				+ "?ramp10  j2:hasValue ?vramp10 ."
-				+ "?vramp10   j2:numericalValue ?Ramp10value ." // ramp10
+				+ "?vramp10   j2:numericalValue ?V_Ramp_10 ." // ramp10
 
 				+ "?model   j5:hasModelVariable ?ramp30 ." 
 				+ "?ramp30  a  j3:Ramp30  ."
 				+ "?ramp30  j2:hasValue ?vramp30 ." 
-				+ "?vramp30   j2:numericalValue ?Ramp30value ." // ramp30
+				+ "?vramp30   j2:numericalValue ?V_Ramp_30 ." // ramp30
 
 				+ "?model   j5:hasModelVariable ?rampq ." 
 				+ "?rampq  a  j3:Rampq  ." 
 				+ "?rampq  j2:hasValue ?vrampq ."
-				+ "?vrampq   j2:numericalValue ?Rampqvalue ." // rampq
+				+ "?vrampq   j2:numericalValue ?V_Ramp_q ." // rampq
 
 				+ "?model   j5:hasModelVariable ?apf ."
 				+ "?apf  a  j3:APF  ." 
 				+ "?apf  j2:hasValue ?vapf ."
-				+ "?vapf   j2:numericalValue ?apfvalue ." // apf
+				+ "?vapf   j2:numericalValue ?V_APF ." // apf
 				
 				+ "?model   j5:hasModelVariable ?startup ." 
 				+ "?startup  a  j3:StartCost  ."
 				+ "?startup  j2:hasValue ?vstartup ." 
-				+ "?vstartup   j2:numericalValue ?startupcostvalue ." //startup cost
+				+ "?vstartup   j2:numericalValue ?V_StartupCost ." //startup cost
 
 				+ "?model   j5:hasModelVariable ?shutdown ." 
 				+ "?shutdown  a  j3:StopCost  ."
 				+ "?shutdown  j2:hasValue ?vshutdown ." 
-				+ "?vshutdown   j2:numericalValue ?shutdowncostvalue ."  //shutdown cost
+				+ "?vshutdown   j2:numericalValue ?V_ShutdownCost ."  //shutdown cost
 				
 				+ "?model   j5:hasModelVariable ?gencostn ." 
 				+ "?gencostn  a  j3:genCostn  ."
 				+ "?gencostn  j2:hasValue ?vgencostn ." 
-				+ "?vgencostn   j2:numericalValue ?gencostnvalue ." //genCostn
+				+ "?vgencostn   j2:numericalValue ?V_genCostn ." //genCostn
 
 				+ "?model   j5:hasModelVariable ?gencostn1 ." 
 				+ "?gencostn1  a  j3:genCostcn-1  ."
 				+ "?gencostn1  j2:hasValue ?vgencostn1 ." 
-				+ "?vgencostn1   j2:numericalValue ?gencostn1value ." //genCostn-1
+				+ "?vgencostn1   j2:numericalValue ?V_genCostn1 ." //genCostn-1
 
 				+ "?model   j5:hasModelVariable ?gencostn2 ." 
 				+ "?gencostn2  a  j3:genCostcn-2  ."
 				+ "?gencostn2  j2:hasValue ?vgencostn2 ." 
-				+ "?vgencostn2   j2:numericalValue ?gencostn2value ."//genCostn-2
-
+				+ "?vgencostn2   j2:numericalValue ?V_genCostn2 ."//genCostn-2
 
 				+ "?model   j5:hasModelVariable ?gencostc ." 
 				+ "?gencostc  a  j3:genCostc0  ."
 				+ "?gencostc  j2:hasValue ?vgencostc ." 
-				+ "?vgencostc   j2:numericalValue ?gencostcvalue ." //genCostc0
+				+ "?vgencostc   j2:numericalValue ?V_genCostc0 ." //genCostc0
 				
-				+ "?entity   technical_system:realizes ?generation ."
-//				+ "?generation   cp:consumesPrimaryFuel ?fueltype ."
 				+ "?generation j9:hasEmission ?emission ." 
 				+ "?emission a j9:Actual_CO2_Emission ."
 				+ "?emission   j2:hasValue ?valueemission ."
-				+ "?valueemission   j2:numericalValue ?vemission ." //
+				+ "?valueemission   j2:numericalValue ?actual_carbon ." 
+				
+				+ "?generation j9:hasEmission ?emission ." 
+				+ "OPTIONAL {?emission a j9:Design_CO2_Emission }"
+				+ "OPTIONAL {?emission   j2:hasValue ?valueemission_d }"
+				+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
 
 				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
 				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."//longitude
-//				+ "?vy  j2:hasUnitOfMeasure ?valueofyunit ."//longitude
+				+ "?vy  j2:numericalValue ?V_y ."
 
 				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."//latitude
-//				+ "?vx  j2:hasUnitOfMeasure ?valueofxunit ."//latitude
+				+ "?vx  j2:numericalValue ?V_x ."//longitude
 
 				+ "}";
 		String info;
 		if (iriOfObject.contains("Gen")){
 			info = genInfo;
 		}else {
-			info = busInfo;
+			info = lineInfo;
 		}
 		String queryResult = new QueryBroker().queryFile(iriOfObject, info);
 		System.out.println(queryResult);
 		String[] keysplant = JenaResultSetFormatter.getKeys(queryResult);
     	List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(queryResult, keysplant);
-//    	System.out.println(resultList.size());=
     	JSONObject json = new JSONObject(queryResult);
     	JSONObject v = (JSONObject) json.get("results");
     	JSONArray values = (JSONArray) v.get("bindings");
@@ -855,9 +914,9 @@ public class ENVisualization extends JPSHttpServlet {
 					+ "?valueemission   j2:numericalValue ?actual_carbon ." 
 					
 					+ "?generation j5:hasEmission ?emission ." 
-//					+ "?emission a j5:Design_CO2_Emission ."
-//					+ "?emission   j2:hasValue ?valueemission_d ."
-//					+ "?valueemission_d   j2:numericalValue ?design_carbon ." 
+					+ "OPTIONAL {?emission a j5:Design_CO2_Emission }"
+					+ "OPTIONAL {?emission   j2:hasValue ?valueemission_d }"
+					+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
 					
 					+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
 					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
