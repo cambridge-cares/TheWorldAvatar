@@ -344,8 +344,8 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         + "?model   j5:hasModelVariable ?Qg ." 
         + "?Pg  a  j3:Qg  ." 
         + "?Pg  j2:hasValue ?vpg ."
-        + "?vpg   j2:numericalValue ?V_QGen ." // pg
-        + "?vpg   j2:hasUnitOfMeasure ?V_QGen_unit ." // pg
+        + "?vpg   j2:numericalValue ?V_QGen ." // Qg
+        + "?vpg   j2:hasUnitOfMeasure ?V_QGen_unit ." // Qg
 
         + "?emission a j9:Actual_CO2_Emission ."
         + "?emission   j2:hasValue ?valueemission ."
@@ -1005,10 +1005,10 @@ asyncLoop({
         //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
 
-        var url = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt;
-        var agent = "testPOWSYSENSimulation"+opt + "CallAgent"
-        console.log('url: ' + url);
-        console.log('agent: ', agent);
+        var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        data = { "electricalnetwork":iriofnetwork}
+        url = createUrlForAgent(scenario, agenturl, data);
+        console.log(url);
         var delayInMilliseconds = 10000; //1 second
 
             setTimeout(function() {
@@ -1017,11 +1017,10 @@ asyncLoop({
         var request = $.ajax({
             url: url,
             type: 'GET',
-            data: { "electricalnetwork":iriofnetwork , "jpscontext":{"scenariourl": agent}},
             contentType: 'application/json; charset=utf-8'
         });
 
-        request.done(function(data) {
+        request.done(function() {
             json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
             displayCO2(json);
             var delayInMilliseconds = 10000; //1 second
@@ -1069,3 +1068,16 @@ function createUrlForSparqlQuery(scenarioname, iri, sparql) {
         return url2;    
     }
 
+    function createUrlForAgent(scenarioname, agenturl, agentparams) {
+
+        var url;
+        if ((scenarioname == null) || scenarioname == "base") {
+            url = agenturl;
+        } else {
+            agentparams['scenarioagentoperation'] = agenturl;
+            var scenariourl = prefix + '/jps/scenario/' + scenarioname + '/call';
+            url = scenariourl;
+        }
+
+        return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
+    }

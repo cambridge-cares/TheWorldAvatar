@@ -347,8 +347,9 @@ PopupMap.prototype = {
             }
         });
 
-        request.fail(function(jqXHR, textStatus) {
-            // your failure code here
+        request.fail(function(jqXHR, textStatus, errorThrown) {
+            alert("The files that needed to be created do not exist. Hit the Run Button again to try again. ");
+            console.log(errorThrown);
         });
     },
 
