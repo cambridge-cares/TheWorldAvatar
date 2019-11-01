@@ -211,64 +211,7 @@ PopupMap.prototype = {
     });
       animatedLines = []
 },
-drawMarkers:function(data){
-    var map = this.googleMap;
-    var self = this;
-    kmlurl =  prefix + '/JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
-    console.log(kmlurl);
-    var request = $.ajax({
-        url: kmlurl,
-        type: 'GET',
-        async: true,
-        contentType: 'application/json; charset=utf-8'
-    });     
-    
-    request.done(function(data) {
-        var obj0 = JSON.parse(data);
-        var size=obj0.length;
-        console.log("size="+size);           
-        
-    //We currently know of a few cases:
-    var x;
-    self.markers = {}
 
-    var emissions = new Set();
-
-    // scan some duplicates
-    
-    for (x=0; x< size; x++){
-        var obj = obj0[x];
-        var fueltype = obj.fueltype;
-        var name = obj.name;
-        console.log(fueltype);
-        if (fueltype== "NaturalGasGeneration"){
-            icon = '/images/naturalgas.png'
-        }else if (fueltype == "NuclearGeneration"){
-            icon = '/images/radiation.png'
-        }else if (fueltype== "OilGeneration"){
-            icon = '/images/oil.png'
-        }
-        
-        console.log("Coordinates: obj.coors.lat: "+ obj.coors.lat + " obj.coors.lng: "+ obj.coors.lng);
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
-            map: map,
-            title: name,
-            icon: icon
-          });
-        self.markers[name] = marker;
-        if (fueltype != "NuclearGeneration"){
-            console.log(obj.actual_carbon);
-            emissions.add(parseFloat(obj.actual_carbon));
-        }
-        }
-        
-        var arr = Array.from(emissions);
-        var arrsum= arr.reduce((a,b) => a + b, 0);
-        arrSum = arrsum;
-        console.log('argSum: '+ arrSum);
-    });
-    },
     drawLines:function(data){
         var map = this.googleMap;
         var self = this;
@@ -307,10 +250,7 @@ drawMarkers:function(data){
         }
         //console.log('lines',lines);
 
-        var infowindow = new google.maps.InfoWindow({
-            content: '<h2>Sup!</h2>',
-            disableAutoPan: true,
-        });
+        
             for (var index in lines){ //this is focused on drawing lines
 
                 var _line = lines[index];
@@ -345,22 +285,25 @@ drawMarkers:function(data){
                         title: _name
                     });
 
+                    google.maps.InfoWindow.prototype.opened = false;
 
                     line.addListener('click', function(lineEvent) {
                         var that = this;
                         var content = constructLineMenu(this.title,function (_content) {
                             console.log('content',_content);
-                            infowindow.setContent(_content);
-                            infowindow.open(map, that);
-                            console.log('Set Time Out')
-                            setTimeout(function(){
-                                var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
-                                ggf.style.visibility = 'visible'
-                                console.log('--- ggf --- 2', ggf)
-                            },2000)
-                
-
+                            infoWindow = new google.maps.InfoWindow({
+                                content: _content
+                            });
+                            console.log(_path[0]);
+                            marker = new google.maps.Marker({
+                                position: {lat: 1.2624421, lng: 103.7007045},
+                                map: map,
+                              });
+                              marker.addListener('click', function() {
+                                infoWindow.open(map, marker);
+                              });
                         });
+
 
                     });
                     self.animateCircle(line,1);
@@ -383,19 +326,14 @@ drawMarkers:function(data){
 
                     transformer.addListener('click', function() {
                         var that = this;
+                        
                         var content = constructLineMenu(this.title,function (_content) {
                             console.log('content',_content);
                             infowindow.setContent(_content);
                             infowindow.open(this.googleMap, that);
-                            
-                            setTimeout(function(){
-                                var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
-                                ggf.style.visibility = 'visible'
-                                console.log('--- ggf --- 2', ggf)
-                            },2000)
-            
-                            
+                        
                         });
+                        console.log(content);
 
                     });
                     
@@ -632,12 +570,14 @@ getIconByType: function (type, highlight) {
     clean all markers
     ***/
     clearMarkers : function () {
+        console.log(this.markers);
         let self = this;
         if(!self.markers || Object.keys(self.markers).length < 1){
             return;
         }
         for(marker of Object.values(self.markers)){
-            marker.setMap(null)
+            marker.setMap(null);
+            console.log(marker.title, marker.icon);
             marker=null;
         }
         self.markers = {}
