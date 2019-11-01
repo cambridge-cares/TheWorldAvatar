@@ -28,7 +28,6 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +35,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -46,6 +47,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
 public class ENVisualization extends JPSHttpServlet {
 	
+	private static final long serialVersionUID = 1446386963475656702L;
 	private Document doc;
 	private Element root;
 	private Logger logger = LoggerFactory.getLogger(ENVisualization.class);
@@ -113,7 +115,8 @@ public class ENVisualization extends JPSHttpServlet {
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
 //			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
-			try (FileWriter writer = new FileWriter("C:/Users/LONG01/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
+			String root = KeyValueManager.get(IKeys.ABSDIR_ROOT);
+			try (FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
 				b = createfinalKML(model);
 
@@ -199,7 +202,7 @@ public class ENVisualization extends JPSHttpServlet {
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
 			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("[" + generators.get(e)[0] + ".owl");
+			gh.setnamegen("[" + generators.get(e)[0] );
 			gh.setx(generators.get(e)[1]);
 			gh.sety(generators.get(e)[2]);
 
@@ -226,7 +229,7 @@ public class ENVisualization extends JPSHttpServlet {
 		ArrayList<String> coorddatabus = new ArrayList<String>();
 		for (int e = 0; e < bus.size(); e++) {
 			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + bus.get(e)[0] + ".owl");
+			gh.setnamegen("[" + bus.get(e)[0] );
 			gh.setx(bus.get(e)[1]);
 			gh.sety(bus.get(e)[2]);
 
@@ -496,7 +499,6 @@ public class ENVisualization extends JPSHttpServlet {
 			    + "}";
 		QueryBroker broker  = new QueryBroker();
 		float actual = 0, design = 0;
-//		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		List<String[]> generators=queryElementCoordinate(model, "PowerGenerator");
 		for (int i = 0; i< generators.size(); i++) {
 			if (generators.get(i)[0].contains("EGen-001")) continue;
@@ -511,6 +513,7 @@ public class ENVisualization extends JPSHttpServlet {
 			}
 			else{
 				actual += Float.valueOf(resultList.get(0)[1]);
+				System.out.println(generators.get(i)[0] +'\n' +resultList.get(0)[1]+'\n' );
 				design += Float.valueOf(resultList.get(0)[2]);
 			}
 		}
@@ -584,7 +587,6 @@ public class ENVisualization extends JPSHttpServlet {
 				
 				+ "}";
 			
-			ENVisualization a=new ENVisualization();
 			
 			ResultSet resultSet = JenaHelper.query(model, genInfo);
 			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
