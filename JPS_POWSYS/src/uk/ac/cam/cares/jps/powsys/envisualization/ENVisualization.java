@@ -42,7 +42,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
 public class ENVisualization extends JPSHttpServlet {
@@ -97,12 +96,11 @@ public class ENVisualization extends JPSHttpServlet {
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 
 		String iriofnetwork = joforEN.getString("electricalnetwork");
-		String flag = joforEN.getString("flag");
 		JPSHttpServlet.disableScenario();
-		if (flag.equals(SCENARIO_NAME_TEST)) {
-			String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
-			JPSHttpServlet.enableScenario(scenarioUrl);	
-		}
+//		if (flag.equals(SCENARIO_NAME_TEST)) {
+//			String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
+//			JPSHttpServlet.enableScenario(scenarioUrl);	
+//		}
 		OntModel model = readModelGreedy(iriofnetwork);
 		logger.info("path called= "+path);
 		if ("/ENVisualization/createLineJS".equals(path)) {
@@ -111,9 +109,9 @@ public class ENVisualization extends JPSHttpServlet {
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
 			
-			String n=joforEN.getString("n");
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
+			String flag = joforEN.getString("flag");
 //			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
 			String root = KeyValueManager.get(IKeys.ABSDIR_ROOT);
 			try (FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");
@@ -137,7 +135,7 @@ public class ENVisualization extends JPSHttpServlet {
 		else if ("/ENVisualization/createMarkers".equals(path)) {
 
 			logger.info("path called here= " + path);
-			String g=createMarkers(flag, model);
+			String g=createMarkers(model);
 			
 			AgentCaller.printToResponse(g, response);
 		}
@@ -552,9 +550,9 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	return resultList;
 	}
-	public String createMarkers(String flag, OntModel model) throws IOException {
+	public String createMarkers(OntModel model) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
-		List<String[]> pplants = queryPowerPlant(model, flag);
+		List<String[]> pplants = queryPowerPlant(model);
 		for (int i = 0; i < pplants.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+pplants.get(i)[3]+", \"lng\": "+pplants.get(i)[2]
 					+ "},  \"fueltype\": \""
@@ -565,7 +563,7 @@ public class ENVisualization extends JPSHttpServlet {
 		return textcomb.toString();
 	}
 	
-	public static List<String[]> queryPowerPlant(OntModel model, String flag) {
+	public static List<String[]> queryPowerPlant(OntModel model) {
 		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "

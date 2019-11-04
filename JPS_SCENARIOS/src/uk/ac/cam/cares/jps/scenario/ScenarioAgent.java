@@ -161,16 +161,22 @@ public class ScenarioAgent extends HttpServlet {
 		
 		// start the scenario by calling the operation (an operation can be called even if no agent or a different agent was given)
 		String operation = jo.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
+		System.out.println("operation: "+ operation  + " scenario name "+ scenarioName + " jo: "+ jo);
 	 	if (operation.startsWith("http")) {
 	 		result = ScenarioManagementAgent.execute(scenarioName, operation, jo);
 	 	} else {
 	 		//throw new RuntimeException("can't call operation without http, operation = " + operation);
 	 		 ScenarioManagementAgent.addJpsContext(scenarioName, jo);
+	 		 //test to see if it was really put into context
 	 		return AgentCaller.executeGetWithJsonParameter(operation, jo.toString());
 	 	}
 	 	
 		JSONObject joresult = new JSONObject();
 		if ((result != null) && !result.isEmpty()) {
+			char c = result.charAt(0);
+			if (c == '[') {
+				result = result.substring(1, result.length()-1);
+			}
 			joresult = new JSONObject(result);
 		}
 	 	

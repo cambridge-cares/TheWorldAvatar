@@ -2,13 +2,10 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
-import org.apache.jena.atlas.json.JsonException;
-import org.apache.jena.atlas.logging.Log;
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
@@ -141,17 +138,13 @@ public class TestENVisualization extends TestCase {
 	
 	public void testcreateMarkers() throws IOException {
 		ENVisualization a=new ENVisualization();
-//		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-//		String res=a.createMarkers("BASE",model);
-
 		JPSHttpServlet.disableScenario();	
 		String flag = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 		String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		OntModel model = ENAgent.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-//		
-		String res= a.createMarkers(flag,model);
-//		System.out.println(res);
+		String res= a.createMarkers(model);
+		System.out.println(res);
 		
 	}
 	public void testcallVisualizationLineJS() throws IOException  {
@@ -171,9 +164,7 @@ public class TestENVisualization extends TestCase {
 
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork","http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
 //		jo.put("flag","BASE");
-//		JSONObject jo2 = new JSONObject();
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createMarkers", jo.toString());
 		System.out.println("resultStart= "+resultStart);
 	}
