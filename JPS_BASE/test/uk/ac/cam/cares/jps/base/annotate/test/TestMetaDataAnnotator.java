@@ -19,25 +19,32 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 	
 	@Override
 	protected void setUp() throws Exception {
+		System.out.println("setup");
+		JPSContext.removeJPSContext();
 		deleteAllTestAnnotations();
 	}
 
 	@Override
 	protected void tearDown() throws Exception {
+		System.out.println("teardown");
+		JPSContext.removeJPSContext();
 		deleteAllTestAnnotations();
 	}
 	
 	public void deleteAllTestAnnotations() {
 		// before you want to perform the next delete all sparql query, know what you do and make sure you are deleting the right data set
 		// in particular, you have to understand that you are deleting data on claudius if your config properties are improper !!!
-		String sparql = "DELETE { ?s ?p ?o . } \r\n" +
-				"WHERE { ?s ?p ?o . FILTER ( CONTAINS(STR(?s), \"example.com\") )}";
+		String sparql = "DELETE { GRAPH ?g { ?s ?p ?o . } } \r\n" +
+				"WHERE { GRAPH ?g { ?s ?p ?o . FILTER ( CONTAINS(STR(?s), \"example.com\") ) } }";
 		
 		//MetaDataAnnotator.getSparqlService().executePost(sparql);
 		MetaDataAnnotator.update(sparql);
 		
-		sparql = "DELETE { ?s ?p ?o . } \r\n" +
-				"WHERE { ?s ?p ?o . FILTER ( CONTAINS(STR(?o), \"example.com\") )}";
+		
+		// The above SPARQL query with GRAPH doesn't delete the triples in the unnamed graph.
+		// Thus, we have to delete them explicitely
+		sparql = "DELETE {  ?s ?p ?o .  } \r\n" +
+				"WHERE {  ?s ?p ?o . FILTER ( CONTAINS(STR(?s), \"example.com\") )  }";
 		
 		//MetaDataAnnotator.getSparqlService().executePost(sparql);
 		MetaDataAnnotator.update(sparql);
@@ -85,7 +92,7 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		String scenario = BucketHelper.getScenarioUrl("testSparqlInsert");
 		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output.csv", scenario, null);
 		System.out.println(sparql);
-		assertEquals(17, sparql.split("\n").length);
+		assertEquals(16, sparql.split("\n").length);
 	}
 	
 	public void testAnnotate() {
@@ -93,7 +100,8 @@ public class TestMetaDataAnnotator extends TestCase implements Prefixes {
 		String sparql = getSparqlInsertExample("http://example.com/jps/some/path/output.csv", scenario, null);
 		System.out.println(sparql);
 		MetaDataAnnotator.update(sparql);
-		sparql = "SELECT ?s ?p ?o WHERE {?s ?p ?o } LIMIT 100";
+		sparql = "SELECT ?g ?s ?p ?o WHERE { GRAPH ?g { ?s ?p ?o } } LIMIT 100";
+		
 		String result = MetaDataQuery.query(sparql);
 		System.out.println(result);
 		assertEquals(11, getNumberOfResultsWithoutHeader(result));

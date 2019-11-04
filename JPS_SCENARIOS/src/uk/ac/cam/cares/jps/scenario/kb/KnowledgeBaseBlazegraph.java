@@ -15,15 +15,12 @@ public class KnowledgeBaseBlazegraph extends KnowledgeBaseAbstract {
 
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseBlazegraph.class);
 	
-	private String datasetName = null;
-	
-	public KnowledgeBaseBlazegraph(String datasetUrl, String datasetName) {
-		this.datasetUrl = datasetUrl;
-		this.datasetName = datasetName;
+	public KnowledgeBaseBlazegraph(String datasetUrl, String datasetName, String endpointUrl) {
+		super(datasetUrl, datasetName, endpointUrl);
 	}
 	
 	private String getEndpointUrl() {		
-		return "http://localhost:9999//blazegraph/namespace/" + datasetName + "/sparql";
+		return endpointUrl + "/sparql";
 	}
 	
 	@Override

@@ -28,6 +28,8 @@ public abstract class KnowledgeBaseAbstract {
 			RDFFormat.RDFXML, RDFFormat.TURTLE, RDFFormat.JSONLD, RDFFormat.NQUADS};
 	
 	protected String datasetUrl = null;
+	protected String datasetName = null;
+	protected String endpointUrl = null;
 	
 	public abstract void put(String resourceUrl, String content, String contentType);
 	
@@ -41,6 +43,12 @@ public abstract class KnowledgeBaseAbstract {
 	
 	public String getDatasetUrl() {
 		return datasetUrl;
+	}
+	
+	public KnowledgeBaseAbstract(String datasetUrl, String datasetName, String endpointUrl) {
+		this.datasetUrl = datasetUrl;
+		this.datasetName = datasetName;
+		this.endpointUrl = endpointUrl;
 	}
 	
 	public String convert(URL resourceUrl, RDFFormat outputFormat) throws IOException {

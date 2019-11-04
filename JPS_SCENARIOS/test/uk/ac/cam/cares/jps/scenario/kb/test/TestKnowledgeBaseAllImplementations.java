@@ -53,6 +53,15 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		}
 	}
 	
+	protected void setUpFusekiDirect() {
+		if (client() == null) {
+			//String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/testfuseki";
+			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/data/meta";
+			System.out.println("creating client for datasetUrl=" + datasetUrl);
+			createClient(datasetUrl, true);
+		}
+	}
+	
 	protected void setUpFileBasedRemote() {
 		if (client() == null) {
 			String datasetUrl = KeyValueManager.getServerAddress() + "/jps/dataset/testfilebased";
@@ -66,6 +75,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		//setUpRdf4jInMemoryDirect();
 		setUpRdf4jInMemoryRemote();
 		//setUpBlazegraphDirect();
+		//setUpFusekiDirect();
 		//setUpFileBasedRemote();
 		printTime(null);
 	}
@@ -84,6 +94,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		putE303Load(datasetUrl, resourceUrl);
 		String accept = MediaType.TEXT_TURTLE.type;
 		String result = client().get(resourceUrl, accept);
+		System.out.println(result);
 		assertEquals("@prefix", result.substring(0,7));
 	}
 	
@@ -95,7 +106,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		assertEquals(marker, value);
 	}
 
-	private String queryE303MarkerValue(String resourceUrl) throws FileNotFoundException {
+	protected String queryE303MarkerValue(String resourceUrl) throws FileNotFoundException {
 		
 		String sparql = "PREFIX powsys:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX EN_behavior:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
@@ -164,8 +175,8 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		
 		printTime(null);
 		
-		int numberExampleProperties = 100;
-		int number = 10;
+		int numberExampleProperties = 1;
+		int number = 1;
 		for (int i=1; i<=number; i++) {
 			System.out.println("random graph" + i);
 			String[] a = createRandomIriAndTurtleContent(null, 1, numberExampleProperties);		
@@ -179,7 +190,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		printTime("testQueryxRandomNamedGraphs with x=" + number);
 	}
 	
-	private void putAndUpdateE303Provenance(String target, String provenanceName) throws FileNotFoundException {
+	protected void putAndUpdateE303Provenance(String target, String provenanceName) throws FileNotFoundException {
 		String marker = "2.98";
 		putE303Load(target, marker);
 		String value = queryE303MarkerValue(target);
@@ -194,6 +205,7 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 				" }";
 		
 		client().update(target, sparqlupdate);
+		//client().update(null, sparqlupdate);
 		
 		String sparqlquery = "PREFIX dcterms:<http://purl.org/dc/terms/> " + 
 				"SELECT ?s ?p ?o WHERE { ?s dcterms:created ?o } ";

@@ -403,8 +403,13 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		
 		String datasetUrl = kb.getDatasetUrl();
 		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		
 		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
-			KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
+			// at the moment, the knowledge base impl for Fuseki does not support SPARQL update if the named graph is given as extra resource URL
+			// KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
+			// for this reason, we have to set resource URL to null and use the GRAPH clause within the SPARQL update string itself 
+			// (which is done bz the MetaDataAnnotator)
+			KnowledgeBaseClient.update(metadatasetUrl, null, sparql);
 			return;
 		}
 		
@@ -436,10 +441,12 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 
 		logger.info("queryKnowledgeBase");
 		
-		String datasetUrl = kb.getDatasetUrl();
 		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
 		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
-			return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
+			// will not work with current knowledge base implementation for Fuseki
+			//String datasetUrl = kb.getDatasetUrl();
+			//return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
+			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
 		}
 		
 		if (kb.exists(resourceUrl)) {

@@ -37,7 +37,7 @@ public class MetaDataAnnotator implements Prefixes {
 		//String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
 		String oldDatasetUrl = "http://localhost:8080/rdf4j-server/repositories/jpsmetadata";
 		sparqlService = new SparqlOverHttpService(RDFStoreType.RDF4J, oldDatasetUrl);
-		datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
+		datasetUrl = KeyValueManager.get(IKeys.DATASET_META_URL);
 	}
 	
 	public static SparqlOverHttpService getSparqlService() {
@@ -55,7 +55,7 @@ public class MetaDataAnnotator implements Prefixes {
 	}
 	
 	public static void annotateWithTimeAndAgent(String iriTarget, String time, String iriCreatingAgent) {
-		String sparql = getSparqlInsertFull(iriTarget, null, time, iriCreatingAgent, time, null, null, null, null);
+		String sparql = getSparqlInsertFull(iriTarget, null, time, iriCreatingAgent, false, time, null, null, null, null);
 		update(sparql);	
 	}
 	
@@ -73,9 +73,8 @@ public class MetaDataAnnotator implements Prefixes {
 		}
 		
 		String simulationTime = creationTime;
-		String iriScenario = null;
+		String iriScenario = JPSContext.getScenarioUrl();
 		if (addJPSContext) {
-			iriScenario = JPSContext.getScenarioUrl();
 			// if the JPS context specifies a simulation time, overtake it
 			String contextTime = JPSContext.getSimulationTime();
 			if ((contextTime != null) && !contextTime.isEmpty()) {
@@ -84,7 +83,7 @@ public class MetaDataAnnotator implements Prefixes {
 			
 		}
 		
-		return getSparqlInsertFull(iriTarget, mediaType, creationTime, iriCreatingAgent, simulationTime, iriScenario, topics, prefixes, triples);
+		return getSparqlInsertFull(iriTarget, mediaType, creationTime, iriCreatingAgent, addJPSContext, simulationTime, iriScenario, topics, prefixes, triples);
 	}
 	
 	/**
@@ -100,7 +99,7 @@ public class MetaDataAnnotator implements Prefixes {
 	 * @return
 	 */
 	public static String getSparqlInsertFull(String iriTarget, MediaType mediaType, String creationTime, String iriCreatingAgent, 
-			String simulationTime, String iriScenario, List<String> topics, List<String> prefixes, List<String> triples) {
+			boolean addJPSContext, String simulationTime, String iriScenario, List<String> topics, List<String> prefixes, List<String> triples) {
 		
 		JPSBaseLogger.info(getInstance(), "annotating target = " + iriTarget + " with media type = " + mediaType 
 				+ ", creation time = " + creationTime + ", creatingAgent = " + iriCreatingAgent + ", simulation time = " + simulationTime + ", scenario = " + iriScenario );
@@ -110,7 +109,7 @@ public class MetaDataAnnotator implements Prefixes {
 		//sparql.append(PrefixToUrlMap.getPrefixForSPARQL(FOAF));
 		//sparql.append(PrefixToUrlMap.getPrefixForSPARQL(TIME));
 		sparql.append(PrefixToUrlMap.getPrefixForSPARQL(XSD));
-		sparql.append(PrefixToUrlMap.getPrefixForSPARQL(JPSAGEN));
+		//sparql.append(PrefixToUrlMap.getPrefixForSPARQL(JPSAGEN));
 
 		if (prefixes != null) {
 			for (String current : prefixes) {
@@ -120,14 +119,20 @@ public class MetaDataAnnotator implements Prefixes {
 				}
 			}
 		}
-		sparql.append("INSERT DATA { \r\n");
+		if (iriScenario == null) {
+			sparql.append("INSERT DATA { \r\n");
+		} else {
+			sparql.append("INSERT DATA { GRAPH <" + iriScenario + "> { \r\n");
+		}
+		
 		if (mediaType != null) {
 			sparql.append("<" + iriTarget + "> dcterms:format \"" + mediaType.type + "\" . \r\n");
 		}
 		sparql.append("<" + iriTarget + "> dcterms:created \"" + creationTime + "\"^^xsd:dateTime . \r\n");
 		if (iriCreatingAgent != null) {
-			sparql.append("<" + iriCreatingAgent + "> a dcterms:Agent . \r\n");
-			sparql.append("<" + iriCreatingAgent + "> a JPSAGEN:Service . \r\n");
+			sparql.append("<" + iriCreatingAgent + "> a dcterms:Agent . \r\n");			
+			//sparql.append("<" + iriCreatingAgent + "> a JPSAGEN:Service . \r\n");
+			sparql.append("<" + iriCreatingAgent + "> a <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service> . \r\n");
 			sparql.append("<" + iriTarget + "> dcterms:creator <" + iriCreatingAgent + "> . \r\n");
 		}
 		//TODO-AE SC URGENT 20190918 discuss with Kevin what have to be changed for the ADMS soft sensor
@@ -154,7 +159,13 @@ public class MetaDataAnnotator implements Prefixes {
 		for (String current : optionalTriples) {
 			sparql.append(current + " \r\n");
 		}
-		sparql.append("} \r\n");		
+		
+		if (iriScenario == null) {
+			sparql.append("} \r\n");	
+		} else {
+			sparql.append("} } \r\n");	
+		}
+			
 		
 		//return replaceByUUID(sparql.toString(), "?time");
 		return sparql.toString();

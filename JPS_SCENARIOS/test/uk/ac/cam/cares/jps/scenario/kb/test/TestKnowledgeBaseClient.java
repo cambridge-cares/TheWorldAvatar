@@ -10,7 +10,6 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -19,7 +18,6 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
-import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
 public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations {
 		
@@ -41,27 +39,6 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 		RDFFormat format = KnowledgeBaseAbstract.getRDFFormatFromFileType(fileName);
 		assertEquals(RDFFormat.TURTLE.getName(), format.getName());
 	}
-
-	public void testGetDatasetUrl() {
-		String datasetUrl = "http://localhost:80/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/data/fancyName";
-		String requestedUrl = datasetUrl;
-		String result = KnowledgeBaseManager.getDatasetUrl(requestedUrl);
-		assertEquals(datasetUrl, result);
-		
-		requestedUrl = datasetUrl + "/some/further/path/xxx.owl";
-		result = KnowledgeBaseManager.getDatasetUrl(requestedUrl);
-		assertEquals(datasetUrl, result);
-		
-		datasetUrl = "http://www.twa.com/"  + JPSConstants.KNOWLEDGE_BASE_JPS + "/kb/fancyName";
-		requestedUrl = datasetUrl + "/yyy.csv";
-		result = KnowledgeBaseManager.getDatasetUrl(requestedUrl);
-		assertEquals(datasetUrl, result);
-		
-		datasetUrl = "http://localhost:8081/jps/scenario/test1234567d";
-		requestedUrl = datasetUrl;
-		result = KnowledgeBaseManager.getDatasetUrl(requestedUrl);
-		assertEquals(datasetUrl, result);
-	}
 	
 	/**
 	 * If both datasetUrl and targetUrl are given, datasetUrl must be a know datasetUrl such as
@@ -79,7 +56,7 @@ public class TestKnowledgeBaseClient extends TestKnowledgeBaseAllImplementations
 	}
 	
 	public void testPutAndGetNonRdfFile() {
-		String path = "/jps/dataset/test/testputandget";
+		String path = "/jps/dataset/testfilebased/testputandget";
 		String body = UUID.randomUUID().toString();
 		KnowledgeBaseClient.put(null, path, body, null);
 

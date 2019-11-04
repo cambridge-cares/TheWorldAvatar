@@ -18,8 +18,9 @@ public enum MediaType {
     APPLICATION_LD_JSON("application/ld+json"),
     APPLICATION_SPARQL("application/sparql-results+json"),
     APPLICATION_SPARQL_RESULTS_XML("application/sparql-results+xml"),
+    APPLICATION_SPARQL_UPDATE("application/sparql-update"),
 	APPLICATION_RDF_XML("application/rdf+xml"),
-	APPLICATION_X_WWW_FOR_URLENCODED("application/x-www-form-urlencoded");
+	APPLICATION_X_WWW_FORM_URLENCODED("application/x-www-form-urlencoded");
 
     public String type = null;
 

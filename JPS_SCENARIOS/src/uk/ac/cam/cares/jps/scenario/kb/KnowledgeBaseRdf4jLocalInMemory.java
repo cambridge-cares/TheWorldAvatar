@@ -27,19 +27,25 @@ public class KnowledgeBaseRdf4jLocalInMemory extends KnowledgeBaseAbstract {
 	private Repository repo = null;
 	
 	public static synchronized KnowledgeBaseRdf4jLocalInMemory getInstance() {
-		if (instance == null) {
-			instance = new KnowledgeBaseRdf4jLocalInMemory();
-		}
 		return instance;
 	}
 	
-	private KnowledgeBaseRdf4jLocalInMemory() {
-		
-		//File dir = new File(datasetDir);
-		//memStore = new MemoryStore(dir);
-		memStore = new MemoryStore();
-		repo = new SailRepository(memStore);
-		repo.init();
+	private KnowledgeBaseRdf4jLocalInMemory(String datasetUrl, String datasetName, String endpointUrl) {
+		super(datasetUrl, datasetName, endpointUrl);
+		init();
+	}
+	
+	private synchronized void init() {
+		if (instance == null) {
+			
+			//File dir = new File(datasetDir);
+			//memStore = new MemoryStore(dir);
+			memStore = new MemoryStore();
+			repo = new SailRepository(memStore);
+			repo.init();
+			
+			instance = this;
+		}
 	}
 	
 	private RepositoryConnection getConnection() {

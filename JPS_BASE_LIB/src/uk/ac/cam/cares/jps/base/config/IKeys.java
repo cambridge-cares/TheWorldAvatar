@@ -11,11 +11,14 @@ public interface IKeys {
 	String URL_BUILDINGSQUERY_HONGKONG = "url.buildingsquery.hongkong";
 	
 	String URL_POSITIONQUERY = "url.positionquery";
-	String URL_RDF_METADATA = "url.rdf.metadata";
+
+	String DATASET_TEMPLATE_URL = "dataset.%s.url";
+	String DATASET_TEMPLATE_KBCLASS = "dataset.%s.kbclass";
+	String DATASET_TEMPLATE_ENDPOINT_URL = "dataset.%s.endpoint.url";
+	String DATASET_META_URL = "dataset.meta.url";
 	
 	String SCENARIO_USECASEDIRECTORY_SEPARATOR = "scenario.usecasedirectory.separator";
 	String ABSDIR_ROOT =  "absdir.root";
 	String PATH_KNOWLEDGEBASE_SHIPS = "path.knowledgebase.ships";
 	String URL_SCHEME = "url.scheme";
-
 }

@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.base.query.test;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -207,7 +208,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 		assertEquals(expected, actual);
 	}
 	
-	public void testQueryBrokerRemoteSparqlUpdate() {
+	public void testQueryBrokerRemoteSparqlUpdate() throws InterruptedException {
 		// check that copy was successful with the correct initial value
 		assertEmissionValue(POWER_PLANT_AFG_FILE, 15.75);
 
@@ -219,7 +220,10 @@ public class TestQuery extends TestCase implements ITestConstants{
 		
 		// check updated value
 		//String localFile = ResourcePathConverter.convertToLocalPath(POWER_PLANT_AFG_FILE);
-		//String localFile = ResourcePathConverter.convert(POWER_PLANT_AFG_FILE);
+		//String localFile = ResourcePathConverter.convert(POWER_PLANT_AFG_FILE);	
+		// For some reasons, we need a time delay here. Otherwise the test will fail. No idea why.
+		TimeUnit.SECONDS.sleep(5);
+		
 		assertEmissionValue(POWER_PLANT_AFG_FILE, newEmissionValue);
 	}
 	

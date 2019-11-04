@@ -30,8 +30,8 @@ public class KnowledgeBaseFileBased extends KnowledgeBaseAbstract {
 
 	private static Logger logger = LoggerFactory.getLogger(KnowledgeBaseFileBased.class);
 	
-	public KnowledgeBaseFileBased(String datasetUrl) {
-		this.datasetUrl = datasetUrl;
+	public KnowledgeBaseFileBased(String datasetUrl, String datasetName, String endpointUrl) {
+		super(datasetUrl, datasetName, endpointUrl);
 	}
 	
 	@Override
