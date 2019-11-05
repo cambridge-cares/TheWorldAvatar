@@ -1,9 +1,22 @@
 package uk.ac.cam.cares.jps.servicespool;
 
-import com.google.gson.Gson;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
+
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -13,15 +26,6 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 
 @WebServlet("/ADMSAgent")
@@ -34,6 +38,7 @@ public class ADMSAgent extends JPSHttpServlet {
     private static final String DATA_KEY_ITEMS = "items";
     private static final String DATA_KEY_LAT = "lat";
     private static final String DATA_KEY_LON = "lon";
+    private static final String DATA_KEY_MMSI = "mmsi";
     private static final String FILENAME_ADMS_PROCESSOR = "adms_processor.py";
 
     private void setLogger() {
@@ -66,7 +71,13 @@ public class ADMSAgent extends JPSHttpServlet {
         double lowerx = Double.parseDouble("" + region.getJSONObject("lowercorner").get("lowerx"));
         double lowery = Double.parseDouble("" + region.getJSONObject("lowercorner").get("lowery"));
         // for default universal coordinate system that is use in the input browser
-        String sourceCRSName = CRSTransformer.EPSG_3857;
+        //String sourceCRSName = CRSTransformer.EPSG_3857;
+        String sourceCRSName = region.optString("srsname");
+        logger.info("getting crs= "+sourceCRSName);
+        
+      if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+    	sourceCRSName = CRSTransformer.EPSG_4326; 
+    }
         String targetCRSName = getTargetCRS(cityIRI);
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
@@ -83,12 +94,8 @@ public class ADMSAgent extends JPSHttpServlet {
                 QueryBroker broker = new QueryBroker();
                 broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
-                String chimney = new String();
-                if (requestParams.has(PARAM_KEY_CHIMNEY)) {
-                    chimney = requestParams.getString(PARAM_KEY_CHIMNEY);
-                }
 
-                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation, chimney);
+                writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation);
                 writeMetFile(weather, fullPath);
                 writeBkgFile(bkgjson, fullPath);
 
@@ -107,8 +114,10 @@ public class ADMSAgent extends JPSHttpServlet {
         String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
 
         startADMS(fullPath);
-        MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);
-
+        File name=new File(fullPath + "/test.levels.gst");
+        if(name.length()!=0&&name.exists()) {
+        	MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);	
+        }
         JSONObject responseParams = new JSONObject();
 
         responseParams.put("folder", fullPath);
@@ -208,6 +217,7 @@ public class ADMSAgent extends JPSHttpServlet {
                         JSONObject latlon = new JSONObject();
                         latlon.put(DATA_KEY_LAT, item.getDouble(DATA_KEY_LAT));
                         latlon.put(DATA_KEY_LON, item.getDouble(DATA_KEY_LON));
+                        latlon.put(DATA_KEY_MMSI, item.get(DATA_KEY_MMSI));
                         coordinates.put(latlon);
                     }
                 }
@@ -276,7 +286,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation, String chimney) {
+    public String writeAPLFileShip(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName, String fullPath, String precipitation) {
 
         //fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
 
@@ -306,7 +316,6 @@ public class ADMSAgent extends JPSHttpServlet {
         args.add(targetCRSName);
         logger.info(targetCRSName);
         args.add(precipitation);
-        args.add(chimney);
         // TODO-AE use PythonHelper instead of CommandHelper
         String result = CommandHelper.executeCommands(targetFolder, args);
         logger.info("ARGUMENTS");
@@ -345,7 +354,7 @@ public class ADMSAgent extends JPSHttpServlet {
     }
 
 
-    private void startADMS(String targetFolder) {
+    public void startADMS(String targetFolder) {
         String startADMSCommand = "\"C:\\\\Program Files (x86)\\CERC\\ADMS 5\\ADMSModel.exe\" /e2 /ADMS \"test.apl\"";
         CommandHelper.executeSingleCommand(targetFolder, startADMSCommand);
     }

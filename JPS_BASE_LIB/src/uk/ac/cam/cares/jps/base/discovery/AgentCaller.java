@@ -2,12 +2,10 @@ package uk.ac.cam.cares.jps.base.discovery;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -15,7 +13,11 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.http.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpHeaders;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -27,6 +29,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -335,18 +338,11 @@ public class AgentCaller {
 
     public static void printToResponse(Object object, HttpServletResponse resp) {
 
-        // TODO-AE SC 20190220 add the case where object is of type org.json.JSONObject to avoid GSON transformation
-
         if (object == null) {
             return;
         }
 
-        String message = null;
-        if (object instanceof String) {
-            message = (String) object;
-        } else {
-            message = new Gson().toJson(object);
-        }
+        String message = serializeForResponse(object);
         resp.setContentType("text/plain");
         resp.setCharacterEncoding("UTF-8");
         try {
@@ -354,6 +350,18 @@ public class AgentCaller {
         } catch (IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
+    }
+    
+    public static String serializeForResponse(Object object) {
+        String message = null;
+        if (object instanceof String) {
+            message = (String) object;
+        } else if (object instanceof JSONObject || object instanceof JSONArray) {
+        	message = object.toString();
+        } else {
+            message = new Gson().toJson(object);
+        }
+        return message;
     }
 
     public static String encodePercentage(String s) {

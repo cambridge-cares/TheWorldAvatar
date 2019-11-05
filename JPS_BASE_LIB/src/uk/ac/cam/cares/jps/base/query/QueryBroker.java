@@ -4,12 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.descriptor.JspConfigDescriptor;
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
-import org.apache.logging.log4j.ThreadContext;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
@@ -21,6 +22,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
@@ -31,7 +33,7 @@ public class QueryBroker {
 	// directly as a parameter (instead of using the super class JPSHttpServlet and ThreadContext)
 	public String readFile(String urlOrPath) {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
@@ -71,7 +73,7 @@ public class QueryBroker {
 
 	public String queryFile(String urlOrPath, String sparqlQuery) {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();
 		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// call the scenario agent if a scenario url is set in the input
@@ -126,6 +128,7 @@ public class QueryBroker {
 			if (count % 50 == 0) {
 				JPSBaseLogger.info(this, "reading file number=" + count + ", name=" + current);
 			}
+			current = ResourcePathConverter.convert(current);
 			model.read(current, null); 
 		}
 		
@@ -146,7 +149,7 @@ public class QueryBroker {
 	 */
 	public String writeFile(String urlOrPath, String content) {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		if (scenarioUrl != null) {
@@ -213,7 +216,7 @@ public class QueryBroker {
 	 */
 	public void updateFile(String urlOrPath, String sparqlUpdate) {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		
@@ -235,7 +238,7 @@ public class QueryBroker {
 		// be stored within scenarios. Later: Broker should find out, whether an QueryAgent (or another broker)
 		// is running on remote server which has local access. 
 		
-		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+//		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		String localFile = urlOrPath;
 		if (urlOrPath.startsWith("http")) {

@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.base.util;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -50,5 +53,13 @@ public class MiscUtil {
 			}
 		}
 		return b.toString();
+	}
+	
+	public static List<String> toList(JSONArray ja) {
+		List<String> result = new ArrayList<String>();
+		for (Object current : ja.toList()) {
+			result.add(current.toString());
+		};
+		return result;
 	}
 }

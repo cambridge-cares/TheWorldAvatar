@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
@@ -47,8 +48,8 @@ public class ScenarioAgent extends HttpServlet {
 		
 		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
 
-		String scenariourl = jo.optString(JPSConstants.SCENARIO_URL);
-		String usecaseurl = jo.optString(JPSConstants.SCENARIO_USE_CASE_URL);
+		String scenariourl = JPSContext.getScenarioUrl(jo);
+		String usecaseurl = JPSContext.getUsecaseUrl(jo);
 		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
 		//logger.debug("with input param=" + jo);
 		//logger.debug("with query string=" + request.getQueryString());
@@ -59,7 +60,7 @@ public class ScenarioAgent extends HttpServlet {
 		// as the scenario agent calls other agents.
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
 			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
+			JPSContext.putScenarioUrl(jo, scenarioUrl);
 		}
 				
 		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
@@ -70,7 +71,9 @@ public class ScenarioAgent extends HttpServlet {
 			
 			// do nothing, the scenario log file has been already created above
 			
-			//result = getScenarioFile(scenarioName);
+			JSONObject resultjo = new JSONObject(log.getLogAsString());
+			// pretty print with 2 spaces to indent
+			result = resultjo.toString(2);
 		
 		} else if ("/option".equals(operation)) {
 			
@@ -199,7 +202,7 @@ public class ScenarioAgent extends HttpServlet {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (fileWithinBucket.exists()) {
+	    if (fileWithinBucket.exists()) { 	
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
 	    	String content = new QueryBroker().readFile(resource);
@@ -278,12 +281,9 @@ public class ScenarioAgent extends HttpServlet {
 		// The description contains all information (input and output parameter) that the composition engine needs
 		// to compose the corresponding agent.  
 		// The input variable jo contains already the values for all input parameter (for executing the composed agent). 
-		// However, it does not contained the parameter types and output parameter that the composition engines needs to know. 
+		// However, it does not contain the parameter types and output parameters that the composition engines needs to know. 
 		// Thus, we have to add the IRI of composedAgent.
-		//String composedAgent =  ScenarioManagementAgent.getScenarioIRI(scenarioName);
-		// TODO-AE SC 20190215 move log constructor out this method, maybe managed by ScenarioManagementAgent?
 		String composedAgent = ScenarioMockManager.getLatestMockedAgent(log);
-		// TODO-AE SC URGENT define "agent" as key in Base (that is also used by AgentWebAPI). Summarize this with SCENARIO_AGENT.
 		jo.put("agent", composedAgent);
 		
 		// The scenario url is the URL of the scenario functionality for mocking the composed agent.
@@ -337,7 +337,7 @@ public class ScenarioAgent extends HttpServlet {
 	 */
 	private void mergeScenario(JSONObject jo, String scenarioName, ScenarioLog log) {
 		
-		String sourceUrl = jo.getString(JPSConstants.SCENARIO_URL);
+		String sourceUrl = JPSContext.getScenarioUrl(jo);
 		String sourceName = BucketHelper.getScenarioName(sourceUrl);
 		
 		// merge the logs

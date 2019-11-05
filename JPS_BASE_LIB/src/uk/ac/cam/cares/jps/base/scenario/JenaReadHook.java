@@ -3,9 +3,6 @@ package uk.ac.cam.cares.jps.base.scenario;
 import org.apache.jena.ontology.OntDocumentManager;
 import org.apache.jena.ontology.OntDocumentManager.ReadHook;
 import org.apache.jena.rdf.model.Model;
-import org.apache.logging.log4j.ThreadContext;
-
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 
 /**
  * If Jena loads an OWL file into a Jena model, then - by default - Jena also loads automatically 
@@ -36,12 +33,13 @@ public class JenaReadHook implements ReadHook {
 	@Override
 	public String beforeRead(Model model, String source, OntDocumentManager odm) {
 		
-		String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
+		String scenarioUrl = JPSContext.getScenarioUrl();
 		if (BucketHelper.isBaseScenario(scenarioUrl)) {
 			return originalReadHook.beforeRead(model, source, odm);
 		}
 		
 		String redirectedSource = new ScenarioClient().getReadUrl(scenarioUrl, source).toString();
+		//System.out.println("MY READHOOK, source=" + source + ", redirected=" + redirectedSource);
 		return originalReadHook.beforeRead(model, redirectedSource, odm);
 	}
 
