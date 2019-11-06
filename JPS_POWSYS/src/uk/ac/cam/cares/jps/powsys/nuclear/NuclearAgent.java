@@ -95,10 +95,14 @@ public class NuclearAgent extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("parameters_req_existing.gdx",newdir+"/parameters_req_existing.gdx");
         fileContext = fileContext.replaceAll("parameters_req.gdx",newdir+"/parameters_req.gdx");
         fileContext = fileContext.replaceAll("constants_req.gdx",newdir+"/constants_req.gdx");
+        fileContext = fileContext.replaceAll("inputlandlots.gdx",newdir+"/inputlandlots.gdx");
+        fileContext = fileContext.replaceAll("inputloadpoints.gdx",newdir+"/inputloadpoints.gdx");
         
         fileContext = fileContext.replaceAll("parameters_req_existing.csv",newdir+"/parameters_req_existing.csv output="+newdir+"/parameters_req_existing.gdx"); 
         fileContext = fileContext.replaceAll("parameters_req.csv",newdir+"/parameters_req.csv output="+newdir+"/parameters_req.gdx");
         fileContext = fileContext.replaceAll("constants_req.csv",newdir+"/constants_req.csv output="+newdir+"/constants_req.gdx");
+        fileContext = fileContext.replaceAll("inputlandlots.csv",newdir+"/inputlandlots.csv output="+newdir+"/inputlandlots.gdx");
+        fileContext = fileContext.replaceAll("inputloadpoints.csv",newdir+"/inputloadpoints.csv output="+newdir+"/inputloadpoints.gdx");
        
 		
 		new QueryBroker().put(destinationUrl, fileContext);
@@ -250,10 +254,10 @@ public class NuclearAgent extends JPSHttpServlet {
         prepareCSVPartialRemaining(plantlist,iriofnetwork,baseUrl);
       //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
-//        if (runGams) {
-//        	runGAMS(baseUrl);
-//        }
-        pseudoRunGAMS(baseUrl);
+        if (runGams) {
+        	runGAMS(baseUrl);
+        }
+        //pseudoRunGAMS(baseUrl);
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
@@ -323,7 +327,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		int x=0;
 		double sumcapreplaced=0;
 		List<String[]> csvresult= new ArrayList<String[]>();
-		String[]header= {"type","capacity","x","y"};
+		String[]header= {"type","Co","x","y"}; //Co=capacity
 		csvresult.add(header);
 		
 		while(x<resultList.size()) {
