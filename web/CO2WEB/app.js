@@ -29,7 +29,7 @@ var visualizeAgent = require("./routes/visualizeAgent.js");
 var visualizeOntokin= require("./routes/visualizeOntokin.js");
 
 
- var showCO2 = require("./routes/showCO2");
+var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
@@ -43,8 +43,9 @@ var ppMap = require('./routes/mapPowerPlant');
 
 var semakauMap = require("./routes/mapSemakau")
 //var b3Map = require("./routes/mapB3")
-var b2Map = require("./routes/mapB2")
-var ppalt = require("./routes/mapPPAlt")
+var b2Map = require("./routes/mapB2");
+var ppalt = require("./routes/mapPPAlt");
+var parallelWorld = require('./routes/parallelWorld');
 
 var parallelWorld = require('./routes/parallelWorld');
 
@@ -62,11 +63,14 @@ process.env.UV_THREADPOOL_SIZE = 128;
 
 app.set('view engine', 'pug');
 app.use(httplogger('dev'));
-
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  next();
+});
 function setHeader(res, mpath){
   logger.debug("path"+ mpath);
   res.setHeader("Content-Type","text/xml");
-  //res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
+  res.setHeader('Access-Control-Allow-Origin', '*');
 
   res.setHeader("Content-Disposition","inline");
     logger.debug("SEtting headers");
@@ -78,10 +82,6 @@ app.use(bodyParser.text({ type: 'application/json' }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
-function acHeader(res){
-	  res.setHeader('Access-Control-Allow-Origin', 'http://www.theworldavatar.com:80');
-
-}
 app.use('/visualizeAgent', visualizeAgent);
 
 app.use('/visualizeWorld', visualizeWorld);
@@ -92,6 +92,7 @@ app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/pwScenario', parallelWorld);
+
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
@@ -241,11 +242,12 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {error: err});
 });
+
 /********************/
 
 
-http.listen(port, function () {
+app.listen(port, function () {
   console.log('Server listening on port '+port);
 });
 
-module.exports = http;
+module.exports = app;

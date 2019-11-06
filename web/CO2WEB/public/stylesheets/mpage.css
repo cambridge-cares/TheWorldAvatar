@@ -349,6 +349,7 @@ CO2Page
     text-align: center;
     font-size: 40px;
     font-weight: 100;
+    display: flex;
 
 }
 

@@ -33,7 +33,7 @@ block content
     div#wrapper
             div.overlay-panel-wrapper
                 div#overlay-setting-panel.panel.panel-default
-                    div.panel-heading Run
+                    div.panel-heading Show scenario
                     div.panel-body.container-fluid
                         div#setting-panel-body
 
@@ -41,9 +41,14 @@ block content
                             div#text-panel
                                 select#predefined-select
                                     option(value='0') Base Scenario
-                                    option(value='1') Test Nuclear Power Sys
+                                    option(value='1') Test Scenario
+                                br
+                                br
+                                p Carbon Tax&nbsp; 
+                                    input(type='text' id='carbontax' contenteditable='false')
+
                             br
-                            button#run-btn.btn.btn-primary Run Simulation
+                            button#run-btn.btn.btn-primary Show
                             div#result-panel
                             div#draw-panel
                            
@@ -51,12 +56,30 @@ block content
     br
     div#co2-sum-panel2
         p
-            | Jurong Island CO
+            | Actual CO
             sub 2
-            | &nbsp;Emission:
+            | &nbsp; Emission: &nbsp;
         p
         span#co2Value  #{co2Value}
-        span  tonnes/seconds
+        span  &nbsp; tonnes/hour
+    
+    div#co2-sum-panel2
+        p
+            span#wildPercentage #{wildPercentage}
+            span  % of Singapore's GHG emissions
+    
+    div#co2-sum-panel2
+        p
+            | Design CO
+            sub 2
+            | &nbsp;Emission: &nbsp;
+        p
+        span#co2Value2  #{co2Value2}
+        span  &nbsp; tonnes/hour
+    div#co2-sum-panel2
+        p(title ="Taken from National Communications and Biennial Update Reports, NEA, 2014 ")
+            span Number and Types of Generators: 
+            span#numberOfGenerators  #{numberOfGenerators}
     script(src="https://code.jquery.com/jquery-2.2.0.min.js")
     script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
     script(src="/javascripts/PopUpmap.js")
