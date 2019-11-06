@@ -23,7 +23,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -78,7 +80,17 @@ public class NuclearAgent extends JPSHttpServlet {
 	
 	public void modifyTemplate(String newdir, String filename) throws IOException { 
 		String destinationUrl = newdir + "/"+filename;
-		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		String indicator = KeyValueManager.get(IKeys.LONG_NUCLEAR_GAMS);
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/res/"+filename);
+		if(indicator.contentEquals("true")) {
+			file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/res/ori/"+filename);
+			logger.info("it's running for the 30 hr!!!");
+		}
+		else {
+			logger.info("running for the 4 hr!");
+		}
+
+		
         String fileContext = FileUtils.readFileToString(file);
         fileContext = fileContext.replaceAll("parameters_req_existing.gdx",newdir+"/parameters_req_existing.gdx");
         fileContext = fileContext.replaceAll("parameters_req.gdx",newdir+"/parameters_req.gdx");
