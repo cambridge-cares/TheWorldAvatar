@@ -76,7 +76,8 @@ public class JPS_ESS extends JPSHttpServlet {
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
         String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-        String folderlocation =baseUrl+"/";
+       // String folderlocation =baseUrl+"/";
+        String folderlocation =baseUrl.replace("/","\\\\")+"\\";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
         
@@ -98,6 +99,7 @@ public class JPS_ESS extends JPSHttpServlet {
 	
 	public void modifyTemplatever2(String newdir2, String filename) throws IOException { 
 		String newdir=newdir2.replace("/","\\\\");
+		System.out.println("newdir2="+newdir2);
 		System.out.println("newdir="+newdir);
 		String destinationUrl = newdir2.replace("/","\\") + "\\"+filename;
 		System.out.println("dest="+destinationUrl);
@@ -120,6 +122,8 @@ public class JPS_ESS extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("EconomicalScore.csv",newdir+"\\\\"+"EconomicalScore.csv output="+newdir+"\\\\"+"EconomicalScore.gdx");
         fileContext = fileContext.replaceAll("Maturity.csv",newdir+"\\\\"+"Maturity.csv output="+newdir+"\\\\"+"Maturity.gdx");
         fileContext = fileContext.replaceAll("Pa_high.csv",newdir+"\\\\"+"Pa_high.csv output="+newdir+"\\\\"+"Pa_high.gdx");
+        
+        //fileContext = fileContext.replaceAll("%gams.scrdir%soleps.gdx",newdir+"\\\\"+"soleps.gdx");
         //System.out.println(fileContext);
 //        File fileout = new File(destinationUrl);
 //        FileWriter fileWriter = new FileWriter(fileout);

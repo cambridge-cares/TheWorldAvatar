@@ -16,6 +16,10 @@ public class TEST_JPSESS extends TestCase {
 //	String dataPath = QueryBroker.getLocalDataPath();
 //	String baseUrl=dataPath+"/JPS_ESS";
 	
+	public void testGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
+		JPS_ESS a = new JPS_ESS();
+		a.runGAMS("C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/91ecce2b-c758-4d7b-883c-e9e11e7d569b");
+	}
 
 	
 		
