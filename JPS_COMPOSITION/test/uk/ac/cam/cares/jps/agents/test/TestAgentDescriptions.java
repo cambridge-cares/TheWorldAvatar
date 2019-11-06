@@ -9,7 +9,6 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceBuilder;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceReader;
 import uk.ac.cam.cares.jps.agents.ontology.ServiceWriter;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.composition.servicemodel.Service;
 
 public class TestAgentDescriptions extends TestCase {
@@ -116,6 +115,16 @@ public class TestAgentDescriptions extends TestCase {
 			.build();
 	}
 	
+	private Service createDescrForAgentEN() {
+		return new ServiceBuilder()
+				.operation(null, JPS_POWSYS + "/ENAgent/startsimulationPF")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.operation(null, JPS_POWSYS + "/ENAgent/startsimulationOPF")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			
+			.build();
+	}
+	
 	private Service createDescrForAgentShip() {
 		return new ServiceBuilder().operation(null, JPS + "/ShipAgent")
 			.input("http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship", "ship")
@@ -202,10 +211,11 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_POWSYS + "/NuclearAgent/startsimulation")
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
-			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
-			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
-			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
 			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
+//			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
+//			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
 			.build();
 	}
 
@@ -229,8 +239,8 @@ public class TestAgentDescriptions extends TestCase {
 			.operation(null, JPS_SCENARIO + "/delete")
 				//.input("http://www.w3.org/2001/XMLSchema#string", "scenarioname")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/OntoAgent.owl#Resource", "scenarioresource")
-			.operation(null, JPS_SCENARIO + "/option")
-				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
+//			.operation(null, JPS_SCENARIO + "/option")
+//				.input("http://www.w3.org/2001/XMLSchema#boolean", JPSConstants.SCENARIO_OPTION_COPY_ON_READ)
 			.build();
 	}
 	
@@ -276,17 +286,23 @@ public class TestAgentDescriptions extends TestCase {
 				.output("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct", "waste")
 				.build();
 	}
-	
+		
 	private Service createDescrForAgentCarbonTaxCoord() {
 		return new ServiceBuilder()
 			.operation(null, JPS_POWSYS + "/startsimulation")
 			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
 			.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
 			.input("http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#Landlot", "landlot")
-			.operation(null, JPS_POWSYS + "/processresult")
-			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
-			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", true, "plant", true)
 			.build();
+	}
+	
+	private Service createDescrForAgentCarbonTax() {
+		return new ServiceBuilder()
+				.operation(null, JPS_POWSYS + "/optimizeforcarbontax")
+				.input("http://www.theworldavatar.com/ontology/Market.owl#Price", "carbontax")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator",true, "substitutionalgenerators",true)
+				.build();
 	}
 	
 	public void testDescription() throws URISyntaxException, FileNotFoundException {

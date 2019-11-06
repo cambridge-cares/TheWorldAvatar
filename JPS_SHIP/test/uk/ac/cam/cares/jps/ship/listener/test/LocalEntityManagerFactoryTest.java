@@ -8,14 +8,7 @@ import uk.ac.cam.cares.jps.ship.listener.LocalEntityManagerFactory;
 import javax.persistence.EntityManager;
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import javax.servlet.descriptor.JspConfigDescriptor;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Enumeration;
-import java.util.EventListener;
-import java.util.Map;
-import java.util.Set;
+
 
 public class LocalEntityManagerFactoryTest extends TestCase {
 

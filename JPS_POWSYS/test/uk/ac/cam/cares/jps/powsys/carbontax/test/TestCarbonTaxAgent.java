@@ -24,7 +24,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		System.out.println("what is dataPath="+dataPath);
 		
 		CarbonTaxAgent a= new CarbonTaxAgent();
-		a.prepareCSVGeneratorParameter(iriofnetwork,dataPath);
+		a.prepareCSVGeneratorParameterUpdatedGenScale(iriofnetwork,dataPath);
 		String filename="time_profile.csv";
 		a.copyTemplate(dataPath, filename);
 		//a.copyTemplate(dataPath, "Generator_Parameters.csv");
@@ -72,7 +72,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		jo.put("carbontax",a );
 		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
 		System.out.println("output= "+resultProcess);
-		assertNotNull(new JSONObject(resultProcess).get("substitutionalpowerplants"));
+		assertNotNull(new JSONObject(resultProcess).get("substitutionalgenerators"));
 	}
 
 }

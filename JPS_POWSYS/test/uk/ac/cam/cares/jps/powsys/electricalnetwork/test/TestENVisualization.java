@@ -72,7 +72,7 @@ public class TestENVisualization extends TestCase {
 		String res=a.createLineJS(model);
 		System.out.println("resultjs= "+res);
 	}
-	public void testreadGenerator() throws IOException {
+	public void testreadGenerator() throws IOException { //pre requisite : need to prepare http://localhost:8080/jps/kb/cdb65d7d-31af-43e2-88da-1462d8a1dc23/nuclearpowerplants/NucGenerator_1_B0.owl#NucGenerator_1_B0
 		ENVisualization a=new ENVisualization();
 		String flag = "base";
 
