@@ -50,7 +50,7 @@ $GDXIN
 
 *Readpng existing generator parameter files from excel files
 $call csv2gdx parameters_req_existing.csv id=eg index=1 values=2..lastCol useHeader=y
-$GDXIN parameters_req_existing_fo.gdx
+$GDXIN parameters_req_existing.gdx
 $Load e=Dim1
 $Load ep=Dim2
 $Load eg
@@ -167,7 +167,7 @@ Model optim /all/;
 option minlp=baron,resLIM=100000,optCR=.1,decimals=6;
 Solve optim using minlp minimizing z;
 
-File output /results_fo.csv/;
+File output /results.csv/;
 *output.nr = 2  ;
 output.nd = 1 ;
 *output.nw = 0  ;

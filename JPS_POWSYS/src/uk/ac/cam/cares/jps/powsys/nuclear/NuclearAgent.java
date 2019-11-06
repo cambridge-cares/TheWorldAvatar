@@ -42,7 +42,7 @@ public class NuclearAgent extends JPSHttpServlet {
 	private static final long serialVersionUID = -4199209974912271432L;
 	private Logger logger = LoggerFactory.getLogger(NuclearAgent.class);
 	public static final String AGENT_TAG = "GAMS_NuclearAgent";
-	private String modelname="final.gms";
+	private String modelname="Parallel_wrld_location.gms";
 	
 	public void runGAMSAsync() throws IOException, InterruptedException {
         System.out.println("Start");
@@ -80,11 +80,14 @@ public class NuclearAgent extends JPSHttpServlet {
 		String destinationUrl = newdir + "/"+filename;
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
         String fileContext = FileUtils.readFileToString(file);
+        fileContext = fileContext.replaceAll("parameters_req_existing.gdx",newdir+"/parameters_req_existing.gdx");
         fileContext = fileContext.replaceAll("parameters_req.gdx",newdir+"/parameters_req.gdx");
         fileContext = fileContext.replaceAll("constants_req.gdx",newdir+"/constants_req.gdx");
         
+        fileContext = fileContext.replaceAll("parameters_req_existing.csv",newdir+"/parameters_req_existing.csv output="+newdir+"/parameters_req_existing.gdx"); 
         fileContext = fileContext.replaceAll("parameters_req.csv",newdir+"/parameters_req.csv output="+newdir+"/parameters_req.gdx");
         fileContext = fileContext.replaceAll("constants_req.csv",newdir+"/constants_req.csv output="+newdir+"/constants_req.gdx");
+       
 		
 		new QueryBroker().put(destinationUrl, fileContext);
 	}
@@ -341,7 +344,7 @@ public class NuclearAgent extends JPSHttpServlet {
 		csvresult.add(content2);
 		 String s = MatrixConverter.fromArraytoCsv(csvresult);
 		 QueryBroker broker = new QueryBroker();
-		 broker.put(baseUrl + "/inputgeneratorselection.csv", s);
+		 broker.put(baseUrl + "/parameters_req_existing.csv", s);
 		
 	}
 	
