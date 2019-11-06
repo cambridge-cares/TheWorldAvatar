@@ -25,7 +25,7 @@ public class TestNuclear extends TestCase {
 	
 	private JSONArray getSubstitutionalGenerators() {
 		JSONArray ja = new JSONArray();
-		for(int x=2;x<=29;x++) {
+		for(int x=24;x<=29;x++) {
 			String r=String.format("%03d", x);
 			ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+r+".owl#EGen-"+r);
 		}
@@ -98,7 +98,10 @@ public class TestNuclear extends TestCase {
 		System.out.println(usecaseUrl);
 		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		jo.put(JPSConstants.RUN_SIMULATION, false);
+		
+//		jo.put(JPSConstants.RUN_SIMULATION, false);
+		jo.put(JPSConstants.RUN_SIMULATION, true);
+		
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		
 		System.out.println("json input parameter=" + jo);
@@ -146,7 +149,7 @@ public class TestNuclear extends TestCase {
 		System.out.println("what is dataPath="+dataPath);
 		//agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
 		agent.prepareCSVPartialRemaining(listofplant,iriofnetwork,dataPath);
-		File file = new File(dataPath+"/inputgeneratorselection.csv");
+		File file = new File(dataPath+"/parameters_req_existing.csv");
 		assertTrue(file.exists());
 
 	}
