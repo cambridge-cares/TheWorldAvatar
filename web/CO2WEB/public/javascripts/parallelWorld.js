@@ -1,6 +1,5 @@
-
 var scenario;
-var prefix = "http://theworldavatar.com";
+var prefix = "http://localhost:8080";
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
@@ -374,8 +373,10 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-    var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
-    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml";
+    // var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
+    // var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
     setInterval(function(){
         distotalemission();
     }, 5000);
@@ -472,16 +473,10 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 })();
 var  kmlLayer;
 function drawGenerator(data, anotherURL){
-    var d = new Date();
-    var n = d.getTime();
     var kmljson = {};
-    var kmlurl = prefix + '/JPS_POWSYS/ENVisualization/createKMLFile'; 
-    kmljson["electricalnetwork"] = data["electricalnetwork"];
-    kmljson["n"] = String(n);
-    kmljson["flag"] =  data["flag"];
-    kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));      
-
-
+    var agenturl = prefix + '/JPS_POWSYS/ENVisualization/createKMLFile'; 
+    var kmlurl = createUrlForAgent(scenario, agenturl, data);
+    console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
         type: 'GET',
@@ -514,7 +509,8 @@ function drawGenerator(data, anotherURL){
     });
 }
 function drawMarkers(data){
-    kmlurl =  prefix + '/JPS_POWSYS/ENVisualization/createMarkers?query=' + encodeURIComponent(JSON.stringify(data));    
+    var agenturl=  prefix + '/JPS_POWSYS/ENVisualization/createMarkers'; 
+    var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -524,6 +520,7 @@ function drawMarkers(data){
     });     
     
     request.done(function(data) {
+        data = filterJSON(data);
         var obj0 = JSON.parse(data);
         var size=obj0.length;
         console.log("size="+size);           
@@ -566,11 +563,11 @@ function drawMarkers(data){
             marker.setMap(null);
             marker=null;
         }
-        markers = {};
     }
 function displayCO2(data){
     //read the value of CO2 and display upon calling
-    kmlurl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator?query=' + encodeURIComponent(JSON.stringify(data));    
+    var agenturl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator' ;
+    var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -1066,7 +1063,7 @@ function createUrlForSparqlQuery(scenarioname, iri, sparql) {
         return url2;    
     }
 
-    function createUrlForAgent(scenarioname, agenturl, agentparams) {
+function createUrlForAgent(scenarioname, agenturl, agentparams) {
 
         var url;
         if ((scenarioname == null) || scenarioname == "base") {
@@ -1079,3 +1076,12 @@ function createUrlForSparqlQuery(scenarioname, iri, sparql) {
 
         return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
     }
+function filterJSON(data){
+    //data is a string
+    if ((scenario == null) || scenario == "base") {
+        return data;
+    }else{
+        data = '['.concat(data, ']');
+        return data;
+    }
+}

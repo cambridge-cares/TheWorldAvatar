@@ -216,7 +216,8 @@ PopupMap.prototype = {
         var map = this.googleMap;
         var self = this;
         var lines=[];
-        kmlurl = prefix + '/JPS_POWSYS/ENVisualization/createLineJS?query=' + encodeURIComponent(JSON.stringify(data));      
+        var agenturl  = prefix + '/JPS_POWSYS/ENVisualization/createLineJS'
+        var kmlurl = createUrlForAgent(scenario, agenturl, data);
         console.log('my kmlurl = '+ kmlurl);
         var request = $.ajax({
             url: kmlurl,
@@ -226,7 +227,8 @@ PopupMap.prototype = {
         });
 
         request.done(function(data) {
-        
+            //since in test scenario it's returning a javascript object rather than a json, I'll have to use this filter function: 
+            data = filterJSON(data);
             var obj0 = JSON.parse(data);
             var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
             var size=obj0.length;
