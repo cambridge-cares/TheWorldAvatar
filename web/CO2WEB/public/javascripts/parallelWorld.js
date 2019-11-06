@@ -5,7 +5,10 @@ var infoWindow;
 var marker;
 var markers = [];
 var actualCarbon = 0.00;
+var wildPercentage = 0.00;
+var emissionValueForSingapore = 48620430;
 var designCarbon= 0.00;
+var numTypeGen = '';
 var branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -465,6 +468,8 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
     function distotalemission(){
         $("#co2Value").text(actualCarbon.toFixed(2));
         $("#co2Value2").text(designCarbon.toFixed(2));
+        $("#wildPercentage").text(wildPercentage.toFixed(2));
+        $("#numberOfGenerators").text(numTypeGen);
     }
     //TODO: define err msg panel
     function cleanMsg() {
@@ -529,19 +534,22 @@ function drawMarkers(data){
     var x;
     markers = []
     // scan some duplicates
-    
+    var dict = {"nuclear": 0, "gas": 0, "oil": 0};
     for (x=0; x< size; x++){
         var obj = obj0[x];
         var fueltype = obj.fueltype;
         var name = obj.name;
         console.log(fueltype);
         if (fueltype== "NaturalGasGeneration"){
-            icon = '/images/naturalgas.png'
+            icon = '/images/naturalgas.png';
+            dict["gas"] += 1;
         }else if (fueltype== "OilGeneration"){
-            icon = '/images/oil.png'
+            icon = '/images/oil.png';
+            dict["oil"] += 1;
         }else{
             console.log(fueltype);
-            icon = '/images/radiation.png'
+            icon = '/images/radiation.png';
+            dict["nuclear"] += 1;
         }
         var marker = new google.maps.Marker({
             position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
@@ -551,6 +559,8 @@ function drawMarkers(data){
           });
         markers.push(marker);
         }
+        
+        numTypeGen = dict["nuclear"] + " Nuclear " + dict["oil"] + " Oil " + dict['gas'] +" Gas ";
     });
     }
     function clearMarkers() {
@@ -579,6 +589,7 @@ function displayCO2(data){
     request.done(function(data) {
         var obj0 = JSON.parse(data);
         actualCarbon = obj0.actual;
+        wildPercentage = (actualCarbon/emissionValueForSingapore)*8760*100;
         designCarbon = obj0.design;      
     });
 }
@@ -714,11 +725,7 @@ function openWindowGen(id){
     );
 }
 function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow cos it's too large. 
-    var kmljson = {};
-    kmljson["sparqlquery"] = type;
-    kmljson["scenarioresource"] = id.split('#')[0];
-    // var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork/' +selectedId.split('#')[1]; //will read from here. 
-    var kmlurl =  prefix + '/jps/scenario/'+scenario+'/query?query=' + encodeURIComponent(JSON.stringify(kmljson));
+    var kmlurl = createUrlForSparqlQuery(scenario, id.split('#')[0], type);
     console.log(kmlurl);
     var inputsHTML = '';
     var request = $.ajax({
@@ -739,8 +746,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 
         var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
         nameSet = [];
-        var selectedId = id;
-        var owlName = selectedId.split('#')[1].split('.')[0];
+        var owlName = id.split('#')[1];
         for(var item in result)
         {
             var pair = result[item];
@@ -1042,9 +1048,9 @@ function constructLineMenu(id,callback){
     selectedId = id.split('/')[1];
     console.log(selectedId)
     var promise1 = new Promise(function (resolve, reject){
-        resolve(openWindowLineAndBus('http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId, branchInfo, callback));
+        resolve(openWindowLineAndBus('http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId +'#'+selectedId.split('.')[0], branchInfo, callback));
     }); 
-    console.log(promise1);
+    promise1.catch(alert);
 }
 function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
 
@@ -1057,7 +1063,7 @@ function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
 function createUrlForSparqlQuery(scenarioname, iri, sparql) {
 
         var url2 = prefix + '/jps/scenario/' + scenarioname + '/query?query=';
-        urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
+        urljson = {"scenarioresource":iri,"sparqlquery":sparql};
         url2 += encodeURIComponent(JSON.stringify(urljson)); 
         //url2 += JSON.stringify(urljson); 
         return url2;    
