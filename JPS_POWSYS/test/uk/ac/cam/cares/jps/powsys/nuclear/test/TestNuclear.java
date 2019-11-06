@@ -84,7 +84,7 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("substitutionalpowerplants", ja);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testScenario"); 
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"); 
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
