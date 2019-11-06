@@ -96,11 +96,6 @@ public class ENVisualization extends JPSHttpServlet {
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 
 		String iriofnetwork = joforEN.getString("electricalnetwork");
-		JPSHttpServlet.disableScenario();
-//		if (flag.equals(SCENARIO_NAME_TEST)) {
-//			String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
-//			JPSHttpServlet.enableScenario(scenarioUrl);	
-//		}
 		OntModel model = readModelGreedy(iriofnetwork);
 		logger.info("path called= "+path);
 		if ("/ENVisualization/createLineJS".equals(path)) {
@@ -108,11 +103,8 @@ public class ENVisualization extends JPSHttpServlet {
 			AgentCaller.printToResponse(g, response);
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
-			
-//			BufferedWriter bufferedWriter = null;
-			String b = null;
 			String flag = joforEN.getString("flag");
-//			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
+			String b = null;
 			String root = KeyValueManager.get(IKeys.ABSDIR_ROOT);
 			try (FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
