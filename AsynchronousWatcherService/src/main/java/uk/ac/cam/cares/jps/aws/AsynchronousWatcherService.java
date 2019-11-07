@@ -77,6 +77,9 @@ public class AsynchronousWatcherService {
     }
 
     private WatcherCallback getCallback(String url, String json) {
+        if (url.isEmpty()) {
+            throw new BadRequestException();
+        }
         WatcherCallback callback = () -> {
             HttpClient httpClient = HttpClientBuilder.create().build();
             try {
@@ -92,7 +95,7 @@ public class AsynchronousWatcherService {
         return callback;
     }
 
-    class Response {
+    public static class Response {
         public String status = STATUS_WATCHING;
         public String path;
 
