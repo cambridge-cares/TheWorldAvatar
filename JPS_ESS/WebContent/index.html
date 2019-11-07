@@ -202,7 +202,7 @@
 					console.log('DONE!');
 					}
 				};
-				xmlhttp.open("GET","localhost:8080/JPS_ESS/resources/outputBranchOPF.json",true);
+				xmlhttp.open("GET","images/outputBranchOPF.json",true);
 				xmlhttp.send();
 				request.done(function(data) {
 				
@@ -257,17 +257,20 @@
 						scale:2,
 						strokeColor: '#333'
 					};
-					var symbolThree = {
-						path: 'M -2,-2 2,2 M 2,-2 -2,2', //M327674 280 c0 -157 2 -221 3 -142 2 78 2 206 0 285 -1 78 -3 14 -3-143z but this doesn't work as a path
-						strokeColor: '#292',
-						strokeWeight: 4
-					  };
+					var image = {
+					    anchor: new google.maps.Point(16, 16), //16: center of 32x32 image
+					    origin: new google.maps.Point(0, 0),
+					    scaledSize: new google.maps.Size(32, 32),
+					    size: new google.maps.Size(64, 64),
+					    url: "images/battery.png"
+  };
+					
 
 					if(_type === 'distribute')
 					{
 					//console.log('--_name--',_name);
 					if (_needBattery == "ON"){
-							icons1 =  [{icon: lineSymbol,offset: '100%'}, {icon: symbolThree ,offset: '60%'} ];
+							icons1 =  [{icon: lineSymbol,offset: '100%'}, {icon: image ,offset: '60%'} ];
 						}else {
 							icons1 = [{icon: lineSymbol,offset: '100%'}];
 						}
