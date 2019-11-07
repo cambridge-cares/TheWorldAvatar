@@ -525,10 +525,8 @@ function drawMarkers(data){
     });     
     
     request.done(function(data) {
-        data = filterJSON(data);
-        var obj0 = JSON.parse(data);
-        var size=obj0.length;
-        console.log("size="+size);           
+        var obj0 = JSON.parse(data).result;
+        var size=obj0.length;        
         
     //We currently know of a few cases:
     var x;
@@ -536,10 +534,9 @@ function drawMarkers(data){
     // scan some duplicates
     var dict = {"nuclear": 0, "gas": 0, "oil": 0};
     for (x=0; x< size; x++){
-        var obj = obj0[x];
+        var obj = JSON.parse(obj0[x]);  
         var fueltype = obj.fueltype;
         var name = obj.name;
-        console.log(fueltype);
         if (fueltype== "NaturalGasGeneration"){
             icon = '/images/naturalgas.png';
             dict["gas"] += 1;
@@ -567,9 +564,7 @@ function drawMarkers(data){
         if(!markers){
             return;
         }
-        console.log(markers);
         for(marker of markers){
-            console.log(marker);
             marker.setMap(null);
             marker=null;
         }
@@ -592,20 +587,6 @@ function displayCO2(data){
         wildPercentage = (actualCarbon/emissionValueForSingapore)*8760*100;
         designCarbon = obj0.design;      
     });
-}
-function sendRequest(url,callback) {
-    console.log(url)
-$.ajax({
-    url: "http://theworldavatar.com:82/getAttrList",
-    method: "POST",
-    data: JSON.stringify({uri: url}),
-    contentType: "application/json; charset=utf-8",
-
-success: function (attrPairs) {
-            callback(attrPairs);
-        }
-
-});
 }
 
 function setKMLMenu(kmlEvent){
@@ -1084,10 +1065,12 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
     }
 function filterJSON(data){
     //data is a string
+    console.log(data);
     if ((scenario == null) || scenario == "base") {
         return data;
     }else{
-        data = '['.concat(data, ']');
+        data = JSON.parse(data)['result'];
+        data = JSON.parse(data);
         return data;
     }
 }

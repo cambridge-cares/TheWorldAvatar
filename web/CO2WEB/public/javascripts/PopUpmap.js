@@ -227,17 +227,14 @@ PopupMap.prototype = {
         });
 
         request.done(function(data) {
-            //since in test scenario it's returning a javascript object rather than a json, I'll have to use this filter function: 
-            data = filterJSON(data);
-            var obj0 = JSON.parse(data);
+            var obj0 = JSON.parse(data).result;
             var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
             var size=obj0.length;
             console.log("size="+size);              
         var x;
         for(x=0;x<size;x++){
-            var obj = obj0[x];  
+            var obj = JSON.parse(obj0[x]);  
             var point0= new self.point(obj.coors[0].lat,obj.coors[0].lng);
-            
             var point1= new self.point(obj.coors[1].lat,obj.coors[1].lng);
             var temparr=[point0,point1];
             var vol0=obj.vols[0];
@@ -258,13 +255,7 @@ PopupMap.prototype = {
                 var _line = lines[index];
                 var _name = _line['name'];
                 var _type = _line['type'];
-
-                console.log('--_type--',_type);
-                
-                
                 var _path = _line['coors'];
-
-
                 var _thickness = _line['thickness'];
                 var lineSymbol = {
                     path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
@@ -274,7 +265,6 @@ PopupMap.prototype = {
 
 
                 if(_type === 'distribute'){
-                    console.log('--_name--',_name);
                     var line = new google.maps.Polyline({
                         path: _path,
                         strokeWeight: _thickness,
@@ -290,7 +280,6 @@ PopupMap.prototype = {
                     google.maps.InfoWindow.prototype.opened = false;
 
                     line.addListener('click', function(lineEvent) {
-                        var that = this;
                         var content = constructLineMenu(this.title,function (_content) {
                             console.log('content',_content);
                             infoWindow = new google.maps.InfoWindow({
@@ -312,7 +301,6 @@ PopupMap.prototype = {
                     animatedLines.push(line);
                     }
                 else if(_type === 'transformer'){
-                    console.log('_path',_path);
                     var transformer = new google.maps.Circle({
                             strokeColor: '#00ff00',
                             strokeOpacity: 0.8,
@@ -324,7 +312,6 @@ PopupMap.prototype = {
                             radius: 30,
                             title:_name
                         });
-                    console.log(JSON.stringify(transformer, null, 4))
 
                     transformer.addListener('click', function() {
                         var that = this;
