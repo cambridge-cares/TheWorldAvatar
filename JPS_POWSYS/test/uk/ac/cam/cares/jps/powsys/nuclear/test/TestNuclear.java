@@ -99,8 +99,8 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		
-		jo.put(JPSConstants.RUN_SIMULATION, false);
-		//jo.put(JPSConstants.RUN_SIMULATION, true);
+		//jo.put(JPSConstants.RUN_SIMULATION, false);
+		jo.put(JPSConstants.RUN_SIMULATION, true);
 		
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		
@@ -109,22 +109,9 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
 		System.out.println("result from startsimulation=" + resultStart);
 		
-		// copy existing result file from a previous simulation to the data bucket
-		//23-10-2019 copying not needed anymore
-//		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
-//		File file = new File(source);
-//		String destinationUrl = QueryBroker.getLocalDataPath() + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
-//		new QueryBroker().put(destinationUrl, file);
-//		
-//		// process the simulation result
-//		jo = new JSONObject();
-//		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-//		JPSContext.putScenarioUrl(jo, scenarioUrl);
-//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-//		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
-//		System.out.println("result from processsimulationresult=" + resultProcess);
-		jo = new JSONObject(resultStart);
-		assertEquals(4, jo.getJSONArray("plants").length());
+//
+//		jo = new JSONObject(resultStart);
+//		assertEquals(4, jo.getJSONArray("plants").length());
 	}
 	
 	public void testcallNewNuclearAgentCSVInput() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {

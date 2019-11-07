@@ -33,7 +33,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
@@ -49,35 +48,13 @@ public class NuclearAgent extends JPSHttpServlet {
     public static final String AGENT_TAG = "GAMS_NuclearAgent";
     private String modelname="Parallel_wrld_location.gms";
 
-    public void runGAMSAsync(String modelname) throws IOException, InterruptedException {
-        System.out.println("Start");
-        System.out.println("separator= " + File.separator);
+    public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
+    	modifyTemplate(baseUrl, modelname);
         String executablelocation = "C:/GAMS/win64/26.1/gams.exe";
-        //String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
-        String folderlocation = "C:/JPS_DATA/workingdir/JPS_POWSYS/";
-        String[] cmdArray = new String[5];
+        String folderlocation = baseUrl + "/";
+        String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
 
-        cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + modelname;
-        cmdArray[2] = "WDIR=" + folderlocation;
-        cmdArray[3] = "SCRDIR=" + folderlocation;
-        cmdArray[4] = "LO=2";
-//      cmdArray[2] = "WDIR="+folderlocation + "TMP";
-//      cmdArray[3] = "SCRDIR="+folderlocation + "TMP";
-
-        String cmdArrayinstring = cmdArray[0] + " " + cmdArray[1] + "," + cmdArray[2] + "," + cmdArray[3] + " " + cmdArray[4];
-
-        //System.out.println(cmdArrayinstring);
-        //Process p = Runtime.getRuntime().exec(cmdArray);
-        //p.waitFor();
-        String startbatCommand = "C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
-
-        ArrayList<String> groupcommand = new ArrayList<String>();
-        groupcommand.add("start");
-        groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat");
-
-        CommandHelper.executeSingleCommand(folderlocation, startbatCommand);
-//		CommandHelper.executeCommands(folderlocation, groupcommand);   
+        Process p = Runtime.getRuntime().exec(content); //used w/o waitFor() to be async
         System.out.println("Done");
     }
 
@@ -254,7 +231,8 @@ public class NuclearAgent extends JPSHttpServlet {
         //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
         if (runGams) {
-        	runGAMS(baseUrl);
+        	//runGAMS(baseUrl);
+        	runGAMSAsync(baseUrl);
         }
         else {
         pseudoRunGAMS(baseUrl);
