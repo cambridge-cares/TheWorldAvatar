@@ -22,6 +22,14 @@ public class AsynchronousWatcherService {
     private static final String KEY_WATCH = "watch";
     private static final String KEY_CALLBACK_URL = "callback";
     private static final String ERR_NO_DIR = "Directory does not exist: ";
+    //Default watcher timeout
+    private final int PARAM_TIMEOUT = 48;
+    private final int TIMEOUT_MUL_SECONDS = 1000;
+    private final int TIMEOUT_MUL_MINUTES = TIMEOUT_MUL_SECONDS * 60;
+    private final int TIMEOUT_MUL_HOURS = TIMEOUT_MUL_MINUTES * 60;
+    //Timeout for the task can be set to seconds, minutes or hours(default)
+    private final int TIMEOUT_MUL = TIMEOUT_MUL_HOURS;
+
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON})
@@ -39,7 +47,7 @@ public class AsynchronousWatcherService {
             JSONObject args = new JSONObject(json);
             String path = getPath(args);
             String url = args.get(KEY_CALLBACK_URL).toString();
-            CreateFileWatcher watcher = new CreateFileWatcher(new File(path));
+            CreateFileWatcher watcher = new CreateFileWatcher(new File(path), PARAM_TIMEOUT * TIMEOUT_MUL);
             WatcherCallback callback = getCallback(url, json);
             watcher.setCallback(callback);
             watcher.start();
