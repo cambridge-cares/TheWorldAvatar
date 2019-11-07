@@ -18,17 +18,21 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
+import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestNuclear extends TestCase {
 	
 	private JSONArray getSubstitutionalGenerators() {
 		JSONArray ja = new JSONArray();
-		for(int x=2;x<=29;x++) {
-			String r=String.format("%03d", x);
-			ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+r+".owl#EGen-"+r);
-		}
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-024.owl#EGen-024");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-025.owl#EGen-025");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-026.owl#EGen-026");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-027.owl#EGen-027");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-028.owl#EGen-028");
+		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-029.owl#EGen-029");
 		return ja;
 	}
 
@@ -109,21 +113,51 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		// copy existing result file from a previous simulation to the data bucket
 		//23-10-2019 copying not needed anymore
 //		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
+//		System.out.println("AgentLocator: " + source);
 //		File file = new File(source);
+//		System.out.println("QueryBroker: " + QueryBroker.getLocalDataPath());
 //		String destinationUrl = QueryBroker.getLocalDataPath() + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
 //		new QueryBroker().put(destinationUrl, file);
 //		
 //		// process the simulation result
-//		jo = new JSONObject();
-//		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-//		JPSContext.putScenarioUrl(jo, scenarioUrl);
-//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-//		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
-//		System.out.println("result from processsimulationresult=" + resultProcess);
+		jo = new JSONObject();
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
+		String resultProcess = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/processresult", jo.toString());
+		System.out.println("result from processsimulationresult=" + resultProcess);
 		jo = new JSONObject(resultStart);
 		assertEquals(4, jo.getJSONArray("plants").length());
 	}
+public void testCoordinateRetroFitNuclearDirectCall() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+	JSONArray ja = getSubstitutionalGenerators();
 	
+	JSONObject jo = new JSONObject();
+	jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
+	jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+	jo.put("substitutionalgenerators", ja);	
+	String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario"); 
+	JPSHttpServlet.enableScenario(scenarioUrl);	
+	new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+	
+	JPSContext.putScenarioUrl(jo, scenarioUrl);
+	String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
+	System.out.println(usecaseUrl);
+	//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
+	
+	
+	System.out.println("json input parameter=" + jo);
+	// start simulation (since parameter JPSConstants.SCENARIO_USE_CASE_URL is set, GAMS is not started)
+	String nuclearPowerPlants= AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
+	List<String> plants = MiscUtil.toList(new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
+	System.out.println("nuclear size= "+plants.size());
+	System.out.println(ja);
+
+	new RetrofitAgent().retrofit(TestEN.ELECTRICAL_NETWORK, plants,MiscUtil.toList(ja));
+	// generator for slack bus only, all other generators have been removed
+	//assertEquals(1, countgen); temporary as the gen cannot all been removed
+
+}
 	public void testcallNewNuclearAgentCSVInput() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {
 		JSONObject result = new JSONObject();
 		JSONArray ja = new JSONArray();
