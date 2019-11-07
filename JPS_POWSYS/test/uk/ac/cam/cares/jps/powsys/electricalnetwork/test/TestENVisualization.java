@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import javax.xml.transform.TransformerException;
@@ -158,12 +157,12 @@ public class TestENVisualization extends TestCase {
 		
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		jo.put("flag", "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario");
+//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createLineJS", jo.toString());
+//		jo = new JSONObject();
+//		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+//		jo.put("flag", "BASE");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createLineJS", jo.toString());
-		jo = new JSONObject();
-		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		jo.put("flag", "BASE");
-		resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createLineJS", jo.toString());
-		System.out.println("resultStart= "+resultStart);
+//		System.out.println("resultStart= "+resultStart);
 	}
 	public static void testcallVisualizationMarker() throws IOException  {
 

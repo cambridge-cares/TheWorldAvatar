@@ -111,7 +111,6 @@ public class ENVisualization extends JPSHttpServlet {
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
 			
-			String n=joforEN.getString("n");
 //			BufferedWriter bufferedWriter = null;
 			String b = null;
 //			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
@@ -709,6 +708,8 @@ public class ENVisualization extends JPSHttpServlet {
 					+ "}";
 			ResultSet resultSet2 = JenaHelper.query(model, busInfo);
 			String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
+			System.out.println(iri);
+			System.out.println(result2);
 			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
 			List<String[]> resultListbus1 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 			busdata.add(iri);

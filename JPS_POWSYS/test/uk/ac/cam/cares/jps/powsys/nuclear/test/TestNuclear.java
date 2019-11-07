@@ -99,8 +99,8 @@ public class TestNuclear extends TestCase {
 		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		
-//		jo.put(JPSConstants.RUN_SIMULATION, false);
-		jo.put(JPSConstants.RUN_SIMULATION, true);
+		jo.put(JPSConstants.RUN_SIMULATION, false);
+		//jo.put(JPSConstants.RUN_SIMULATION, true);
 		
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		

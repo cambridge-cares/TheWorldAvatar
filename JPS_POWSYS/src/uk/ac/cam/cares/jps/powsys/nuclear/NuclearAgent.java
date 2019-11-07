@@ -257,7 +257,9 @@ public class NuclearAgent extends JPSHttpServlet {
         if (runGams) {
         	runGAMS(baseUrl);
         }
-        //pseudoRunGAMS(baseUrl);
+        else {
+        pseudoRunGAMS(baseUrl);
+        }
 	}
 	
 	public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
