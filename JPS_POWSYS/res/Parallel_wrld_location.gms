@@ -164,7 +164,7 @@ objective..    z=e=sum((p,s),tr(p,s))+sum((p,e),tre(p,e))+ sum(s,AC(s))+sum(s,PC
 
 
 Model optim /all/;
-option minlp=baron,resLIM=18000,optCR=.8,decimals=6;
+option minlp=baron,resLIM=20000,optCR=.8,decimals=6;
 Solve optim using minlp minimizing z;
 
 File output /results.csv/;

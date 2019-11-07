@@ -354,12 +354,16 @@ public class NuclearAgent extends JPSHttpServlet {
 			x++;
 		}
 		System.out.println("sum replaced= "+sumcapreplaced);
+
+		/**nuclear should not be included in the remaining generator option since 7/11/19
 		String[]content2= new String[4];
 		content2[0]="n";
 		content2[1]=""+sumcapreplaced;
 		content2[2]="0.0";
 		content2[3]="0.0";
 		csvresult.add(content2);
+ 
+ */
 		 String s = MatrixConverter.fromArraytoCsv(csvresult);
 		 QueryBroker broker = new QueryBroker();
 		 broker.put(baseUrl + "/parameters_req_existing.csv", s);
