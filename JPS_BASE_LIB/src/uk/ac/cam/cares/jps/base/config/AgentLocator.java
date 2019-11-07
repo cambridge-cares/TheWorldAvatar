@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.StringTokenizer;
 
@@ -24,8 +25,8 @@ public class AgentLocator {
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
     private static final String[] SUBDIRECTORIES_FOR_COMPILED_CLASSES = new String[]{
-            "/WEB-INF/classes/", "\\WEB-INF\\classes", "/bin/", "\\bin\\", "/build/classes/", "\\build\\classes",
-            "/target/classes/", "\\target\\classes", "/target/test-classes/", "\\target\\test-classes"
+            "/WEB-INF/classes", "\\WEB-INF\\classes", "/bin", "\\bin", "/build/classes", "\\build\\classes",
+            "target/classes", "\\target\\classes", "target/test-classes", "\\target\\test-classes"
     };
     private String jpsBaseDirectory = null;
     private String url = null;
@@ -88,6 +89,9 @@ public class AgentLocator {
         }
         if (result == null) {
             result = path + "/../../../JPS_BASE";
+            if (!Files.isDirectory(Paths.get(result))) {
+                result = path + "/../../JPS_BASE";
+            }
         }
         return result;
     }
