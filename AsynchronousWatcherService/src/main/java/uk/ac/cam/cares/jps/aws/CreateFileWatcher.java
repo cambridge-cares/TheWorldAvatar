@@ -7,11 +7,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CreateFileWatcher extends Thread implements Watcher {
     private final File file;
+    private final int timeout;
     private AtomicBoolean stop = new AtomicBoolean(false);
     private WatcherCallback callback;
 
-    public CreateFileWatcher(File file) {
+    public CreateFileWatcher(File file, int timeout) {
         this.file = file;
+        this.timeout = timeout;
     }
 
     public boolean isStopped() {
@@ -36,6 +38,7 @@ public class CreateFileWatcher extends Thread implements Watcher {
     @Override
     public void run() {
         try {
+            long startTime = System.currentTimeMillis();
             WatchService watcher = FileSystems.getDefault().newWatchService();
             Path path = file.toPath().getParent();
             path.register(watcher, StandardWatchEventKinds.ENTRY_CREATE);
@@ -48,6 +51,9 @@ public class CreateFileWatcher extends Thread implements Watcher {
                     return;
                 }
                 if (key == null) {
+                    if (timeout < (System.currentTimeMillis() - startTime)) {
+                        stopThread();
+                    }
                     Thread.yield();
                     continue;
                 }
@@ -72,7 +78,12 @@ public class CreateFileWatcher extends Thread implements Watcher {
                         break;
                     }
                 }
+
                 Thread.yield();
+            }
+            if (isStopped()) {
+                watcher.close();
+                Thread.interrupted();
             }
         } catch (Throwable e) {
             e.printStackTrace();
