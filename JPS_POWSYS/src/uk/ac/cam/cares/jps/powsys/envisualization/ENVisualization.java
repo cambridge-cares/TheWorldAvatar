@@ -101,7 +101,6 @@ public class ENVisualization extends JPSHttpServlet {
 		logger.info("path called= "+path);
 		if ("/ENVisualization/createLineJS".equals(path)) {
 			String g=createLineJS(model);
-			System.out.println("check printout: "+ g);
 			AgentCaller.printToResponse(g, response);
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
@@ -499,13 +498,11 @@ public class ENVisualization extends JPSHttpServlet {
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(queryResult, keysplant);
 			if (resultList.size() == 0) { //temporary method just in case this generator does not have co2 emission
 				actual += 0;
-				System.out.println(generators.get(i)[0] +'\n');
 				actual += 0;
 				design += 0; 
 			}
 			else{
 				actual += Float.valueOf(resultList.get(0)[1]);
-				System.out.println(generators.get(i)[0] +'\n' +resultList.get(0)[1]+'\n' );
 				design += Float.valueOf(resultList.get(0)[2]);
 			}
 		}
@@ -584,7 +581,6 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			ResultSet resultSet = JenaHelper.query(model, genInfo);
 			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			System.out.println(result);
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			//used to get distinct emissions and fuel types
@@ -621,7 +617,6 @@ public class ENVisualization extends JPSHttpServlet {
 			for (int i=0; i<resultListfromquery.size(); i++) {
 				if (resultListfromquery.get(i)[0].contains("EGen-001")) continue;
 				String resultplant = broker.queryFile(resultListfromquery.get(i)[0],plantinfo);
-				System.out.println(resultplant);
 				String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
 				plantDict.add(resultList.get(0));
