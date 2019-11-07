@@ -173,10 +173,6 @@ public class ScenarioAgent extends HttpServlet {
 	 	
 		JSONObject joresult = new JSONObject();
 		if ((result != null) && !result.isEmpty()) {
-			char c = result.charAt(0);
-			if (c == '[') {
-				result = result.substring(1, result.length()-1);
-			}
 			joresult = new JSONObject(result);
 		}
 	 	
