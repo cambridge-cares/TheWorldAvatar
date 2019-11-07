@@ -38,7 +38,9 @@ public class NuclearKBCreator {
  
 	static Individual xaxis;
 	static Individual yaxis;
-		
+
+	public static final String GAMS_OUTPUT_FILENAME = "results.csv";
+
 	private OntClass nuclearpowerplantclass = null;
 	private OntClass CO2_emissionclass = null;
 	private OntClass coordinateclass = null;
@@ -130,8 +132,8 @@ public class NuclearKBCreator {
         String iriprefix = QueryBroker.getIriPrefix() + "/nuclearpowerplants/";
         
     	ArrayList<NuclearGenType> generatortype=extractInformationForGen(baseUrl + "/parameters_req.csv", "0","3");
-	    
-		String csvfileoutput = baseUrl + "/results.csv";
+
+		String csvfileoutput = baseUrl + "/" + GAMS_OUTPUT_FILENAME;
 //	   	IriMapper map2=new IriMapper();
 //	    List<IriMapping> original=map2.deserialize(csvfileoutput);
 	    	
