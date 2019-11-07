@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -100,6 +101,7 @@ public class ENVisualization extends JPSHttpServlet {
 		logger.info("path called= "+path);
 		if ("/ENVisualization/createLineJS".equals(path)) {
 			String g=createLineJS(model);
+			System.out.println("check printout: "+ g);
 			AgentCaller.printToResponse(g, response);
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
@@ -552,8 +554,10 @@ public class ENVisualization extends JPSHttpServlet {
 					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
 			textcomb.add(content);
 		}
-		
-		return textcomb.toString();
+		JSONArray jsArray = new JSONArray(textcomb);
+	    JSONObject jo = new JSONObject();
+	    jo.put("result", jsArray);
+		return jo.toString();
 	}
 	
 	public static List<String[]> queryPowerPlant(OntModel model) {
@@ -809,7 +813,10 @@ public class ENVisualization extends JPSHttpServlet {
 	    String content3="{\"coors\": [{\"lat\": "+1.27646+", \"lng\": "+103.7266+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
 	    textcomb.add(content2);
 	    textcomb.add(content3);
-	    return textcomb.toString();
+	    JSONArray jsArray = new JSONArray(textcomb);
+	    JSONObject jo = new JSONObject();
+	    jo.put("result", jsArray);
+	    return jo.toString();
 		
 	}
 

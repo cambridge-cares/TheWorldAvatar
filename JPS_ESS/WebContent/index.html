@@ -195,17 +195,15 @@
 					contentType: 'application/json; charset=utf-8'
 				});
 				var xmlhttp = new XMLHttpRequest();
-				xmlhttp.open("GET","outputBranchOPF.json",true);
-				xmlhttp.send();
-				txt = {};
 				xmlhttp.onreadystatechange = function(){
-					console.log(xmlhttp.status, xmlhttp.readyState);
 				if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
 					txt = xmlhttp.responseText;
 					txt = JSON.parse(txt);
 					console.log('DONE!');
 					}
 				};
+				xmlhttp.open("GET","localhost:8080/JPS_ESS/resources/outputBranchOPF.json",true);
+				xmlhttp.send();
 				request.done(function(data) {
 				
 				var obj0 = JSON.parse(data);
