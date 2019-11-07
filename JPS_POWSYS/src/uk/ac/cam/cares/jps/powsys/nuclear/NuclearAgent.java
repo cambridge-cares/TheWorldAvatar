@@ -1,5 +1,18 @@
 package uk.ac.cam.cares.jps.powsys.nuclear;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.ontology.OntModel;
@@ -7,9 +20,11 @@ import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -20,18 +35,6 @@ import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
 public class NuclearAgent extends JPSHttpServlet {
@@ -181,8 +184,8 @@ public class NuclearAgent extends JPSHttpServlet {
 				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
 				//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
 
-				responseParams = jo;*/
-                pseudoRunGAMS(dataPath + "/" + AGENT_TAG);
+				responseParams = jo;
+                pseudoRunGAMS(dataPath + "/" + AGENT_TAG);*/
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw new JPSRuntimeException(e.getMessage(), e);
@@ -203,7 +206,7 @@ public class NuclearAgent extends JPSHttpServlet {
                 jo.put("plants", plantsja);
 
                 // TODO-AE SC 20190913 replace hard-coded call back to coordination agent
-                //AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
+                AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
 
                 // no need to return jo or plants here; this is just for asserting the simulation result in a junit test
                 responseParams = jo;
