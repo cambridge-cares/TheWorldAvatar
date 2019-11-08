@@ -1,5 +1,5 @@
 var scenario;
-var prefix = "http://localhost:8080";
+var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
@@ -430,7 +430,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         }
         else if (predefinedId == '1') {
             kmlURL = anotherURL2;
-            scenario = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
+            scenario = "testCoordinateRetroFitNuclearAgentCall20";
             // appPrefix = prefix2;
         }
             
@@ -538,14 +538,23 @@ function drawMarkers(data){
         var fueltype = obj.fueltype;
         var name = obj.name;
         if (fueltype== "NaturalGasGeneration"){
-            icon = '/images/naturalgas.png';
+            var icon = {
+                url: '/images/icon2.png',
+                scaledSize : new google.maps.Size(80, 80),
+            };
             dict["gas"] += 1;
         }else if (fueltype== "OilGeneration"){
-            icon = '/images/oil.png';
+            var icon = {
+                url: '/images/icon1.png',
+                scaledSize : new google.maps.Size(80, 80),
+            };
             dict["oil"] += 1;
         }else{
             console.log(fueltype);
-            icon = '/images/radiation.png';
+            var icon = {
+                url: '/images/radiation.png', 
+                scaledSize : new google.maps.Size(80, 80),
+            };
             dict["nuclear"] += 1;
         }
         var marker = new google.maps.Marker({
@@ -557,7 +566,7 @@ function drawMarkers(data){
         markers.push(marker);
         }
         
-        numTypeGen = dict["nuclear"] + " Nuclear " + dict["oil"] + " Oil " + dict['gas'] +" Gas ";
+        numTypeGen = dict["nuclear"] + " Nuclear , " + dict["oil"] + " Oil , " + dict['gas'] +" Gas ";
     });
     }
     function clearMarkers() {
