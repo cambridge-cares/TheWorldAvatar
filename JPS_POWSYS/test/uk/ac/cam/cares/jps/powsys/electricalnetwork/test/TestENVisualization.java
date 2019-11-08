@@ -55,6 +55,7 @@ public class TestENVisualization extends TestCase {
 	public void testcallVisualizationLineJS() throws IOException  {
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENVisualization/createLineJS", jo.toString());
 		System.out.println("resultStart= "+resultStart);
 	}
