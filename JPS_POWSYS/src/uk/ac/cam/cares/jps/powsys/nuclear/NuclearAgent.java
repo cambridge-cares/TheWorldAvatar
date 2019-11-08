@@ -203,7 +203,7 @@ public class NuclearAgent extends JPSHttpServlet {
     public void startSimulation(String lotiri, String iriofnetwork, ArrayList<String> plantlist, String dataPath, boolean runGams) throws IOException, InterruptedException {
 
         String baseUrl = dataPath + "/" + AGENT_TAG;
-
+        System.out.println("go here datapath= "+baseUrl);
         logger.info("starting simulation for local path =" + baseUrl);
 
         QueryBroker broker = new QueryBroker();

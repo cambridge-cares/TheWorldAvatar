@@ -36,22 +36,18 @@ public class TestNuclear extends TestCase {
 		NuclearAgent agent = new NuclearAgent();
 		JSONObject jofornuc = new JSONObject();
 		JSONArray ja = new JSONArray();
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-006.owl#EGen-006");
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-007.owl#EGen-007");
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-016.owl#EGen-016");
-		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-017.owl#EGen-017");
-		jofornuc.put("substitutionalgenerators", ja);
+//		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-006.owl#EGen-006");
+//		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-007.owl#EGen-007");
+//		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-016.owl#EGen-016");
+//		ja.put("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-017.owl#EGen-017");
+		jofornuc.put("substitutionalgenerators", getSubstitutionalGenerators());
 		
 		String lotiri = "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl";
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
-		ArrayList<String> listofplant= new ArrayList<String>();
-		
-		for (int c=0;c<jofornuc.getJSONArray("substitutionalgenerators").length();c++) {
-			listofplant.add(jofornuc.getJSONArray("substitutionalgenerators").getString(c));
-		}
-		
-		agent.startSimulation(lotiri, iriofnetwork,listofplant, dataPath, false);
+		List<Object> listofplant=  jofornuc.getJSONArray("substitutionalgenerators").toList();
+		System.out.println(dataPath);
+		agent.startSimulation(lotiri, iriofnetwork,(ArrayList)listofplant, dataPath, false);
 		
 		// copy existing result file from a previous simulation to the data bucket 
 		String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results.csv";
