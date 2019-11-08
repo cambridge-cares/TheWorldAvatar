@@ -308,28 +308,39 @@ public class NuclearAgent extends JPSHttpServlet {
         List<String[]> csvresult = new ArrayList<String[]>();
 		String[]header= {"type","Co","x","y"}; //Co=capacity
         csvresult.add(header);
+       
+		while (x < resultList.size()) {
+			if (!plantlist.contains(resultList.get(x)[0])) { // has been switched to 0 instead of 1 cause we use
+																// generator scale
+				System.out.println("generator remains= " + resultList.get(x)[0]);
+				System.out.println("P max= " + resultList.get(x)[2]);
+				System.out.println("x= " + resultList.get(x)[3]);
+				System.out.println("y= " + resultList.get(x)[4]);
+				String[] content = new String[4];
+				content[0] = "c" + x;
+				content[1] = resultList.get(x)[2];
+				content[2] = resultList.get(x)[3];
+				content[3] = resultList.get(x)[4];
+				csvresult.add(content);
 
-        while (x < resultList.size()) {
-            if (!plantlist.contains(resultList.get(x)[0])) { //has been switched to 0 instead of 1 cause we use generator scale
-                System.out.println("generator remains= " + resultList.get(x)[0]);
-                System.out.println("P max= " + resultList.get(x)[2]);
-                System.out.println("x= " + resultList.get(x)[3]);
-                System.out.println("y= " + resultList.get(x)[4]);
-                String[] content = new String[4];
-                content[0] = "c" + x;
-                content[1] = resultList.get(x)[2];
-                content[2] = resultList.get(x)[3];
-                content[3] = resultList.get(x)[4];
-                csvresult.add(content);
+			} else {
+				sumcapreplaced = sumcapreplaced + Double.valueOf(resultList.get(x)[2]);
+			}
 
-            } else {
-                sumcapreplaced = sumcapreplaced + Double.valueOf(resultList.get(x)[2]);
-            }
+			x++;
+		}
+		if (csvresult.size() == 1) {
+			String[] content = new String[4];
+			content[0] = "c0";
+			content[1] = "0.00001";
+			content[2] = "0.00001";
+			content[3] = "0.00001";
+			csvresult.add(content);
+			//default value if all generators are removed
+		}
+            System.out.println("sum replaced= " + sumcapreplaced);
+        
 
-
-            x++;
-        }
-        System.out.println("sum replaced= " + sumcapreplaced);
         
 		/**nuclear should not be included in the remaining generator option since 7/11/19
 		String[]content2= new String[4];
