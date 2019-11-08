@@ -47,6 +47,7 @@ public class NuclearAgent extends JPSHttpServlet {
     private static final long serialVersionUID = -4199209974912271432L;
     public static final String AGENT_TAG = "GAMS_NuclearAgent";
     private String modelname="Parallel_wrld_location.gms";
+    
 
     public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
     	modifyTemplate(baseUrl, modelname);
@@ -138,6 +139,12 @@ public class NuclearAgent extends JPSHttpServlet {
         logger = LoggerFactory.getLogger(NuclearAgent.class);
         super.doHttpJPS(request, response);
     }
+    
+    @Override
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
+        logger = LoggerFactory.getLogger(NuclearAgent.class);
+        super.doHttpJPS(request, response);
+    }
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
@@ -204,6 +211,9 @@ public class NuclearAgent extends JPSHttpServlet {
 
         String baseUrl = dataPath + "/" + AGENT_TAG;
         System.out.println("go here datapath= "+baseUrl);
+        if (logger == null) {
+        	logger = LoggerFactory.getLogger(NuclearAgent.class);
+        }
         logger.info("starting simulation for local path =" + baseUrl);
 
         QueryBroker broker = new QueryBroker();

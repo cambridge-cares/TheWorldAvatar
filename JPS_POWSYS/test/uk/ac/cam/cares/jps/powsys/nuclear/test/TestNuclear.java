@@ -18,10 +18,8 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
-import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
-import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestNuclear extends TestCase {
 	
@@ -131,11 +129,11 @@ public void testCoordinateRetroFitNuclearDirectCall() throws NumberFormatExcepti
 	System.out.println("json input parameter=" + jo);
 	// start simulation (since parameter JPSConstants.SCENARIO_USE_CASE_URL is set, GAMS is not started)
 	String nuclearPowerPlants= AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
-	List<String> plants = MiscUtil.toList(new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
-	System.out.println("nuclear size= "+plants.size());
-	System.out.println(ja);
-
-	new RetrofitAgent().retrofit(TestEN.ELECTRICAL_NETWORK, plants,MiscUtil.toList(ja));
+//	List<String> plants = MiscUtil.toList(new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
+//	System.out.println("nuclear size= "+plants.size());
+//	System.out.println(ja);
+//
+//	new RetrofitAgent().retrofit(TestEN.ELECTRICAL_NETWORK, plants,MiscUtil.toList(ja));
 	// generator for slack bus only, all other generators have been removed
 	//assertEquals(1, countgen); temporary as the gen cannot all been removed
 
