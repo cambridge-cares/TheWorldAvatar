@@ -539,13 +539,13 @@ function drawMarkers(data){
         var name = obj.name;
         if (fueltype== "NaturalGasGeneration"){
             var icon = {
-                url: '/images/icon2.png',
+                url: '/images/naturalgas.png',
                 scaledSize : new google.maps.Size(80, 80),
             };
             dict["gas"] += 1;
         }else if (fueltype== "OilGeneration"){
             var icon = {
-                url: '/images/icon1.png',
+                url: '/images/oil.png',
                 scaledSize : new google.maps.Size(80, 80),
             };
             dict["oil"] += 1;

@@ -755,6 +755,9 @@ getIconByType: function (type, highlight) {
                 icons: [{
                     icon: lineSymbol,
                     offset: '100%'
+                },{
+                    icon: lineSymbol,
+                    offset: '100%'
                 },
                     {
                         icon: lineSymbol,
@@ -784,10 +787,9 @@ getIconByType: function (type, highlight) {
     animatedLines.forEach((line)=>
     {
         line.setMap(null);
-        line= null;
     })
 
-        animatedLines = []
+        this.animatedLines = []
     },
     animateLine : function (line) {
         var count = 0, step = 20;
