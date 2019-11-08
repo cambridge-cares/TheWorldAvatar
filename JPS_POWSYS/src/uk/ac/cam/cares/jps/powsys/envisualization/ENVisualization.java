@@ -103,7 +103,10 @@ public class ENVisualization extends JPSHttpServlet {
 			AgentCaller.printToResponse(g, response);
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
+			
+//			BufferedWriter bufferedWriter = null;
 			String flag = joforEN.getString("flag");
+			
 			String b = null;
 			String root = KeyValueManager.get(IKeys.ABSDIR_ROOT);
 			try (FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");

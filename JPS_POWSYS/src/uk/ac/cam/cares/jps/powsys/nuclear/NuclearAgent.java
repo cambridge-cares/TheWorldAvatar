@@ -1,30 +1,5 @@
 package uk.ac.cam.cares.jps.powsys.nuclear;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
-import uk.ac.cam.cares.jps.base.config.KeyValueMap;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
-import uk.ac.cam.cares.jps.powsys.util.Util;
-
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -32,6 +7,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = {"/NuclearAgent/startsimulation", "/NuclearAgent/processresult"})
 public class NuclearAgent extends JPSHttpServlet {
@@ -42,52 +46,47 @@ public class NuclearAgent extends JPSHttpServlet {
     public static final String KEY_CALLBACK_URL = "callback";
     private static final long serialVersionUID = -4199209974912271432L;
     public static final String AGENT_TAG = "GAMS_NuclearAgent";
-    private String modelname = "final.gms";
+    private String modelname="Parallel_wrld_location.gms";
 
-    public void runGAMSAsync() throws IOException, InterruptedException {
-        System.out.println("Start");
-        System.out.println("separator= " + File.separator);
+    public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
+    	modifyTemplate(baseUrl, modelname);
         String executablelocation = "C:/GAMS/win64/26.1/gams.exe";
-        //String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
-        String folderlocation = "C:/JPS_DATA/workingdir/JPS_POWSYS/";
-        String[] cmdArray = new String[5];
+        String folderlocation = baseUrl + "/";
+        String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
 
-        cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + "final.gms";
-        cmdArray[2] = "WDIR=" + folderlocation;
-        cmdArray[3] = "SCRDIR=" + folderlocation;
-        cmdArray[4] = "LO=2";
-//      cmdArray[2] = "WDIR="+folderlocation + "TMP";
-//      cmdArray[3] = "SCRDIR="+folderlocation + "TMP";
-
-        String cmdArrayinstring = cmdArray[0] + " " + cmdArray[1] + "," + cmdArray[2] + "," + cmdArray[3] + " " + cmdArray[4];
-
-        //System.out.println(cmdArrayinstring);
-        //Process p = Runtime.getRuntime().exec(cmdArray);
-        //p.waitFor();
-        String startbatCommand = "C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
-
-        ArrayList<String> groupcommand = new ArrayList<String>();
-        groupcommand.add("start");
-        groupcommand.add("C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat");
-
-        CommandHelper.executeSingleCommand(folderlocation, startbatCommand);
-//		CommandHelper.executeCommands(folderlocation, groupcommand);   
+        Process p = Runtime.getRuntime().exec(content); //used w/o waitFor() to be async
         System.out.println("Done");
     }
 
-    public void modifyTemplate(String newdir, String filename) throws IOException {
-        String destinationUrl = newdir + "/" + filename;
-        File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+	public void modifyTemplate(String newdir, String filename) throws IOException { 
+		String destinationUrl = newdir + "/"+filename;
+		String indicator = KeyValueManager.get(IKeys.LONG_NUCLEAR_GAMS);
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/res/"+filename);
+		if(indicator.contentEquals("true")) {
+			file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/res/ori/"+filename);
+			logger.info("it's running for the 30 hr!!!");
+		}
+		else {
+			logger.info("running for the 4 hr!");
+		}
+
+		
         String fileContext = FileUtils.readFileToString(file);
-        fileContext = fileContext.replaceAll("parameters_req.gdx", newdir + "/parameters_req.gdx");
-        fileContext = fileContext.replaceAll("constants_req.gdx", newdir + "/constants_req.gdx");
-
-        fileContext = fileContext.replaceAll("parameters_req.csv", newdir + "/parameters_req.csv output=" + newdir + "/parameters_req.gdx");
-        fileContext = fileContext.replaceAll("constants_req.csv", newdir + "/constants_req.csv output=" + newdir + "/constants_req.gdx");
-
-        new QueryBroker().put(destinationUrl, fileContext);
-    }
+        fileContext = fileContext.replaceAll("parameters_req_existing.gdx",newdir+"/parameters_req_existing.gdx");
+        fileContext = fileContext.replaceAll("parameters_req.gdx",newdir+"/parameters_req.gdx");
+        fileContext = fileContext.replaceAll("constants_req.gdx",newdir+"/constants_req.gdx");
+        fileContext = fileContext.replaceAll("inputlandlots.gdx",newdir+"/inputlandlots.gdx");
+        fileContext = fileContext.replaceAll("inputloadpoints.gdx",newdir+"/inputloadpoints.gdx");
+        
+        fileContext = fileContext.replaceAll("parameters_req_existing.csv",newdir+"/parameters_req_existing.csv output="+newdir+"/parameters_req_existing.gdx"); 
+        fileContext = fileContext.replaceAll("parameters_req.csv",newdir+"/parameters_req.csv output="+newdir+"/parameters_req.gdx");
+        fileContext = fileContext.replaceAll("constants_req.csv",newdir+"/constants_req.csv output="+newdir+"/constants_req.gdx");
+        fileContext = fileContext.replaceAll("inputlandlots.csv",newdir+"/inputlandlots.csv output="+newdir+"/inputlandlots.gdx");
+        fileContext = fileContext.replaceAll("inputloadpoints.csv",newdir+"/inputloadpoints.csv output="+newdir+"/inputloadpoints.gdx");
+       
+		
+		new QueryBroker().put(destinationUrl, fileContext);
+	}
 
 
     public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location
@@ -168,21 +167,6 @@ public class NuclearAgent extends JPSHttpServlet {
                 notifyWatcher(jofornuc, dataPath + "/" + AGENT_TAG + "/" + NuclearKBCreator.GAMS_OUTPUT_FILENAME,
                         request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 
-                //@todo: LKA refactoring
-				/*String scenarioUrl = BucketHelper.getScenarioUrl();
-				String usecaseUrl = BucketHelper.getUsecaseUrl();
-				logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
-
-				List<String> plants = processSimulationResult(dataPath);
-				JSONArray plantsja = new JSONArray(plants);
-				JSONObject jo = new JSONObject();
-				jo.put("plants", plantsja);
-				
-				// TODO-AE SC 20190913 replace hard-coded call back to coordination agent
-				//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
-
-				responseParams = jo;*/
-                pseudoRunGAMS(dataPath + "/" + AGENT_TAG);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 throw new JPSRuntimeException(e.getMessage(), e);
@@ -203,7 +187,7 @@ public class NuclearAgent extends JPSHttpServlet {
                 jo.put("plants", plantsja);
 
                 // TODO-AE SC 20190913 replace hard-coded call back to coordination agent
-                //AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
+                AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/processresult", jo.toString()); //no need to call back the coordination and retrofit agent
 
                 // no need to return jo or plants here; this is just for asserting the simulation result in a junit test
                 responseParams = jo;
@@ -219,7 +203,7 @@ public class NuclearAgent extends JPSHttpServlet {
     public void startSimulation(String lotiri, String iriofnetwork, ArrayList<String> plantlist, String dataPath, boolean runGams) throws IOException, InterruptedException {
 
         String baseUrl = dataPath + "/" + AGENT_TAG;
-
+        System.out.println("go here datapath= "+baseUrl);
         logger.info("starting simulation for local path =" + baseUrl);
 
         QueryBroker broker = new QueryBroker();
@@ -246,11 +230,13 @@ public class NuclearAgent extends JPSHttpServlet {
         prepareCSVPartialRemaining(plantlist, iriofnetwork, baseUrl);
         //-----------------------------------------5th input file finished-------------------------------------------------------------------
 
-        //@todo: LKA refactoring
-/*      if (runGams) {
-       	    runGAMS(baseUrl);
+        if (runGams) {
+        	//runGAMS(baseUrl);
+        	runGAMSAsync(baseUrl);
         }
-        pseudoRunGAMS(baseUrl);*/
+        else {
+        pseudoRunGAMS(baseUrl);
+        }
     }
 
     public List<String> processSimulationResult(String dataPath) throws NumberFormatException, IOException, URISyntaxException {
@@ -320,7 +306,7 @@ public class NuclearAgent extends JPSHttpServlet {
         int x = 0;
         double sumcapreplaced = 0;
         List<String[]> csvresult = new ArrayList<String[]>();
-        String[] header = {"type", "capacity", "x", "y"};
+		String[]header= {"type","Co","x","y"}; //Co=capacity
         csvresult.add(header);
 
         while (x < resultList.size()) {
@@ -344,15 +330,19 @@ public class NuclearAgent extends JPSHttpServlet {
             x++;
         }
         System.out.println("sum replaced= " + sumcapreplaced);
-        String[] content2 = new String[4];
-        content2[0] = "n";
-        content2[1] = "" + sumcapreplaced;
-        content2[2] = "0.0";
-        content2[3] = "0.0";
-        csvresult.add(content2);
+        
+		/**nuclear should not be included in the remaining generator option since 7/11/19
+		String[]content2= new String[4];
+		content2[0]="n";
+		content2[1]=""+sumcapreplaced;
+		content2[2]="0.0";
+		content2[3]="0.0";
+		csvresult.add(content2);
+ 
+ */
         String s = MatrixConverter.fromArraytoCsv(csvresult);
         QueryBroker broker = new QueryBroker();
-        broker.put(baseUrl + "/inputgeneratorselection.csv", s);
+		 broker.put(baseUrl + "/parameters_req_existing.csv", s);
 
     }
 
