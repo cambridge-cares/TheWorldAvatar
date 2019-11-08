@@ -36,7 +36,7 @@
     </a>
 		<h1 id="title">OntoKin</h1>
 		<p id="description">
-			A Knowledge Base built with the integration of semantic technologies and software agents for 
+			A knowledge-graph built with the integration of semantic technologies and software agents for 
 			enhancing the experience of chemists in querying chemical kinetic reaction 
 			mechanisms. This User Interface (UI) demonstrates the query capability of OntoKin.
 		</p>
@@ -200,7 +200,10 @@
 							<p></p>
 							<span id ="mechOnOrOff" style="">Clicking on a mechanism, its visualisation can be deactivated or activated.</span>
 							</div>
-							<div id="canvasBox" style="max-width:1000px; max-height:666px">
+<!-- 							<div id="canvasBox" style="max-width:550px; max-height:450px">
+								<canvas id="canvas" style="display:none"></canvas>
+							</div>
+ -->						<div id="canvasBox" style="max-width:1000px; max-height:666px">
 								<canvas id="canvas" style="display:none"></canvas>
 							</div>
 							<div id="canvasJMolKBox" style="max-width:1000px; max-height:666px">	
@@ -240,10 +243,6 @@
 								<canvas id="canvasSNoDimension" style="width:1000px; height:666px; display:none"></canvas>
 							</div>
 						</div>
-					   	<div id="chartCanvasRateAE" class="" style="display:none">
-							<canvas id="canvasRateAE" style="width:1000px !important; height:666px !important"></canvas>
-						</div>
-						<hr class="line !important;">
 					   	<div id="chartCanvasRatePEF" class="" style="display:none">
 							<canvas id="canvasRatePEF" style="width:1000px !important; height:666px !important"></canvas>
 						</div>
@@ -252,8 +251,12 @@
 							<canvas id="canvasRateTE" style="width:1000px !important; height:666px !important"></canvas>							
 						</div>
 					   	<hr class="line !important;">
+					   	<div id="chartCanvasRateAE" class="" style="display:none">
+							<canvas id="canvasRateAE" style="width:1000px !important; height:666px !important"></canvas>
+						</div>
+						<hr class="line !important;">
 					   	<div id="chartCanvasRateConstant" class="" style="display:none">
-							<canvas id="canvasRateConstant" style="width:1000px !important; height:800px !important"></canvas>
+							<canvas id="canvasRateConstant" style="width:1000px !important; height:666px !important"></canvas>
 						</div>
 					  </div>
 					</div>
@@ -318,7 +321,7 @@ $( function() {
 			interval = Math.ceil(interval / 100.0) * 100;
 			var temperatures = [];
 			var T;
-			for(T = 300; T <= 6000; T = T + 300){
+			for(T = 300; T <= 3000; T = T + 300){
 				temperatures.push(T);
 			}
 			return temperatures;
@@ -331,7 +334,7 @@ $( function() {
 			interval = Math.ceil(interval / 100.0) * 100;
 			var temperatures = [];
 			var T;
-			for(T = 6000; T >=300 ; T = T - 300){
+			for(T = 3000; T >=300 ; T = T - 300){
 				number = 1000 / T;
 				number = number.toFixed(2);
 				temperatures.push(number);
@@ -378,7 +381,7 @@ $( function() {
 		var T = 300;
 		var CpAllTemps = [];
 		if(aLow.length>=7 && aHigh.length>=7){
- 			for(T = 300; T <= 6000; T += 300){
+ 			for(T = 300; T <= 3000; T += 300){
  				if(T<midTemp){
 					Cp = R * (parseFloat(aLow[0]) + parseFloat(aLow[1]) * T + parseFloat(aLow[2]) * Math.pow(T, 2)  + parseFloat(aLow[3]) * Math.pow(T, 3) + parseFloat(aLow[4]) * Math.pow(T, 4));
 				} else{
@@ -396,7 +399,7 @@ $( function() {
 			var T = 300;
 			var HAllTemps = [];
 			if(aLow.length>=7 && aHigh.length>=7){
-	 			for(T = 300; T <= 6000; T += 300){
+	 			for(T = 300; T <= 3000; T += 300){
 	 				if(T<midTemp){
 						H = R * (parseFloat(aLow[0]) * T + parseFloat(aLow[1]) * Math.pow(T, 2) / 2 + parseFloat(aLow[2]) * Math.pow(T, 3) / 3  + parseFloat(aLow[3]) * Math.pow(T, 4) / 4 + parseFloat(aLow[4]) * Math.pow(T, 5) / 5 + parseFloat(aLow[5]));
 					} else{
@@ -414,7 +417,7 @@ $( function() {
 			var T = 300;
 			var SAllTemps = [];
 			if(aLow.length>=7 && aHigh.length>=7){
-	 			for(T = 300; T <= 6000; T += 300){
+	 			for(T = 300; T <= 3000; T += 300){
 	 				lnT = Math.log(T);
 					if(T<midTemp){
 						S = R * (parseFloat(aLow[0]) * lnT + parseFloat(aLow[1]) * T + parseFloat(aLow[2]) * Math.pow(T, 2) / 2  + parseFloat(aLow[3]) * Math.pow(T, 3) / 3 + parseFloat(aLow[4]) * Math.pow(T, 4) / 4 + parseFloat(aLow[6]));
@@ -430,7 +433,7 @@ $( function() {
 	 function calculateRateConstant(unitsR, A, b, E) {
 			let R = calculateR(unitsR);
 			var RateConstantAllTemps = [];
-	 			for(T = 300; T <= 6000; T += 300){
+	 			for(T = 300; T <= 3000; T += 300){
 					var x = 1000 / T; 
 	 				RC = A * Math.pow(1000 / x, b) * Math.exp(-E * x /(R * 1000));
 					RateConstantAllTemps.push(RC);
@@ -446,6 +449,25 @@ $( function() {
 		return str;
 	}
 
+	 function getSpeciesQueryPartPrimitive(str){
+		 let queryPart = '?SpeciesIRI rdfs:label \"' + str + '\" . ?SpeciesIRI rdfs:label ?SpeciesName . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+		    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
+		    '?MechanismIRI rdfs:label ?MechanismName .' + '\n';
+		 return queryPart;
+	 }
+	 
+	 function getSpeciesQueryPartComplex(str){
+			let queryPart = '?SpeciesIRI rdfs:label \"' + str + '\" . ?SpeciesIRI rdfs:label ?SpeciesName . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
+			'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
+			'?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
+		    '?SpeciesIRI ontokin:hasThermoModel ?ThermoModelIRI .' + '\n' +
+		    '?ThermoModelIRI ontokin:hasCoefficientValues ?CoefficientValues .' + '\n' +
+		    '?ThermoModelIRI ontokin:hasMinimumTemperature ?MinTemp .' + '\n' +
+		    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
+		    '?ThermoModelIRI ontokin:hasPressure  ?Pressure .' + '\n';
+			return queryPart;
+	 }
+	 
 	 function hideAllCanvas(){
 			$('#canvas').hide();
 			$('#canvasH').hide();
@@ -484,7 +506,6 @@ $( function() {
 	 });
 
 	 $('#querySelection').change(function(){ 
-		 console.log('In query selection');	
 		 var value = $(this).val();
 			if (value == '-1') {
 				$('#queryText').text("Select a query type (above)");
@@ -608,18 +629,35 @@ $( function() {
 				'} ';
 								
 			} else if (search_querySelection == 'mechforS' && !(search_term_name.indexOf('=') > -1)) {			 
-			 
+			 	if(search_term_name.indexOf('C6H6') > -1 || search_term_name.indexOf('A1') > -1 || search_term_name.indexOf('A1-C6H6') > -1){
+					queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+				 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+					'PREFIX ontokin:' + '\n' +
+					'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+					'SELECT ?MechanismName ?SpeciesName ?MechanismIRI' + '\n' +
+					'WHERE {{' + '\n' +
+						getSpeciesQueryPartPrimitive('C6H6') + '\n' +
+					'} ' + '\n' +
+					'UNION' + '\n' +
+					'{' + '\n' +
+						getSpeciesQueryPartPrimitive('A1') + '\n' +
+					'} ' + '\n' +
+					'UNION' + '\n' +
+					'{' + '\n' +
+						getSpeciesQueryPartPrimitive('A1-C6H6') + '\n' +
+					'} ' + '\n' +
+					'}';
+					
+			 	} else{
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?MechanismIRI' + '\n' +
+				'SELECT ?MechanismName ?SpeciesName ?MechanismIRI' + '\n' +
 				'WHERE {' + '\n' +
-					'?Species rdfs:label \"' + search_term_name + '\" . ?Species ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
-				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
-				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
-				'} ';
-								
+					getSpeciesQueryPartPrimitive(search_term_name) + '\n' +
+				'} ';			 	
+			 	}
 			} else if (search_querySelection == 'mechforR' && search_term_name.indexOf('=') > -1 && reactantArray.length == 2 && productArray.length == 2) {
 			 
 			    let p1 = productArray[0].trim();
@@ -683,39 +721,64 @@ $( function() {
 			    	'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
  				'}';
 			} else if(search_querySelection == 'thermo') {
-			 
+			 	if(search_term_name.indexOf('C6H6') > -1 || search_term_name.indexOf('A1') > -1 || search_term_name.indexOf('A1-C6H6') > -1){
+					queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+				 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+					'PREFIX ontokin:' + '\n' +
+					'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+					'SELECT ?MechanismName ?SpeciesName ?CoefficientValues ?MinTemp ?MaxTemp ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI' + '\n' +
+					'WHERE {{' + '\n' +
+						getSpeciesQueryPartComplex('C6H6') + '\n' +
+					'} ' + '\n' +
+					'UNION' + '\n' +
+					'{' + '\n' +
+						getSpeciesQueryPartComplex('A1') + '\n' +
+					'} ' + '\n' +
+					'UNION' + '\n' +
+					'{' + '\n' +
+						getSpeciesQueryPartComplex('A1-C6H6') + '\n' +
+					'} ' + '\n' +
+					'}';
+					
+			 	} else{
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
-				'SELECT ?MechanismName ?CoefficientValues ?MinTemp ?MaxTemp ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI' + '\n' +
+				'SELECT ?MechanismName ?SpeciesName ?CoefficientValues ?MinTemp ?MaxTemp ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI' + '\n' +
 				'WHERE {' + '\n' +
-					'?SpeciesIRI rdfs:label \"' + search_term_name + '\" . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
-					'?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
-					'?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
-				    '?SpeciesIRI ontokin:hasThermoModel ?ThermoModelIRI .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasCoefficientValues ?CoefficientValues .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasMinimumTemperature ?MinTemp .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
+					getSpeciesQueryPartComplex(search_term_name) + '\n' +
 				'} ';
-				
+			 	}
 			} else if(search_querySelection == 'compthermo') {
-			 
+				if(search_term_name.indexOf('C6H6') > -1 || search_term_name.indexOf('A1') > -1 || search_term_name.indexOf('A1-C6H6') > -1){
+					queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
+				 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
+					'PREFIX ontokin:' + '\n' +
+					'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
+					'SELECT ?MechanismName ?SpeciesName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp ?Pressure' + '\n' +
+					'WHERE {{' + '\n' +
+						getSpeciesQueryPartComplex('C6H6') + '\n' +
+					'} ' + '\n' +
+					'UNION' + '\n' +
+					'{' + '\n' +
+						getSpeciesQueryPartComplex('A1') + '\n' +
+					'} ' + '\n' +
+					'UNION' + '\n' +
+					'{' + '\n' +
+						getSpeciesQueryPartComplex('A1-C6H6') + '\n' +
+					'} ' + '\n' +
+					'}';
+				} else {
 				queryString = 'PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>' + '\n' +
 			 	'PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>' + '\n' + 
 				'PREFIX ontokin:' + '\n' +
 				'<http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>'+ '\n' +
 				'SELECT ?MechanismName ?MechanismIRI ?SpeciesIRI ?ThermoModelIRI ?CoefficientValues ?MinTemp ?MaxTemp ?Pressure' + '\n' +
 				'WHERE {' + '\n' +
-					'?SpeciesIRI rdfs:label \"' + search_term_name + '\" . ?SpeciesIRI ontokin:belongsToPhase ?Phase . ?Phase ontokin:containedIn ?MechanismIRI .'+ '\n' +
-				    '?MechanismIRI rdf:type ontokin:ReactionMechanism .' + '\n' +
-				    '?MechanismIRI rdfs:label ?MechanismName .' + '\n' +
-				    '?SpeciesIRI ontokin:hasThermoModel ?ThermoModelIRI .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasCoefficientValues ?CoefficientValues .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasMinimumTemperature ?MinTemp .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasMaximumTemperature  ?MaxTemp .' + '\n' +
-				    '?ThermoModelIRI ontokin:hasPressure  ?Pressure .' + '\n' +
+					getSpeciesQueryPartComplex(search_term_name) + '\n' +
 	 				'}';
+				}
 			} else if(search_querySelection == 'rateconstant' && reactantArray.length == 2 && productArray.length == 2) {
 			    let p1 = productArray[0].trim();
 			    let p2 = productArray[1].trim();
@@ -1089,6 +1152,11 @@ $( function() {
 					        		chartLabel.push(formatLabel(row) + ' (LTR)');
 					        	}
 					        	
+					        } else if (i == 'SpeciesName') {
+					        	if(countCoeffSequence % 2 == 0){
+					        		chartLabelMech = chartLabelMech + ':' +row;
+					        	}
+					        	
 					        } else if (i == 'Pressure') {
 					        	pressure.push(row);
 					        }
@@ -1100,7 +1168,7 @@ $( function() {
 						        	ef.push(row);
 						        	preExponentialFactor = row;
 						        } else if (i == 'TempExponent') {
-						        	te.push(row);
+						        	te.push('    '+row);
 						        	temperatureExponent = row;
 						        } else if (i == 'MechanismName') {
 						        		chartLabelRate.push(formatLabel(row));
@@ -1214,6 +1282,7 @@ $( function() {
 							var RCJMolK = calculateRateConstant('jmolk', parseFloat(preExponentialFactor), parseFloat(temperatureExponent), parseFloat(activationEnergy));
 							datasetsRCJMolK.push({
 								label: chartLabelMechRateConstant,
+								fontSize: 12,
 								backgroundColor: color,
 								borderColor: color,
 								data: RCJMolK,
@@ -1226,7 +1295,7 @@ $( function() {
 						} 
 						
  						if(countCoeffSequence >= resultArray.length && (search_querySelection == 'comparerate' || search_querySelection == 'comparerateAnyOrder')){
-							chartLabelsRate = get1000OverTemperatures(300, 6000);
+							chartLabelsRate = get1000OverTemperatures(300, 3000);
 						} 
  						
 						if (search_querySelection != 'compthermo' && search_querySelection != 'comparerate' && search_querySelection != 'comparerateAnyOrder') {
@@ -1294,9 +1363,11 @@ $( function() {
 									},
 									options: {
 										responsive: true,
+										legend:{labels:{fontSize: 12}},
 										title: {
 											display: true,
-											text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
+											text: 'Heat capacity at constant pressure evaluated as a function of temperature.',
+											fontSize: 12
 										},
 										tooltips: {
 											mode: 'index',
@@ -1308,17 +1379,25 @@ $( function() {
 										},
 										scales: {
 											xAxes: [{
+												ticks: {
+									                fontSize: 12
+									            },
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Temperature (K)'
+													labelString: 'Temperature (K)',
+													fontSize: 12
 												}
 											}],
 											yAxes: [{
+												ticks: {
+									                fontSize: 12
+									            },
 												display: true,
 												scaleLabel: {
 													display: true,
-													labelString: 'Cp (kcal / K)'
+													labelString: 'Cp (kcal / K)',
+													fontSize: 12
 												}
 											}]
 										}
@@ -1336,9 +1415,11 @@ $( function() {
 										},
 										options: {
 											responsive: true,
+											legend:{labels:{fontSize: 12}},
 											title: {
 												display: true,
-												text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
+												text: 'Heat capacity at constant pressure evaluated as a function of temperature.',
+												fontSize: 12
 											},
 											tooltips: {
 												mode: 'index',
@@ -1350,17 +1431,25 @@ $( function() {
 											},
 											scales: {
 												xAxes: [{
+													ticks: {
+										                fontSize: 12
+										            },
 													display: true,
 													scaleLabel: {
 														display: true,
-														labelString: 'Temperature (K)'
+														labelString: 'Temperature (K)',
+														fontSize: 12
 													}
 												}],
 												yAxes: [{
+													ticks: {
+										                fontSize: 12
+										            },
 													display: true,
 													scaleLabel: {
 														display: true,
-														labelString: 'Cp (J / K)'
+														labelString: 'Cp (J / K)',
+														fontSize: 12
 													}
 												}]
 											}
@@ -1378,9 +1467,11 @@ $( function() {
 											},
 											options: {
 												responsive: true,
+												legend:{labels:{fontSize: 12}},
 												title: {
 													display: true,
-													text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
+													text: 'Heat capacity at constant pressure evaluated as a function of temperature.',
+													fontSize: 12
 												},
 												tooltips: {
 													mode: 'index',
@@ -1392,18 +1483,26 @@ $( function() {
 												},
 												scales: {
 													xAxes: [{
+														ticks: {
+											                fontSize: 12
+											            },
 														display: true,
 														scaleLabel: {
 															display: true,
-															labelString: 'Temperature (K)'
+															labelString: 'Temperature (K)',
+															fontSize: 12
 														}
 													}],
 													yAxes: [{
+														ticks: {
+											                fontSize: 12
+											            },
 														type: 'logarithmic',														
 														display: true,
 														scaleLabel: {
 															display: true,
-															labelString: 'Cp (erg / K)'
+															labelString: 'Cp (erg / K)',
+															fontSize: 12
 														}
 													}]
 												}
@@ -1421,9 +1520,11 @@ $( function() {
 												},
 												options: {
 													responsive: true,
+													legend:{labels:{fontSize: 12}},
 													title: {
 														display: true,
-														text: 'Heat capacity at constant pressure evaluated as a function of temperature.'
+														text: 'Heat capacity at constant pressure evaluated as a function of temperature.',
+														fontSize: 12
 													},
 													tooltips: {
 														mode: 'index',
@@ -1435,18 +1536,26 @@ $( function() {
 													},
 													scales: {
 														xAxes: [{
+															ticks: {
+												                fontSize: 12
+												            },
 															display: true,
 															scaleLabel: {
 																display: true,
-																labelString: 'Temperature (K)'
+																labelString: 'Temperature (K)',
+																fontSize: 12
 															}
 														}],
 														yAxes: [{
+															ticks: {
+												                fontSize: 12
+												            },
 															type: 'logarithmic',
 															display: true,
 															scaleLabel: {
 																display: true,
-																labelString: 'Cp (-)'
+																labelString: 'Cp (-)',
+																fontSize: 12
 															}
 														}]
 													}
@@ -1464,9 +1573,11 @@ $( function() {
 													},
 													options: {
 														responsive: true,
+														legend:{labels:{fontSize: 12}},
 														title: {
 															display: true,
-															text: 'Enthalpy evaluated as a function of temperature.'
+															text: 'Enthalpy evaluated as a function of temperature.',
+															fontSize: 12
 														},
 														tooltips: {
 															mode: 'index',
@@ -1478,17 +1589,25 @@ $( function() {
 														},
 														scales: {
 															xAxes: [{
+																ticks: {
+													                fontSize: 12
+													            },
 																display: true,
 																scaleLabel: {
 																	display: true,
-																	labelString: 'Temperature (K)'
+																	labelString: 'Temperature (K)',
+																	fontSize: 12
 																}
 															}],
 															yAxes: [{
+																ticks: {
+													                fontSize: 12
+													            },
 																display: true,
 																scaleLabel: {
 																	display: true,
-																	labelString: 'H (kcal)'
+																	labelString: 'H (kcal)',
+																	fontSize: 12
 																}
 															}]
 														}
@@ -1506,9 +1625,11 @@ $( function() {
 														},
 														options: {
 															responsive: true,
+															legend:{labels:{fontSize: 12}},
 															title: {
 																display: true,
-																text: 'Enthalpy evaluated as a function of temperature.'
+																text: 'Enthalpy evaluated as a function of temperature.',
+																fontSize: 12
 															},
 															tooltips: {
 																mode: 'index',
@@ -1520,17 +1641,25 @@ $( function() {
 															},
 															scales: {
 																xAxes: [{
+																	ticks: {
+														                fontSize: 12
+														            },
 																	display: true,
 																	scaleLabel: {
 																		display: true,
-																		labelString: 'Temperature (K)'
+																		labelString: 'Temperature (K)',
+																		fontSize: 12
 																	}
 																}],
 																yAxes: [{
+																	ticks: {
+														                fontSize: 12
+														            },
 																	display: true,
 																	scaleLabel: {
 																		display: true,
-																		labelString: 'H (J)'
+																		labelString: 'H (J)',
+																		fontSize: 12
 																	}
 																}]
 															}
@@ -1548,9 +1677,11 @@ $( function() {
 															},
 															options: {
 																responsive: true,
+																legend:{labels:{fontSize: 12}},
 																title: {
 																	display: true,
-																	text: 'Enthalpy evaluated as a function of temperature.'
+																	text: 'Enthalpy evaluated as a function of temperature.',
+																	fontSize: 12
 																},
 																tooltips: {
 																	mode: 'index',
@@ -1562,18 +1693,26 @@ $( function() {
 																},
 																scales: {
 																	xAxes: [{
+																		ticks: {
+															                fontSize: 12
+															            },
 																		display: true,
 																		scaleLabel: {
 																			display: true,
-																			labelString: 'Temperature (K)'
+																			labelString: 'Temperature (K)',
+																			fontSize: 12
 																		}
 																	}],
 																	yAxes: [{
+																		ticks: {
+															                fontSize: 12
+															            },
 																		type: 'logarithmic',														
 																		display: true,
 																		scaleLabel: {
 																			display: true,
-																			labelString: 'H (erg)'
+																			labelString: 'H (erg)',
+																			fontSize: 12
 																		}
 																	}]
 																}
@@ -1591,9 +1730,11 @@ $( function() {
 																},
 																options: {
 																	responsive: true,
+																	legend:{labels:{fontSize: 12}},
 																	title: {
 																		display: true,
-																		text: 'Enthalpy evaluated as a function of temperature.'
+																		text: 'Enthalpy evaluated as a function of temperature.',
+																		fontSize: 12
 																	},
 																	tooltips: {
 																		mode: 'index',
@@ -1605,18 +1746,26 @@ $( function() {
 																	},
 																	scales: {
 																		xAxes: [{
+																			ticks: {
+																                fontSize: 12
+																            },
 																			display: true,
 																			scaleLabel: {
 																				display: true,
-																				labelString: 'Temperature (K)'
+																				labelString: 'Temperature (K)',
+																				fontSize: 12
 																			}
 																		}],
 																		yAxes: [{
+																			ticks: {
+																                fontSize: 12
+																            },
 																			type: 'logarithmic',
 																			display: true,
 																			scaleLabel: {
 																				display: true,
-																				labelString: 'H (-)'
+																				labelString: 'H (-)',
+																				fontSize: 12
 																			}
 																		}]
 																	}
@@ -1635,9 +1784,11 @@ $( function() {
 																	},
 																	options: {
 																		responsive: true,
+																		legend:{labels:{fontSize: 12}},
 																		title: {
 																			display: true,
-																			text: 'Entropy evaluated as a function of temperature.'
+																			text: 'Entropy evaluated as a function of temperature.',
+																			fontSize: 12
 																		},
 																		tooltips: {
 																			mode: 'index',
@@ -1649,17 +1800,25 @@ $( function() {
 																		},
 																		scales: {
 																			xAxes: [{
+																				ticks: {
+																	                fontSize: 12
+																	            },
 																				display: true,
 																				scaleLabel: {
 																					display: true,
-																					labelString: 'Temperature (K)'
+																					labelString: 'Temperature (K)',
+																					fontSize: 12
 																				}
 																			}],
 																			yAxes: [{
+																				ticks: {
+																	                fontSize: 12
+																	            },
 																				display: true,
 																				scaleLabel: {
 																					display: true,
-																					labelString: 'S (kcal / K)'
+																					labelString: 'S (kcal / K)',
+																					fontSize: 12
 																				}
 																			}]
 																		}
@@ -1677,9 +1836,11 @@ $( function() {
 																		},
 																		options: {
 																			responsive: true,
+																			legend:{labels:{fontSize: 12}},
 																			title: {
 																				display: true,
-																				text: 'Entropy evaluated as a function of temperature.'
+																				text: 'Entropy evaluated as a function of temperature.',
+																				fontSize: 12
 																			},
 																			tooltips: {
 																				mode: 'index',
@@ -1691,17 +1852,25 @@ $( function() {
 																			},
 																			scales: {
 																				xAxes: [{
+																					ticks: {
+																		                fontSize: 12
+																		            },
 																					display: true,
 																					scaleLabel: {
 																						display: true,
-																						labelString: 'Temperature (K)'
+																						labelString: 'Temperature (K)',
+																						fontSize: 12
 																					}
 																				}],
 																				yAxes: [{
+																					ticks: {
+																		                fontSize: 12
+																		            },
 																					display: true,
 																					scaleLabel: {
 																						display: true,
-																						labelString: 'S (J / K)'
+																						labelString: 'S (J / K)',
+																						fontSize: 12
 																					}
 																				}]
 																			}
@@ -1719,9 +1888,11 @@ $( function() {
 																			},
 																			options: {
 																				responsive: true,
+																				legend:{labels:{fontSize: 12}},
 																				title: {
 																					display: true,
-																					text: 'Entropy evaluated as a function of temperature.'
+																					text: 'Entropy evaluated as a function of temperature.',
+																					fontSize: 12
 																				},
 																				tooltips: {
 																					mode: 'index',
@@ -1733,18 +1904,26 @@ $( function() {
 																				},
 																				scales: {
 																					xAxes: [{
+																						ticks: {
+																			                fontSize: 12
+																			            },
 																						display: true,
 																						scaleLabel: {
 																							display: true,
-																							labelString: 'Temperature (K)'
+																							labelString: 'Temperature (K)',
+																							fontSize: 12
 																						}
 																					}],
 																					yAxes: [{
+																						ticks: {
+																			                fontSize: 12
+																			            },
 																						type: 'logarithmic',														
 																						display: true,
 																						scaleLabel: {
 																							display: true,
-																							labelString: 'S (erg / K)'
+																							labelString: 'S (erg / K)',
+																							fontSize: 12
 																						}
 																					}]
 																				}
@@ -1762,9 +1941,11 @@ $( function() {
 																				},
 																				options: {
 																					responsive: true,
+																					legend:{labels:{fontSize: 12}},
 																					title: {
 																						display: true,
-																						text: 'Entropy evaluated as a function of temperature.'
+																						text: 'Entropy evaluated as a function of temperature.',
+																						fontSize: 12
 																					},
 																					tooltips: {
 																						mode: 'index',
@@ -1776,18 +1957,26 @@ $( function() {
 																					},
 																					scales: {
 																						xAxes: [{
+																							ticks: {
+																				                fontSize: 12
+																				            },
 																							display: true,
 																							scaleLabel: {
 																								display: true,
-																								labelString: 'Temperature (K)'
+																								labelString: 'Temperature (K)',
+																								fontSize: 12
 																							}
 																						}],
 																						yAxes: [{
+																							ticks: {
+																				                fontSize: 12
+																				            },
 																							type: 'logarithmic',
 																							display: true,
 																							scaleLabel: {
 																								display: true,
-																								labelString: 'S (-)'
+																								labelString: 'S (-)',
+																								fontSize: 12
 																							}
 																						}]
 																					}
@@ -1808,77 +1997,34 @@ $( function() {
 							$("canvas#canvasRateAE").remove();
 							$("canvas#canvasRatePEF").remove();
 							$("canvas#canvasRateTE").remove();
-							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
 							$("div#chartCanvasRatePEF").append('<canvas id="canvasRatePEF" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
 							$("div#chartCanvasRateTE").append('<canvas id="canvasRateTE" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
-							$("div#chartCanvasRateConstant").append('<canvas id="canvasRateConstant" class="animated fadeIn" style="width:1000px !important; height:800px !important"></canvas>');
-							var configAE = {
-									type: 'line',
-									data: {
-										labels: chartLabelRate,
-										datasets: [{
-											label: 'Activation Energy',
-											backgroundColor: window.chartColors.red,
-											borderColor: window.chartColors.red,
-											data: ae,
-											fill: false,
-										}
-										]
-									},
-									options: {
-										responsive: true,
-										title: {
-											display: true,
-											text: ['Activation Energy for the Given Reaction across Mechanisms.']
-										},
-										tooltips: {
-											mode: 'index',
-											intersect: false,
-										},
-										hover: {
-											mode: 'nearest',
-											intersect: true
-										},
-										scales: {
-											xAxes: [{
-												display: true,
-												scaleLabel: {
-													display: true,
-													labelString: 'Mechanism'
-												}
-											}],
-											yAxes: [{
-												display: true,
-												scaleLabel: {
-													display: true,
-													labelString: 'Activation Energy (J / mol)'
-												}
-											}]
-										}
-									}
-								};
+							$("div#chartCanvasRateAE").append('<canvas id="canvasRateAE" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
+							$("div#chartCanvasRateConstant").append('<canvas id="canvasRateConstant" class="animated fadeIn" style="width:1000px !important; height:666px !important"></canvas>');
 
-								var ctxAE = document.getElementById('canvasRateAE').getContext('2d');
-								var myChartAE = new Chart(ctxAE, configAE);
-
-								var configPEF = {
+							var configPEF = {
 										type: 'line',
 										data: {
 											labels: chartLabelRate,
 											datasets: [{
-												label: 'Pre-exponential Factor',
+												/*label: 'Pre-exponential Factor',
+												fontSize: 12,*/
 												fill: false,
 												backgroundColor: window.chartColors.blue,
 												borderColor: window.chartColors.blue,
 												data: ef,
+												showLine: false,
 											}
 											]
 										},
 										options: {
 											responsive: true,
+											//legend:{labels:{fontSize: 12}, display:false},
+											legend:{display:false},
 											title: {
 												display: true,
-												text: ['Pre-exponential Factor for the Given Reaction across Mechanisms.']
+												text: ['Pre-exponential Factor for the Given Reaction across Mechanisms.'],
+												fontSize: 12
 											},
 											tooltips: {
 												mode: 'index',
@@ -1890,17 +2036,43 @@ $( function() {
 											},
 											scales: {
 												xAxes: [{
+													ticks: {
+										                fontSize: 12
+										            },
 													display: true,
 													scaleLabel: {
 														display: true,
-														labelString: 'Mechanism'
+														labelString: 'Mechanism',
+														fontSize: 12
 													}
 												}],
 												yAxes: [{
-													display: true,
+													ticks: {
+										                fontSize: 12,
+										                /*callback: function(value, index, values) {
+															if ( value == 1000   ) {
+																return '1e+3';	
+															} else if ( value == 100   ) {
+																return '1e+2';	
+															} else if ( value == 10   ) {
+																return '1e+1';	
+															} else if ( value == 1   ) {
+																return '1e+0';	
+															} else if ( value == 0.1   ) {
+																return '1e-1';	
+															} else if ( value == 0.01   ) {
+																return '1e-2';	
+															} else if ( value == 0.001   ) {
+																return '1e-3';	
+															}						
+														}*/
+										            },
+										            type: 'logarithmic',
+										            display: true,
 													scaleLabel: {
 														display: true,
-														labelString: 'Pre-exponential Factor (m3 / mol / s)'
+														labelString: 'Pre-exponential Factor (m3/mol/s)',
+														fontSize: 12
 													}
 												}]
 											}
@@ -1915,19 +2087,23 @@ $( function() {
 											data: {
 												labels: chartLabelRate,
 												datasets: [{
-													label: 'Temperature Exponent',
+													/*label: 'Temperature Exponent',
+													fontSize: 12,*/
 													fill: false,
 													backgroundColor: window.chartColors.orange,
 													borderColor: window.chartColors.orange,
 													data: te,
+													showLine: false,
 												}
 												]
 											},
 											options: {
 												responsive: true,
+												legend:{display:false},
 												title: {
 													display: true,
-													text: ['Temperature Exponent for the Given Reaction across Mechanisms.']
+													text: ['Temperature Exponent for the Given Reaction across Mechanisms.'],
+													fontSize: 12
 												},
 												tooltips: {
 													mode: 'index',
@@ -1939,17 +2115,25 @@ $( function() {
 												},
 												scales: {
 													xAxes: [{
+														ticks: {
+											                fontSize: 12
+											            },
 														display: true,
 														scaleLabel: {
 															display: true,
-															labelString: 'Mechanism'
+															labelString: 'Mechanism',
+															fontSize: 12
 														}
 													}],
 													yAxes: [{
+														ticks: {
+											                fontSize: 12
+											            },
 														display: true,
 														scaleLabel: {
 															display: true,
-															labelString: 'Temperature Exponent'
+															labelString: 'Temperature Exponent (-)',
+															fontSize: 12
 														}
 													}]
 												}
@@ -1959,48 +2143,139 @@ $( function() {
 										var ctxTE = document.getElementById('canvasRateTE').getContext('2d');
 										var myChartTE = new Chart(ctxTE, configTE);
 
-							var configRateConstant = {
-									type: 'line',
-									data: {
-										labels: chartLabelsRate,
-										datasets: datasetsRCJMolK
-									},
-									options: {
-										responsive: true,
-										title: {
-											display: true,
-											text: ['Rate constant evaluated as a function of temperature.']
-										},
-										tooltips: {
-											mode: 'index',
-											intersect: false,
-										},
-										hover: {
-											mode: 'nearest',
-											intersect: true
-										},
-										scales: {
-											xAxes: [{
-												display: true,
-												scaleLabel: {
-													display: true,
-													labelString: '1000 K / T (-)'
+										var configAE = {
+												type: 'line',
+												data: {
+													labels: chartLabelRate,
+													datasets: [{
+														/*label: 'Activation Energy',
+														fontSize: 12,*/
+														backgroundColor: window.chartColors.red,
+														borderColor: window.chartColors.red,
+														data: ae,
+														fill: false,
+														showLine: false,
+													}
+													]
+												},
+												options: {
+													responsive: true,
+													legend:{display:false},
+													title: {
+														display: true,
+														text: ['Activation Energy for the Given Reaction across Mechanisms.'],
+												        fontSize: 12
+													},
+													tooltips: {
+														mode: 'index',
+														intersect: false,
+													},
+													hover: {
+														mode: 'nearest',
+														intersect: true
+													},
+													scales: {
+														xAxes: [{
+															ticks: {
+												                fontSize: 12
+												            },
+															display: true,
+															scaleLabel: {
+																display: true,
+																labelString: 'Mechanism',
+																fontSize: 12
+															}
+														}],
+														yAxes: [{
+															ticks: {
+												                fontSize: 12,
+/* 									                            min: 25800,
+									                            max: 27300,
+																stepSize: 300 */
+												            },
+															display: true,
+															scaleLabel: {
+																display: true,
+																labelString: 'Activation Energy (J / mol)',
+																fontSize: 12
+															}
+														}]
+													}
 												}
-											}],
-											yAxes: [{
-												type: 'logarithmic',
-												display: true,
-												scaleLabel: {
-													display: true,
-													labelString: 'Rate Constant (m3 / mol / s)'
-												}
-											}]
-										}
-									}
-								};
+											};
 
-								var ctxRateConstant = document.getElementById('canvasRateConstant').getContext('2d');
-								var myChartRateConstant = new Chart(ctxRateConstant, configRateConstant);
+											var ctxAE = document.getElementById('canvasRateAE').getContext('2d');
+											var myChartAE = new Chart(ctxAE, configAE);
+											
+											var configRateConstant = {
+													type: 'line',
+													data: {
+														labels: chartLabelsRate,
+														datasets: datasetsRCJMolK
+													},
+													options: {
+														responsive: true,
+														/*legend:{position: 'right'},*/
+														title: {
+															display: true,
+															text: ['Rate constant evaluated as a function of temperature.'],
+															fontSize: 12
+														},
+														tooltips: {
+															mode: 'index',
+															intersect: false,
+														},
+														hover: {
+															mode: 'nearest',
+															intersect: true
+														},
+														scales: {
+															xAxes: [{
+																ticks: {
+													                fontSize: 12
+													            },
+																display: true,
+																scaleLabel: {
+																	display: true,
+																	labelString: '1000 K / T (-)',
+																	fontSize: 12
+																}
+															}],
+															yAxes: [{
+																ticks: {
+													                fontSize: 12,
+													                /*callback: function(value, index, values) {
+																		if ( value > 44324681   ) {																		
+																			return '2e+8';
+																		} else if ( value == 20000000   ) {
+																			return '2e+7';
+																		} else if ( value == 2000000   ) {
+																			return '2e+6';
+																		} else if ( value == 200000   ) {
+																			return '2e+5';
+																		} else if ( value == 20000   ) {
+																			return '2e+4';
+																		} else if ( value == 2000  ) {
+																			return '2e+3';
+																		} else if ( value == 1000  ) {
+																			return '2e+2';
+																		}	
+																	}*/
+													            },
+																type: 'logarithmic',
+																display: true,
+																scaleLabel: {
+																	display: true,
+																	labelString: 'Rate Constant (m3 / mol / s)',
+																	fontSize: 12
+																}
+															}]
+														}
+													}
+												};
+
+												var ctxRateConstant = document.getElementById('canvasRateConstant').getContext('2d');
+												var myChartRateConstant = new Chart(ctxRateConstant, configRateConstant);
 						}
 						
 					}
