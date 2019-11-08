@@ -44,9 +44,9 @@ public class AsynchronousWatcherService {
         } catch (BadRequestException e) {
             response.setStatus(STATUS_ERROR);
             response.setPath(e.getLocalizedMessage());
-        } finally {
-            return response;
         }
+
+        return response;
 
     }
 
@@ -73,18 +73,14 @@ public class AsynchronousWatcherService {
     private String getPath(JSONObject args) throws Exception {
         String path;
 
-        try {
-            path = args.get(KEY_WATCH).toString();
-            String dir = new File(path).getAbsoluteFile().getParent();
-            if (path.equals("")|| !Files.isDirectory(Paths.get(dir))) {
-                String msg = ERR_NO_DIR;
-                if (!path.equals("")) {
-                    msg = msg + dir;
-                }
-                throw new IOException(msg);
+        path = args.get(KEY_WATCH).toString();
+        String dir = new File(path).getAbsoluteFile().getParent();
+        if (path.equals("") || !Files.isDirectory(Paths.get(dir))) {
+            String msg = ERR_NO_DIR;
+            if (!path.equals("")) {
+                msg = msg + dir;
             }
-        } catch (Exception e) {
-            throw e;
+            throw new IOException(msg);
         }
 
         return path;
@@ -92,7 +88,7 @@ public class AsynchronousWatcherService {
 
     private WatcherCallback getCallback(String url, String json) {
 
-        WatcherCallback callback = () -> {
+        return () -> {
             HttpClient httpClient = HttpClientBuilder.create().build();
             try {
                 HttpPost request = new HttpPost(url);
@@ -103,8 +99,6 @@ public class AsynchronousWatcherService {
                 e.printStackTrace();
             }
         };
-
-        return callback;
     }
 
     private void validateInput(String json) {
@@ -128,6 +122,7 @@ public class AsynchronousWatcherService {
         public void setStatus(String s) {
             status = s;
         }
+
         public void setPath(String p) {
             path = p;
         }
