@@ -50,12 +50,13 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @param response HTTP Servlet response
      */
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+        JSONObject reqBody;
         try {
-            enableScenario(request);
+            reqBody = enableScenario(request);
             if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
                 doGetJPS(request, response);
             } else if ((request.getMethod().equals(HttpPost.METHOD_NAME))) {
-                doPostJPS(request, response);
+                doPostJPS(request, response, reqBody);
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -83,6 +84,14 @@ public abstract class JPSHttpServlet extends HttpServlet {
         doHttpJPS(request, response);
     }
 
+    /**
+     * JPS wrapper for HttpServlet#doPost
+     *
+     * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+     */
+    protected void doPostJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws ServletException, IOException {
+        doHttpJPS(request, response, reqBody);
+    }
 
     /**
      * Method to group pre-processing steps common to all Http request methods
@@ -91,10 +100,20 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @param response HTTP Servlet Rsponse
      * @throws IOException @see PrintWriter#getWriter
      */
-    private void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         response.getWriter().write(getResponseBody(request));
     }
 
+    /**
+     * Method to group pre-processing steps common to all Http request methods
+     *
+     * @param request  HTTP Servlet Request
+     * @param response HTTP Servlet Rsponse
+     * @throws IOException @see PrintWriter#getWriter
+     */
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
+        response.getWriter().write(getResponseBody(request, reqBody));
+    }
 
     /**
      * Extract & Transform input parameters and return response parameters
@@ -103,10 +122,30 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @return Response parameters as String
      */
     private String getResponseBody(HttpServletRequest request) {
-        JSONObject requestParams = getRequestParameters(request);
-        JSONObject responseParams = processRequestParameters(requestParams);
+        JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        JSONObject responseParams;
+        responseParams = processRequestParameters(requestParams);
+        if (responseParams.isEmpty()) {
+            responseParams = processRequestParameters(requestParams, request);
+        }
         return responseParams.toString();
     }
+
+    /**
+     * Extract & Transform input parameters and return response parameters
+     *
+     * @param request HTTP Servlet Request
+     * @return Response parameters as String
+     */
+    private String getResponseBody(HttpServletRequest request, JSONObject requestParams) {
+        JSONObject responseParams;
+        responseParams = processRequestParameters(requestParams);
+        if (responseParams.isEmpty()) {
+            responseParams = processRequestParameters(requestParams, request);
+        }
+        return responseParams.toString();
+    }
+
 
     /**
      * Stub method to be overridden in subclasses
@@ -115,6 +154,17 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @TODO: convert it to the abstract method and alter all JPSHttpServlet implementations (slightly bigger job)
      */
     protected JSONObject processRequestParameters(JSONObject requestParams) {
+        JSONObject responseParams = new JSONObject();
+        return responseParams;
+    }
+
+    /**
+     * Stub method to be overridden in subclasses
+     * - shall implement logic transforming requestParams to responseParams
+     *
+     * @TODO: convert it to the abstract method and alter all JPSHttpServlet implementations (slightly bigger job)
+     */
+    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
         JSONObject responseParams = new JSONObject();
         return responseParams;
     }
@@ -188,7 +238,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      *
      * @param request
      */
-    public static void enableScenario(HttpServletRequest request) {
+    public static JSONObject enableScenario(HttpServletRequest request) {
         JSONObject jo = AgentCaller.readJsonParameter(request);
         if (JPSContext.getScenarioUrl(jo) != null) {
             String scenarioUrl = JPSContext.getScenarioUrl(jo);
@@ -198,6 +248,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
             String usecaseUrl =  JPSContext.getUsecaseUrl(jo);
             JPSContext.putUsecaseUrl(usecaseUrl);
         }
+        return jo;
     }
 
     public static void enableScenario(String scenarioUrl) {

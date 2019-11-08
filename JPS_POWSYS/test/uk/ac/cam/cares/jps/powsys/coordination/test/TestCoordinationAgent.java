@@ -214,7 +214,7 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		jo.put("carbontax", 52.0);
 		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		jo.put(JPSConstants.RUN_SIMULATION, false);
+		jo.put(JPSConstants.RUN_SIMULATION, false); //2nd gams not executed
 		
 		new CoordinationAgent().startSimulation(jo);
 	}
