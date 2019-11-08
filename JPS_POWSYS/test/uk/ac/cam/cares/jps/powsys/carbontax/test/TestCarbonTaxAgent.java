@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 public class TestCarbonTaxAgent extends TestCase {
 	CarbonTaxAgent a= new CarbonTaxAgent();
 	
-	public void xxxtestLocalRun() throws IOException, InterruptedException { //warning, need to put owl file in root localhost
+	public void testLocalRun() throws IOException, InterruptedException { //warning, need to put owl file in root localhost
 		
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
@@ -31,7 +31,7 @@ public class TestCarbonTaxAgent extends TestCase {
 
 		
 		BigDecimal c;
-		c= new BigDecimal("40"); 
+		c= new BigDecimal("170"); 
 		a.prepareConstantCSV(c,dataPath);
 		a.runGAMS(dataPath);
 		File file = new File(dataPath+"/results.csv");
