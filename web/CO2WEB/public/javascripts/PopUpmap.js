@@ -201,11 +201,11 @@ PopupMap.prototype = {
         url: self.curPath + "/coordinates",
         method: "GET",
         async: true,
-        done: function (pps) {
+        success: function (pps) {
             console.log('check status of ajax')
             self.updateMarkers(pps);
         },
-        fail: function () {
+        error: function () {
             console.log("Can not get location")
         }
     });
@@ -280,14 +280,14 @@ PopupMap.prototype = {
                     google.maps.InfoWindow.prototype.opened = false;
 
                     line.addListener('click', function(lineEvent) {
+                        console.log(lineEvent.latLng.toString());
                         var content = constructLineMenu(this.title,function (_content) {
-                            console.log('content',_content);
                             infoWindow = new google.maps.InfoWindow({
                                 content: _content
                             });
-                            console.log(_path[0]);
+
                             marker = new google.maps.Marker({
-                                position: {lat: 1.2624421, lng: 103.7007045},
+                                position: lineEvent.latLng,
                                 map: map,
                               });
                               marker.addListener('click', function() {

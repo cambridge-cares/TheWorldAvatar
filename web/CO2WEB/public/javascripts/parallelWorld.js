@@ -1072,14 +1072,3 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
 
         return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
     }
-function filterJSON(data){
-    //data is a string
-    console.log(data);
-    if ((scenario == null) || scenario == "base") {
-        return data;
-    }else{
-        data = JSON.parse(data)['result'];
-        data = JSON.parse(data);
-        return data;
-    }
-}
