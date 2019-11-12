@@ -122,12 +122,12 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
         String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-        String folderlocation =baseUrl+"/";
+        String folderlocation =baseUrl; //+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
         
         cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + modelname;
+        cmdArray[1] = folderlocation + "/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
         cmdArray[4] = "LO=2";
@@ -242,14 +242,15 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 				current[8] = resultListfromquery.get(0)[1]; //capacity in mw
 				current[9] = "1";// rand
 				current[10] = "2";// rand
-				current[11] = "0.33";// rand
+//				current[11] = "0.33";// rand
+				current[11] = "1";// try to make the value higher 81119
 				resultListforcsv.add(current);
 	    	}
 		}
 		
 		String[] header = { "Type", "Yr", "Cap", "Fix", "OM", "Fuel", "Carb", "Ri", "Ci", "a", "b", "c" };
-		String[] nuclear = { "n", "7", "3000000", "8000", "2.14", "7.7", "0", "2", "0", "0", "0", "0" };
-
+		String[] nuclear = { "n", "7", "2000000", "8000", "2.14", "7.7", "0", "2", "0", "0", "0", "0" };
+// cap change temporarily from 3000000
 
 
 		/* IF IN THE FUTURE NEED TO READ FROM THE TEMPLATE */

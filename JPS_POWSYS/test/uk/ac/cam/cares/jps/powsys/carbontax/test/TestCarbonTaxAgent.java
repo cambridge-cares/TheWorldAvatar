@@ -59,7 +59,7 @@ public class TestCarbonTaxAgent extends TestCase {
 	}
 	
 	public void testCallCarbonTax() {
-		String scenarioName = "testPOWSYSCarbonTax";
+		String scenarioName = "testPOWSYSCarbonTaxserver";
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		System.out.println(scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
@@ -67,7 +67,7 @@ public class TestCarbonTaxAgent extends TestCase {
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		BigDecimal a;
-		a= new BigDecimal("40"); 
+		a= new BigDecimal("170"); 
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("carbontax",a );
 		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());

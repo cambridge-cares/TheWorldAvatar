@@ -238,4 +238,23 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 		System.out.println(result);
 	}
 	
+	
+	public void testCoordinateOnServer() { //worked after the old scenario folder is deleted; only worked one time (no more working???)
+		
+		String scenarioUrl = BucketHelper.getScenarioUrl("testCoordinateOnServer1111new2");
+		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
+		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
+		System.out.println("usecaseUrl=" + usecaseUrl);
+		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		
+		JSONObject jo = new JSONObject();
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
+		jo.put("carbontax", 170.0);
+		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+		
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/startsimulation", jo.toString());
+		System.out.println(result);
+	}
 } 
