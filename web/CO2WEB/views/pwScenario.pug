@@ -55,31 +55,41 @@ block content
     div#map
     br
     div#co2-sum-panel2
-        p
-            | Actual CO
-            sub 2
-            | &nbsp; Emission: &nbsp;
-        p
-        span#co2Value  #{co2Value}
-        span  &nbsp; tonnes/hour
-    
+        table(style=" font-size:30px; margin-left:auto; margin-right:auto; padding:2px; and border-spacing:20px;")
+            tr 
+                td  
+                td T/hour 
+                td MT/year 
+                td(title ="Taken from National Communications and Biennial Update Reports, NEA, 2014 ") % of Singapore's 2014 GHG Emissions
+            tr
+                td Actual CO
+                    sub 2 
+                    | Emission: 
+                td#co2Value   #{co2Value}
+                td#co2ValueYr  #{co2ValueYr} 
+                td#wildPercentage #{wildPercentage}
+            tr
+                td Design (Max) CO
+                    sub 2 
+                    | Emission: 
+                td#co2Value2  #{co2Value2}
+                td#co2ValueYr2  #{co2ValueYr2} 
+                td#wildPercentage2 #{wildPercentage2}
+        
     div#co2-sum-panel2
-        p(title ="Taken from National Communications and Biennial Update Reports, NEA, 2014 ")
-            span#wildPercentage #{wildPercentage}
-            span  % of Singapore's GHG emissions (2014)
-    
-    div#co2-sum-panel2
-        p
-            | Design CO
-            sub 2
-            | &nbsp;Emission: &nbsp;
-        p
-        span#co2Value2  #{co2Value2}
-        span  &nbsp; tonnes/hour
-    div#co2-sum-panel2
-        p(title ="Taken from National Communications and Biennial Update Reports, NEA, 2014 ")
-            span Number and Types of Generators: 
-            span#numberOfGenerators  #{numberOfGenerators}
+        table(style=" font-size:30px; margin-left:auto; margin-right:auto; padding:2px; and border-spacing:20px;")
+            tr  
+                td
+                td Nuclear
+                td Oil
+                td Natural Gas
+
+            tr
+                td Number and Type of Generators
+                td#NucGen #{NucGen}
+                td#OilGen #{OilGen} 
+                td#NatGasGen #{NatGasGen}
+
     script(src="https://code.jquery.com/jquery-2.2.0.min.js")
     script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
     script(src="/javascripts/PopUpmap.js")

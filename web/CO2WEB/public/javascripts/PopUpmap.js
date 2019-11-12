@@ -293,6 +293,11 @@ PopupMap.prototype = {
                               marker.addListener('click', function() {
                                 infoWindow.open(map, marker);
                               });
+                              marker.addListener('dblclick', function() {
+                                infoWindow.close();
+                                marker.setMap(null);
+                                marker = null;
+                              });
                         });
 
 

@@ -182,7 +182,7 @@ text.nodeTag {
     position: relative;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 
-    font-size:20px;
+    font-size:30px;
 
 
 }
@@ -340,16 +340,15 @@ CO2Page
 #co2-sum-panel {
     padding: 320px 15px;
     text-align: center;
-    font-size: 80px;
+    font-size: 40px;
     font-weight: 300;
 
 }
 #co2-sum-panel2 {
     padding: 15px 15px;
     text-align: center;
-    font-size: 40px;
+    font-size: 35px;
     font-weight: 100;
-    display: flex;
 
 }
 
@@ -378,8 +377,9 @@ table {
 
 td,  th {
     border: 1px solid #ddd;
-    text-align: left;
-    padding: 8px;
+    text-align: center;
+    padding: 0px;
+    width: 75px;
 }
 
 tr:nth-child(even):hover{
@@ -405,7 +405,7 @@ th {
 
 /*********Overlay Panel*******************/
 .overlay-panel-wrapper {
-    opacity: 0.5;
+    opacity: 1;
     z-index: 100;
     position: absolute;
     width: 560px;
@@ -462,5 +462,5 @@ th {
     text-align: left;
     overflow-y: scroll;
 	font-size: 16px;
-	color: black; !important
+	color: black;
 }

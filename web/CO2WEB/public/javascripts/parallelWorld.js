@@ -1,13 +1,18 @@
 var scenario;
-var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
+var prefix = "http://localhost:8080";
+// var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
 var markers = [];
 var actualCarbon = 0.00;
-var wildPercentage = 0.00;
-var emissionValueForSingapore = 48620430;
+var emissionValueForSingapore = 50908130;
 var designCarbon= 0.00;
+let actualCarbonYr = 0.0;
+let designCarbonYr =0.0;
+let wildPercentage =0.0;
+let wildPercentage2 =0.0;
+let dict = {};
 var numTypeGen = '';
 var branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -376,10 +381,10 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-    var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
-    var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml";
-    // var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
-    // var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml";
+    var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
+    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
     setInterval(function(){
         distotalemission();
     }, 5000);
@@ -430,7 +435,8 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         }
         else if (predefinedId == '1') {
             kmlURL = anotherURL2;
-            scenario = "testCoordinateRetroFitNuclearAgentCall20";
+            // scenario = "testCoordinateRetroFitNuclearAgentCall20";
+            scenario = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10";
             // appPrefix = prefix2;
         }
             
@@ -468,8 +474,14 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
     function distotalemission(){
         $("#co2Value").text(actualCarbon.toFixed(2));
         $("#co2Value2").text(designCarbon.toFixed(2));
+        $("#co2ValueYr").text(actualCarbonYr.toFixed(2));
+        $("#co2ValueYr2").text(designCarbonYr.toFixed(2));
         $("#wildPercentage").text(wildPercentage.toFixed(2));
-        $("#numberOfGenerators").text(numTypeGen);
+        $("#wildPercentage2").text(wildPercentage2.toFixed(2));
+        $("#NucGen").text(dict["nuclear"]);
+        $("#OilGen").text(dict["oil"]);
+        $("#NatGasGen").text(dict["gas"]);
+        // $("#numberOfGenerators").text(numTypeGen);
     }
     //TODO: define err msg panel
     function cleanMsg() {
@@ -532,7 +544,7 @@ function drawMarkers(data){
     var x;
     markers = []
     // scan some duplicates
-    var dict = {"nuclear": 0, "gas": 0, "oil": 0};
+    dict = {"nuclear": 0, "gas": 0, "oil": 0};
     for (x=0; x< size; x++){
         var obj = JSON.parse(obj0[x]);  
         var fueltype = obj.fueltype;
@@ -593,8 +605,11 @@ function displayCO2(data){
     request.done(function(data) {
         var obj0 = JSON.parse(data);
         actualCarbon = obj0.actual;
-        wildPercentage = (actualCarbon/emissionValueForSingapore)*8760*100;
-        designCarbon = obj0.design;      
+        actualCarbonYr = actualCarbon*8760/1000000;
+        wildPercentage = (actualCarbonYr/emissionValueForSingapore)*100*1000000;
+        designCarbon = obj0.design;    
+        designCarbonYr = designCarbon*8760/1000000;
+        wildPercentage2 = (designCarbonYr/emissionValueForSingapore)*100*1000000;  
     });
 }
 
