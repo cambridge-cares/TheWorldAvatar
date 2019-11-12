@@ -18,7 +18,6 @@ import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
-import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
@@ -130,37 +129,37 @@ public class TestNuclear extends TestCase {
 	}
 	
 	
-	public void testCoordinateRetroFitNuclearAgentCall() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
-		JSONArray ja = getSubstitutionalGenerators();
-		
-		JSONObject jo = new JSONObject();
-		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
-		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		jo.put("substitutionalgenerators", ja);	
-		String scenarioUrl = BucketHelper.getScenarioUrl("testCoordinateRetroFitNuclearAgentCall20"); 
-		JPSHttpServlet.enableScenario(scenarioUrl);	
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-		
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-		System.out.println(usecaseUrl);
-		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
-		
-		
-		System.out.println("json input parameter=" + jo);
-		// start simulation (since parameter JPSConstants.SCENARIO_USE_CASE_URL is set, GAMS is not started)
-		String nuclearPowerPlants= AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
-		List<String> plants = MiscUtil.toList(new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
-		System.out.println("nuclear size= "+plants.size());
-		System.out.println(ja);
-	
-		//new RetrofitAgent().retrofit(TestEN.ELECTRICAL_NETWORK, plants,MiscUtil.toList(ja));
-	
-		
-		jo.put("plants", new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
-		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
-
-	}
+//	public void testCoordinateRetroFitNuclearAgentCall() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+//		JSONArray ja = getSubstitutionalGenerators();
+//		
+//		JSONObject jo = new JSONObject();
+//		jo.put("landlot", "http://www.jparksimulator.com/kb/sgp/jurongisland/JurongIslandLandlots.owl");
+//		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+//		jo.put("substitutionalgenerators", ja);	
+//		String scenarioUrl = BucketHelper.getScenarioUrl("testCoordinateRetroFitNuclearAgentCall20"); 
+//		JPSHttpServlet.enableScenario(scenarioUrl);	
+//		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+//		
+//		JPSContext.putScenarioUrl(jo, scenarioUrl);
+//		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
+//		System.out.println(usecaseUrl);
+//		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
+//		
+//		
+//		System.out.println("json input parameter=" + jo);
+//		// start simulation (since parameter JPSConstants.SCENARIO_USE_CASE_URL is set, GAMS is not started)
+//		String nuclearPowerPlants= AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/NuclearAgent/startsimulation", jo.toString());
+//		List<String> plants = MiscUtil.toList(new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
+//		System.out.println("nuclear size= "+plants.size());
+//		System.out.println(ja);
+//	
+//		//new RetrofitAgent().retrofit(TestEN.ELECTRICAL_NETWORK, plants,MiscUtil.toList(ja));
+//	
+//		
+//		jo.put("plants", new JSONObject(nuclearPowerPlants).getJSONArray("plants"));
+//		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofit", jo.toString());
+//
+//	}
 
 	public void testcallNewNuclearAgentCSVInput() throws IOException, InterruptedException, NumberFormatException, URISyntaxException {
 		JSONObject result = new JSONObject();
