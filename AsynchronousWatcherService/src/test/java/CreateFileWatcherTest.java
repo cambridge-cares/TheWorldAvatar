@@ -1,8 +1,11 @@
 import junit.framework.TestCase;
+import org.apache.tomcat.util.http.fileupload.FileUtils;
 import uk.ac.cam.cares.jps.aws.CreateFileWatcher;
 import uk.ac.cam.cares.jps.aws.Watcher;
+import uk.ac.cam.cares.jps.aws.WatcherCallback;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,9 +49,11 @@ public class CreateFileWatcherTest extends TestCase {
         }
     }
 
-    public void testNewCreateFileWatcherMethods() throws NoSuchFieldException, IllegalAccessException {
+    public void testNewCreateFileWatcherMethods() throws NoSuchFieldException, IllegalAccessException, IOException {
         File fileIn = new File("./tmp/test.watch");
-        CreateFileWatcher cfw = new CreateFileWatcher(fileIn, 1);
+        new File(fileIn.getParent()).mkdirs();
+        CreateFileWatcher cfw = new CreateFileWatcher(fileIn, 1000);
+        WatcherCallback cb = () -> {assertTrue(true);};
         Field stop = null;
         Field callback = null;
         try {
@@ -62,7 +67,78 @@ public class CreateFileWatcherTest extends TestCase {
             assertFalse(cfw.isStopped());
             cfw.stopThread();
             assertTrue(cfw.isStopped());
-            //@todo: [AC] test remaining methods
+            cfw.setCallback(cb);
+            assertNotNull(callback.get(cfw));
+            assertEquals(callback.get(cfw).getClass().getInterfaces()[0], WatcherCallback.class);
+            assertFalse(cfw.isAlive());
+            cfw.start();
+            assertTrue(cfw.isAlive());
+            cfw.doOnChange();
+            assertTrue(cfw.isStopped());
+        }
+        if (fileIn.getParentFile().isDirectory()) {
+            cfw.suspend();
+            FileUtils.deleteDirectory(fileIn.getParentFile());
+        }
+    }
+
+    public void testNewCreateFileWatcherRunMethodNotTimedout() throws IOException {
+        File fileIn = new File("./tmp/test.watch");
+        File fileOut = new File("./tmp/test.callback");
+        new File(fileIn.getParent()).mkdirs();
+        CreateFileWatcher cfw = new CreateFileWatcher(fileIn, 60000);
+        WatcherCallback cb = () -> {
+            try {
+                assertTrue(fileOut.createNewFile());
+            } catch (IOException e) {
+                assertTrue(false);
+            }
+        };
+        cfw.setCallback(cb);
+        try {
+            cfw.start();
+            assertFalse(cfw.isStopped());
+            Thread.sleep(500);
+            fileIn.createNewFile();
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            assertTrue(false);
+        } finally {
+            assertTrue(fileOut.exists());
+        }
+        if (fileIn.getParentFile().isDirectory()) {
+            cfw.suspend();
+            FileUtils.deleteDirectory(fileIn.getParentFile());
+        }
+    }
+
+    public void testNewCreateFileWatcherRunMethodTimedout() throws IOException {
+        File fileIn = new File("./tmp/test.watch");
+        File fileOut = new File("./tmp/test.callback");
+        new File(fileIn.getParent()).mkdirs();
+        CreateFileWatcher cfw = new CreateFileWatcher(fileIn, 100);
+        WatcherCallback cb = () -> {
+            try {
+                assertTrue(fileOut.createNewFile());
+            } catch (IOException e) {
+                assertTrue(false);
+            }
+        };
+        cfw.setCallback(cb);
+        try {
+            cfw.start();
+            assertFalse(cfw.isStopped());
+            Thread.sleep(500);
+            fileIn.createNewFile();
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            assertTrue(false);
+        } finally {
+            assertFalse(fileOut.exists());
+        }
+        if (fileIn.getParentFile().isDirectory()) {
+            cfw.suspend();
+            FileUtils.deleteDirectory(fileIn.getParentFile());
         }
     }
 
