@@ -11,6 +11,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -35,9 +36,18 @@ public class AsynchronousWatcherService {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response readRequests(String json) {
-        Response response = watchObject(json);
+        Response response = new Response();
+
+        try {
+            validateInput(json);
+            response = watchObject(json);
+        } catch (BadRequestException e) {
+            response.setStatus(STATUS_ERROR);
+            response.setPath(e.getLocalizedMessage());
+        }
 
         return response;
+
     }
 
     private Response watchObject(String json) {
@@ -63,21 +73,22 @@ public class AsynchronousWatcherService {
     private String getPath(JSONObject args) throws Exception {
         String path;
 
-        try {
-            path = args.get(KEY_WATCH).toString();
-            String dir = new File(path).getAbsoluteFile().getParent();
-            if (!Files.isDirectory(Paths.get(dir))) {
-                throw new IOException(ERR_NO_DIR + dir);
+        path = args.get(KEY_WATCH).toString();
+        String dir = new File(path).getAbsoluteFile().getParent();
+        if (path.equals("") || !Files.isDirectory(Paths.get(dir))) {
+            String msg = ERR_NO_DIR;
+            if (!path.equals("")) {
+                msg = msg + dir;
             }
-        } catch (Exception e) {
-            throw e;
+            throw new IOException(msg);
         }
 
         return path;
     }
 
     private WatcherCallback getCallback(String url, String json) {
-        WatcherCallback callback = () -> {
+
+        return () -> {
             HttpClient httpClient = HttpClientBuilder.create().build();
             try {
                 HttpPost request = new HttpPost(url);
@@ -88,17 +99,30 @@ public class AsynchronousWatcherService {
                 e.printStackTrace();
             }
         };
-
-        return callback;
     }
 
-    class Response {
+    private void validateInput(String json) {
+
+        try {
+            JSONObject args = new JSONObject(json);
+            String url = args.get(KEY_CALLBACK_URL).toString();
+            String path = args.get(KEY_WATCH).toString();
+            URI.create(url).toURL();
+            new File(path).getAbsoluteFile().getParentFile();
+        } catch (Exception e) {
+            throw new BadRequestException();
+        }
+
+    }
+
+    public static class Response {
         public String status = STATUS_WATCHING;
         public String path;
 
         public void setStatus(String s) {
             status = s;
         }
+
         public void setPath(String p) {
             path = p;
         }

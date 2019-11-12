@@ -83,7 +83,7 @@ public class CreateFileWatcher extends Thread implements Watcher {
             }
             if (isStopped()) {
                 watcher.close();
-                Thread.interrupted();
+                Thread.currentThread().join();
             }
         } catch (Throwable e) {
             e.printStackTrace();
