@@ -1,37 +1,34 @@
 package uk.ac.cam.cares.ess.test;
 
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.List;
 
-import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
-//import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
+import uk.ac.cam.cares.jps.ess.JPS_ESS;
 
 
 public class TEST_JPSESS extends TestCase {
 	
-	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PVSingaporeNetwork.owl#PVSingaporeNetwork";
 //	String dataPath = QueryBroker.getLocalDataPath();
 //	String baseUrl=dataPath+"/JPS_ESS";
 	
+	public void testGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
+		JPS_ESS a = new JPS_ESS();
+		a.runGAMS("C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/91ecce2b-c758-4d7b-883c-e9e11e7d569b");
+	}
 
 	
 		
 
-	public void testStartSimulationPFAgentCallNonBaseScenario() throws IOException  {
+	public void testStartSimulationPFAgentCallBaseScenario() throws IOException  {
 
 		JSONObject jo = new JSONObject();
 		
-		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
+		jo.put("PVNetwork", ELECTRICAL_NETWORK);
 		
 		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationPFCallAgent");
 		//JPSHttpServlet.enableScenario(scenarioUrl);	
@@ -47,12 +44,15 @@ public class TEST_JPSESS extends TestCase {
 		System.out.println("finished execute");
 	}
 	
-//	public void testStartSimulationPFDirectCallBaseScenario() throws IOException  {
-//
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-//		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "PF");	
-//	}
-	
+	public void testCreateCSV() throws IOException  {
+
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_ESS";
+		new JPS_ESS().prepareCSV(ELECTRICAL_NETWORK, baseUrl);	
+	}
+	public void testModifyTemplate() throws IOException{
+		JPS_ESS a = new JPS_ESS();
+		a.modifyTemplate("D:/", "NESS.gms") ;
+	}
 
 }

@@ -3,9 +3,9 @@ package uk.ac.cam.cares.jps.ship.test;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 
@@ -20,8 +20,8 @@ public class TestADMSCoordinationAgent extends TestCase {
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JSONObject jo = new JSONObject();
-		jo.put(JPSConstants.SCENARIO_URL, scenarioUrl);
-		jo.put(JPSConstants.SCENARIO_USE_CASE_URL,  usecaseUrl);		
+		JPSContext.putScenarioUrl(jo, scenarioUrl);
+		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		
 		JSONObject upcorn = new JSONObject();
 		upcorn.put("upperx", "12708200.45");

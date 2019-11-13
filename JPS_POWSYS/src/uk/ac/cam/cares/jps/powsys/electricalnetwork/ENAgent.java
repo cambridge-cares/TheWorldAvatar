@@ -33,6 +33,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
@@ -55,6 +56,10 @@ public class ENAgent extends JPSHttpServlet {
 
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		
+		
+		System.out.println("scenario URL = " + JPSContext.getScenarioUrl());
+		
 
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 		String iriofnetwork = joforEN.getString("electricalnetwork");
@@ -915,6 +920,7 @@ public class ENAgent extends JPSHttpServlet {
 		IriMapper map3 = new IriMapper();
 		List<IriMapping> originalforgen = map3.deserialize2(baseUrl + "/mappingforgenerator.csv");
 		int amountofgen = genoutputlist.size();
+		logger.info("amount of gen in output="+amountofgen);
 		for (int a = 0; a < amountofgen; a++) {
 			
 			String currentIri = genoutputlist.get(a)[1];
@@ -931,6 +937,8 @@ public class ENAgent extends JPSHttpServlet {
 
 			Individual vqout = jenaOwlModel.getIndividual(genoutputlist.get(a)[2]);
 			vqout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[2]));
+			//logger.info("initial Pout= "+jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
+			updateGeneratorEmission(jenaOwlModel); //add new functionality for updating the emission
 
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			broker.put(currentIri, content);
@@ -973,5 +981,52 @@ public class ENAgent extends JPSHttpServlet {
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			broker.put(currentIri, content);
 		}
+	}
+
+	public void updateGeneratorEmission(OntModel model) {
+		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+				+ "PREFIX j10:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "SELECT ?entity ?Pvalue ?valueemm ?emissionfactor " 
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j2:isModeledBy ?model ."
+				+ "?model   j5:hasModelVariable ?p ." 
+				+ "?p  a  j3:Pg  ." 
+				+ "?p  j2:hasValue ?vp ."
+				+ "?vp   j2:numericalValue ?Pvalue ." // p
+				+" ?entity j6:realizes ?genprocess ."
+				+ "?genprocess j9:hasEmission ?emm ."
+				+ "?emm a j9:Actual_CO2_Emission ."
+				+ "?emm j2:hasValue ?valueemm ." //iriofco2 emission
+				
+				+ "?genprocess j10:usesGenerationTechnology ?tech ."
+				+ "?tech j10:hasEmissionFactor ?emmfac ."
+				+ "?emmfac j2:hasValue ?valueemmfac ."
+				+ "?valueemmfac j2:numericalValue ?emissionfactor ." //emission factor 
+				
+				+ "}";
+		
+		ResultSet resultSet = JenaHelper.query(model, genInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		DatatypeProperty numval = getNumericalValueProperty(model);
+		for (int c = 0; c < resultListfromquery.size(); c++) {
+		double pvalue=	Double.valueOf(resultListfromquery.get(c)[1]);
+		double emissionf=	Double.valueOf(resultListfromquery.get(c)[3]);
+		double actualem=pvalue*emissionf;
+		Individual vemissioninstance = model.getIndividual(resultListfromquery.get(c)[2]);
+		vemissioninstance.setPropertyValue(numval, model.createTypedLiteral(new Double(actualem)));
+		//logger.info("updated Pout= "+pvalue);
+		}
+		
+		
 	}
 }
