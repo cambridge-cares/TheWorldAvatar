@@ -42,15 +42,21 @@ public class LocalOntologyModelManager implements ServletContextListener {
 
     private static final String CHIMNEY = "Chimney-1";
     private static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
-    private static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
+    private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
+    private static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
+    public static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
     private static final String PATH_KB_SHIPS = ABSDIR_ROOT + "/kb/ships/";
-    private static final String PATH_KB_SHIPS_TEST = ABSDIR_ROOT_TEST + "/kb/ships/";
-    private static final String IRI_KB = "http://www.theworldavatar.com/kb/";
+    public static final String PATH_KB_SHIPS_TEST = ABSDIR_ROOT_TEST + "/kb/ships/";
+    private static final String IRI_BASE = "http://www.theworldavatar.com";
+    private static final String IRI_KB = IRI_BASE + "/kb/";
     private static final String IRI_KB_SHIPS = IRI_KB + "ships/";
+    private static final String IRI_BASE_TEST = "http://localhost:8080/JPS_SHIP";
+    private static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
+    public static final String IRI_KB_SHIPS_TEST = IRI_KB_TEST + "ships/";
     private static final String OWL_CHIMNEY = CHIMNEY + ".owl";
     private static final String OWL_CHIMNEY_TEMP = CHIMNEY + "-temp.owl";
-    private static final String PATH_BASE_CHIMNEY = PATH_KB_SHIPS + OWL_CHIMNEY_TEMP;
-    private static final String PATH_BASE_CHIMNEY_TEST = PATH_KB_SHIPS_TEST + OWL_CHIMNEY_TEMP;
+    public static final String PATH_BASE_CHIMNEY = PATH_KB_SHIPS + OWL_CHIMNEY_TEMP;
+    public static final String PATH_BASE_CHIMNEY_TEST = PATH_KB_SHIPS_TEST + OWL_CHIMNEY_TEMP;
     private static final String IRI_ONTOLOGY = "http://www.theworldavatar.com/ontology/";
     private static final String IRI_ONTOCAPE = IRI_ONTOLOGY + "ontocape/";
     private static final String OWL_ONTOCAPE_UPPER = IRI_ONTOCAPE + "upper_level/";
@@ -77,7 +83,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
     public static final String CPT_DENS = "#Density";
     public static final String CPT_MASSFR = "#MassFraction";
     public static final String CPT_HASDENS = "#has_density";
-    private static final String SPQ_WASTE = "PREFIX j4:<" + IRI_ONTOCAPE + "chemical_process_system/CPS_function/process.owl#> " +
+    public static final String SPQ_WASTE = "PREFIX j4:<" + IRI_ONTOCAPE + "chemical_process_system/CPS_function/process.owl#> " +
             "PREFIX j7:<" + IRI_ONTOLOGY + "meta_model/topology/topology.owl#> " +
             "SELECT ?wasteStream \r\n" +
             "WHERE " +
@@ -111,8 +117,13 @@ public class LocalOntologyModelManager implements ServletContextListener {
     }
 
     public static OntModel createChimneyModelForMMSI(String mmsi) throws IOException {
-        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST);
-        String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
+        String shipKbURL;
+        if (!AgentLocator.isJPSRunningForTest()) {
+            shipKbURL = IRI_KB_SHIPS;
+        } else {
+            shipKbURL = IRI_KB_SHIPS_TEST;
+        }
+
         String content = getBaseChimneyContent();
         content = content.replaceAll(IRI_KB_SHIPS + OWL_CHIMNEY, shipKbURL + mmsi + "/" + OWL_CHIMNEY);
 
@@ -188,7 +199,7 @@ public class LocalOntologyModelManager implements ServletContextListener {
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readWriteLock.writeLock().lock();
         try {
-            saveToOwl(jenaOwlModel, iriOfChimney, mmsi);
+            saveToOwl(jenaOwlModel, iriOfChimney);
         } catch (IOException e) {
             throw new JPSRuntimeException(EX_SAVE_OWL + iriOfChimney);
         } finally {
@@ -199,20 +210,19 @@ public class LocalOntologyModelManager implements ServletContextListener {
         }
     }
 
-    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney, String mmsi) throws IOException {
+    public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney) throws IOException {
     	String filePath2;
     	if (!AgentLocator.isJPSRunningForTest()) {
-    		filePath2= iriOfChimney.replaceAll(IRI_KB, KeyValueManager.get(IKeys.ABSDIR_ROOT) + "/kb/").split("#")[0];
+    		filePath2= iriOfChimney.replaceAll(IRI_KB, ABSDIR_KB).split("#")[0];
     	} else {
-    		filePath2= iriOfChimney.replaceAll("http://localhost/kb", ABSDIR_ROOT_TEST + "/kb").split("#")[0];
+            filePath2= iriOfChimney.replaceAll(IRI_KB_TEST, ABSDIR_KB_TEST).split("#")[0];
     	}
-    		logger.info("the filepath created= "+filePath2);
+    	logger.info("the filepath created= "+filePath2);
+
         try {
             prepareDirectory(filePath2);
         } catch (IOException e) {
-        	logger.error("OWLFAIL");
-            e.printStackTrace();
-            //throw new JPSRuntimeException(EX_SAVE_OWL + filePath2);
+            throw new JPSRuntimeException(EX_SAVE_OWL + filePath2);
         } finally {
             FileOutputStream out = new FileOutputStream(filePath2);
 
