@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -36,22 +37,25 @@ public class AsynchronousWatcherService {
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.APPLICATION_JSON})
     public Response readRequests(String json) {
-        Response response = new Response();
+        Response rsp;
+        ResponseBody response = new ResponseBody();
 
         try {
             validateInput(json);
             response = watchObject(json);
+            rsp = Response.ok().entity(response).build();
         } catch (BadRequestException e) {
             response.setStatus(STATUS_ERROR);
             response.setPath(e.getLocalizedMessage());
+            rsp = Response.status(Response.Status.BAD_REQUEST).entity(response).build();
         }
 
-        return response;
+        return rsp;
 
     }
 
-    private Response watchObject(String json) {
-        Response response = new Response();
+    private ResponseBody watchObject(String json) {
+        ResponseBody response = new ResponseBody();
 
         try {
             JSONObject args = new JSONObject(json);
@@ -115,7 +119,7 @@ public class AsynchronousWatcherService {
 
     }
 
-    public static class Response {
+    public static class ResponseBody {
         public String status = STATUS_WATCHING;
         public String path;
 

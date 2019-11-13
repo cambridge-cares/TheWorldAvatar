@@ -50,31 +50,31 @@ public class AsynchronousWatcherServiceTest extends TestCase {
                     .getAnnotation(Consumes.class).value()[0]);
             assertEquals(MediaType.APPLICATION_JSON, aws.getClass().getDeclaredMethod("readRequests", String.class)
                     .getAnnotation(Produces.class).value()[0]);
-            AsynchronousWatcherService.Response rsp = new AsynchronousWatcherService.Response();
+            AsynchronousWatcherService.ResponseBody rsp = new AsynchronousWatcherService.ResponseBody();
             String jsonStr = "";
             rsp.setStatus("Error");
             rsp.setPath(badReq);
-            assertEquals(rsp.status, aws.readRequests(jsonStr).status);
-            assertEquals(rsp.path, aws.readRequests(jsonStr).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path);
             jsonStr = "{}";
-            assertEquals(rsp.status, aws.readRequests(jsonStr).status);
-            assertEquals(rsp.path, aws.readRequests(jsonStr).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path);
             jsonStr = "{\"watch\":\"" + file + "\"}";
-            assertEquals(rsp.status, aws.readRequests(jsonStr).status);
-            assertEquals(rsp.path, aws.readRequests(jsonStr).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path);
             jsonStr = "{\"watch\":\"" + file + "\", \"callback\":\"\"}";
-            assertEquals(rsp.status, aws.readRequests(jsonStr).status);
-            assertEquals(rsp.path, aws.readRequests(jsonStr).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path);
             jsonStr = "{\"watch\":\"" + file + "\", \"callback\":\"http://localhost:8080/back\"}";
-            assertEquals(rsp.status, aws.readRequests(jsonStr).status);
-            assertTrue(aws.readRequests(jsonStr).path.contains("Directory does not exist: "));
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
+            assertTrue(((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path.contains("Directory does not exist: "));
             watchDir = new File(file).getParentFile();
             boolean dir = watchDir.mkdirs();
             assertTrue(dir);
             rsp.setStatus("Watching");
             rsp.setPath(file);
-            assertEquals(rsp.status, aws.readRequests(jsonStr).status);
-            assertEquals(rsp.path, aws.readRequests(jsonStr).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) aws.readRequests(jsonStr).getEntity()).path);
         } finally {
             if (watchDir != null && watchDir.isDirectory()) {
                 FileUtils.deleteDirectory(watchDir);
@@ -90,34 +90,34 @@ public class AsynchronousWatcherServiceTest extends TestCase {
             assertNotNull(aws.getClass().getDeclaredMethod("watchObject", String.class));
             Method watchObject = aws.getClass().getDeclaredMethod("watchObject", String.class);
             watchObject.setAccessible(true);
-            AsynchronousWatcherService.Response rsp = new AsynchronousWatcherService.Response();
+            AsynchronousWatcherService.ResponseBody rsp = new AsynchronousWatcherService.ResponseBody();
             String jsonStr = "";
             rsp.setStatus("Error");
             rsp.setPath("A JSONObject text must begin with '{' at 0 [character 1 line 1]");
             Object result = watchObject.invoke(aws, jsonStr);
-            assertEquals(rsp.status, ((AsynchronousWatcherService.Response) result).status);
-            assertEquals(rsp.path, ((AsynchronousWatcherService.Response) result).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) result).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) result).path);
             jsonStr = "{}";
             rsp.setPath("JSONObject[\"watch\"] not found.");
             result = watchObject.invoke(aws, jsonStr);
-            assertEquals(rsp.status, ((AsynchronousWatcherService.Response) result).status);
-            assertEquals(rsp.path, ((AsynchronousWatcherService.Response) result).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) result).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) result).path);
             jsonStr = "{\"watch\":\"" + file + "\"}";
             result = watchObject.invoke(aws, jsonStr);
-            assertTrue(((AsynchronousWatcherService.Response) result).path.contains("Directory does not exist: "));
+            assertTrue(((AsynchronousWatcherService.ResponseBody) result).path.contains("Directory does not exist: "));
             watchDir = new File(file).getParentFile();
             boolean dir = watchDir.mkdirs();
             assertTrue(dir);
             result = watchObject.invoke(aws, jsonStr);
             rsp.setPath("JSONObject[\"callback\"] not found.");
-            assertEquals(rsp.status, ((AsynchronousWatcherService.Response) result).status);
-            assertEquals(rsp.path, ((AsynchronousWatcherService.Response) result).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) result).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) result).path);
             jsonStr = "{\"watch\":\"" + file + "\", \"callback\":\"\"}";
             result = watchObject.invoke(aws, jsonStr);
             rsp.setStatus("Watching");
             rsp.setPath(file);
-            assertEquals(rsp.status, ((AsynchronousWatcherService.Response) result).status);
-            assertEquals(rsp.path, ((AsynchronousWatcherService.Response) result).path);
+            assertEquals(rsp.status, ((AsynchronousWatcherService.ResponseBody) result).status);
+            assertEquals(rsp.path, ((AsynchronousWatcherService.ResponseBody) result).path);
         } finally {
             if (watchDir != null && watchDir.isDirectory()) {
                 FileUtils.deleteDirectory(watchDir);
@@ -236,13 +236,13 @@ public class AsynchronousWatcherServiceTest extends TestCase {
     }
 
     public void testNewAsynchronousWatcherServiceResponse() {
-        AsynchronousWatcherService.Response rsp = null;
+        AsynchronousWatcherService.ResponseBody rsp = null;
 
         try {
-            rsp = new AsynchronousWatcherService.Response();
+            rsp = new AsynchronousWatcherService.ResponseBody();
         } finally {
             assertNotNull(rsp);
-            assertEquals(rsp.getClass(), AsynchronousWatcherService.Response.class);
+            assertEquals(rsp.getClass(), AsynchronousWatcherService.ResponseBody.class);
             assertEquals(2, rsp.getClass().getDeclaredFields().length);
             assertEquals(2, rsp.getClass().getDeclaredMethods().length);
             assertEquals("Watching", rsp.status);
