@@ -3,7 +3,7 @@
 <head>
 	<meta name="viewport" content="initial-scale=1.0">
 	<meta charset="utf-8">
-	<title>KML Layers</title>
+	<title>Battery Placement</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 	<!--script type="text/javascript" src="https://cdn.jsdelivr.net/gh/geocodezip/geoxml3@master/kmz/geoxml3.js"></script-->
 	<!--script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script-->
@@ -178,194 +178,186 @@
 	}
 		
 	function initMap() {
-		var map = new google.maps.Map(document.getElementById('map'), {
+		map = new google.maps.Map(document.getElementById('map'), {
 			zoom: 14,
 			center: {lat: 1.2624421, lng: 103.7007045}
 		});
 		
 		
 		//load the line at the starting
-		var url = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createLineJS';
+		var url = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createLineJS';
 		var lines=[];
-				
-				var request = $.ajax({
-					url: url,
-					type: 'GET',
-					data: { "electricalnetwork":electricalnetwork },
-					contentType: 'application/json; charset=utf-8'
-				});
-				var xmlhttp = new XMLHttpRequest();
-				xmlhttp.onreadystatechange = function(){
-				if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
-					txt = xmlhttp.responseText;
-					txt = JSON.parse(txt);
-					}
-				};
-				xmlhttp.open("GET","resources/outputBranchOPF.json",true);
-				xmlhttp.send();
-
-				request.done(function(data) {
-				
-				var obj0 = JSON.parse(data);
-				var size=obj0.length;
-				// console.log("size="+size);      
-				//Parse BranchOPF.txt file
-				
-				var x;
-				for(x=0;x<size;x++){
-					var obj = obj0[x];  
-					var point0= new point(obj.coors[0].lat,obj.coors[0].lng);
-					
-					var point1= new point(obj.coors[1].lat,obj.coors[1].lng);
-					var temparr=[point0,point1];
-					var vol0=obj.vols[0];
-					
-					var vol1=obj.vols[1];
-					var temparrvol=[vol0,vol1];
-					marker = obj.name.split('-')[1].split('.')[0].replace(/^0+/, '');
-					console.log(marker, typeof marker);
-					if (txt[marker][0] < 0.03){
-						marker = 'ON';
-					}else{
-						marker = 'OFF';
-					}
-					var line = new Branch(temparr,temparrvol, obj.thickness, obj.type,obj.name, marker);
-					console.log("linename="+obj.name + " " + marker);
-					// console.log("linepoint0long="+temparr[0].lng);
-					
-					lines.push(line);
-				}
-				//console.log('lines',lines);
+		var request = $.ajax({
+			url: url,
+			type: 'GET',
+			data: { "electricalnetwork":electricalnetwork, "flag": "BASE"},
+			contentType: 'application/json; charset=utf-8'
+		});
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function(){
+		if(xmlhttp.status == 200 && xmlhttp.readyState == 4){
+			txt = xmlhttp.responseText;
+			txt = JSON.parse(txt);
+			console.log('DONE!');
+			}
+		};
+		xmlhttp.open("GET","images/outputBranchOPF.json",true);
+		xmlhttp.send();
+		request.done(function(data) {
+		
+		
+		obj0 = JSON.parse(data).result;
+		console.log(obj0);
+		var size=obj0.length;
+		console.log("size="+size);   
+		   
+		//Parse BranchOPF.txt file
+		
+		var x;
+		console.log(txt);
+		for(x=0;x<size;x++){
+			var obj = JSON.parse(obj0[x]);  
+			var point0= new point(obj.coors[0].lat,obj.coors[0].lng);
+			var point1= new point(obj.coors[1].lat,obj.coors[1].lng);
+			var temparr=[point0,point1];
+			var vol0=obj.vols[0];			
+			var vol1=obj.vols[1];
+			var temparrvol=[vol0,vol1];
+			marker = obj.name.split('-')[1].split('.')[0].replace(/^0+/, '');
+			//Temporary: Because there is are two lines created due to Parallel World, need to get rid of them. 
+			if (marker == "220" || marker ==  "221"){
+				continue;
+			};
+			if (txt[marker][0] > 0.03){
+				console.log('marker: ' + txt[marker][0] + 'E-Line: '+ marker);
+				marker = 'ON';
+			}else{
+				marker = 'OFF';
+			}
+			var line = new Branch(temparr,temparrvol, obj.thickness, obj.type,obj.name, marker);
+			// console.log("linepoint0long="+temparr[0].lng);
 			
-			var infowindow = new google.maps.InfoWindow({content: '<h2>Sup!</h2>'});
-				for (var index in lines){
-					var _line = lines[index];
-					var _name = _line['name'];
-					var _type = _line['type'];
+			lines.push(line);
+		}
+		console.log('lines ',lines , ' size of lines ', lines.length);
+			
+	var infowindow = new google.maps.InfoWindow({content: '<h2>Sup!</h2>'});
+	batterycount = 0;
+		for (var index in lines){
+			var _line = lines[index];
+			var _name = _line['name'];
+			var _type = _line['type'];
 
-					// console.log('--_type--',_type);
-					
-					
-					var _path = _line['coors'];
+			// console.log('--_type--',_type);
+			
+			
+			var _path = _line['coors'];
 
 
-					var _thickness = _line['thickness'];
-					var _needBattery = _line['presentMarker']
-					var lineSymbol = {
-						path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
-						scale:2,
-						strokeColor: '#333'
-					};
-					var symbolThree = {
-				   		path: 'M -2,-2 2,2 M 2,-2 -2,2', //M327674 280 c0 -157 2 -221 3 -142 2 78 2 206 0 285 -1 78 -3 14 -3-143z but this doesn't work as a path
-					    strokeColor: '#292',
-					    strokeWeight: 4
-					  };
+			var _thickness = _line['thickness'];
+			var _needBattery = _line['presentMarker']
+			var lineSymbol = {
+				path: google.maps.SymbolPath.FORWARD_OPEN_ARROW,
+				scale:2,
+				strokeColor: '#333'
+			};
+			
 
-					if(_type === 'distribute')
-					{
-					//console.log('--_name--',_name);
-					if (_needBattery == "ON"){
-							icons1 =  [{icon: lineSymbol,offset: '100%'}, {icon: symbolThree ,offset: '60%'} ];
-						}else {
-							icons1 = [{icon: lineSymbol,offset: '100%'}];
-						}
-						var line = new google.maps.Polyline({
-							path: _path,
-							strokeWeight: _thickness,
-							strokeColor : colorMap[_thickness - 3],
-							icons: icons1,
+			if(_type === 'distribute')
+			{
+			//console.log('--_name--',_name);
+				var line = new google.maps.Polyline({
+					path: _path,
+					strokeWeight: _thickness,
+					strokeColor : colorMap[_thickness - 3],
+					 icons: [{icon: lineSymbol,
+								offset: '100%'
+							}],
+					map: map,
+					title: _name
+				});
+
+				if (_needBattery == "ON"){
+					console.log(_path);
+					console.log(_path[0].lat);
+					var NWCoord = new google.maps.LatLng(_path[0]);
+					var SECoord = new google.maps.LatLng(_path[1]);
+					console.log("NWCoord: " + NWCoord);
+					console.log("SECoord: " + SECoord);
+					var bounds =  new google.maps.LatLngBounds(NWCoord, SECoord);
+					console.log(bounds);
+					var center = bounds.getCenter();
+
+					console.log(center);
+						batterycount++;
+						console.log(batterycount);
+						marker = new google.maps.Marker({
+							position: center,
 							map: map,
-							title: _name
-						});
-
-						
-						 google.maps.event.addListener(line, 'click', function() {
-							var that = this;
-							var content = constructLineMenu(this.title,function (_content) {
-								console.log('content',_content);
-								infowindow.setContent(_content);
-								infowindow.open(map, that);
-								
-								// setTimeout(function(){
-								// 	var ggf = document.getElementById('something').parentElement.parentElement.parentElement;
-								// 	ggf.style.visibility = 'visible'
-								// 	// console.log('--- ggf --- 2', ggf)
-								// },2000)
-					
-
-							});
-
-						});
-						animateCircle(line,1);
+						    animation: google.maps.Animation.DROP,
+							icon: "images/battery.png"
+					   });
 					}
+				 
+				google.maps.event.addListener(line, 'click', function(lineEvent) {
+					var that = this;
+					var content = constructLineMenu(this.title,function (_content) {
+						console.log('content',_content);
+						infowindow.setContent(_content);
+						infowindow.open(map, that);
+
+					});
 					
-					
 
-
-
-
-				}
 				});
+				animateCircle(line,1);
+			}
+			
+			
 
-				request.fail(function(jqXHR, textStatus) {
-					// your failure code here
-				});
+
+
+
+		}
+		});
+
+		request.fail(function(jqXHR, textStatus) {
+			// your failure code here
+		});
 		
 
-		var d = new Date();
-		var n = d.getTime();
 		var kmljson = {};
 		kmljson["electricalnetwork"] = electricalnetwork;
-		kmljson["n"] = String(n);
-		var kmlurl = 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile';
+		kmljson['flag']  = "BASE";
+		var kmlurl = 'http://localhost:8080/JPS_POWSYS/ENVisualization/createKMLFile';
 
 		//kmlurl += "/" + n;
 		kmlurl += "?query=" + encodeURIComponent(JSON.stringify(kmljson));      
 		
-		console.log("my kmlurl=" + kmlurl);
-		console.log("my n=" + n);
-		
+		console.log("my kmlurl = " + kmlurl);
 		var kmldataurl;
-				
-				var request = $.ajax({
-					url: kmlurl,
-					type: 'GET',
-					data: { "electricalnetwork":electricalnetwork,"n":n},
-					contentType: 'application/json; charset=utf-8'
-				});
+		var request = $.ajax({
+			url: kmlurl,
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8'
+		});
 
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							//url: 'http://www.theworldavatar.com/JPS_POWSYS/ENVisualization/createKMLFile/test2.kml',
-							//url: kmlurl,
-							//url: 'http://www.theworldavatar.com/ENVisualization/getKMLFile/en'+n+'.kml',
-							url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',
+							url: 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml',
 							suppressInfoWindows: false,
 							map: map
 						});
-
-
-						// kmlLayer.addListener('click', function(kmlEvent) {
-						// 	generalOnclick(kmlEvent,'kml')
-						// });             
 					
 				});
 				
 
 	request.fail(function(jqXHR, textStatus) {
-		// your failure code here
 	});
-				
-		//myParser = new geoXML3.parser({map: map});
-	   //myParser.parseKmlString(kmlurl,myParser.docs);
-	   
 	   
 
 	}
-	
-	//google.maps.event.addDomListener(window, 'load', initMap);
 
 
 	function generalOnclick(event,type)
@@ -396,29 +388,7 @@
 		var inputLine = "<tr><td><label> " + id +'</label></td><td><label> ' + txt[selectedId][0] +  '</label></td><td> MW </td></tr> ';
 		inputsHTML = inputsHTML + inputLine;
 		inputsHTML  += "</table>";
-		// 	for(var item in response)
-		// 	{
-		// 		var pair = response[item];
-		// 		if(pair['value'].includes('.owl'))
-		// 		{
-
-		// 		}
-		// 		else{
-
-		// 			console.log(pair['name']);
-		// 			var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
-		// 			inputsHTML = inputsHTML + inputLine;
-		// 		}
-		// 	}
-
-
-		// var div = document.createElement('div');
-		// div.id = 'something';
-		// console.log(inputsHTML);
-		// div.innerHTML = inputsHTML 
 		callback(inputsHTML);
-
-		// });
 	}
 
 
@@ -473,11 +443,6 @@
 				
 					
 				}
-				
-				//if(nameSet.includes(pair['name'])){
-				//  console.log('repeated')
-				//}
-				//else{
 					var inputLine = '<tr><td><label>' + pair['name'] +'</label></td><td><input class="input_class" data-dataType="' + pair['datatype'] + '" value="' + pair['value'] + '" style="float: right;"></td><td>' + pair['unit'] + '</td></tr>';
 					inputsHTML = inputsHTML + inputLine;
 					nameSet.push(pair['name'])
