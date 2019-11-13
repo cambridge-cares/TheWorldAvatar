@@ -22,7 +22,8 @@ router.get('/', function(req, res, next) {
             next(new Error("can not get sensor list backend error"));
             return
         }
-        res.render('bmsplot',result);
+        console.log(result)
+    res.render('bmsPlot', {sensorList :result}); //render the view with this value
     })
 })
 
