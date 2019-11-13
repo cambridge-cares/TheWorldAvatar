@@ -47,7 +47,7 @@ public class QueryBroker {
 			return new ScenarioClient().read(scenarioUrl, urlOrPath);
 		}
 		
-		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+//		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		if (urlOrPath.startsWith("http")) {
 		
@@ -81,7 +81,7 @@ public class QueryBroker {
 			return new ScenarioClient().query(scenarioUrl, urlOrPath, sparqlQuery);
 		}
 		
-//		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		ResultSet resultSet = null;
 		if (urlOrPath.startsWith("http")) {
@@ -126,6 +126,7 @@ public class QueryBroker {
 			if (count % 50 == 0) {
 				JPSBaseLogger.info(this, "reading file number=" + count + ", name=" + current);
 			}
+			current = ResourcePathConverter.convert(current);
 			model.read(current, null); 
 		}
 		
@@ -235,7 +236,7 @@ public class QueryBroker {
 		// be stored within scenarios. Later: Broker should find out, whether an QueryAgent (or another broker)
 		// is running on remote server which has local access. 
 		
-		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+//		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		String localFile = urlOrPath;
 		if (urlOrPath.startsWith("http")) {
