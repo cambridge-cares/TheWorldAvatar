@@ -33,7 +33,7 @@ var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-//var MAU = require("./routes/runMAU")
+var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
@@ -111,7 +111,7 @@ app.use('/b2map', b2Map)
 app.use("/mauplot", MAUPlot);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-//app.use("/MAU", MAU);
+app.use("/MAU", MAU);
 
 
 
@@ -246,8 +246,8 @@ app.use(function(err, req, res, next) {
 /********************/
 
 
-app.listen(port, function () {
+http.listen(port, function () {
   console.log('Server listening on port '+port);
 });
 
-module.exports = app;
+module.exports = http;

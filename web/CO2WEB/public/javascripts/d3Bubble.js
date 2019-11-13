@@ -1,6 +1,6 @@
 // http://blog.thomsonreuters.com/index.php/mobile-patent-suits-graphic-of-the-day/
 
-var socket = io();
+var socket = io('//www.theworldavatar.com:82');
 
 let resultArr;
 var shapeSaved = {};

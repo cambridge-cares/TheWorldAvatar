@@ -13,11 +13,19 @@ var getAllSensor = require("../agents/GetAllSensor");
 
 var cacheRouter  = require("../agents/Cache");
 
-function  sendResult(result, res) {
-    res.render('bmsPlot', {sensorList :JSON.parse(result)}); //render the view with this value
-}
+router.get('/', function(req, res, next) {
 
-router = cacheRouter(router).get('/', getAllSensor, { sendResult, expiredTime:36000000});
+	    getAllSensor(function (err, result) {
+        if(err){
+            console.log("can not get sensor list backend error")
+
+            next(new Error("can not get sensor list backend error"));
+            return
+        }
+        res.render('bmsplot',result);
+    })
+})
+
 
 
 module.exports = router;
