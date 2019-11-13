@@ -228,7 +228,8 @@
 			if (marker == "220" || marker ==  "221"){
 				continue;
 			};
-			if (txt[marker][0] < 0.03){
+			if (txt[marker][0] > 0.03){
+				console.log('marker: ' + txt[marker][0] + 'E-Line: '+ marker);
 				marker = 'ON';
 			}else{
 				marker = 'OFF';
