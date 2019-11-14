@@ -38,6 +38,8 @@ import uk.ac.cam.ceb.paper.sort.Sort;
  *         College, February 7, 2017.
  * 
  *         This code requires at least Java 1.8
+ *         
+ *         This code is running (start) from shell on HPC or local machine.
  *
  */
 
@@ -71,7 +73,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	static String srcCompoundsRef = "esc/g09/";
 	
-	
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -89,6 +90,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Ti-based target species
 	 * 
@@ -96,14 +98,16 @@ public class LeaveOneOutCrossValidationAlgorithm {
 //	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HCO-based target species
 	 * 
 	 */
+	
 	static String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
-
 	
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Local Windows machine settings.
 	 * 
@@ -111,11 +115,13 @@ public class LeaveOneOutCrossValidationAlgorithm {
 //	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
 	
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
+	 * 
 	 */
+	
 	static String destRList = "ti_isg/";
-
 	
 	/**
 	 * 
@@ -126,8 +132,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 //	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
 	
 	/**
+	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * HPC settings
+	 * 
 	 */
 	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
@@ -172,8 +180,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	static int[] ctrRadicals = new int[] {100}; // 0, 1, 2, 3, 4, 5
 
-	public static void main(String[] args) throws Exception {		
-		
+	public static void main(String[] args) throws Exception {
+	
+	
 	BufferedWriter printedResultsFile = new BufferedWriter(new FileWriter(destRList + "printed_results" + ".txt", true));
 		
 		/**
@@ -515,8 +524,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				
 				printedResultsFile.write("Soi species name: " + errorMap.getKey().getRef() + " , " + errorMap.getKey().getHf() + " , " + errorMap.getKey().getTotalEnergy() + " , " 
 						+ errorMap.getKey().getAtomMap() + " , " + errorMap.getKey().getBondTypeMultiset());
-				printedResultsFile.write("\n");
 				
+				printedResultsFile.write("\n");
 
 				double targetSpeciesEnthalpy = errorMap.getKey().getHf();
 				
@@ -527,13 +536,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				printedResultsFile.write("targetSpeciesEnthalpy: " + targetSpeciesEnthalpy);
 				printedResultsFile.write("\n");
 				
-				
 				System.out.println("After updated Hf: ");
 				
 				printedResultsFile.write("After updated Hf: ");
 				printedResultsFile.write("\n");
-
-				
 
 				/**
 				 * 
@@ -694,16 +700,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	};
 	
-	
 	printedResultsFile.close();
 	
 		/**
+		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Terminates program
 		 * 
 		 */
-	   
-	
 	
 	System.exit(0);
 	
@@ -717,6 +721,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * @return true if the species that is currently in use is the member of valid set of species.
 	 *  
 	 */
+	
 	public static boolean containsSpecies(LinkedHashSet<Species> validSpecies, Species currentSpecies) {
 		
 		boolean contains = false;
