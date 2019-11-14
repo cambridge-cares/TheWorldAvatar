@@ -39,9 +39,9 @@ public class JPS_ESS extends JPSHttpServlet {
 	public static void runGAMSOld() throws IOException, InterruptedException {
 		System.out.println("Start");
 		System.out.println("separator= " + File.separator);
-		String executablelocation = "C:/GAMS/win64/27.3/gams.exe";
-		// String folderlocation ="D:/Users/KADIT01/Documents/gamsdir/projdir/";
-		String folderlocation = "C:/Users/GKAR01/Documents/gamsdir/projdir/";
+		String executablelocation = "C:/GAMS/win64/28.2/gams.exe";
+		String folderlocation ="D:/Users/LONG01/Documents/gamsdir/projdir/";
+//		String folderlocation = "C:/Users/GKAR01/Documents/gamsdir/projdir/";
 		String[] cmdArray = new String[5];
 
 		cmdArray[0] = executablelocation;
@@ -53,14 +53,14 @@ public class JPS_ESS extends JPSHttpServlet {
 		String cmdArrayinstring = cmdArray[0] + " " + cmdArray[1] + "," + cmdArray[2] + "," + cmdArray[3] + " "
 				+ cmdArray[4];
 
-//		System.out.println(cmdArrayinstring);
+		System.out.println(cmdArrayinstring);
 //        Process p = Runtime.getRuntime().exec(cmdArray);
 //		   p.waitFor();
 		// String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
 
 		ArrayList<String> groupcommand = new ArrayList<String>();
 
-		groupcommand.add("C:/Users/GKAR01/Documents/gamsdir/projdir/gamsexecute.bat");
+		groupcommand.add("D:/Users/LONG01/Documents/gamsdir/projdir/gamsexecute.bat");
 
 		// CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
 		CommandHelper.executeCommands(folderlocation, groupcommand);
@@ -70,19 +70,19 @@ public class JPS_ESS extends JPSHttpServlet {
 
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
 		
-		modifyTemplatever2(baseUrl,modelname);
+		modifyTemplate(baseUrl,modelname);
 
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-       // String folderlocation =baseUrl+"/";
-        String folderlocation =baseUrl.replace("/","\\\\")+"\\";
+        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
+        String folderlocation =baseUrl.replace("//", "/");
+//        String folderlocation =baseUrl.replace("/","\\\\")+"\\";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
         
         cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + modelname;
+        cmdArray[1] = folderlocation+"/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
         cmdArray[4] = "LO=2";
@@ -90,11 +90,11 @@ public class JPS_ESS extends JPSHttpServlet {
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
         
-        logger.info(cmdArrayinstring);
+        System.out.println(cmdArrayinstring);
         Process p = Runtime.getRuntime().exec(cmdArray);
 		   p.waitFor();
          
-		   logger.info("Done");
+		   System.out.println("Done");
 	}
 	
 	public void modifyTemplatever2(String newdir2, String filename) throws IOException { 
@@ -104,6 +104,7 @@ public class JPS_ESS extends JPSHttpServlet {
 		String destinationUrl = newdir2.replace("/","\\") + "\\"+filename;
 		System.out.println("dest="+destinationUrl);
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		System.out.println("FILE: FILE: "+ file);
         String fileContext = FileUtils.readFileToString(file);
         fileContext = fileContext.replaceAll("Ptlow.gdx",newdir+"\\\\"+"Ptlow.gdx");
         fileContext = fileContext.replaceAll("Pthigh.gdx",newdir+"\\\\"+"Pthigh.gdx");
@@ -132,10 +133,14 @@ public class JPS_ESS extends JPSHttpServlet {
 		new QueryBroker().put(destinationUrl, fileContext);
 	}
 	
-	public void modifyTemplate(String newdir, String filename) throws IOException { 
+	public void modifyTemplate(String newdir, String filename) throws IOException {
+		newdir = newdir.replace("//", "/");
 		String destinationUrl = newdir + "/"+filename;
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		
         String fileContext = FileUtils.readFileToString(file);
+		System.out.println("FILE: FILE: "+ file);
+        
         fileContext = fileContext.replaceAll("Ptlow.gdx",newdir+"/Ptlow.gdx");
         fileContext = fileContext.replaceAll("Pthigh.gdx",newdir+"/Pthigh.gdx");
         fileContext = fileContext.replaceAll("Dtlow.gdx",newdir+"/Dtlow.gdx");
@@ -153,8 +158,7 @@ public class JPS_ESS extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("EconomicalScore.csv",newdir+"/EconomicalScore.csv output="+newdir+"/EconomicalScore.gdx");
         fileContext = fileContext.replaceAll("Maturity.csv",newdir+"/Maturity.csv output="+newdir+"/Maturity.gdx");
         fileContext = fileContext.replaceAll("Pa_high.csv",newdir+"/Pa_high.csv output="+newdir+"/Pa_high.gdx");
-        System.out.println(fileContext);
-
+        System.out.println("NEWDIR: "+ newdir);
         //FileUtils.write(file, fileContext);
  
 		
@@ -227,60 +231,12 @@ public class JPS_ESS extends JPSHttpServlet {
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String baseUrl = QueryBroker.getLocalDataPath();// + "/GAMS_ESS";
+		System.out.println("baseURL: " + baseUrl);
 		JSONObject jofornuc = AgentCaller.readJsonParameter(request);
 		String PVNetworkiri=jofornuc.getString("PVNetwork");
-		
+		System.out.println("PVNETWORK: " + PVNetworkiri);
 		System.out.println("parameter got= "+jofornuc.toString());
 		prepareCSV(PVNetworkiri,baseUrl);
-		
-		
-
-		
-
-//		String sparqlQuery = "PREFIX rdf:<http://www.w3.org/2001/XMLSchema#>\r\n"
-//				+ "PREFIX App:<http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#>\r\n"
-//				+ "PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>\r\n"
-//				+ "PREFIX PV:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator>\r\n"
-//				+ "\r\n" + "SELECT ?Pa_low ?Pa_high  ?Da_high ?Da_low \r\n" + "WHERE \r\n" + "{ \r\n"
-//				+ "  ?pv a <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PhotovoltaicGenerator> .\r\n"
-//				
-//				+ "  ?pv  <http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#hasMaximumActivePowerGenerated> ?apg .\r\n"
-//				+ "  ?apg  <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue> ?v_apg.\r\n"
-//				+ "  ?v_apg  <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#upperLimit> ?Pa_high.\r\n"
-//				+ "  ?pv  <http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork.owl#hasMinimumActivePowerGenerated> ?mapg .\r\n"
-//				+ "  ?mapg  <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue> ?v_mapg.\r\n"
-//				+ "  ?v_mapg  <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#lowerLimit> ?Pa_low.\r\n"
-//				+ "  \r\n"
-//				+ "  ?pv  <http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasStateOfCharge> ?dt . \r\n"
-//				+ "  ?dt  <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue> ?v_dt.\r\n"
-//				+ "  ?v_dt <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#lowerLimit> ?Da_low.\r\n"
-//				+ "  ?v_dt <http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#upperLimit> ?Da_high.\r\n"
-//				+ "}\r\n" + "";
-
-//		QueryExecution qe = QueryExecutionFactory
-//				.sparqlService("http://www.theworldavatar.com/damecoolquestion/pvsingaporenetwork/query", sparqlQuery);
-//
-//		ResultSet results = qe.execSelect();
-//
-//		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//		List<QuerySolution> result_list = ResultSetFormatter.toList(results);
-//
-//		String text = "Parameters, Value\n";
-//		for (QuerySolution solution : result_list) {
-//			Iterator<String> vars = solution.varNames();
-//			while (vars.hasNext()) {
-//				String var_name = vars.next();
-//				String value = solution.getLiteral(var_name).getString();
-//				String line = var_name + "," + value + "\n";
-//				System.out.println(line);
-//				text = text + line;
-//			}
-//		}
-//
-//		File file = new File(baseUrl+"/Pa_high.csv");
-//		FileWriter writer = new FileWriter(file);
-
-
 		
 		copyTemplate(baseUrl, "Ptlow.csv");
 		copyTemplate(baseUrl, "Pthigh.csv");

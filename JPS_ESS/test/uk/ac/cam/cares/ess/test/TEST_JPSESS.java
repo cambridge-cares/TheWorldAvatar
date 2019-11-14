@@ -15,8 +15,9 @@ public class TEST_JPSESS extends TestCase {
 	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PVSingaporeNetwork.owl#PVSingaporeNetwork";
 //	String dataPath = QueryBroker.getLocalDataPath();
 //	String baseUrl=dataPath+"/JPS_ESS";
-	
-	public void testGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
+
+	private String modelname="NESS.gms";
+	public void xxxtestGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
 		JPS_ESS a = new JPS_ESS();
 		a.runGAMS("C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/91ecce2b-c758-4d7b-883c-e9e11e7d569b");
 	}
@@ -25,6 +26,7 @@ public class TEST_JPSESS extends TestCase {
 		
 
 	public void testStartSimulationPFAgentCallBaseScenario() throws IOException  {
+		
 
 		JSONObject jo = new JSONObject();
 		
@@ -50,9 +52,18 @@ public class TEST_JPSESS extends TestCase {
 		String baseUrl = dataPath + "/JPS_ESS";
 		new JPS_ESS().prepareCSV(ELECTRICAL_NETWORK, baseUrl);	
 	}
-	public void testModifyTemplate() throws IOException{
+	@SuppressWarnings("static-access")
+	public void testModifyTemplate() throws IOException, InterruptedException{
 		JPS_ESS a = new JPS_ESS();
-		a.modifyTemplate("D:/", "NESS.gms") ;
+		a.runGAMS("D:\\Users\\LONG01\\Documents\\gamsdir\\projdir") ;
+		try {
+			a.runGAMSOld();
+		   }
+		   catch (InterruptedException e) {
+		      e.printStackTrace();
+		   }
+		catch (Exception e) {
+			      e.printStackTrace();
+			   }
 	}
-
 }

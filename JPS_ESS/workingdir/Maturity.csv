@@ -1,39 +1,18 @@
-<<<<<<< HEAD
 Parameter,Value
-PHS,352
-CAES,15
-FES,51
-LA,44
-NaS,35
-ZEBRA,28
-NiCd,3
-Li-ion,446
-VRFB,61
-ZnBr,29
-PSB,0
-SMES,0
-Sc,0
-H2,13
-Powerwall,0
-BlueBattery,0
-Baobab,0
-=======
-Parameter,Value
-PHS,352
-CAES,15
-FES,51
-LA,44
-NaS,35
-ZEBRA,28
-NiCd,3
-Li-ion,446
-VRFB,61
-ZnBr,29
-PSB,0
-SMES,0
-Sc,0
-H2,13
-Powerwall,0
-BlueBattery,0
-Baobab,0
->>>>>>> 813-visualization-of-adding-the-battery-to-the-electric-grid
+PHS        ,352
+CAES        ,15
+FES        ,51
+LA        ,44
+NaS        ,35
+ZEBRA        ,28
+NiCd        ,3
+Li-ion        ,446
+VRFB        ,61
+ZnBr        ,29
+PSB        ,0
+SMES        ,0
+Sc        ,0
+H2        ,13
+Powerwall        ,0
+BlueBattery        ,0
+Baobab       ,0
