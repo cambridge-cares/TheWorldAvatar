@@ -95,7 +95,7 @@ public class InitialDataAnalysis {
 				for (int k = 0; k < ctrRes.length; k++) {
 
 //	                  int timeout = 60 * ctrRes[k];
-					String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_"
+					String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_"
 							+ timeout + "s";
 
 					System.out.println("Process configuration " + config);
@@ -117,7 +117,7 @@ public class InitialDataAnalysis {
 						 * HPC settings
 						 * 
 						 */
-					if (new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config + ".txt").exists()) {
+					if (new File(destRList +"/"+ "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config + ".txt").exists()) {
 
 						/**
 						 * 
@@ -131,9 +131,9 @@ public class InitialDataAnalysis {
 						 * HPC settings
 						 * 
 						 */
-					System.out.println("Skipping " + destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
+					System.out.println("Skipping " + destRList +"/"+ "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
 
-					printedResultsFile.write("Skipping " + destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
+					printedResultsFile.write("Skipping " + destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + config);
 					
 					printedResultsFile.write("\n");
 					
@@ -279,7 +279,7 @@ public class InitialDataAnalysis {
 							 * HPC settings
 							 * 
 							 */
-						if (new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
+						if (new File(destRList +"/"+ "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
 
 							continue;
 
@@ -447,8 +447,8 @@ public class InitialDataAnalysis {
 							 * HPC settings
 							 * 
 							 */
-							if (!new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/").exists()) {
-								new File(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"	 + iteration + "/" + target.getRef() + "/").mkdirs();
+							if (!new File(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/").exists()) {
+								new File(destRList +"/"+ "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"	 + iteration + "/" + target.getRef() + "/").mkdirs();
 							}
 							
 							/**
@@ -467,7 +467,7 @@ public class InitialDataAnalysis {
 							 * 
 							 */
 							ReactionListWriter rListWriter = new ReactionListWriter(new File(
-									destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct"));
+									destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_reaction-list.rct"));
 							/**
 							 * 
 							 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -483,7 +483,7 @@ public class InitialDataAnalysis {
 							 * 
 							 */
 							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(
-									destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
+									destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
 
 							if (!completeRList.isEmpty()) {
 								System.out.println("Writting complete reaction list...");
@@ -656,7 +656,7 @@ public class InitialDataAnalysis {
 						 * HPC settings
 						 */
 						
-						writer.set(destRList + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + config + ".txt");
+						writer.set(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + config + ".txt");
 						
 						writer.write();
 

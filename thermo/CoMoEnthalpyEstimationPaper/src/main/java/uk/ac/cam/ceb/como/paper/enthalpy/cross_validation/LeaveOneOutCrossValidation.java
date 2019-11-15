@@ -46,7 +46,8 @@ import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
  */
 
 /**
- * @author nk510
+ * 
+ * @author nk510@cam.ac.uk
  * @version 1.0
  * @since 2018-04-2
  * 
@@ -76,9 +77,11 @@ public class LeaveOneOutCrossValidation {
     public static void main(String[] args) throws Exception {
 
     	/**
-    	 * @author nk510
+    	 * 
+    	 * @author nk510@cam.ac.uk
     	 * @version 1.0
          * @since 2018-04-20
+         * 
     	 */
     	
         /*

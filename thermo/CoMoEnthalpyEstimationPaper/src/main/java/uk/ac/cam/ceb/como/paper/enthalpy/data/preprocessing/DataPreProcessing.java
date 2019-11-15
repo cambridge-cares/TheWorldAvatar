@@ -94,13 +94,14 @@ public class DataPreProcessing {
 //          timeout = 1500; // remove this when call this method
             
 //          Stopping run the code condition
+            
             int stop = 1;
             
-        for (int i = 0; i < ctrRuns.length; i++) {
+            for (int i = 0; i < ctrRuns.length; i++) {
         
         	for (int k = 0; k < ctrRes.length; k++) {
             
-        		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+        		String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                 
         		System.out.println("Process configuration " + config);
                 
@@ -108,22 +109,22 @@ public class DataPreProcessing {
         		
         		printedResultsFile.write("\n");
         		
-//                  if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+//              if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	  
                 	  /**
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
                  	   * HPC settings
                 	   */
-        		if(new File(destRList + "data-pre-processing" + "/" + config + ".txt").exists()) {
+        		if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
                 	
 //              System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
                    /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * HPC settings
                   	 */  
-        		System.out.println("Skipping " + destRList  + "data-pre-processing" + "/" + config);
+        		System.out.println("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
         		
-        		printedResultsFile.write("Skipping " + destRList  + "data-pre-processing" + "/" + config);
+        		printedResultsFile.write("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
                 
         		printedResultsFile.write("\n");
         		
@@ -172,20 +173,21 @@ public class DataPreProcessing {
                 	 * HPC settings
                 	 * 
                 	 */
-                if (new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
+                if (new File(destRList  +"/"+ "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
                     continue;
                     
                     }
 
                   /**
+                   * 
                    * @author nk510 ( caresssd@hermes.cam.ac.uk )
                    * Added: new ArrayList<>() -> new ArrayList<Species>();
                    * 
                    */
                     List<Species> refPool = new ArrayList<Species>();
                     
-//                    System.out.println("RefPool before adding refSpecies:");
+//                  System.out.println("RefPool before adding refSpecies:");
                     for(Species refP: refPool) {
                     	
 //                    	System.out.println(refP.getRef() + " " + refP.getHf() + " " + refP.getAtomMultiset() + " " + refP.getAtomMap() + " " + refP.getBondMap());
@@ -213,8 +215,8 @@ public class DataPreProcessing {
                     
                     refPool.addAll(refSpecies);
                     
-//                    System.out.println("RefPool after adding refSpecies:");
-//                    System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation method i class DataPreProcessing) : " +refPool.isEmpty());
+//                      System.out.println("RefPool after adding refSpecies:");
+//                      System.out.println("refPool.isEmpty() (getPreProcessingCorssValidation method i class DataPreProcessing) : " +refPool.isEmpty());
 
                         for(Species refP: refPool) {
                     	
@@ -318,7 +320,7 @@ public class DataPreProcessing {
                     /**
                      * 
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
-                     * Commented line of code below is used in original code
+                     * Commented line of code below 1is used in original code
                      * 
                      */
                     
@@ -412,7 +414,8 @@ public class DataPreProcessing {
                                 
                                 for (ReactionList l : results.get(s)) {
                                 	
-                                    rList.addAll(l);
+                                rList.addAll(l);
+                                
                                 }
                                 
                               completeRList.addAll(rList);
@@ -460,7 +463,7 @@ public class DataPreProcessing {
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
                     	 */
-                     if(!new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
+                     if(!new File(destRList  + "/"+"data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
                         	/**
                         	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -471,7 +474,7 @@ public class DataPreProcessing {
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
                     	 */
-                      new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
+                      new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
@@ -486,7 +489,7 @@ public class DataPreProcessing {
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * HPC settings
                   	 */
-                     ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
+                     ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
                          * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -507,7 +510,7 @@ public class DataPreProcessing {
                   	 * 
                   	 */
                     
-                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
+                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                         
                         
                   if (!completeRList.isEmpty()) {
@@ -529,7 +532,8 @@ public class DataPreProcessing {
                             	/**
                             	 * 
                             	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-                            	 * Calculates error that is difference between calculated enthalpy of formation (Hf) for currently analyzed species and its reference enthalpy.
+                            	 * Calculates error that is difference between calculated enthalpy of formation (Hf) for currently analyzed species and species reference enthalpy.
+                            	 * 
                             	 * 
                             	 */
                             	
@@ -584,14 +588,15 @@ public class DataPreProcessing {
                         for(Species sp: ttipSpecies) {
                         		
                         		/**
+                        		 * 
                             	 * @author nk510 (caresssd@hermes.cam.ac.uk)
                             	 * Species reference enthalpy and species name.
                             	 * 
                             	 */
                             	
-                        System.out.println("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
+                        System.out.println("[ Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
                             
-                        printedResultsFile.write("[Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
+                        printedResultsFile.write("[ Species name: " + sp.getRef() + "  Species (reference) enthalpy: " + sp.getHf() + " ]" );
                         
                         printedResultsFile.write("\n");
                         
@@ -602,7 +607,6 @@ public class DataPreProcessing {
                         printedResultsFile.write("Writting species list...");
                         
                         printedResultsFile.write("\n");
-                        
                             
                         spWriter.set(ttipSpecies, false);
                             
@@ -630,6 +634,7 @@ public class DataPreProcessing {
                      * Settings on PC machine.
                      * 
                      */
+                    
 //              writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
                     
                 /**
@@ -637,7 +642,7 @@ public class DataPreProcessing {
               	 * HPC settings
               	 * 
               	 */
-                writer.set(destRList  + "data-pre-processing" + "/"+ config + ".txt");
+                writer.set(destRList  + "/"+ "data-pre-processing" + "/"+ config + ".txt");
                     
                  writer.write();
                     
