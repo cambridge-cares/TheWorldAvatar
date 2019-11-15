@@ -19,7 +19,46 @@ import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 public class CoordinationDataCollection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 		
+	public void executeSGData(JSONObject jo){
+		JSONObject upcorn = new JSONObject();
+		upcorn.put("upperx", "11563323.926");
+		upcorn.put("uppery", "143305.896");
+		JSONObject lowcorn = new JSONObject();
+		lowcorn.put("lowerx", "11560879.832");
+		lowcorn.put("lowery", "140107.739");
+		JSONObject joregion = new JSONObject();
+		joregion.put("srsname","EPSG:3857");
+		joregion.put("lowercorner",lowcorn);
+		joregion.put("uppercorner",upcorn);
+		jo.put("region", joregion);
+		jo.put("location", "Singapore");
+		
+		callAgent(jo);
+	}
 	
+	public void executeHKData(JSONObject jo){
+		JSONObject upcorn = new JSONObject();
+		upcorn.put("upperx", "12720831.57");
+		upcorn.put("uppery", "2562311.02");
+		JSONObject lowcorn = new JSONObject();
+		lowcorn.put("lowerx", "12693826.33");
+		lowcorn.put("lowery", "2535141.08");
+		JSONObject joregion = new JSONObject();
+		joregion.put("srsname","EPSG:3857");
+		joregion.put("lowercorner",lowcorn);
+		joregion.put("uppercorner",upcorn);
+		jo.put("region", joregion);
+		jo.put("location", "Hong Kong");
+		
+		callAgent(jo);
+	}
+
+	
+	public void callAgent(JSONObject jo) {
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
+	}
+
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		JSONObject jo = new JSONObject();
@@ -42,26 +81,9 @@ public class CoordinationDataCollection extends HttpServlet {
 
 		
 		//retrieveShipdata();
+		executeHKData(jo);
+		executeSGData(jo);
 		
-		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12720831.57");
-		upcorn.put("uppery", "2562311.02");
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12693826.33");
-		lowcorn.put("lowery", "2535141.08");
-		JSONObject joregion = new JSONObject();
-		joregion.put("srsname","EPSG:3857");
-		joregion.put("lowercorner",lowcorn);
-		joregion.put("uppercorner",upcorn);
-		
-		
-		
-		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
-		jo.put("region", joregion);
-		jo.put("location", "Hong Kong");
-		//jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
 		System.out.println("it is executed");
 	}
 	
