@@ -53,7 +53,7 @@ public class NuclearAgent extends JPSHttpServlet {
     	modifyTemplate(baseUrl, modelname);
         String executablelocation = "C:/GAMS/win64/26.1/gams.exe";
         String folderlocation = baseUrl;
-        String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
+        String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",PROCDIR="+folderlocation+",CURDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
 
         Process p = Runtime.getRuntime().exec(content); //used w/o waitFor() to be async
         System.out.println("Done");
