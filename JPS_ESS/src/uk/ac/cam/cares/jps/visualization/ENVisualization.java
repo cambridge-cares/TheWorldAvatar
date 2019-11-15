@@ -132,19 +132,6 @@ public class ENVisualization extends JPSHttpServlet {
 			AgentCaller.printToResponse(b, response);
 		}
 		
-		else if ("/ENVisualization/createMarkers".equals(path)) {
-
-			logger.info("path called here= " + path);
-			String g=createMarkers(model);
-			
-			AgentCaller.printToResponse(g, response);
-		}
-		else if ("/ENVisualization/readGenerator".equals(path)) {
-
-			logger.info("path called here= " + path);
-			String g=readGenerator( model);
-			AgentCaller.printToResponse(g, response);
-		}
 	}
 	
 	public void writeToResponse(HttpServletResponse response, String content,String n) {
@@ -550,88 +537,9 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	return resultList;
 	}
-	public String createMarkers(OntModel model) throws IOException {
-		ArrayList<String>textcomb=new ArrayList<String>();
-		List<String[]> pplants = queryPowerPlant(model);
-		for (int i = 0; i < pplants.size(); i++) {
-			String content="{\"coors\": {\"lat\": "+pplants.get(i)[3]+", \"lng\": "+pplants.get(i)[2]
-					+ "},  \"fueltype\": \""
-					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
-			textcomb.add(content);
-		}
-		
-		return textcomb.toString();
-	}
 	
-	public static List<String[]> queryPowerPlant(OntModel model) {
-		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-				+ "SELECT DISTINCT ?entity ?valueofx ?valueofy "
-				+ "WHERE {?entity  a  j1:PowerGenerator ."
-				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."
-//
-				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."
-				
-				+ "}";
-			
-			
-			ResultSet resultSet = JenaHelper.query(model, genInfo);
-			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			System.out.println(result);
-			String[] keys = JenaResultSetFormatter.getKeys(result);
-			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-			//used to get distinct emissions and fuel types
-			String plantinfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-					+ "SELECT ?entity ?generation ?valueofx ?valueofy ?actual_carbon ?design_carbon "
-					+ "WHERE {?entity  a  j1:PowerGenerator ."
-					+ "?entity   j3:realizes ?generation ."
-					
-					+ "?generation j5:hasEmission ?emission ." 
-					+ "?emission a j5:Actual_CO2_Emission ."
-					+ "?emission   j2:hasValue ?valueemission ."
-					+ "?valueemission   j2:numericalValue ?actual_carbon ." 
-					
-					+ "OPTIONAL {?v_emission a j5:CO2_emission }"
-					+ "OPTIONAL {?v_emission   j2:hasValue ?valueemission_d }"
-					+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
-					
-					+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-					+ "?y  j2:hasValue ?vy ." 
-					+ "?vy  j2:numericalValue ?valueofy ."
-					+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-					+ "?x  j2:hasValue ?vx ." 
-					+ "?vx  j2:numericalValue ?valueofx ."
-
-					+ "}";
-			QueryBroker broker = new QueryBroker();
-			List<String[]> plantDict = new ArrayList<String[]>();
-			for (int i=0; i<resultListfromquery.size(); i++) {
-				if (resultListfromquery.get(i)[0].contains("EGen-001")) continue;
-				String resultplant = broker.queryFile(resultListfromquery.get(i)[0],plantinfo);
-				System.out.println(resultplant);
-				String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
-				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
-				plantDict.add(resultList.get(0));
-			}
-
-			return plantDict;
-	}
+	
+	
 	public String createLineJS(OntModel model) throws IOException {
 		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
