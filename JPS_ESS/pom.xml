@@ -58,6 +58,10 @@
 						<targetPath>/images</targetPath>
 					</resource>
 					<resource>
+						<directory>res</directory>
+						<targetPath>/res</targetPath>
+					</resource>
+					<resource>
 						<directory>WebContent/scripts</directory>
 						<targetPath>/scripts</targetPath>
 					</resource>
