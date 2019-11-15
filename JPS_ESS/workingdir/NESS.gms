@@ -235,8 +235,8 @@ $set awkscript awk.%gams.scrext%
 file fa / "%gams.scrdir%%awkscript%" /; put fa 'BEGIN { printf("Table solutions(*,*)\n$ondelim\nsol';
 loop(k, put ',' k.tl:0); putclose '\n"); }' / '{ print NR,$0 }' / 'END { print ";" }';
 $if     %system.filesys% == UNIX execute 'cd "%gams.scrdir%" && sort %fname% | uniq | awk -f %awkscript% > g.%gams.scrext% && gams g.%gams.scrext% o=gx.%gams.scrext% lo=0 gdx=soleps';
-$if NOT %system.filesys% == UNIX execute 'cd "%gams.scrdir%" && gsort %fname% | uniq | awk -f %awkscript% > g.%gams.scrext% && gams g.%gams.scrext% o=gx.%gams.scrext% lo=0 gdx=soleps';
-execute 'mv -f "%gams.scrdir%soleps.gdx" .';
+$if NOT %system.filesys% == UNIX execute 'cd "%gams.wdir%" && gsort %fname% | uniq | awk -f %awkscript% > g.%gams.scrext% && gams g.%gams.scrext% o=gx.%gams.scrext% lo=0 gdx=soleps';
+* execute 'mv -f "%gams.scrdir%soleps.gdx" .';
 
 Set s Solutions /1*50/; Parameter solutions(s,k) Unique solutions;
 execute_load 'soleps', solutions;

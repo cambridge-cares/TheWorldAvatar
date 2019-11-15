@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.ess;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,13 +61,28 @@ public class JPS_ESS extends JPSHttpServlet {
 		// String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
 
 		ArrayList<String> groupcommand = new ArrayList<String>();
-
-		groupcommand.add("D:/Users/LONG01/Documents/gamsdir/projdir/gamsexecute.bat");
-
-		// CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
-		CommandHelper.executeCommands(folderlocation, groupcommand);
-		System.out.println("Done");
+		try {
+            Process p = Runtime.getRuntime().exec(cmdArray);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String s = null;
+            while((s=stdInput.readLine()) !=null){
+               System.out.println(s);
+            }
+            p.waitFor();
+     }
+     catch (java.io.IOException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+     catch (InterruptedException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+		   System.out.println("Done");
 	}
+	
 
 
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
@@ -91,9 +108,25 @@ public class JPS_ESS extends JPSHttpServlet {
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
         
         System.out.println(cmdArrayinstring);
-        Process p = Runtime.getRuntime().exec(cmdArray);
-		   p.waitFor();
-         
+        try {
+            Process p = Runtime.getRuntime().exec(cmdArray);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String s = null;
+            while((s=stdInput.readLine()) !=null){
+               System.out.println(s);
+            }
+            p.waitFor();
+     }
+     catch (java.io.IOException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+     catch (InterruptedException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
 		   System.out.println("Done");
 	}
 	
@@ -245,6 +278,7 @@ public class JPS_ESS extends JPSHttpServlet {
 		copyTemplate(baseUrl, "EnvironmentalScore.csv");
 		copyTemplate(baseUrl, "EconomicalScore.csv");
 		copyTemplate(baseUrl, "Maturity.csv");
+		copyTemplate(baseUrl, "soleps.gdx");
 		
 		try {
 			runGAMS(baseUrl);

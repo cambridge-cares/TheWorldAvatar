@@ -55,7 +55,7 @@ public class TEST_JPSESS extends TestCase {
 	@SuppressWarnings("static-access")
 	public void testModifyTemplate() throws IOException, InterruptedException{
 		JPS_ESS a = new JPS_ESS();
-		a.runGAMS("D:\\Users\\LONG01\\Documents\\gamsdir\\projdir") ;
+//		a.runGAMS("D:\\Users\\LONG01\\Documents\\gamsdir\\projdir") ;
 		try {
 			a.runGAMSOld();
 		   }
