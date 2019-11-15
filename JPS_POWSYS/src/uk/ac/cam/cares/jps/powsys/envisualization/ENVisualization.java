@@ -28,6 +28,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +43,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet(urlPatterns = { "/ENVisualization/createLineJS", "/ENVisualization/createKMLFile/*", "/ENVisualization/getKMLFile/*",  "/ENVisualization/createMarkers/*" ,"/ENVisualization/readGenerator/*"})
 public class ENVisualization extends JPSHttpServlet {
@@ -97,12 +97,6 @@ public class ENVisualization extends JPSHttpServlet {
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 
 		String iriofnetwork = joforEN.getString("electricalnetwork");
-		String flag = joforEN.getString("flag");
-		JPSHttpServlet.disableScenario();
-		if (flag.equals(SCENARIO_NAME_TEST)) {
-			String scenarioUrl = BucketHelper.getScenarioUrl(flag); 
-			JPSHttpServlet.enableScenario(scenarioUrl);	
-		}
 		OntModel model = readModelGreedy(iriofnetwork);
 		logger.info("path called= "+path);
 		if ("/ENVisualization/createLineJS".equals(path)) {
@@ -110,11 +104,8 @@ public class ENVisualization extends JPSHttpServlet {
 			AgentCaller.printToResponse(g, response);
 			
 		} else if ("/ENVisualization/createKMLFile".equals(path)) {
-			
-			String n=joforEN.getString("n");
-//			BufferedWriter bufferedWriter = null;
+			String flag = joforEN.getString("flag");
 			String b = null;
-//			try (FileWriter writer = new FileWriter("C:/TOMCAT/webapps/ROOT/OntoEN/testfinal" + flag +".kml");
 			String root = KeyValueManager.get(IKeys.ABSDIR_ROOT);
 			try (FileWriter writer = new FileWriter(root + "/OntoEN/testfinal" + flag +".kml");
 		             BufferedWriter bw = new BufferedWriter(writer)) {
@@ -137,7 +128,7 @@ public class ENVisualization extends JPSHttpServlet {
 		else if ("/ENVisualization/createMarkers".equals(path)) {
 
 			logger.info("path called here= " + path);
-			String g=createMarkers(flag, model);
+			String g=createMarkers(model);
 			
 			AgentCaller.printToResponse(g, response);
 		}
@@ -507,13 +498,11 @@ public class ENVisualization extends JPSHttpServlet {
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(queryResult, keysplant);
 			if (resultList.size() == 0) { //temporary method just in case this generator does not have co2 emission
 				actual += 0;
-				System.out.println(generators.get(i)[0] +'\n');
 				actual += 0;
 				design += 0; 
 			}
 			else{
 				actual += Float.valueOf(resultList.get(0)[1]);
-				System.out.println(generators.get(i)[0] +'\n' +resultList.get(0)[1]+'\n' );
 				design += Float.valueOf(resultList.get(0)[2]);
 			}
 		}
@@ -553,20 +542,22 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	return resultList;
 	}
-	public String createMarkers(String flag, OntModel model) throws IOException {
+	public String createMarkers(OntModel model) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
-		List<String[]> pplants = queryPowerPlant(model, flag);
+		List<String[]> pplants = queryPowerPlant(model);
 		for (int i = 0; i < pplants.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+pplants.get(i)[3]+", \"lng\": "+pplants.get(i)[2]
 					+ "},  \"fueltype\": \""
 					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
 			textcomb.add(content);
 		}
-		
-		return textcomb.toString();
+		JSONArray jsArray = new JSONArray(textcomb);
+	    JSONObject jo = new JSONObject();
+	    jo.put("result", jsArray);
+		return jo.toString();
 	}
 	
-	public static List<String[]> queryPowerPlant(OntModel model, String flag) {
+	public static List<String[]> queryPowerPlant(OntModel model) {
 		String genInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
@@ -590,7 +581,6 @@ public class ENVisualization extends JPSHttpServlet {
 			
 			ResultSet resultSet = JenaHelper.query(model, genInfo);
 			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			System.out.println(result);
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			//used to get distinct emissions and fuel types
@@ -627,7 +617,6 @@ public class ENVisualization extends JPSHttpServlet {
 			for (int i=0; i<resultListfromquery.size(); i++) {
 				if (resultListfromquery.get(i)[0].contains("EGen-001")) continue;
 				String resultplant = broker.queryFile(resultListfromquery.get(i)[0],plantinfo);
-				System.out.println(resultplant);
 				String[] keysplant = JenaResultSetFormatter.getKeys(resultplant);
 				List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultplant, keysplant);
 				plantDict.add(resultList.get(0));
@@ -819,7 +808,10 @@ public class ENVisualization extends JPSHttpServlet {
 	    String content3="{\"coors\": [{\"lat\": "+1.27646+", \"lng\": "+103.7266+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
 	    textcomb.add(content2);
 	    textcomb.add(content3);
-	    return textcomb.toString();
+	    JSONArray jsArray = new JSONArray(textcomb);
+	    JSONObject jo = new JSONObject();
+	    jo.put("result", jsArray);
+	    return jo.toString();
 		
 	}
 

@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.descriptor.JspConfigDescriptor;
-
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
@@ -49,7 +47,7 @@ public class QueryBroker {
 			return new ScenarioClient().read(scenarioUrl, urlOrPath);
 		}
 		
-		urlOrPath = ResourcePathConverter.convert(urlOrPath);
+//		urlOrPath = ResourcePathConverter.convert(urlOrPath);
 		
 		if (urlOrPath.startsWith("http")) {
 		

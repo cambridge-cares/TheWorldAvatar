@@ -39,7 +39,7 @@ public class ResourcePathConverter {
 			converted = path.replace("http://www.jparksimulator.com", address);
 			JPSBaseLogger.info(getInstance(), "convert(): converted resource path " + path + " to " + converted);
 		}
-		
+		System.out.println(path);
 		return converted;
 	}
 	
