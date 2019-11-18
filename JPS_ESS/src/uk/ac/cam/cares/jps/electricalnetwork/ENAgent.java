@@ -668,7 +668,7 @@ public class ENAgent extends JPSHttpServlet {
 				}
 			}
 
-			System.out.println("Done");
+			System.out.println("Done heavy memory and cpu consumption");
 
 		} catch (IOException e) {
 
@@ -968,7 +968,7 @@ public class ENAgent extends JPSHttpServlet {
 			Individual vqloss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[2]);
 			vqloss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[2]));
 
-//			Individual vpave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[3]); //value = 0??? empty
+//			Individual vpave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[3]); //Only three columns (including numbering for the branch
 //			vpave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[3]));
 //
 //			Individual vqave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[4]);

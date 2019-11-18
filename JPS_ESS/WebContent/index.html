@@ -496,6 +496,7 @@ var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongi
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
 var infowindow;
+var animatedLines = [];
  
  
 // Perform other work here ...
@@ -552,6 +553,7 @@ var infowindow;
 	}
 	function drawLines(){
 		clearMarkers();
+		clearAnimatedLines();
 		//load the line at the starting
 		var url = prefix + '/JPS_ESS/ENVisualization/createLineJS';
 		var lines=[];
@@ -689,6 +691,7 @@ var infowindow;
                     markers.push(marker);
 				});
 				animateCircle(line,1);
+                animatedLines.push(line);
 			}
 			
 			
@@ -872,7 +875,7 @@ function openWindowGen(id){
 
 		console.log(inputsHTML);
 		var div = document.getElementById('inputsContainer');
-		div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+		div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
 		'<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
 
 
@@ -959,7 +962,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 	});
 
 }
-	function SubmitTable(e) {
+function SubmitTable(e) {
 
 	opt = e.innerHTML;
 	var table = document.getElementById('inputsTable');
@@ -1199,7 +1202,7 @@ asyncLoop({
 
 }
    
-	function animateCircle(line,timeOut) {
+function animateCircle(line,timeOut) {
 		var count = 0;
 		window.setInterval(function() {
 			count = (count + 1) % 200;
@@ -1209,6 +1212,13 @@ asyncLoop({
 			line.set('icons', icons);
 		}, timeOut);
 	}
+function clearAnimatedLines(){
+	animatedLines.forEach((line)=>
+	{
+		line.setMap(null);
+	})
+	animatedLines=[];
+}
 	function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
 
 		var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';

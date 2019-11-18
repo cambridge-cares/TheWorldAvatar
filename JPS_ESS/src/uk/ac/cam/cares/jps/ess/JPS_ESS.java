@@ -25,7 +25,6 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
@@ -83,8 +82,6 @@ public class JPS_ESS extends JPSHttpServlet {
 		   System.out.println("Done");
 	}
 	
-
-
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
 		
 		modifyTemplate(baseUrl,modelname);
@@ -109,6 +106,7 @@ public class JPS_ESS extends JPSHttpServlet {
         
         System.out.println(cmdArrayinstring);
         try {
+        	
             Process p = Runtime.getRuntime().exec(cmdArray);
             BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
             String s = null;
@@ -127,7 +125,7 @@ public class JPS_ESS extends JPSHttpServlet {
             System.err.println(">>>>" + e.getMessage() );
             e.printStackTrace();
      }
-		   System.out.println("Done");
+		   System.out.println("Done Processing");
 	}
 	
 	public void modifyTemplatever2(String newdir2, String filename) throws IOException { 

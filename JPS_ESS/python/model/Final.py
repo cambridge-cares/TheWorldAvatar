@@ -264,7 +264,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
             dic[i] = [str(absDiff(r['branch'][i][15], r['branch'][i][13])),  str(absDiff(r['branch'][i][16], r['branch'][i][14]))]
             i += 1
         f.close()
-        with open ('data.json', 'w') as fp: 
+        with open ('C:\\Users\\LONG01\\TOMCAT\\webapps\\ROOT\OntoEN\\outputOPF.json', 'w') as fp: 
             json.dump(dic, fp)
     #For Standard Power Flow
     elif (optimal == 0):
