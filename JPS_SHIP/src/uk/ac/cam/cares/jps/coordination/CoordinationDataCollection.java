@@ -81,8 +81,9 @@ public class CoordinationDataCollection extends HttpServlet {
 
 		
 		//retrieveShipdata();
-		executeHKData(jo);
 		executeSGData(jo);
+		executeHKData(jo);
+
 		
 		System.out.println("it is executed");
 	}
