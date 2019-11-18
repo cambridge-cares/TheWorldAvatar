@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.ess;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,6 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
@@ -53,36 +54,49 @@ public class JPS_ESS extends JPSHttpServlet {
 		String cmdArrayinstring = cmdArray[0] + " " + cmdArray[1] + "," + cmdArray[2] + "," + cmdArray[3] + " "
 				+ cmdArray[4];
 
-//		System.out.println(cmdArrayinstring);
+		System.out.println(cmdArrayinstring);
 //        Process p = Runtime.getRuntime().exec(cmdArray);
 //		   p.waitFor();
 		// String startbatCommand ="C:/JPS_DATA/workingdir/JPS_POWSYS/gamsexecute.bat";
 
 		ArrayList<String> groupcommand = new ArrayList<String>();
-
-		groupcommand.add("C:/Users/GKAR01/Documents/gamsdir/projdir/gamsexecute.bat");
-
-		// CommandHelper.executeSingleCommand(folderlocation,startbatCommand);
-		CommandHelper.executeCommands(folderlocation, groupcommand);
-		System.out.println("Done");
+		try {
+            Process p = Runtime.getRuntime().exec(cmdArray);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String s = null;
+            while((s=stdInput.readLine()) !=null){
+               System.out.println(s);
+            }
+            p.waitFor();
+     }
+     catch (java.io.IOException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+     catch (InterruptedException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+		   System.out.println("Done");
 	}
-
-
+	
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
 		
-		modifyTemplatever2(baseUrl,modelname);
+		modifyTemplate(baseUrl,modelname);
 
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-       // String folderlocation =baseUrl+"/";
-        String folderlocation =baseUrl.replace("/","\\\\")+"\\";
+        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
+        String folderlocation =baseUrl.replace("//", "/");
+//        String folderlocation =baseUrl.replace("/","\\\\")+"\\";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
         
         cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + modelname;
+        cmdArray[1] = folderlocation+"/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
         cmdArray[4] = "LO=2";
@@ -90,11 +104,28 @@ public class JPS_ESS extends JPSHttpServlet {
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
         
-        logger.info(cmdArrayinstring);
-        Process p = Runtime.getRuntime().exec(cmdArray);
-		   p.waitFor();
-         
-		   logger.info("Done");
+        System.out.println(cmdArrayinstring);
+        try {
+        	
+            Process p = Runtime.getRuntime().exec(cmdArray);
+            BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String s = null;
+            while((s=stdInput.readLine()) !=null){
+               System.out.println(s);
+            }
+            p.waitFor();
+     }
+     catch (java.io.IOException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+     catch (InterruptedException e )
+     {
+            System.err.println(">>>>" + e.getMessage() );
+            e.printStackTrace();
+     }
+		   System.out.println("Done Processing");
 	}
 	
 	public void modifyTemplatever2(String newdir2, String filename) throws IOException { 
@@ -104,6 +135,7 @@ public class JPS_ESS extends JPSHttpServlet {
 		String destinationUrl = newdir2.replace("/","\\") + "\\"+filename;
 		System.out.println("dest="+destinationUrl);
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		System.out.println("FILE: FILE: "+ file);
         String fileContext = FileUtils.readFileToString(file);
         fileContext = fileContext.replaceAll("Ptlow.gdx",newdir+"\\\\"+"Ptlow.gdx");
         fileContext = fileContext.replaceAll("Pthigh.gdx",newdir+"\\\\"+"Pthigh.gdx");
@@ -132,10 +164,14 @@ public class JPS_ESS extends JPSHttpServlet {
 		new QueryBroker().put(destinationUrl, fileContext);
 	}
 	
-	public void modifyTemplate(String newdir, String filename) throws IOException { 
+	public void modifyTemplate(String newdir, String filename) throws IOException {
+		newdir = newdir.replace("//", "/");
 		String destinationUrl = newdir + "/"+filename;
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		
         String fileContext = FileUtils.readFileToString(file);
+		System.out.println("FILE: FILE: "+ file);
+        
         fileContext = fileContext.replaceAll("Ptlow.gdx",newdir+"/Ptlow.gdx");
         fileContext = fileContext.replaceAll("Pthigh.gdx",newdir+"/Pthigh.gdx");
         fileContext = fileContext.replaceAll("Dtlow.gdx",newdir+"/Dtlow.gdx");
@@ -153,8 +189,7 @@ public class JPS_ESS extends JPSHttpServlet {
         fileContext = fileContext.replaceAll("EconomicalScore.csv",newdir+"/EconomicalScore.csv output="+newdir+"/EconomicalScore.gdx");
         fileContext = fileContext.replaceAll("Maturity.csv",newdir+"/Maturity.csv output="+newdir+"/Maturity.gdx");
         fileContext = fileContext.replaceAll("Pa_high.csv",newdir+"/Pa_high.csv output="+newdir+"/Pa_high.gdx");
-        System.out.println(fileContext);
-
+        System.out.println("NEWDIR: "+ newdir);
         //FileUtils.write(file, fileContext);
  
 		
@@ -227,9 +262,10 @@ public class JPS_ESS extends JPSHttpServlet {
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String baseUrl = QueryBroker.getLocalDataPath();// + "/GAMS_ESS";
+		System.out.println("baseURL: " + baseUrl);
 		JSONObject jofornuc = AgentCaller.readJsonParameter(request);
 		String PVNetworkiri=jofornuc.getString("PVNetwork");
-		
+		System.out.println("PVNETWORK: " + PVNetworkiri);
 		System.out.println("parameter got= "+jofornuc.toString());
 		prepareCSV(PVNetworkiri,baseUrl);
 		
@@ -289,6 +325,7 @@ public class JPS_ESS extends JPSHttpServlet {
 		copyTemplate(baseUrl, "EnvironmentalScore.csv");
 		copyTemplate(baseUrl, "EconomicalScore.csv");
 		copyTemplate(baseUrl, "Maturity.csv");
+		copyTemplate(baseUrl, "soleps.gdx");
 		
 		try {
 			runGAMS(baseUrl);

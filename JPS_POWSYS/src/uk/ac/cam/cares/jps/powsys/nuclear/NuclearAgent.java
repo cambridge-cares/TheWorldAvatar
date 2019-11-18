@@ -52,8 +52,8 @@ public class NuclearAgent extends JPSHttpServlet {
     public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
     	modifyTemplate(baseUrl, modelname);
         String executablelocation = "C:/GAMS/win64/26.1/gams.exe";
-        String folderlocation = baseUrl + "/";
-        String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
+        String folderlocation = baseUrl;
+        String content=executablelocation+" "+baseUrl+"/"+modelname+",WDIR="+folderlocation+",PROCDIR="+folderlocation+",CURDIR="+folderlocation+",SCRDIR="+folderlocation+" LO=2";
 
         Process p = Runtime.getRuntime().exec(content); //used w/o waitFor() to be async
         System.out.println("Done");
@@ -97,12 +97,12 @@ public class NuclearAgent extends JPSHttpServlet {
         logger.info("Start");
         //logger.info("separator= "+File.separator);
         String executablelocation = "C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
-        String folderlocation = baseUrl + "/";
+        String folderlocation =baseUrl;
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[5];
 
         cmdArray[0] = executablelocation;
-        cmdArray[1] = folderlocation + modelname;
+        cmdArray[1] = folderlocation + "/" + modelname;
         cmdArray[2] = "WDIR=" + folderlocation;
         cmdArray[3] = "SCRDIR=" + folderlocation;
         cmdArray[4] = "LO=2";
@@ -143,7 +143,7 @@ public class NuclearAgent extends JPSHttpServlet {
     @Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
         logger = LoggerFactory.getLogger(NuclearAgent.class);
-        super.doHttpJPS(request, response);
+        super.doHttpJPS(request, response, reqBody);
     }
 
     @Override

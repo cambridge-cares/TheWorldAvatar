@@ -130,7 +130,9 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         cmdArray[1] = folderlocation + "/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
-        cmdArray[4] = "LO=2";
+        cmdArray[4] = "PROCDIR="+folderlocation;
+        cmdArray[5] = "CURDIR="+folderlocation;
+        cmdArray[6] = "LO=2";
 
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];

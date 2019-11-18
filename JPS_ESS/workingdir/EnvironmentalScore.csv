@@ -1,18 +1,18 @@
 Parameter,Value
-PHS,0.024
-CAES,0.027
-FES,0.001
-LA,0.031
-NaS,0.022
-ZEBRA,0.025
-NiCd,0.05
-Li-ion,0.03
-VRFB,0.01
-ZnBr,0.032
-PSB,0.032
-SMES,0.04
-Sc,0.005
-H2,0.067
-Powerwall,0.03
-BlueBattery,0.024
-Baobab,0.024
+PHS        ,0.024
+CAES        ,0.027
+FES        ,0.001
+LA        ,0.031
+NaS        ,0.022
+ZEBRA        ,0.025
+NiCd        ,0.05
+Li-ion        ,0.03
+VRFB        ,0.01
+ZnBr        ,0.032
+PSB        ,0.032
+SMES        ,0.04
+Sc        ,0.005
+H2        ,0.067
+Powerwall        ,0.03
+BlueBattery        ,0.024
+Baobab       ,0.024
