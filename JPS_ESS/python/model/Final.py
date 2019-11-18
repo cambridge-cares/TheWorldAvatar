@@ -42,6 +42,8 @@ def readText(baseMVAName, busName, genName, branchName, splitCharacter, optimal,
         singleLine = file.readline()
         singleLine = singleLine.strip()
         items = singleLine.split(splitCharacter)
+        print(items)
+        print(items[0])
         ppc["bus"][readLoop][0] = numpy.float(float(items[0])-1.0)
         valueLoop = 1
         while (valueLoop < 13):
@@ -188,7 +190,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
     #busName = "bus.txt"
     #genName = "gen.txt"
     #branchName = "branch.txt"
-    #splitCharacter = '	'
+    #splitCharacter = ' '
     #outputBusName = "outputBus.txt"
     #outputBranchName = "outputBranch.txt"
     #outputBranchName = "outputGen.txt"
@@ -259,10 +261,10 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
         dic = {}
         while (i < branchCount):
             f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14])) + '\n')
-            i += 1
             dic[i] = [str(absDiff(r['branch'][i][15], r['branch'][i][13])),  str(absDiff(r['branch'][i][16], r['branch'][i][14]))]
+            i += 1
         f.close()
-        with open ('data.json', 'w') as fp: 
+        with open ('C:\\Users\\LONG01\\TOMCAT\\webapps\\ROOT\OntoEN\\outputOPF.json', 'w') as fp: 
             json.dump(dic, fp)
     #For Standard Power Flow
     elif (optimal == 0):
@@ -310,9 +312,9 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
 
 #MAIN
 #Run the main function here (all variables after the 'optimal' 0/1 are only needed for the optimal power flow analysis, but some unused input is still required). 
-mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusPF.txt", "outputBranchPF.txt", "outputGenPF.txt", 1, 0, "areas.txt", "genCost.txt")
-mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusOPF.txt", "outputBranchOPF.txt", "outputGenOPF.txt", 1, 1, "areas.txt", "genCost.txt")
-#mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBus.txt", "outputBranch.txt", "outputGen.txt", 0, 0, "areas.txt", "genCost.txt")
+mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '\t', "outputBusPF.txt", "outputBranchPF.txt", "outputGenPF.txt", 1, 0, "areas.txt", "genCost.txt")
+mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '\t', "outputBusOPF.txt", "outputBranchOPF.txt", "outputGenOPF.txt", 1, 1, "areas.txt", "genCost.txt")
+#mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '   ', "outputBus.txt", "outputBranch.txt", "outputGen.txt", 0, 0, "areas.txt", "genCost.txt")
 sys.exit()
 
 ########
