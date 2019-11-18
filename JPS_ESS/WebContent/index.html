@@ -494,7 +494,8 @@ var scenario = "base";
 var prefix = "http://localhost:8080"
 var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
-var markers = []
+var markers = [];
+var infowindow;
  
  
 // Perform other work here ...
@@ -672,11 +673,20 @@ var markers = []
 					var content = constructLineMenu(this.title,function (_content) {
 						console.log('content',_content);
 						infowindow.setContent(_content);
-						infowindow.open(map, that);
-
 					});
-					
-
+					marker = new google.maps.Marker({
+                                position: lineEvent.latLng,
+                                map: map,
+                              });
+                              marker.addListener('click', function() {
+                                infowindow.open(map, marker);
+                              });
+                              marker.addListener('dblclick', function() {
+                                infowindow.close();
+                                marker.setMap(null);
+                                marker = null;
+                              });
+                    markers.push(marker);
 				});
 				animateCircle(line,1);
 			}
@@ -748,24 +758,18 @@ var markers = []
 	function constructLineMenu(id,callback)
 	{
 		// var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork' + id;
-		console.log('check that this has been called');
-		console.log(id);
 		selectedId = id.split('/')[1];
-		console.log('url',url);
 		// sendRequest(url,function (response) {
-
-		var inputsHTML = "<table id='table"+selectedId+"' class='table-attr'>";
-		var inputLine = "<tr><td><label> " + id +'</label></td><td><label> ' + txt[selectedId][0] +  '</label></td><td> MW </td></tr> ';
-		inputsHTML = inputsHTML + inputLine;
-		inputsHTML  += "</table>";
-		callback(inputsHTML);
+    var promise1 = new Promise(function (resolve, reject){
+        resolve(openWindowLineAndBus('http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId +'#'+selectedId.split('.')[0], branchInfo, callback));
+    }); 
+    promise1.catch(alert);
 	}
 
 
 
 	function setKMLMenu(kmlEvent)
 	{
-		console.log('CHECK THAT HERE')
 		var data = kmlEvent.featureData;
 		var nameString = data.name.substr(1);
 		console.log(nameString);
@@ -1167,7 +1171,7 @@ asyncLoop({
 		//var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
 
-		var agenturl = prefix + '/JPS_ESS/ENAgent/startsimulation'+opt;
+		var agenturl = prefix + '/JPS_ESS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
 		data = { "electricalnetwork":electricalnetwork}
 		url = createUrlForAgent(scenario, agenturl, data);
 		console.log(url);
