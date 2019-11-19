@@ -99,7 +99,7 @@ var busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
     + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
     + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
     + "SELECT ?entity ?V_Pd ?V_Pd_unit ?V_Pd_Gen ?V_Pd_Gen_unit ?V_Gd ?V_Gd_unit ?V_Gd_Gen ?V_Gd_Gen_unit " 
-    + "?V_Gs ?V_Bs ?V_Vm ?V_Vm_unit ?V_Va ?V_Va_unit ?V_BaseKV ?V_BaseKV_unit ?V_VmMax ?V_VmMax_unit ?V_VmMin ?V_VmMin_unit ?V_x ?V_x_unit ?V_y ?V_y_unit "
+    + "?V_Gs ?V_Bs ?V_Vm ?V_Va ?V_Va_unit ?V_BaseKV ?V_BaseKV_unit ?V_VmMax ?V_VmMin ?V_x ?V_x_unit ?V_y ?V_y_unit "
 
     + "WHERE {?entity  a  j1:BusNode  ." 
     + "?entity   j2:isModeledBy ?model ."
@@ -143,7 +143,6 @@ var busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
     + "?VM  a  j3:Vm  ." 
     + "?VM  j2:hasValue ?vVM ."
     + "?vVM   j2:numericalValue ?V_Vm ." // Vm
-    + "?vVM   j2:hasUnitOfMeasure ?V_Vm_unit ." // Vm
 
     + "?model   j5:hasModelVariable ?VA ." 
     + "?VA  a  j3:Va  ." 
@@ -161,13 +160,11 @@ var busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
     + "?vmaxvar  a  j3:VmMax  ."
     + "?vmaxvar  j2:hasValue ?vvmaxvar ." 
     + "?vvmaxvar   j2:numericalValue ?V_VmMax ." // Vmax
-    + "?vvmaxvar   j2:hasUnitOfMeasure ?V_VmMax_unit ." // Vmax
 
     + "?model   j5:hasModelVariable ?vminvar ." 
     + "?vminvar  a  j3:VmMin  ."
     + "?vminvar  j2:hasValue ?vvminvar ." 
     + "?vvminvar   j2:numericalValue ?V_VmMin ." // Vmin
-    + "?vvminvar   j2:hasUnitOfMeasure ?V_VmMin_unit ." // Vmin
     
     + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
     + "?y  j2:hasValue ?vy ." 
