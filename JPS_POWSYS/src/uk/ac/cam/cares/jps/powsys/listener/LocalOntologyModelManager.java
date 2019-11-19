@@ -12,22 +12,20 @@ import java.io.IOException;
 public class LocalOntologyModelManager extends BaseChimneyOntologyModelManager {
 
     public static OntModel createChimneyModelForName(String name) throws IOException {
-        String shipKbURL;
+        //@todo LKA - implementation
+        String plantKbURL = null;
+
         if (!AgentLocator.isJPSRunningForTest()) {
-            shipKbURL = IRI_KB_SHIPS;
+
         } else {
-            shipKbURL = IRI_KB_SHIPS_TEST;
+
         }
 
         String content = getBaseChimneyContent();
-        content = content.replaceAll(IRI_KB_SHIPS + OWL_CHIMNEY, shipKbURL + name + "/" + OWL_CHIMNEY);
+        content = content.replaceAll(IRI_KB_BASE + OWL_CHIMNEY, plantKbURL + name + "/" + OWL_CHIMNEY);
 
         return createModelFromString(content);
     }
-
-
-
-
 
 }
 
