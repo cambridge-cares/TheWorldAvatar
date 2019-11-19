@@ -3,27 +3,37 @@ package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Property;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
+import uk.ac.cam.cares.jps.ship.listener.LocalOntologyModelManager;
+
 @WebServlet(urlPatterns = { "/aggregateemission" })
 public class AggregationEmissionAgent extends JPSHttpServlet {
 	
     public static final String UPDATE_PATH = "/AggregationEmissionAgent/update";
     public static final String SUM_PATH = "/AggregationEmissionAgent/sum";
+    private static final String EM_RATE = "_EmissionRate";
+    //both only called by front end javascript; update to chimney, then query to sum to give to front end
 	
 	String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 		    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -77,19 +87,27 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 	}
 	
 	
-	
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException { 
-		
-		JSONObject joforEN = AgentCaller.readJsonParameter(request);
+    @Override
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        logger = LoggerFactory.getLogger(NuclearAgent.class);
+        super.doHttpJPS(request, response);
+    }
+    
+    @Override
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
+        logger = LoggerFactory.getLogger(NuclearAgent.class);
+        super.doHttpJPS(request, response, reqBody);
+    }
 
-		String iriofnetwork = joforEN.getString("electricalnetwork");
-		
+    @Override
+    protected JSONObject processRequestParameters(JSONObject requestParams) {
+    	
+		String iriofnetwork = requestParams.getString("electricalnetwork");
 		
 		JSONObject result=sumEmissionResult(iriofnetwork);
-		AgentCaller.printToResponse(result, response);
-	
-	}
+    	
+		return result;
+    }
 	
 	public static List<String[]> provideGenlist(String iriofnetwork) {
 		String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
@@ -175,10 +193,65 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 	return ans;
 	}
 	
-	public void updateEmission() {
+	public void updateEmission(String ENIRI) {
+		JSONObject ans=sumEmissionResult(ENIRI);
+		List<Object>chimneylist=ans.getJSONArray("chimney").toList();
+		List<Object>emissionlist=ans.getJSONArray("emission").toList();
+		int size=chimneylist.size();
+		for(int d=0;d<size;d++) {
+			OntModel jenaOwlModel = LocalOntologyModelManager.createChimneyModelForMMSI(mmsi);
+			startConversion(jenaOwlModel, chimneylist.get(d), emissionlist.get(d));
+		}
+		
 		
 		
 	}
+
+	private void startConversion(OntModel jenaOwlModel, String iriOfChimney, String emission)
+			throws IOException {
+		doConversion(jenaOwlModel, iriOfChimney, emission);
+		// save the updated model
+		LocalOntologyModelManager.saveToOwl(jenaOwlModel, iriOfChimney); // for each owl file
+
+	}
+
+	private void doConversion(OntModel jenaOwlModel, String iriofchimney, String emission) throws JSONException {
+		
+		
+		Map hmap = LocalOntologyModelManager.getSpeciesMap();
+        //reset all the emission rate to be zero
+        for (int b = 0; b < hmap.size(); b++) {
+            String ks = (String) hmap.get(hmap.keySet().toArray()[b].toString());
+            Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + ks + EM_RATE);
+            valueofspeciesemissionrate.setPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
+                    jenaOwlModel.createTypedLiteral(Double.valueOf(0)));
+        }
+
+			String parametername = "CO2"; //hard coded at the moment
+			Double parametervalue = Double.valueOf(emission);
+			if (hmap.get(parametername) != null) {
+				Individual valueofspeciesemissionrate = jenaOwlModel
+						.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
+				valueofspeciesemissionrate.setPropertyValue(
+						(Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
+						jenaOwlModel.createTypedLiteral(parametervalue));
+			}
+		
+	}
+	
+    public static OntModel createChimneyModelForMMSI(String mmsi) throws IOException {
+        String shipKbURL;
+        if (!AgentLocator.isJPSRunningForTest()) {
+            shipKbURL = "http://www.theworldavatar.com/kb/powerplants/";
+        } else {
+            shipKbURL = "http://localhost:8080/kb/powerplants/";
+        }
+
+        String content = getBaseChimneyContent();
+        content = content.replaceAll(IRI_KB_SHIPS + OWL_CHIMNEY, shipKbURL + mmsi + "/" + OWL_CHIMNEY);
+
+        return createModelFromString(content);
+    }
 	
 	
 
