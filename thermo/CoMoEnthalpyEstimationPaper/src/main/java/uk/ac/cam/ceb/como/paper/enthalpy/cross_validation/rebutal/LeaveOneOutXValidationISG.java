@@ -87,7 +87,7 @@ public class LeaveOneOutXValidationISG {
         
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
         
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv"; //ref_scaled_kJperMols_v8-5-6c.csv";
         
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
         

@@ -122,23 +122,25 @@ public class ErrorBarCalculation {
  }
  
  /**
+ * 
  * @param invalidSpeciesFile The txt file where invlid species will be listed remaining after appliation cross validation algorithm in initial analysis.
  * @param tempInvalidSetOfSpecies The set of invalid species after completing initial analysis
  * @param invalidSpeciesSet Invalid set of species
  * @param validSpeciesSet  Valid set of species.
  * @throws IOException The IO exception.
+ * 
  */
 public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet, BufferedWriter printedResultsFile) throws IOException {
 	
 	 	for(Species invs: invalidSpeciesSet) {
-	         
+	 		
 	 	       if(!validSpeciesSet.contains(invs)) {
 	 	       
 	 	       System.out.println("Species name: " + invs.getRef());
 	 	       
 	 	      printedResultsFile.write("Species name: " + invs.getRef());
 	 	      
-	 	     printedResultsFile.write("\n");
+	 	      printedResultsFile.write("\n");
 	 	       
 	 	       tempInvalidSetOfSpecies.add(invs);
 	 	       

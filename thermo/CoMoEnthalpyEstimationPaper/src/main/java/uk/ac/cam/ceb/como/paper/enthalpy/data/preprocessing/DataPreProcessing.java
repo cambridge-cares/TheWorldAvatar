@@ -101,7 +101,7 @@ public class DataPreProcessing {
         
         	for (int k = 0; k < ctrRes.length; k++) {
             
-        		String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
+        		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                 
         		System.out.println("Process configuration " + config);
                 
@@ -454,31 +454,40 @@ public class DataPreProcessing {
                         }
                         
                         /**
+                         * 
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                          * PC machine settings.
+                         * 
                          */
 
 //                   if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
                         /**
+                         * 
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
+                    	 * 
                     	 */
                      if(!new File(destRList  + "/"+"data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
                         	/**
+                        	 * 
                         	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
                         	 * PC machine settings.
+                        	 * 
                         	 */
 //                   new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
                         /**
+                         * 
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
+                    	 * 
                     	 */
                       new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
                      /**
+                      * 
                       * @author nk510 ( caresssd@hermes.cam.ac.uk )
                       * PC machine settings.
                       * 
@@ -486,32 +495,39 @@ public class DataPreProcessing {
 //                   ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
                      
                     /**
+                     * 
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * HPC settings
+                  	 * 
                   	 */
                      ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
+                         * 
                          * @author nk510 (caresssd@hermes.cam.ac.uk)
                          * Added ctr in species pool median name.
                          * 
                          */
                     
                      /**
+                      * 
                       * @author nk510 ( caresssd@hermes.cam.ac.uk )
                       * PC machine settings.
                       * 
                       */
-//                    SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                     
+//                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
                     
                     /**
+                     * 
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * HPC settings.
                   	 * 
                   	 */
                     
                   SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
-                        
+                  
+                  SpeciesPoolWriter spWriter_targetSpecies = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_target_species_"+ctr+".csv"));
                         
                   if (!completeRList.isEmpty()) {
                         	
@@ -540,7 +556,10 @@ public class DataPreProcessing {
                             double error = Math.abs(completeRList.get(ri).getSpecies().getHf()-completeRList.get(ri).calculateHf());
                             
                             /**
-                             * Commented line below: double variable 'calculatedEnthalpy' does not save correctly calculated enthalpy of formation (Hf). It has error in decimals.  
+                             * 
+                             * @author nk510 (caresssd@hermes.cam.ac.uk)
+                             * Commented line below: double variable 'calculatedEnthalpy' does not save correctly calculated enthalpy of formation (Hf). It has error in decimals.
+                             *   
                              */
 //                          double calculatedEnthalpy = completeRList.get(ri).calculateHf();
                             
@@ -580,9 +599,25 @@ public class DataPreProcessing {
                             }
                             
                             stop++;
-                        
+                            
+                            /**
+                             * 
+                             * @author NK510 (caresssd@hermes.cam.ac.uk)
+                             * Selects median reaction and median enthalpy in preprocessing step.
+                             * 
+                             */
+                            ReactionSelector medianSelector = new MedianReactionSelector();
+                            
+                            Reaction medianReaction = medianSelector.select(completeRList).get(0);
+                            
+                            System.out.println();
+                            
+                            System.out.println("Median Reaction: " + medianReaction.toString() + " medianReaction species Hf: " + medianReaction.getSpecies().getHf() + " : medianReaction.calculateHf(): " + medianReaction.calculateHf());
+                            
+                            printedResultsFile.write("Median Reaction: " + medianReaction.toString() + " medianReaction species Hf: " + medianReaction.getSpecies().getHf() + " : medianReaction.calculateHf(): " + medianReaction.calculateHf());
+                            
                         }
-                        
+                  
                         if(!ttipSpecies.isEmpty()){
                         	
                         for(Species sp: ttipSpecies) {
@@ -600,7 +635,7 @@ public class DataPreProcessing {
                         
                         printedResultsFile.write("\n");
                         
-                            }
+                        }
                         	
                         System.out.println("Writting species list...");
                         

@@ -78,6 +78,7 @@ public class InitialDataAnalysis {
 	 * @throws Exception the exception.
 	 * 
 	 */
+	
 	public void getInitialDataAnalysisCrossValidation(int loop, boolean addedSpeciesToValidSet, int iteration,
 			String destRList, int[] ctrRadicals, int[] ctrRuns, int[] ctrRes, List<Species> refSpecies,
 			List<Species> soiSpecies, String srcCompoundsRef, Map<Species, Integer> spinMultiplicity,
@@ -94,9 +95,9 @@ public class InitialDataAnalysis {
 
 				for (int k = 0; k < ctrRes.length; k++) {
 
-//	                  int timeout = 60 * ctrRes[k];
-					String config = "isd_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_"
-							+ timeout + "s";
+//	                int timeout = 60 * ctrRes[k];
+					
+					String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
 
 					System.out.println("Process configuration " + config);
 					
@@ -110,7 +111,9 @@ public class InitialDataAnalysis {
 					 * Settings on PC machine.
 					 * 
 					 */
+					
 //					if (new File(destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_" + iteration + "\\" + config + ".txt").exists()) {
+					
 						/**
 						 * 
 						 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -124,7 +127,9 @@ public class InitialDataAnalysis {
 						 * @author nk510 (caresssd@hermes.cam.ac.uk)
 						 * Settings on PC machine.
 						 */
+						
 //					System.out.println("Skipping " + destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + config);
+						
 						/**
 						 * 
 						 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -138,7 +143,6 @@ public class InitialDataAnalysis {
 					printedResultsFile.write("\n");
 					
 						continue;
-
 					}
 
 					/**
@@ -172,7 +176,7 @@ public class InitialDataAnalysis {
 						 * @author nk510 (caresssd@hermes.cam.ac.uk)
 						 * HPC settings
 						 */
-						new File(tempFolder + "loop_" + loop + "/" + "iteration_" + iteration + "/"+ target.getRef().replace(".g09", "") + "/.temp/").mkdirs();
+						new File(tempFolder+"/" + "loop_" + loop + "/" + "iteration_" + iteration + "/"+ target.getRef().replace(".g09", "") + "/.temp/").mkdirs();
 						
 						/**
 						 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -185,7 +189,7 @@ public class InitialDataAnalysis {
 						 * HPC settings
 						 * 
 						 */
-						solver.setDirectory(new File(tempFolder + "loop_" + loop + "/" + "iteration_" + iteration + "/"+ target.getRef().replace(".g09", "") + "/"));
+						solver.setDirectory(new File(tempFolder+"/" + "loop_" + loop + "/" + "iteration_" + iteration + "/"+ target.getRef().replace(".g09", "") + "/"));
 
 //	                        System.out.println("REF: Processing " + ctr + " / " + all.size());
 //	                        ctr++;
@@ -273,7 +277,9 @@ public class InitialDataAnalysis {
 						 * Settings on PC machine.
 						 * 
 						 */
+						
 //						if (new File(destRList +  "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+						
 							/**
 							 * @author nk510 ( caresssd@hermes.cam.ac.uk )
 							 * HPC settings
@@ -304,6 +310,7 @@ public class InitialDataAnalysis {
 						}
 
 						Collections.shuffle(refPool);
+						
 						ExecutorService executor = Executors.newSingleThreadExecutor();
 
 						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, new ISGReactionType(true)));
@@ -439,14 +446,17 @@ public class InitialDataAnalysis {
 							 * Settings on PC machine.
 							 * 
 							 */
+							
 //							if (!new File(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\"+ target.getRef() + "\\").exists()) {
 //								new File(destRList + "initial-analysis" + "\\"+ "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\").mkdirs();
+							
 							/**
 							 * 
 							 * @author nk510 (caresssd@hermes.cam.ac.uk)
 							 * HPC settings
 							 * 
 							 */
+							
 							if (!new File(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_" + iteration + "/" + target.getRef() + "/").exists()) {
 								new File(destRList +"/"+ "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"	 + iteration + "/" + target.getRef() + "/").mkdirs();
 							}
@@ -460,6 +470,7 @@ public class InitialDataAnalysis {
 
 //							ReactionListWriter rListWriter = new ReactionListWriter(new File(
 //									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+							
 							/**
 							 * 
 							 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -474,8 +485,10 @@ public class InitialDataAnalysis {
 							 * Settings on PC machine.
 							 * 
 							 */
+							
 //							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(
 //									destRList  + "initial-analysis" + "\\" + "loop_" + loop +"\\"+"iteration_"+ iteration + "\\" + target.getRef() + "\\" + config + "_species-pool_median.csv"));
+							
 							/**
 							 * 
 							 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -486,6 +499,7 @@ public class InitialDataAnalysis {
 									destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
 
 							if (!completeRList.isEmpty()) {
+								
 								System.out.println("Writting complete reaction list...");
 								
 								printedResultsFile.write("Writting complete reaction list...");
@@ -504,13 +518,9 @@ public class InitialDataAnalysis {
 
 									if (r.getRef().equals(target.getRef())) {
 
-										System.out.println("Ref species name: " + r.getRef() + " = "
-												+ " Target species name : " + target.getRef()
-												+ " Median species enthalpy: " + target.getHf());
+										System.out.println("Ref species name: " + r.getRef() + " = " + " Target species name : " + target.getRef() + " Median species enthalpy: " + target.getHf());
 										
-										printedResultsFile.write("Ref species name: " + r.getRef() + " = "
-												+ " Target species name : " + target.getRef()
-												+ " Median species enthalpy: " + target.getHf());
+										printedResultsFile.write("Ref species name: " + r.getRef() + " = " + " Target species name : " + target.getRef() + " Median species enthalpy: " + target.getHf());
 										
 										printedResultsFile.write("\n");
 
@@ -520,6 +530,7 @@ public class InitialDataAnalysis {
 								}
 
 								double errorSum = 0d;
+								
 								/**
 								 * 
 								 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -584,12 +595,14 @@ public class InitialDataAnalysis {
 								 * that species calculated in pre-processing step.
 								 * 
 								 */
+								
 								if (errorBar < currentErrorBar) {
 
 									/**
 									 * @author nk510 (caressssd@hermes.cam.ac.uk)
 									 * Adds species into valid list of species
 									 */
+									
 									validSpecies.add(target);
 
 									addedSpeciesToValidSet = true;

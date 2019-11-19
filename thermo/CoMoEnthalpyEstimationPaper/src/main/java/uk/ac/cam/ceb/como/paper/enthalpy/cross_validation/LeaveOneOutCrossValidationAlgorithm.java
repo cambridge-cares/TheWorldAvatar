@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import uk.ac.ca.ceb.como.paper.enthalpy.data.analysis.InitialDataAnalysis;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
@@ -64,7 +67,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based reference species
 	 * 
 	 */
-//	static String srcCompoundsRef = "g09/";
+	static String srcCompoundsRef = "g09/";
 	
 	/**
 	 * 
@@ -95,7 +98,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based target species
 	 * 
 	 */
-//	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
+	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	/**
 	 * 
@@ -121,7 +124,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-//	static String destRList = "ti_isg/";
+	static String destRList = "ti_isg/";
 	
 	/**
 	 * 
@@ -182,14 +185,34 @@ public class LeaveOneOutCrossValidationAlgorithm {
 
 	public static void main(String[] args) throws Exception {
 	
-	String srcCompoundsRef = args[0]; //"g09/";
+	/**
+	 * Folder that contains Gaussian files.
+	 */
+//	String srcCompoundsRef = args[0]; //"g09/";
 	
-	String srcRefPool = args[1]; //"csv/ref_scaled_kJperMols_v8.csv";
+	/**
+	 * File that contains information about target species.
+	 */
+//	String srcRefPool = args[1]; //"csv/ref_scaled_kJperMols_v8.csv";
 	
-	String destRList = args[2]; //"ti_isg/";
+	/**
+	 * Folder that stores all results of cross validation calculations: chemical reactions, enthalpy, valid species, invalid species, etc..
+	 */
+//	String destRList = args[2]; //"ti_isg/";
 	
+	/**
+	 * Path to .temp folder that stores all  files used by GLPK solver.
+	 */
+//	String tempFolder = args[3]; //"LeaveOneOutCrossValidation_temp/"
+	
+    JSONArray listOfJsonSpeciesData = new JSONArray();
+    
+    JSONObject speciesJsonObject = new JSONObject();
+    
+    
+    
 	BufferedWriter printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
-
+	
 	    /**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -218,6 +241,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
     System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
     
 	printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
+	
 	printedResultsTxtFile.write("\n");
 	
 		/**
@@ -273,6 +297,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings
 	 * 
 	 */
+			
 	new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
 	System.out.println("Invalid reactions writing . . .");
@@ -280,7 +305,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	printedResultsTxtFile.write("Invalid reactions writing . . .");
 	printedResultsTxtFile.write("\n");
 	
-
 	errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, printedResultsTxtFile,invalidReaction);
 
 		/**
@@ -337,9 +361,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	    BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
-	    errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, invalidSpecies, validSpecies);
+	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, invalidSpecies, validSpecies);
 
 		/**
 		 * 
@@ -351,7 +375,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
 
-		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies,printedResultsTxtFile));
+	invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies,printedResultsTxtFile));
 
 		/**
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -592,19 +616,43 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	printedResultsTxtFile.write("\n");
 	
-	
 	int num = 1;
 	
-	for(Species s: validSpecies) {
+	JSONArray validSpeciesJsonList = new JSONArray();
 	
+	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" + "printed_valid_species_loop_"+loop +".json", true));
+
+	for(Species s: validSpecies) {
+
+    JSONObject jsonValidSpecies = new JSONObject();
+    JSONObject jsonAllValidSpecies = new JSONObject();
+    
 	System.out.println( num + ". species name: " + s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + " , " + s.getBondTypeMultiset());
 
 	printedResultsTxtFile.write( num + ". species name: " + s.getRef() + " , " + s.getHf() + " , " + s.getTotalEnergy() + " , " + s.getAtomMap() + " , " + s.getBondTypeMultiset());
+	
 	printedResultsTxtFile.write("\n");
+	
+	/**
+	 * Store information about valid species in JSON file.
+	 */
+	jsonValidSpecies.put("speciesName",s.getRef().toString());
+	
+	jsonValidSpecies.put("validity","true");
+	
+	jsonAllValidSpecies.put("species", jsonValidSpecies);
+	
+	validSpeciesJsonList.add(jsonAllValidSpecies);
 	
 	num++;
 	
 	}
+	
+	/**
+	 * Save valid species list as JSON file.
+	 */
+	printedJsonFileValidSpecies.write(validSpeciesJsonList.toJSONString());
+	printedJsonFileValidSpecies.close();
 	
 	System.out.println("Invalid species file after (" + loop+ ".) loop through invalid species list with error bar . . .");
 	
@@ -668,14 +716,42 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	printedResultsTxtFile.write("After (" + loop + ".) loop the set of invalid species is:");
 	printedResultsTxtFile.write("\n");
 	
+	
+    JSONArray invalidSpeciesJsonList = new JSONArray();
+	
+	BufferedWriter printedJsonFileInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"/" + "printed_invalid_species_loop_"+loop +".json", true));
+	
 	for(Species s: tempInvalidSetOfSpecies) {
 	
 		System.out.println(s.getRef() + " " + s.getHf());
 		
 		printedResultsTxtFile.write(s.getRef() + " " + s.getHf());
+		
 		printedResultsTxtFile.write("\n");
 		
+		JSONObject jsonInvalidSpecies = new JSONObject();
+	    JSONObject jsonAllInvalidSpecies = new JSONObject();
+	    
+	    
+	    /**
+		 * Store information about invalid species in JSON file.
+		 */
+		jsonInvalidSpecies.put("speciesName",s.getRef().toString());
+		
+		jsonInvalidSpecies.put("validity","false");
+		
+		jsonAllInvalidSpecies.put("species", jsonInvalidSpecies);
+		
+		invalidSpeciesJsonList.add(jsonAllInvalidSpecies);
+		
 	}
+	
+	
+	/**
+	 * Save invalid species list as JSON file.
+	 */
+	printedJsonFileInvalidSpecies.write(invalidSpeciesJsonList.toJSONString());
+	printedJsonFileInvalidSpecies.close();
 	
 	loop++;
 
