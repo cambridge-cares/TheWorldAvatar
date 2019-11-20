@@ -181,8 +181,9 @@ public class NISTInfoReader extends NISTParser {
         if (content.size() > 0 && content.contains("Formula")) {
             for (int i = 0; i < content.size(); i++) {
                 if (content.get(i).trim().contains("Formula")) {
-                    String data = NISTHTMLReaderHelper.removeTags(body.get(lineIndex));
-                    return new ChemFormula(data.replace("Formula:", ""));
+                    System.out.println("lineindex:"+lineIndex+" line:"+body.get(lineIndex));
+                	String data = NISTHTMLReaderHelper.removeTags(body.get(lineIndex));
+                    return new ChemFormula(data.replace("Formula:", "").trim());
                 }
             }
         }

@@ -3,6 +3,7 @@ package org.cam.ceb.como.nist.converter;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import org.cam.ceb.como.nist.model.exception.OntoSpeciesException;
 import org.cam.ceb.como.nist.model.utils.NISTConverterUtils;
 import org.cam.ceb.como.nist.webbook.info.NISTSpeciesInfo;
 import org.cam.ceb.como.nist.webbook.parser.NISTWebBookParser;
+import org.cam.ceb.como.nist.webbook.thermochem.NISTEnthalpy;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.IRI;
@@ -33,6 +35,25 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	// to log messages relevant for the NISTConverter class.
 	private static Logger logger = org.slf4j.LoggerFactory.getLogger(NISTConverter.class);
 
+	public static final String NIST_WEB_LINK = "https://webbook.nist.gov";  
+	
+	public static final String CLS_SPECIES = "Species";
+	public static final String CLS_WEBLINK = "Weblink";
+	public static final String CLS_ENTHALPY = "StandardEnthalpyOfFormation";
+	public static final String CLS_TEMPERATURE = "Temperature";
+	
+	public static final String PROP_OBJ_WEBLINK = "hasWeblink";
+	public static final String PROP_DAT_VALUE = "value";
+	public static final String PROP_DAT_DATE = "dateOfAccess";
+	public static final String PROP_OBJ_ENTHALPY = "hasStandardEnthalpyOfFormation";
+	public static final String PROP_DAT_UNITS = "units";
+	public static final String PROP_DAT_CAS_REG_ID = "casRegistryID";
+	public static final String PROP_OBJ_TEMPERATURE = "hasReferenceTemperature";
+	public static final String VALUE_REF_TEMPERATURE = "298.15";
+	public static final String VALUE_REF_TEMP_UNITS = "K";
+	public static final String PROP_DAT_ALT_LABEL = "altLabel";
+	public static final String PROP_DAT_ID = "identifier";	
+	
 	/**
 	 * Takes the paths to the input HTML and structure (SDF and MOL) files</br>
 	 * representing NIST species and the output OWL files. It then</br>
@@ -190,7 +211,11 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 */
 	private void convertNISTSpecies(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
 		createSpeciesInstance();
+		addIdentifier();
 		addWeblinkToSpecies(speciesInfo);
+		addEnthalpyOfFormation(speciesInfo);
+		addCASRegistryNumber(speciesInfo);
+		addAlternativeNames(speciesInfo);
 	}
 	
 	/**
@@ -199,7 +224,16 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void createSpeciesInstance() throws OntoSpeciesException{
-		individual = iNistOWLWriter.createInstance(ontoKinTBoxIRI, uniqueSpeciesId, "Species");
+		individual = iNistOWLWriter.createInstance(ontoKinTBoxIRI, uniqueSpeciesId, CLS_SPECIES);
+	}
+	
+	/**
+	 * Adds the identifier to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addIdentifier() throws OntoSpeciesException{
+		iNistOWLWriter.addDataPropertyToIndividual(individual, DUBLIN_CORE_URL, PROP_DAT_ID, BACKSLASH, uniqueSpeciesId);
 	}
 	
 	/**
@@ -208,12 +242,96 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void addWeblinkToSpecies(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
-//		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
-//		{
-//			OWLIndividual weblink = nistOWLWriter.createInstance(ontoKinTBoxIRI, uniqueSpeciesId, "Weblink");
-//			nistOWLWriter.addDataPropertyToIndividual(individual, "", propertyPathSeparator, dataPropertyValue);InstanceName(appConfigOntokin
-//					.getOntokinMechanism().concat(UNDERSCORE).concat(Long.toString(mechanismInstanceId)), mechanismName);
-//		}
+		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
+		{
+			weblinkId++;
+			OWLIndividual weblinkIndividual = iNistOWLWriter.createInstance(CLS_WEBLINK.concat(UNDERSCORE)+weblinkId, CLS_WEBLINK);
+			iNISTOwlWriter.linkInstance(PROP_OBJ_WEBLINK, uniqueSpeciesId, CLS_WEBLINK.concat(UNDERSCORE)+weblinkId);
+			iNistOWLWriter.addDataPropertyToIndividual(weblinkIndividual, PROP_DAT_VALUE, HASH, NIST_WEB_LINK.concat(speciesInfo.getPermanentLink()));
+			LocalDate localDate = LocalDate.now(); 
+			iNistOWLWriter.addDataPropertyToIndividual(weblinkIndividual, PROP_DAT_DATE, HASH, localDate.toString());
+		}
+	}
+	
+	/**
+	 * Adds a set of enthalpies of formation to the current species.
+	 * 
+	 * @param speciesInfo
+	 * @throws OntoSpeciesException
+	 */
+	private void addEnthalpyOfFormation(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
+		{
+			if(speciesInfo.getPhase()==null || speciesInfo.getPhase().equals("gas")){
+				for(NISTEnthalpy nistEnthalpy:speciesInfo.getEnthalpyOfFormationInGas()){
+					addEnthalpyOfFormation(nistEnthalpy);
+				}				
+			} else if(speciesInfo.getPhase().equals("solid")){
+				for(NISTEnthalpy nistEnthalpy:speciesInfo.getEnthalpyOfFormationInSolid()){
+					addEnthalpyOfFormation(nistEnthalpy);
+				}
+			} else if(speciesInfo.getPhase().equals("liquid")){
+				for(NISTEnthalpy nistEnthalpy:speciesInfo.getEnthalpyOfFormationInLiquid()){
+					addEnthalpyOfFormation(nistEnthalpy);
+				}
+			} 
+		}
+	}
+	
+	
+	
+	/**
+	 * Adds a single enthalpy of formation to the current species.
+	 * 
+	 * @param nistEnthalpy
+	 * @throws OntoSpeciesException
+	 */
+	private void addEnthalpyOfFormation(NISTEnthalpy nistEnthalpy)  throws OntoSpeciesException{
+		enthalpyId++;
+		OWLIndividual enthalpyIndividual = iNistOWLWriter.createInstance(CLS_ENTHALPY.concat(UNDERSCORE)+enthalpyId, CLS_ENTHALPY);
+		iNISTOwlWriter.linkInstance(PROP_OBJ_ENTHALPY, uniqueSpeciesId, CLS_ENTHALPY.concat(UNDERSCORE)+enthalpyId);
+		if(nistEnthalpy.getNegTolerance()!=0 && nistEnthalpy.getPosTolerance()!=0){
+			iNistOWLWriter.addDataPropertyToIndividual(enthalpyIndividual, PROP_DAT_VALUE, HASH, nistEnthalpy.getValue()+"±"+nistEnthalpy.getPosTolerance());
+		} else{
+			iNistOWLWriter.addDataPropertyToIndividual(enthalpyIndividual, PROP_DAT_VALUE, HASH, EMPTY+nistEnthalpy.getValue());
+		}
+		if(nistEnthalpy.getUnits()!=null && !nistEnthalpy.getUnits().isEmpty()){
+			iNistOWLWriter.addDataPropertyToIndividual(enthalpyIndividual, PROP_DAT_UNITS, HASH, nistEnthalpy.getUnits());
+		}
+		addReferenceTemperature(enthalpyId);
+	}
+	
+	private void addReferenceTemperature(long enthalpyId)  throws OntoSpeciesException{
+		OWLIndividual temperatureIndividual = iNistOWLWriter.createInstance(CLS_TEMPERATURE.concat(UNDERSCORE)+temperatureId, CLS_TEMPERATURE);
+		iNISTOwlWriter.linkInstance(PROP_OBJ_TEMPERATURE, CLS_ENTHALPY.concat(UNDERSCORE)+enthalpyId, CLS_TEMPERATURE.concat(UNDERSCORE)+temperatureId);
+		iNistOWLWriter.addDataPropertyToIndividual(temperatureIndividual, PROP_DAT_VALUE, HASH, VALUE_REF_TEMPERATURE);
+		iNistOWLWriter.addDataPropertyToIndividual(temperatureIndividual, PROP_DAT_UNITS, HASH, VALUE_REF_TEMP_UNITS);
+	}
+	
+	/**
+	 * Adds the CAS Registry Number to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addCASRegistryNumber(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
+		{
+			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_CAS_REG_ID, HASH, speciesInfo.getCASRegNr());
+		}
+	}
+	
+	/**
+	 * Adds one or more alternative names to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addAlternativeNames(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getOtherNames()!=null)
+		{
+			for(String altName: speciesInfo.getOtherNames()){
+				iNistOWLWriter.addDataPropertyToIndividual(individual, SKOS_URL, PROP_DAT_ALT_LABEL, HASH, altName);
+			}
+		}
 	}
 	
 	/**

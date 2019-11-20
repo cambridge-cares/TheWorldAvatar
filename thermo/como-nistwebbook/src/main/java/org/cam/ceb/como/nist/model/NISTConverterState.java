@@ -51,6 +51,10 @@ public class NISTConverterState {
 
 	// Declared to serve as the seed for generating species UUID (Universally Unique Identifier).
 	public static long speciesId = System.nanoTime();
+	public static long weblinkId = System.nanoTime();
+	public static long enthalpyId = System.nanoTime();
+	public static long temperatureId = System.nanoTime();
+	
 	public static String uniqueSpeciesId = "";
 	public static INISTOWLWriter iNISTOwlWriter;
 	public static final String EMPTY = "";
@@ -86,10 +90,12 @@ public class NISTConverterState {
 	public static final String OWL_SAME_AS = "sameAs";
 	public static final String DUBLIN_CORE = "dc";
 	public static final String DUBLIN_CORE_ID = "identifier";
-	public static final String DUBLIN_CORE_URL = "http://purl.org/dc/elements/1.1/";
+	public static final String DUBLIN_CORE_URL = "http://purl.org/dc/elements/1.1";
 	public static final String GEOSPARQL = "geosparql";
 	public static final String GEOSPARQL_DIMENSION = "dimension";
 	public static final String GEOSPARQL_URL = "http://www.opengis.net/ont/geosparql#";
+	public static final String SKOS_URL = "http://www.w3.org/2004/02/skos/core";
+	
 	
 	public static String basePathTBox;
 	public static String basePathABox;

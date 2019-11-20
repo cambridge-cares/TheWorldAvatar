@@ -6,6 +6,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.sql.Date;
+import java.time.LocalDate;
 
 import org.cam.ceb.como.nist.model.exception.OntoSpeciesException;
 import org.cam.ceb.como.nist.model.utils.NISTConverterUtils;
@@ -218,6 +220,12 @@ public class NISTOWLWriter extends NISTConverter implements INISTOWLWriter{
 					return ontoFactory.getOWLLiteral(Double.parseDouble(literal));
 				}catch(NumberFormatException e){
 					throw new OntoSpeciesException("The following value is not a double:"+literal);
+				}
+			} else if(dataPropertyNameVsTypeMap.get(propertyName.toLowerCase()).equals("date")){
+				try{
+					return ontoFactory.getOWLLiteral(literal);
+				}catch(NumberFormatException e){
+					throw new OntoSpeciesException("The following value is not a date:"+literal);
 				}
 			}
 		}
