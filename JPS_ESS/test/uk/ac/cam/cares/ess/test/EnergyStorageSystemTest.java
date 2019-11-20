@@ -39,13 +39,14 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONObject result = new JSONObject();
 	}
 	
-	public void testcreateOwlFilemethod() throws IOException {
+	public void testgetbatterylocmethod() throws IOException {
 		String indexline ="34"; //--> index no 34
-		String capacity="40";
 		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testPOWSYSENSimulationOPFDirectCall\\localhost_8080\\data\\8b2c4234-4e6f-44d2-9d27-be5497d42794\\JPS_POWSYS_EN";
 	    EnergyStorageSystem c=new EnergyStorageSystem();		
 		OntModel model = c.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		c.createOwlFile(indexline, capacity, baseUrl, model);
+		double[]coordinate=c.prepareBatteryLocationData(indexline, baseUrl, model);
+		assertEquals(103.70840835, coordinate[0], 0.001);
+		assertEquals(1.2723166665, coordinate[1], 0.001);
 	}
 	
 	
@@ -71,12 +72,18 @@ public class EnergyStorageSystemTest extends TestCase {
 		System.out.println("finished execute");
 	}
 	
+	
 	public void testCreateCSV() throws IOException  {
-
+		String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
+		EnergyStorageSystem a = new EnergyStorageSystem();
+		OntModel modelbattery=a.readBatteryGreedy(batIRI);
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_ESS";
-		new EnergyStorageSystem().prepareCSVPahigh(ELECTRICAL_NETWORK, baseUrl);	
+		a.prepareCSVPahigh("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1", baseUrl);	
+		a.prepareCSVRemaining(batIRI,baseUrl,modelbattery);
 	}
+	
+	
 	@SuppressWarnings("static-access")
 	public void testModifyTemplate() throws IOException, InterruptedException{
 		String dataPath = QueryBroker.getLocalDataPath();
