@@ -39,7 +39,7 @@ public class JenaReadHook implements ReadHook {
 		}
 		
 		String redirectedSource = new ScenarioClient().getReadUrl(scenarioUrl, source).toString();
-		//System.out.println("MY SOURCE = " + source + ", MY REDIR = " + redirectedSource);
+		//System.out.println("MY READHOOK, source=" + source + ", redirected=" + redirectedSource);
 		return originalReadHook.beforeRead(model, redirectedSource, odm);
 	}
 

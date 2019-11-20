@@ -80,6 +80,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		//initVoltageMagnitudeInPUForBuses(buses);
 		
 		connectNuclearPowerGeneratorsToOptimalBus(buses, newGenerators, slackBus);
+		logger.info("finished retrofitting");
 	}
 	
 	private BusInfo findFirstSlackBus(List<BusInfo> buses) {

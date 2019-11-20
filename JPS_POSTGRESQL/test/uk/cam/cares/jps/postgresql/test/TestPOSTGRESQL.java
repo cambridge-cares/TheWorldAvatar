@@ -117,7 +117,7 @@ public class TestPOSTGRESQL extends TestCase  {
         return result.toString();
 	}
 	
-	public void testcalculationforterrain() {
+	public void xxxtestcalculationforterrain() {
 		int add=2900;
 		int xmin=833044;
 		int ymin=816015;

@@ -1,17 +1,10 @@
 package uk.ac.cam.cares.jps.srm.test;
 
-import java.io.FileWriter;
 import java.io.IOException;
 
 import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.Query;
-import org.apache.jena.query.QueryExecution;
-import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QueryFactory;
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.query.ResultSetFactory;
-import org.apache.jena.query.ResultSetRewindable;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.json.JSONException;
@@ -33,7 +26,7 @@ public class TestSRMAgent extends TestCase {
 	public void testCallAgent () throws JSONException {
 		JSONObject dataSet = new JSONObject();
 		try {
-			dataSet.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC.owl#ReactionMechanism_184144363244001") ;
+			dataSet.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Toluene.owl#ReactionMechanism_187077735769001") ;
 			//dataSet.put("reactionmechanism", "https://como.cheng.cam.ac.uk/kb/Reduced_PRF_ERC.owl#ReactionMechanism_4909454516579602") ;
 			dataSet.put("engine", "http://www.theworldavatar.com/kb/deu/berlin/powerplants/DieselEngine-001.owl#DieselEngine-001") ;
 		}

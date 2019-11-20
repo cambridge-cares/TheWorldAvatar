@@ -182,11 +182,13 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		
 		// start the scenario by calling the operation (an operation can be called even if no agent or a different agent was given)
 		String operation = jo.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
+		System.out.println("operation: "+ operation  + " scenario name "+ scenarioName + " jo: "+ jo);
 	 	if (operation.startsWith("http")) {
 	 		result = ScenarioManagementAgent.execute(scenarioName, operation, jo);
 	 	} else {
 	 		//throw new RuntimeException("can't call operation without http, operation = " + operation);
 	 		 ScenarioManagementAgent.addJpsContext(scenarioName, jo);
+	 		 //test to see if it was really put into context
 	 		return AgentCaller.executeGetWithJsonParameter(operation, jo.toString());
 	 	}
 	 	
@@ -223,9 +225,10 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (fileWithinBucket.exists()) {
+	    if (fileWithinBucket.exists()) { 	
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
+
 	    	String content = new QueryBroker().readFileLocal(resource);
 	    	FileUtil.writeFileLocally(completePathWithinBucket, content);
 	    	return completePathWithinBucket;
@@ -248,6 +251,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		String resource = getResourcePath(jo, scenarioName, copyOnRead);
 		// TODO-AE SC the prepare method might create a scenario copy; in this case prepare method already reads the content; i.e. in this case
 		// we read it here a second time --> refactor the code such that this is not required; the same for queryFile
+
 		return new QueryBroker().readFileLocal(resource);
 	}
 	

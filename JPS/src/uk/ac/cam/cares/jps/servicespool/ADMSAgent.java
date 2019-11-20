@@ -46,15 +46,15 @@ public class ADMSAgent extends JPSHttpServlet {
     }
 
     @Override
-    protected void doGetJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        setLogger();
-        super.doGetJPS(request, response);
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    	setLogger();
+        super.doHttpJPS(request, response);
     }
-
+    
     @Override
-    protected void doPostJPS(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        setLogger();
-        super.doPostJPS(request, response);
+    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
+    	setLogger();
+        super.doHttpJPS(request, response, reqBody);
     }
 
     @Override

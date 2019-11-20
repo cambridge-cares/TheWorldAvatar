@@ -17,7 +17,7 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.test.TestEN;
 public class TestCarbonTaxAgent extends TestCase {
 	CarbonTaxAgent a= new CarbonTaxAgent();
 	
-	public void testLocalRun() throws IOException, InterruptedException { //warning, need to put owl file in root localhost
+	public void xxxtestLocalRun() throws IOException, InterruptedException { //warning, need to put owl file in root localhost
 		
 		String iriofnetwork = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 		String dataPath = QueryBroker.getLocalDataPath();
@@ -31,7 +31,7 @@ public class TestCarbonTaxAgent extends TestCase {
 
 		
 		BigDecimal c;
-		c= new BigDecimal("40"); 
+		c= new BigDecimal("170"); 
 		a.prepareConstantCSV(c,dataPath);
 		a.runGAMS(dataPath);
 		File file = new File(dataPath+"/results.csv");
@@ -59,7 +59,7 @@ public class TestCarbonTaxAgent extends TestCase {
 	}
 	
 	public void testCallCarbonTax() {
-		String scenarioName = "testPOWSYSCarbonTax";
+		String scenarioName = "testPOWSYSCarbonTaxserver";
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		System.out.println(scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
@@ -67,17 +67,11 @@ public class TestCarbonTaxAgent extends TestCase {
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		BigDecimal a;
-		a= new BigDecimal("40"); 
+		a= new BigDecimal("170"); 
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("carbontax",a );
 		String resultProcess=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/optimizeforcarbontax", jo.toString());
 		System.out.println("output= "+resultProcess);
 		assertNotNull(new JSONObject(resultProcess).get("substitutionalgenerators"));
-	}
-
-	public void testQueryEmissionFactor() {
-		String technology = "http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#CombinedCycleGasTurbine";
-		String factor = new CarbonTaxAgent().queryEmissionFactor(technology);
-		assertEquals("0.181", factor);
 	}
 }

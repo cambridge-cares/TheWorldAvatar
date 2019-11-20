@@ -40,7 +40,7 @@ public class TestADMSHelper extends TestCase {
 	public void testpolcalculation() {
 		
 		
-		String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS_SHIP/workingdir/test.levels.gst");
+		String csv = new QueryBroker().readFileLocal("D:/JPS-git/JParkSimulator-git/JPS_SHIP/workingdir/test.levels.gst");
 		//String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levels.gst");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 		int startcontentindex=7;
@@ -54,7 +54,7 @@ public class TestADMSHelper extends TestCase {
 	
 	public void testheaderpostprocessing() {
 		ArrayList<String[]> copier=new ArrayList<String[]>();
-		String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levels.gst");
+		String csv = new QueryBroker().readFileLocal("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levels.gst");
 		//String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levelsVer2.gst");
 		//String csv = new QueryBroker().readFile("D:/JPS-git/JParkSimulator-git/JPS/workingdir/ADMS/test.levelscop.gst");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);

@@ -13,6 +13,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -156,7 +158,13 @@ public class AgentCaller {
     private static URIBuilder getUriBuilderForPath(String path) {
         // TODO-AE maybe use directly class java.net.URI
         // TODO-AE refactor get hostname
-        return new URIBuilder().setScheme("http").setHost(getHostPort()).setPath(path);
+        URIBuilder builder;
+        try {
+            builder = new URIBuilder(createURI(path));
+        } catch (Exception e) {
+            builder = new URIBuilder().setScheme("http").setHost(getHostPort()).setPath(path);
+        }
+        return builder;
     }
 
     public static String executeGetWithURL(String url) {
@@ -197,7 +205,7 @@ public class AgentCaller {
             builder.setPort(port);
         }
 
-        if (keyOrValue != null) {
+        if (!ArrayUtils.isEmpty(keyOrValue)) {
             for (int i = 0; i < keyOrValue.length; i = i + 2) {
                 String key = keyOrValue[i];
                 String value = keyOrValue[i + 1];
@@ -259,8 +267,14 @@ public class AgentCaller {
     public static JSONObject readJsonParameter(HttpServletRequest request) {
 
         try {
+            String json = null;
 
-            String json = request.getParameter(JSON_PARAMETER_KEY);
+            if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
+                json = IOUtils.toString(request.getReader());
+            } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
+                json = request.getParameter(JSON_PARAMETER_KEY);
+            }
+
             if (json != null) {
                 return new JSONObject(json);
             }
@@ -274,7 +288,7 @@ public class AgentCaller {
             }
             return jsonobject;
 
-        } catch (JSONException e) {
+        } catch (JSONException | IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
     }
