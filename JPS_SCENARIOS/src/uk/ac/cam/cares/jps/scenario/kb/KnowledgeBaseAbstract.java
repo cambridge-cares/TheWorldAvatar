@@ -6,21 +6,14 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
-import org.eclipse.rdf4j.repository.sail.SailRepository;
+import org.apache.jena.query.ResultSet;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.eclipse.rdf4j.rio.RDFParseException;
 import org.eclipse.rdf4j.rio.RDFParser;
 import org.eclipse.rdf4j.rio.RDFWriter;
 import org.eclipse.rdf4j.rio.Rio;
-import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 
 public abstract class KnowledgeBaseAbstract {
 
@@ -110,32 +103,32 @@ public abstract class KnowledgeBaseAbstract {
 	public static String query(InputStream inputStream, RDFFormat inputFormat, String sparql) {
 		
 		// this is the solution with Jena that was used originally in QueryBroker.queryFile 
-		// and that is still used in KnowledgeBaseClient when querying a file on the clien-side.
-//		ResultSet resultSet = JenaHelper.queryInputStream(inputStream, sparql);
-//		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		// and that is still used in KnowledgeBaseClient when querying a file on the client-side.
+		ResultSet resultSet = JenaHelper.queryInputStream(inputStream, sparql);
+		return JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		
 		
 		// the following implementation with RDF4j will not always return the queried information 
 		// since - contrary to Jena - RDF4j does not load OWL imports automatically
-		MemoryStore memStore = new MemoryStore();
-		Repository repo = new SailRepository(memStore);
-		repo.init();
-		
-		try (RepositoryConnection conn = repo.getConnection()) {
-			conn.add(inputStream, "", inputFormat);
-			TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, sparql);	
-
-			ByteArrayOutputStream outputStream = null;
-			try {
-				outputStream = new ByteArrayOutputStream();
-				SPARQLResultsJSONWriter writer = new SPARQLResultsJSONWriter(outputStream);
-				tupleQuery.evaluate(writer);
-				return new String(outputStream.toByteArray(), Charset.defaultCharset());
-			} finally {
-				outputStream.close();
-			}
-		} catch(RDFParseException | RepositoryException | IOException e) {
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
+//		MemoryStore memStore = new MemoryStore();
+//		Repository repo = new SailRepository(memStore);
+//		repo.init();
+//		
+//		try (RepositoryConnection conn = repo.getConnection()) {
+//			conn.add(inputStream, "", inputFormat);
+//			TupleQuery tupleQuery = conn.prepareTupleQuery(QueryLanguage.SPARQL, sparql);	
+//
+//			ByteArrayOutputStream outputStream = null;
+//			try {
+//				outputStream = new ByteArrayOutputStream();
+//				SPARQLResultsJSONWriter writer = new SPARQLResultsJSONWriter(outputStream);
+//				tupleQuery.evaluate(writer);
+//				return new String(outputStream.toByteArray(), Charset.defaultCharset());
+//			} finally {
+//				outputStream.close();
+//			}
+//		} catch(RDFParseException | RepositoryException | IOException e) {
+//			throw new JPSRuntimeException(e.getMessage(), e);
+//		}
 	}
 }

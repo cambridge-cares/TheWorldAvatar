@@ -146,7 +146,8 @@ public class KnowledgeBaseClient {
 				// the scenario agent has to be called even for get / query in combination with copy-on-write since in previous calls
 				// another agent might have updated the file within the same scenario 
 				joparams = new JSONObject();
-				joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
+				String resource = cutHashFragment(targetUrl);
+				joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
 				if (datasetUrl != null) {
 					if (targetUrl == null) {
 						joparams.put(JPSConstants.SCENARIO_RESOURCE, datasetUrl);
@@ -158,7 +159,8 @@ public class KnowledgeBaseClient {
 			// case 2
 			} else if (datasetUrl != null) {
 				joparams = new JSONObject();
-				joparams.put(JPSConstants.SCENARIO_RESOURCE, targetUrl);
+				String resource = cutHashFragment(targetUrl);
+				joparams.put(JPSConstants.SCENARIO_RESOURCE, resource);
 				requestUrl = datasetUrl;
 			// case 1a
 			} else {
@@ -235,6 +237,9 @@ public class KnowledgeBaseClient {
 	 * @return
 	 */
 	public static String cutHashFragment(String url) {
+		if (url == null) {
+			return null;
+		}
 		int i = url.lastIndexOf("#");
 		if (i >= 0) {
 			return url.substring(0, i);

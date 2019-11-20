@@ -1,13 +1,18 @@
 package uk.ac.cam.cares.jps.scenario.kb.test;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.UUID;
 
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
 
 public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeBaseHelper {
 	
@@ -220,5 +225,47 @@ public abstract class TestKnowledgeBaseAllImplementations extends TestKnowledgeB
 		String provenanceName = UUID.randomUUID().toString();
 		String resourceUrl = "http://www.myhost.com:7778/fancyquerypath/testE-303load.owl";
 		putAndUpdateE303Provenance(resourceUrl, provenanceName);
+	}
+	
+	public void testQueryOwlFileWithImports() throws IOException {
+		
+		String sparql = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "SELECT ?entity ?Pmaxvalue ?emissionfactor " // add the emission value as optional
+				+ "WHERE {?entity  a  j1:PowerGenerator  ." 
+				//+ "?entity   j2:isSubsystemOf ?plant ." // plant
+				+ "?entity   j2:isModeledBy ?model ." 
+				+ "?model   j5:hasModelVariable ?pmax ." 
+				+ "?pmax  a  j3:PMax  ."
+				+ "?pmax  j2:hasValue ?vpmax ." 
+				+ "?vpmax   j2:numericalValue ?Pmaxvalue ." // pmax
+
+				+ "?entity j4:realizes ?genprocess ." 
+				+ "?genprocess j9:usesGenerationTechnology ?tech ."
+				+ "?tech j9:hasEmissionFactor ?emm ."
+				+ "?emm j2:hasValue ?valueemm ."
+				+ "?valueemm j2:numericalValue ?emissionfactor ." 
+				+ "}";
+
+
+//		String filePath = "C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/testTMPCSVReactorParameter/localhost_8080/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl";
+//		String content = FileUtil.readFileLocally(filePath);
+//		InputStream inputStream = FileUtil.stringToInputStream(content);
+		
+		URL url = new URL("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
+		InputStream inputStream = url.openStream();
+		
+		String result = KnowledgeBaseAbstract.query(inputStream, RDFFormat.RDFXML, sparql);
+		JSONObject simplified = JenaResultSetFormatter.convertToSimplifiedList(result);
+		System.out.println(simplified);
+		String actual = simplified.getJSONArray("results").getJSONObject(0).getString("entity");
+		assertEquals("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl#EGen-008", actual);
 	}
 }
