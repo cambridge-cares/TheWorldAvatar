@@ -2,6 +2,7 @@ package uk.ac.ca.ceb.como.paper.enthalpy.data.analysis;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -17,6 +18,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.reactions.ReactionListWriter;
@@ -495,9 +499,11 @@ public class InitialDataAnalysis {
 							 * HPC settings
 							 * 
 							 */
-							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(
-									destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
+							SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.csv"));
 
+							
+							BufferedWriter printedJsonFileMedianEnthalpyForSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop + "/" + "iteration_"+ iteration + "/" + target.getRef() + "/" + config + "_species-pool_median.json", true));
+							
 							if (!completeRList.isEmpty()) {
 								
 								System.out.println("Writting complete reaction list...");
@@ -511,9 +517,13 @@ public class InitialDataAnalysis {
 								rListWriter.write();
 
 								/**
+								 * 
 								 * @author nk510 (caresssd@hermes.cam.ac.uk)
 								 * Sets the reference enthalpy for target species
+								 * 
 								 */
+								 JSONArray meadianEnthalpySpeciesJsonList = new JSONArray();
+								 
 								for (Species r : refSpecies) {
 
 									if (r.getRef().equals(target.getRef())) {
@@ -523,12 +533,35 @@ public class InitialDataAnalysis {
 										printedResultsFile.write("Ref species name: " + r.getRef() + " = " + " Target species name : " + target.getRef() + " Median species enthalpy: " + target.getHf());
 										
 										printedResultsFile.write("\n");
-
+										
+										JSONObject jsonMedianEnthalpySpecies = new JSONObject();
+							     		
+							     	    JSONObject jsonAllMedianEnthalpySpecies = new JSONObject();	    
+							     	    
+							     	    /**
+							     	     * 
+							     	     * @author NK510 (caresssd@hermes.cam.ac.uk)
+							     		 * Store information about median enthalpy for species in JSON file.
+							     		 * 
+							     		 */
+							     	    
+							     	   jsonMedianEnthalpySpecies.put("speciesName",target.getRef().toString());
+							     		
+							       	   jsonMedianEnthalpySpecies.put("medianEnthalpy",target.getHf());
+							     		
+							     	   jsonAllMedianEnthalpySpecies.put("species", jsonMedianEnthalpySpecies);
+							     		
+							     	  meadianEnthalpySpeciesJsonList.add(jsonAllMedianEnthalpySpecies);
+							     	   
 										target.setHf(r.getHf());
+							     	   
 
 									}
 								}
 
+								printedJsonFileMedianEnthalpyForSpeciesInitialAnalysis.write(meadianEnthalpySpeciesJsonList.toJSONString());
+								printedJsonFileMedianEnthalpyForSpeciesInitialAnalysis.close();
+								
 								double errorSum = 0d;
 								
 								/**

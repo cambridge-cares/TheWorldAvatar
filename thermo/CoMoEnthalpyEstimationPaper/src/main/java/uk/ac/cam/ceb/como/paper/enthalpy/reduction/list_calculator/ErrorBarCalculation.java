@@ -9,6 +9,9 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
@@ -64,8 +67,10 @@ public class ErrorBarCalculation {
   * @throws IOException the exception.
   * 
   */
- public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile, BufferedWriter printedResultsFile, LinkedHashSet<Species> validSpeciesSet) throws IOException {
+ public void generateInitialValidSpeciesFile(BufferedWriter validSpeciesFile, BufferedWriter printedResultsFile, BufferedWriter printedJsonFileInitialValidSpecies, LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
+	 JSONArray validSpeciesJsonInitialList = new JSONArray();
+	 
  	for(Species s: validSpeciesSet) {
  		
          System.out.println("Species name: " + s.getRef());
@@ -79,7 +84,30 @@ public class ErrorBarCalculation {
          printedResultsFile.write("\n");
          
          
+        JSONObject jsonInitialValidSpecies = new JSONObject();
+ 		
+ 	    JSONObject jsonAllInitialValidSpecies = new JSONObject();	    
+ 	    
+ 	    /**
+ 	     * 
+ 	     * @author NK510 (caresssd@hermes.cam.ac.uk)
+ 		 * Store information about invalid species in JSON file.
+ 		 * 
+ 		 */
+ 	    
+ 	   jsonInitialValidSpecies.put("speciesName",s.getRef().toString());
+ 		
+   	   jsonInitialValidSpecies.put("validity","true");
+ 		
+ 	   jsonAllInitialValidSpecies.put("species", jsonInitialValidSpecies);
+ 		
+ 	   validSpeciesJsonInitialList.add(jsonAllInitialValidSpecies);
+ 		
         }
+ 	
+ 	printedJsonFileInitialValidSpecies.write(validSpeciesJsonInitialList.toJSONString());
+ 	
+ 	printedJsonFileInitialValidSpecies.close();
  	
  	validSpeciesFile.close();
  	
@@ -96,8 +124,10 @@ public class ErrorBarCalculation {
   * @throws IOException the exception. 
   * 
   */
- public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile,BufferedWriter printedResultsFile, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
+ public void generateInitialInvalidSpeciesFile(BufferedWriter invalidSpeciesFile,BufferedWriter printedResultsFile, BufferedWriter printedJsonFileInitialInvalidSpecies, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet) throws IOException {
  	
+	 JSONArray invalidSpeciesJsonInitialList = new JSONArray();
+	 
  	for(Species invs: invalidSpeciesSet) {
          
  	       if(!validSpeciesSet.contains(invs)) {
@@ -112,10 +142,35 @@ public class ErrorBarCalculation {
             
             printedResultsFile.write("\n");
  	       
+            
+            JSONObject jsonInitialInvalidSpecies = new JSONObject();
+     		
+     	    JSONObject jsonAllInitialInvalidSpecies = new JSONObject();	    
+     	    
+     	    /**
+     	     * 
+     	     * @author NK510 (caresssd@hermes.cam.ac.uk)
+     		 * Store information about invalid species in JSON file.
+     		 * 
+     		 */
+     	    
+     	   jsonInitialInvalidSpecies.put("speciesName",invs.getRef().toString());
+     		
+       	   jsonInitialInvalidSpecies.put("validity","false");
+     		
+     	   jsonAllInitialInvalidSpecies.put("species", jsonInitialInvalidSpecies);
+     		
+     	   invalidSpeciesJsonInitialList.add(jsonAllInitialInvalidSpecies);
+     	   
  	       }
  	       
  	}
  	       
+
+ 	printedJsonFileInitialInvalidSpecies.write(invalidSpeciesJsonInitialList.toJSONString());
+ 	
+ 	printedJsonFileInitialInvalidSpecies.close();
+ 	
  	invalidSpeciesFile.close();
  	
  	
@@ -124,13 +179,16 @@ public class ErrorBarCalculation {
  /**
  * 
  * @param invalidSpeciesFile The txt file where invlid species will be listed remaining after appliation cross validation algorithm in initial analysis.
+ * @param printedJsonFileInvalidSpeciesInitialAnalysis Json file that saves invalid species.
  * @param tempInvalidSetOfSpecies The set of invalid species after completing initial analysis
  * @param invalidSpeciesSet Invalid set of species
  * @param validSpeciesSet  Valid set of species.
  * @throws IOException The IO exception.
  * 
  */
-public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet, BufferedWriter printedResultsFile) throws IOException {
+public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWriter invalidSpeciesFile, BufferedWriter  printedJsonFileInvalidSpeciesInitialAnalysis, Set<Species> tempInvalidSetOfSpecies, Map<Species, Double> sortedInvalidSpeciesErrorBar, LinkedHashSet<Species> invalidSpeciesSet, LinkedHashSet<Species> validSpeciesSet, BufferedWriter printedResultsFile) throws IOException {
+	
+	JSONArray invalidSpeciesJsonList = new JSONArray();
 	
 	 	for(Species invs: invalidSpeciesSet) {
 	 		
@@ -147,10 +205,34 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
 	 	       invalidSpeciesFile.write(invs.getRef());
 	 	       
 	            invalidSpeciesFile.write("\n");
+	            
+	            JSONObject jsonInvalidSpecies = new JSONObject();
+	    		
+	    	    JSONObject jsonAllInvalidSpecies = new JSONObject();	    
+	    	    
+	    	    /**
+	    	     * 
+	    	     * @author NK510 (caresssd@hermes.cam.ac.uk)
+	    		 * Store information about invalid species in JSON file.
+	    		 * 
+	    		 */
+	    	    
+	    		jsonInvalidSpecies.put("speciesName",invs.getRef().toString());
+	    		
+	    		jsonInvalidSpecies.put("validity","false");
+	    		
+	    		jsonAllInvalidSpecies.put("species", jsonInvalidSpecies);
+	    		
+	    		invalidSpeciesJsonList.add(jsonAllInvalidSpecies);
+	    		
 	 	       
 	 	       }
 	 	       
 	 	}
+	 	
+	 	printedJsonFileInvalidSpeciesInitialAnalysis.write(invalidSpeciesJsonList.toJSONString());
+	 	
+	 	printedJsonFileInvalidSpeciesInitialAnalysis.close();
 	 	       
 	 	invalidSpeciesFile.close();
 	 	

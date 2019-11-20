@@ -2,6 +2,7 @@ package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +16,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import uk.ac.cam.ceb.como.chem.periodictable.Element;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.io.pool.SpeciesPoolWriter;
@@ -527,8 +531,11 @@ public class DataPreProcessing {
                     
                   SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                   
-                  SpeciesPoolWriter spWriter_targetSpecies = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_target_species_"+ctr+".csv"));
-                        
+                                          
+                  BufferedWriter printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".json", true));
+                  
+                  JSONArray medianEnthalpyReactionJsonList = new JSONArray();
+                  
                   if (!completeRList.isEmpty()) {
                         	
                             System.out.println("Writting complete reaction list...");
@@ -616,7 +623,32 @@ public class DataPreProcessing {
                             
                             printedResultsFile.write("Median Reaction: " + medianReaction.toString() + " medianReaction species Hf: " + medianReaction.getSpecies().getHf() + " : medianReaction.calculateHf(): " + medianReaction.calculateHf());
                             
+                            
+                            JSONObject jsonEnthalpySpecies = new JSONObject();
+                     		
+                     	    JSONObject jsonAllEnthalpySpecies = new JSONObject();	    
+                     	    
+                     	    /**
+                     	     * 
+                     	     * @author NK510 (caresssd@hermes.cam.ac.uk)
+                     		 * Store information about median enthalpy for species in JSON file.
+                     		 * 
+                     		 */
+                     	    
+                     	   jsonEnthalpySpecies.put("speciesName",medianReaction.getSpecies().getRef().toString());
+                     		
+                       	   jsonEnthalpySpecies.put("medianEnthalpy",medianReaction.calculateHf());
+                     		
+                     	   jsonAllEnthalpySpecies.put("species", jsonEnthalpySpecies);
+                     		
+                     	  medianEnthalpyReactionJsonList.add(jsonAllEnthalpySpecies);
+                     	   
+                            
                         }
+                  
+                  printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis.write(medianEnthalpyReactionJsonList.toJSONString());
+                  printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis.close();
+                  
                   
                         if(!ttipSpecies.isEmpty()){
                         	
