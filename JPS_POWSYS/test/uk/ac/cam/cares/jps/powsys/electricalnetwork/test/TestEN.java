@@ -444,6 +444,12 @@ public class TestEN extends TestCase {
 		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
 	}
 	
+	public void testStartSimulationOPFDirectCallBaseScenario() throws IOException  {			
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_POWSYS_EN";
+		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+	}
+	
 	public void xxxtestupdatelocalgenerator() throws IOException {
 		String resourceDir = "D:\\tmp\\scenario for testing with more generator\\Final Version\\owl file changed";
 		

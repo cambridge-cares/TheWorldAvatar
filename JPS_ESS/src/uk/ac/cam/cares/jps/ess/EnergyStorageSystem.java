@@ -43,6 +43,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	private Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 	private String modelname="NESS.gms";
+    List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
 
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
 		
@@ -121,12 +122,13 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		new QueryBroker().put(destinationUrl, fileContext);
 	}
 	
-	public void copyTemplate(String newdir, String filename) {
-		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
-		
-		String destinationUrl = newdir + "/"+filename;
-		new QueryBroker().put(destinationUrl, file);
-	}
+	/*
+	 * public void copyTemplate(String newdir, String filename) { File file = new
+	 * File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+	 * 
+	 * String destinationUrl = newdir + "/"+filename; new
+	 * QueryBroker().put(destinationUrl, file); }
+	 */
 	
 	public static OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
@@ -269,35 +271,61 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keysbat = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysbat);
+        System.out.println("battery list size= "+resultList.size());
+
+        for(int bat=0; bat<resultList.size();bat++) {
+        	ElectricalComponentObject b= new ElectricalComponentObject(resultList.get(bat)[0]);
+        	System.out.println("battery list= "+resultList.get(bat)[0]);
+        	b.setenv(Double.valueOf(resultList.get(bat)[1]));
+        	b.setcost(Double.valueOf(resultList.get(bat)[2]));
+        	b.setmatur(Double.valueOf(resultList.get(bat)[3]));
+        	b.setpthigh(Double.valueOf(resultList.get(bat)[4]));
+        	b.setptlow(Double.valueOf(resultList.get(bat)[5]));
+        	b.setdthigh(Double.valueOf(resultList.get(bat)[6]));
+        	b.setdtlow(Double.valueOf(resultList.get(bat)[7]));
+        	batterylist.add(b);        	
+        }
+        
         
 		String[] header = { "Parameter", "Value" };
 		
-		makeBatteryCSV(baseUrl, resultList, header,"EnvironmentalScore.csv",1);
-		makeBatteryCSV(baseUrl, resultList, header,"EconomicalScore.csv",2);
-		makeBatteryCSV(baseUrl, resultList, header,"Maturity.csv",3);
-		makeBatteryCSV(baseUrl, resultList, header,"Pthigh.csv",4);
-		makeBatteryCSV(baseUrl, resultList, header,"Ptlow.csv",5);
-		makeBatteryCSV(baseUrl, resultList, header,"Dthigh.csv",6);
-		makeBatteryCSV(baseUrl, resultList, header,"Dtlow.csv",7);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"EnvironmentalScore.csv",1);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"EconomicalScore.csv",2);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"Maturity.csv",3);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"Pthigh.csv",4);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"Ptlow.csv",5);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"Dthigh.csv",6);
+		makeBatteryInputParamCSV(baseUrl, resultList, header,"Dtlow.csv",7);
 		
 	}
 
-	private void makeBatteryCSV(String baseUrl, List<String[]> resultList, String[] header,String filename,int index) {
+	private void makeBatteryInputParamCSV(String baseUrl, List<String[]> resultList, String[] header,String filename,int index) {
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
 		resultListforcsv.add(header);
-		for (int x = 0; x < resultList.get(0).length; x++) {
-			String[] line = {resultList.get(x)[0], resultList.get(x)[index] };
+		for (int x = 0; x < resultList.size(); x++) {
+			String[] line = {resultList.get(x)[0].split("#")[1], resultList.get(x)[index] };
 			resultListforcsv.add(line);
 		}
 		new QueryBroker().put(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultListforcsv));
 	}
 	
-	public JSONObject giveResult(String outputfiledir,String batterycat,OntModel model) {
+	
+	
+	
+	public JSONObject giveResult(String outputfiledir,String batterycat,OntModel model) { //unfinished yet
 		JSONObject result=new JSONObject();
-		List<Double[]> simulationResult=readOutput(outputfiledir);	
-
-		
-		result.put("battery","twa/.......");
+		List<Double[]> simulationResult=readOutput(outputfiledir);
+		String choseniri=null;
+		for(int d=0;d<simulationResult.size();d++) {
+			for (ElectricalComponentObject var : batterylist) 
+			{ 
+			    if(var.getenv()==simulationResult.get(d)[0]&&var.getcost()==simulationResult.get(d)[1]&&var.getmatur()==simulationResult.get(d)[2]) {
+			    	choseniri=var.getObjectIRI();
+			    }
+			}
+		}
+	
+		result.put("battery",choseniri);
 		return result;	
 	}
 	
@@ -371,11 +399,11 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				double bus2x = 0.0;
 				double bus2y = 0.0;
 				for (int h = 0; h < buslist.size(); h++) {
-					if (buslist.get(h).getbus().contains(bus1)) {
+					if (buslist.get(h).getObjectIRI().contains(bus1)) {
 						bus1x = buslist.get(h).getx();
 						bus1y = buslist.get(h).gety();
 					}
-					if (buslist.get(h).getbus().contains(bus2)) {
+					if (buslist.get(h).getObjectIRI().contains(bus2)) {
 						bus2x = buslist.get(h).getx();
 						bus2y = buslist.get(h).gety();
 					}
@@ -408,26 +436,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		System.out.println("GENERATOR: " + pvGenIRI);
 		System.out.println("parameter got= "+jofornuc.toString());
 		
-		OntModel modelbattery=readBatteryGreedy(batIRI);
-		prepareCSVPahigh(pvGenIRI,baseUrl);
-		
-		copyTemplate(baseUrl, "Ptlow.csv");
-		copyTemplate(baseUrl, "Pthigh.csv");
-		copyTemplate(baseUrl, "Dtlow.csv");
-		copyTemplate(baseUrl, "Dthigh.csv");
-		copyTemplate(baseUrl, "EnvironmentalScore.csv");
-		copyTemplate(baseUrl, "EconomicalScore.csv");
-		copyTemplate(baseUrl, "Maturity.csv");
-		
-		
-		try {
-			runGAMS(baseUrl);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-		}
-		JSONObject result=giveResult(baseUrl+"/solutions.csv",batIRI,modelbattery);
-		logger.info("optimization result directory = " + result);
+		JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
+		//1st step done
 		
 		
 		//modified the EN with the additional renewable gen added
@@ -473,6 +483,32 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			
 		
 		
-		AgentCaller.printToResponse(result, response);
+		AgentCaller.printToResponse(resultofbattery, response);
+	}
+
+	public JSONObject optimizedBatteryMatching(String baseUrl, String pvGenIRI, String batIRI) throws IOException {
+		OntModel modelbattery=readBatteryGreedy(batIRI);
+		prepareCSVPahigh(pvGenIRI,baseUrl);
+		prepareCSVRemaining(batIRI,baseUrl,modelbattery);
+		
+//		copyTemplate(baseUrl, "Ptlow.csv");
+//		copyTemplate(baseUrl, "Pthigh.csv");
+//		copyTemplate(baseUrl, "Dtlow.csv");
+//		copyTemplate(baseUrl, "Dthigh.csv");
+//		copyTemplate(baseUrl, "EnvironmentalScore.csv");
+//		copyTemplate(baseUrl, "EconomicalScore.csv");
+//		copyTemplate(baseUrl, "Maturity.csv");
+		
+		
+		try {
+			runGAMS(baseUrl);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			System.out.println("gams cannot run completely");
+			logger.error(e.getMessage());
+		}
+		JSONObject result=giveResult(baseUrl+"/solutions.csv",batIRI,modelbattery);
+		logger.info("selected battery = " + result.getString("battery"));
+		return result;
 	}
 }

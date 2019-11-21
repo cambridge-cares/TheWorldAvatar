@@ -76,6 +76,11 @@ public class ENAgent extends JPSHttpServlet {
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
 		startSimulation(iriofnetwork, baseUrl, modeltype);
+		
+		JSONObject resjo=new JSONObject();
+		resjo.put("folder", baseUrl);
+		AgentCaller.printToResponse(resjo, response);
+		
 	}
 	
 	public String createfinalKML(OntModel model) throws TransformerException {
