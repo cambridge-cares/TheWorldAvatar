@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+  xmlns:coordinate_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+  xmlns:PowSysRealization="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
+  xmlns:EN_behavior="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#"
+  xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:space_and_time_extended="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ns1="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#E-303load">
+    <PowSysRealization:hasRatedVoltage>
+      <PowSysRealization:RatedVoltage rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#NominalV_E-303load">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_NominalV_E-303load"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </PowSysRealization:RatedVoltage>
+    </PowSysRealization:hasRatedVoltage>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerLoad"/>
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#E-303load_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#x_E-303load"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#y_E-303load"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <EN_behavior:hasReactivePowerAbsorbed>
+      <EN_behavior:AbsorbedReactivePower rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#Qout_E-303load">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_Qout_E-303load"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </EN_behavior:AbsorbedReactivePower>
+    </EN_behavior:hasReactivePowerAbsorbed>
+    <EN_behavior:hasActualVoltage>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#Voltage_E-303load">
+        <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#ActualV_E-303load"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Voltage"/>
+        <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#theta_E-303load"/>
+      </owl:NamedIndividual>
+    </EN_behavior:hasActualVoltage>
+    <EN_behavior:hasActivePowerAbsorbed>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#Pout_E-303load">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_Pout_E-303load"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedActivePower"/>
+      </owl:NamedIndividual>
+    </EN_behavior:hasActivePowerAbsorbed>
+    <PowSysRealization:hasRatedPower>
+      <PowSysRealization:RatedPower rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#Pset_E-303load">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_Pset_E-303load"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </PowSysRealization:RatedPower>
+    </PowSysRealization:hasRatedPower>
+  </owl:NamedIndividual>
+  <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#theta_E-303load">
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_theta_E-303load">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">-0.45</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+      </system:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageAngle"/>
+  </owl:NamedIndividual>
+  <ns1:StraightCoordinate rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#x_E-303load">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_x_E-303load">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+  </ns1:StraightCoordinate>
+  <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_NominalV_E-303load">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">3</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <ns1:StraightCoordinate rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#y_E-303load">
+    <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+    <system:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    <system:hasValue>
+      <coordinate_system:CoordinateValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_y_E-303load">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </coordinate_system:CoordinateValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </ns1:StraightCoordinate>
+  <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_Qout_E-303load">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.27</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_ActualV_E-303load">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">2.97</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <EN_behavior:VoltageMagnitude rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#ActualV_E-303load">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_ActualV_E-303load"/>
+  </EN_behavior:VoltageMagnitude>
+  <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_Pout_E-303load">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">0.562</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </system:ScalarValue>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/E-303load.owl#V_Pset_E-303load">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.562</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+</rdf:RDF>

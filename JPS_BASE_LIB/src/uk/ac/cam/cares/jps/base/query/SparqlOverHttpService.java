@@ -14,6 +14,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class SparqlOverHttpService {
@@ -21,6 +22,7 @@ public class SparqlOverHttpService {
 	public enum RDFStoreType {	
 		FUSEKI,
 		RDF4J,
+		BLAZEGRAPH,
 		OBDA
 	}
 	
@@ -56,6 +58,10 @@ public class SparqlOverHttpService {
 			this.type = RDFStoreType.FUSEKI;
 			this.sparqlServiceURIForQuery = datasetUrl + "/query";
 			this.sparqlServiceURIForUpdate = datasetUrl + "/update";
+		} else if (RDFStoreType.BLAZEGRAPH == rdfStoreType){
+			this.type = RDFStoreType.BLAZEGRAPH;
+			this.sparqlServiceURIForQuery = datasetUrl;
+			this.sparqlServiceURIForUpdate = datasetUrl + "/update"; // update will not work yet
 		} else {
 			throw new JPSRuntimeException("unsupported RDF store type = " + rdfStoreType);
 		}
@@ -72,7 +78,7 @@ public class SparqlOverHttpService {
 
 		URI uri = AgentCaller.createURI(sparqlServiceURIForUpdate);
 		HttpPost request = new HttpPost(uri);
-		//request.setHeader(HttpHeaders.ACCEPT, "text/csv");
+		//request.setHeader(HttpHeaders.ACCEPT, AgentCaller.MediaType.TEXT_CSV.type);
 		
 		if (RDFStoreType.RDF4J.equals(type)) {
 			request.setHeader(HttpHeaders.CONTENT_TYPE, "application/x-www-form-urlencoded");
@@ -130,12 +136,12 @@ public class SparqlOverHttpService {
 
 		URI uri = null;
 		if (RDFStoreType.RDF4J.equals(type)) {
-			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", "text/csv");
+			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery, "Accept", MediaType.TEXT_CSV.type);
 		} else {
 			uri = AgentCaller.createURI(sparqlServiceURIForQuery, "query", sparqlQuery);
 		}
 		HttpGet request = new HttpGet(uri);
-		request.setHeader(HttpHeaders.ACCEPT, "text/csv");
+		request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
 		//request.setHeader(HttpHeaders.ACCEPT, "text/plain");
 		//request.setHeader(HttpHeaders.ACCEPT, "application/sparql-results+json");
 

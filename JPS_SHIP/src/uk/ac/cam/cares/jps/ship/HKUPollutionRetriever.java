@@ -111,7 +111,7 @@ public class HKUPollutionRetriever extends JPSHttpServlet  {
 
 		QueryBroker broker = new QueryBroker();
 		System.out.println("location for csv= "+fullPath);
-		broker.put(fullPath + "/1hrairpollutionhistory.csv", result);
+		broker.putLocal(fullPath + "/1hrairpollutionhistory.csv", result);
 		
 		//then put it to data set for the metadata
 	}

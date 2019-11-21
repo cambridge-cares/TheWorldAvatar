@@ -16,7 +16,6 @@ public class TestScenarios extends TestCase {
 	//private static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl";
 	public static final String PLANT = "http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan";
 	
-	
 	private void putToThreadContext() {
 		ThreadContext.put("scenarioname", "abc");
 	}
@@ -70,7 +69,8 @@ public class TestScenarios extends TestCase {
 				.endObject().toString();
 		
 		String result = new ScenarioClient().call("test1234567", "/JPS_BASE/EmissionTestAgent/read", json);
-		assertTrue(result.startsWith("<rdf:RDF"));
+		System.out.println(result);
+		assertTrue(result.contains("<rdf:RDF"));
 	}
 	
 	public void testCreateAndDeleteScenario() {

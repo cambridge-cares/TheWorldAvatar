@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.building.SimpleShapeConverter.SimpleShape;
@@ -49,7 +50,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 		}
 		
 		logger.info("urlKey: " + urlKey);
-		return AgentCaller.executeGetWithURLKey(urlKey, AgentCaller.MediaType.TEXT_CSV, "query", query);
+		return AgentCaller.executeGetWithURLKey(urlKey, MediaType.TEXT_CSV, "query", query);
 	}
 	
 	// TODO-AE: move method to JPS BASE (AgentCaller)
@@ -60,7 +61,7 @@ public class BuildingQueryPerformer implements SparqlConstants {
 			int min = Math.min(message.length(), 100);
 			logger.info(message.substring(0, min));
 			HttpGet request = new HttpGet(uri);
-			request.setHeader(HttpHeaders.ACCEPT, "text/csv");
+			request.setHeader(HttpHeaders.ACCEPT, MediaType.TEXT_CSV.type);
 			//request.setHeader(HttpHeaders.ACCEPT, "application/json");
 			//request.setHeader(HttpHeaders.ACCEPT, "application/sparql-results+json");
 			HttpResponse httpResponse = HttpClientBuilder.create().build().execute(request);

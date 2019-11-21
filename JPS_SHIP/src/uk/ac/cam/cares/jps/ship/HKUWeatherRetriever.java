@@ -5,7 +5,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.annotation.WebServlet;
@@ -23,13 +22,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/GetHKUWeatherData")
 public class HKUWeatherRetriever extends JPSHttpServlet {
@@ -61,7 +58,7 @@ public class HKUWeatherRetriever extends JPSHttpServlet {
 
 		QueryBroker broker = new QueryBroker();
 		System.out.println("location for csv= "+fullPath);
-		broker.put(fullPath + "/1hrweatherhistory.csv", result);
+		broker.putLocal(fullPath + "/1hrweatherhistory.csv", result);
 		
 		//then put it to data set for the metadata
 	}
