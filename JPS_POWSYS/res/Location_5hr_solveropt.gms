@@ -49,8 +49,8 @@ $Load cc
 $GDXIN
 
 *Readpng existing generator parameter files from excel files
-$call csv2gdx parameters_req_existing_fo.csv id=eg index=1 values=2..lastCol useHeader=y
-$GDXIN parameters_req_existing_fo.gdx
+$call csv2gdx parameters_req_existing.csv id=eg index=1 values=2..lastCol useHeader=y
+$GDXIN parameters_req_existing.gdx
 $Load e=Dim1
 $Load ep=Dim2
 $Load eg
@@ -171,7 +171,7 @@ option minlp=baron,resLIM=100000,optCR=.9,decimals=6;
 optim.optfile=1;
 Solve optim using minlp minimizing z;
 
-File output /results_5hr_ccgt.csv/;
+File output /results.csv/;
 *output.nr = 2  ;
 output.nd = 1 ;
 *output.nw = 0  ;
