@@ -61,7 +61,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
         cmdArray[1] = folderlocation+"/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
-        cmdArray[4] = "LO=2";
+        cmdArray[4] = "LO=3";
 
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
