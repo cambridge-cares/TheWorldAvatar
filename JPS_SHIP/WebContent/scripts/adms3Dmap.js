@@ -69,7 +69,8 @@ const initadms3dmap = (
     '+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs')
   proj4.defs('WGS84',
     '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees')
-
+  proj4.defs("EPSG:3414",
+		  "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs");
   const parsedLowLeft = proj4('EPSG:3857', 'WGS84', [range[0], range[2]])
   const parsedTopRight = proj4('EPSG:3857', 'WGS84', [range[1], range[3]])
   let lowLeft = [], topRight = []
@@ -193,7 +194,8 @@ const initadms3dmap = (
     }).done(function (shipsResult) {
       let shipsList = JSON.parse(shipsResult)
       let shipsListTransformed = []
-      let src = new proj4.Proj("EPSG:2326")
+      //let src_hk = new proj4.Proj("EPSG:2326")
+      let src = new proj4.Proj("EPSG:3414")
       let dst = new proj4.Proj('EPSG:4326')
       let orig = new proj4.Proj('EPSG:3857')
       let regionUP = new proj4.Point(11563323.926, 143305.896);
@@ -204,6 +206,7 @@ const initadms3dmap = (
         let shipPt = new proj4.Point(ship.lon, ship.lat);
         let shipT = proj4.transform(src, dst, shipPt)
         //if (shipT.x > regionDT.x && shipT.x < regionUPT.x && shipT.y > regionDT.y && shipT.y < regionUPT.y) {
+        	console.log(shipT, shipPt);
           shipsListTransformed.push({'lat':shipT.y, 'lon':shipT.x})
         //}
       }
