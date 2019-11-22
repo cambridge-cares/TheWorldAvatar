@@ -54,7 +54,7 @@ public class TestNuclear extends TestCase {
 		//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/res" + "/results_secondrun.csv";
 		File file = new File(source);
 		String destinationUrl = dataPath + "/" + NuclearAgent.AGENT_TAG + "/results.csv";
-		new QueryBroker().put(destinationUrl, file);
+		new QueryBroker().putLocal(destinationUrl, file);
 		
 		List<String> result = agent.processSimulationResult(dataPath);
 		System.out.println("result from processsimulationresult=" + result);

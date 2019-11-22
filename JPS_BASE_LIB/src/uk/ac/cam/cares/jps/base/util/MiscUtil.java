@@ -62,4 +62,11 @@ public class MiscUtil {
 		};
 		return result;
 	}
+	
+	public static String optNullKey(JSONObject jo, String key) {
+		if (jo.isNull(key)) {
+			return null;
+		}
+		return jo.getString(key);
+	}
 }
