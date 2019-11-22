@@ -10,7 +10,6 @@ import java.io.IOException;
 @WebListener
 public class LocalOntologyModelManager extends BaseChimneyOntologyModelManager {
 
-    private static final String PATH_KB_SHIPS = ABSDIR_ROOT + "/kb/ships/";
     public static final String PATH_KB_SHIPS_TEST = ABSDIR_ROOT_TEST + "/kb/ships/";
 
     public static final String IRI_KB_SHIPS = IRI_KB + "ships/";
