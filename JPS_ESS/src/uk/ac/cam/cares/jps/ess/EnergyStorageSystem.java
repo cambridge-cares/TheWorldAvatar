@@ -61,7 +61,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
         cmdArray[1] = folderlocation+"/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
-        cmdArray[4] = "LO=3";
+        cmdArray[4] = "LO=2";
 
         
         String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
@@ -91,6 +91,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	}
 	
 	public void modifyTemplate(String newdir, String filename) throws IOException {
+		//header that include the battery name hardcoded in the gams MUST BE THE SAME as the one in the input file
 		newdir = newdir.replace("//", "/");
 		String destinationUrl = newdir + "/"+filename;
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);

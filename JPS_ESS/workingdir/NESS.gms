@@ -4,7 +4,7 @@ $eolcom //
 $STitle Example model definitions
 
 Sets
-   p       energy storage technologies /PHS,CAES,FES,LA,NaS,ZEBRA,NiCd,Li-ion,VRFB,ZnBr,PSB,SMES,Sc,H2,Powerwall,BlueBattery,Baobab/
+   p       energy storage technologies /PHS,CAES,FES,LeadAcid,NaS,SodiumNickelChlorideBattery,NiCd,Li_Ion,VRB,ZnBr,PSB,SMES,Sc,HES,Powerwall2,BlueBattery,Baobab/
    k       objective functions /  environment,cost, maturity /
    d       param /Pa_low, Pa_high, Da_low, Da_high/
 $set min -1
