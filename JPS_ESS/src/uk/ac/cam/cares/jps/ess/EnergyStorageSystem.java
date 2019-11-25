@@ -55,16 +55,17 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 //        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
 		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
-        String[] cmdArray = new String[5];
+        String[] cmdArray = new String[7];
         
         cmdArray[0] = executablelocation;
         cmdArray[1] = folderlocation+"/" + modelname;
         cmdArray[2] = "WDIR="+folderlocation;
         cmdArray[3] = "SCRDIR="+folderlocation;
-        cmdArray[4] = "LO=2";
-
+        cmdArray[4] = "PROCDIR="+folderlocation;
+        cmdArray[5] = "CURDIR="+folderlocation;
+        cmdArray[6] = "LO=2";
         
-        String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4];
+        String cmdArrayinstring=cmdArray[0]+" "+cmdArray[1]+","+cmdArray[2]+","+cmdArray[3]+" "+cmdArray[4]+" "+cmdArray[5]+" "+cmdArray[6];
         
         System.out.println(cmdArrayinstring);
         try {
@@ -319,10 +320,20 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		String choseniri=null;
 		for(int d=0;d<simulationResult.size();d++) {
 			for (ElectricalComponentObject var : batterylist) 
-			{ 
+			{
 			    if(var.getenv()==simulationResult.get(d)[0]&&var.getcost()==simulationResult.get(d)[1]&&var.getmatur()==simulationResult.get(d)[2]) {
 			    	choseniri=var.getObjectIRI();
 			    }
+			    else if(var.getenv()==simulationResult.get(d)[0]&&var.getcost()==simulationResult.get(d)[1]) {
+			    	choseniri=var.getObjectIRI();
+			    }
+			    else if(var.getcost()==simulationResult.get(d)[1]&&var.getmatur()==simulationResult.get(d)[2]) {
+			    	choseniri=var.getObjectIRI();
+			    }
+			    else if(var.getenv()==simulationResult.get(d)[0]&&var.getmatur()==simulationResult.get(d)[2]) {
+			    	choseniri=var.getObjectIRI();
+			    }
+			    
 			}
 		}
 	
