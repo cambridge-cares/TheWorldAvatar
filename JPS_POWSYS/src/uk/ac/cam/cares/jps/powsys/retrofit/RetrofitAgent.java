@@ -62,7 +62,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 		}
 		else if ("/retrofitGenerator".equals(path)){
-			JSONArray ja = jo.getJSONArray("renewableGens");
+			JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
 			List<String> RenewableGenerators = MiscUtil.toList(ja);
 			retrofitGenerator(electricalNetwork, RenewableGenerators, substitutionalGenerators);
 		}

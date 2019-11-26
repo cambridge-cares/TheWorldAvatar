@@ -32,11 +32,9 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
 @WebServlet(urlPatterns = { "/ESSAgent" })
@@ -150,15 +148,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		new QueryBroker().put(destinationUrl, fileContext);
 	}
-	
-	/*
-	 * public void copyTemplate(String newdir, String filename) { File file = new
-	 * File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
-	 * 
-	 * String destinationUrl = newdir + "/"+filename; new
-	 * QueryBroker().put(destinationUrl, file); }
-	 */
-	
+
 	public static OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -209,9 +199,9 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		return entryinstance;
 	}
 	
-	public void prepareCSVPahigh(String PVNetworkiri, String baseUrl) {
-		
-		//System.out.println("model= "+model);
+	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
+
+		// System.out.println("model= "+model);
 
 		String batteryquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -223,7 +213,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?Pa_high ?Da_low ?Pa_low ?Da_high " 
 				+ "WHERE {?entity  a  j1:PhotovoltaicGenerator  ."
-
+				
 				+ "?entity   j6:hasMaximumActivePowerGenerated ?Pmax ." 
 				+ "?Pmax     j2:hasValue ?vPmax ."
 				+ "?vPmax  j5:upperLimit ?Pa_high ."
@@ -235,22 +225,32 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				+ "?entity   j6:hasStateOfCharge ?dt ." 
 				+ "?dt     j2:hasValue ?vdt ."
 				+ "?vdt  j5:upperLimit ?Da_high ." 
-				+ "?vdt  j5:lowerLimit ?Da_low ."
-				+ "}";
-		//?Pa_low ?Pa_high ?Da_high ?Da_low 
-		
-        String result = new QueryBroker().queryFile(PVNetworkiri, batteryquery);
-        String[] keyspv = JenaResultSetFormatter.getKeys(result);
-        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyspv);
-
+				+ "?vdt  j5:lowerLimit ?Da_low ." + "}";
 
 		List<String[]> resultListforcsv = new ArrayList<String[]>();
 		String[] header = { "Parameters", "Value" };
 		resultListforcsv.add(header);
-		for (int x = 0; x < resultList.get(0).length; x++) {
-			String[] line = { keyspv[x], resultList.get(0)[x] };
-			resultListforcsv.add(line);
+
+		int variablequeried = 4;
+		String[] keyspv = new String[variablequeried];
+		Double[] pvprop = { 0.0, 0.0, 0.0, 0.0 };
+
+		for (int w = 0; w < pvGenIRI.size(); w++) {
+
+			String result = new QueryBroker().queryFile(pvGenIRI.get(w), batteryquery);
+			keyspv = JenaResultSetFormatter.getKeys(result);
+			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyspv);
+
+			for (int x = 0; x < variablequeried; x++) {
+				pvprop[x] = pvprop[x] + Double.valueOf(resultList.get(0)[x]);
+			}
 		}
+
+		for (int d = 0; d < variablequeried; d++) {
+			String[] line0 = { keyspv[d], "" + pvprop[d] };
+			resultListforcsv.add(line0);
+		}
+
 		String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
 		new QueryBroker().put(baseUrl + "/Pa_high.csv", s);
 	}
@@ -459,7 +459,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		return ans;
 	}
 		
-	public void initOWLClasses(OntModel jenaOwlModel) {
+	protected void initOWLClasses(OntModel jenaOwlModel) {
 		coordinateclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#AngularCoordinate");
 		coordinatesystemclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
 		valueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
@@ -483,48 +483,41 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
 	}
-	
-	
-	
+		
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 		System.out.println("baseURL: " + baseUrl);
-		JSONObject jofornuc = AgentCaller.readJsonParameter(request);
-		String pvGenIRI=jofornuc.getString("RenewableEnergyGenerator");
-		String batIRI=jofornuc.getString("BatteryCatalog");
-		String ENIRI=jofornuc.getString("electricalnetwork");
+		JSONObject joforess = AgentCaller.readJsonParameter(request);
+		List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
+		String batIRI=joforess.getString("BatteryCatalog");
+		String ENIRI=joforess.getString("electricalnetwork");
 		System.out.println("GENERATOR: " + pvGenIRI);
-		System.out.println("parameter got= "+jofornuc.toString());
+		System.out.println("parameter got= "+joforess.toString());
 		
 		JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
 		//1st step done
 		
 		
 		//modified the EN with the additional renewable gen added
-		JSONObject jo = new JSONObject();
-		JSONArray value1 = new JSONArray();
-		JSONArray value2 = new JSONArray();
-		jo.put("electricalnetwork", ENIRI);
-		value1.put(pvGenIRI);
-		jo.put("renewableGens", value1);
-		jo.put("substitutionalgenerators", value2);
-		AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
 		
+		JSONArray value2 = new JSONArray();
+		joforess.put("substitutionalgenerators", value2);
+		AgentCaller.executeGet("JPS_POWSYS/retrofit", joforess.toString());
 		
 		//run the scenario for EN after it is retrofitted
 		logger.info("starting the OPF");
-		String scenarioUrl = BucketHelper.getScenarioUrl("POWSYS-ESS-OPFCallAgent");
-		JPSHttpServlet.enableScenario(scenarioUrl);	
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+//		String scenarioUrl = BucketHelper.getScenarioUrl("POWSYS-ESS-OPFCallAgent");
+//		JPSHttpServlet.enableScenario(scenarioUrl);	
+//		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+//		
+//		JPSContext.putScenarioUrl(jo, scenarioUrl);
+//		
+//		String usecaseUrl = BucketHelper.getUsecaseUrl();
+//		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
+//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		
-		String usecaseUrl = BucketHelper.getUsecaseUrl();
-		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
 		String dirOfOPF = new JSONObject(resultStart).getString("folder");
 		
 		//make battery owl file
@@ -588,10 +581,11 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 					activepowerbalancevalue.addProperty(hasunit, MW);
 					
 					String finalcontent=JenaHelper.writeToString(bat);
-					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",iriprefix+typebat+"-"+String.format("%03d", d+1)+".owl"); //individual file name changed
+					String newiri="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/"+typebat+"-"+String.format("%03d", d+1)+".owl";
+					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
 					
-					broker.put(iriprefix+typebat+"-"+String.format("%03d", d+1)+".owl",finalcontent);
-					listofbat.put(iriprefix+typebat+"-"+String.format("%03d", d+1)+".owl");
+					broker.put(newiri,finalcontent);
+					listofbat.put(newiri);
 				}
 				
 				d++;
@@ -599,7 +593,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			return listofbat;
 	}
 
-	public JSONObject optimizedBatteryMatching(String baseUrl, String pvGenIRI, String batIRI) throws IOException {
+	public JSONObject optimizedBatteryMatching(String baseUrl, List<String> pvGenIRI, String batIRI) throws IOException {
 		OntModel modelbattery=readBatteryGreedy(batIRI);
 		prepareCSVPahigh(pvGenIRI,baseUrl);
 		prepareCSVRemaining(batIRI,baseUrl,modelbattery);		

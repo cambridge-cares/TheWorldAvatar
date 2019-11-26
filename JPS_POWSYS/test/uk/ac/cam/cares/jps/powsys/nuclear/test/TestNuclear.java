@@ -86,7 +86,7 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario103xzx");
 		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearoilremovedserver3");
-		JPSHttpServlet.enableScenario(scenarioUrl);	
+		//JPSHttpServlet.enableScenario(scenarioUrl);	
 		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
