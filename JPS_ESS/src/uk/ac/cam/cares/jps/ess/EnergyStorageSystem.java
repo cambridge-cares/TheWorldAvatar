@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -52,8 +54,20 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	private OntClass coordinatesystemclass = null;
 	private OntClass valueclass = null;
 	private OntClass scalarvalueclass = null;
+	private OntClass powerbalanceclass= null;
+	private ObjectProperty hasActivePowerInjection= null;
+	private ObjectProperty hasunit = null;
+	private ObjectProperty hasvalue = null;
+	private ObjectProperty hascoordinatesystem = null;
+	private ObjectProperty hasx = null;
+	private ObjectProperty hasy = null;
+	
+	private DatatypeProperty numval = null;
+	static Individual degree;
+	static Individual MW;
+	
 
-	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
+ 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
 		
 		modifyTemplate(baseUrl,modelname);
 
@@ -320,8 +334,6 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	}
 	
 	
-	
-	
 	public JSONObject giveResult(String outputfiledir,String batterycat,OntModel model) { //unfinished yet
 		JSONObject result=new JSONObject();
 		List<Double[]> simulationResult=readOutput(outputfiledir);
@@ -447,7 +459,19 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		coordinatesystemclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
 		valueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
 		scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
+		powerbalanceclass= jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#ActivePowerBalance");
 		
+		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+		
+		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
+		hasActivePowerInjection=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerInjection");
+		hascoordinatesystem = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem");
+		hasx = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x");
+		hasy = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y");
+		
+		
+		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
+		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
 	}
 	
 	
@@ -491,9 +515,17 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
-		String dir = new JSONObject(resultStart).getString("folder");
+		String dirOfOPF = new JSONObject(resultStart).getString("folder");
 		
 		//make battery owl file
+		createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
+			
+		
+		
+		AgentCaller.printToResponse(resultofbattery, response);
+	}
+
+	public void createBatteryOwlFile(String ENIRI, JSONObject resultofbattery, String dir) throws IOException {
 		ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
 		int size=resultfrommodelbranch.size();
 		double standard=0.003;
@@ -510,8 +542,12 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				
 				content.replaceAll(typebat+".owl",typebat+"-"+String.format("%03d", d+1)+".owl"); //individual file name changed
 				
-				OntModel bat= new JenaHelper().createModel();
-				new JenaHelper().readFromString(content, bat);
+				new JenaHelper();
+				OntModel bat= JenaHelper.createModel();
+				JenaHelper.readFromString(content, bat);
+				String iriprefix="http://www.jparksimulator.com/kb/batterycatalog/";
+				Individual battery=bat.getIndividual(iriprefix+typebat+"-"+String.format("%03d", d+1)+".owl#"+typebat);
+				
 				
 				Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#CoordinateSystem_of_"+typebat);
 				Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#x_coordinate_of_"+typebat);
@@ -520,19 +556,24 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#v_y_coordinate_of_"+typebat);
 				Individual activepowerbalance=powerbalanceclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#ActivePowerInjection_of_"+typebat);
 				Individual activepowerbalancevalue=scalarvalueclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#V_ActivePowerInjection_of_"+typebat);
+				
+				battery.addProperty(hascoordinatesystem,gencoordinate);
+				gencoordinate.addProperty(hasx,xgencoordinate);
+				gencoordinate.addProperty(hasy,ygencoordinate);
+				xgencoordinate.addProperty(hasvalue, xgencoordinatevalue);
+				ygencoordinate.addProperty(hasvalue, ygencoordinatevalue);
 				xgencoordinatevalue.setPropertyValue(numval, bat.createTypedLiteral(new Double (x)));
 				xgencoordinatevalue.addProperty(hasunit, degree);
 				ygencoordinatevalue.setPropertyValue(numval, bat.createTypedLiteral(new Double (y)));
 				ygencoordinatevalue.addProperty(hasunit, degree);
+				
+				battery.addProperty(hasActivePowerInjection,activepowerbalance);
+				activepowerbalance.addProperty(hasvalue, activepowerbalancevalue);
 				activepowerbalancevalue.setPropertyValue(numval, bat.createTypedLiteral(new Double (capacity)));
 				activepowerbalancevalue.addProperty(hasunit, MW);
 	
-				broker.put(resultofbattery.getString("battery"), new JenaHelper().writeToString(bat));
+				broker.put(resultofbattery.getString("battery"),JenaHelper.writeToString(bat));
 			}
-			
-		
-		
-		AgentCaller.printToResponse(resultofbattery, response);
 	}
 
 	public JSONObject optimizedBatteryMatching(String baseUrl, String pvGenIRI, String batIRI) throws IOException {
