@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -20,6 +21,7 @@ public class EnergyStorageSystemTest extends TestCase {
 //	String baseUrl=dataPath+"/JPS_ESS";
 
 	private String modelname="NESS.gms";
+	private String ENIRI="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	
 	public void xxxtestGAMSRun() throws IOException, InterruptedException { //only to test the gums code if it's running automatically
 		EnergyStorageSystem a = new EnergyStorageSystem();
@@ -44,13 +46,23 @@ public class EnergyStorageSystemTest extends TestCase {
 		String indexline ="34"; //--> index no 34
 		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\05ad27f6-afd3-4fed-8989-e7c1141029aa\\JPS_POWSYS_EN";
 	    EnergyStorageSystem c=new EnergyStorageSystem();		
-		OntModel model = c.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		OntModel model = c.readModelGreedy(ENIRI);
 		double[]coordinate=c.prepareBatteryLocationData(indexline, baseUrl, model);
 		assertEquals(103.70840835, coordinate[0], 0.001);
 		assertEquals(1.2723166665, coordinate[1], 0.001);
 	}
 	
-	public void testoptimizedbattery() throws IOException {
+	public void testCreateOWLFile() throws IOException {
+		String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\05ad27f6-afd3-4fed-8989-e7c1141029aa\\JPS_POWSYS_EN";
+		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
+		JSONObject result=new JSONObject();
+		result.put("battery",resultofbattery);
+		EnergyStorageSystem c=new EnergyStorageSystem();
+		JSONArray a= c.createBatteryOwlFile(ENIRI, result, dir);
+		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB-002.owl", a.get(0));
+	}
+	
+	public void testoptimizedbattery() throws IOException { //to test the execution of gams model
 		String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 		String pvGenIRI="http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1";
 		String dataPath = QueryBroker.getLocalDataPath();
