@@ -52,12 +52,22 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 	
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String electricalNetwork = jo.getString("electricalnetwork");
-		JSONArray ja = jo.getJSONArray("plants");
-		List<String> nuclearPowerPlants = MiscUtil.toList(ja);
+
 		JSONArray ja2 = jo.getJSONArray("substitutionalgenerators");
 		List<String> substitutionalGenerators = MiscUtil.toList(ja2);
+		String path = request.getServletPath();
+		if ("/retrofit".equals(path)) {
+			JSONArray ja = jo.getJSONArray("plants");
+			List<String> nuclearPowerPlants = MiscUtil.toList(ja);
+			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
+		}
+		else if ("/retrofitGenerator".equals(path)){
+			JSONArray ja = jo.getJSONArray("renewableGens");
+			List<String> RenewableGenerators = MiscUtil.toList(ja);
+			retrofitGenerator(electricalNetwork, RenewableGenerators, substitutionalGenerators);
+		}
 		
-		retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
+		
 	}
 	
 	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
@@ -83,6 +93,39 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		logger.info("finished retrofitting");
 	}
 	
+	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators, List<String> substitutionalGenerators) {
+		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
+		
+		List<BusInfo> buses = queryBuses(model);
+		
+		BusInfo slackBus = findFirstSlackBus(buses);
+		
+		if(substitutionalGenerators!=null&&substitutionalGenerators.size()>0) {
+			deletePowerGeneratorsFromElectricalNetwork(electricalNetwork, substitutionalGenerators);
+		}
+		
+		List<GeneratorInfo> newGenerators = new ArrayList<GeneratorInfo>();
+		QueryBroker broker = new QueryBroker();
+		for (String currentGen : RenewableGenerators) {
+			String generatorIri = currentGen;
+			GeneratorInfo info = new GeneratorInfo();
+			info.generatorIri = generatorIri;
+			String queryGenerator = getQueryForGenerator();
+			String resultGen = broker.queryFile(generatorIri, queryGenerator);
+			List<String[]> resultGenAsList = JenaResultSetFormatter.convertToListofStringArrays(resultGen, "entity", "x", "y", "busnumber");
+			info.x = Double.valueOf(resultGenAsList.get(0)[1]);
+			info.y = Double.valueOf(resultGenAsList.get(0)[2]);
+			info.busNumberIri = resultGenAsList.get(0)[3];
+			
+			newGenerators.add(info);
+		}
+		
+		addNuclearPowerGeneratorsToElectricalNetwork(electricalNetwork, newGenerators);
+		
+		connectNuclearPowerGeneratorsToOptimalBus(buses, newGenerators, slackBus);
+		
+	}
+	
 	private BusInfo findFirstSlackBus(List<BusInfo> buses) {
 		BusInfo slackBus = null;
 		for (BusInfo current : buses) {
@@ -98,6 +141,25 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		}
 		
 		return slackBus;
+	}
+	
+	public void completeGenerators (List<String> RenewableGenerators){
+		for(String el:RenewableGenerators) {
+			String scenarioUrl = BucketHelper.getScenarioUrl();
+			URI uri = new ScenarioClient().getReadUrl(scenarioUrl, el);
+			OntModel model = JenaHelper.createModel();
+			try {
+				URL url = uri.toURL();
+				JenaHelper.readFromUrl(url, model);
+			} catch (MalformedURLException e) {
+				new JPSRuntimeException(e.getMessage(), e);
+			}		
+			completePowerGenerator(model, el);
+		}
+		
+
+
+		
 	}
 	
 	public List<String> completeNuclearPowerGenerators(List<String> nuclearPowerPlants) {

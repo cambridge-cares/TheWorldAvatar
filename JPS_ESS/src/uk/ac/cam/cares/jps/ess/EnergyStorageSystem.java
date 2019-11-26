@@ -14,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
@@ -43,7 +45,13 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	private Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
 	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 	private String modelname="NESS.gms";
+	
     List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
+    
+	private OntClass coordinateclass = null;
+	private OntClass coordinatesystemclass = null;
+	private OntClass valueclass = null;
+	private OntClass scalarvalueclass = null;
 
 	public void runGAMS(String baseUrl) throws IOException, InterruptedException { // need gdx files to be in directory location 		
 		
@@ -338,6 +346,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		}
 	
 		result.put("battery",choseniri);
+		batterylist.clear();
 		return result;	
 	}
 	
@@ -433,7 +442,13 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		return ans;
 	}
 		
+	public void initOWLClasses(OntModel jenaOwlModel) {
+		coordinateclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate");
+		coordinatesystemclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#ProjectedCoordinateSystem");
+		valueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateValue");
+		scalarvalueclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue");
 		
+	}
 	
 	
 	
@@ -458,7 +473,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		JSONArray value2 = new JSONArray();
 		jo.put("electricalnetwork", ENIRI);
 		value1.put(pvGenIRI);
-		jo.put("plants", value1);
+		jo.put("renewableGens", value1);
 		jo.put("substitutionalgenerators", value2);
 		AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
 		
@@ -484,13 +499,35 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		double standard=0.003;
 		int d=0;
 		OntModel model = readModelGreedy(ENIRI);
+		QueryBroker broker=new QueryBroker();
 			while(Double.valueOf(resultfrommodelbranch.get(d)[1])<standard&&d<size) {
 				double[]coordinate=prepareBatteryLocationData(resultfrommodelbranch.get(d)[0],dir,model);
 				double x=coordinate[0];
 				double y=coordinate[1];
 				double capacity=Double.valueOf(resultfrommodelbranch.get(d)[1]);
+				String typebat=resultofbattery.getString("battery").split("#")[1];
+				String content=broker.readFile(resultofbattery.getString("battery"));
 				
-				d++;
+				content.replaceAll(typebat+".owl",typebat+"-"+String.format("%03d", d+1)+".owl"); //individual file name changed
+				
+				OntModel bat= new JenaHelper().createModel();
+				new JenaHelper().readFromString(content, bat);
+				
+				Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#CoordinateSystem_of_"+typebat);
+				Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#x_coordinate_of_"+typebat);
+				Individual ygencoordinate = coordinateclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1)+ ".owl#y_coordinate_of_"+typebat);
+				Individual xgencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#v_x_coordinate_of_"+typebat);
+				Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#v_y_coordinate_of_"+typebat);
+				Individual activepowerbalance=powerbalanceclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#ActivePowerInjection_of_"+typebat);
+				Individual activepowerbalancevalue=scalarvalueclass.createIndividual(iriprefix + typebat+"-"+String.format("%03d", d+1) + ".owl#V_ActivePowerInjection_of_"+typebat);
+				xgencoordinatevalue.setPropertyValue(numval, bat.createTypedLiteral(new Double (x)));
+				xgencoordinatevalue.addProperty(hasunit, degree);
+				ygencoordinatevalue.setPropertyValue(numval, bat.createTypedLiteral(new Double (y)));
+				ygencoordinatevalue.addProperty(hasunit, degree);
+				activepowerbalancevalue.setPropertyValue(numval, bat.createTypedLiteral(new Double (capacity)));
+				activepowerbalancevalue.addProperty(hasunit, MW);
+	
+				broker.put(resultofbattery.getString("battery"), new JenaHelper().writeToString(bat));
 			}
 			
 		
