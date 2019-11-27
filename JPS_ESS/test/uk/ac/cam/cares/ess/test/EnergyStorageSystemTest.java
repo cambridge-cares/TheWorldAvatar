@@ -84,10 +84,11 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONObject testres= new EnergyStorageSystem ().optimizedBatteryMatching(baseUrl, pvgeniris, batIRI);
 		System.out.println("result battery= "+testres.getString("battery"));
 		pvgeniris.clear();
+		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB", testres.getString("battery"));
 		
 	}
 
-	public void unfinishedtestStartSimulationESSScenario() throws IOException  {
+	public void testStartSimulationESSScenario() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
@@ -95,15 +96,16 @@ public class EnergyStorageSystemTest extends TestCase {
 		String usecaseUrl = BucketHelper.getUsecaseUrl();
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
+		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 
-		pvgeniris.add(pvGenIRI);
+		//pvgeniris.add(pvGenIRI);
+		pvgeniris.add("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("BatteryCatalog", batIRI);
 		jo.put("RenewableEnergyGenerator", pvgeniris);
 		
-		
+		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
 		System.out.println(jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
 		System.out.println(resultStart);

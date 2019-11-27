@@ -188,7 +188,8 @@ public class ENVisualization extends JPSHttpServlet {
 		ENVisualization a = new ENVisualization();
 
 		// ------------FOR GENERATORS-----------------
-		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
+		String type="PowerGenerator";
+		List<String[]> generators = a.queryElementCoordinate(model, type);
 		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
 		ArrayList<String> coorddata = new ArrayList<String>();
 		for (int e = 0; e < generators.size(); e++) {
@@ -211,7 +212,36 @@ public class ENVisualization extends JPSHttpServlet {
 		for (int g = 0; g < gensmerged.size(); g++) {
 			MapPoint c = new MapPoint(Double.valueOf(gensmerged.get(g).gety()),
 					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
-			a.addMark(c, "generator");
+			a.addMark(c, type);
+		}
+		
+		
+		
+		// ------------FOR Batteries-----------------	
+		List<String[]> batteries = a.queryElementCoordinate(model, "Battery");
+		ArrayList<ENVisualization.StaticobjectgenClass> batmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
+		ArrayList<String> coorddatabat = new ArrayList<String>();
+		for (int e = 0; e < batteries.size(); e++) {
+			StaticobjectgenClass gh = a.new StaticobjectgenClass();
+			gh.setnamegen("[" + batteries.get(e)[0] );
+			gh.setx(batteries.get(e)[1]);
+			gh.sety(batteries.get(e)[2]);
+
+			if (coorddatabat.contains(gh.getx()) && coorddatabat.contains(gh.gety())) {
+				int index = coorddatabat.indexOf(gh.getx()) / 2;
+				batmerged.get(index).setnamegen(batmerged.get(index).getnamegen() + gh.getnamegen());
+			} else {
+				batmerged.add(gh);
+				coorddatabat.add(batteries.get(e)[1]);
+				coorddatabat.add(batteries.get(e)[2]);
+			}
+
+		}
+
+		for (int g = 0; g < batmerged.size(); g++) {
+			MapPoint c = new MapPoint(Double.valueOf(batmerged.get(g).gety()),
+					Double.valueOf(batmerged.get(g).getx()), 0.0, batmerged.get(g).getnamegen());
+			a.addMark(c, "Battery");
 		}
 	
 		// ------------FOR BUS-----------------
@@ -238,7 +268,7 @@ public class ENVisualization extends JPSHttpServlet {
 		for (int g = 0; g < bussesmerged.size(); g++) {
 			MapPoint c = new MapPoint(Double.valueOf(bussesmerged.get(g).gety()),
 					Double.valueOf(bussesmerged.get(g).getx()), 0.0, bussesmerged.get(g).getnamegen());
-			a.addMark(c, "bus");
+			a.addMark(c, "BusNode");
 		}
 
 
@@ -325,12 +355,12 @@ public class ENVisualization extends JPSHttpServlet {
 		
 		Element styleurl = doc.createElement("styleUrl");
 		double busconstant=0;
-		if(type.contains("bus"))
+		if(type.contains("BusNode"))
 			{
 				styleurl.appendChild(doc.createTextNode("#polyStyID_0"));	
 				busconstant=0.00025;
 			}
-		else if(type.contains("generator")) {
+		else if(type.contains("PowerGenerator")) {
 			styleurl.appendChild(doc.createTextNode("#polyStyID_1"));
 		}
 		
@@ -512,7 +542,7 @@ public class ENVisualization extends JPSHttpServlet {
 	
 	public List<String[]> queryElementCoordinate(OntModel model,String type) {
 	//String[]typelist= {"PowerGenerator","BusNode"};
-	
+		
 	String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -534,6 +564,37 @@ public class ENVisualization extends JPSHttpServlet {
 			+ "?vx  j2:numericalValue ?valueofx ."
 			
 			+ "}";
+	
+	if (type.toLowerCase().contains("battery")) {
+		gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+		+ "SELECT ?entity ?valueofx ?valueofy "
+		+ "WHERE {?entity  a  ?class ."
+		+ "?class rdfs:subClassOf j1:Battery ." 
+		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+
+		+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+		+ "?y  j2:hasValue ?vy ." 
+		+ "?vy  j2:numericalValue ?valueofy ."
+
+		+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+		+ "?x  j2:hasValue ?vx ." 
+		+ "?vx  j2:numericalValue ?valueofx ."
+		+ " {?class rdfs:subClassOf j1:Battery ."
+		+ "} "
+		+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
+		+ "}";
+		
+	}
+	
+
 	
 	ResultSet resultSet = JenaHelper.query(model, gencoordinate);
 	String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);

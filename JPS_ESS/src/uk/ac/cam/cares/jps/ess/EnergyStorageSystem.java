@@ -32,6 +32,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -146,7 +147,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
         //FileUtils.write(file, fileContext);
  
 		
-		new QueryBroker().put(destinationUrl, fileContext);
+		new QueryBroker().putLocal(destinationUrl, fileContext);
 	}
 
 	public static OntModel readModelGreedy(String iriofnetwork) {
@@ -175,7 +176,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
 		logger.info("reading result from " + outputfiledir);
-		String content = new QueryBroker().readFile(outputfiledir);
+		String content = new QueryBroker().readFileLocal(outputfiledir);
 		StringReader stringreader = new StringReader(content);
 		CSVReader reader = null;
 		try {
@@ -252,7 +253,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		}
 
 		String s = MatrixConverter.fromArraytoCsv(resultListforcsv);
-		new QueryBroker().put(baseUrl + "/Pa_high.csv", s);
+		new QueryBroker().putLocal(baseUrl + "/Pa_high.csv", s);
 	}
 	
 	public void prepareCSVRemaining(String batcal, String baseUrl,OntModel model) {
@@ -335,7 +336,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			String[] line = {resultList.get(x)[0].split("#")[1], resultList.get(x)[index] };
 			resultListforcsv.add(line);
 		}
-		new QueryBroker().put(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultListforcsv));
+		new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultListforcsv));
 	}
 	
 	
@@ -368,12 +369,12 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	}
 	
 	public List<Double[]> readOutput (String outputfiledir){
-		int contentsize = new QueryBroker().readFile(outputfiledir).split("      ").length;
+		int contentsize = new QueryBroker().readFileLocal(outputfiledir).split("      ").length;
 		List<Double[]>simulationResult=new ArrayList<Double[]>();
 		for(int x=1;x<contentsize;x+=3) {
-			double venvironment=Double.valueOf(new QueryBroker().readFile(outputfiledir).split("      ")[x]);
-			double vcost=Double.valueOf(new QueryBroker().readFile(outputfiledir).split("      ")[x+1]);
-			double vmaturity=Double.valueOf(new QueryBroker().readFile(outputfiledir).split("      ")[x+2].split("\\*")[0]);
+			double venvironment=Double.valueOf(new QueryBroker().readFileLocal(outputfiledir).split("      ")[x]);
+			double vcost=Double.valueOf(new QueryBroker().readFileLocal(outputfiledir).split("      ")[x+1]);
+			double vmaturity=Double.valueOf(new QueryBroker().readFileLocal(outputfiledir).split("      ")[x+2].split("\\*")[0]);
 			if(venvironment!=0.0&&vcost!=0.0&vmaturity!=0.0) {
 				Double[]propbat=new Double[3];
 				propbat[0]=venvironment;
@@ -387,7 +388,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	}
 	
 	public double[] prepareBatteryLocationData(String indexline, String baseUrl, OntModel model) throws IOException {
-		String content = new QueryBroker().readFile(baseUrl + "/mappingforbranch" + ".csv");
+		String content = new QueryBroker().readFileLocal(baseUrl + "/mappingforbranch" + ".csv");
 		// System.out.println("dir= "+content);
 		List<String[]> readinglist = MatrixConverter.fromCsvToArray(content);
 		int r = readinglist.size();
@@ -503,6 +504,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+        String scenarioUrl = BucketHelper.getScenarioUrl();
+        String usecaseUrl = BucketHelper.getUsecaseUrl();
 		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 		System.out.println("baseURL: " + baseUrl);
 		JSONObject joforess = AgentCaller.readJsonParameter(request);
@@ -520,7 +523,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		JSONArray value2 = new JSONArray();
 		joforess.put("substitutionalgenerators", value2);
-		AgentCaller.executeGet("JPS_POWSYS/retrofit", joforess.toString());
+		AgentCaller.executeGet("JPS_POWSYS/retrofitGenerator", joforess.toString());
 		
 		//run the scenario for EN after it is retrofitted
 		logger.info("starting the OPF");
@@ -564,7 +567,6 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 					double y=coordinate[1];
 					double capacity=Double.valueOf(resultfrommodelbranch.get(d)[1]);
 					String typebat=resultofbattery.getString("battery").split("#")[1];
-					//String content=broker.readFile(resultofbattery.getString("battery"));
 					OntModel bat= JenaHelper.createModel(resultofbattery.getString("battery"));
 
 					initOWLClasses(bat);

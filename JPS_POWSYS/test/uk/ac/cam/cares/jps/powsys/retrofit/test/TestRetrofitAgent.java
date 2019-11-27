@@ -76,7 +76,8 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		JSONArray value1 = new JSONArray();
 		JSONArray value2 = new JSONArray();
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
-		value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+		value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
 		jo.put("renewableGens", value1);
 		jo.put("substitutionalgenerators", value2);
 		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
