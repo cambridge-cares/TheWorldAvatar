@@ -168,9 +168,9 @@ public class ENAgent extends JPSHttpServlet {
 		//create line javascript & kml for visualization
 		ENVisualization a=new ENVisualization();
 		QueryBroker broker = new QueryBroker();
-		broker.put(baseUrl + "/line.js", a.createLineJS(model));
+		broker.putLocal(baseUrl + "/line.js", a.createLineJS(model));
 		try {
-			broker.put(baseUrl + "/test2.kml",createfinalKML(model));
+			broker.putLocal(baseUrl + "/test2.kml",createfinalKML(model));
 		} catch (TransformerException e1) {
 			logger.error(e1.getMessage(),e1);
 			e1.printStackTrace();
@@ -525,29 +525,29 @@ public class ENAgent extends JPSHttpServlet {
 
 		List<String[]> buslist = extractOWLinArray(model, iriofnetwork, busInfo, "bus", baseUrl);
 		String content = createNewTSV(buslist, baseUrl + "/mappingforbus.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/bus.txt", content);
+		broker.putLocal(baseUrl + "/bus.txt", content);
 
 		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/gen.txt", content);
+		broker.putLocal(baseUrl + "/gen.txt", content);
 		
 		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generatorcost", baseUrl);
 		content = createNewTSV(gencostlist, baseUrl + "/mappingforgeneratorcost.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/genCost.txt", content);
+		broker.putLocal(baseUrl + "/genCost.txt", content);
 
 		List<String[]> branchlist = extractOWLinArray(model, iriofnetwork, branchInfo, "branch", baseUrl);
 		content = createNewTSV(branchlist, baseUrl + "/mappingforbranch.csv", baseUrl + "/mappingforbus.csv");
-		broker.put(baseUrl + "/branch.txt", content);
+		broker.putLocal(baseUrl + "/branch.txt", content);
 
 		String resourceDir = Util.getResourceDir(this);
 		File file = new File(resourceDir + "/baseMVA.txt");
-		broker.put(baseUrl + "/baseMVA.txt", file);
+		broker.putLocal(baseUrl + "/baseMVA.txt", file);
 
 		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
-		broker.put(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
 		
 		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
-		broker.put(baseUrl + "/runpy.bat", file3);
+		broker.putLocal(baseUrl + "/runpy.bat", file3);
 		
 		
 		return buslist;
@@ -597,7 +597,7 @@ public class ENAgent extends JPSHttpServlet {
 
 			String csv = mapper.serialize();
 			QueryBroker broker = new QueryBroker();
-			broker.put(baseUrl + "/mappingfor" + context + ".csv", csv);
+			broker.putLocal(baseUrl + "/mappingfor" + context + ".csv", csv);
 		}
 
 		return resultList;
@@ -736,7 +736,7 @@ public class ENAgent extends JPSHttpServlet {
 		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
 		
 		logger.info("reading result from " + outputfiledir);
-		String content = new QueryBroker().readFile(outputfiledir);
+		String content = new QueryBroker().readFileLocal(outputfiledir);
 		StringReader stringreader = new StringReader(content);
 		CSVReader reader = null;
 		try {

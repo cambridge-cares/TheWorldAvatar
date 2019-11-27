@@ -393,16 +393,16 @@ public class TestEN extends TestCase {
 		
 		
 		String content=b.createNewTSV(list,baseUrl+"/mappingforbus.csv",busmapurl);
-		broker.put(baseUrl+"/bus.txt", content);
+		broker.putLocal(baseUrl+"/bus.txt", content);
 		
 		content=b.createNewTSV(list2,baseUrl+"/mappingforgenerator.csv",busmapurl);
-		broker.put(baseUrl+"/gen.txt", content);
+		broker.putLocal(baseUrl+"/gen.txt", content);
 		
 		content=b.createNewTSV(list4, baseUrl+"/mappingforbranch.csv",busmapurl);
-		broker.put(baseUrl+"/branch.txt", content);
+		broker.putLocal(baseUrl+"/branch.txt", content);
 		
 		content=b.createNewTSV(list3, baseUrl+"/mappingforgeneratorcost.csv",busmapurl);
-		broker.put(baseUrl+"/genCost.txt", content);
+		broker.putLocal(baseUrl+"/genCost.txt", content);
 	}	
 	
 	public void testStartSimulationPFAgentCallNonBaseScenario() throws IOException  {
@@ -526,7 +526,7 @@ public class TestEN extends TestCase {
 //			Individual ycoordinatevalue = jenaOwlModel2.getIndividual("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-"+x+".owl#V_y_EGen-"+x);
 //			ycoordinatevalue.setPropertyValue(numval, jenaOwlModel2.createTypedLiteral(new Double(1.28135)));
 			String content = JenaHelper.writeToString(jenaOwlModel2);
-			broker.put(filePath, content);
+			broker.putLocal(filePath, content);
 		}
 		
 		

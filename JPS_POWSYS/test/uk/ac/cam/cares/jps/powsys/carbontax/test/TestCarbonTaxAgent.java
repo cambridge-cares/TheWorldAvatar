@@ -74,5 +74,4 @@ public class TestCarbonTaxAgent extends TestCase {
 		System.out.println("output= "+resultProcess);
 		assertNotNull(new JSONObject(resultProcess).get("substitutionalgenerators"));
 	}
-
 }

@@ -92,7 +92,7 @@ public class ADMSAgent extends JPSHttpServlet {
             if (requestParams.has(PARAM_KEY_SHIP)) {
                 JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
-                broker.put(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
+                broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
 
                 writeAPLFileShip(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitation);
@@ -109,14 +109,18 @@ public class ADMSAgent extends JPSHttpServlet {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
 
-        String agentIRI = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 
-        String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
 
         startADMS(fullPath);
-        File name=new File(fullPath + "/test.levels.gst");
+        String target = fullPath + "/test.levels.gst";
+        File name=new File(target);
         if(name.length()!=0&&name.exists()) {
-        	MetaDataAnnotator.annotateWithTimeAndAgent(fullPath + "/test.levels.gst", timestamp, agentIRI);	
+        	String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
+            //String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
+        	//MetaDataAnnotator.annotateWithTimeAndAgent(target, timestamp, agent);	
+        	List<String> topics = new ArrayList<String>();
+        	topics.add(cityIRI);
+        	MetaDataAnnotator.annotate(target, null, agent, true, topics);
         }
         JSONObject responseParams = new JSONObject();
 

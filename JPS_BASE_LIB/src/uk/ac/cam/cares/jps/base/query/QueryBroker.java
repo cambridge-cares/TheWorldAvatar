@@ -27,15 +27,31 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class QueryBroker {
 	
+	public String readFile(String url) {
+		if (!url.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must be a URL");
+		}
+		String result = KnowledgeBaseClient.get(null, url, null);
+		return result;
+	}
+	
+	public String readFileLocal(String path) {
+		if (path.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must not be a URL");
+		}
+		String localFile = ScenarioHelper.cutHash(path);
+		return FileUtil.readFileLocally(localFile);
+	}
+	
 	// TODO-AE SC 20190321 all methods should be extended in such a way that scenario url might passed
 	// directly as a parameter (instead of using the super class JPSHttpServlet and ThreadContext)
-	public String readFile(String urlOrPath) {
+	public String readFileOLD(String urlOrPath) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "reading file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
 		
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
-		if (! urlOrPath.startsWith("http")) {
+		if (!urlOrPath.startsWith("http")) {
 			String localFile = ScenarioHelper.cutHash(urlOrPath);
 			return FileUtil.readFileLocally(localFile);
 		}
@@ -68,8 +84,13 @@ public class QueryBroker {
 			return FileUtil.readFileLocally(localFile);
 		}
 	}
+	
+	public String queryFile(String targetUrl, String sparqlQuery) {
+		String result = KnowledgeBaseClient.query(null, targetUrl, sparqlQuery);
+		return result;
+	}
 
-	public String queryFile(String urlOrPath, String sparqlQuery) {
+	public String queryFileOld(String urlOrPath, String sparqlQuery) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();
 		JPSBaseLogger.info(this, "querying file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -140,12 +161,17 @@ public class QueryBroker {
 		return JenaResultSetFormatter.convertToJSONW3CStandard(result);
 	}
 	
+	public String writeFile(String urlOrPath, String content) {
+		String result = KnowledgeBaseClient.put(null, urlOrPath, content, null);
+		return result;
+	}
+	
 	/**
 	 * @param urlOrPath
 	 * @param content
 	 * @return the URL to access the written file
 	 */
-	public String writeFile(String urlOrPath, String content) {
+	public String writeFileOLD(String urlOrPath, String content) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "writing file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -174,6 +200,20 @@ public class QueryBroker {
 	}
 	
 	public void put(String destinationUrl, String content) {
+		if (!destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must be a URL");
+		}
+		KnowledgeBaseClient.put(null, destinationUrl, content, null);
+	}
+	
+	public void putLocal(String destinationUrl, String content) {
+		if (destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must not be a URL");
+		}
+		FileUtil.writeFileLocally(destinationUrl, content);
+	}
+	
+	public void putOld(String destinationUrl, String content) {
 		
 		//String scenarioUrl = ThreadContext.get(JPSConstants.SCENARIO_URL);	
 		//JPSBaseLogger.info(this, "put for destinationUrl=" + destinationUrl + ", scenarioUrl=" + scenarioUrl);
@@ -181,19 +221,37 @@ public class QueryBroker {
 		// TODO-AE SC 20190416 this is just a hack to read local file, refactor this method
 		String path = destinationUrl;
 		if (destinationUrl.startsWith("http")) {
-			String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
-			path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+			
+			AgentCaller.executePut(destinationUrl, content);
+			
+			//String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
+			//path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 		}
 		
 		FileUtil.writeFileLocally(path, content);
 	}
 	
 	public void put(String destinationUrl, File file) {
+		if (!destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must be a URL");
+		}
 		
 		String content = FileUtil.readFileLocally(file.getAbsolutePath());
 		put(destinationUrl, content);
 	}
+	
+	public void putLocal(String destinationUrl, File file) {
+		if (destinationUrl.startsWith("http")) {
+			throw new JPSRuntimeException("destinationUrl must not be a URL");
+		}
+		String content = FileUtil.readFileLocally(file.getAbsolutePath());
+		FileUtil.writeFileLocally(destinationUrl, content);
+	}
 
+	public void updateFile(String targetUrl, String sparqlUpdate) {
+		KnowledgeBaseClient.update(null, targetUrl, sparqlUpdate);
+	}
+	
 	/**
 	 * Useful links for the question how to update with Jena for future purpose:<br>
 	 * <br> 
@@ -212,7 +270,7 @@ public class QueryBroker {
 	 * @param urlOrPath
 	 * @param sparqlUpdate
 	 */
-	public void updateFile(String urlOrPath, String sparqlUpdate) {
+	public void updateFileOLD(String urlOrPath, String sparqlUpdate) {
 		
 		String scenarioUrl = JPSContext.getScenarioUrl();	
 		JPSBaseLogger.info(this, "updating file for urlOrPath=" + urlOrPath + ", scenarioUrl=" + scenarioUrl);
@@ -245,6 +303,7 @@ public class QueryBroker {
 		}
 		
 		JPSBaseLogger.info(this, "updating local file=" + localFile);
+		JPSBaseLogger.info(this, "SPARQL update =" + sparqlUpdate);
 		
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
 		OntModel model = JenaHelper.createModel(localFile);	
