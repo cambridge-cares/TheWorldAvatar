@@ -483,7 +483,24 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 		MW=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW");
 	}
+	
+	public void addObjectToElectricalNetwork(String electricalNetwork, List<String> componentIRI) {
 		
+		String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + "INSERT DATA { \r\n";
+		StringBuffer b = new StringBuffer();
+		
+		for (int i=1; i<=componentIRI.size(); i++) {
+			String current = componentIRI.get(i-1);
+			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
+			if ((i % 5 == 0) || i == componentIRI.size()) {
+				String sparql = sparqlStart + b.toString() + "} \r\n";
+				logger.info("inserting " + (i % 5) + " power generators to electrical network top node\n" + sparql);
+				new QueryBroker().updateFile(electricalNetwork, sparql);
+				b = new StringBuffer();
+			}
+		}
+	}
+	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
@@ -525,6 +542,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		JSONObject listofbat=new JSONObject();
 		listofbat.put("batterylist", a);
+		
+		addObjectToElectricalNetwork(ENIRI, MiscUtil.toList(a));
 				
 		AgentCaller.printToResponse(listofbat, response);
 	}
