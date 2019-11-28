@@ -12,8 +12,6 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,30 +21,22 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-@WebListener
-public class BaseOntologyModelManager implements ServletContextListener {
+public class BaseOntologyModelManager {
 
-    protected static final String IRI_BASE = "http://www.theworldavatar.com";
+    private static final String IRI_BASE = "http://www.theworldavatar.com";
     protected static final String IRI_KB = IRI_BASE + "/kb/";
-    protected static final String EX_SAVE_OWL =  "Saving OWL failed: ";
-    protected static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
+    private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
+    static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
     protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
-    public static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
-    protected static final String IRI_BASE_TEST = "http://localhost:8080/JPS_SHIP";
+    private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
+    private static final String IRI_BASE_TEST = "http://localhost:8080/JPS_SHIP";
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
 
-    protected static ConcurrentHashMap<String, Resource> conceptMap;
-    protected static OntModel baseEntityModel;
+    static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();
+    static OntModel baseEntityModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
     private static Logger logger = LoggerFactory.getLogger(BaseOntologyModelManager.class);
 
-    @Override
-    public void contextInitialized(ServletContextEvent sce) {
-        baseEntityModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-        setConcepts();
-    }
-
-    @Override
     public void contextDestroyed(ServletContextEvent sce) {
         baseEntityModel.close();
     }
@@ -58,15 +48,11 @@ public class BaseOntologyModelManager implements ServletContextListener {
         return model;
     }
 
-    private void setConcepts() {
-        conceptMap = new ConcurrentHashMap<>();
-    }
-
     public static Resource getConcept(String name) {
         return conceptMap.get(name);
     }
 
-    public static void save(OntModel jenaOwlModel, String iriOfChimney, String mmsi) {
+    public static void save(OntModel jenaOwlModel, String iriOfChimney) {
         ReadWriteLock readWriteLock = new ReentrantReadWriteLock();
         readWriteLock.writeLock().lock();
         try {

@@ -5,11 +5,12 @@ import org.apache.jena.ontology.OntModel;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.listener.BaseChimneyOntologyModelManager;
 
+import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.io.IOException;
 
 @WebListener
-public class LocalOntologyModelManager extends BaseChimneyOntologyModelManager {
+public class LocalOntologyModelManager extends BaseChimneyOntologyModelManager implements ServletContextListener {
 
     public static OntModel createChimneyModelForName(String name) throws IOException {
         //@todo LKA - implementation

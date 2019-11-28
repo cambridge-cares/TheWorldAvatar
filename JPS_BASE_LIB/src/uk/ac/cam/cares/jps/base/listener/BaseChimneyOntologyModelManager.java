@@ -8,6 +8,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-@WebListener
+
 public class BaseChimneyOntologyModelManager extends BaseOntologyModelManager {
 
     private static final String CHIMNEY = "Chimney-1";
@@ -65,9 +66,7 @@ public class BaseChimneyOntologyModelManager extends BaseOntologyModelManager {
     private static ConcurrentHashMap<String, String> speciesMap = new ConcurrentHashMap<>();
     private static Logger logger = LoggerFactory.getLogger(BaseChimneyOntologyModelManager.class);
 
-    @Override
     public void contextInitialized(ServletContextEvent sce) {
-        super.contextInitialized(sce);
         logger.info("initializing the local ontology manager");
         try {
             baseEntityModel = createBaseChimneyModel();
