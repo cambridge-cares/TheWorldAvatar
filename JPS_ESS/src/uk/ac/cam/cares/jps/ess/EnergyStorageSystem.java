@@ -32,7 +32,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -504,11 +503,11 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-        String scenarioUrl = BucketHelper.getScenarioUrl();
-        String usecaseUrl = BucketHelper.getUsecaseUrl();
+
+
+		JSONObject joforess = AgentCaller.readJsonParameter(request);
 		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 		System.out.println("baseURL: " + baseUrl);
-		JSONObject joforess = AgentCaller.readJsonParameter(request);
 		List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
 		String batIRI=joforess.getString("BatteryCatalog");
 		String ENIRI=joforess.getString("electricalnetwork");
@@ -521,9 +520,9 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		//modified the EN with the additional renewable gen added
 		
-		JSONArray value2 = new JSONArray();
-		joforess.put("substitutionalgenerators", value2);
-		AgentCaller.executeGet("JPS_POWSYS/retrofitGenerator", joforess.toString());
+		logger.info("sent to the retrofit= "+joforess.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
+
 		
 		//run the scenario for EN after it is retrofitted
 		logger.info("starting the OPF");
@@ -602,10 +601,11 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 					activepowerbalancevalue.addProperty(hasunit, MW);
 					
 					String finalcontent=JenaHelper.writeToString(bat);
-					String newiri="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/"+typebat+"-"+String.format("%03d", d+1)+".owl";
+					String newiri = QueryBroker.getIriPrefix() + "/sgp/jurongisland/jurongislandpowernetwork/"+typebat+"-"+String.format("%03d", d+1)+".owl";
+					//String newiri="http://www.jparksimulator.com/kb/
 					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
 					
-					broker.put(newiri,finalcontent);
+					broker.putOld(newiri,finalcontent);
 					listofbat.put(newiri);
 				}
 				

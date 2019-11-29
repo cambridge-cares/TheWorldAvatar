@@ -91,7 +91,8 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = BucketHelper.getUsecaseUrl();
+		//String usecaseUrl = BucketHelper.getUsecaseUrl();??? change to bottom
+		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		System.out.println(usecaseUrl);
 		//usecaseUrl = "http://localhost:8080" + ScenarioHelper.SCENARIO_COMP_URL + "/testStartSimulationAndProcessResultAgentCallForTestScenario/kb/d9fbd6f4-9e2f-4c63-9995-9ff88ab8900e";
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);

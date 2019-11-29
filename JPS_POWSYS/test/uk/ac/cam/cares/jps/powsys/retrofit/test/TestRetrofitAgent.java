@@ -78,11 +78,26 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
 		value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
-		jo.put("renewableGens", value1);
+		jo.put("RenewableEnergyGenerator", value1);
 		jo.put("substitutionalgenerators", value2);
 		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
 		List<String> RenewableGenerators = MiscUtil.toList(value1);
-		List<String> substitutionalGenerators = MiscUtil.toList(value2);
-		new RetrofitAgent().retrofitGenerator(jo.getString("electricalnetwork"), RenewableGenerators, substitutionalGenerators);
+		new RetrofitAgent().retrofitGenerator(jo.getString("electricalnetwork"), RenewableGenerators);
+		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
 	}
+	
+//	public void testretrofitnuclear() {
+//		JSONObject jo = new JSONObject();
+//		JSONArray value1 = new JSONArray();
+//		JSONArray value2 = new JSONArray();
+//		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+//		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+//		value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
+//		jo.put("RenewableEnergyGenerator", value1);
+//		jo.put("substitutionalgenerators", value2);
+//		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
+//		List<String> RenewableGenerators = MiscUtil.toList(value1);
+//		new RetrofitAgent().retrofit(jo.getString("electricalnetwork"), RenewableGenerators,jo.getString("substitutionalgenerators"));
+//		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
+//	}
 }
