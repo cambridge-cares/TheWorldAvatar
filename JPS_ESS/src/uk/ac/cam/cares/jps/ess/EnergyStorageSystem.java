@@ -212,7 +212,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?Pa_high ?Da_low ?Pa_low ?Da_high " 
-				+ "WHERE {?entity  a  j1:PhotovoltaicGenerator  ."
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
 				
 				+ "?entity   j6:hasMaximumActivePowerGenerated ?Pmax ." 
 				+ "?Pmax     j2:hasValue ?vPmax ."
@@ -499,6 +499,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				b = new StringBuffer();
 			}
 		}
+		
 	}
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -542,18 +543,19 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		//make battery owl file
 		JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
 		
+		addObjectToElectricalNetwork(ENIRI, MiscUtil.toList(a));
+		
 		JSONObject listofbat=new JSONObject();
 		listofbat.put("batterylist", a);
-		
-		addObjectToElectricalNetwork(ENIRI, MiscUtil.toList(a));
-				
+		listofbat.put("folder", QueryBroker.getLocalDataPath());
+
 		AgentCaller.printToResponse(listofbat, response);
 	}
 
 	public JSONArray createBatteryOwlFile(String ENIRI, JSONObject resultofbattery, String dir) throws IOException {
 		ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
 		int size=resultfrommodelbranch.size();
-		double standard=0.003;
+		double standard=0.3;
 		int d=0;
 		OntModel model = readModelGreedy(ENIRI);
 //		initOWLClasses(model);

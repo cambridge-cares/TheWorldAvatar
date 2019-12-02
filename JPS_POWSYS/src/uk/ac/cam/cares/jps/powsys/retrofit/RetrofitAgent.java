@@ -53,11 +53,12 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String electricalNetwork = jo.getString("electricalnetwork");
 
-		JSONArray ja2 = jo.getJSONArray("substitutionalgenerators");
-		List<String> substitutionalGenerators = MiscUtil.toList(ja2);
+
 		String path = request.getServletPath();
 		logger.info("path= "+path);
 		if ("/retrofit".equals(path)) {
+			JSONArray ja2 = jo.getJSONArray("substitutionalgenerators");
+			List<String> substitutionalGenerators = MiscUtil.toList(ja2);
 			JSONArray ja = jo.getJSONArray("plants");
 			List<String> nuclearPowerPlants = MiscUtil.toList(ja);
 			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
@@ -108,11 +109,14 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			GeneratorInfo info = new GeneratorInfo();
 			info.generatorIri = generatorIri;
 			String queryGenerator = getQueryForGenerator();
+			System.out.println("myquery= "+queryGenerator);
 			String resultGen = broker.queryFile(generatorIri, queryGenerator);
 			List<String[]> resultGenAsList = JenaResultSetFormatter.convertToListofStringArrays(resultGen, "entity", "x", "y", "busnumber");
+			System.out.println("result size= "+resultGenAsList.size());
 			info.x = Double.valueOf(resultGenAsList.get(0)[1]);
 			info.y = Double.valueOf(resultGenAsList.get(0)[2]);
 			info.busNumberIri = resultGenAsList.get(0)[3];
+			System.out.println("bus number iri= "+resultGenAsList.get(0)[3]  );
 			
 			newGenerators.add(info);
 		}
@@ -283,6 +287,13 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		
 		for (int i=1; i<=generators.size(); i++) {
 			String current = generators.get(i-1).generatorIri;
+			
+			if(!current.contains("jps")) { //only apply for other than nuclear
+				System.out.println("current="+current);
+				String genname=current.split("#")[1];
+				current = QueryBroker.getIriPrefix() + "/sgp/pvsingaporenetwork/"+genname+".owl#"+genname;
+			}
+			
 			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
 			if ((i % 5 == 0) || i == generators.size()) {
 				String sparql = sparqlStart + b.toString() + "} \r\n";
@@ -400,6 +411,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			double minimalDistance = -1;
 			for (GeneratorInfo currentGenerator : generators) {
 				if ((busNumber == null) || (currentGenerator.distanceToClosestBus < minimalDistance)) {
+					System.out.println("bus number choosen= "+busNumber);
 					busNumber = currentGenerator.closestBusNumber;
 					minimalDistance = currentGenerator.distanceToClosestBus;
 				}
@@ -407,7 +419,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			
 			// finally, connect the generators to the buses in the OWL files
 			for (GeneratorInfo currentGenerator : generators) {
-				logger.info("connecting generator to bus, generator = " + currentGenerator.generatorIri + ", bus number = " + busNumber);
+				logger.info("connecting generator to bus, solar generator = " + currentGenerator.generatorIri + ", bus number = " + busNumber);
 				connectGeneratorToBus(currentGenerator.generatorIri, currentGenerator.busNumberIri, busNumber);
 			}	
 		

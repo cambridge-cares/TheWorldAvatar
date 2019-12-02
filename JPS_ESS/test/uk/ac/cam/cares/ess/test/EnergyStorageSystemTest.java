@@ -15,7 +15,6 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 
 
@@ -93,13 +92,13 @@ public class EnergyStorageSystemTest extends TestCase {
 
 		JSONObject jo = new JSONObject();
 		//pvgeniris.add(pvGenIRI);
-		pvgeniris.add("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
+		pvgeniris.add("http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("BatteryCatalog", batIRI);
 		jo.put("RenewableEnergyGenerator", pvgeniris);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testBatteryESS3");
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		String scenarioUrl = BucketHelper.getScenarioUrl("testBatteryESS2");
+		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
