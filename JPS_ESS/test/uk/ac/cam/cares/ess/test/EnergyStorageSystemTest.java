@@ -20,14 +20,14 @@ import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 
 public class EnergyStorageSystemTest extends TestCase {
 	
-	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PVSingaporeNetwork.owl#PVSingaporeNetwork";
+	//public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PVSingaporeNetwork.owl#PVSingaporeNetwork";
 //	String dataPath = QueryBroker.getLocalDataPath();
 //	String baseUrl=dataPath+"/JPS_ESS";
 
 	private String modelname="NESS.gms";
 	private String ENIRI="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
 	private String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
-	private String pvGenIRI="http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1";
+	private String pvGenIRI="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001";
 	List<String>pvgeniris= new ArrayList<String>();
 	
 	
@@ -91,13 +91,12 @@ public class EnergyStorageSystemTest extends TestCase {
 		
 
 		JSONObject jo = new JSONObject();
-		//pvgeniris.add(pvGenIRI);
-		pvgeniris.add("http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+		pvgeniris.add(pvGenIRI);
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("BatteryCatalog", batIRI);
 		jo.put("RenewableEnergyGenerator", pvgeniris);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testBatteryESS2");
+		String scenarioUrl = BucketHelper.getScenarioUrl("testBatteryESSfin");
 		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
 		JPSContext.putScenarioUrl(jo, scenarioUrl);

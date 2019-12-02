@@ -78,7 +78,7 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
 		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
 		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
-		value1.put("http://www.theworldavatar.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+		value1.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
 		jo.put("RenewableEnergyGenerator", value1);
 		jo.put("substitutionalgenerators", value2);
 		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());

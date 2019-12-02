@@ -290,8 +290,9 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			
 			if(!current.contains("jps")) { //only apply for other than nuclear
 				System.out.println("current="+current);
-				String genname=current.split("#")[1];
-				current = QueryBroker.getIriPrefix() + "/sgp/pvsingaporenetwork/"+genname+".owl#"+genname;
+				//String genname=current.split("#")[1];
+				current = QueryBroker.getIriPrefix() + current.split("kb")[1];
+				//QueryBroker.getIriPrefix() +generatorIri.split("kb")[1];
 			}
 			
 			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
@@ -436,7 +437,8 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		System.out.println("geniri=" +generatorIri);
 		String genname=generatorIri.split("#")[1];
 		String content = JenaHelper.writeToString(modelGen);
-		String irinew = QueryBroker.getIriPrefix() + "/sgp/pvsingaporenetwork/"+genname+".owl#"+genname;
+		//String irinew = QueryBroker.getIriPrefix() + "/sgp/pvsingaporenetwork/"+genname+".owl#"+genname;
+		String irinew= QueryBroker.getIriPrefix() +generatorIri.split("kb")[1];
 		if(!generatorIri.contains("jps")) {
 			content=content.replace(generatorIri, irinew);
 			System.out.println("newgeniri=" +irinew);
