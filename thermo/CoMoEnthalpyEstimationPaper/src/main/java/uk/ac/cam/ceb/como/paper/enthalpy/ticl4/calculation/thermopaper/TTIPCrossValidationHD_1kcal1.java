@@ -54,15 +54,15 @@ public class TTIPCrossValidationHD_1kcal1 {
 //      String srcSoiPool = "W:\\projects\\enthalpy-methodology\\ttip-case-2\\soi-calc-enthalpy_scaled_kJperMol.csv";
 //      String destRList = "W:\\projects\\enthalpy-methodology\\ttip-case-2\\results\\hd-1kcal\\";
 
-//        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
-//        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
-//        String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";       
+        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
+        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";       
         
-        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8-valid.csv"; //reference data
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8-one-species.csv";  // target species calc-enthalpy_scaled_kJperMol-test-O2-3let calc-enthalpy_scaled_kJperMol-test
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg\\";
+//        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+//        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8-valid.csv"; //reference data
+//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8-one-species.csv";  // target species calc-enthalpy_scaled_kJperMol-test-O2-3let calc-enthalpy_scaled_kJperMol-test
+//        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg\\";
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         refParser.parse();
@@ -126,8 +126,8 @@ public class TTIPCrossValidationHD_1kcal1 {
         solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
 
         int[] ctrRuns = new int[]{1};
-        int[] ctrRes = new int[]{5}; // 1, 5, 15, 25 //1,2,3,4,5,6,7,8,9,10
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5 //100,0
+        int[] ctrRes = new int[]{1}; // 1, 5, 15, 25 //1,2,3,4,5,6,7,8,9,10
+        int[] ctrRadicals = new int[]{0}; // 0, 1, 2, 3, 4, 5 //100,0
 
         for (int z = 0; z < ctrRadicals.length; z++) {
             

@@ -54,7 +54,7 @@ public class ValidationHD {
     	
         String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";
 
         SpeciesPoolParser soiParser = new SpeciesPoolParser(new File(srcSoiPool));
@@ -96,8 +96,8 @@ public class ValidationHD {
         solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
 
         int[] ctrRuns = new int[]{1};
-        int[] ctrRes = new int[]{10, 35, 50}; // 1, 5, 50, 
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRes = new int[]{1,5}; // 1, 5, 50, //10, 35, 50 in original source code
+        int[] ctrRadicals = new int[]{0, 1, 2, 3, 4, 5,100}; // 0, 1, 2, 3, 4, 5
 
         for (int z = 0; z < ctrRadicals.length; z++) {
             int maxRadical = ctrRadicals[z];

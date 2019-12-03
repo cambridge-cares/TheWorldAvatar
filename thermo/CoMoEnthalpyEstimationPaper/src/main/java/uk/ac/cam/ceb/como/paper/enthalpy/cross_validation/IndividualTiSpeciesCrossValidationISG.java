@@ -62,7 +62,7 @@ public class IndividualTiSpeciesCrossValidationISG {
         
         String srcRefTiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";//"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf\\ti_scaled_kJperMols_no-TiO.csv";
         
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\xvalidation\\dHf_rct_isg_x-validation-refined\\";//"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf-x-validation\\dHf-x-validation-isg\\dHf_rct_isg_x-validation-refined-noTiO\\";
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\xvalidation\\";//"C:\\Users\\pb556\\workspace\\ttip_thermo\\calculations\\dHf-x-validation\\dHf-x-validation-isg\\dHf_rct_isg_x-validation-refined-noTiO\\";
         
         int[] ctrRuns = new int[]{1};
         int[] ctrRes = new int[]{5}; // 1, 5, 15, 25

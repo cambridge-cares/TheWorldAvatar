@@ -3,6 +3,8 @@ package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,14 +31,19 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selecto
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.selector.ReactionSelector;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Bond;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
+import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSolver;
+import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
+import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
 import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
+import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
+import uk.ac.cam.ceb.paper.sort.Sort;
 
 /**
 *  
@@ -89,7 +96,7 @@ public class DataPreProcessing {
      */
 
 	
-    public void getPreProcessingCorssValidation(int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction,  BufferedWriter printedResultsFile) throws Exception {
+    public void getPreProcessingCorssValidation(ReactionType reactionType, int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction,  BufferedWriter printedResultsFile) throws Exception {
     	
     	for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -113,18 +120,29 @@ public class DataPreProcessing {
         		
         		printedResultsFile.write("\n");
         		
+          	  /**
+          	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
+           	   * Folder path settings on PC machine
+          	   */
+        		
 //              if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	  
                 	  /**
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
-                 	   * HPC settings
+                 	   * Folder path settings on HPC machine
                 	   */
         		if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
+        			
+                	  /**
+                	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
+                 	   * Folder path settings on PC machine
+                	   */
+
                 	
 //              System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
                    /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
-                  	 * HPC settings
+                  	 * Folder path settings on HPC machine
                   	 */  
         		System.out.println("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
         		
@@ -167,14 +185,14 @@ public class DataPreProcessing {
                     
                     /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
-                     * Settings on PC machine
+                     * Folder path settings on PC machine
                      * 
                      */
 
 //                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                     /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
-                	 * HPC settings
+                	 * Folder path settings on HPC machine
                 	 * 
                 	 */
                 if (new File(destRList  +"/"+ "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
@@ -285,11 +303,12 @@ public class DataPreProcessing {
                             if (spinMultiplicity.get(sSpin) != null && spinMultiplicity.get(sSpin) - 1 > maxRadical) {
                             	
                                 refPool.remove(sSpin);
-                                
+                            
                             }
                             
                         } catch (NullPointerException ex) {
                         	
+                        ex.printStackTrace();	
                         }
                     }
                     
@@ -332,7 +351,9 @@ public class DataPreProcessing {
                     
                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+//                  PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+                    
+                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, reactionType));
                     
                     poolModCalc.setMaximumSearchDepth(50); //50
                     
@@ -720,5 +741,250 @@ public class DataPreProcessing {
             }
          }
       }    
+    }
+    
+    /**
+     * 
+     * @author NK510 (caresssd@hermes.cam.ac.uk)
+     * 
+     * @param srcCompoundsRef Folder contains Gaussian files for Ti-based species that are reference species used in EBR pre-processing step of cross validation.
+     * @param srcRefPool  The file path (csv file) for Ti-based target species that are used in EBR pre-processing step of cross validation
+     * @param destRList   Destination folders that store results generated by pre-processing module (Java code) of cross validation Java code. It includes ISG and ISD reaction types generated by Java code.
+     * @param tempFolder Folder that contains files used by GLPK solver. Before running this Junit tests, the folder below should be created first.
+     * @param ctrRuns Number of runs.
+     * @param ctrRes Number of reactions that will be generated.
+     * @param ctrRadicals Number of radicals.
+     * @param reactionType Reaction type (ISG, ISD. Hd, HHD)
+     * @throws Exception The exception.
+     * 
+     * Method generates chemical reaction for target species, and estimates standard ethalpy of formation for each reaction based on given reaction type.
+     *  
+     */
+    public void getPreProcessingErrorBalanceReaction(String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
+    	
+    	
+		FolderUtils folderUtils = new FolderUtils();
+		
+		String folderName = FolderUtils.generateUniqueFolderName("isg_isd");		
+
+		Files.createDirectories(Paths.get(destRList +"/" +folderName));
+		
+		 Map<String, Integer[]> mapElPairing = new HashMap<>();
+
+		Map<Species, Integer> spinMultiplicity = new HashMap<>();
+
+        LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
+		
+        LinkedHashSet<Species> invalidSpecies = new LinkedHashSet<Species>();
+
+		Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
+
+		Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
+
+		Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
+		
+		JSONArray listOfJsonSpeciesData = new JSONArray();
+		    
+		JSONObject speciesJsonObject = new JSONObject();
+		    
+		BufferedWriter printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList +"/" +folderName +"/"+ "printed_results" + ".txt", true));
+
+		LoadSpecies ls = new LoadSpecies();
+
+		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing, printedResultsTxtFile);
+
+		System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
+			
+		printedResultsTxtFile.write("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
+			
+		printedResultsTxtFile.write("\n");
+			
+		LoadSolver lSolver = new LoadSolver();
+
+		DataPreProcessing dpp = new DataPreProcessing();
+
+		ErrorBarCalculation errorBarCalculation = new ErrorBarCalculation();
+
+		System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
+		    
+		printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
+			
+		printedResultsTxtFile.write("\n");
+			
+				/**
+				 * 
+				 * Reaction type
+				 * 
+				 */
+		    
+		
+			
+		dpp.getPreProcessingCorssValidation(reactionType,1500, 20, destRList+"/"+folderName, ctrRadicals, ctrRuns, ctrRes, refSpecies,
+						spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
+						validReaction, invalidReaction,printedResultsTxtFile); 
+
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * After completing pre-processing step, it prints valid reactions in txt file and on console.
+				 * 
+				 */
+			
+		BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +folderName +"/"+"data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
+
+		System.out.println("Valid reactions writing . . . ");
+			
+		printedResultsTxtFile.write("Valid reactions writing . . . ");
+		printedResultsTxtFile.write("\n");
+			
+		errorBarCalculation.generateInitialReactionListFile(validReactionFile, printedResultsTxtFile,validReaction);
+
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * Printing invalid reactions in txt file and on console.
+				 * 
+				 */
+			
+		BufferedWriter invalidReactionFile = new BufferedWriter(
+			
+		//  new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+		    
+			/**
+			 * 
+			 * @author nk510 (caresssd@hermes.cam.ac.uk)
+			 * HPC settings
+			 * 
+			 */
+
+			new FileWriter(destRList + "/" +folderName +"/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
+
+			System.out.println("Invalid reactions writing . . .");
+			
+			printedResultsTxtFile.write("Invalid reactions writing . . .");
+			printedResultsTxtFile.write("\n");
+			
+			errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, printedResultsTxtFile,invalidReaction);
+
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * Printing valid species in txt file and on console.
+				 * 
+				 */
+			
+			System.out.println("Valid species writing . . . ");
+			
+			printedResultsTxtFile.write("Valid species writing . . . ");
+			printedResultsTxtFile.write("\n");
+			
+			BufferedWriter validSpeciesFile = new BufferedWriter(
+			
+//			new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
+			
+			/**
+			 * 
+			 * @author nk510 (caresssd@hermes.cam.ac.uk)
+			 * HPC settings
+			 * 
+			 */
+			new FileWriter(destRList + "/"+folderName +"/"+"data-pre-processing" + "/"+ "valid_species" + ".txt", true));
+
+			/**
+			 * 
+			 * @author NK510 (caresssd@hermes.cam.ac.uk)
+			 * Saves initial valid species into json format. This initial valid species is generated in pre-processing step of cross validation algorithm.
+			 *   
+			 */
+			BufferedWriter printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/"+folderName +"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
+			
+			errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, printedResultsTxtFile,printedJsonFileInitialValidSpecies,validSpecies);
+
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * Printing invalid species in txt file and on console.
+				 * 
+				 */
+			
+			System.out.println("Invalid species writing . . .");
+			
+			printedResultsTxtFile.write("Invalid species writing . . .");
+			printedResultsTxtFile.write("\n");
+
+			/**
+			 * 
+			 * @author nk510 (caresssd@hermes.cam.ac.uk)
+			 * Settings on PC machine.
+			 * 
+			 */
+//			BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+			
+			/**
+			 * 
+			 * @author nk510 (caresssd@hermes.cam.ac.uk)
+			 * HPC settings
+			 * 
+			 */
+			
+			BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList +"/" +folderName +"/"+ "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+
+			/**
+			 * 
+			 * @author NK510 (caresssd@hermes.cam.ac.uk)
+			 * Saves initial invalid species into json format. This initial invalid species is generated in pre-processing step of cross validation algorithm.
+			 *   
+			 */
+			
+			BufferedWriter printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList + "/" +folderName + "/" + "data-pre-processing" + "/"+ "printed_initial_invalid_species" +".json", true));
+			
+			errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, printedJsonFileInitialInvalidSpecies,invalidSpecies, validSpecies);
+
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * Error bar is average of all errors generated for each reaction of given
+				 * species.
+				 * 
+				 * Calculates error bar for each species in invalid set of species.
+				 * 
+				 */
+
+			invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies,printedResultsTxtFile));
+
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * Sorted hash map in decreasing order comparing by error bar value in Java 1.8.
+				 * 
+				 */
+				
+				Map<Species, Double> sortedInvalidSpeciesErrorBar = Sort.sortingSpeciesMapComparingByValue(invalidSpeciesErrorBar);
+
+				System.out.println("Sorted species compared by error bars:");
+				
+				printedResultsTxtFile.write("Sorted species compared by error bars:");
+				printedResultsTxtFile.write("\n");
+
+				for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
+
+				System.out.println(ss.getKey().getRef() + " " +  ss.getValue());
+
+				printedResultsTxtFile.write(ss.getKey().getRef() + " " +  ss.getValue());
+				
+				printedResultsTxtFile.write("\n");
+				
+				}
+				
+				printedResultsTxtFile.close();
+				
+				/**
+				 * 
+				 * @author nk510 (caresssd@hermes.cam.ac.uk)
+				 * Terminates program
+				 * 
+				 */
+			
+			     System.exit(0);
     }
 }

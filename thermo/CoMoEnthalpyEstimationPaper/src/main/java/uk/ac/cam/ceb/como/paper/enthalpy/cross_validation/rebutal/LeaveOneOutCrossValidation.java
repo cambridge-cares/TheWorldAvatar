@@ -53,7 +53,7 @@ public class LeaveOneOutCrossValidation {
 //        String destRList = "C:\\Users\\pb556\\preprints\\methodology\\cnf_initial-submission\\rebuttal\\additional-calculations\\data\\reactions\\x-validation\\hco_isd\\";
 
           String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
-          String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";
+          String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol3.csv";
           String destRList = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\hco_hd\\";
         
 //        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";

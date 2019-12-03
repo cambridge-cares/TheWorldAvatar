@@ -62,20 +62,34 @@ public class LeaveOneOutCrossValidationHD {
 //      String srcRefPool = "C:\\Users\\pb556\\preprints\\methodology\\cnf_initial-submission\\rebuttal\\additional-calculations\\data\\calc-enthalpy_scaled_kJperMol.csv";
 //      String destRList = "C:\\Users\\pb556\\preprints\\methodology\\cnf_initial-submission\\rebuttal\\additional-calculations\\data\\reactions\\x-validation\\hco_isg\\";
         
-        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_hd\\";
+//      String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+//      String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+//      String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_hd\\";
+        
+//    String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
+      String srcCompoundsRef = "esc/g09/";
+      
+//    String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv calc-enthalpy_scaled_kJperMol.csv
+      String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
+      
+//    String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
 
-        SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
-        refParser.parse();
+//    String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";
+      String destRList = "hco_hd_ebr/";
+      
         
-        Collection<Species> ref = refParser.getRefSpecies();
+      SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         
-//        for(Species r:ref) {
+      refParser.parse();
+        
+      Collection<Species> ref = refParser.getRefSpecies();
+        
+//    for(Species r:ref) {
 //        	
-//        	System.out.println("Ref species name: " + r.getRef() + " Ref species enthalpy: " + r.getHf());
+//    System.out.println("Ref species name: " + r.getRef() + " Ref species enthalpy: " + r.getHf());
 //        	
-//        }
+//    }
+        
         Collection<Species> invalids = new HashSet<>();
         Map<Species, Integer> spinMultiplicity = new HashMap<>();
         
@@ -122,15 +136,17 @@ public class LeaveOneOutCrossValidationHD {
 
         SolverHelper.add(mapElPairing);
 
-        LPSolver solver = new TerminalGLPKSolver(15000, false, true);
+        LPSolver solver = new TerminalGLPKSolver(30000, false, true);
         
-        solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
+//        solver.setDirectory(new File("D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\"));
+        solver.setDirectory(new File("LeaveOneOutCrossValidation_hd_ebr/"));
+        //static String tempFolder = "LeaveOneOutCrossValidation_hd/";
 
         int[] ctrRuns = new int[]{1};
         
-        int[] ctrRes = new int[]{5}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
+        int[] ctrRes = new int[]{1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
         
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRadicals = new int[]{0}; // 0, 1, 2, 3, 4, 5
 
         for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -146,7 +162,8 @@ public class LeaveOneOutCrossValidationHD {
                     
             		System.out.println("Process configuration " + config);
                     
-                    if (new File(destRList + "\\" + config + ".txt").exists()) {
+//                  if (new File(destRList + "\\" + config + ".txt").exists()) {
+                    if (new File(destRList + "/" + config + ".txt").exists()) {
                     	
                         System.out.println("Skipping " + destRList + "\\" + config);
                         
@@ -166,7 +183,8 @@ public class LeaveOneOutCrossValidationHD {
                     
                         ctr++;
 
-                        if (new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+//                        if (new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+                        if (new File(destRList + "/" + target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                         
                         	continue;
                         }
@@ -318,13 +336,16 @@ public class LeaveOneOutCrossValidationHD {
                                 }
                             }
 
-                            if(!new File(destRList + "\\" + target.getRef() + "\\").exists()) {
+//                            if(!new File(destRList + "\\" + target.getRef() + "\\").exists()) {
+                           	  if(!new File(destRList + "/" + target.getRef() + "/").exists()) {
                             	
-                            new File(destRList + "\\" + target.getRef() + "\\").mkdirs();
+//                          new File(destRList + "\\" + target.getRef() + "\\").mkdirs();
+                            new File(destRList + "/" + target.getRef() + "/").mkdirs();
                             
                             }
 
-                            ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));                            
+//                            ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_reaction-list.rct"));
+                           	 ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList + "/" + target.getRef() + "/" + config + "_reaction-list.rct"));
                             
                             /**
                              * 
@@ -332,7 +353,8 @@ public class LeaveOneOutCrossValidationHD {
                              * 
                              */
                             
-                            SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+//                            SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "\\" + target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                             SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "/" + target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                             
                             
                             if (!completeRList.isEmpty()) {
@@ -365,7 +387,7 @@ public class LeaveOneOutCrossValidationHD {
                                 	 * 
                                 	 */
                                 	
-                                System.out.println("[Species name: " + sp.getRef() + "  Species enthalpy (median?): " + sp.getHf() + " ]" );
+                                System.out.println("[Species name: " + sp.getRef() + "  Species enthalpy: " + sp.getHf() + " ]" );
                                 
                                 
                                 
@@ -393,7 +415,8 @@ public class LeaveOneOutCrossValidationHD {
                         
                         writer.overwrite(true);
                         
-                        writer.set(destRList + "\\" + config + ".txt");
+//                      writer.set(destRList + "\\" + config + ".txt");
+                        writer.set(destRList + "/" + config + ".txt");
                         
                         writer.write();
                         
@@ -404,11 +427,13 @@ public class LeaveOneOutCrossValidationHD {
             }
         }
         System.out.println();
+        
         System.out.println("Valid reactions: ");
         
         
         
-        BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "valid_reactions" + ".txt", true)); 
+//      BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "valid_reactions" + ".txt", true)); 
+        BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" + "valid_reactions" + ".txt", true));
         
         for(Map.Entry<Reaction, Double> v: validReaction.entrySet()) {
         	
@@ -422,7 +447,8 @@ public class LeaveOneOutCrossValidationHD {
         
         validReactionFile.close();
         
-        BufferedWriter invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "invalid_reactions" + ".txt", true)); 
+//        BufferedWriter invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "\\" + "invalid_reactions" + ".txt", true)); 
+        BufferedWriter invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "/" + "invalid_reactions" + ".txt", true));
         
         System.out.println();
         System.out.println("Invalid reactions: ");

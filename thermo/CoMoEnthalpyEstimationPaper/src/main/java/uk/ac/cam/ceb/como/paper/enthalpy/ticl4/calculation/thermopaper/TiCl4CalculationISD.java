@@ -75,10 +75,10 @@ public class TiCl4CalculationISD {
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species. //171//calc-enthalpy_scaled_kJperMol.csv
         String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isd\\";
 
-//        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; 
-//        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-//        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv // 1 species //-1species
-//        String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_isd\\";
+//      String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; 
+//      String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
+//      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv // 1 species //-1species
+//      String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_isd\\";
         
 //      String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
 //      String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";

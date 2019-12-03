@@ -35,7 +35,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -73,7 +73,7 @@ public class LeaveOneOutXValidationISG {
 	
     public static void main(String[] args) throws Exception {
 
-    	double maxErr = 20;
+    	double maxErr = 20; //20 was in original code
     	
     	Set<Species> validSpecies = new HashSet<Species>();
     	
@@ -85,11 +85,13 @@ public class LeaveOneOutXValidationISG {
     	
         Map<String, Integer[]> mapElPairing = new HashMap<>();
         
-        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+//      String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+//      String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv"; //ref_scaled_kJperMols_v8-5-6c.csv";
+//      String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
         
-        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv"; //ref_scaled_kJperMols_v8-5-6c.csv";
-        
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+        String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\";
+        String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\hco_hd\\";
         
         SpeciesPoolParser refParser = new SpeciesPoolParser(new File(srcRefPool));
         
@@ -150,15 +152,15 @@ public class LeaveOneOutXValidationISG {
 
         int[] ctrRuns = new int[]{1};
         
-        int[] ctrRes = new int[]{5}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
+        int[] ctrRes = new int[]{1}; //5 was in original code // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10
         
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRadicals = new int[]{0}; //100 was in original code // 0, 1, 2, 3, 4, 5
 
         for (int z = 0; z < ctrRadicals.length; z++) {
         	
             int maxRadical = ctrRadicals[z];
             
-            int timeout = 1500;
+            int timeout = 1500; //1500 was in original code
             
             for (int i = 0; i < ctrRuns.length; i++) {
             
@@ -219,7 +221,7 @@ public class LeaveOneOutXValidationISG {
                         
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         
-                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HDReactionType()));
                         
                         poolModCalc.setMaximumSearchDepth(50);
                         
