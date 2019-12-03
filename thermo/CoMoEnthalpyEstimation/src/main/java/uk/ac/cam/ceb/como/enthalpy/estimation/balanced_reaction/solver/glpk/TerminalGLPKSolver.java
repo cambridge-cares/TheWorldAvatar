@@ -72,7 +72,7 @@ public class TerminalGLPKSolver extends LPSolver {
          * Settings to run the code (LP solver) on local Windows (PC) machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper.
          *  
          */
-//        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
+        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
 
         /**
          * 
@@ -80,7 +80,7 @@ public class TerminalGLPKSolver extends LPSolver {
          * Settings to run the code (LP solver) on HPC. The GLPK solver should be installed (copied) on user's profile on Unix (Linux) HPC machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/
          *  
          */
-        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
+//        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
         
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
