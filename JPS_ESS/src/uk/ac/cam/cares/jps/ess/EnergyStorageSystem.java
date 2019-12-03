@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
-@WebServlet(urlPatterns = { "/ESSAgent" })
+@WebServlet(urlPatterns = { "/ESSAgent" , "/ESSBatterySearch"})
 
 public class EnergyStorageSystem extends JPSHttpServlet {
 
@@ -77,8 +77,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-//        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
-		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
+//		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
         String[] cmdArray = new String[7];
         
@@ -505,53 +505,105 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		String path = request.getServletPath();
+		if ("/ESSBatterySearch".equals(path)) {
+			JSONObject joforEN = AgentCaller.readJsonParameter(request);
+			String iriofnetwork = joforEN.getString("electricalnetwork");
+			OntModel model = readModelGreedy(iriofnetwork);
 
-		JSONObject joforess = AgentCaller.readJsonParameter(request);
-		String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
-		System.out.println("baseURL: " + baseUrl);
-		List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
-		String batIRI=joforess.getString("BatteryCatalog");
-		String ENIRI=joforess.getString("electricalnetwork");
-		System.out.println("GENERATOR: " + pvGenIRI);
-		System.out.println("parameter got= "+joforess.toString());
-		
-		JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-		//1st step done
-		
-		
-		//modified the EN with the additional renewable gen added
-		
-		logger.info("sent to the retrofit= "+joforess.toString());
-		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
+			ArrayList<String>textcomb=new ArrayList<String>();
+			List<String[]> g= getBatteryCoord(model);
+			for (int i = 0; i < g.size(); i++) {
+				String content="{\"coors\": {\"lat\": "+g.get(i)[2]+", \"lng\": "+g.get(i)[1]
+						+ "},  \"name\": \""+g.get(i)[0].split("#")[0]+".owl\"}";
+				textcomb.add(content);
+			}
+			JSONArray jsArray = new JSONArray(textcomb);
+		    JSONObject jo = new JSONObject();
+		    jo.put("result", jsArray);
+			AgentCaller.printToResponse(jo.toString(), response);
+		}
+		else {
 
-		
-		//run the scenario for EN after it is retrofitted
-		logger.info("starting the OPF");
-//		String scenarioUrl = BucketHelper.getScenarioUrl("POWSYS-ESS-OPFCallAgent");
-//		JPSHttpServlet.enableScenario(scenarioUrl);	
-//		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-//		
-//		JPSContext.putScenarioUrl(jo, scenarioUrl);
-//		
-//		String usecaseUrl = BucketHelper.getUsecaseUrl();
-//		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
-		String dirOfOPF = new JSONObject(resultStart).getString("folder");
-		
-		//make battery owl file
-		JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
-		
-		addObjectToElectricalNetwork(ENIRI, MiscUtil.toList(a));
-		
-		JSONObject listofbat=new JSONObject();
-		listofbat.put("batterylist", a);
-		listofbat.put("folder", QueryBroker.getLocalDataPath());
-
-		AgentCaller.printToResponse(listofbat, response);
+			JSONObject joforess = AgentCaller.readJsonParameter(request);
+			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
+			System.out.println("baseURL: " + baseUrl);
+			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
+			String batIRI=joforess.getString("BatteryCatalog");
+			String ENIRI=joforess.getString("electricalnetwork");
+			System.out.println("GENERATOR: " + pvGenIRI);
+			System.out.println("parameter got= "+joforess.toString());
+			
+			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
+			//1st step done
+			
+			
+			//modified the EN with the additional renewable gen added
+			
+			logger.info("sent to the retrofit= "+joforess.toString());
+			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
+	
+			
+			//run the scenario for EN after it is retrofitted
+			logger.info("starting the OPF");
+	//		String scenarioUrl = BucketHelper.getScenarioUrl("POWSYS-ESS-OPFCallAgent");
+	//		JPSHttpServlet.enableScenario(scenarioUrl);	
+	//		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+	//		
+	//		JPSContext.putScenarioUrl(jo, scenarioUrl);
+	//		
+	//		String usecaseUrl = BucketHelper.getUsecaseUrl();
+	//		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
+	//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
+			
+			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
+			String dirOfOPF = new JSONObject(resultStart).getString("folder");
+			
+			//make battery owl file
+			JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
+			
+			addObjectToElectricalNetwork(ENIRI, MiscUtil.toList(a));
+			
+			JSONObject listofbat=new JSONObject();
+			listofbat.put("batterylist", a);
+			listofbat.put("folder", QueryBroker.getLocalDataPath());
+	
+			AgentCaller.printToResponse(listofbat, response);
 	}
+		}
+	public List<String[]> getBatteryCoord(OntModel model) {
+		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+				+ "SELECT ?entity ?valueofx ?valueofy "
+				+ "WHERE {?entity  a  ?class ."
+				+ "?class rdfs:subClassOf j1:Battery ." 
+				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
 
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."
+				+ " {?class rdfs:subClassOf j1:Battery ."
+				+ "} "
+				+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
+				+ "}";
+			ResultSet resultSet = JenaHelper.query(model, gencoordinate);
+			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+			String[] keys = JenaResultSetFormatter.getKeys(result);
+			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			
+		return resultList;
+	}
 	public JSONArray createBatteryOwlFile(String ENIRI, JSONObject resultofbattery, String dir) throws IOException {
 		ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
 		int size=resultfrommodelbranch.size();

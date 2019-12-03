@@ -262,7 +262,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		
 		logger.debug("sparqlquery=" + sparqlQuery);
 		
-		return new QueryBroker().queryFile(resource, sparqlQuery);
+		return new QueryBroker().queryFileOld(resource, sparqlQuery); //swap to queryFileOLD due to queryFil location not including http check and used within bucket
 	}
 	
 	private void updateFile(JSONObject jo, String scenarioName) {
