@@ -809,7 +809,6 @@ var animatedLines = [];
 	        console.log(batterylist);
 			searchBatteryCoord(data);	
 			drawLines();
-			drawMarkers();
 	        
 		});
 
@@ -846,7 +845,8 @@ var animatedLines = [];
     	        console.log(name, obj.coors.lat, obj.coors.lng);
     	        markers.push(marker);
     	        }
-    	        
+
+				drawMarkers();
     	    });
 	}
 
