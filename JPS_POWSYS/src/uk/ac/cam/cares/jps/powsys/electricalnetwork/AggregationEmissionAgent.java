@@ -33,8 +33,6 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID =  6859324316966357379L;;
-//	public static final String UPDATE_PATH = "/AggregationEmissionAgent/update";
-//    public static final String SUM_PATH = "/AggregationEmissionAgent/sum";
     private static final String EM_RATE = "_EmissionRate";
     //both only called by front end javascript; update to chimney, then query to sum to give to front end
 
@@ -64,11 +62,6 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
 
             + "}";
-
-    String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-            + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-            + "SELECT ?component "
-            + "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
 
     String plantInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
             + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
