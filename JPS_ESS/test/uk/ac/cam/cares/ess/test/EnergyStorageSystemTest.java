@@ -114,6 +114,24 @@ public class EnergyStorageSystemTest extends TestCase {
 		System.out.println("finished execute");
 		pvgeniris.clear();
 	}
+public void testStartSimulationESSScenarioVis() throws IOException  {
+		
+
+		JSONObject jo = new JSONObject();
+		pvgeniris.add(pvGenIRI);
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("BatteryCatalog", batIRI);
+		jo.put("RenewableEnergyGenerator", pvgeniris);
+		
+		String scenarioUrl = BucketHelper.getScenarioUrl("testBatteryESSfin3");
+		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+		pvgeniris.clear();
+	}
 	public void testESSBattery() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", ENIRI);
