@@ -1,5 +1,15 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -8,28 +18,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
+
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.powsys.listener.LocalOntologyModelManager;
-import uk.ac.cam.cares.jps.powsys.nuclear.NuclearAgent;
 
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-@WebServlet(urlPatterns = {"/aggregateemission"})
+@WebServlet(urlPatterns = {"/AggregationEmissionAgent/aggregateemission"})
 public class AggregationEmissionAgent extends JPSHttpServlet {
 
-    public static final String UPDATE_PATH = "/AggregationEmissionAgent/update";
-    public static final String SUM_PATH = "/AggregationEmissionAgent/sum";
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID =  6859324316966357379L;;
+//	public static final String UPDATE_PATH = "/AggregationEmissionAgent/update";
+//    public static final String SUM_PATH = "/AggregationEmissionAgent/sum";
     private static final String EM_RATE = "_EmissionRate";
     //both only called by front end javascript; update to chimney, then query to sum to give to front end
 
@@ -71,8 +76,10 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             + "SELECT ?chimney "
             + "WHERE {?entity  a  j1:PowerPlant  ."
             + "?entity   j2:hasSubsystem ?chimney ."
-            + "?chimney  a j3:Pipe ."
+           // + "?chimney  a j3:Pipe ."
             + "}";
+    
+   
 
     public static OntModel readModelGreedy(String iriofnetwork) {
         String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
@@ -87,13 +94,13 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
     @Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(NuclearAgent.class);
+        logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
         super.doHttpJPS(request, response);
     }
 
     @Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(NuclearAgent.class);
+        logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
         super.doHttpJPS(request, response, reqBody);
     }
 
@@ -101,10 +108,30 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
     protected JSONObject processRequestParameters(JSONObject requestParams) {
 
         String iriofnetwork = requestParams.getString("electricalnetwork");
+        JSONObject result=updateEmission(iriofnetwork);
+        List<Object> chimneylist = result.getJSONArray("chimney").toList();
+        List<Object> desco2list = result.getJSONArray("designemission").toList();
+        double totalemissionactual=0.0;
+        double totalemissiondesign=0.0;
+        String parametername = "CO2"; //hard coded at the moment
+        Map hmap = LocalOntologyModelManager.getSpeciesMap();
+        OntModel jenaOwlModel = JenaHelper.createModel();
+        for (int x=0;x<chimneylist.size();x++) {
+        	String iriofchimney=chimneylist.get(x).toString();
+        	jenaOwlModel.read(iriofchimney);
+            Individual valueofspeciesemissionrate = jenaOwlModel
+                    .getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
+        	Double val=valueofspeciesemissionrate.getPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL)).asLiteral().getDouble();
+        	totalemissionactual=totalemissionactual+val;
+        	totalemissiondesign=totalemissiondesign+Double.valueOf(desco2list.get(x).toString());
 
-        JSONObject result = sumEmissionResult(iriofnetwork);
-
-        return result;
+        }
+        JSONObject newresult= new JSONObject();
+        newresult.put("actual",totalemissionactual);
+        newresult.put("design",totalemissiondesign);
+        
+        
+        return newresult;
     }
 
     public static List<String[]> provideGenlist(String iriofnetwork) {
@@ -142,27 +169,33 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             String result = broker.queryFile(genList.get(d)[0], genInfo);
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-            if (!plantunique.contains(resultList.get(0)[3])) {
+            if (!plantunique.contains(resultList.get(0)[3])) { //plant=resultList.get(0)[3]
                 plantunique.add(resultList.get(0)[3]);
             }
-            emplantunique.add(resultList.get(0)[1] + "from" + resultList.get(0)[3]);
+            emplantunique.add(resultList.get(0)[2] + "separate" +resultList.get(0)[1] + "separate" + resultList.get(0)[3]);
 
         }
 
         int sizeofplant = plantunique.size();
         System.out.println("uniqueplantsize= " + sizeofplant);
         Double[] plantactco2 = new Double[sizeofplant];
+        Double[] plantdesco2 = new Double[sizeofplant];
         int index = 0;
         for (int t = 0; t < plantunique.size(); t++) {
             plantactco2[index] = 0.0;
+            plantdesco2[index] = 0.0;
+
             for (int x = 0; x < emplantunique.size(); x++) {
-                String name = emplantunique.get(x).split("from")[1];
-                String value = emplantunique.get(x).split("from")[0];
+                String name = emplantunique.get(x).split("separate")[2];
+                String value = emplantunique.get(x).split("separate")[1];
+                String desvalue = emplantunique.get(x).split("separate")[0];
 
                 if (name.contains(plantunique.get(t))) {
                     plantactco2[index] = plantactco2[index] + Double.valueOf(value);
-                    System.out.println(name);
+                    plantdesco2[index] = plantdesco2[index] + Double.valueOf(desvalue);
+                    System.out.println("name="+name);
                     System.out.println(value);
+                    System.out.println(desvalue);
                 }
             }
 
@@ -173,16 +206,20 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         JSONArray plant = new JSONArray();
         JSONArray chimney = new JSONArray();
         JSONArray emission = new JSONArray();
+        JSONArray desemission = new JSONArray();
         for (int f = 0; f < plantunique.size(); f++) {
             String result = broker.queryFile(plantunique.get(f), plantInfo);
+            System.out.println("filequery= "+plantunique.get(f));
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
             chimney.put(resultList.get(0)[0]);
             plant.put(plantunique.get(f));
             emission.put(plantactco2[f]);
+            desemission.put(plantdesco2[f]);
         }
         ans.put("plant", plant);
         ans.put("emission", emission);
+        ans.put("designemission", desemission);
         ans.put("chimney", chimney);
 
 //		System.out.println(plantunique.get(2));
@@ -191,20 +228,24 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         return ans;
     }
 
-    public void updateEmission(String ENIRI) {
-    	String plantName = null;
-        JSONObject ans = sumEmissionResult(ENIRI);
+
+    public JSONObject updateEmission(String ENIRI) {//read from the generator to write it to chimney 
+    	String chimneyiriName = null;
+        
+    	JSONObject ans = sumEmissionResult(ENIRI);
         List<Object> chimneylist = ans.getJSONArray("chimney").toList();
         List<Object> emissionlist = ans.getJSONArray("emission").toList();
         int size = chimneylist.size();
         for (int d = 0; d < size; d++) {
 			try {
-				OntModel jenaOwlModel = LocalOntologyModelManager.createChimneyModelForName(plantName);
-				startConversion(jenaOwlModel, chimneylist.get(d).toString(), emissionlist.get(d).toString());
+				chimneyiriName=chimneylist.get(d).toString();
+				OntModel jenaOwlModel = LocalOntologyModelManager.createChimneyModelForChimneyIRI(chimneyiriName);
+				startConversion(jenaOwlModel, chimneyiriName, emissionlist.get(d).toString());
 			} catch (IOException e) {
 				throw new JPSRuntimeException(e);
 			}
         }
+		return ans;
 
 
     }
@@ -212,15 +253,17 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
     private void startConversion(OntModel jenaOwlModel, String iriOfChimney, String emission)
             throws IOException {
         doConversion(jenaOwlModel, iriOfChimney, emission);
+        
         // save the updated model
         LocalOntologyModelManager.saveToOwl(jenaOwlModel, iriOfChimney); // for each owl file
 
     }
 
     private void doConversion(OntModel jenaOwlModel, String iriofchimney, String emission) throws JSONException {
-
-
+    	
+    	
         Map hmap = LocalOntologyModelManager.getSpeciesMap();
+        logger.info("sizeof hmap= "+hmap.size());
         //reset all the emission rate to be zero
         for (int b = 0; b < hmap.size(); b++) {
             String ks = (String) hmap.get(hmap.keySet().toArray()[b].toString());
