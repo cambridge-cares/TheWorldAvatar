@@ -712,7 +712,7 @@ var animatedLines = [];
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml',
+							url: 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestBatt1.kml',
 							suppressInfoWindows: false,
 							map: map
 						});
@@ -745,6 +745,8 @@ var animatedLines = [];
 	    var x;
 	    // scan some duplicates
 	    dict = {"solar": 0, "gas": 0, "oil": 0};
+	    var markerdict = new Map();
+	    var latLng = new Map();
 	    for (x=0; x< size; x++){
 	        var obj = JSON.parse(obj0[x]);  
 	        var fueltype = obj.fueltype;
@@ -752,33 +754,47 @@ var animatedLines = [];
 	        if (fueltype== "NaturalGasGeneration"){
 	            var icon = {
 	                url: 'images/naturalgas.png',
-	                scaledSize : new google.maps.Size(80, 80),
+	                scaledSize : new google.maps.Size(40, 40),
 	            };
 	            dict["gas"] += 1;
 	        }else if (fueltype== "OilGeneration"){
 	            var icon = {
 	                url: 'images/oil.png',
-	                scaledSize : new google.maps.Size(80, 80),
+	                scaledSize : new google.maps.Size(40, 40),
 	            };
 	            dict["oil"] += 1;
 	        }else{
-	            console.log(fueltype);
 	            var icon = {
 	                url: 'images/solar.png', 
-	                scaledSize : new google.maps.Size(80, 80),
+	                scaledSize : new google.maps.Size(40, 40),
 	            };
 	            dict["solar"] += 1;
 	        }
-	        var marker = new google.maps.Marker({
-	            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
-	            map: map,
-	            title: name,
-	            icon: icon
-	          });
-	        console.log(name, obj.coors.lat, obj.coors.lng);
-	        markers.push(marker);
-	        }
-	        
+	        if (markerdict.has(obj.coors.lat)){
+	        	var v = markerdict.get(obj.coors.lat);
+	        	v.push(name);
+	        	markerdict.set(obj.coors.lat, v);
+	        }else{
+	        	markerdict.set(obj.coors.lat, [name]);
+	        	
+	        	latLng.set(obj.coors.lat, [obj.coors.lng, icon]);
+	        	}
+        }
+	    for (var [key, value] of latLng.entries()) {
+	    	  	console.log(key, value);
+		        var marker = new google.maps.Marker({
+		            position: new google.maps.LatLng(key, value[0]),
+		            map: map,
+		            icon: value[1]
+		          });
+		        infowindow = new google.maps.InfoWindow({
+	                content:"HIHIHIHIHI"
+	            });
+		        marker.addListener('click', function() {
+	                infowindow.open(map, marker);
+	              });
+		        markers.push(marker);
+	    }
 	    });
 	    }
 	function drawBattery() 	{
@@ -897,7 +913,28 @@ var animatedLines = [];
 		kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
 
 	}
+	
+	function setMarkerMenu(kmlEvent)
+	{
+		var data = kmlEvent.featureData;
+		var nameString = data.name.substr(1);
+		console.log(nameString);
+		var names = nameString.split('[');
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(buttonsList);
+		for(var index in names)
+		{
+			var name = names[index];
 
+			 buttonsList = buttonsList + '<div><label>' + name.split('#')[1] + '</label>' +
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
+
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+	}
 
 	function selectEBus(event) {
 	selectedId =  event.srcElement.id;
