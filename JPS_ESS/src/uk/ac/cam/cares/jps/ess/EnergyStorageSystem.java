@@ -77,8 +77,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
-//		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+//        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
+		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
         String[] cmdArray = new String[7];
         
@@ -531,6 +531,13 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
 			String batIRI=joforess.getString("BatteryCatalog");
 			String ENIRI=joforess.getString("electricalnetwork");
+			String scenario=joforess.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];
+			System.out.println("current scenario directory= "+scenario);
+			
+			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
+			if (f.exists()&& f.isDirectory()) {
+				FileUtils.deleteDirectory(f);
+			}
 			System.out.println("GENERATOR: " + pvGenIRI);
 			System.out.println("parameter got= "+joforess.toString());
 			
@@ -546,31 +553,47 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			
 			//run the scenario for EN after it is retrofitted
 			logger.info("starting the OPF");
-	//		String scenarioUrl = BucketHelper.getScenarioUrl("POWSYS-ESS-OPFCallAgent");
-	//		JPSHttpServlet.enableScenario(scenarioUrl);	
-	//		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-	//		
-	//		JPSContext.putScenarioUrl(jo, scenarioUrl);
-	//		
-	//		String usecaseUrl = BucketHelper.getUsecaseUrl();
-	//		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-	//		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 			
 			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
 			String dirOfOPF = new JSONObject(resultStart).getString("folder");
 			
 			//make battery owl file
 			JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
-			
-			addObjectToElectricalNetwork(ENIRI, MiscUtil.toList(a));
+			List<String>battlist=new ArrayList<String>();
+			for(int d=0;d<a.length();d++) {
+				battlist.add(a.getJSONArray(d).getString(0));
+			}
+			addObjectToElectricalNetwork(ENIRI, battlist);
 			
 			JSONObject listofbat=new JSONObject();
 			listofbat.put("batterylist", a);
-			listofbat.put("folder", QueryBroker.getLocalDataPath());
 	
 			AgentCaller.printToResponse(listofbat, response);
 	}
 		}
+	
+	private void cleanDirectory() {
+		//	clear the folder SRM first
+		File folder = new File("C:/JPS_DATA/workingdir/JPS/SRM");
+				
+		File[] listOfFiles = folder.listFiles();
+
+		if (listOfFiles != null) {
+			for (int i = 0; i < listOfFiles.length; i++) {
+				if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
+						&& !listOfFiles[i].getName().equals("InputParams.xml")
+						&& !listOfFiles[i].getName().equals("InputEngineML.xml")
+						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
+						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
+						&& !listOfFiles[i].getName().equals("convert.exe")
+						&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
+
+					listOfFiles[i].delete();
+				}
+			}
+		}
+	}
+	
 	public List<String[]> getBatteryCoord(OntModel model) {
 		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -615,6 +638,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		JSONArray listofbat= new JSONArray();
 			while(d<size) {
 				if(Double.valueOf(resultfrommodelbranch.get(d)[1])>standard) {
+					JSONArray indbat= new JSONArray();
 					double[]coordinate=prepareBatteryLocationData(resultfrommodelbranch.get(d)[0],dir,model);
 					double x=coordinate[0];
 					double y=coordinate[1];
@@ -660,7 +684,10 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
 					
 					broker.putOld(newiri,finalcontent);
-					listofbat.put(newiri);
+					indbat.put(newiri);
+					indbat.put(x);
+					indbat.put(y);
+					listofbat.put(indbat);
 				}
 				
 				d++;
