@@ -1,17 +1,5 @@
 package uk.ac.cam.cares.jps.base.listener;
 
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.query.*;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.Resource;
-import org.apache.jena.shared.Lock;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
-import javax.servlet.ServletContextEvent;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -21,6 +9,25 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import javax.servlet.ServletContextEvent;
+
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.Query;
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QueryFactory;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.query.ResultSetFactory;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.shared.Lock;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+
 public class BaseOntologyModelManager {
 
     private static final String IRI_BASE = "http://www.theworldavatar.com";
@@ -28,9 +35,10 @@ public class BaseOntologyModelManager {
     private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
     static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
-    protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
+    //protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
+    protected static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
     private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
-    private static final String IRI_BASE_TEST = "http://localhost:8080/JPS_SHIP";
+    private static final String IRI_BASE_TEST = "http://localhost:8080";
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
 
     static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();

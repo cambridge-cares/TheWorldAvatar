@@ -1,21 +1,21 @@
 package uk.ac.cam.cares.jps.base.listener;
 
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.query.ResultSet;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.servlet.annotation.WebListener;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.ServletContextEvent;
+
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class BaseChimneyOntologyModelManager extends BaseOntologyModelManager {
@@ -70,12 +70,14 @@ public class BaseChimneyOntologyModelManager extends BaseOntologyModelManager {
         logger.info("initializing the local ontology manager");
         try {
             baseEntityModel = createBaseChimneyModel();
+            logger.info("createbase chimney is successful");
         } catch (IOException e) {
             logger.error("initializing the local ontology manager failed");
             throw new JPSRuntimeException("Could not create base model for chimney: " + PATH_BASE_CHIMNEY);
         } finally {
             setConcepts();
             setSpecies();
+            logger.info("setspecies is finished" + "species map size= "+ String.valueOf(speciesMap.size()));
         }
     }
 
