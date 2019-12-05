@@ -179,7 +179,7 @@ public class SoftSensor extends HttpServlet {
 				System.out.println("agent involved= "+listmap.get(v)[2]);
 				File name = new File(listmap.get(v)[0]);
 				if(name.exists()&&name.length()!=0) {
-					String csv = new QueryBroker().readFile(listmap.get(v)[0]);
+					String csv = new QueryBroker().readFileLocal(listmap.get(v)[0]);
 					List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 					
 					for(int v2=0;v2<coordinatelist.length();v2++) {

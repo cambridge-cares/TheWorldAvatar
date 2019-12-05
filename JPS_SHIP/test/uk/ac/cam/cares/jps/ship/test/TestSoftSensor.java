@@ -51,7 +51,7 @@ public class TestSoftSensor extends TestCase {
 	
 	public void testCallingSoftsensorwithPMmodif() {
 		SoftSensor a= new SoftSensor();
-		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.csv");
+		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.csv");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 //		double x=822082.44;
 //		double y=809548.75;
@@ -138,7 +138,7 @@ public class TestSoftSensor extends TestCase {
 
 	public void testcalculationclosest() {
 		SoftSensor a= new SoftSensor();
-		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.gst");
+		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.gst");
 		
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 		System.out.println("the closest number= "+a.findtheclosest(simulationResult,833776.38,816731.54,17.0));
@@ -152,7 +152,7 @@ public class TestSoftSensor extends TestCase {
 	
 	public void testcalculationconcentration() {
 		SoftSensor a= new SoftSensor();
-		String csv = new QueryBroker().readFile(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.gst");
+		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/test.levels.gst");
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 		double realx=Double.valueOf(a.findtheclosest(simulationResult,833776.38,816731.54,17.0).get(0));
 		double realy=Double.valueOf(a.findtheclosest(simulationResult,833776.38,816731.54,17.0).get(1));
