@@ -42,7 +42,7 @@ public class LocalOntologyModelManager extends BaseChimneyOntologyModelManager i
         }
 
         String content = getBaseChimneyContent();
-        content = content.replaceAll(IRI_KB_BASE + OWL_CHIMNEY, name.split("#")[0]);
+        content = content.replaceAll(IRI_KB_BASE + OWL_CHIMNEY, plantKbURL+name.split("powerplants/")[1].split("#")[0]);
 
         return createModelFromString(content);
     }

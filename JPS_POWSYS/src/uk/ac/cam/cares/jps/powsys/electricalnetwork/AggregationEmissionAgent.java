@@ -10,6 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -19,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -72,7 +74,35 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
            // + "?chimney  a j3:Pipe ."
             + "}";
     
-   
+    String chimneyiriInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+            + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+            + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
+            + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+            + "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+            + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+            + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+            + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+            + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+            + "SELECT ?vheightchimney ?vdiameterchimney ?vmassf ?vtemp ?vdens "
+            + "WHERE {?entity  a  j3:Pipe  ."
+            + "?entity   j3:hasHeight ?heightchimney ."
+            + "?heightchimney  j2:hasValue ?vheightchimney ."
+            + "?entity   j3:hasInsideDiameter ?diameterchimney ."
+            + "?diameterchimney  j2:hasValue ?vdiameterchimney ."
+            + "?entity   j4:realizes ?proc ."
+            + "?proc j5:hasOutput ?waste ."
+            + "?waste j6:refersToGeneralizedAmount ?genwaste ."
+            + "?genwaste   j2:hasProperty ?massf ."
+            + "?massf   j2:hasValue ?vmassf ."
+            + "?genwaste   j2:hasSubsystem ?matamount ."
+            + "?matamount   j7:refersToMaterial ?mat ."
+            + "?mat   j8:thermodynamicBehavior ?thermo ."
+            + "?thermo   j9:has_temperature ?temp ."
+            + "?temp  j2:hasValue ?vtemp ."
+            + "?thermo   j9:has_density ?dens ."
+            + "?dens  j2:hasValue ?vdens ."
+            
+            + "}";
 
     public static OntModel readModelGreedy(String iriofnetwork) {
         String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
@@ -111,6 +141,7 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         OntModel jenaOwlModel = JenaHelper.createModel();
         for (int x=0;x<chimneylist.size();x++) {
         	String iriofchimney=chimneylist.get(x).toString();
+        	System.out.println("what is iri of chimney:"+iriofchimney);
         	jenaOwlModel.read(iriofchimney);
             Individual valueofspeciesemissionrate = jenaOwlModel
                     .getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
@@ -120,7 +151,7 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
         }
         JSONObject newresult= new JSONObject();
-        newresult.put("actual",totalemissionactual);
+        newresult.put("actual",totalemissionactual/1000000*3600); //from kg/s back to ton/hr
         newresult.put("design",totalemissiondesign);
         
         
@@ -205,7 +236,12 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             System.out.println("filequery= "+plantunique.get(f));
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-            chimney.put(resultList.get(0)[0]);
+	        if (!AgentLocator.isJPSRunningForTest()) {
+	        	chimney.put(resultList.get(0)[0]);
+	        } else {
+	        	chimney.put("http://localhost:8080/kb"+resultList.get(0)[0].split("kb")[1]);    	
+	        }
+            
             plant.put(plantunique.get(f));
             emission.put(plantactco2[f]);
             desemission.put(plantdesco2[f]);
@@ -254,9 +290,17 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
     private void doConversion(OntModel jenaOwlModel, String iriofchimney, String emission) throws JSONException {
     	
+    	/**asumption data added to be used by adms (https://www.steelcon.com/en/soedertaejle/):
+    	 * diameter=3m
+    	 * height= 110m 
+    	 * Tout=587oC (from the wiki ccgt)
+    	 * density=1.225 kg/m3 (near air)
+    	 * efflux rate= 210.3 kg/s (after rough calculation from the wikipedia formula)
+    	 */
+    	
+    	
     	
         Map hmap = LocalOntologyModelManager.getSpeciesMap();
-        logger.info("sizeof hmap= "+hmap.size());
         //reset all the emission rate to be zero
         for (int b = 0; b < hmap.size(); b++) {
             String ks = (String) hmap.get(hmap.keySet().toArray()[b].toString());
@@ -265,8 +309,10 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
                     jenaOwlModel.createTypedLiteral(Double.valueOf(0)));
         }
 
+      //update the necessary values needed
         String parametername = "CO2"; //hard coded at the moment
-        Double parametervalue = Double.valueOf(emission);
+        
+        Double parametervalue = Double.valueOf(emission)*1000000/3600; //ton per hour to g/s
         if (hmap.get(parametername) != null) {
             Individual valueofspeciesemissionrate = jenaOwlModel
                     .getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
@@ -274,6 +320,25 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
                     (Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
                     jenaOwlModel.createTypedLiteral(parametervalue));
         }
+
+        ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		DatatypeProperty numval = jenaOwlModel.getDatatypeProperty(
+				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+		Individual vheightchimney = jenaOwlModel.getIndividual(resultListfromquery.get(0)[0]);
+		vheightchimney.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(110.0)));
+		Individual vdiameterchimney = jenaOwlModel.getIndividual(resultListfromquery.get(0)[1]);
+		vdiameterchimney.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(3.0)));
+		Individual vmassf = jenaOwlModel.getIndividual(resultListfromquery.get(0)[2]);
+		vmassf.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(210.3)));
+		Individual vtemp = jenaOwlModel.getIndividual(resultListfromquery.get(0)[3]);
+		vtemp.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(587.0)));
+		Individual vdens = jenaOwlModel.getIndividual(resultListfromquery.get(0)[4]);
+		vdens.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(1.225)));
+		
+		
 
     }
 
