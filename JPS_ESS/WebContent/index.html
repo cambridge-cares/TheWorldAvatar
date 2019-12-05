@@ -522,8 +522,8 @@ var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#B
 var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001"];//to be a jsonarray
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
-var infowindow;
 var animatedLines = [];
+var batterylist;
  
  
 // Perform other work here ...
@@ -780,21 +780,19 @@ var animatedLines = [];
 	        	latLng.set(obj.coors.lat, [obj.coors.lng, icon]);
 	        	}
         }
+
+		var infowindow = new google.maps.InfoWindow({content: '<h2>Sup!</h2>'});
 	    for (var [key, value] of latLng.entries()) {
-	    	  	console.log(key, value);
 		        var marker = new google.maps.Marker({
 		            position: new google.maps.LatLng(key, value[0]),
 		            map: map,
 		            icon: value[1]
 		          });
-		        infowindow = new google.maps.InfoWindow({
-	                content:"HIHIHIHIHI"
-	            });
-		        marker.addListener('click', function() {
-	                infowindow.open(map, marker);
-	              });
+		        (function (marker))
 		        markers.push(marker);
 	    }
+
+		searchBatteryCoord(batterylist);	
 	    });
 	    }
 	function drawBattery() 	{
@@ -820,50 +818,32 @@ var animatedLines = [];
 	    });
 	    request.done( function(data) {
 	        console.log ("success create request");
-	        console.log(data);
-	        var batterylist = JSON.parse(data).batterylist;
+	        batterylist = JSON.parse(data).batterylist;
 	        console.log(batterylist);
-			searchBatteryCoord(data);	
+			drawMarkers();
 			drawLines();
-	        
 		});
 
 
 	}
 	function searchBatteryCoord(srcdata) {
-		//var batteryjson = JSON.parse(srcdata);
-		var agenturl = prefix + '/JPS_ESS/ESSBatterySearch';  
-		var batteryjson= {}
-    	batteryjson["electricalnetwork"]= electricalnetwork;
-    	var searchurl = createUrlForAgent(scenario, agenturl, batteryjson);
-    	console.log(searchurl);
-    	var request = $.ajax({
-            url: searchurl,
-            type: 'GET',
-            data: batteryjson,
-            contentType: 'application/json; charset=utf-8'
-        });
-    	request.done(function(data){
-    		var obj0 = JSON.parse(data).result;
-    		console.log(obj0);
-    		var size=obj0.length; 
+    		var size=srcdata.length; 
     		console.log(size);
+    		console.log(srcdata);
     		var x;
     	    for (x=0; x< size; x++){
-    	        var obj = JSON.parse(obj0[x]); 
-    	        var name = obj.name;
+    	    	console.log(map);
     	        var marker = new google.maps.Marker({
-    	            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
+    	            position: new google.maps.LatLng(String(srcdata[x][2]),String(srcdata[x][1])),
     	            map: map,
-    	            title: name,
+    	            title: srcdata[x][0],
     	            icon: "images/battery.png"
     	          });
-    	        console.log(name, obj.coors.lat, obj.coors.lng);
+
+    	    	console.log(srcdata[x][2],srcdata[x][1],srcdata[x][0]);
     	        markers.push(marker);
     	        }
 
-				drawMarkers();
-    	    });
 	}
 
 	function calLengthOfLine(x1,x2,y1,y2) {
@@ -1022,15 +1002,8 @@ function openWindowGen(id){
 
 
 	}, function (jqXHR, textStatus, errorThrown){
-		var x1 = promise1;
-		var x2 = promise2;
-		if (x1.readyState != 4) {
-			x1.abort();
-		}
-		if (x2.readyState != 4) {
-			x2.abort();
-		}
-	   alert('Either j1 or j2 failed!');
+		console.log(textStatus);
+		console.log(errorThrown);
 	}
 	);
 }
