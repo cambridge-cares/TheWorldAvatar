@@ -235,11 +235,29 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             System.out.println("filequery= "+plantunique.get(f));
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-	        if (!AgentLocator.isJPSRunningForTest()) {
-	        	chimney.put(resultList.get(0)[0]);
-	        } else {
-	        	chimney.put("http://localhost:8080/kb"+resultList.get(0)[0].split("kb")[1]);    	
-	        }
+            String iriofchimney;
+            if(resultList.size()>0) {
+            	iriofchimney=resultList.get(0)[0];
+            }
+            else {
+            	String plantname=plantunique.get(f).split("#")[1];
+            	iriofchimney="http://www.theworldavatar.com/kb/powerplants/"+plantname+"/Chimney-001.owl#Chimney-001";
+    			String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
+    					+ "INSERT DATA { \r\n";
+    			StringBuffer b = new StringBuffer();
+    			b.append("<" + plantunique.get(f) + "> OCPSYST:hasSubsystem <" + iriofchimney + "> . \r\n");
+
+    			String sparql = sparqlStart + b.toString() + "} \r\n";
+    			logger.info("inserting chimney to plant top node\n" + sparql);
+    			new QueryBroker().updateFile(plantunique.get(f), sparql);
+    			b = new StringBuffer();
+            }
+			if (!AgentLocator.isJPSRunningForTest()) {
+				chimney.put(iriofchimney);
+			} else {
+				chimney.put("http://localhost:8080/kb" + iriofchimney.split("kb")[1]);
+			}
+            
             
             plant.put(plantunique.get(f));
             emission.put(plantactco2[f]);
