@@ -30,7 +30,7 @@ public class LocalEntityManagerFactoryTest extends TestCase {
 
     public void testNewLocalEntityManagerFactoryFields() {
         LocalEntityManagerFactory lmf = new LocalEntityManagerFactory();
-        assertEquals(1, lmf.getClass().getDeclaredFields().length);
+        assertEquals(2, lmf.getClass().getDeclaredFields().length);
     }
 
     public void testNewLocalEntityManagerFactoryMethods() {
