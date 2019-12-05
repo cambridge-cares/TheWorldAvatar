@@ -61,8 +61,7 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             + "?v_emission a j9:CO2_emission ."
             + "?v_emission   j2:hasValue ?valueemission_d ."
             + "?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission ." //
-
-
+			+ "Filter (?V_Actual_CO2_Emission > 0.0 && ?V_Design_CO2_Emission > 0.0) ." //eliminate generator with 0 emission
             + "}";
 
     String plantInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
