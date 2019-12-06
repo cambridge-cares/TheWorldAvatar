@@ -318,8 +318,8 @@ var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
 	+ "?model   j5:hasModelVariable ?Qg ." 
 	+ "?Qg  a  j3:Qg  ." 
 	+ "?Qg  j2:hasValue ?vqg ."
-	+ "?vqg   j2:numericalValue ?VQ_Gen ." // qg
-	+ "?vqg   j2:hasUnitOfMeasure ?VQ_Gen_unit ." // qg
+	+ "?vqg   j2:numericalValue ?V_QGen ." // qg
+	+ "?vqg   j2:hasUnitOfMeasure ?V_QGen_unit ." // qg
 
 	+ "?model   j5:hasModelVariable ?qmax ." 
 	+ "?qmax  a  j3:QMax  ." 
@@ -781,20 +781,29 @@ var batterylist;
 	        	}
         }
 
-		var infowindow = new google.maps.InfoWindow({content: '<h2>Sup!</h2>'});
 	    for (var [key, value] of latLng.entries()) {
-		        var marker = new google.maps.Marker({
-		            position: new google.maps.LatLng(key, value[0]),
-		            map: map,
-		            icon: value[1]
-		          });
-		        (function (marker))
-		        markers.push(marker);
+	    	createMarker(key, value, markerdict);
+		      
 	    }
 
 		searchBatteryCoord(batterylist);	
 	    });
 	    }
+	function createMarker(key, value, markerdict){
+		var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(key, value[0]),
+            map: map,
+            icon: value[1]
+          });
+		marker.addListener('click', function(){
+			var infowindow = new google.maps.InfoWindow({
+				content: '<h2>Sup!</h2>'});
+			_content = setMarkerMenu(markerdict.get(key));
+			infowindow.setContent(_content);
+			infowindow.open(map, this);
+		});
+        markers.push(marker);
+	}
 	function drawBattery() 	{
 		var batteryjson= {}
 		batteryjson["electricalnetwork"] = electricalnetwork;
@@ -832,7 +841,6 @@ var batterylist;
     		console.log(srcdata);
     		var x;
     	    for (x=0; x< size; x++){
-    	    	console.log(map);
     	        var marker = new google.maps.Marker({
     	            position: new google.maps.LatLng(String(srcdata[x][2]),String(srcdata[x][1])),
     	            map: map,
@@ -840,7 +848,6 @@ var batterylist;
     	            icon: "images/battery.png"
     	          });
 
-    	    	console.log(srcdata[x][2],srcdata[x][1],srcdata[x][0]);
     	        markers.push(marker);
     	        }
 
@@ -894,25 +901,21 @@ var batterylist;
 
 	}
 	
-	function setMarkerMenu(kmlEvent)
+	function setMarkerMenu(jsonArray)
 	{
-		var data = kmlEvent.featureData;
-		var nameString = data.name.substr(1);
-		console.log(nameString);
-		var names = nameString.split('[');
 		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
-		console.log(buttonsList);
-		for(var index in names)
+		for(var index in jsonArray)
 		{
-			var name = names[index];
-
-			 buttonsList = buttonsList + '<div><label>' + name.split('#')[1] + '</label>' +
+			var name = jsonArray[index];
+			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
 				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
 		}
 
 		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
 		// set the content of the popup window.
-		kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
+		infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+		return infoWindowHtml;
 
 	}
 
@@ -963,6 +966,7 @@ function openWindowGen(id){
 		contentType: 'application/json; charset=utf-8',
 		success: function(data){   
 			var obj0 = JSON.parse(data);
+			console.log(obj0);
 			obj2 = obj0['results']['bindings'][0];
 			console.log(obj2);
 		},
