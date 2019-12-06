@@ -106,28 +106,24 @@ public class EnergyStorageSystemTest extends TestCase {
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
-		
-
-
-		
-
+	
 		System.out.println(jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
 		System.out.println(resultStart);
 		System.out.println("finished execute");
 		pvgeniris.clear();
 	}
-public void testStartSimulationESSScenarioVis() throws IOException  {
-		
+	
+	public void testStartSimulationESSScenarioVis() throws IOException {
 
 		JSONObject jo = new JSONObject();
 		pvgeniris.add(pvGenIRI);
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("BatteryCatalog", batIRI);
 		jo.put("RenewableEnergyGenerator", pvgeniris);
-		
+
 		String scenarioUrl = BucketHelper.getScenarioUrl("testBatteryESSfin3");
-		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
+		// new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 
 		System.out.println(jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
@@ -135,6 +131,7 @@ public void testStartSimulationESSScenarioVis() throws IOException  {
 		System.out.println("finished execute");
 		pvgeniris.clear();
 	}
+<<<<<<< HEAD
 public static OntModel readModelGreedy(String iriofnetwork) {
 	String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -321,6 +318,9 @@ public void testJPSPV() {
 		System.out.println(result);
 	
 }
+=======
+
+>>>>>>> develop
 	public void testESSBattery() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", ENIRI);

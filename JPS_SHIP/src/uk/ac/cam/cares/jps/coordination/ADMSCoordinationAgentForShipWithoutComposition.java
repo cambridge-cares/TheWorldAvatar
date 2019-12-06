@@ -62,18 +62,20 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
         String resultship = AgentCaller.executeGetWithURLAndJSON(url, requestParams.toString());
 
         JSONObject jsonShip = new JSONObject(resultship);
-
-        String reactionMechanism = requestParams.optString("reactionmechanism");
-        JSONArray newwaste;
-
-        newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
-
-        requestParams.put("waste", newwaste);
         requestParams.put(PARAM_KEY_SHIP, jsonShip);
 
-        result = execute("/JPS/ADMSAgent", requestParams.toString(), HttpPost.METHOD_NAME);
-        String folder = new JSONObject(result).getString("folder");
-        requestParams.put("folder", folder);
+        if (((JSONArray) ((JSONObject) jsonShip.get("collection")).get("items")).length() != 0) {
+            String reactionMechanism = requestParams.optString("reactionmechanism");
+            JSONArray newwaste;
+
+            newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
+
+            requestParams.put("waste", newwaste);
+
+            result = execute("/JPS/ADMSAgent", requestParams.toString(), HttpPost.METHOD_NAME);
+            String folder = new JSONObject(result).getString("folder");
+            requestParams.put("folder", folder);
+        }
 
         return requestParams;
     }
