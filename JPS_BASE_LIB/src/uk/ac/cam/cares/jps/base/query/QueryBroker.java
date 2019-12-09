@@ -222,10 +222,10 @@ public class QueryBroker {
 		String path = destinationUrl;
 		if (destinationUrl.startsWith("http")) {
 			
-			AgentCaller.executePut(destinationUrl, content);
+			//AgentCaller.executePut(destinationUrl, content);
 			
-			//String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
-			//path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
+			String destinationUrlWithoutHash = ScenarioHelper.cutHash(destinationUrl);
+			path = BucketHelper.getLocalPath(destinationUrlWithoutHash);
 		}
 		
 		FileUtil.writeFileLocally(path, content);

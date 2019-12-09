@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.powsys.retrofit.test;
 
 import java.io.File;
+import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.rdf.model.RDFNode;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -16,6 +19,7 @@ import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.retrofit.RetrofitAgent;
 
 public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
@@ -66,4 +70,35 @@ public class TestRetrofitAgent extends TestCase implements Prefixes, Paths {
 		String expectedPowerPlant = "http://localhost:8080/jps/kb/bd1c6d1d-f875-4c50-a7e1-cc28919f1fe7/nuclearpowerplants/NucPP_1.owl#NucPP_1";
 		assertPropertyValue(expectedPowerPlant, powerGenerator, path);
 	}
+	
+	public void testretrofitgen() {
+		JSONObject jo = new JSONObject();
+		JSONArray value1 = new JSONArray();
+		JSONArray value2 = new JSONArray();
+		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
+		value1.put("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001");
+		jo.put("RenewableEnergyGenerator", value1);
+		jo.put("substitutionalgenerators", value2);
+		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
+		List<String> RenewableGenerators = MiscUtil.toList(value1);
+		new RetrofitAgent().retrofitGenerator(jo.getString("electricalnetwork"), RenewableGenerators);
+		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
+	}
+	
+//	public void testretrofitnuclear() {
+//		JSONObject jo = new JSONObject();
+//		JSONArray value1 = new JSONArray();
+//		JSONArray value2 = new JSONArray();
+//		jo.put("electricalnetwork", "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork");
+//		//value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/PV1.owl#PV1");
+//		value1.put("http://www.jparksimulator.com/kb/sgp/pvsingaporenetwork/EGen-200.owl#EGen-200");
+//		jo.put("RenewableEnergyGenerator", value1);
+//		jo.put("substitutionalgenerators", value2);
+//		//AgentCaller.executeGet("JPS_POWSYS/retrofit", jo.toString());
+//		List<String> RenewableGenerators = MiscUtil.toList(value1);
+//		new RetrofitAgent().retrofit(jo.getString("electricalnetwork"), RenewableGenerators,jo.getString("substitutionalgenerators"));
+//		//AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
+//	}
 }

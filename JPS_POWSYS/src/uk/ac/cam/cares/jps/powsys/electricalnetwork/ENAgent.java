@@ -15,7 +15,6 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.TransformerException;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -36,9 +35,6 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization;
-import uk.ac.cam.cares.jps.powsys.envisualization.ENVisualization.StaticobjectgenClass;
-import uk.ac.cam.cares.jps.powsys.envisualization.MapPoint;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
@@ -76,101 +72,18 @@ public class ENAgent extends JPSHttpServlet {
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
 		startSimulation(iriofnetwork, baseUrl, modeltype);
+		
+		JSONObject resjo=new JSONObject();
+		resjo.put("folder", baseUrl);
+		AgentCaller.printToResponse(resjo, response);
+		
 	}
 	
-	public String createfinalKML(OntModel model) throws TransformerException {
-		ENVisualization a = new ENVisualization();
-		
-
-		// ------------FOR GENERATORS-----------------
-		List<String[]> generators = a.queryElementCoordinate(model, "PowerGenerator");
-		ArrayList<ENVisualization.StaticobjectgenClass> gensmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
-		ArrayList<String> coorddata = new ArrayList<String>();
-		for (int e = 0; e < generators.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + generators.get(e)[0].split("#")[1] + ".owl");
-			gh.setx(generators.get(e)[1]);
-			gh.sety(generators.get(e)[2]);
-			//System.out.println("/" + generators.get(e)[0].split("#")[1] + ".owl");
-
-			if (coorddata.contains(gh.getx()) && coorddata.contains(gh.gety())) {
-				int index = coorddata.indexOf(gh.getx()) / 2;
-				gensmerged.get(index).setnamegen(gensmerged.get(index).getnamegen() + gh.getnamegen());
-			} else {
-				gensmerged.add(gh);
-				coorddata.add(generators.get(e)[1]);
-				coorddata.add(generators.get(e)[2]);
-			}
-
-		}
-
-		for (int g = 0; g < gensmerged.size(); g++) {
-			MapPoint c = new MapPoint(Double.valueOf(gensmerged.get(g).gety()),
-					Double.valueOf(gensmerged.get(g).getx()), 0.0, gensmerged.get(g).getnamegen());
-			a.addMark(c, "generator");
-		}
-
-		// --------------------------------
-		
-	
-		// ------------FOR BUS-----------------
-		List<String[]> bus = a.queryElementCoordinate(model, "BusNode");
-		ArrayList<ENVisualization.StaticobjectgenClass> bussesmerged = new ArrayList<ENVisualization.StaticobjectgenClass>();
-		ArrayList<String> coorddatabus = new ArrayList<String>();
-		for (int e = 0; e < bus.size(); e++) {
-			StaticobjectgenClass gh = a.new StaticobjectgenClass();
-			gh.setnamegen("/" + bus.get(e)[0].split("#")[1] + ".owl");
-			gh.setx(bus.get(e)[1]);
-			gh.sety(bus.get(e)[2]);
-			//System.out.println("/" + bus.get(e)[0].split("#")[1] + ".owl");
-
-			if (coorddatabus.contains(gh.getx()) && coorddatabus.contains(gh.gety())) {
-				int index = coorddatabus.indexOf(gh.getx()) / 2;
-				bussesmerged.get(index).setnamegen(bussesmerged.get(index).getnamegen() + gh.getnamegen());
-			} else {
-				bussesmerged.add(gh);
-				coorddatabus.add(bus.get(e)[1]);
-				coorddatabus.add(bus.get(e)[2]);
-			}
-
-		}
-
-		for (int g = 0; g < bussesmerged.size(); g++) {
-			MapPoint c = new MapPoint(Double.valueOf(bussesmerged.get(g).gety()),
-					Double.valueOf(bussesmerged.get(g).getx()), 0.0, bussesmerged.get(g).getnamegen());
-			a.addMark(c, "bus");
-		}
-
-		// --------------------------------
-
-		
-//		int size2 = bus.size();
-//		for (int g = 0; g < size2; g++) {
-//			MapPoint c = new MapPoint(Double.valueOf(bus.get(g)[2]), Double.valueOf(bus.get(g)[1]), 0.0,
-//					"/" + bus.get(g)[0].split("#")[1] + ".owl");
-//			a.addMark(c, "bus");
-//		}
-
-		return a.writeFiletoString();
-	}
-
 	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
-		OntModel model = readModelGreedy(iriofnetwork);
-		
-		//create line javascript & kml for visualization
-		ENVisualization a=new ENVisualization();
-		QueryBroker broker = new QueryBroker();
-		broker.putLocal(baseUrl + "/line.js", a.createLineJS(model));
-		try {
-			broker.putLocal(baseUrl + "/test2.kml",createfinalKML(model));
-		} catch (TransformerException e1) {
-			logger.error(e1.getMessage(),e1);
-			e1.printStackTrace();
-		}
-		
+		OntModel model = readModelGreedy(iriofnetwork);	
 		
 		List<String[]> buslist = generateInput(model, iriofnetwork, baseUrl, modeltype);
 		

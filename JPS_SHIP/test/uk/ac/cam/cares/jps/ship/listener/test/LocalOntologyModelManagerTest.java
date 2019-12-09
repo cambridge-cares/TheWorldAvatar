@@ -31,7 +31,7 @@ public class LocalOntologyModelManagerTest extends TestCase {
 
     public void testLocalOntologyModelManagerFields() {
         LocalOntologyModelManager lomm = new LocalOntologyModelManager();
-        assertEquals(49, lomm.getClass().getDeclaredFields().length);
+        assertEquals(3, lomm.getClass().getDeclaredFields().length);
     }
 
     public void testLocalOntologyModelManagerMethods() {
