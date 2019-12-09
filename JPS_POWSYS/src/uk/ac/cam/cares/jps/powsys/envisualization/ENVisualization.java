@@ -609,7 +609,7 @@ public class ENVisualization extends JPSHttpServlet {
 		for (int i = 0; i < pplants.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+pplants.get(i)[3]+", \"lng\": "+pplants.get(i)[2]
 					+ "},  \"fueltype\": \""
-					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0].split("#")[1]+".owl\"}";
+					+ pplants.get(i)[1].split("#")[1]+"\", \"name\": \""+pplants.get(i)[0]+"\"}";
 			textcomb.add(content);
 		}
 		JSONArray jsArray = new JSONArray(textcomb);
