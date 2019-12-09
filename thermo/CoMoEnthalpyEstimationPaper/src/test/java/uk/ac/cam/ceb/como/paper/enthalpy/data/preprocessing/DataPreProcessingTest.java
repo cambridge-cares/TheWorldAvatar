@@ -8,6 +8,10 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiont
 /**
  * 
  * @author nk510 (caresssd@hermes.cam.ac.uk)
+ * 
+ * Junit tests which generate chemical reactions and estimate enthalpy of formation for 25 Ti-based species.
+ * 
+ * 
  *
  */
 
@@ -69,8 +73,9 @@ public class DataPreProcessingTest {
 	 * 
 	 */
 
-	static int[] ctrRadicals = new int[] { 0 }; // 0, 1, 2, 3, 4, 5 //100
+	static int[] ctrRadicals = new int[] { 5 }; // 0, 1, 2, 3, 4, 5 //100
 
+	
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk) Junit test that generates ISG type

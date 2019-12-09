@@ -19,7 +19,7 @@ import org.json.simple.JSONObject;
 import uk.ac.ca.ceb.como.paper.enthalpy.data.analysis.InitialDataAnalysis;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HHDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing.DataPreProcessing;
 import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSolver;
@@ -127,9 +127,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	
 //	static String destRList = "ti_isg/";
-//	static String destRList = "hco_hhd/";
+	static String destRList = "hco_hhd/";
 //	static String destRList = "hco_isd/";
-	static String destRList = "hco_isg/";
+//	static String destRList = "hco_isg/";
 //	static String destRList = "hco_hd/";
 	
 	/**
@@ -146,7 +146,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings temp folder path.
 	 * 
 	 */
-	static String tempFolder = "LeaveOneOutCrossValidation_isg/";
+	static String tempFolder = "LeaveOneOutCrossValidation_hhd/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
@@ -187,7 +187,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static int[] ctrRadicals = new int[] {0}; // 0, 1, 2, 3, 4, 5 //100
+	static int[] ctrRadicals = new int[] {1}; // 0, 1, 2, 3, 4, 5 //100
 
 	public static void main(String[] args) throws Exception {
 	
@@ -255,9 +255,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
     
-	ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
+//	ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 	
-	dpp.getPreProcessingCorssValidation(isgReactionTypePreProcessing,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
+	HHDReactionType hhdReactionTypePreProcessing = new HHDReactionType();
+	
+	dpp.getPreProcessingCorssValidation(hhdReactionTypePreProcessing,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
 				spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
 				validReaction, invalidReaction,printedResultsTxtFile);
 
@@ -410,6 +412,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		System.out.println("Sorted species compared by error bars:");
 		
 		printedResultsTxtFile.write("Sorted species compared by error bars:");
+		
 		printedResultsTxtFile.write("\n");
 
 		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
@@ -417,14 +420,15 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		System.out.println(ss.getKey().getRef() + " " +  ss.getValue());
 
 		printedResultsTxtFile.write(ss.getKey().getRef() + " " +  ss.getValue());
-		printedResultsTxtFile.write("\n");
-
+		
+		printedResultsTxtFile.write("\n");		
 		
 		}
 
 		System.out.println("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
 		
 		printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
+		
 		printedResultsTxtFile.write("\n");
 
 		/**
@@ -468,7 +472,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Iteration that terminates when there will be not species added to the set of valid species.
+		 * Iteration that terminates when there will be no more species added into the set of valid species.
 		 * 
 		 */
 		
@@ -492,18 +496,19 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		int tempValidSpeciesSize = tempValidSpecies.size();
 		
 		/**
+		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Iteration through a set of invalid species.
 		 * 
 		 */
 		
 		for (Map.Entry<Species, Double> errorMap : sortedInvalidSpeciesErrorBar.entrySet()) {
-			
+		
 		System.out.println("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
 		
 		printedResultsTxtFile.write("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
-		printedResultsTxtFile.write("\n");
 		
+		printedResultsTxtFile.write("\n");		
 			    
 			    /**
 			     * 
@@ -626,9 +631,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 				
 				InitialDataAnalysis initialDataAnalysis = new InitialDataAnalysis();
 				
-				ISGReactionType isgReactionTypeInitialAnalysis = new ISGReactionType(true);
+				/**
+				 * 
+				 * @author NK510 (caresssd@hermes.cam.ac.uk)
+				 * 
+				 */
+//				ISGReactionType isgReactionTypeInitialAnalysis = new ISGReactionType(true); //remove comment on this line of the code if it is necessary to add type of reaction as argument in method  'initialDataAnalysis.getInitialDataAnalysisCrossValidation'
 				
-				initialDataAnalysis.getInitialDataAnalysisCrossValidation(isgReactionTypeInitialAnalysis,loop, addedSpeciesToValidSet,iteration, destRList, ctrRadicals, ctrRuns, ctrRes, srcRefPoolSpecies, 
+				initialDataAnalysis.getInitialDataAnalysisCrossValidation(loop, addedSpeciesToValidSet,iteration, destRList, ctrRadicals, ctrRuns, ctrRes, srcRefPoolSpecies, 
 						targetSpecies, srcCompoundsRef, spinMultiplicity, mapElPairing, tempFolder, invalids, all, validSpecies, targetSpeciesEnthalpy, currentErrorBar,printedResultsTxtFile);
 				
 				iteration++;

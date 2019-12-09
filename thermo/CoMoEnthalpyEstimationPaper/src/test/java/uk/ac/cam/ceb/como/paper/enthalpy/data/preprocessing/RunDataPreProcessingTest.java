@@ -7,7 +7,6 @@ import org.junit.runner.notification.Failure;
 public class RunDataPreProcessingTest {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		
 		Result testResult = JUnitCore.runClasses(DataPreProcessingTestSuite.class);
 		
