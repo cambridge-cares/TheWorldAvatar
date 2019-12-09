@@ -76,7 +76,7 @@ public class TestNuclear extends TestCase {
 		assertEquals(4, result.size());
 	}
 	
-public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+	public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
 		JSONArray ja = getSubstitutionalGenerators();
 		
 		JSONObject jo = new JSONObject();
@@ -84,8 +84,7 @@ public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("substitutionalgenerators", ja);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenarionewmod2"); //don't use the close existing scenario name again!!
-		scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenarionewmodloadpoint2"); //don't use the close existing scenario name again!!
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10updatenewload2");
 		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearoilremovedserver3");
 		//JPSHttpServlet.enableScenario(scenarioUrl);	
 		
