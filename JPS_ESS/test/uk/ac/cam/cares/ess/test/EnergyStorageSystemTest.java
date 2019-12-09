@@ -53,7 +53,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONObject result = new JSONObject();
 	}
 	
-	public void testgetbatterylocmethod() throws IOException {
+	public void xxxtestgetbatterylocmethod() throws IOException {
 		String indexline ="34"; //--> index no 34
 		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
 	    EnergyStorageSystem c=new EnergyStorageSystem();		
@@ -63,7 +63,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		assertEquals(1.2723166665, coordinate[1], 0.001);
 	}
 	
-	public void testCreateOWLFile() throws IOException {
+	public void xxxtestCreateOWLFile() throws IOException {
 
 		String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
 		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";

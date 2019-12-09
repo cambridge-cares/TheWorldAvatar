@@ -1,16 +1,10 @@
 package uk.ac.cam.cares.jps.powsys.electricalnetwork.test;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContextEvent;
-
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.AggregationEmissionAgent;
-import uk.ac.cam.cares.jps.powsys.listener.LocalOntologyModelManager;
-import uk.ac.cam.cares.jps.powsys.test.ServletTestHelper;
 
 public class TestAggregation extends TestCase{
 
@@ -33,20 +27,20 @@ public class TestAggregation extends TestCase{
 		System.out.println("result end="+resultStart);
 	}
 	
-	public void testupdatefunction() {
-        LocalOntologyModelManager lomm = new LocalOntologyModelManager();
-        ServletConfig ctx = ServletTestHelper.getServletConfig();
-        ServletContextEvent event = new ServletContextEvent(ctx.getServletContext());
-        //Test Initialisation: baseChimney, species & concepts loaded
-        try {
-            lomm.contextInitialized(event);
-        } catch (Exception e) {
-            throw new JPSRuntimeException(e);
-        } finally {
-		JSONObject jo = new AggregationEmissionAgent().updateEmission(TestEN.ELECTRICAL_NETWORK);
-		System.out.println("result end="+jo.toString());
-        }
-	}
+//	public void testupdatefunction() {
+//        LocalOntologyModelManager lomm = new LocalOntologyModelManager();
+//        ServletConfig ctx = ServletTestHelper.getServletConfig();
+//        ServletContextEvent event = new ServletContextEvent(ctx.getServletContext());
+//        //Test Initialisation: baseChimney, species & concepts loaded
+//        try {
+//            lomm.contextInitialized(event);
+//        } catch (Exception e) {
+//            throw new JPSRuntimeException(e);
+//        } finally {
+//		JSONObject jo = new AggregationEmissionAgent().updateEmission(TestEN.ELECTRICAL_NETWORK);
+//		System.out.println("result end="+jo.toString());
+//        }
+//	}
 	
 	
 }
