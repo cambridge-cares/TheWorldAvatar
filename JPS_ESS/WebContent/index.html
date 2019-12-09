@@ -712,7 +712,7 @@ var batterylist;
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestBatt1.kml',
+							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml',
 							suppressInfoWindows: false,
 							map: map
 						});
@@ -724,6 +724,8 @@ var batterylist;
 				
 
 	request.fail(function(jqXHR, textStatus) {
+		console.log(jqXHR);
+		console.log(textStatus);
 	});
 	}
 	function drawMarkers(){
@@ -915,6 +917,7 @@ var batterylist;
 		// set the content of the popup window.
 		infoWindowHtml = '<div>' + buttonsList + '</div>';
 
+		console.log(infoWindowHtml);
 		return infoWindowHtml;
 
 	}

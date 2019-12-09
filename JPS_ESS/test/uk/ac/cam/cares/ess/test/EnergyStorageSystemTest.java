@@ -131,7 +131,6 @@ public class EnergyStorageSystemTest extends TestCase {
 		System.out.println("finished execute");
 		pvgeniris.clear();
 	}
-<<<<<<< HEAD
 public static OntModel readModelGreedy(String iriofnetwork) {
 	String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -309,7 +308,7 @@ public void testJPSPV() {
 			    + "}";
 		QueryBroker broker  = new QueryBroker();
 		OntModel model = JenaHelper.createModel();
-		JenaHelper.readFromUrl("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001", model);
+		JenaHelper.read("http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001", model);
 		ResultSet resultSet = JenaHelper.query(model, genInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -318,9 +317,6 @@ public void testJPSPV() {
 		System.out.println(result);
 	
 }
-=======
-
->>>>>>> develop
 	public void testESSBattery() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", ENIRI);
