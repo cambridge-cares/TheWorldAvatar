@@ -124,7 +124,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
         String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl; //+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
-        String[] cmdArray = new String[5];
+        String[] cmdArray = new String[7];
         
         cmdArray[0] = executablelocation;
         cmdArray[1] = folderlocation + "/" + modelname;

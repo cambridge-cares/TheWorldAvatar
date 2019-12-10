@@ -318,8 +318,8 @@ var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
 	+ "?model   j5:hasModelVariable ?Qg ." 
 	+ "?Qg  a  j3:Qg  ." 
 	+ "?Qg  j2:hasValue ?vqg ."
-	+ "?vqg   j2:numericalValue ?VQ_Gen ." // qg
-	+ "?vqg   j2:hasUnitOfMeasure ?VQ_Gen_unit ." // qg
+	+ "?vqg   j2:numericalValue ?V_QGen ." // qg
+	+ "?vqg   j2:hasUnitOfMeasure ?V_QGen_unit ." // qg
 
 	+ "?model   j5:hasModelVariable ?qmax ." 
 	+ "?qmax  a  j3:QMax  ." 
@@ -522,8 +522,8 @@ var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#B
 var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001"];//to be a jsonarray
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
-var infowindow;
 var animatedLines = [];
+var batterylist;
  
  
 // Perform other work here ...
@@ -712,7 +712,7 @@ var animatedLines = [];
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml',
+							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml',
 							suppressInfoWindows: false,
 							map: map
 						});
@@ -724,6 +724,8 @@ var animatedLines = [];
 				
 
 	request.fail(function(jqXHR, textStatus) {
+		console.log(jqXHR);
+		console.log(textStatus);
 	});
 	}
 	function drawMarkers(){
@@ -745,6 +747,8 @@ var animatedLines = [];
 	    var x;
 	    // scan some duplicates
 	    dict = {"solar": 0, "gas": 0, "oil": 0};
+	    var markerdict = new Map();
+	    var latLng = new Map();
 	    for (x=0; x< size; x++){
 	        var obj = JSON.parse(obj0[x]);  
 	        var fueltype = obj.fueltype;
@@ -752,35 +756,56 @@ var animatedLines = [];
 	        if (fueltype== "NaturalGasGeneration"){
 	            var icon = {
 	                url: 'images/naturalgas.png',
-	                scaledSize : new google.maps.Size(80, 80),
+	                scaledSize : new google.maps.Size(40, 40),
 	            };
 	            dict["gas"] += 1;
 	        }else if (fueltype== "OilGeneration"){
 	            var icon = {
 	                url: 'images/oil.png',
-	                scaledSize : new google.maps.Size(80, 80),
+	                scaledSize : new google.maps.Size(40, 40),
 	            };
 	            dict["oil"] += 1;
 	        }else{
-	            console.log(fueltype);
 	            var icon = {
 	                url: 'images/solar.png', 
-	                scaledSize : new google.maps.Size(80, 80),
+	                scaledSize : new google.maps.Size(40, 40),
 	            };
 	            dict["solar"] += 1;
 	        }
-	        var marker = new google.maps.Marker({
-	            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
-	            map: map,
-	            title: name,
-	            icon: icon
-	          });
-	        console.log(name, obj.coors.lat, obj.coors.lng);
-	        markers.push(marker);
-	        }
-	        
+	        if (markerdict.has(obj.coors.lat)){
+	        	var v = markerdict.get(obj.coors.lat);
+	        	v.push(name);
+	        	markerdict.set(obj.coors.lat, v);
+	        }else{
+	        	markerdict.set(obj.coors.lat, [name]);
+	        	
+	        	latLng.set(obj.coors.lat, [obj.coors.lng, icon]);
+	        	}
+        }
+
+	    for (var [key, value] of latLng.entries()) {
+	    	createMarker(key, value, markerdict);
+		      
+	    }
+
+		searchBatteryCoord(batterylist);	
 	    });
 	    }
+	function createMarker(key, value, markerdict){
+		var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(key, value[0]),
+            map: map,
+            icon: value[1]
+          });
+		marker.addListener('click', function(){
+			var infowindow = new google.maps.InfoWindow({
+				content: '<h2>Sup!</h2>'});
+			_content = setMarkerMenu(markerdict.get(key));
+			infowindow.setContent(_content);
+			infowindow.open(map, this);
+		});
+        markers.push(marker);
+	}
 	function drawBattery() 	{
 		var batteryjson= {}
 		batteryjson["electricalnetwork"] = electricalnetwork;
@@ -804,50 +829,30 @@ var animatedLines = [];
 	    });
 	    request.done( function(data) {
 	        console.log ("success create request");
-	        console.log(data);
-	        var batterylist = JSON.parse(data).batterylist;
+	        batterylist = JSON.parse(data).batterylist;
 	        console.log(batterylist);
-			searchBatteryCoord(data);	
+			drawMarkers();
 			drawLines();
-	        
 		});
 
 
 	}
 	function searchBatteryCoord(srcdata) {
-		//var batteryjson = JSON.parse(srcdata);
-		var agenturl = prefix + '/JPS_ESS/ESSBatterySearch';  
-		var batteryjson= {}
-    	batteryjson["electricalnetwork"]= electricalnetwork;
-    	var searchurl = createUrlForAgent(scenario, agenturl, batteryjson);
-    	console.log(searchurl);
-    	var request = $.ajax({
-            url: searchurl,
-            type: 'GET',
-            data: batteryjson,
-            contentType: 'application/json; charset=utf-8'
-        });
-    	request.done(function(data){
-    		var obj0 = JSON.parse(data).result;
-    		console.log(obj0);
-    		var size=obj0.length; 
+    		var size=srcdata.length; 
     		console.log(size);
+    		console.log(srcdata);
     		var x;
     	    for (x=0; x< size; x++){
-    	        var obj = JSON.parse(obj0[x]); 
-    	        var name = obj.name;
     	        var marker = new google.maps.Marker({
-    	            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
+    	            position: new google.maps.LatLng(String(srcdata[x][2]),String(srcdata[x][1])),
     	            map: map,
-    	            title: name,
+    	            title: srcdata[x][0],
     	            icon: "images/battery.png"
     	          });
-    	        console.log(name, obj.coors.lat, obj.coors.lng);
+
     	        markers.push(marker);
     	        }
 
-				drawMarkers();
-    	    });
 	}
 
 	function calLengthOfLine(x1,x2,y1,y2) {
@@ -897,7 +902,25 @@ var animatedLines = [];
 		kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
 
 	}
+	
+	function setMarkerMenu(jsonArray)
+	{
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		for(var index in jsonArray)
+		{
+			var name = jsonArray[index];
+			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
 
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+		console.log(infoWindowHtml);
+		return infoWindowHtml;
+
+	}
 
 	function selectEBus(event) {
 	selectedId =  event.srcElement.id;
@@ -946,6 +969,7 @@ function openWindowGen(id){
 		contentType: 'application/json; charset=utf-8',
 		success: function(data){   
 			var obj0 = JSON.parse(data);
+			console.log(obj0);
 			obj2 = obj0['results']['bindings'][0];
 			console.log(obj2);
 		},
@@ -985,15 +1009,8 @@ function openWindowGen(id){
 
 
 	}, function (jqXHR, textStatus, errorThrown){
-		var x1 = promise1;
-		var x2 = promise2;
-		if (x1.readyState != 4) {
-			x1.abort();
-		}
-		if (x2.readyState != 4) {
-			x2.abort();
-		}
-	   alert('Either j1 or j2 failed!');
+		console.log(textStatus);
+		console.log(errorThrown);
 	}
 	);
 }

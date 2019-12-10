@@ -1,5 +1,5 @@
   Sets
-p loadpoint  /p1*p208/
+p loadpoint  /p1*p209/
 e exiisting generator
 ep existing generator parameters
 s potential sites   /s1*s31/
@@ -164,7 +164,7 @@ objective..    z=e=sum((p,s),tr(p,s))+sum((p,e),tre(p,e))+ sum(s,AC(s))+sum(s,PC
 
 
 Model optim /all/;
-option minlp=baron,resLIM=20000,optCR=.9,decimals=7;
+option minlp=baron,resLIM=100000,optCR=.8,decimals=6;
 Solve optim using minlp minimizing z;
 
 File output /results.csv/;
