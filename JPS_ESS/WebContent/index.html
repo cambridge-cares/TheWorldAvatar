@@ -712,7 +712,7 @@ var batterylist;
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml',
+							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
 						});
