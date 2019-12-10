@@ -517,6 +517,7 @@ var selectedId;
 var txt;
 var scenario = "base";
 var prefix = "http://localhost:8080"
+//var prefix = "http://www.jparksimulator.com"
 var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001"];//to be a jsonarray
@@ -712,7 +713,7 @@ var batterylist;
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml',
+							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
 						});
