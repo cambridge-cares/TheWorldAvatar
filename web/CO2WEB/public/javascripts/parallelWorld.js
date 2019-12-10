@@ -207,8 +207,8 @@ var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
     + "?model   j5:hasModelVariable ?Qg ." 
     + "?Qg  a  j3:Qg  ." 
     + "?Qg  j2:hasValue ?vqg ."
-    + "?vqg   j2:numericalValue ?VQ_Gen ." // qg
-    + "?vqg   j2:hasUnitOfMeasure ?VQ_Gen_unit ." // qg
+    + "?vqg   j2:numericalValue ?V_QGen ." // qg
+    + "?vqg   j2:hasUnitOfMeasure ?V_QGen_unit ." // qg
 
     + "?model   j5:hasModelVariable ?qmax ." 
     + "?qmax  a  j3:QMax  ." 
@@ -378,10 +378,10 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-    // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
-    // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml";
-    var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
-    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml";
+    // var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
+    // var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
     setInterval(function(){
         distotalemission();
     }, 5000);
@@ -545,7 +545,6 @@ function drawMarkers(data){
     for (x=0; x< size; x++){
         var obj = JSON.parse(obj0[x]);  
         var fueltype = obj.fueltype;
-        var name = obj.name;
         if (fueltype== "NaturalGasGeneration"){
             var icon = {
                 url: '/images/naturalgas.png',
@@ -569,13 +568,14 @@ function drawMarkers(data){
         var marker = new google.maps.Marker({
             position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
             map: map,
-            title: name,
             icon: icon
           });
+        console.log(obj.name);
         markers.push(marker);
         }
         
         numTypeGen = dict["nuclear"] + " Nuclear , " + dict["oil"] + " Oil , " + dict['gas'] +" Gas ";
+        console.log(markers);
     });
     }
     function clearMarkers() {
@@ -714,15 +714,8 @@ function openWindowGen(id){
 
 
     }, function (jqXHR, textStatus, errorThrown){
-        var x1 = promise1;
-        var x2 = promise2;
-        if (x1.readyState != 4) {
-            x1.abort();
-        }
-        if (x2.readyState != 4) {
-            x2.abort();
-        }
-       alert('Either j1 or j2 failed!');
+        alert(textStatus);
+        console.log(errorThrown);
     }
     );
 }

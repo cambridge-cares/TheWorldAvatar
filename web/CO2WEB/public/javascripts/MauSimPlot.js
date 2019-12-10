@@ -115,7 +115,14 @@ var socket = io();
 
             let value = singleSetIn.value;
             let name = singleSetIn.name;
-			            let unit = singleSetIn.unit;
+            let unit = singleSetIn.unit;
+            if (name.includes("Humidity")){
+                unit = "%";
+            }else if (name.includes("Temperature")){
+                unit = "Celsius";
+            }else{
+                unit = "1/m";
+            }
 
             let  template =`<tr><td>${name}</td><td>${value}</td><td>${unit}</td></tr>`;
             console.log(template)
