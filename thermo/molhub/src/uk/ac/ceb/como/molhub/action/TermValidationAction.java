@@ -574,7 +574,4 @@ public class TermValidationAction extends ActionSupport implements SessionAware,
 	public void setRunningTime(String runningTime) {
 		this.runningTime = runningTime;
 	}
-
-	
-
 }

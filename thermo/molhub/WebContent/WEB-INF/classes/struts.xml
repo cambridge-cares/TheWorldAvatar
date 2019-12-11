@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>  
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE struts PUBLIC
     "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
     "http://struts.apache.org/dtds/struts-2.0.dtd">
@@ -27,14 +27,13 @@
     <result name="success">/search.jsp</result>
 	<result name="input">/search.jsp</result>
 	<result name="error">/search.jsp</result>
-	 
 	
-    <interceptor-ref name="basicStack"/> 
+    <interceptor-ref name="basicStack"/>
        
     <interceptor-ref name="scope">
         <param name="type">start</param>
     </interceptor-ref>
-      
+
    </action>
    
    <action name="calculation" class="uk.ac.ceb.como.molhub.action.CalculationAction" method="execute">  
