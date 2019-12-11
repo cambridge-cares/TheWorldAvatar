@@ -149,6 +149,7 @@
 </div>
 <div class="panel panel-default">
   <div class="panel-body"> <button type="button" id= 'run-btn'>Run Simulation</button>
+  <input type="text" id="scenarioTxt" value="">
   <div style="display:none;" id="loader"></div>
    </div>
 </div>
@@ -983,14 +984,18 @@ var infowindow;
 	}
 	
 	function drawBattery() 	{
+		document.getElementById("run-btn").disabled = true;
 		document.getElementById("loader").style.display = "block";
+		scenario = document.getElementById("scenarioTxt").value;
+		if (scenario == ''){
+			scenario = "testBatt1"; //fixed temporarily, will be changed along with user input
+		}
 		var batteryjson= {}
 		batteryjson["electricalnetwork"] = electricalnetwork;
 		batteryjson["BatteryCatalog"] = batIRI;
 		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
 		var agenturl = prefix + '/JPS_ESS/ESSAgent';  
 	
-		scenario = "testBatt1"; //fixed temporarily, will be changed along with user input
 		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
 		console.log(batteryurl);
 	    var request = $.ajax({
@@ -1026,6 +1031,7 @@ var infowindow;
     	       }
 
 			document.getElementById("loader").style.display = "none";
+			document.getElementById("run-btn").disabled = false;
 	}
 	function createBattery(iri, lat, lng){//to be integrated with createMarker once variables have been commonified. 
 		var marker = new google.maps.Marker({
