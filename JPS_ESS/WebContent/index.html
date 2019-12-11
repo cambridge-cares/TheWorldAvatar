@@ -98,6 +98,32 @@
 	text-align: left;
 	overflow-y: scroll;
 }
+#loader {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 1;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
 
 	</style>
@@ -120,7 +146,9 @@
   <h1 id="head1">Electrical Network</h1>
 </div>
 <div class="panel panel-default">
-  <div class="panel-body">A Basic Panel</div>
+  <div class="panel-body"> <button type="button" id= 'run-btn'>Run Simulation</button>
+  <div style="display:none;" id="loader"></div>
+   </div>
 </div>
 <div id="map"></div>
  
@@ -338,11 +366,11 @@ var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
 	+ "?Vg  j2:hasValue ?vVg ."
 	+ "?vVg   j2:numericalValue ?V_Vg ." // vg
 
-	+ "?model   j5:hasModelVariable ?mbase ." 
-	+ "?mbase  a  j3:mBase  ." 
-	+ "?mbase  j2:hasValue ?vmbase ."
-	+ "?vmbase   j2:numericalValue ?V_mBase ." // mbase
-	+ "?vmbase   j2:hasUnitOfMeasure ?V_mBase_unit ." // mbase
+	+ "OPTIONAL{?model   j5:hasModelVariable ?mbase }" 
+	+ "OPTIONAL{?mbase  a  j3:mBase  }" 
+	+ "OPTIONAL{?mbase  j2:hasValue ?vmbase }"
+	+ "OPTIONAL{?vmbase   j2:numericalValue ?V_mBase }" // mbase
+	+ "OPTIONAL{?vmbase   j2:hasUnitOfMeasure ?V_mBase_unit }" // mbase
 
 	+ "?model   j5:hasModelVariable ?pmax ." 
 	+ "?pmax  a  j3:PMax  ." 
@@ -449,25 +477,17 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 		+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
 		+ "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-		+ "SELECT ?entity ?V_QGen ?V_QGen_unit ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
+		+ "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
 
 		+ "WHERE {?entity  a  j1:PowerGenerator  ."
 		+ "?entity   technical_system:realizes ?generation ."
+
 		+ "?generation j9:hasEmission ?emission ." 
-
-		+ "?model   j5:hasModelVariable ?Qg ." 
-		+ "?Pg  a  j3:Qg  ." 
-		+ "?Pg  j2:hasValue ?vpg ."
-		+ "?vpg   j2:numericalValue ?V_QGen ." // Qg
-		+ "?vpg   j2:hasUnitOfMeasure ?V_QGen_unit ." // Qg
-
 		+ "?emission a j9:Actual_CO2_Emission ."
 		+ "?emission   j2:hasValue ?valueemission ."
 		+ "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
 		+ "?valueemission   j2:hasUnitOfMeasure ?V_Actual_CO2_Emission_unit ." //
 
-
-		+ "?generation j9:hasEmission ?v_emission ." 
 		+ "?v_emission a j9:CO2_emission ."
 		+ "OPTIONAL {?v_emission   j2:hasValue ?valueemission_d }"
 		+ "OPTIONAL {?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission }" //
@@ -485,7 +505,42 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 
 
 		+ "}";
-		var batteryInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+	var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+		+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+		
+		+ "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_ActivePowerInjection_of_VRB ?V_ActivePowerInjection_of_VRB_unit "
+		+ "WHERE {?entity  a  j1:VanadiumRedoxBattery ."
+
+		+ "?entity   j9:hasActivePowerInjection ?cap ."
+		+"?cap j2:hasValue ?vcap ."
+		+"?vcap  j2:numericalValue ?V_ActivePowerInjection_of_VRB ."
+		+"?vcap  j2:hasUnitOfMeasure ?V_ActivePowerInjection_of_VRB_unit ."
+
+		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+
+		+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+		+ "?y  j2:hasValue ?vy ." 
+		+ "?vy  j2:numericalValue ?V_y ."
+		+ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."
+
+		+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+		+ "?x  j2:hasValue ?vx ." 
+		+ "?vx  j2:numericalValue ?V_x ."//longitude
+		+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
+
+		+ " {?class rdfs:subClassOf j1:Battery ."
+		+ "} "
+		+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
+		+ "}";
+		var batteryInfo2 ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
 			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -493,22 +548,136 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 			+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+			+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
 			+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-			+ "SELECT ?entity ?valueofx ?valueofy "
-			+ "WHERE {?entity  a  ?class ."
-			+ "?class rdfs:subClassOf j1:Battery ." 
+			
+			+ "SELECT ?entity ?V_BusNumber ?V_PGen ?V_PGen_unit ?V_Vg ?V_Pmax ?V_Pmax_unit ?V_Pmin ?V_Pmin_unit ?V_Pc1 "
+					+ "?V_Ramp_agc ?V_Ramp_10 ?V_Ramp_30 ?V_Ramp_q ?V_Pc2 ?V_APF ?V_x ?V_x_unit ?V_y ?V_y_unit "
+							+ "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit "
+			+ "WHERE {?entity  a  j1:PowerGenerator  ."
 			+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
 
 			+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
 			+ "?y  j2:hasValue ?vy ." 
-			+ "?vy  j2:numericalValue ?valueofy ."
+			+ "?vy  j2:numericalValue ?V_y ."
+			+ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."
 
 			+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
 			+ "?x  j2:hasValue ?vx ." 
-			+ "?vx  j2:numericalValue ?valueofx ."
-			+ " {?class rdfs:subClassOf j1:Battery ."
-			+ "} "
-			+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
+			+ "?vx  j2:numericalValue ?V_x ."//longitude
+			+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
+
+			+ "?entity   j2:isModeledBy ?model ."
+			+ "?model   j5:hasModelVariable ?num ." 
+			+ "?num  a  j3:BusNumber  ." 
+			+ "?num  j2:hasValue ?vnum ."
+			+ "?vnum   j2:numericalValue ?V_BusNumber ." // number
+
+			+ "?model   j5:hasModelVariable ?Pg ." 
+			+ "?Pg  a  j3:Pg  ." 
+			+ "?Pg  j2:hasValue ?vpg ."
+			+ "?vpg   j2:numericalValue ?V_PGen ." // pg
+			+ "?vpg   j2:hasUnitOfMeasure ?V_PGen_unit ." // pg
+					
+			//+ "?model   j5:hasModelVariable ?Qg ." 
+			//+ "?Qg  a  j3:Qg  ." 
+			//+ "?Qg  j2:hasValue ?vqg ."
+			//+ "?vqg   j2:numericalValue ?V_QGen ." // qg Doesn't work
+			//+ "?vqg   j2:hasUnitOfMeasure ?V_QGen_unit ." // qg
+			+ "?model   j5:hasModelVariable ?Vg ." 
+			+ "?Vg  a  j3:Vg  ." 
+			+ "?Vg  j2:hasValue ?vVg ."
+			+ "?vVg   j2:numericalValue ?V_Vg ." // vg
+
+			//+ "?model   j5:hasModelVariable ?mbase ." 
+			//+ "?mbase  a  j3:mBase  ." 
+			//+ "?mbase  j2:hasValue ?vmbase ."
+			//+ "?vmbase   j2:numericalValue ?V_mBase ." // mbase  Doesn't work
+			//+ "?vmbase   j2:hasUnitOfMeasure ?V_mBase_unit ." // mbase
+					
+			+ "?model   j5:hasModelVariable ?pmax ." 
+			+ "?pmax  a  j3:PMax  ." 
+			+ "?pmax  j2:hasValue ?vpmax ."
+			+ "?vpmax   j2:numericalValue ?V_Pmax ." // pmax
+			+ "?vpmax   j2:hasUnitOfMeasure  ?V_Pmax_unit ." // pmax
+
+			+ "?model   j5:hasModelVariable ?pmin ." 
+			+ "?pmin  a  j3:PMin  ." 
+			+ "?pmin  j2:hasValue ?vpmin ."
+			+ "?vpmin   j2:numericalValue ?V_Pmin ." // pmin
+			+ "?vpmin   j2:hasUnitOfMeasure?V_Pmin_unit ." // pmin
+
+			+ "?model   j5:hasModelVariable ?pc1 ." 
+			+ "?pc1  a  j3:Pc1  ." 
+			+ "?pc1  j2:hasValue ?vpc1 ."
+			+ "?vpc1   j2:numericalValue ?V_Pc1 ." // pc1
+
+			+ "?model   j5:hasModelVariable ?pc2 ." 
+			+ "?pc2  a  j3:Pc2  ." 
+			+ "?pc2  j2:hasValue ?vpc2 ."
+			+ "?vpc2   j2:numericalValue ?V_Pc2 ." // pc2					
+					
+			+ "?model   j5:hasModelVariable ?rampagc ." 
+			+ "?rampagc  a  j3:Rampagc  ."
+			+ "?rampagc  j2:hasValue ?vrampagc ." 
+			+ "?vrampagc   j2:numericalValue ?V_Ramp_agc ." // rampagc
+
+			+ "?model   j5:hasModelVariable ?ramp10 ." 
+			+ "?ramp10  a  j3:Ramp10  ."
+			+ "?ramp10  j2:hasValue ?vramp10 ."
+			+ "?vramp10   j2:numericalValue ?V_Ramp_10 ." // ramp10
+
+			+ "?model   j5:hasModelVariable ?ramp30 ." 
+			+ "?ramp30  a  j3:Ramp30  ."
+			+ "?ramp30  j2:hasValue ?vramp30 ." 
+			+ "?vramp30   j2:numericalValue ?V_Ramp_30 ." // ramp30
+
+			+ "?model   j5:hasModelVariable ?rampq ." 
+			+ "?rampq  a  j3:Rampq  ." 
+			+ "?rampq  j2:hasValue ?vrampq ."
+			+ "?vrampq   j2:numericalValue ?V_Ramp_q ." // rampq
+					
+			+ "?model   j5:hasModelVariable ?apf ."
+			+ "?apf  a  j3:APF  ." 
+			+ "?apf  j2:hasValue ?vapf ."
+			+ "?vapf   j2:numericalValue ?V_APF ." // apf
+					
+			+ "?model   j5:hasModelVariable ?startup ." 
+			+ "?startup  a  j3:StartCost  ."
+			+ "?startup  j2:hasValue ?vstartup ." 
+			+ "?vstartup   j2:numericalValue ?V_StartupCost ." //startup cost
+
+			+ "?model   j5:hasModelVariable ?shutdown ." 
+			+ "?shutdown  a  j3:StopCost  ."
+			+ "?shutdown  j2:hasValue ?vshutdown ." 
+			+ "?vshutdown   j2:numericalValue ?V_ShutdownCost ."  //shutdown cost
+					
+			+ "?model   j5:hasModelVariable ?gencostn ." 
+			+ "?gencostn  a  j3:genCostn  ."
+			+ "?gencostn  j2:hasValue ?vgencostn ." 
+			+ "?vgencostn   j2:numericalValue ?V_genCostn ." //genCostn
+
+			+ "?model   j5:hasModelVariable ?gencostn1 ." 
+			+ "?gencostn1  a  j3:genCostcn-1  ."
+			+ "?gencostn1  j2:hasValue ?vgencostn1 ." 
+			+ "?vgencostn1   j2:numericalValue ?V_genCostn1 ." //genCostn-1
+
+			+ "?model   j5:hasModelVariable ?gencostn2 ." 
+			+ "?gencostn2  a  j3:genCostcn-2  ."
+			+ "?gencostn2  j2:hasValue ?vgencostn2 ." 
+			+ "?vgencostn2   j2:numericalValue ?V_genCostn2 ."//genCostn-2
+
+			+ "?model   j5:hasModelVariable ?gencostc ." 
+			+ "?gencostc  a  j3:genCostc0  ."
+			+ "?gencostc  j2:hasValue ?vgencostc ." 
+			+ "?vgencostc   j2:numericalValue ?V_genCostc0 ." //genCostc0
+					
+			+ "?generation j9:hasEmission ?emission ." 
+			+ "?emission a j9:Actual_CO2_Emission ."
+			+ "?emission   j2:hasValue ?valueemission ."
+			+ "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
+			+ "?valueemission   j2:hasUnitOfMeasure ?V_Actual_CO2_Emission_unit ." //
+			
 			+ "}";
 			
 var opt = 'OPF';
@@ -524,6 +693,7 @@ var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
 var animatedLines = [];
 var batterylist;
+var infowindow;
  
  
 // Perform other work here ...
@@ -575,10 +745,12 @@ var batterylist;
 			zoom: 14,
 			center: {lat: 1.2624421, lng: 103.7007045}
 		});
+		infowindow = new google.maps.InfoWindow({
+            content: '<h2>Sup!</h2>'
+        });
 
-		drawBattery();
-		
 	}
+	document.getElementById("run-btn").addEventListener("click", drawBattery);
 	function drawLines(){
 		clearMarkers();
 		clearAnimatedLines();
@@ -621,7 +793,7 @@ var batterylist;
 		}
 		console.log('lines ',lines , ' size of lines ', lines.length);
 			
-	var infowindow = new google.maps.InfoWindow({content: '<h2>Sup!</h2>'});
+	
 	batterycount = 0;
 		for (var index in lines){
 			var _line = lines[index];
@@ -657,7 +829,8 @@ var batterylist;
 				});
 
 				
-				 
+
+                google.maps.InfoWindow.prototype.opened = false;
 				google.maps.event.addListener(line, 'click', function(lineEvent) {
 					var that = this;
 					var content = constructLineMenu(this.title,function (_content) {
@@ -712,7 +885,7 @@ var batterylist;
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml',
+							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
 						});
@@ -798,15 +971,15 @@ var batterylist;
             icon: value[1]
           });
 		marker.addListener('click', function(){
-			var infowindow = new google.maps.InfoWindow({
-				content: '<h2>Sup!</h2>'});
 			_content = setMarkerMenu(markerdict.get(key));
 			infowindow.setContent(_content);
 			infowindow.open(map, this);
 		});
         markers.push(marker);
 	}
+	
 	function drawBattery() 	{
+		document.getElementById("loader").style.display = "block";
 		var batteryjson= {}
 		batteryjson["electricalnetwork"] = electricalnetwork;
 		batteryjson["BatteryCatalog"] = batIRI;
@@ -833,6 +1006,7 @@ var batterylist;
 	        console.log(batterylist);
 			drawMarkers();
 			drawLines();
+
 		});
 
 
@@ -842,17 +1016,29 @@ var batterylist;
     		console.log(size);
     		console.log(srcdata);
     		var x;
+    		var markerdict = new Map();
     	    for (x=0; x< size; x++){
-    	        var marker = new google.maps.Marker({
-    	            position: new google.maps.LatLng(String(srcdata[x][2]),String(srcdata[x][1])),
-    	            map: map,
-    	            title: srcdata[x][0],
-    	            icon: "images/battery.png"
-    	          });
+    	    	createBattery(srcdata[x][0], srcdata[x][2], srcdata[x][1]);
+    	       }
 
-    	        markers.push(marker);
-    	        }
-
+			document.getElementById("loader").style.display = "none";
+	}
+	function createBattery(iri, lat, lng){//to be integrated with createMarker once variables have been commonified. 
+		var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(String(lat), String(lng)),
+            map: map,
+            title: String(iri),
+            icon: "images/battery.png"
+          });
+		marker.addListener('click', function(){
+        	var jsonArray = marker.title.split('/');
+        	console.log(jsonArray);
+        	var spec = marker.title + '#' + jsonArray[jsonArray.length-1];
+			_content = setMarkerMenu([spec]);
+			infowindow.setContent(_content);
+			infowindow.open(map, this);
+		});
+        markers.push(marker);
 	}
 
 	function calLengthOfLine(x1,x2,y1,y2) {
@@ -906,9 +1092,11 @@ var batterylist;
 	function setMarkerMenu(jsonArray)
 	{
 		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(jsonArray);
 		for(var index in jsonArray)
 		{
 			var name = jsonArray[index];
+			console.log(name);
 			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
 				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
 		}
@@ -930,7 +1118,10 @@ var batterylist;
 function openWindow(selectedId){
 	if (selectedId.includes("Bus")){
 		openWindowLineAndBus(selectedId, busInfo);
-	}else if (selectedId.includes("ine")){
+	}else if (selectedId.includes('VRB')){
+		openWindowLineAndBus(selectedId, batteryInfo);
+	}
+	else if (selectedId.includes("ine")){
 		//recreate infowindow if present. 
 		openWindowLineAndBus(selectedId, branchInfo);
 	}
@@ -949,6 +1140,8 @@ function openWindowGen(id){
 	var kmlurl = prefix + '/jps/scenario/'+scenario+'/query?query=' + encodeURIComponent(JSON.stringify(kmljson));
 	kmljson["sparqlquery"] = genInfo2;
 	var kmlurl2 = prefix +'/jps/scenario/'+scenario+'/query?query=' + encodeURIComponent(JSON.stringify(kmljson));
+	console.log(kmlurl);
+	console.log(kmlurl2);
 	$.when(
 		$.ajax({
 		url: kmlurl,
@@ -1057,7 +1250,9 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 		}
 
 		console.log(inputsHTML);
-		if (id.includes("Bus")){
+		if ((id.includes("Bus")) || (id.includes("VRB")) || (id.includes("PV"))){
+			console.log('check that it comes here');
+		
 			var div = document.getElementById('inputsContainer');
 			div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
 			'<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
@@ -1296,7 +1491,7 @@ asyncLoop({
 		//var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
 
-		var agenturl = prefix + '/JPS_ESS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
+		var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
 		data = { "electricalnetwork":electricalnetwork}
 		url = createUrlForAgent(scenario, agenturl, data);
 		console.log(url);
@@ -1314,7 +1509,7 @@ asyncLoop({
 		request.done(function() {
 			json = { "electricalnetwork":electricalnetwork ,"flag": scenario };
 			console.log('DONE SIMULATION');
-			drawLines();
+			drawBattery();
 			openWindow(filename);
 		});
 
