@@ -768,11 +768,13 @@ var infowindow;
 		
 		
 		obj0 = JSON.parse(data).result;
-		console.log(obj0);
+		var line223 ="{\"coors\": [{\"lat\": "+String(1.206334)+", \"lng\": "+String(103.780312)+"}, {\"lat\": "+String(1.2794833)+", \"lng\": "+String(103.7271667)+"}], \"vols\": ["+String(228.0)+","+String(227.0)+"], \"thickness\": "+String(6)+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
+	    obj0.push(line223);
+	    console.log(obj0);
 		var size=obj0.length;
 		console.log("size="+size);   
-		   
-		//Parse BranchOPF.txt file
+
+		//Temporary: Because there are two lines created due to Parallel World, need to get rid of them. 
 		
 		var x;
 		for(x=0;x<size;x++){
@@ -783,7 +785,6 @@ var infowindow;
 			var vol0=obj.vols[0];			
 			var vol1=obj.vols[1];
 			var temparrvol=[vol0,vol1];
-			//Temporary: Because there are two lines created due to Parallel World, need to get rid of them. 
 			
 			
 			var line = new Branch(temparr,temparrvol, obj.thickness, obj.type,obj.name);
@@ -1182,6 +1183,9 @@ function openWindowGen(id){
 			if (pair[0] == "entity"){}
 			else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
 			{
+				if (owlName.includes('.')){
+					owlName = owlName.split('.')[0]
+					}
 				var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"></td></tr>';
 				inputsHTML = inputsHTML + inputLine;
 				nameSet.push(pair[0]);
@@ -1235,7 +1239,10 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 			var pair = result[item];
 			if (pair[0] == "entity"){}
 			else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
-			{
+			{	console.log(owlName);
+				if (owlName.includes('.')){
+					owlName = owlName.split('.')[0];
+				}
 				var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"></td></tr>';
 				inputsHTML = inputsHTML + inputLine;
 				nameSet.push(pair[0]);
@@ -1249,17 +1256,16 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 			}
 		}
 
-		console.log(inputsHTML);
+		console.log(inputsHTML); 
 		if ((id.includes("Bus")) || (id.includes("VRB")) || (id.includes("PV"))){
-			console.log('check that it comes here');
 		
 			var div = document.getElementById('inputsContainer');
-			div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+			div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
 			'<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
 			}
 			
 			else if (callback == null){
-				innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+				innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
 						'<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
 				infoWindow.setContent(innerHTML);
 			}
@@ -1269,7 +1275,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 					resolve('Success');
 			});
 				newPromise.then((successMessage) => {
-					innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+					innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
 						'<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
 					console.log(innerHTML);
 					callback(innerHTML);
