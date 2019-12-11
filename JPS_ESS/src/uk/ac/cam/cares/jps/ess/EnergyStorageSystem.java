@@ -505,26 +505,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String path = request.getServletPath();
-		if ("/ESSBatterySearch".equals(path)) {
-			JSONObject joforEN = AgentCaller.readJsonParameter(request);
-			String iriofnetwork = joforEN.getString("electricalnetwork");
-			OntModel model = readModelGreedy(iriofnetwork);
-
-			ArrayList<String>textcomb=new ArrayList<String>();
-			List<String[]> g= getBatteryCoord(model);
-			for (int i = 0; i < g.size(); i++) {
-				String content="{\"coors\": {\"lat\": "+g.get(i)[2]+", \"lng\": "+g.get(i)[1]
-						+ "},  \"name\": \""+g.get(i)[0].split("#")[0]+".owl\"}";
-				textcomb.add(content);
-			}
-			JSONArray jsArray = new JSONArray(textcomb);
-		    JSONObject jo = new JSONObject();
-		    jo.put("result", jsArray);
-			AgentCaller.printToResponse(jo.toString(), response);
-		}
-		else {
-
+		 	System.gc();//garbage collection (reduce memory consumption)
 			JSONObject joforess = AgentCaller.readJsonParameter(request);
 			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 			System.out.println("baseURL: " + baseUrl);
@@ -564,12 +545,12 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 				battlist.add(a.getJSONArray(d).getString(0));
 			}
 			addObjectToElectricalNetwork(ENIRI, battlist);
-			
+
+		    System.gc();
 			JSONObject listofbat=new JSONObject();
 			listofbat.put("batterylist", a);
 	
 			AgentCaller.printToResponse(listofbat, response);
-	}
 		}
 	
 	private void cleanDirectory() {
