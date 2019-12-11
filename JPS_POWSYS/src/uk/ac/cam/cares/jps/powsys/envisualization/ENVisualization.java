@@ -868,10 +868,10 @@ public class ENVisualization extends JPSHttpServlet {
 	    }
 	    String content2="{\"coors\": [{\"lat\": "+1.28135+", \"lng\": "+103.72386+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-220.owl\"}";
 	    String content3="{\"coors\": [{\"lat\": "+1.27646+", \"lng\": "+103.7266+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
-	    String content4="{\"coors\": [{\"lat\": "+1.206334+", \"lng\": "+103.780312+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-222.owl\"}";
+	    //String content4="{\"coors\": [{\"lat\": "+1.206334+", \"lng\": "+103.780312+"}, {\"lat\": "+1.2794833+", \"lng\": "+103.7271667+"}], \"vols\": ["+228.0+","+227.0+"], \"thickness\": "+6+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-222.owl\"}";
 	    textcomb.add(content2);
 	    textcomb.add(content3);
-	    textcomb.add(content4);
+	    //textcomb.add(content4);
 	    JSONArray jsArray = new JSONArray(textcomb);
 	    JSONObject jo = new JSONObject();
 	    jo.put("result", jsArray);

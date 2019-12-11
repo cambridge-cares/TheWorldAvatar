@@ -1,24 +1,26 @@
 package uk.ac.cam.cares.jps.adms;
 
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 /**
  * Servlet implementation class ADMSOutput
@@ -41,7 +43,7 @@ public class ADMSOutputAllForShips extends HttpServlet {
             folder = joforEN.getString("folder");
 
             String outputFile = folder + "/test.levels.gst";
-            String csv = new QueryBroker().readFile(outputFile);
+            String csv = new QueryBroker().readFileLocal(outputFile);
             List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
 
             int startcontentindex = 7;
