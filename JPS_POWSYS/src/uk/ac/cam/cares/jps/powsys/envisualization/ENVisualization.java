@@ -138,6 +138,7 @@ public class ENVisualization extends JPSHttpServlet {
 			String g=readGenerator( model);
 			AgentCaller.printToResponse(g, response);
 		}
+		System.gc();
 	}
 	
 	public void writeToResponse(HttpServletResponse response, String content,String n) {
