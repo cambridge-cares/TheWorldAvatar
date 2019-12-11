@@ -137,9 +137,11 @@
 	 <span id="readme-button">?</span>
 
 	<span id="readme-text">
-		Jurong Island’s electrical, power and grid models are reverse-engineered with assumptions. This agent allows the simulation of Power Flow (PF) and Optimal Power Flow (OPF) analysis. The coloured lines represent the transmission lines in the electrical network that connect buses which are represented by the red points. Different coloured transmission lines represent different voltage levels: pink represents 230 kV, purple represents 66 kV and black represents 22kV.
+		This feature is mainly the extension of the Jurong island electrical network model with the use case of additional solar generator and some batteries included.
 		<br/><br/>
-		The arrow indicates the direction of the current flow from one bus to another within the network. Upon clicking on the load icon (red point), a pop-up window containing the information about the selected component will appear (click on the >). The user can modify the value of the input parameters (parameters without (updated)) and execute the simulation (PF or OPF) to determine the corresponding network profile. Optimal Power Flow is used to determine the best operating levels for power generators in order to meet demands given throughout a transmission network with the objective of minimising the operating cost for the power generators.
+		The first model inside will choose which type of battery is the most suitable for the selected solar generator added and it will run the OPF simulation with the new generator added.
+		<br/>
+		The final step will be locating the selected battery with specific amount and locations to cover the power losses identified by this OPF simulation.
 	</span>
 
  
