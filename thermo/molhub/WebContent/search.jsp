@@ -46,6 +46,13 @@ TH {
     
 }
 
+
+#tableName td {
+text-align: left;
+}
+
+
+
 </style>
 
 <div class="jumbotron text-center" id="topBanner">
@@ -79,7 +86,7 @@ TH {
 
 <body class="oneColFixCtr">
 
-<div id="container">
+<!--<div id="container">-->
 
 <!-- <div id="mainContent">-->
 <!-- <div id="border">-->
@@ -142,7 +149,7 @@ TH {
  -->
  
 <div id="primary-navigation" class="clearfix">
-    <ul class="clearfix">
+<!--   <ul class="clearfix"> -->
  
 <!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk'>Home</a></li>-->        
          
@@ -161,7 +168,7 @@ TH {
 <!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/seminars/'>Seminars</a></li>-->
  
 <!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/admin/login/?next=/admin/'>Login</a></li>-->
-    </ul>
+<!-- </ul> -->
 </div>
 
 <div id="leftnav" class="clearfix">
@@ -172,7 +179,10 @@ TH {
     <ul><li class="sel last"><a href="https://como.ceb.cam.ac.uk/resources/sootdb/">Soot Database</a></li></ul>          
     <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/flpyro/">Flame pyrometry</a></li></ul>
     -->
-    <ul><li class="selcsm">MolHub</li></ul>    
+    
+    <!-- <ul><li class="selcsm">MolHub</li></ul> -->    
+    <ul><li class="selcsm">MolHub</li></ul>
+    
 </div>
 
 <!-- SUB-SUB-MENU, FEEL FREE TO CHANGE -->
@@ -190,15 +200,15 @@ TH {
 
 <div class="col-md-9">
 <s:actionerror/>
-<s:form action="search">   
+<s:form action="search" align="left">   
 <s:textfield name="term.name" placeholder="Search Molhub" size="80"/>
 <s:submit value="Molhub Search"/>
 </s:form>
 </div>
-<div class="col-md-4">
+<div class="col-md-5">
 
 <s:actionerror/>
-<s:actionmessage/>
+<s:actionmessage />
 
 <s:form action="calculation" >
 <s:submit value="Run calculation"/>
@@ -211,7 +221,6 @@ TH {
 <tbody>
 <tr>
 <td><b>Number of final results:</b></td><td><s:property value="%{session.size}"/></td>
-<td></td>
 <td><b>Query completed in :</b> </td> <td><s:property value="runningTime"/></td>
 </tr>
 <tr>
@@ -239,7 +248,7 @@ Session result: <s:property value="session"/>
  
 <div id="tool-container">
 
-       <div id="result-container">
+      <div id="result-container">
        
             <div id="process-box" class="tool-tab">
 
@@ -259,11 +268,7 @@ Session result: <s:property value="session"/>
     
     </div>
     
-    <div class="round-bottom box-content">
- 
-<!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
- 
-<!-- <img alt="" src="http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/>/<s:property  value="uuid"/>.png" class="species-image"/>-->
+<div class="round-bottom box-content">
 
 <img alt="" src="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property  value="uuid"/>.png" class="species-image"/>
 
@@ -276,42 +281,37 @@ Session result: <s:property value="session"/>
 
 <div class="species-image" id="middlepanel"></div>
  
-        <div class="species-content">
+        <!-- <div class="species-content">-->
+        <div>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[0]"/></div>
-                <div class="property-value"><s:property  value="uuid"/></div>
+                <div class="property-value" align="left"><s:property  value="uuid"/></div>
             </div>
             <p/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[1]"/></div>
-                <div class="property-value">
+                <div class="property-value" align="left">
                 <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/></s:a>
                 </div>
             </div>
             <p/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[2]"/></div>
-                <div class="property-value"> <s:property  value="moleculeName"/></div>
+                <div class="property-value" align="left"> <s:property  value="moleculeName"/></div>
             </div>
-            
-            <!-- 
-            <div>
-            <div class="property-name">InChI</div>
-            <div class="property-value">InChI=1S/C2H5O4Si/c1-2-6-7(3,4)5/h2-4H,1H2</div>
-            </div>
-             -->
              
              <p/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[3]"/></div>
-                <div class="property-value"> <s:property  value="basisSet"/></div>
+                <div class="property-value" align="left"> <s:property  value="basisSet"/></div>
             </div>
             <p/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[4]"/></div>
-                <div class="property-value"> <s:property  value="levelOfTheory"/></div>
+                <div class="property-value" align="left"> <s:property  value="levelOfTheory"/></div>
             </div>
-        </div>
+        </div>    
+       <!-- </div>-->
     </div>
 </div>
 
@@ -342,6 +342,6 @@ Session result: <s:property value="session"/>
 -->
 <!-- </div>-->
  <!-- </div>-->
-</div>
+<!--</div>-->
 </body>
 </html>

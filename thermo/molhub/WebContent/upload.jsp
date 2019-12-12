@@ -68,7 +68,7 @@ TH {
 </div>
 
 <body class="oneColFixCtr">
-	<div id="container">
+<!-- <div id="container">-->
 	
 		<!--<div id="mainContent">-->
 
@@ -207,12 +207,11 @@ TH {
 					<!-- PUT CONTENT HERE -->
 					<div class="col-md-9">
 					
-						<s:form action="upload" method="post" enctype="multipart/form-data" theme="bootstrap" cssClass="well form-search">
+						<s:form action="upload" method="post" enctype="multipart/form-data" theme="bootstrap" cssClass="well form-search" align="left">
 						
-							<s:file name="upload" label="Select Gaussian files to upload:"
-								multiple="multiple" theme="bootstrap" />
+						<s:file name="upload" label="Select Gaussian files to upload:" multiple="multiple" theme="bootstrap"/>
 
-							<s:submit value="Upload" label="Select files" theme="bootstrap" />
+						<s:submit value="Upload" label="Select files" theme="bootstrap"/>
 
 						</s:form>
 				    
@@ -270,6 +269,6 @@ TH {
 
 			<!--</div>-->
 		<!--</div>-->
-	</div>
+<!-- </div>-->
 </body>
 </html>

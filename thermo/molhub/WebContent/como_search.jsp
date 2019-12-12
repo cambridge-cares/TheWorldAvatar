@@ -202,7 +202,7 @@ Session result: <s:property value="session"/>
     
     </div>
     
-    <div class="round-bottom box-content">
+<div class="round-bottom box-content">
  
 <!--<img alt="" src="http://como.cheng.cam.ac.uk/molhub/compchem/6498a583-a210-4ac1/data.3d.thumb.png" class="species-image"/>-->
  
