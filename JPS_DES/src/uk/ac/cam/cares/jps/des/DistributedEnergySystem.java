@@ -23,8 +23,16 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 
+
+
 @WebServlet(urlPatterns = { "/DESAgent" })
 public class DistributedEnergySystem extends JPSHttpServlet {
+	public static String cons="constraint.csv";
+	public static String weather="weather.csv";
+	public static String schedule="schedule.csv";
+	public static String producerdata="inputpod.csv";
+	public static String consumerdata="inputcons.csv";
+	
 	
     @Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -48,15 +56,15 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		List<String[]> consumer = provideLoadlist(model); // instance iri and its class
 
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
-		broker.putLocal(baseUrl + "/inputprod.csv", producercsv);
+		broker.putLocal(baseUrl + "/"+producerdata, producercsv);
 
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
-		broker.putLocal(baseUrl + "/inputcons.csv", consumercsv);
+		broker.putLocal(baseUrl + "/"+consumerdata, consumercsv);
 		
 		
-		copyTemplate(baseUrl, "schedule.csv");
-		copyTemplate(baseUrl, "weather.csv");
-		copyTemplate(baseUrl, "constraint.csv");
+		copyTemplate(baseUrl, schedule);
+		copyTemplate(baseUrl, weather);
+		copyTemplate(baseUrl, cons);
 		try {
 			runOptimization(baseUrl);
 		} catch (IOException e) {
@@ -89,7 +97,10 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
-				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+				+ "WHERE {"
+				//+ "?entity  a  j2:CompositeSystem  ." 
+				+ "?entity   j2:hasSubsystem ?component ." 
+				+ "}";
 
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
@@ -106,7 +117,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
                 + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
                 + "SELECT ?entity "
-                + "WHERE {?entity  a  j1:PowerGenerator  ."
+                + "WHERE {?entity  a  j1:PhotovoltaicPanel  ."
                 //+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
                 + "}";
 
