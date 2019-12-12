@@ -1,7 +1,9 @@
 package uk.ac.cam.cares.jps.des;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -15,22 +17,29 @@ import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 
 
 
 @WebServlet(urlPatterns = { "/DESAgent" })
 public class DistributedEnergySystem extends JPSHttpServlet {
-	public static String cons="constraint.csv";
-	public static String weather="weather.csv";
-	public static String schedule="schedule.csv";
-	public static String producerdata="inputpod.csv";
+	
+	public static String weather="Weather.csv";
+	public static String schedule="ApplianceScheduleLoad1.csv";
+	
+	public static String Pmin="Pmin.csv";
+	public static String Pmax="Pmax.csv";
+	public static String bcap="bcap.csv";
+	public static String unwill="unwill.csv";
+	
+	
+	
+	public static String producerdata="PV_parameters.csv";
 	public static String consumerdata="inputcons.csv";
 	
 	
@@ -50,7 +59,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     protected JSONObject processRequestParameters(JSONObject requestParams) {
 		QueryBroker broker = new QueryBroker();
 		String baseUrl = QueryBroker.getLocalDataPath();
-		String iriofnetwork = requestParams.getString("electricalnetwork");
+		
+		//currently not needed because owl file not ready
+		/*String iriofnetwork = requestParams.getString("electricalnetwork");
 		OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> producer = provideGenlist(model); // instance iri
 		List<String[]> consumer = provideLoadlist(model); // instance iri and its class
@@ -60,11 +71,10 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+consumerdata, consumercsv);
+		*/
 		
+
 		
-		copyTemplate(baseUrl, schedule);
-		copyTemplate(baseUrl, weather);
-		copyTemplate(baseUrl, cons);
 		try {
 			runOptimization(baseUrl);
 		} catch (IOException e) {
@@ -81,11 +91,61 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     }
     
     public void runOptimization(String baseUrl) throws IOException {
-    	String plantIRI="parameter";
-    	String DES = PythonHelper.callPython("Receding Horizon Optimization.py", plantIRI, this);
+		copyTemplate(baseUrl, producerdata); //just temporary
+		
+		copyTemplate(baseUrl, schedule);
+		copyTemplate(baseUrl, weather);
+		copyTemplate(baseUrl, Pmin);
+		copyTemplate(baseUrl, Pmax);
+		copyTemplate(baseUrl, bcap);
+		copyTemplate(baseUrl, unwill);
+		copyFromPython(baseUrl, "runpy.bat");
+		copyFromPython(baseUrl,"Receding_Horizon_Optimization_V0.py");
+		
+		String startbatCommand =baseUrl+"/runpy.bat";
+		String result= executeSingleCommand(baseUrl,startbatCommand);
+		logger.info("final after calling: "+result);
+    	//String DES = PythonHelper.callPythonwithNoParameter("Receding Horizon Optimization_V0.py", this);
     	
     	
     }
+
+	private void copyFromPython(String baseUrl,String filename) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/python/"+filename);
+		
+		String destinationUrl = baseUrl + "/"+filename;
+		new QueryBroker().putLocal(destinationUrl, file);
+	}
+	
+	private String executeSingleCommand(String targetFolder, String command) {
+
+		//logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		Runtime rt = Runtime.getRuntime();
+		Process pr = null;
+		try {
+			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds
+																	// will be executed within such folder.
+
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+		String line = "";
+		String resultString = "";
+		try {
+
+			while ((line = bfr.readLine()) != null) {
+				resultString += line;
+
+			}
+		} catch (IOException e) {
+			throw new JPSRuntimeException(e.getMessage(), e);
+		}
+
+		return resultString;
+	}
+	
 	public void copyTemplate(String newdir, String filename) {
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
 		
@@ -115,9 +175,70 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
                 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
                 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-                + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-                + "SELECT ?entity "
+                + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+                + "PREFIX j10:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+                + "SELECT ?entity ?iscval ?vocval ?impval ?vmpval ?alphaval ?aval ?ilval ?ioval ?rsval ?rshval ?tcval ?gval ?egval "
                 + "WHERE {?entity  a  j1:PhotovoltaicPanel  ."
+                
+                + "?entity   j1:hasMaterialBandGap ?mbg ."
+                + "?mbg   j2:hasValue ?vmbg ."
+                + "?vmbg   j2:numericalValue ?egval ."
+                
+                + "?entity   j1:hasBaseTestingIrradiance ?g ."
+                + "?g   j2:hasValue ?vg ."
+                + "?vg   j2:numericalValue ?gval ."
+                
+                + "?entity   j10:has_temperature ?t ."
+                + "?t   j2:hasValue ?vt ."
+                + "?vt   j2:numericalValue ?tcval ." 
+                
+                + "?entity   j2:hasProperty ?a ."
+                + "?a   j2:hasValue ?va ."
+                + "?va   j2:numericalValue ?aval ."
+                
+                + "?entity   j1:hasTemperatureCoeffOfPower ?tcoeff ."
+                + "?tcoeff   j2:hasValue ?vtcoeff ."
+                + "?vtcoeff   j2:numericalValue ?alphaval ."
+//------------------------------------------------------------------------------                
+                + "?entity   j1:hasRatedVoltage ?vmp ."
+                + "?vmp a j9:MaximumVoltage ."
+                + "?vmp   j2:hasValue ?vvmp ."
+                + "?vvmp   j2:numericalValue ?vmpval ."
+                
+                + "?entity   j1:hasRatedVoltage ?voc ."
+                + "?voc a j9:Voltage ."
+                + "?voc   j2:hasValue ?vvoc ."
+                + "?vvoc   j2:numericalValue ?vocval ."
+//------------------------------------------------------------------------------ //below need a filter
+                + "?entity   j1:hasResistance ?rs ."
+                + "?rs  j2:hasValue ?vrs ."
+                + "?vrs   j2:numericalValue ?rsval ."
+                
+                + "?entity   j1:hasResistance ?rsh ."
+                + "?rsh   j2:hasValue ?vrsh ."
+                + "?vrsh   j2:numericalValue ?rshval ."
+//------------------------------------------------------------------------------                //below need a filter
+                + "?entity   j1:hasRatedCurrent ?imp ."
+                + "?imp a j9:MaximumCurrent ."
+                + "?imp   j2:hasValue ?vimp ."
+                + "?vimp   j2:numericalValue ?impval ."
+                
+                + "?entity   j1:hasRatedCurrent ?isc ."
+                + "?isc a j9:Current ."
+                + "?isc   j2:hasValue ?visc ."
+                + "?visc   j2:numericalValue ?iscval ."
+                
+                + "?entity   j1:hasRatedCurrent ?il ."
+                + "?il a j1:RatedCurrent ."
+                + "?il   j2:hasValue ?vil ."
+                + "?vil   j2:numericalValue ?ilval ."
+                
+                + "?entity   j1:hasRatedCurrent ?io ."
+                + "?io a j1:RatedCurrent ."
+                + "?io   j2:hasValue ?vio ."
+                + "?vio   j2:numericalValue ?ioval ."
+//------------------------------------------------------------------------------                
+                            
                 //+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
                 + "}";
 
