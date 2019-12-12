@@ -1,6 +1,6 @@
 var scenario;
-var prefix = "http://localhost:8080";
-// var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
+//var prefix = "http://localhost:8080";
+var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
@@ -421,7 +421,10 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
-        console.log('predefinedID = ', predefinedId)
+        console.log('predefinedID = ', predefinedId);
+        infowindow = new google.maps.InfoWindow({
+            content: '<h2>Sup!</h2>'
+        });
         ppMap.clearAnimatedLines();
         clearMarkers();
         if (predefinedId == '0') {
@@ -438,6 +441,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         }
             
         json = { "electricalnetwork":iriofnetwork ,"flag": scenario }
+        document.getElementById("loader").style.display = "block";
         ppMap.drawLines(json );
         drawMarkers(json);
         refreshLayer(json, kmlURL);
@@ -535,49 +539,88 @@ function drawMarkers(data){
     
     request.done(function(data) {
         var obj0 = JSON.parse(data).result;
-        var size=obj0.length;        
+        var size=obj0.length; 
         
     //We currently know of a few cases:
     var x;
-    markers = []
     // scan some duplicates
     dict = {"nuclear": 0, "gas": 0, "oil": 0};
+    var markerdict = new Map();
+    var latLng = new Map();
     for (x=0; x< size; x++){
         var obj = JSON.parse(obj0[x]);  
         var fueltype = obj.fueltype;
+        var name = obj.name;
         if (fueltype== "NaturalGasGeneration"){
             var icon = {
-                url: '/images/naturalgas.png',
-                scaledSize : new google.maps.Size(80, 80),
+                url: 'images/naturalgas.png',
+                scaledSize : new google.maps.Size(40, 40),
             };
             dict["gas"] += 1;
         }else if (fueltype== "OilGeneration"){
             var icon = {
-                url: '/images/oil.png',
-                scaledSize : new google.maps.Size(80, 80),
+                url: 'images/oil.png',
+                scaledSize : new google.maps.Size(40, 40),
             };
             dict["oil"] += 1;
         }else{
-            console.log(fueltype);
             var icon = {
-                url: '/images/radiation.png', 
-                scaledSize : new google.maps.Size(80, 80),
+                url: 'images/radiation.png', 
+                scaledSize : new google.maps.Size(40, 40),
             };
             dict["nuclear"] += 1;
         }
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
-            map: map,
-            icon: icon
-          });
-        console.log(obj.name);
-        markers.push(marker);
-        }
-        
-        numTypeGen = dict["nuclear"] + " Nuclear , " + dict["oil"] + " Oil , " + dict['gas'] +" Gas ";
-        console.log(markers);
+        if (markerdict.has(obj.coors.lat)){
+            var v = markerdict.get(obj.coors.lat);
+            v.push(name);
+            markerdict.set(obj.coors.lat, v);
+        }else{
+            markerdict.set(obj.coors.lat, [name]);
+            
+            latLng.set(obj.coors.lat, [obj.coors.lng, icon]);
+            }
+    }
+
+    for (var [key, value] of latLng.entries()) {
+        createMarker(key, value, markerdict);
+          
+    }
+	
     });
     }
+    function setMarkerMenu(jsonArray)
+	{
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(jsonArray);
+		for(var index in jsonArray)
+		{
+			var name = jsonArray[index];
+			console.log(name);
+			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
+
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+		console.log(infoWindowHtml);
+		return infoWindowHtml;
+
+	}
+function createMarker(key, value, markerdict){
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(key, value[0]),
+        map: map,
+        icon: value[1]
+      });
+    marker.addListener('click', function(){
+        _content = setMarkerMenu(markerdict.get(key));
+        infowindow.setContent(_content);
+        infowindow.open(map, this);
+    });
+    markers.push(marker);
+}
     function clearMarkers() {
         if(!markers){
             return;
@@ -589,7 +632,7 @@ function drawMarkers(data){
     }
 function displayCO2(data){
     //read the value of CO2 and display upon calling
-    var agenturl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator' ;
+    var agenturl =  prefix + '/JPS_POWSYS/AggregationEmissionAgent/aggregateemission' ;
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
     var request = $.ajax({
@@ -607,6 +650,7 @@ function displayCO2(data){
         designCarbon = obj0.design;    
         designCarbonYr = designCarbon*8760/1000000;
         wildPercentage2 = (designCarbonYr/emissionValueForSingapore)*100*1000000;  
+        document.getElementById("loader").style.display = "none";
     });
 }
 
@@ -1000,7 +1044,7 @@ asyncLoop({
 
         //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
-
+        document.getElementById("loader").style.display = "block";
         var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt;
         data = { "electricalnetwork":iriofnetwork}
         url = createUrlForAgent(scenario, agenturl, data);
@@ -1025,6 +1069,7 @@ asyncLoop({
             }, delayInMilliseconds);
             console.log('DONE SIMULATION')
             openWindow(filename);
+            document.getElementById("loader").style.display = "none";
         });
 
 
