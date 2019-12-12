@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -22,6 +23,7 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 
@@ -61,17 +63,19 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String baseUrl = QueryBroker.getLocalDataPath();
 		
 		//currently not needed because owl file not ready
-		/*String iriofnetwork = requestParams.getString("electricalnetwork");
+		String iriofnetwork = requestParams.getString("electricalnetwork");
 		OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> producer = provideGenlist(model); // instance iri
 		List<String[]> consumer = provideLoadlist(model); // instance iri and its class
 
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
+		
+		
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv);
 
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+consumerdata, consumercsv);
-		*/
+		
 		
 
 		
@@ -177,7 +181,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
                 + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
                 + "PREFIX j10:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-                + "SELECT ?entity ?iscval ?vocval ?impval ?vmpval ?alphaval ?aval ?ilval ?ioval ?rsval ?rshval ?tcval ?gval ?egval "
+                + "SELECT ?iscval ?vocval ?impval ?vmpval ?alphaval ?aval ?ilval ?ioval ?rsval ?rshval ?tcval ?gval ?egval "
                 + "WHERE {?entity  a  j1:PhotovoltaicPanel  ."
                 
                 + "?entity   j1:hasMaterialBandGap ?mbg ."
@@ -242,14 +246,20 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 //+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
                 + "}";
 
-
+        List<String[]> resultListforcsv = new ArrayList<String[]>();
+	
         
         ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
         String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keys = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+        System.out.println("size of query= "+resultListfromquery.size());
+    	for(int d=0;d<keys.length;d++) {
+    		String[] line0 = { keys[d], resultListfromquery.get(0)[d] };
+    		resultListforcsv.add(line0);
+    	}
 
-        return resultListfromquery;
+        return resultListforcsv;
     }
     
     public static List<String[]> provideLoadlist(OntModel model) {
