@@ -29,7 +29,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-    <title>Molhub: The Computational Modelling Group's thermochemistry database</title>
+    <title>Molhub: Thermochemistry database</title>
     
 <script src="scripts/start.js"></script>
 
@@ -61,26 +61,28 @@ text-align: left;
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
         <img  src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
-       <h1 id="head1">Molhub: The Computational Modelling Group's thermochemistry database</h1>
+       <h1 id="head1">Molhub: Thermochemistry database</h1>
 	   
 	   <span id="readme-button">?</span>
 		<span id="readme-text">This is the Computational Modelling Group's open database for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
 		
 		<br/>
 		<br/>
-		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between datapoints. 
+		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
 		These queries are defined using the SPARQL Protocol and RDF Query Language (SPARQL). These queries can be implemented using a variety of different programming languages and make the database extremely flexible.
 		
 
 <br/>
 <br/> 
 
+<a href="https://pubs.acs.org/doi/10.1021/acs.jcim.9b00227">link to paper </a>
+
 <br/>
 <br/>
 </span>
 
 		
-<p id="description">Exlpore Molhub as an open database for our thermochemistry data.   </p>
+<p id="description">Exlpore Molhub as an open database for thermochemistry data.   </p>
 
 </div>
 
@@ -90,98 +92,18 @@ text-align: left;
 
 <!-- <div id="mainContent">-->
 <!-- <div id="border">-->
-
-<!-- 
-    <div id="skiplinks">
-    
-        <ul>
-   
-             <li><a href="http://como.ceb.cam.ac.uk" accesskey="h">Jump to Home [Accesskey 'h']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/people/" accesskey="m">Jump to People [Accesskey 'm']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/research/" accesskey="r">Jump to Research [Accesskey 'r']</a></li>
-            
-        
-            <li><a accesskey="s">Jump to Resources [Accesskey 's']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/preprints/" accesskey="p">Jump to Preprints [Accesskey 'p']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/publications/" accesskey="b">Jump to Publications [Accesskey 'b']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/conferences/" accesskey="c">Jump to Conferences [Accesskey 'c']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/seminars/" accesskey="s">Jump to Seminars [Accesskey 's']</a></li>
-            
-   
-            <li><a href="http://como.ceb.cam.ac.uk/admin/login/?next=/admin/" accesskey="l">Jump to Login Page [Accesskey 'l']</a></li>
-        
-        </ul>
-    </div>
--->
-
-<!-- 
-    <div id="top-nav" class="clearfix">
-        <ul class="clearfix">
-            <li class="az"><a id="az" href="http://www.cam.ac.uk/university-a-z">a-z</a></li>
-            <li class="search"><a id="search" href="http://search.cam.ac.uk/">search</a></li>
-            <li class="home"><a id="home" href="http://como.ceb.cam.ac.uk/">home</a></li>
-        </ul>
-    </div>
--->
-<!-- 
-    <div id="banner" class="default clearfix">
-        <a href="/"><img id="banner-logo" src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_01.png" alt="Go to the CoMo homepage"/></a>
-        <img id="banner-center" src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_02.png" alt="center banner image"/>
-        <div id="banner-right">
-            <div id="right-logo">
-                <a href="http://www.cam.ac.uk/"><img src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_03.png" alt="University of Cambridge Logo"/></a>
-                <a href="http://www.ceb.cam.ac.uk/"><img src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_04.png" alt="University of Cambridge Logo"/></a>
-            </div>
-        </div>
-    </div>
- -->
  
-<div id="primary-navigation" class="clearfix">
-<!--   <ul class="clearfix"> -->
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk'>Home</a></li>-->        
-         
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/people/'>People</a></li>-->        
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/research/'>Research</a></li>-->
-        
-<!--         <li class="clearfix"><a class='selected-menu-item'>Resources</a></li>-->        
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/preprints/'>Preprints</a></li>-->
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/publications/'>Publications</a></li>-->
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/conferences/'>Conferences</a></li> -->
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/seminars/'>Seminars</a></li>-->
- 
-<!--         <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/admin/login/?next=/admin/'>Login</a></li>-->
-<!-- </ul> -->
+ <div id="primary-navigation" class="clearfix">
+				
+					<ul class="clearfix">
+					</ul>
 </div>
+ 
+ 
 
 <div id="leftnav" class="clearfix">
 
-    <!-- 
-    <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/">Introduction</a></li></ul>
-    <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/software/">Software</a></li></ul>
-    <ul><li class="sel last"><a href="https://como.ceb.cam.ac.uk/resources/sootdb/">Soot Database</a></li></ul>          
-    <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/flpyro/">Flame pyrometry</a></li></ul>
-    -->
-    
-    <!-- <ul><li class="selcsm">MolHub</li></ul> -->    
-    <ul><li class="selcsm">MolHub</li></ul>
+ <ul><li class="selcsm">MolHub</li></ul>
     
 </div>
 
@@ -325,21 +247,6 @@ Session result: <s:property value="session"/>
 
 </div>
 
-<!-- 
-<div id="footer-bar"></div>
-    <div id="footer">
-        <ul>
-            <li><a class="date">&copy;2018</a>
-             <a href="/">Computational Modelling Group</a></li>
-            <li><a class="separator"> :: </a></li>
-            <li><a href="http://www.ceb.cam.ac.uk/">Department of Chemical Engineering and Biotechnology</a></li>
-            <li><a class="separator"> :: </a></li>
-            <li><a href="http://www.cam.ac.uk/">University of Cambridge</a></li>
-            <li><a class="separator"> :: </a></li>
-            <li><a href="http://www.cam.ac.uk/about-this-site/privacy-policy/">Privacy Policy</a></li>
-        </ul>
-    </div>
--->
 <!-- </div>-->
  <!-- </div>-->
 <!--</div>-->

@@ -12,32 +12,35 @@
 <head>
 
 <!--after pressing refresh button it clears content of page.-->
-<!--<meta http-equiv="refresh" content="300;url=upload.action" />-->
+<!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
-<link rel="icon" href="${pageContext.request.contextPath}/css/static/group/favicon.ico" />
+<title>Molhub: Thermochemistry database</title>
+
+<link rel="icon" href="${pageContext.request.contextPath}/css/static/group/favicon.ico"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css"/>
+
+<!--
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css"/>
-
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/tool-navigator.css"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/repository.css"/>
 
-<!-- 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/index.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
 -->
 
-<link rel="stylesheet" type="text/css" href="css/index.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
-  
-<title>Molhub: The Computational Modelling Group's thermochemistry database</title>
+<meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
+        
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
 
-<script   type="text/javascript" src="<%=request.getContextPath()%>/jsmol/JSmol.min.js"></script>
 
-<script type="text/javascript">  
+<script src="<%=request.getContextPath()%>/scripts/start.js"></script>
+
+<script type="text/javascript" src="<%=request.getContextPath()%>/jsmol/JSmol.min.js"></script>
+
+<script type="text/javascript">
 
 var s = unescape(document.location.search);
 var script = 'set errorCallback "myCallback";'
@@ -59,7 +62,7 @@ if (xxxx)
   
 var Info = {
 		width:  700,
-		height: 600,		
+		height: 600,
 		disableJ2SLoadMonitor: true, 
 		disableInitialConsole: true, 
 		script: script,
@@ -90,7 +93,6 @@ if (!isApplet && !Info.script) {
 	Info.script = "#alt:LOAD :tylenol";
 
 }
-
 
 $(document).ready(function(){
 		
@@ -132,19 +134,15 @@ $(document).ready(function(){
 	);
 })
 
-</script>
-
+</script> 
+ 
 </head>
-
 
 <style>
 
 TH {
-
-    padding: 5px; align-content:center
-    
+padding: 5px; align-content:center
 }
-
 
 #tableName td {
 text-align: left;
@@ -154,141 +152,52 @@ text-align: left;
 
 <div class="jumbotron text-center" id="topBanner">
 
-
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
-        <img  src="images/cam_lang_negativ1%20NEW_0.png">
+    <img  src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
-       <h1 id="head1">Molhub: The Computational Modelling Group's thermochemistry database</h1>
-	    
-<!--  
+       <h1 id="head1">Molhub: Thermochemistry database</h1>
+       
 	   <span id="readme-button">?</span>
-		<span id="readme-text">This is the Computational Modelling Group's open database for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
+		<span id="readme-text">
+		This is the Computational Modelling Group's open database for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
 		
 		<br/>
 		<br/>
-		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between datapoints. 
+		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
 		These queries are defined using the SPARQL Protocol and RDF Query Language (SPARQL). These queries can be implemented using a variety of different programming languages and make the database extremely flexible.
 		
 <br/>
 <br/>
 
+<a href="https://pubs.acs.org/doi/10.1021/acs.jcim.9b00227">link to paper </a>
  
 <br/>
 <br/>
 </span>
- -->
+
 		
-<!-- <p id="description">Exlpore Molhub as an open database for our thermochemistry data.   </p>-->
+<p id="description">Exlpore Molhub as an open database for thermochemistry data.   </p>
 
 </div>
 
 <body class="oneColFixCtr">
 
-
+<!-- 
 <div id="container">
-
 <div id="mainContent">
-
-<div id="border">
-
-<!--
-    <div id="skiplinks">
-        <ul>
-            
-            <li><a href="http://como.ceb.cam.ac.uk" accesskey="h">Jump to Home [Accesskey 'h']</a></li>
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/people/" accesskey="m">Jump to People [Accesskey 'm']</a></li>
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/research/" accesskey="r">Jump to Research [Accesskey 'r']</a></li>
-            
-                        
-            <li><a accesskey="s">Jump to Resources [Accesskey 's']</a></li>
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/preprints/" accesskey="p">Jump to Preprints [Accesskey 'p']</a></li>
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/publications/" accesskey="b">Jump to Publications [Accesskey 'b']</a></li>
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/conferences/" accesskey="c">Jump to Conferences [Accesskey 'c']</a></li>
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/seminars/" accesskey="s">Jump to Seminars [Accesskey 's']</a></li>            
-            
-            
-            <li><a href="http://como.ceb.cam.ac.uk/admin/login/?next=/admin/" accesskey="l">Jump to Login Page [Accesskey 'l']</a></li>
-        </ul>
-</div>
 -->
-
-<!--  
-    <div id="top-nav" class="clearfix">
-        <ul class="clearfix">
-            <li class="az"><a id="az" href="http://www.cam.ac.uk/university-a-z">a-z</a></li>
-            <li class="search"><a id="search" href="http://search.cam.ac.uk/">search</a></li>
-            <li class="home"><a id="home" href="http://como.ceb.cam.ac.uk/">home</a></li>
-        </ul>
-    </div>
--->
-
-<!--  
-    <div id="banner" class="default clearfix">
-        <a href="/"><img id="banner-logo" src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_01.png" alt="Go to the CoMo homepage"/></a>
-        <img id="banner-center" src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_02.png" alt="center banner image"/>
-        <div id="banner-right">
-            <div id="right-logo">
-                <a href="http://www.cam.ac.uk/"><img src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_03.png" alt="University of Cambridge Logo"/></a>
-                <a href="http://www.ceb.cam.ac.uk/"><img src="${pageContext.request.contextPath}/css/static/group/images/CoMo_Head_04.png" alt="University of Cambridge Logo"/></a>
-            </div>
-        </div>
-    </div>
--->
+<!--<div id="border">-->
 
 <div id="primary-navigation" class="clearfix">
-<!--  
-    <ul class="clearfix">
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk'>Home</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/people/'>People</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/research/'>Research</a></li>
-        
-    
-        <li class="clearfix"><a class='selected-menu-item'>Resources</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/preprints/'>Preprints</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/publications/'>Publications</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/conferences/'>Conferences</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/seminars/'>Seminars</a></li>
-        
-    
-        <li class="clearfix"><a href='http://como.ceb.cam.ac.uk/admin/login/?next=/admin/'>Login</a></li>
-        
+ 
+    <ul class="clearfix">    
     
     </ul>
--->
+
 </div>
 
 <div id="leftnav" class="clearfix">
-    <!--  
-    <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/">Introduction</a></li></ul>
-    <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/software/">Software</a></li></ul>
-    <ul><li class="sel last"><a href="https://como.ceb.cam.ac.uk/resources/sootdb/">Soot Database</a></li></ul>
-    <ul><li class="sel last"><a href="http://como.ceb.cam.ac.uk/resources/flpyro/">Flame pyrometry</a></li></ul>
-    -->
+    
     <ul><li class="selcsm">MolHub</li></ul>
     
 </div>
@@ -307,7 +216,108 @@ text-align: left;
 
 <div id="tool-container">
 <div class="container">
-</div><h1><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
+
+
+
+<script type="text/javascript">
+
+var s = unescape(document.location.search);
+var script = 'set errorCallback "myCallback";'
+	+'set animationFPS 4;set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
+	+'set echo top left;echo loading XXXX...;refresh;'
+	+'load ":XXXX";set echo top center;echo XXXX;'
+var xxxx = s.split("_USE=")[0]
+if (xxxx.length < 2) {
+  xxxx = "ethanol"
+} else {
+  xxxx = xxxx.substring(1);
+  if (xxxx.indexOf("load ") >= 0) {
+    script = xxxx
+    xxxx = ""
+  }
+}
+if (xxxx)
+  script = script.replace(/XXXX/g, xxxx)
+  
+var Info = {
+		width:  700,
+		height: 600,
+		disableJ2SLoadMonitor: true, 
+		disableInitialConsole: true, 
+		script: script,
+		use: "HTML5",
+		jarPath: "<%=request.getContextPath()%>/jsmol/java",
+		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
+		jarFile: "JmolAppletSigned.jar",
+		isSigned: false,
+		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>",		
+		addSelectionOptions: false,
+		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
+		readyFunction: null,
+		console: "jmol_infodiv",
+		disableInitialConsole: true,
+		defaultModel: null,
+		debug: false
+	}
+	
+Jmol.getApplet("appletCheck", Info, true);
+var isApplet = (appletCheck._jmolType.indexOf("_Applet") >= 0);
+var is2D = appletCheck._is2D;
+
+if (!isApplet && !Info.script) {
+
+	// JSmol or image
+
+	Info.defaultModel = "$tylenol";
+	Info.script = "#alt:LOAD :tylenol";
+
+}
+
+$(document).ready(function(){
+		
+	// This demonstration shows that
+	// what is put on the page can depend upon the platform.
+
+	// Note that the use of $(document.ready()) is optional but preferred. 
+	// You can do the traditional in-body coding if you want. See also simple2-nojq.htm.
+	// But as Gusts Kaksis pointed out, if we are using jQuery for database lookups, we might
+	// as well use it for more than that.
+  
+    // note that we create the applet first, before the controls, because
+    // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
+  
+  $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
+
+  // alternatively, you can use
+  //
+  //   jmol = "jmol"
+  //
+  // and then create the buttons before the applet itself. 
+  // Just make sure if you do that to use the name of the applet you are
+  // actually going to be using. So, perhaps:
+  //
+  //   jmolApplet0 = "jmolApplet0"
+  //
+
+	var use = (Info.use != "JAVA" ? Info.use : Info.isSigned ? "SIGNED" : "JAVA"); 
+
+		$("#leftpanel").html(		
+		  "<br>Spin: " + Jmol.jmolRadioGroup(jmol, [["spin off", "off", true],["spin on", "on"]])
+		);
+
+  // right panel
+  
+	Jmol.setButtonCss(null, "style='width:160px'");	
+	$("#rightpanel").html(
+		Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")		
+	);
+})
+
+</script> 
+
+</div>
+
+<h1 align="left"><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
 
 <div style="width: 100%;margin: auto;position:left;">    
     <div style="position: left;"class="tabcontent paddingAll hide" id="mol-jmol-1">
@@ -316,62 +326,63 @@ text-align: left;
         <div id="rightpanel"></div>
     </div>
 </div>
+
 <div class="span-24 last params">
     <div class="span-12 paramlist">
-        <h2>Overview<!--{inchi}--></h2>
+        <h2 align="left">Overview<!--{inchi}--></h2>
         <table style="width:80%;">
             <tbody>
-                <tr>
+                <tr align="left">
                     <td><b>Empirical Formula</b></td>
                     <td><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>Canonical SMILES</b></td>
                     <td>N/A</td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>Isomeric SMILES</b></td>
                     <td>N/A</td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>InChI</b></td>
                     <td>N/A</td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>InChI Key</b></td>
                     <td>N/A</td>
                 </tr>
             </tbody>
         </table>
-        <h2>Parameters</h2>
+        <h2 align="left">Parameters</h2>
         <table style="width:80%;">
             <tbody>
-                <tr>
+                <tr align="left">
                     <td><b>Basis Set:</b></td>
                     <td><s:iterator value="moleculePropertyList" var="resultSet"> <s:property value="#resultSet.basisSet"/></s:iterator></td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>Level of Theory:</b></td>
                     <td><s:iterator value="moleculePropertyList" var="resultSet"> <s:property value="#resultSet.levelOfTheory"/></s:iterator></td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>Geometry Type:</b></td>
                     <td><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.geometryType"/></s:iterator></td>
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>Job Type</b></td>
                     <td>N/A</td>
                 </tr>
 
             </tbody>
         </table>
-        <h2>Properties</h2>
+        <h2 align="left">Properties</h2>
         <table style="width:100%;">
             <tbody>
 
                 <tr>
                     <s:if test="%{frequencyList.size>0}">
-                    <td>
+                    <td align="left">
                     <b>Frequencies</b><P/>
                      <s:iterator value="frequencyList" var="result">
                      <ul>
@@ -387,27 +398,28 @@ text-align: left;
                     <td></td>
                     
                 </tr>
-                <tr>
+                <tr align="left">
                     <td><b>Enthalpy of Formation</b></td>
                     <td>N/A</td>
                 </tr>
                 <s:if test="rotationalSymmetryNumber!=''">
-                <tr>
+                <tr align="left">
                     <td><b>Rotational Symmetry Number:</b></td>
                     <td><s:property value="rotationalSymmetryNumber"/></td>
                 </tr>
                 </s:if>
                 
                 <s:if test="spinMultiplicityValue!=''">
-                <tr>
+                
+                <tr align="left">
                     <td><b>Spin Multiplicity:</b></td>
                     <td><s:property value="spinMultiplicityValue"/></td>
                 </tr>
                 </s:if>
                 
                 <s:if test="%{formalChargeList.size>0}">
-                <tr>
-                    <td>
+                <tr align="left">
+                    <td align="left">
                     <b>Formal Charge:</b>
                     <s:iterator value="formalChargeList" var="resultFormalCharge">
                     <ul>
@@ -422,8 +434,8 @@ text-align: left;
                 </s:if>
                 
                 
-                <tr>
-                    <td>
+                <tr align="left">
+                    <td align="left">
                     <s:if test="%{atomicMassList.size>0}">
                     <b>Atomic Mass</b><P/>
                      <s:iterator value="atomicMassList" var="resultAtomicMass">
@@ -440,7 +452,7 @@ text-align: left;
                     <td></td>
                 </tr>
                 
-                <tr>
+                <tr align="left">
                     <s:if test="%{rotationalConstantList.size>0}">
                     <td>
                     <b>Rotational Constant</b><P/>
@@ -450,63 +462,41 @@ text-align: left;
                      <li><b>Rotational Constant Value:</b> <s:property value="#resultRotationalConstant.rotationalConstantsValue"/></li>
                      <li><b>Rotational Constant Unit:</b> <a href="<s:property value="#resultRotationalConstant.rotationalConstantsUnit"/>"><s:property value="#resultRotationalConstant.rotationalConstantsUnit"/></a></li>
                      </ul>
-                     </s:iterator>       
-                    </td> 
-                    </s:if>                   
+                     </s:iterator>
+                    </td>
+                    </s:if>
                     <td></td>
                     <td></td>
                     <td></td>
-                    
                 </tr>
-                
-                
             </tbody>
         </table>
         
-        <h2>Other Data</h2>
-        <p>
-        This page is a human readable frontend to the molecule database.
-            The following links provide access to other data formats.
-            Depending on your browser these may not be rendered properly.
+        <h2 align="left">Other Data</h2>
+        <p align="left">This page is a human readable frontend to the molecule database. The following links provide access to other data formats. Depending on your browser these may not be rendered properly.
 
-        <ul>
-            <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
-  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
-  <li><a href="http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
+<ul>
+  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
   <s:if test="%{nasaFileName!=null}">
-  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
   </s:if>
-        </ul>
-        </p>
-
-    </div>
+</ul>
+</p>
 </div>
 </div>
-
-
+</div>
 </div>
 
 <!-- PUT CONTENT HERE -->
-<!-- <div id="middlepanel"></div><div id="leftpanel"></div><div id="rightpanel"></div> -->
 
-</div>
-<!--  
-    <div id="footer-bar"></div>
-    <div id="footer">
-        <ul>
-            <li><a class="date">&copy;2018</a>
-             <a href="/">Computational Modelling Group</a></li>
-            <li><a class="separator"> :: </a></li>
-            <li><a href="http://www.ceb.cam.ac.uk/">Department of Chemical Engineering and Biotechnology</a></li>
-            <li><a class="separator"> :: </a></li>
-            <li><a href="http://www.cam.ac.uk/">University of Cambridge</a></li>
-            <li><a class="separator"> :: </a></li>
-            <li><a href="http://www.cam.ac.uk/about-this-site/privacy-policy/">Privacy Policy</a></li>
-        </ul>
-    </div>
- -->
+<!--</div>-->
 
+ <!-- 
 </div>
 </div>
+-->
+
 </body>
 </html>
