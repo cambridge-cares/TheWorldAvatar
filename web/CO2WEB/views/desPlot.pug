@@ -1,0 +1,48 @@
+extends header.pug
+block title
+    title DES Simulation
+
+block sheets
+    link(rel='stylesheet', href='/stylesheets/mpage.css', type='text/css')
+
+block subtitle
+    | Distributed Energy System
+//- block readme
+//-     span#readme-button
+//-         | ?    
+//-     span#readme-text
+//-         | 
+block description
+    |Plot of Distributed Energy System Simulation (pre-run)
+
+block content
+    style.
+        .container1 {
+        display: flex;
+        flex-direction: row;
+        }
+        .irradiationdiv{
+            height:
+        }
+        @media screen and (max-width: 1200px) {
+        .container1 {
+        flex-direction: column;
+        }
+        
+        }
+
+
+   
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js')
+    script(src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0")
+    script(src='/javascripts/DESplot.js')
+    .container1
+        #temperaturediv(style=("height:500px"))
+            canvas#temperature
+        #irradiationdiv(style=("height:500px"))
+            canvas#irradiation
+    //- div(style='height: 500px;  clear:both;')   
+    //-     h1 Outputs
+    //-     canvas#graph4
+

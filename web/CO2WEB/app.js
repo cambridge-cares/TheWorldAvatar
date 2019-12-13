@@ -47,7 +47,7 @@ var b2Map = require("./routes/mapB2");
 var ppalt = require("./routes/mapPPAlt");
 var parallelWorld = require('./routes/parallelWorld');
 
-var parallelWorld = require('./routes/parallelWorld');
+var DESPlot = require('./routes/DESPlot');
 
 var literalData = require('./agents/GetLiteralData');
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
@@ -108,6 +108,7 @@ app.use('/ppmap', ppMap);
 app.use('/b2map', b2Map)
  app.use("/hw", HW);
 
+app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
