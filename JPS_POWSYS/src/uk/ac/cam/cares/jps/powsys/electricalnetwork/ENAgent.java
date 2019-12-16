@@ -820,6 +820,7 @@ public class ENAgent extends JPSHttpServlet {
 			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
 			
 			String content = JenaHelper.writeToString(jenaOwlModel);
+//			broker.put(currentIri, content); tempchange
 			broker.putOld(currentIri, content);
 		}
 		
@@ -854,6 +855,7 @@ public class ENAgent extends JPSHttpServlet {
 			updateGeneratorEmission(jenaOwlModel); //add new functionality for updating the emission
 
 			String content = JenaHelper.writeToString(jenaOwlModel);
+//			broker.put(currentIri, content); tempchange
 			broker.putOld(currentIri, content);
 		}
 		
@@ -892,6 +894,7 @@ public class ENAgent extends JPSHttpServlet {
 			vsave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[5]));
 			
 			String content = JenaHelper.writeToString(jenaOwlModel);
+//			broker.put(currentIri, content); tempchange
 			broker.putOld(currentIri, content);
 		}
 	}
