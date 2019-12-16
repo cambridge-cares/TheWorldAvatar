@@ -249,7 +249,6 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
     			b.append("<" + plantunique.get(f) + "> OCPSYST:hasSubsystem <" + iriofchimney + "> . \r\n");
 
     			String sparql = sparqlStart + b.toString() + "} \r\n";
-    			logger.info("inserting chimney to plant top node\n" + sparql);
     			new QueryBroker().updateFile(plantunique.get(f), sparql);
     			b = new StringBuffer();
             }
