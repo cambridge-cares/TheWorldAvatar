@@ -42,7 +42,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 	
 	
 	public static String producerdata="PV_parameters.csv";
-	public static String consumerdata="inputcons.csv";
+	public static String consumerdata1="FuelCell.csv";
 	
 	
     @Override
@@ -66,7 +66,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> producer = provideGenlist(model); // instance iri
-		List<String[]> consumer = provideLoadlist(model); // instance iri and its class
+		List<String[]> consumer = provideLoadFClist(model); // instance iri
 
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
 		
@@ -74,7 +74,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv);
 
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
-		broker.putLocal(baseUrl + "/"+consumerdata, consumercsv);
+		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv);
 		
 		
 
@@ -170,7 +170,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
 	}
     
-    public static List<String[]> provideGenlist(OntModel model) {
+    public static List<String[]> provideGenlist(OntModel model) { //for file "PV_parameters.csv"
         String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
                 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
                 + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -213,35 +213,37 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "?voc a j9:Voltage ."
                 + "?voc   j2:hasValue ?vvoc ."
                 + "?vvoc   j2:numericalValue ?vocval ."
-//------------------------------------------------------------------------------ //below need a filter
+
                 + "?entity   j1:hasResistance ?rs ."
+                + "?rs a j1:SeriesResistance ."
                 + "?rs  j2:hasValue ?vrs ."
                 + "?vrs   j2:numericalValue ?rsval ."
                 
                 + "?entity   j1:hasResistance ?rsh ."
+                + "?rsh a j1:ShuntResistance ."
                 + "?rsh   j2:hasValue ?vrsh ."
                 + "?vrsh   j2:numericalValue ?rshval ."
-//------------------------------------------------------------------------------                //below need a filter
+
                 + "?entity   j1:hasRatedCurrent ?imp ."
                 + "?imp a j9:MaximumCurrent ."
                 + "?imp   j2:hasValue ?vimp ."
                 + "?vimp   j2:numericalValue ?impval ."
                 
                 + "?entity   j1:hasRatedCurrent ?isc ."
-                + "?isc a j9:Current ."
+                + "?isc a j9:RatedCurrent ."
                 + "?isc   j2:hasValue ?visc ."
                 + "?visc   j2:numericalValue ?iscval ."
                 
                 + "?entity   j1:hasRatedCurrent ?il ."
-                + "?il a j1:RatedCurrent ."
+                + "?il a j1:OutputRatedCurrent ."
                 + "?il   j2:hasValue ?vil ."
                 + "?vil   j2:numericalValue ?ilval ."
                 
                 + "?entity   j1:hasRatedCurrent ?io ."
-                + "?io a j1:RatedCurrent ."
+                + "?io a j9:MinimumCurrent ."
                 + "?io   j2:hasValue ?vio ."
                 + "?vio   j2:numericalValue ?ioval ."
-//------------------------------------------------------------------------------                
+            
                             
                 //+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
                 + "}";
@@ -254,16 +256,23 @@ public class DistributedEnergySystem extends JPSHttpServlet {
         String[] keys = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
         System.out.println("size of query= "+resultListfromquery.size());
-    	for(int d=0;d<keys.length;d++) {
-    		String[] line0 = { keys[d], resultListfromquery.get(0)[d] };
-    		resultListforcsv.add(line0);
-    	}
+		for (int d = 0; d < keys.length; d++) {
+			if (!keys[d].contains("tcval")) {
+				String[] line0 = { keys[d], resultListfromquery.get(0)[d] };
+				resultListforcsv.add(line0);
+			} else {
+				Double value = Double.valueOf(resultListfromquery.get(0)[d]) + 273.15; // convert celcius to K
+				String[] line0 = { keys[d], "" + value };
+				resultListforcsv.add(line0);
+			}
+
+		}
 
         return resultListforcsv;
     }
     
-    public static List<String[]> provideLoadlist(OntModel model) {
-        String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+    public static List<String[]> provideLoadFClist(OntModel model) {
+        String fuelcellInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
                 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
                 + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
                 + "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
@@ -271,51 +280,41 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
                 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
                 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-                + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+                + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
                 + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-                + "SELECT ?entity ?class "
-                + "WHERE {?entity  a  ?class  ."
-        		+ " {?class rdfs:subClassOf j1:PowerLoad ."
-        		+ "} "
-        		+ "UNION { ?class a j1:PowerLoad . } ."
-        		//group plant (electrolizer) load
-        		+ "OPTIONAL {?entity j5:hasEmission ?emission "
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "}"
-        		//group (commercial builiding) load       		
-        		+ "OPTIONAL {?entity j5:hasEmission ?emission "
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "}"
-        		//group (Residential Household) load       		
-        		+ "OPTIONAL {?entity j5:hasEmission ?emission "
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "}"
-        		//group Fuel Cell load       		
-        		+ "OPTIONAL {?entity j5:hasEmission ?emission "
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-        		+ "}"
+                + "SELECT ?enumber ?nocellval ?effval ?tvalmin ?tvalmax "
+                + "WHERE {?entity  a  j1:FuelCell  ."
+                + "?entity j4:realizes ?proc ."
+                + "?proc j2:hasProperty ?propproc ."
+                + "?propproc j2:hasValue ?vpropproc ."
+                + "?vpropproc j2:numericalValue ?enumber ."
+                
+        		+ "?entity j1:hasNumberOfCells ?no ."
+        		+ "?no   j2:hasValue ?vno ."
+        		+ "?vno   j2:numericalValue ?nocellval ."
         		
+        		+ "?entity j9:hasEfficiency ?eff ."
+        		+ "?eff   j2:hasValue ?veff ."
+        		+ "?veff   j2:numericalValue ?effval ."
+        		
+        		+ "?entity j8:has_temperature ?t ."
+        		+ "?t   j2:hasValue ?vt ."
+        		+ "?vt   j5:upperLimit ?tvalmax ."
+        		+ "?vt   j5:lowerLimit ?tvalmin ."
 
                 + "}";
-
-        ResultSet resultSet = JenaHelper.query(model, gennodeInfo);
+        List<String[]> resultListforcsv = new ArrayList<String[]>();
+        ResultSet resultSet = JenaHelper.query(model, fuelcellInfo);
         String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keys = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+        
+		for (int d = 0; d < keys.length; d++) {
+				String[] line0 = { keys[d], resultListfromquery.get(0)[d] };
+				resultListforcsv.add(line0);
+		}
 
-        return resultListfromquery;
+        return resultListforcsv;
     }
 
 }

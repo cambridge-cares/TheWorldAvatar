@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[561]:
+# In[1]:
 
 
 import numpy as np
@@ -16,7 +16,7 @@ import os
 
 # ### Renewable
 
-# In[563]:
+# In[10]:
 
 
 class RenewableGeneration:
@@ -126,11 +126,14 @@ class RenewableGeneration:
         
         return P_wind
     
+    
+    
+    
 
 
 # ### Residential
 
-# In[513]:
+# In[27]:
 
 
 class ResidentialHousehold:
@@ -345,7 +348,7 @@ class ResidentialHousehold:
 
 # ### Commercial
 
-# In[514]:
+# In[28]:
 
 
 class Building_Temperature_Dynamics:
@@ -434,7 +437,7 @@ class Building_Temperature_Dynamics:
     
 
 
-# In[515]:
+# In[29]:
 
 
 class CommercialBuilding:
@@ -617,7 +620,7 @@ class CommercialBuilding:
 
 # ### Industrial
 
-# In[516]:
+# In[43]:
 
 
 class Electrolyzer_Temperature_Dynamics:
@@ -856,7 +859,7 @@ class Electrolyzer_Temperature_Dynamics:
         
 
 
-# In[517]:
+# In[45]:
 
 
 class Fuel_Cell:
@@ -864,9 +867,11 @@ class Fuel_Cell:
     # hydrogen fuel cell
     # reaction based on 1 mol of H2
     
+    DF_FC = pd.read_csv("FuelCell.csv", header=None )
+    
     # physical constants:
-    F = 96485.34           #[A*s/mol]
-    z = 2                  # no. of electrons transferred per reaction
+    F = 96548.34           #[A*s/mol]
+    z = DF_FC.iloc[0,1]           # no. of electrons transferred per reaction
     
     # polarization curve parameters:
     U0 = 33.18             #[V]
@@ -876,10 +881,10 @@ class Fuel_Cell:
     R = -2.04              #[Ohm*C]
     
     # operation parameters:
-    nc = 35                # no. of cells
-    eta = 0.7              # fuel utilization factor
-    Tlow = 24              #[C]
-    Thigh = 72             #[C]
+    nc     = DF_FC.iloc[1,1]              # no. of cells
+    eta    = DF_FC.iloc[2,1]              # fuel utilization factor
+    Tlow   = DF_FC.iloc[3,1]              #[C]
+    Thigh  = DF_FC.iloc[4,1]              #[C]
     
     # track optimal operating temperature if possible:
     Ilow = Tlow**2*E1/R    #[A]
@@ -950,7 +955,7 @@ class Fuel_Cell:
     
 
 
-# In[518]:
+# In[32]:
 
 
 class IndustrialPlant:
@@ -1204,7 +1209,7 @@ class IndustrialPlant:
 
 # ### Game Organizer
 
-# In[519]:
+# In[33]:
 
 
 class Organizer:
@@ -1246,7 +1251,7 @@ class Organizer:
 
 # ### Optimization
 
-# In[520]:
+# In[34]:
 
 
 # electricity bill structure
@@ -1258,7 +1263,7 @@ industry_below = 0.77*1/50*0.01*np.ones(24)
 industry_above = 0.77*1/50*0.02*np.ones(24)
 
 
-# In[521]:
+# In[35]:
 
 
 #Read File from CSV 
@@ -1274,7 +1279,7 @@ AllWindSpeedActual = data[6].to_numpy()
 AllRadiationActual = data[8].to_numpy()
 
 
-# In[522]:
+# In[36]:
 
 
 # renewable generations
@@ -1282,7 +1287,7 @@ rg = RenewableGeneration(24)
 rg_test = RenewableGeneration(24)
 
 
-# In[523]:
+# In[37]:
 
 
 # 3 residential households
@@ -1347,7 +1352,7 @@ for rh_test in rh_test_list:
     rh_test.set_starting_point()
 
 
-# In[524]:
+# In[38]:
 
 
 # 1 commercial building
@@ -1372,7 +1377,7 @@ cb_test.get_x0(np.array([28.3, 28.2, 28.6]))
 cb_test.set_starting_point()
 
 
-# In[525]:
+# In[39]:
 
 
 # 1 industrial plant
@@ -1396,7 +1401,7 @@ ip_test.get_T0(99)
 ip_test.set_starting_point()
 
 
-# In[526]:
+# In[40]:
 
 
 # game organizer
@@ -1407,7 +1412,7 @@ for a in agent_list:
     org.collect_load(a, np.zeros(24), True)
 
 
-# In[527]:
+# In[41]:
 
 
 # receding horizon optimization
