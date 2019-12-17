@@ -548,8 +548,8 @@ var globalKMLEventinfoWindowHtml;
 var selectedId;
 var txt;
 var scenario = "base";
-//var prefix = "http://localhost:8080"
-var prefix = "http://www.theworldavatar.com"
+var prefix = "http://localhost:8080"
+//var prefix = "http://www.theworldavatar.com"
 //var prefix = "http://www.jparksimulator.com"
 var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
@@ -751,7 +751,7 @@ var infowindow;
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
+							//url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
 							url:'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
@@ -1364,31 +1364,30 @@ asyncLoop({
 
 	},
 	callback : function(){
-
-		//var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
-
-
-		var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
-		data = { "electricalnetwork":electricalnetwork}
-		url = createUrlForAgent(scenario, agenturl, data);
-		console.log(url);
-		var delayInMilliseconds = 10000; //1 second
+		/*
+			var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
+			data = { "electricalnetwork":electricalnetwork}
+			url = createUrlForAgent(scenario, agenturl, data);
+			console.log(url);
+			var delayInMilliseconds = 10000; //1 second
 
 			setTimeout(function() {
 				console.log('timeout');
 			}, delayInMilliseconds);
+			
 		var request = $.ajax({
 			url: url,
 			type: 'GET',
 			contentType: 'application/json; charset=utf-8'
 		});
 
-		request.done(function() {
+		request.done(function()*/
+				{
 			json = { "electricalnetwork":electricalnetwork ,"flag": scenario };
 			console.log('DONE SIMULATION');
 			drawBattery();
 			openWindow(filename);
-		});
+		}
 
 
 	}
