@@ -89,8 +89,8 @@
 	margin: 0px 100px 0px 0px;
 
 	position: absolute;
-	/*top: 32px;*/
-	/*right: 6px;*/
+	top: 32px;
+	right: 6px;
 
 	background: white;
 	z-index: 1;
@@ -136,13 +136,12 @@
  
 	 <span id="readme-button">?</span>
 
-	<span id="readme-text">
-		This feature is mainly the extension of the Jurong island electrical network model with the use case of additional solar generator and some batteries included.
-		<br/><br/>
-		The first model inside will choose which type of battery is the most suitable for the selected solar generator added and it will run the OPF simulation with the new generator added.
-		<br/>
-		The final step will be locating the selected battery with specific amount and locations to cover the power losses identified by this OPF simulation.
-	</span>
+		<span id="readme-text">
+			The ESS agent extends the Jurong island electrical network model with an additional solar generator and some batteries included.
+			<br/><br/>
+			The user can enter the custom scenario that he chooses to create, and click on the button "Run Simulation". It will run the OPF simulation with the new generator
+			 and estimate the placement of the batteries. The location of the batteries is determined by the power losses identified by this OPF simulation.
+		</span>
 
  
   <h1 id="head1">Energy Storage System</h1>
@@ -753,6 +752,7 @@ var infowindow;
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
 							url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
+							url:'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
 						});
