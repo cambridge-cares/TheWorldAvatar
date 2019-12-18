@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -95,14 +96,29 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     }
     
     public void runOptimization(String baseUrl) throws IOException {
-		copyTemplate(baseUrl, producerdata); //just temporary
 		
-		copyTemplate(baseUrl, schedule);
-		copyTemplate(baseUrl, weather);
+		//copyTemplate(baseUrl, weather);//temporary
+		JSONObject jo = new JSONObject();
+
+		jo.put("folder", baseUrl);
+		jo.put("tempsensor",
+				"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+		jo.put("speedsensor",
+				"http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		jo.put("irradiationsensor",
+				"http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData",
+				jo.toString());
+		
+		//constraints related to residential
 		copyTemplate(baseUrl, Pmin);
 		copyTemplate(baseUrl, Pmax);
 		copyTemplate(baseUrl, bcap);
 		copyTemplate(baseUrl, unwill);
+		//property for residential
+		copyTemplate(baseUrl, schedule);
+		
+		
 		copyFromPython(baseUrl, "runpy.bat");
 		copyFromPython(baseUrl,"Receding_Horizon_Optimization_V0.py");
 		
@@ -114,14 +130,14 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	
     }
 
-	private void copyFromPython(String baseUrl,String filename) {
+	public void copyFromPython(String baseUrl,String filename) {
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/python/"+filename);
 		
 		String destinationUrl = baseUrl + "/"+filename;
 		new QueryBroker().putLocal(destinationUrl, file);
 	}
 	
-	private String executeSingleCommand(String targetFolder, String command) {
+	public String executeSingleCommand(String targetFolder, String command) {
 
 		//logger.info("In folder: " + targetFolder + " Excuted: " + command);
 		Runtime rt = Runtime.getRuntime();
