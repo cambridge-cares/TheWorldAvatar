@@ -32,7 +32,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
-import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HHDReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -83,7 +83,7 @@ public class InitialDataAnalysis {
 	 * 
 	 */
 	
-	public void getInitialDataAnalysisCrossValidation(ReactionType reactionType, int loop, boolean addedSpeciesToValidSet, int iteration,
+	public void getInitialDataAnalysisCrossValidation(int loop, boolean addedSpeciesToValidSet, int iteration,
 			String destRList, int[] ctrRadicals, int[] ctrRuns, int[] ctrRes, List<Species> refSpecies,
 			List<Species> soiSpecies, String srcCompoundsRef, Map<Species, Integer> spinMultiplicity,
 			Map<String, Integer[]> mapElPairing, String tempFolder, Collection<Species> invalids, Set<Species> all,
@@ -318,9 +318,9 @@ public class InitialDataAnalysis {
 						
 						ExecutorService executor = Executors.newSingleThreadExecutor();
 
-//						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, new ISGReactionType(true)));
+						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, new HHDReactionType()));
 						
-						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, reactionType));
+//						PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver,new MPSFormat(false, reactionType));
 						
 						poolModCalc.setMaximumSearchDepth(50);
 

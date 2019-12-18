@@ -349,11 +349,11 @@ public class DataPreProcessing {
                     
 //                  Collections.shuffle(refPool);
                     
-                    ExecutorService executor = Executors.newSingleThreadExecutor();
+                     ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-//                  PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
+//                     PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HHDReactionType()));
                     
-                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, reactionType));
+                   PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, reactionType));
                     
                     poolModCalc.setMaximumSearchDepth(50); //50
                     

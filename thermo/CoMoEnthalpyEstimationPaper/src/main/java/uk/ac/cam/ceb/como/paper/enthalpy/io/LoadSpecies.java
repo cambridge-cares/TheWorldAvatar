@@ -119,7 +119,7 @@ public class LoadSpecies {
 	 * @author mk510 (caresssd@hermes.cam.ac.uk)
 	 * @author am2145 ( am2145@cam.ac.uk )
 	 * 
-	 * @param srcCompoundsRef The path to Gaussian files
+	 * @param srcCompoundsRef_ti The path to Gaussian files
 	 * @param srcRefPool The path to csv file that contains information about reference species total energy at zero Kelvin, enthalpy of formation, species names, etc.
 	 * @return the collection of Species objects.
 	 * @throws Exception
