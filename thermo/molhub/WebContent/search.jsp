@@ -24,7 +24,7 @@
 
 <meta charset="UTF-8">
  
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -127,7 +127,7 @@ text-align: left;
 <s:submit value="Molhub Search"/>
 </s:form>
 </div>
-<div class="col-md-5">
+<div class="col-md-9">
 
 <s:actionerror/>
 <s:actionmessage />
@@ -139,7 +139,7 @@ text-align: left;
 <!--<s:property value="term"/>-->
 
 <s:if test="%{session.size>0}">
-<table style="width:200%;">
+<table style="width:100%;">
 <tbody>
 <tr>
 <td><b>Number of final results:</b></td><td><s:property value="%{session.size}"/></td>

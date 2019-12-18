@@ -8,7 +8,8 @@
 
 <!DOCTYPE html>
 <html>
-
+<!--    
+      -->
 <head>
 
 <!--after pressing refresh button it clears content of page.-->
@@ -16,38 +17,26 @@
 
 <title>Molhub: Thermochemistry database</title>
 
-<link rel="icon" href="${pageContext.request.contextPath}/css/static/group/favicon.ico"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css"/>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css"/>
+    
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">    
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+    
+    <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
 
-<!--
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoIncludeStyle.css"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoThemesStyle.css"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/tool-navigator.css"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/styles/repository.css"/>
+    <script type="text/javascript">   
 
--->
-
-<meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/index.css">
-        
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>    
-
-
-<script src="<%=request.getContextPath()%>/scripts/start.js"></script>
-
-<script type="text/javascript" src="<%=request.getContextPath()%>/jsmol/JSmol.min.js"></script>
-
-<script type="text/javascript">
-
+    
 var s = unescape(document.location.search);
+
 var script = 'set errorCallback "myCallback";'
 	+'set animationFPS 4;set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
 	+'set echo top left;echo loading XXXX...;refresh;'
 	+'load ":XXXX";set echo top center;echo XXXX;'
+
 var xxxx = s.split("_USE=")[0]
+
 if (xxxx.length < 2) {
   xxxx = "ethanol"
 } else {
@@ -62,7 +51,7 @@ if (xxxx)
   
 var Info = {
 		width:  700,
-		height: 600,
+		height: 600,		
 		disableJ2SLoadMonitor: true, 
 		disableInitialConsole: true, 
 		script: script,
@@ -80,7 +69,7 @@ var Info = {
 		defaultModel: null,
 		debug: false
 	}
-	
+
 Jmol.getApplet("appletCheck", Info, true);
 var isApplet = (appletCheck._jmolType.indexOf("_Applet") >= 0);
 var is2D = appletCheck._is2D;
@@ -135,18 +124,26 @@ $(document).ready(function(){
 })
 
 </script> 
- 
+
+     
+     <script src="scripts/start.js"></script>
+   
 </head>
 
 <style>
 
 TH {
-padding: 5px; align-content:center
+
+    padding: 5px; align-content:center
+    
 }
+
 
 #tableName td {
 text-align: left;
 }
+
+
 
 </style>
 
@@ -165,16 +162,14 @@ text-align: left;
 		<br/>
 		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
 		These queries are defined using the SPARQL Protocol and RDF Query Language (SPARQL). These queries can be implemented using a variety of different programming languages and make the database extremely flexible.
-		
-<br/>
-<br/>
+        <br/>
+        <br/>
 
 <a href="https://pubs.acs.org/doi/10.1021/acs.jcim.9b00227">link to paper </a>
  
 <br/>
 <br/>
 </span>
-
 		
 <p id="description">Exlpore Molhub as an open database for thermochemistry data.   </p>
 
@@ -182,11 +177,14 @@ text-align: left;
 
 <body class="oneColFixCtr">
 
+<!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">--> 
+
 <!-- 
 <div id="container">
 <div id="mainContent">
+<div id="border">
 -->
-<!--<div id="border">-->
+
 
 <div id="primary-navigation" class="clearfix">
  
@@ -198,7 +196,7 @@ text-align: left;
 
 <div id="leftnav" class="clearfix">
     
-    <ul><li class="selcsm">MolHub</li></ul>
+<ul><li class="selcsm">MolHub</li></ul>
     
 </div>
 
@@ -211,111 +209,20 @@ text-align: left;
     </ul>
 </div>
 
- 
 <div id="main-content" class="clearfix">
+ 
+<!-- <div id="main-content" class="clearfix">-->
 
-<div id="tool-container">
+<!--<div id="tool-container">-->
+
+<!--
+
 <div class="container">
 
-
-
-<script type="text/javascript">
-
-var s = unescape(document.location.search);
-var script = 'set errorCallback "myCallback";'
-	+'set animationFPS 4;set antialiasdisplay;set measurementUnits angstroms;set zoomlarge false;'
-	+'set echo top left;echo loading XXXX...;refresh;'
-	+'load ":XXXX";set echo top center;echo XXXX;'
-var xxxx = s.split("_USE=")[0]
-if (xxxx.length < 2) {
-  xxxx = "ethanol"
-} else {
-  xxxx = xxxx.substring(1);
-  if (xxxx.indexOf("load ") >= 0) {
-    script = xxxx
-    xxxx = ""
-  }
-}
-if (xxxx)
-  script = script.replace(/XXXX/g, xxxx)
-  
-var Info = {
-		width:  700,
-		height: 600,
-		disableJ2SLoadMonitor: true, 
-		disableInitialConsole: true, 
-		script: script,
-		use: "HTML5",
-		jarPath: "<%=request.getContextPath()%>/jsmol/java",
-		j2sPath: "<%=request.getContextPath()%>/jsmol/j2s",
-		jarFile: "JmolAppletSigned.jar",
-		isSigned: false,
-		script: "set zoomlarge false;set antialiasDisplay;load http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property  value="uuid"/>/<s:property value="gaussianFileName"/>",		
-		addSelectionOptions: false,
-		serverURL: "<%=request.getContextPath()%>/jsmol/php/jsmol.php",
-		readyFunction: null,
-		console: "jmol_infodiv",
-		disableInitialConsole: true,
-		defaultModel: null,
-		debug: false
-	}
-	
-Jmol.getApplet("appletCheck", Info, true);
-var isApplet = (appletCheck._jmolType.indexOf("_Applet") >= 0);
-var is2D = appletCheck._is2D;
-
-if (!isApplet && !Info.script) {
-
-	// JSmol or image
-
-	Info.defaultModel = "$tylenol";
-	Info.script = "#alt:LOAD :tylenol";
-
-}
-
-$(document).ready(function(){
-		
-	// This demonstration shows that
-	// what is put on the page can depend upon the platform.
-
-	// Note that the use of $(document.ready()) is optional but preferred. 
-	// You can do the traditional in-body coding if you want. See also simple2-nojq.htm.
-	// But as Gusts Kaksis pointed out, if we are using jQuery for database lookups, we might
-	// as well use it for more than that.
-  
-    // note that we create the applet first, before the controls, because
-    // we need window.jmol to be defined for those, and Jmol.getAppletHtml does that.
-  
-  $("#middlepanel").html(Jmol.getAppletHtml("jmol", Info));
-
-  // alternatively, you can use
-  //
-  //   jmol = "jmol"
-  //
-  // and then create the buttons before the applet itself. 
-  // Just make sure if you do that to use the name of the applet you are
-  // actually going to be using. So, perhaps:
-  //
-  //   jmolApplet0 = "jmolApplet0"
-  //
-
-	var use = (Info.use != "JAVA" ? Info.use : Info.isSigned ? "SIGNED" : "JAVA"); 
-
-		$("#leftpanel").html(		
-		  "<br>Spin: " + Jmol.jmolRadioGroup(jmol, [["spin off", "off", true],["spin on", "on"]])
-		);
-
-  // right panel
-  
-	Jmol.setButtonCss(null, "style='width:160px'");	
-	$("#rightpanel").html(
-		Jmol.jmolButton(jmol,"write PNGJ jsmol.png","Save PNG")		
-	);
-})
-
-</script> 
+Here is java script for visualization molecules.
 
 </div>
+-->
 
 <h1 align="left"><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
 
@@ -486,8 +393,11 @@ $(document).ready(function(){
 </p>
 </div>
 </div>
+<!--</div>-->
+
 </div>
-</div>
+
+
 
 <!-- PUT CONTENT HERE -->
 

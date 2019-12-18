@@ -121,6 +121,7 @@ $(document).ready(function(){
 
 </script>
 
+<script src="scripts/start.js"></script>
 
 </head>
 
