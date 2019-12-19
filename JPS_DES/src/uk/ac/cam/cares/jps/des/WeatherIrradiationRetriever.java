@@ -120,10 +120,10 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		List<String[]> readingFromCSV = new ArrayList<String[]>();
 		for (int d=0;d<resultListfromqueryirr.size();d++) {
 			String timewholecsv=resultListfromquerytemp.get(d)[2];
-			String datemonthcsv=timewholecsv.split("#")[1].split("-")[2].split("T")[0]+"-"+timewholecsv.split("#")[1].split("-")[1];			
-			String timecsv=timewholecsv.split("#")[1].split("-")[2].split("T")[1].split("\\+")[0];
+			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
+			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
 			
-			String[]e= {timewholecsv.split("#")[1].split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
+			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
 			readingFromCSV.add(e);
 		}
 		
