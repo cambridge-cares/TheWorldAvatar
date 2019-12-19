@@ -15,17 +15,25 @@ import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 public class Test_DES extends TestCase{
 	
-	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporepowernetwork/SingaporePowerNetwork.owl#SingaporePowerNetwork";
+	private String ENIRI="http://jparksimulator.com/kb/sgp/singapore/singaporepowernetwork/SingaporeElectricalnetwork.owl";
 	
-	public void testrunpython() throws IOException {
+	public void testrunpython() throws IOException {//why doesn't it work on kevin's computer???
 //		DistributedEnergySystem a = new DistributedEnergySystem();
 //		String dataPath = QueryBroker.getLocalDataPath();
 //		String baseUrl = dataPath + "/JPS_DES";
 //		a.runOptimization(baseUrl);
 		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-	}
-
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		int returnValue = -1;
+		Process pr = rt.exec("python C:\\Users\\LONG01\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("C:\\Users\\LONG01\\JParkSimulator-git\\JPS_DES\\python"));
+		try {
+			pr.waitFor();
+			returnValue = pr.exitValue();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+			System.out.println(returnValue);
+		}
 	public void testStartDESScenario() throws IOException  {
 		
 
@@ -48,7 +56,7 @@ public class Test_DES extends TestCase{
 
 	}
 	
-	public void testIrradiationRetreiver() throws Exception {
+	public void testIrrasdiationRetreiver() throws Exception {
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_DES";
 		
@@ -56,7 +64,7 @@ public class Test_DES extends TestCase{
 		
 		jo.put("folder", baseUrl);
 		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
-		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		jo.put("windspeed", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
 		jo.put("jpscontext", "base");
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();

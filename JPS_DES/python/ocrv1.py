@@ -4,6 +4,7 @@ import urllib.request
 from datetime import datetime
 import json
 import time
+import sys
 
 #read and download image
 
@@ -12,6 +13,7 @@ def ocr():
 	response = urllib.request.urlretrieve(url, '500_image.png')
 	#scan image provided. 
 	im = Image.open('500_image.png')
+	im.close()
 	text = image_to_string(im)
 	r = text.split('\n')
 	result = {}

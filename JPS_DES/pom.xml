@@ -50,24 +50,10 @@
 						<targetPath>python</targetPath>
 					</resource>
 					<resource>
-						<directory>WebContent/css</directory>
-						<targetPath>css</targetPath>
+						<directory>resources</directory>
+						<targetPath>resources</targetPath>
 					</resource>
-					<resource>
-						<directory>WebContent/images</directory>
-						<targetPath>/images</targetPath>
-					</resource>
-					<resource>
-						<directory>WebContent/scripts</directory>
-						<targetPath>/scripts</targetPath>
-					</resource>
-
-					<resource>
-						<directory>WebContent</directory>
-						<includes>
-							<include>*.html</include>
-						</includes>
-					</resource>
+					
 				</webResources>
 
 				<warName>${project.artifactId}##${project.version}</warName>
