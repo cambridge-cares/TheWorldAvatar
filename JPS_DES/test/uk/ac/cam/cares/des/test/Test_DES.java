@@ -20,14 +20,6 @@ public class Test_DES extends TestCase{
 	
 	private String ENIRI="http://www.theworldavatar.com/kb/sg/singapore/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 	
-	public void testrunpython() throws IOException {//why doesn't it work on kevin's computer???
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-	}
 	
 	public void testrunpython2() throws IOException {
 //		DistributedEnergySystem a = new DistributedEnergySystem();
@@ -37,7 +29,7 @@ public class Test_DES extends TestCase{
 		Runtime rt = Runtime.getRuntime();
 		int returnValue = -1;
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
+		Process pr = rt.exec("python C:\\Users\\LONG01\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("C:\\Users\\LONG01\\JParkSimulator-git\\JPS_DES\\python"));
 		try {
 			pr.waitFor();
 			returnValue = pr.exitValue();
@@ -78,7 +70,7 @@ public class Test_DES extends TestCase{
 		
 		jo.put("folder", baseUrl);
 		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
-		jo.put("windspeed", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
 		jo.put("jpscontext", "base");
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();

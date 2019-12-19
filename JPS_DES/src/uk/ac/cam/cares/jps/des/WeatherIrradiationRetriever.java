@@ -85,7 +85,8 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
 				+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+				//+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+				+ "}";
 
 		String result = new QueryBroker().queryFile(iritempsensor, sensorinfo);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -120,6 +121,9 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		List<String[]> readingFromCSV = new ArrayList<String[]>();
 		for (int d=0;d<resultListfromqueryirr.size();d++) {
 			String timewholecsv=resultListfromquerytemp.get(d)[2];
+			if ( timewholecsv == null){
+				timewholecsv = "Datatype[http://www.w3.org/2001/XMLSchema#2018-06-04T14:00+08:00]";
+			}
 			String datemonthcsv=timewholecsv.split("#")[1].split("-")[2].split("T")[0]+"-"+timewholecsv.split("#")[1].split("-")[1];			
 			String timecsv=timewholecsv.split("#")[1].split("-")[2].split("T")[1].split("\\+")[0];
 			
