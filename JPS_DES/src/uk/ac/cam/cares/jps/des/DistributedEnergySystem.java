@@ -85,6 +85,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		String directory = baseUrl + "";
@@ -95,7 +98,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	
     }
     
-    public void runOptimization(String baseUrl) throws IOException {
+    public void runOptimization(String baseUrl) throws IOException, InterruptedException {
 		
 		//copyTemplate(baseUrl, weather);//temporary
 		JSONObject jo = new JSONObject();
@@ -137,14 +140,14 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		new QueryBroker().putLocal(destinationUrl, file);
 	}
 	
-	public String executeSingleCommand(String targetFolder, String command) {
+	public String executeSingleCommand(String targetFolder, String command) throws InterruptedException {
 
 		//logger.info("In folder: " + targetFolder + " Excuted: " + command);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		try {
 			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds
-																	// will be executed within such folder.
+			pr.waitFor();														// will be executed within such folder.
 
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);

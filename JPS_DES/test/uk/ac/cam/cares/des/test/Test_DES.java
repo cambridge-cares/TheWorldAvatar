@@ -4,10 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
@@ -15,7 +18,7 @@ import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 public class Test_DES extends TestCase{
 	
-	private String ENIRI="http://jparksimulator.com/kb/sgp/singapore/singaporepowernetwork/SingaporeElectricalnetwork.owl";
+	private String ENIRI="http://www.theworldavatar.com/kb/sg/singapore/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 	
 	public void testrunpython() throws IOException {//why doesn't it work on kevin's computer???
 //		DistributedEnergySystem a = new DistributedEnergySystem();
@@ -23,17 +26,28 @@ public class Test_DES extends TestCase{
 //		String baseUrl = dataPath + "/JPS_DES";
 //		a.runOptimization(baseUrl);
 		Runtime rt = Runtime.getRuntime();
-		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
+	}
+	
+	public void testrunpython2() throws IOException {
+//		DistributedEnergySystem a = new DistributedEnergySystem();
+//		String dataPath = QueryBroker.getLocalDataPath();
+//		String baseUrl = dataPath + "/JPS_DES";
+//		a.runOptimization(baseUrl);
+		Runtime rt = Runtime.getRuntime();
 		int returnValue = -1;
-		Process pr = rt.exec("python C:\\Users\\LONG01\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("C:\\Users\\LONG01\\JParkSimulator-git\\JPS_DES\\python"));
+		System.out.println("Working Directory = " + System.getProperty("user.dir"));
+		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
 		try {
 			pr.waitFor();
 			returnValue = pr.exitValue();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			System.out.println(e);
 		}
 			System.out.println(returnValue);
 		}
+
 	public void testStartDESScenario() throws IOException  {
 		
 
@@ -94,6 +108,51 @@ public class Test_DES extends TestCase{
 		System.out.println("date= "+content.split("#")[1].split("-")[2].split("T")[0]);
 		System.out.println("time= "+content.split("#")[1].split("-")[2].split("T")[1].split("\\+")[0]);
 	}
+	
+	public static OntModel readModelGreedy(String iriofnetwork) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE { " 
+				+ "?entity   j2:hasSubsystem ?component ." 
+				+ "}";
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
+	
+	public void testquerygreedymultiple() {
+		String iriofnetworkdistrict="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+		OntModel model = readModelGreedy(iriofnetworkdistrict);	
+		String busInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+				+ "SELECT ?entity (COUNT(?entity) AS ?group) "
+				+ "WHERE { ?entity a j6:Building ." 
+				+ "  ?entity j4:isComprisedOf ?user ." 
+				+ "  ?entity j2:hasProperty ?prop ."
+				+ " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?propval ."
+				+ "}" 
+				+ "GROUP BY ?entity "; 
+		
+		 //?user 
+
+		
+		ResultSet resultSet = JenaHelper.query(model, busInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		System.out.println("sizeofresult="+resultList.size());
+		System.out.println("element= "+resultList.get(0)[0]);
+		System.out.println("element= "+resultList.get(0)[1]);
+		System.out.println("element= "+resultList.get(0)[2]);
+		//System.out.println("element= "+resultList.get(0)[3]);
+		
+	}
+	
+
 	
 	
 }

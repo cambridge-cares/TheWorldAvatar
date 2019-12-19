@@ -214,7 +214,7 @@ public class FuelCellCreatorKB {
 
 		
 
-		String Prefix="http://www.theworldavatar.com/kb/sgp/singapore/singaporepowernetwork/";
+		String Prefix="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/";
 		//ObjectProperty[] relationobject= {hastemperature};
 		
 		Individual mainobjinst = mainobjclass.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);

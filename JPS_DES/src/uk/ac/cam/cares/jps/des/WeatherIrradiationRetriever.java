@@ -56,6 +56,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
 		
 		String startbatCommand =folder+"/runpyocr.bat";
+		System.out.println(startbatCommand);
 		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
 		logger.info("OCR finished");
 		
