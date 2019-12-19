@@ -1,5 +1,5 @@
 var scenario;
-// var prefix = "http://localhost:8080";
+//var prefix = "http://localhost:8080";
 var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
@@ -207,8 +207,8 @@ var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
     + "?model   j5:hasModelVariable ?Qg ." 
     + "?Qg  a  j3:Qg  ." 
     + "?Qg  j2:hasValue ?vqg ."
-    + "?vqg   j2:numericalValue ?VQ_Gen ." // qg
-    + "?vqg   j2:hasUnitOfMeasure ?VQ_Gen_unit ." // qg
+    + "?vqg   j2:numericalValue ?V_QGen ." // qg
+    + "?vqg   j2:hasUnitOfMeasure ?V_QGen_unit ." // qg
 
     + "?model   j5:hasModelVariable ?qmax ." 
     + "?qmax  a  j3:QMax  ." 
@@ -339,17 +339,11 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
         + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
         + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-        + "SELECT ?entity ?V_QGen ?V_QGen_unit ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
+        + "SELECT ?entity  ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
 
         + "WHERE {?entity  a  j1:PowerGenerator  ."
         + "?entity   technical_system:realizes ?generation ."
         + "?generation j9:hasEmission ?emission ." 
-
-        + "?model   j5:hasModelVariable ?Qg ." 
-        + "?Pg  a  j3:Qg  ." 
-        + "?Pg  j2:hasValue ?vpg ."
-        + "?vpg   j2:numericalValue ?V_QGen ." // Qg
-        + "?vpg   j2:hasUnitOfMeasure ?V_QGen_unit ." // Qg
 
         + "?emission a j9:Actual_CO2_Emission ."
         + "?emission   j2:hasValue ?valueemission ."
@@ -381,7 +375,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
     // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
     // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml";
     var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
-    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml';
+    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
     setInterval(function(){
         distotalemission();
     }, 5000);
@@ -421,7 +415,10 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
-        console.log('predefinedID = ', predefinedId)
+        console.log('predefinedID = ', predefinedId);
+        infowindow = new google.maps.InfoWindow({
+            content: '<h2>Sup!</h2>'
+        });
         ppMap.clearAnimatedLines();
         clearMarkers();
         if (predefinedId == '0') {
@@ -438,6 +435,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         }
             
         json = { "electricalnetwork":iriofnetwork ,"flag": scenario }
+        document.getElementById("loader").style.display = "block";
         ppMap.drawLines(json );
         drawMarkers(json);
         refreshLayer(json, kmlURL);
@@ -522,9 +520,9 @@ function drawGenerator(data, anotherURL){
     request.fail(function(jqXHR, textStatus) {
     });
 }
-function drawMarkers(data){
+function drawMarkers(){
     var agenturl=  prefix + '/JPS_POWSYS/ENVisualization/createMarkers'; 
-    var kmlurl = createUrlForAgent(scenario, agenturl, data);
+    var kmlurl = createUrlForAgent(scenario, agenturl, {"electricalnetwork":iriofnetwork});
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -535,49 +533,88 @@ function drawMarkers(data){
     
     request.done(function(data) {
         var obj0 = JSON.parse(data).result;
-        var size=obj0.length;        
+        var size=obj0.length; 
         
     //We currently know of a few cases:
     var x;
-    markers = []
     // scan some duplicates
     dict = {"nuclear": 0, "gas": 0, "oil": 0};
+    var markerdict = new Map();
+    var latLng = new Map();
     for (x=0; x< size; x++){
         var obj = JSON.parse(obj0[x]);  
         var fueltype = obj.fueltype;
         var name = obj.name;
         if (fueltype== "NaturalGasGeneration"){
             var icon = {
-                url: '/images/naturalgas.png',
-                scaledSize : new google.maps.Size(80, 80),
+                url: 'images/naturalgas.png',
+                scaledSize : new google.maps.Size(40, 40),
             };
             dict["gas"] += 1;
         }else if (fueltype== "OilGeneration"){
             var icon = {
-                url: '/images/oil.png',
-                scaledSize : new google.maps.Size(80, 80),
+                url: 'images/oil.png',
+                scaledSize : new google.maps.Size(40, 40),
             };
             dict["oil"] += 1;
         }else{
-            console.log(fueltype);
             var icon = {
-                url: '/images/radiation.png', 
-                scaledSize : new google.maps.Size(80, 80),
+                url: 'images/radiation.png', 
+                scaledSize : new google.maps.Size(40, 40),
             };
             dict["nuclear"] += 1;
         }
-        var marker = new google.maps.Marker({
-            position: new google.maps.LatLng(obj.coors.lat, obj.coors.lng),
-            map: map,
-            title: name,
-            icon: icon
-          });
-        markers.push(marker);
-        }
-        
-        numTypeGen = dict["nuclear"] + " Nuclear , " + dict["oil"] + " Oil , " + dict['gas'] +" Gas ";
+        if (markerdict.has(obj.coors.lat)){
+            var v = markerdict.get(obj.coors.lat);
+            v.push(name);
+            markerdict.set(obj.coors.lat, v);
+        }else{
+            markerdict.set(obj.coors.lat, [name]);
+            
+            latLng.set(obj.coors.lat, [obj.coors.lng, icon]);
+            }
+    }
+
+    for (var [key, value] of latLng.entries()) {
+        createMarker(key, value, markerdict);
+          
+    }
+	
     });
     }
+    function setMarkerMenu(jsonArray)
+	{
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(jsonArray);
+		for(var index in jsonArray)
+		{
+			var name = jsonArray[index];
+			console.log(name);
+			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
+
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+		console.log(infoWindowHtml);
+		return infoWindowHtml;
+
+	}
+function createMarker(key, value, markerdict){
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(key, value[0]),
+        map: map,
+        icon: value[1]
+      });
+    marker.addListener('click', function(){
+        _content = setMarkerMenu(markerdict.get(key));
+        infowindow.setContent(_content);
+        infowindow.open(map, this);
+    });
+    markers.push(marker);
+}
     function clearMarkers() {
         if(!markers){
             return;
@@ -589,7 +626,8 @@ function drawMarkers(data){
     }
 function displayCO2(data){
     //read the value of CO2 and display upon calling
-    var agenturl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator' ;
+    // var agenturl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator' ;
+    var agenturl =  prefix + '/JPS_POWSYS/AggregationEmissionAgent/aggregateemission' ;
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
     var request = $.ajax({
@@ -607,6 +645,7 @@ function displayCO2(data){
         designCarbon = obj0.design;    
         designCarbonYr = designCarbon*8760/1000000;
         wildPercentage2 = (designCarbonYr/emissionValueForSingapore)*100*1000000;  
+        document.getElementById("loader").style.display = "none";
     });
 }
 
@@ -714,15 +753,8 @@ function openWindowGen(id){
 
 
     }, function (jqXHR, textStatus, errorThrown){
-        var x1 = promise1;
-        var x2 = promise2;
-        if (x1.readyState != 4) {
-            x1.abort();
-        }
-        if (x2.readyState != 4) {
-            x2.abort();
-        }
-       alert('Either j1 or j2 failed!');
+        alert(textStatus);
+        console.log(errorThrown);
     }
     );
 }
@@ -1007,7 +1039,7 @@ asyncLoop({
 
         //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
-
+        document.getElementById("loader").style.display = "block";
         var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt;
         data = { "electricalnetwork":iriofnetwork}
         url = createUrlForAgent(scenario, agenturl, data);
@@ -1032,6 +1064,7 @@ asyncLoop({
             }, delayInMilliseconds);
             console.log('DONE SIMULATION')
             openWindow(filename);
+            document.getElementById("loader").style.display = "none";
         });
 
 

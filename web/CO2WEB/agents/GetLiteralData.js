@@ -38,7 +38,7 @@ FILTER isLiteral(?literal)}
 
 const SPA = `
     PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    PREFIX system: <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
+    PREFIX system: <http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#>
 
 SELECT distinct ?o ?Unit ?eq
 WHERE { 
@@ -271,5 +271,9 @@ callback
     }
 }
 
+LiteralData((err, result)=>{
+console.log(err)
+console.log(result)
 
+},'http://www.theworldavatar.com/BMS/MAU-C7-1_OAT_sensor1.owl',{})
 module.exports = LiteralData;
