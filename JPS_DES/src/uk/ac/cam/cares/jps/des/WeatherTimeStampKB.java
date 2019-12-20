@@ -7,7 +7,6 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.List;
 
-import org.apache.jena.datatypes.xsd.impl.XSDDateTimeStampType;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -114,7 +113,7 @@ public class WeatherTimeStampKB {
 			voutsidetemp.addProperty(hasunit, C);
 			
 			voutsidetemp.addProperty(hastime, timestamptemp);
-			timestamptemp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new XSDDateTimeStampType (timestampvalue))); //value need to be changed later
+			timestamptemp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampvalue))); //value need to be changed later
 			
 		}
 	}
@@ -142,7 +141,7 @@ public class WeatherTimeStampKB {
 			voutsideirradiation.addProperty(hasunit, Wperm2);
 			
 			voutsideirradiation.addProperty(hastime, timestampirradiation);
-			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new XSDDateTimeStampType(timestampvalue))); //value need to be changed later
+			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
 			
 		}
 		
@@ -170,7 +169,7 @@ public class WeatherTimeStampKB {
 			voutsidewindspeed.addProperty(hasunit, mpers);
 			
 			voutsidewindspeed.addProperty(hastime, timestampwindpseed);
-			timestampwindpseed.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new XSDDateTimeStampType(timestampvalue))); //value need to be changed later
+			timestampwindpseed.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
 			
 		}
 		
