@@ -1,5 +1,3 @@
-
-
 /***
 Implements the Sim prototype. for Mau.
 ***/
@@ -29,15 +27,14 @@ document.addEventListener("click", function (evt){
     }
     
 });
-$(document).ready(function ()
-{
+  addWeatherData();
   d3.csv("images/weather.csv").then(makeChart);
   var time;
   function makeChart(data){
     //data is an array of objects where each object represents a datapoint
     time = data.map(function(d){return d.Time});
     var temperature = data.map(function(d){return d.AirTemp})
-    var chart = new Chart("temperature", {
+    tempGraph = new Chart("temperature", {
       type: 'bar',
       data: {
         labels:time,
@@ -74,12 +71,12 @@ $(document).ready(function ()
           display: true
         },
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: true
       }
     });
     
     var irradiation = data.map(function(d){return d.IncomingRadiation})
-    var chart = new Chart("irradiation", {
+    irradGraph = new Chart("irradiation", {
       type: 'line',
       data: {
         labels:time,
@@ -98,17 +95,9 @@ $(document).ready(function ()
         },
         scales:{
           yAxes:[{
-            type:'logarithmic',
+            type:'linear',
             ticks: {
-              min: 0,
-              max: 1000,
-              callback: function (value, index, values) {
-                  if (value === 1000) return "1K";
-                  if (value === 100) return "100";
-                  if (value === 10) return "10";
-                  if (value === 0) return "0";
-                  return null;
-              }
+              fontSize:16
          }
           }], 
           xAxes:[{
@@ -127,50 +116,120 @@ $(document).ready(function ()
           display: true
         },
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: true
       }
     });
   }
+  function addWeatherData(){
+    var weatherjson = {};
+    weatherjson["tempsensor"] = "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
+    weatherjson["speedsensor"]="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
+    weatherjson["irradiationsensor"]="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
+    weatherjson["jpscontext"]= "base";
+    var weatherurl = "http://localhost:8080/JPS_DES/GetIrradiationandWeatherData"  + "?query=" + encodeURIComponent(JSON.stringify(weatherjson));
+    console.log(weatherurl);
+    var request = $.ajax({
+      url: "http://localhost:8080/JPS_DES/GetIrradiationandWeatherData",
+      type: 'GET',
+      data: weatherjson,
+      contentType: 'application/json; charset=utf-8'
+  });
 
+  request.done(function(data) {
+    console.log(data);
+    radiation = JSON.parse(data).irrad;
+    temp = JSON.parse(data).temperature;
+    addData(tempGraph, temp);
+    addData(irradGraph, radiation);
+    irradGraph.data.labels.pop();
+    irradGraph.update();
+    removeData(tempGraph);
+    setTimeout(function() {
+        console.log('timeout');  
+        irradGraph.data.datasets[0].data.shift();
+        irradGraph.update();
+    }, 2000);
+  //   setTimeout(function() {
+  //     console.log('timeout');
+  //     removeLine(irradGraph); 
+  // }, 10000);
+  });
+  }
 
-
+  //add data totgenbu
+  function addData(chart, elem){
+    chart.data.labels.push(new Date().toLocaleTimeString());
+    console.log(elem);
+    chart.data.datasets[0].data.push(elem);
+    chart.update();
+  }
+  function removeData(chart) {
+    chart.data.labels.shift();
+    chart.data.datasets[0].data.shift();
+    chart.update();
+}
+function removeLine(chart) { //for line since there seems to be an error
+  chart.data.labels.pop();
+  chart.data.datasets[0].data.shift();
+  chart.update();
+}
   //Outputs to be taken from csv here. 
-  
   d3.csv("images/totgenbu.csv").then(makeOutputChart);
   function makeOutputChart(data){
-    capacity = data.map(function(d){return d.capacity});
+    cA = data.map(function(d){return d.cA});
+    cB = data.map(function(d){return d.cB});
+    cC = data.map(function(d){return d.cC});
+    cD = data.map(function(d){return d.cD});
+    console.log(cA);
+    console.log(cB);
+    console.log(cC);
+    console.log(cD);
     var chart = new Chart("graph4", {
       type: 'line',
       data: {
         labels:time,
-        
         datasets: [
           {
+            label:'Home',
             pointRadius:10,
             pointHoverRadius:11,
-            borderColor:'rgba(146, 212, 146, 1)',
-            data: capacity, 
+            borderColor:"rgba(39, 211, 122, 1)",
+            data: cA, 
+            fill: false,
+          }, 
+          {
+            label:'Industrial',
+            pointRadius:10,
+            pointHoverRadius:11,
+            borderColor:"rgba(85, 71, 189, 1)",
+            data: cB, 
+            fill: false,
+          },  {
+            label:'Commercial',
+            pointRadius:10,
+            pointHoverRadius:11,
+            borderColor:"rgba(186, 34, 191, 1)",
+            data: cC, 
+            fill: false,
+          },  {
+            label:'Fuel Cell',
+            pointRadius:10,
+            pointHoverRadius:11,
+            borderColor:"rgba(221, 44, 127, 1)",
+            data: cD, 
+            fill: false,
           }
         ]
       }, 
       options:{
         legend:{
-          display:false
+          display:true
         },
         scales:{
           yAxes:[{
-            type:'logarithmic',
+            type:'linear',
             ticks: {
-              fontSize:16,
-              min: 0,
-              max: 1000,
-              callback: function (value, index, values) {
-                  if (value === 1000) return "1K";
-                  if (value === 100) return "100";
-                  if (value === 10) return "10";
-                  if (value === 0) return "0";
-                  return null;
-              }
+              fontSize:16
          }
           }], 
           xAxes:[{
@@ -185,13 +244,13 @@ $(document).ready(function ()
         },
         title:{
           fontSize:48, 
-          text:"Home",
+          text:"Power Load",
           display: true
         },
         responsive: true,
-        maintainAspectRatio: false
+        maintainAspectRatio: true
       }
     });
   
   }
-})
+  
