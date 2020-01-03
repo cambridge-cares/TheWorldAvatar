@@ -19,6 +19,7 @@
 /JPS_BASE/PythonCustomLibraries/caresjpsutil.egg-info/
 /JPS_BASE/PythonCustomLibraries/dist/
 /JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/util/CRSTransformer.java
+/JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/listener/BaseOntologyModelManager.java
 /JPS_COMPOSITION/JPS_COMPOSITION.iml
 /JPS_COMPOSITION/target/
 /JPS_SHIP/classes/
