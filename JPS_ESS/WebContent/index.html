@@ -520,9 +520,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 		
 		+ "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_ActivePowerInjection_of_VRB ?V_ActivePowerInjection_of_VRB_unit "
-		+ "WHERE {?entity  a  j1:VanadiumRedoxBattery ."
-
-		+ "?entity   j9:hasActivePowerInjection ?cap ."
+		+ "WHERE {?entity   j9:hasActivePowerInjection ?cap ."
 		+"?cap j2:hasValue ?vcap ."
 		+"?vcap  j2:numericalValue ?V_ActivePowerInjection_of_VRB ."
 		+"?vcap  j2:hasUnitOfMeasure ?V_ActivePowerInjection_of_VRB_unit ."
@@ -539,11 +537,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 		+ "?vx  j2:numericalValue ?V_x ."//longitude
 		+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
 
-		+ " {?class rdfs:subClassOf j1:Battery ."
-		+ "} "
-		+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
 		+ "}";
-		
 			
 var opt = 'OPF';
 var globalKMLEventinfoWindowHtml;
@@ -552,6 +546,7 @@ var txt;
 var scenario = "base";
 //var prefix = "http://localhost:8080"
 var prefix = "http://www.theworldavatar.com"
+//var prefix = "http://www.jparksimulator.com"
 var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001"];//to be a jsonarray
@@ -752,7 +747,7 @@ var infowindow;
 				request.done(function(data) {
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
-							url: 'http://theworldavatar.com/OntoEN/testfinaltestBatt1.kml'+ "?r="+(new Date()).getTime(),
+							url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
 						});
