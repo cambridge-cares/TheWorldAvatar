@@ -77,7 +77,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv);
 		
-		
+		//put the csv for the consumer here
 
 		
 		try {
@@ -98,9 +98,25 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	
     }
     
-    public void runOptimization(String baseUrl) throws IOException, InterruptedException {
-		
-		//copyTemplate(baseUrl, weather);//temporary
+    
+    
+    
+    	
+    
+
+	public static OntModel readModelGreedyForUser(String useriri) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "SELECT ?component " + "WHERE { " + "?entity   j2:isConnectedTo ?component ." + "}";
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(useriri, electricalnodeInfo);
+	}
+
+	public void runOptimization(String baseUrl) throws IOException, InterruptedException {
+
+		// copyTemplate(baseUrl, weather);//temporary
 		JSONObject jo = new JSONObject();
 
 		jo.put("folder", baseUrl);
@@ -112,26 +128,25 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 				"http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData",
 				jo.toString());
-		
-		//constraints related to residential
+
+		// constraints related to residential
 		copyTemplate(baseUrl, Pmin);
 		copyTemplate(baseUrl, Pmax);
 		copyTemplate(baseUrl, bcap);
 		copyTemplate(baseUrl, unwill);
-		//property for residential
+		// property for residential
 		copyTemplate(baseUrl, schedule);
-		
-		
+
 		copyFromPython(baseUrl, "runpy.bat");
-		copyFromPython(baseUrl,"Receding_Horizon_Optimization_V0.py");
-		
-		String startbatCommand =baseUrl+"/runpy.bat";
-		String result= executeSingleCommand(baseUrl,startbatCommand);
-		logger.info("final after calling: "+result);
-    	//String DES = PythonHelper.callPythonwithNoParameter("Receding Horizon Optimization_V0.py", this);
-    	
-    	
-    }
+		copyFromPython(baseUrl, "Receding_Horizon_Optimization_V0.py");
+
+		String startbatCommand = baseUrl + "/runpy.bat";
+		String result = executeSingleCommand(baseUrl, startbatCommand);
+		logger.info("final after calling: " + result);
+		// String DES = PythonHelper.callPythonwithNoParameter("Receding Horizon
+		// Optimization_V0.py", this);
+
+	}
 
 	public void copyFromPython(String baseUrl,String filename) {
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/python/"+filename);
@@ -187,6 +202,193 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
+	
+	public void extractResidentialData(String iriofnetworkdistrict,String baseUrl) {
+    	OntModel model = readModelGreedy(iriofnetworkdistrict);	
+		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+				+ "SELECT DISTINCT ?entity (COUNT(?entity) AS ?group) ?propval ?user "
+				+ "WHERE {"
+				+ "{ ?entity a j6:Building ."  
+				+ "  ?entity j2:hasProperty ?prop ."
+				+ " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?propval ."
+				+ "?entity j4:isComprisedOf ?user ."	
+				+ "}"
+				+"FILTER regex(STR(?user),\"001\") ."
+				+ "}" 
+				+ "GROUP BY ?entity ?propval ?user "; 
+		
+		
+		
+		String groupInfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " 
+				+ "SELECT DISTINCT ?entity (COUNT(?entity) AS ?group) "
+				+ "WHERE "
+				+ "{ ?entity a j6:Building ."
+				+ "?entity j4:isComprisedOf ?user ."	 
+			
+				+ "}"
+
+ 
+				+ "GROUP BY ?entity "; 
+		
+		String equipmentinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j7:<http://www.w3.org/2006/time#> "
+				 + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval ?Pactval ?hourval "
+				+ "WHERE "
+				+ "{ ?entity a j6:Electronics ."
+				+ "?entity j9:hasActivePowerAbsorbed ?Pmax ."
+				+ "?Pmax a j9:MaximumActivePower ."
+				+ " ?Pmax   j2:hasValue ?vPmax ."
+				+ " ?vPmax   j2:numericalValue ?Pmaxval ."
+				
+				+ "  ?entity j2:hasProperty ?prop ."
+				+ "?prop a j6:IdealityFactor ."
+				+ " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?unwillval ."
+				
+				+ "?entity j9:hasActivePowerAbsorbed ?Pmin ."
+				+ "?Pmin a j9:MinimumActivePower ."
+				+ " ?Pmin   j2:hasValue ?vPmin ."
+				+ " ?vPmin   j2:numericalValue ?Pminval ."
+				
+				+ "?entity j9:hasActivePowerAbsorbed ?Pact ."
+				+ "?Pact a j9:AbsorbedActivePower ."
+				+ " ?Pact   j2:hasValue ?vPact ."
+				+ " ?vPact   j2:numericalValue ?Pactval ."
+				+ " ?vPact   j7:hasTime ?proptime ."
+				+ "?proptime j7:hour ?hourval ."
+			
+				+ "}"
+				+ "ORDER BY ASC(?hourval)";
+
+		
+		 //?user  ?user ?equipment
+
+		
+		ResultSet resultSet = JenaHelper.query(model, groupInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		System.out.println("sizeofresult="+resultList.size());
+		int size=resultList.size();
+		List<String> iriofgroupuser= new ArrayList<String>();
+		List<String[]> csvofbcap= new ArrayList<String[]>();
+		QueryBroker broker = new QueryBroker();
+		for(int d=0;d<size;d++) {
+			for(int t=0;t<keys.length;t++) {
+				//System.out.println("elementonquery1 "+t+"= "+resultList.get(d)[t]);
+				if(t==3) {
+					iriofgroupuser.add(resultList.get(d)[t]);
+				}
+
+			}
+			
+			int group=Integer.valueOf(resultList.get(d)[0].split("#Building-")[1]);
+			//String[]e= {"group"+group,resultList.get(d)[2]};
+			String[]e= {resultList.get(d)[3],resultList.get(d)[2]};
+			csvofbcap.add(e);
+			
+		}
+		String bcapcsv = MatrixConverter.fromArraytoCsv(csvofbcap);
+		System.out.println(bcapcsv);
+		broker.putLocal(baseUrl + "/"+bcap, bcapcsv);
+		
+		//part 2 to see how many multiplication factor
+		ResultSet resultSet2 = JenaHelper.query(model, groupInfo2);
+		String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
+		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+		List<String[]> resultList2 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+		System.out.println("sizeofresult="+resultList2.size());
+		int size2=resultList2.size();
+		for(int d=0;d<size2;d++) {
+			for(int t=0;t<keys2.length;t++) {
+				System.out.println("elementonquery2 "+t+"= "+resultList2.get(d)[t]);
+			}
+			System.out.println("---------------------------------------");
+			
+		}
+		
+		
+		
+
+		int sizeofiriuser=iriofgroupuser.size();
+		System.out.println("sizeofiriuser="+sizeofiriuser);
+		List<String[]> csvofpmax= new ArrayList<String[]>();
+		List<String[]> csvofpmin= new ArrayList<String[]>();
+		List<String[]> csvofw= new ArrayList<String[]>();
+		List<String[]> csvofschedule= new ArrayList<String[]>();
+		for(int x=1;x<=sizeofiriuser;x++) {
+			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
+			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
+			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
+			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
+			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
+			System.out.println("sizeofresult="+resultListx.size());
+			List<String>groupPmax=new ArrayList<String>();
+			groupPmax.add(iriofgroupuser.get(x-1));
+			List<String>groupPmin=new ArrayList<String>();
+			groupPmin.add(iriofgroupuser.get(x-1));
+			List<String>groupw=new ArrayList<String>();
+			groupw.add(iriofgroupuser.get(x-1));
+			List<String>groupschedule=new ArrayList<String>();
+			groupschedule.add(iriofgroupuser.get(x-1));
+			for(int d=0;d<resultListx.size();d++) {
+				//for(int t=0;t<keysx.length;t++) {
+					//System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
+					if(resultListx.get(d)[5].contentEquals("1")) {
+						groupPmax.add(resultListx.get(d)[1]);
+						groupPmin.add(resultListx.get(d)[2]);
+						groupw.add(resultListx.get(d)[3]);
+					}
+					
+					groupschedule.add("t"+resultListx.get(d)[5]);
+					groupschedule.add(resultListx.get(d)[4]);
+					
+			
+
+
+				//}
+				//System.out.println("---------------------------------------");
+				
+			}
+			
+			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
+			csvofpmax.add(arr1);
+			String[] arr2 = groupPmin.toArray(new String[groupPmin.size()]);
+			csvofpmin.add(arr2);
+			String[] arr3 = groupw.toArray(new String[groupw.size()]);
+			csvofw.add(arr3);
+			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
+			csvofschedule.add(arr4);
+
+		}
+	
+		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
+		System.out.println(pmaxcsv);
+		broker.putLocal(baseUrl + "/"+Pmax, pmaxcsv);
+		
+		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
+		System.out.println(pmincsv);
+		broker.putLocal(baseUrl + "/"+Pmin, pmincsv);
+		
+		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
+		System.out.println(wcsv);
+		broker.putLocal(baseUrl + "/"+unwill, wcsv);
+		
+		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
+		System.out.println(schedulecsv);
+		
 	}
     
     public static List<String[]> provideGenlist(OntModel model) { //for file "PV_parameters.csv"
