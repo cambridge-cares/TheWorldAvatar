@@ -14,6 +14,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 
@@ -176,7 +177,7 @@ public class Test_DES extends TestCase{
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j7:<http://www.w3.org/2006/time#> "
 				 + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
-				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval ?Pactval ?hourval ?unwillval "
+				+ "SELECT ?entity ?Pmaxval ?Pminval ?unwillval ?Pactval ?hourval "
 				+ "WHERE "
 				+ "{ ?entity a j6:Electronics ."
 				+ "?entity j9:hasActivePowerAbsorbed ?Pmax ."
@@ -215,17 +216,28 @@ public class Test_DES extends TestCase{
 		System.out.println("sizeofresult="+resultList.size());
 		int size=resultList.size();
 		List<String> iriofgroupuser= new ArrayList<String>();
+		List<String[]> csvofbcap= new ArrayList<String[]>();
 		for(int d=0;d<size;d++) {
 			for(int t=0;t<keys.length;t++) {
-				System.out.println("element "+t+"= "+resultList.get(d)[t]);
+				//System.out.println("elementonquery1 "+t+"= "+resultList.get(d)[t]);
 				if(t==3) {
 					iriofgroupuser.add(resultList.get(d)[t]);
 				}
+
 			}
 			
-			System.out.println("---------------------------------------");
+			int group=Integer.valueOf(resultList.get(d)[0].split("#Building-")[1]);
+			//String[]e= {"group"+group,resultList.get(d)[2]};
+			String[]e= {resultList.get(d)[3],resultList.get(d)[2]};
+			csvofbcap.add(e);
+			
+			//System.out.println("---------------------------------------");
 		}
+		String bcapcsv = MatrixConverter.fromArraytoCsv(csvofbcap);
+		System.out.println(bcapcsv);
 		
+		
+		//part 2 to see how many multiplication factor
 		ResultSet resultSet2 = JenaHelper.query(model, groupInfo2);
 		String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
 		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
@@ -234,30 +246,77 @@ public class Test_DES extends TestCase{
 		int size2=resultList2.size();
 		for(int d=0;d<size2;d++) {
 			for(int t=0;t<keys2.length;t++) {
-				System.out.println("element "+t+"= "+resultList2.get(d)[t]);
+				System.out.println("elementonquery2 "+t+"= "+resultList2.get(d)[t]);
 			}
 			System.out.println("---------------------------------------");
 			
 		}
+		
+		
+		
 
 		int sizeofiriuser=iriofgroupuser.size();
 		System.out.println("sizeofiriuser="+sizeofiriuser);
-		for(int x=0;x<sizeofiriuser;x++) {
-			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x));
+		List<String[]> csvofpmax= new ArrayList<String[]>();
+		List<String[]> csvofpmin= new ArrayList<String[]>();
+		List<String[]> csvofw= new ArrayList<String[]>();
+		List<String[]> csvofschedule= new ArrayList<String[]>();
+		for(int x=1;x<=sizeofiriuser;x++) {
+			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
 			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
 			System.out.println("sizeofresult="+resultListx.size());
+			List<String>groupPmax=new ArrayList<String>();
+			groupPmax.add(iriofgroupuser.get(x-1));
+			List<String>groupPmin=new ArrayList<String>();
+			groupPmin.add(iriofgroupuser.get(x-1));
+			List<String>groupw=new ArrayList<String>();
+			groupw.add(iriofgroupuser.get(x-1));
+			List<String>groupschedule=new ArrayList<String>();
+			groupschedule.add(iriofgroupuser.get(x-1));
 			for(int d=0;d<resultListx.size();d++) {
-				for(int t=0;t<keysx.length;t++) {
-					System.out.println("element "+t+"= "+resultListx.get(d)[t]);
-				}
-				System.out.println("---------------------------------------");
+				//for(int t=0;t<keysx.length;t++) {
+					//System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
+					if(resultListx.get(d)[5].contentEquals("1")) {
+						groupPmax.add(resultListx.get(d)[1]);
+						groupPmin.add(resultListx.get(d)[2]);
+						groupw.add(resultListx.get(d)[3]);
+					}
+					
+					groupschedule.add("t"+resultListx.get(d)[5]);
+					groupschedule.add(resultListx.get(d)[4]);
+			
+
+
+				//}
+				//System.out.println("---------------------------------------");
 				
 			}
+			
+			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
+			csvofpmax.add(arr1);
+			String[] arr2 = groupPmin.toArray(new String[groupPmin.size()]);
+			csvofpmin.add(arr2);
+			String[] arr3 = groupw.toArray(new String[groupw.size()]);
+			csvofw.add(arr3);
+			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
+			csvofschedule.add(arr4);
+
 		}
 		
+		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
+		System.out.println(pmaxcsv);
+		
+		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
+		System.out.println(pmincsv);
+		
+		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
+		System.out.println(wcsv);
+		
+		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
+		System.out.println(schedulecsv);
 		
 	}
 	
