@@ -203,7 +203,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 
 		// System.out.println("model= "+model);
 
-		String batteryquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		String pvquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -237,7 +237,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 
 		for (int w = 0; w < pvGenIRI.size(); w++) {
 
-			String result = new QueryBroker().queryFile(pvGenIRI.get(w), batteryquery);
+			String result = new QueryBroker().queryFile(pvGenIRI.get(w), pvquery);
 			keyspv = JenaResultSetFormatter.getKeys(result);
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyspv);
 
@@ -502,6 +502,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 	}
 	
+	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -553,29 +554,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			AgentCaller.printToResponse(listofbat, response);
 		}
 	
-	private void cleanDirectory() {
-		//	clear the folder SRM first
-		File folder = new File("C:/JPS_DATA/workingdir/JPS/SRM");
-				
-		File[] listOfFiles = folder.listFiles();
-
-		if (listOfFiles != null) {
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
-						&& !listOfFiles[i].getName().equals("InputParams.xml")
-						&& !listOfFiles[i].getName().equals("InputEngineML.xml")
-						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
-						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
-						&& !listOfFiles[i].getName().equals("convert.exe")
-						&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
-
-					listOfFiles[i].delete();
-				}
-			}
-		}
-	}
-	
-	public List<String[]> getBatteryCoord(OntModel model) {
+/*	public List<String[]> getBatteryCoord(OntModel model) { must be the complete model (not needed at the moment
 		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -607,7 +586,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			
 		return resultList;
-	}
+	}*/
+	
 	public JSONArray createBatteryOwlFile(String ENIRI, JSONObject resultofbattery, String dir) throws IOException {
 		ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
 		int size=resultfrommodelbranch.size();
