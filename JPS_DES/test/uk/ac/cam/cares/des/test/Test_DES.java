@@ -17,12 +17,13 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 
 public class Test_DES extends TestCase{
 	
-	private String ENIRI="http://www.theworldavatar.com/kb/sg/singapore/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 	
 	public void testrunpython() throws IOException {
@@ -348,7 +349,11 @@ public class Test_DES extends TestCase{
 		
 	}
 	
-	
+	public void testquerygen() {
+		OntModel model = readModelGreedy(ENIRI);
+		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
+		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
+	}
 	
 
 	

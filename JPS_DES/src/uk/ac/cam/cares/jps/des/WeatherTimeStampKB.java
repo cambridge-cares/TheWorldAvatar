@@ -101,10 +101,10 @@ public class WeatherTimeStampKB {
 		for(int x=1;x<=49;x++) {
 			String tempvalue=readingFromCSV.get(x-1)[4];
 			String year=readingFromCSV.get(x-1)[0];
-			//String month=readingFromCSV.get(x-1)[1].split("-")[1]; need to map from june
+			String month=readingFromCSV.get(x-1)[1].split("-")[1]; //need to map from june
 			String date=readingFromCSV.get(x-1)[1].split("-")[0];
 			String time=readingFromCSV.get(x-1)[2];
-			String timestampvalue=year+"-"+"06"+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
+			String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
 			
 			Individual voutsidetemp = scalarvalueclass.createIndividual(Prefix+mainobjectname+".owl#V_MeasuredTemperatureOf"+mainobjectname+"_"+x);
 			Individual timestamptemp = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasuredTemperatureOf"+mainobjectname+"_"+x);

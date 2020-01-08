@@ -42,8 +42,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 	public static String bcap="bcap.csv";
 	public static String unwill="unwill.csv";
 	
-	
-	
 	public static String producerdata="PV_parameters.csv";
 	public static String consumerdata1="FuelCell.csv";
 	
@@ -73,12 +71,12 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		List<String[]> consumer = provideLoadFClist(model); // instance iri
 
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
-		broker.putLocal(baseUrl + "/"+producerdata, producercsv);
+		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
 
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
-		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv);
+		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
 		
-		extractResidentialData(iriofdistrict, baseUrl);
+		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 
 		
 		try {
@@ -99,12 +97,19 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	
     }
     
-    
-    
-    
-    	
-    
+	public static OntModel readModelGreedy(String iriofnetwork) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {"
+				//+ "?entity  a  j2:CompositeSystem  ." 
+				+ "?entity   j2:hasSubsystem ?component ." 
+				+ "}";
 
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
+	
 	public static OntModel readModelGreedyForUser(String useriri) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -117,7 +122,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 	public void runOptimization(String baseUrl) throws IOException, InterruptedException {
 
-		// copyTemplate(baseUrl, weather);//temporary
 		JSONObject jo = new JSONObject();
 
 		jo.put("folder", baseUrl);
@@ -132,13 +136,11 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 
 		copyFromPython(baseUrl, "runpy.bat");
-		copyFromPython(baseUrl, "Receding_Horizon_Optimization_V0.py");
+		copyFromPython(baseUrl, "Receding_Horizon_Optimization_V.py");
 
 		String startbatCommand = baseUrl + "/runpy.bat";
 		String result = executeSingleCommand(baseUrl, startbatCommand);
 		logger.info("final after calling: " + result);
-		// String DES = PythonHelper.callPythonwithNoParameter("Receding Horizon
-		// Optimization_V0.py", this);
 
 	}
 
@@ -185,19 +187,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		new QueryBroker().putLocal(destinationUrl, file);
 	}
     
-	public static OntModel readModelGreedy(String iriofnetwork) {
-		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?component "
-				+ "WHERE {"
-				//+ "?entity  a  j2:CompositeSystem  ." 
-				+ "?entity   j2:hasSubsystem ?component ." 
-				+ "}";
-
-		QueryBroker broker = new QueryBroker();
-		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-	}
-	
 	public void extractResidentialData(String iriofnetworkdistrict,String baseUrl) {
     	OntModel model = readModelGreedy(iriofnetworkdistrict);	
 		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -468,7 +457,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "?vimp   j2:numericalValue ?impval ."
                 
                 + "?entity   j1:hasRatedCurrent ?isc ."
-                + "?isc a j9:RatedCurrent ."
+                + "?isc a j1:RatedCurrent ."
                 + "?isc   j2:hasValue ?visc ."
                 + "?visc   j2:numericalValue ?iscval ."
                 
@@ -481,9 +470,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 + "?io a j9:MinimumCurrent ."
                 + "?io   j2:hasValue ?vio ."
                 + "?vio   j2:numericalValue ?ioval ."
-            
-                            
-                //+ "FILTER EXISTS {?entity j2:isSubsystemOf ?plant } " //filtering gen 001 as it is slackbus
+
                 + "}";
 
         List<String[]> resultListforcsv = new ArrayList<String[]>();
@@ -546,7 +533,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
         String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keys = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        
+        System.out.println("size of query consumer= "+resultListfromquery.size());
 		for (int d = 0; d < keys.length; d++) {
 				String[] line0 = { keys[d], resultListfromquery.get(0)[d] };
 				resultListforcsv.add(line0);
