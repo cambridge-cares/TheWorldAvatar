@@ -67,19 +67,18 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		
 		//currently not needed because owl file not ready
 		String iriofnetwork = requestParams.getString("electricalnetwork");
+		String iriofdistrict = requestParams.getString("district");
 		OntModel model = readModelGreedy(iriofnetwork);
 		List<String[]> producer = provideGenlist(model); // instance iri
 		List<String[]> consumer = provideLoadFClist(model); // instance iri
 
 		String producercsv = MatrixConverter.fromArraytoCsv(producer);
-		
-		
 		broker.putLocal(baseUrl + "/"+producerdata, producercsv);
 
 		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
 		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv);
 		
-		//put the csv for the consumer here
+		extractResidentialData(iriofdistrict, baseUrl);
 
 		
 		try {
@@ -131,13 +130,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData",
 				jo.toString());
 
-		// constraints related to residential
-		copyTemplate(baseUrl, Pmin);
-		copyTemplate(baseUrl, Pmax);
-		copyTemplate(baseUrl, bcap);
-		copyTemplate(baseUrl, unwill);
-		// property for residential
-		copyTemplate(baseUrl, schedule);
 
 		copyFromPython(baseUrl, "runpy.bat");
 		copyFromPython(baseUrl, "Receding_Horizon_Optimization_V0.py");
@@ -295,9 +287,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 				}
 
 			}
-			
-			int group=Integer.valueOf(resultList.get(d)[0].split("#Building-")[1]);
-			//String[]e= {"group"+group,resultList.get(d)[2]};
 			String[]e= {resultList.get(d)[3],resultList.get(d)[2]};
 			csvofbcap.add(e);
 			
@@ -330,6 +319,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		
 
 		int sizeofiriuser=iriofgroupuser.size();
+		Collections.sort(iriofgroupuser);
 		System.out.println("sizeofiriuser="+sizeofiriuser);
 		List<String[]> csvofpmax= new ArrayList<String[]>();
 		List<String[]> csvofpmin= new ArrayList<String[]>();
@@ -344,6 +334,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
 			System.out.println("sizeofresult="+resultListx.size());
+			
 			List<String>groupPmax=new ArrayList<String>();
 			groupPmax.add(iriofgroupuser.get(x-1));
 			List<String>groupPmin=new ArrayList<String>();
@@ -352,6 +343,8 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			groupw.add(iriofgroupuser.get(x-1));
 			List<String>groupschedule=new ArrayList<String>();
 			groupschedule.add(iriofgroupuser.get(x-1));
+			int countr = 1; 
+			groupschedule.add("t1");
 			for(int d=0;d<resultListx.size();d++) {
 				//for(int t=0;t<keysx.length;t++) {
 					//System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
@@ -363,16 +356,23 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 						groupPmin.add(resultListx.get(d)[2]);
 						groupw.add(resultListx.get(d)[3]);
 					}
-					
-					groupschedule.add("t"+resultListx.get(d)[5]);
-					groupschedule.add(resultListx.get(d)[4]);
-					
-			
-
-
-				//}
-				//System.out.println("---------------------------------------");
-				
+					//HashMap
+					countr ++; 
+					if (countr < 12) { //11 appliances
+						groupschedule.add(resultListx.get(d)[4]);
+					} else {
+						groupschedule.add(resultListx.get(d)[4]);
+						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
+						csvofschedule.add(arr4);
+						//clear groupschedule
+						groupschedule=new ArrayList<String>();
+						countr = 1;
+						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
+							groupschedule.add(iriofgroupuser.get(x-1));
+							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+						}
+					}	
+									
 			}
 			
 			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
@@ -387,31 +387,16 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		}
 		String[] arr0 = header.toArray(new String[header.size()]);	
 		
-		Collections.sort(csvofpmax, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
 		//csvofpmax.add(0, arr0);
 		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
 		System.out.println(pmaxcsv);
 		broker.putLocal(baseUrl + "/"+Pmax, pmaxcsv);
 		
-		Collections.sort(csvofpmin, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
 		//csvofpmin.add(0, arr0);
 		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
 		System.out.println(pmincsv);
 		broker.putLocal(baseUrl + "/"+Pmin, pmincsv);
 		
-		Collections.sort(csvofw, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
 		//csvofw.add(0, arr0);
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
@@ -419,6 +404,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		
 		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
 		System.out.println(schedulecsv);
+		broker.putLocal(baseUrl + "/"+schedule, schedulecsv);
 		
 	}
     

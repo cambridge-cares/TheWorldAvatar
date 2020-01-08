@@ -23,6 +23,7 @@ import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 public class Test_DES extends TestCase{
 	
 	private String ENIRI="http://www.theworldavatar.com/kb/sg/singapore/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 	
 	public void testrunpython() throws IOException {
 //		DistributedEnergySystem a = new DistributedEnergySystem();
@@ -52,12 +53,13 @@ public class Test_DES extends TestCase{
 			System.out.println(returnValue);
 		}
 
-	public void testStartDESScenario() throws IOException  {
+	public void testStartDESScenariobase() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
 	
 		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
 		
 //		String scenarioUrl = BucketHelper.getScenarioUrl("testtest");
 //		
@@ -138,7 +140,7 @@ public class Test_DES extends TestCase{
 		return broker.readModelGreedy(useriri, electricalnodeInfo);
 	}
 	
-	public void testquerygreedymultiple() {
+	public void xxxtestquerygreedymultiple() { //testing for csv creation related to residential
 		String iriofnetworkdistrict="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 		OntModel model = readModelGreedy(iriofnetworkdistrict);	
 		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -227,9 +229,6 @@ public class Test_DES extends TestCase{
 				}
 
 			}
-			
-			int group=Integer.valueOf(resultList.get(d)[0].split("#Building-")[1]);
-			//String[]e= {"group"+group,resultList.get(d)[2]};
 			String[]e= {resultList.get(d)[3],resultList.get(d)[2]};
 			csvofbcap.add(e);
 			
@@ -263,6 +262,7 @@ public class Test_DES extends TestCase{
 		
 
 		int sizeofiriuser=iriofgroupuser.size();
+		Collections.sort(iriofgroupuser);
 		System.out.println("sizeofiriuser="+sizeofiriuser);
 		List<String[]> csvofpmax= new ArrayList<String[]>();
 		List<String[]> csvofpmin= new ArrayList<String[]>();
@@ -286,9 +286,10 @@ public class Test_DES extends TestCase{
 			groupw.add(iriofgroupuser.get(x-1));
 			List<String>groupschedule=new ArrayList<String>();
 			groupschedule.add(iriofgroupuser.get(x-1));
+			//Set to ensure no repeats
+			int countr = 1; 
+			groupschedule.add("t1");
 			for(int d=0;d<resultListx.size();d++) {
-				//for(int t=0;t<keysx.length;t++) {
-					//System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
 					if(resultListx.get(d)[5].contentEquals("1")) {
 						//System.out.println("equipment= "+resultListx.get(d)[0]);
 						if(x==1) {
@@ -298,15 +299,22 @@ public class Test_DES extends TestCase{
 						groupPmin.add(resultListx.get(d)[2]);
 						groupw.add(resultListx.get(d)[3]);
 					}
-					
-					groupschedule.add("t"+resultListx.get(d)[5]);
-					groupschedule.add(resultListx.get(d)[4]);
-			
-
-
-				//}
-				//System.out.println("---------------------------------------");
-				
+					//HashMap
+					countr ++; 
+					if (countr < 12) { //11 appliances
+						groupschedule.add(resultListx.get(d)[4]);
+					} else {
+						groupschedule.add(resultListx.get(d)[4]);
+						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
+						csvofschedule.add(arr4);
+						//clear groupschedule
+						groupschedule=new ArrayList<String>();
+						countr = 1;
+						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
+							groupschedule.add(iriofgroupuser.get(x-1));
+							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+						}
+					}				
 			}
 
 			
@@ -322,33 +330,19 @@ public class Test_DES extends TestCase{
 		}
 		String[] arr0 = header.toArray(new String[header.size()]);		
 		
-		Collections.sort(csvofpmax, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
 		csvofpmax.add(0, arr0);
 		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
 		System.out.println(pmaxcsv);
-		
-		Collections.sort(csvofpmin, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
+
 		csvofpmin.add(0, arr0);
 		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
 		System.out.println(pmincsv);
 		
-		Collections.sort(csvofw, new Comparator<String[]>() {
-			public int compare(String[] strings, String[] otherStrings) {
-				return strings[0].compareTo(otherStrings[0]);
-			}
-		});
 		csvofw.add(0, arr0);
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
 		
+		//csvofschedule.add(0, arr0);
 		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
 		System.out.println(schedulecsv);
 		
