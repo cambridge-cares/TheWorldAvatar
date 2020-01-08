@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -300,6 +302,11 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			csvofbcap.add(e);
 			
 		}
+		Collections.sort(csvofbcap, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
 		String bcapcsv = MatrixConverter.fromArraytoCsv(csvofbcap);
 		System.out.println(bcapcsv);
 		broker.putLocal(baseUrl + "/"+bcap, bcapcsv);
@@ -328,6 +335,8 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		List<String[]> csvofpmin= new ArrayList<String[]>();
 		List<String[]> csvofw= new ArrayList<String[]>();
 		List<String[]> csvofschedule= new ArrayList<String[]>();
+		List<String>header=new ArrayList<String>();
+		header.add("");
 		for(int x=1;x<=sizeofiriuser;x++) {
 			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
@@ -347,6 +356,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 				//for(int t=0;t<keysx.length;t++) {
 					//System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
 					if(resultListx.get(d)[5].contentEquals("1")) {
+						if(x==1) {
+						header.add(resultListx.get(d)[0].split("#")[1].split("-")[0]);
+						}
 						groupPmax.add(resultListx.get(d)[1]);
 						groupPmin.add(resultListx.get(d)[2]);
 						groupw.add(resultListx.get(d)[3]);
@@ -373,15 +385,34 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			csvofschedule.add(arr4);
 
 		}
-	
+		String[] arr0 = header.toArray(new String[header.size()]);	
+		
+		Collections.sort(csvofpmax, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
+		//csvofpmax.add(0, arr0);
 		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
 		System.out.println(pmaxcsv);
 		broker.putLocal(baseUrl + "/"+Pmax, pmaxcsv);
 		
+		Collections.sort(csvofpmin, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
+		//csvofpmin.add(0, arr0);
 		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
 		System.out.println(pmincsv);
 		broker.putLocal(baseUrl + "/"+Pmin, pmincsv);
 		
+		Collections.sort(csvofw, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
+		//csvofw.add(0, arr0);
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
 		broker.putLocal(baseUrl + "/"+unwill, wcsv);

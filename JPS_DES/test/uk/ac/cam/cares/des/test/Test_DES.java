@@ -3,6 +3,8 @@ package uk.ac.cam.cares.des.test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
@@ -233,6 +235,11 @@ public class Test_DES extends TestCase{
 			
 			//System.out.println("---------------------------------------");
 		}
+		Collections.sort(csvofbcap, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
 		String bcapcsv = MatrixConverter.fromArraytoCsv(csvofbcap);
 		System.out.println(bcapcsv);
 		
@@ -261,6 +268,8 @@ public class Test_DES extends TestCase{
 		List<String[]> csvofpmin= new ArrayList<String[]>();
 		List<String[]> csvofw= new ArrayList<String[]>();
 		List<String[]> csvofschedule= new ArrayList<String[]>();
+		List<String>header=new ArrayList<String>();
+		header.add("");
 		for(int x=1;x<=sizeofiriuser;x++) {
 			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
@@ -268,6 +277,7 @@ public class Test_DES extends TestCase{
 			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
 			System.out.println("sizeofresult="+resultListx.size());
+
 			List<String>groupPmax=new ArrayList<String>();
 			groupPmax.add(iriofgroupuser.get(x-1));
 			List<String>groupPmin=new ArrayList<String>();
@@ -280,6 +290,10 @@ public class Test_DES extends TestCase{
 				//for(int t=0;t<keysx.length;t++) {
 					//System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
 					if(resultListx.get(d)[5].contentEquals("1")) {
+						//System.out.println("equipment= "+resultListx.get(d)[0]);
+						if(x==1) {
+						header.add(resultListx.get(d)[0].split("#")[1].split("-")[0]);
+						}
 						groupPmax.add(resultListx.get(d)[1]);
 						groupPmin.add(resultListx.get(d)[2]);
 						groupw.add(resultListx.get(d)[3]);
@@ -294,6 +308,7 @@ public class Test_DES extends TestCase{
 				//System.out.println("---------------------------------------");
 				
 			}
+
 			
 			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
 			csvofpmax.add(arr1);
@@ -305,13 +320,32 @@ public class Test_DES extends TestCase{
 			csvofschedule.add(arr4);
 
 		}
+		String[] arr0 = header.toArray(new String[header.size()]);		
 		
+		Collections.sort(csvofpmax, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
+		csvofpmax.add(0, arr0);
 		String pmaxcsv = MatrixConverter.fromArraytoCsv(csvofpmax);
 		System.out.println(pmaxcsv);
 		
+		Collections.sort(csvofpmin, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
+		csvofpmin.add(0, arr0);
 		String pmincsv = MatrixConverter.fromArraytoCsv(csvofpmin);
 		System.out.println(pmincsv);
 		
+		Collections.sort(csvofw, new Comparator<String[]>() {
+			public int compare(String[] strings, String[] otherStrings) {
+				return strings[0].compareTo(otherStrings[0]);
+			}
+		});
+		csvofw.add(0, arr0);
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
 		
