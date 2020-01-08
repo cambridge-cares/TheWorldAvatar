@@ -77,7 +77,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 //		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 		// later replaced by query from the owl file of the sensor
 		
-		
+		//query the data from the existing owl file
 		
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -123,20 +123,20 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 			String timewholecsv=resultListfromquerytemp.get(d)[2];
 			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
 			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
-			
 			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
 			readingFromCSV.add(e);
 		}
 		
 		
 		
-		
+		//make new csv
 		readingFromCSV.remove(0); //if with header,later need to be changed TODO KEVIN
 		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
+		System.out.println("datemonth="+datemonth);
 		readingFromCSV.add(newline);
 		 new QueryBroker().putLocal(folder + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
 		
-		
+		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
 		String irifortemp=converter.startConversion(readingFromCSV,"temperature");
 		System.out.println(irifortemp+" is updated");
