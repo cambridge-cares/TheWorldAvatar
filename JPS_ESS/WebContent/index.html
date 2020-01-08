@@ -1364,7 +1364,7 @@ asyncLoop({
 
 		document.getElementById("loader").style.display = "block";
 
-		var agenturl = prefix + '/JPS_POWSYS/BattRetrofit/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
+		var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
 		data = { "electricalnetwork":electricalnetwork}
 		url = createUrlForAgent(scenario, agenturl, data);
 		console.log(url);
