@@ -20,11 +20,11 @@ import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
@@ -61,9 +61,11 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {
 		QueryBroker broker = new QueryBroker();
-		String baseUrl = QueryBroker.getLocalDataPath();
 		
-		//currently not needed because owl file not ready
+        String scenarioUrl = BucketHelper.getScenarioUrl();
+        String usecaseUrl = BucketHelper.getUsecaseUrl();
+        logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+        String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES";
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String iriofdistrict = requestParams.getString("district");
 		OntModel model = readModelGreedy(iriofnetwork);
@@ -83,9 +85,15 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			runOptimization(baseUrl);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			e.printStackTrace();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
 
@@ -120,9 +128,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		return broker.readModelGreedy(useriri, electricalnodeInfo);
 	}
 
-	public void runOptimization(String baseUrl) throws IOException, InterruptedException {
+	public void runOptimization(String baseUrl) throws Exception {
 
-		JSONObject jo = new JSONObject();
+		/*JSONObject jo = new JSONObject();
 
 		jo.put("folder", baseUrl);
 		jo.put("tempsensor",
@@ -132,7 +140,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		jo.put("irradiationsensor",
 				"http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData",
-				jo.toString());
+				jo.toString());*/
+		
+		new WeatherIrradiationRetriever().readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 
 
 		copyFromPython(baseUrl, "runpy.bat");

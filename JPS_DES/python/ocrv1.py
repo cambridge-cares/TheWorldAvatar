@@ -12,14 +12,10 @@ def ocr():
 	url = 'https://www.solar-repository.sg/ftp_up/weather/500_Weather.png'
 	response = urllib.request.urlretrieve(url, '500_image.png')
 	#scan image provided. 
-	with open ('data1.txt', 'w') as outfile:
-		outfile.write('hahaha');
 	im = Image.open('500_image.png')
 	text = image_to_string(im)
 	im.close()
 	r = text.split('\n')
-	with open ('data2.txt', 'w') as outfile:
-		outfile.write('hahaha');
 	result = {}
 	print(r)
 	for i in r:
