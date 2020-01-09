@@ -31,7 +31,7 @@ public class TestCarbonTaxAgent extends TestCase {
 
 		
 		BigDecimal c;
-		c= new BigDecimal("170"); 
+		c= new BigDecimal("150"); 
 		a.prepareConstantCSV(c,dataPath);
 		a.runGAMS(dataPath);
 		File file = new File(dataPath+"/results.csv");

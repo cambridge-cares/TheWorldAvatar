@@ -35,7 +35,8 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	private static final long serialVersionUID = -2354646810093235777L;
 	List<NuclearGenType>plant =new ArrayList<NuclearGenType>();	
 	private Logger logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
-	private String modelname="prllelwrld_dynamicvar.gms";
+	//private String modelname="prllelwrld_dynamicvar.gms";
+	private String modelname="Final_parallel_wrld.gms";
 
 	@Override
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -272,7 +273,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		String[]header= {"Parameter","Value"};
 		String[]delta= {"delta","0.05"};
 		String[]tau= {"tau",""+tax};
-		String[]D= {"D","0.1"};
+		String[]D= {"D","0.02"};
 		String[]L= {"L","30"};
 		constant.add(header);
 		constant.add(delta);
