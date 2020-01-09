@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
-@WebServlet(urlPatterns = { "/ESSAgent" , "/ESSBatterySearch"})
+@WebServlet(urlPatterns = { "/ESSAgent"})
 
 public class EnergyStorageSystem extends JPSHttpServlet {
 

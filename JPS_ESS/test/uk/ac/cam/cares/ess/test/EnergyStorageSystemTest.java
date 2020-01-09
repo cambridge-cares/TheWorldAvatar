@@ -121,18 +121,6 @@ public static OntModel readModelGreedy(String iriofnetwork) {
 	return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
 }
 
-	public void testESSBattery() throws IOException{
-		JSONObject jo = new JSONObject();
-		jo.put("electricalnetwork", ENIRI);
-		String scenarioUrl = BucketHelper.getScenarioUrl("testBatt1");
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSBatterySearch", jo.toString());
-		System.out.println(resultStart);
-	}
 	
 	public void testCreateCSV() throws IOException  {
 		//String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
