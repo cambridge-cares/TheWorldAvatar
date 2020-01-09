@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		
         String scenarioUrl = BucketHelper.getScenarioUrl();
         String usecaseUrl = BucketHelper.getUsecaseUrl();
-        logger.info("processing result of GAMS simulation for scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
         String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES";
 		String iriofnetwork = requestParams.getString("electricalnetwork");
 		String iriofdistrict = requestParams.getString("district");
@@ -96,12 +97,47 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-
-		String directory = baseUrl + "";
-		JSONObject newresult = new JSONObject();
-		newresult.put("folder", directory);
-
-		return newresult;
+		String weatherdir=baseUrl+"/Weather.csv";
+		String content = new QueryBroker().readFileLocal(weatherdir);
+		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
+		
+		String powerdir=baseUrl+"/totgen.csv";
+		String content2 = new QueryBroker().readFileLocal(powerdir);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
+		
+		JSONObject dataresult= new JSONObject();
+		
+		JSONArray temperature=new JSONArray();
+		JSONArray irradiation=new JSONArray();
+		JSONArray fuelcellconsumption=new JSONArray();
+		JSONArray residentialconsumption=new JSONArray();
+		JSONArray industrialconsumption=new JSONArray();
+		JSONArray buildingconsumption=new JSONArray();
+		
+		//25-48 (last 24)
+		int sizeofweather=weatherResult.size();
+		for (int x=sizeofweather-24;x<sizeofweather;x++) {
+			temperature.put(weatherResult.get(x)[4]);
+			irradiation.put(weatherResult.get(x)[8]);
+		}
+		
+		int sizeofsimulation=simulationResult.size();
+		for (int x=sizeofsimulation-24;x<sizeofsimulation;x++) {
+			fuelcellconsumption.put(simulationResult.get(0)[x]);
+			residentialconsumption.put(simulationResult.get(1)[x]);
+			industrialconsumption.put(simulationResult.get(2)[x]);
+			buildingconsumption.put(simulationResult.get(3)[x]);
+		}
+		
+		
+		dataresult.put("temperature", temperature);
+		dataresult.put("irradiation", irradiation);
+		dataresult.put("fuelcell", fuelcellconsumption);
+		dataresult.put("residential", residentialconsumption);
+		dataresult.put("industrial", industrialconsumption);
+		dataresult.put("building", buildingconsumption);
+		
+		return dataresult;
     	
     }
     
