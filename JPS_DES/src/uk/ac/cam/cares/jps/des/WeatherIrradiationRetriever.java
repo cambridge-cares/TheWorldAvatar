@@ -23,10 +23,6 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
 	@Override 
 	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) {
-		
-//		String value = req.getParameter("query");
-//		JSONObject input = new JSONObject(value);
-		System.out.println("HELLO");
 		JSONObject joforDES = AgentCaller.readJsonParameter(req);
 		String folder = joforDES.getString("folder");
 //		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
@@ -35,9 +31,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		String iriirradiationsensor=joforDES.getString("irradiationsensor");
 		String iritempsensor=joforDES.getString("tempsensor");
 		String irispeedsensor=joforDES.getString("speedsensor");
-		System.out.println("jpscontet needed?0");
 		try {
-			System.out.println("Check here then?");
 			readWritedatatoOWL(folder,iritempsensor,iriirradiationsensor,irispeedsensor);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -59,8 +53,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(startbatCommand);
 		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
 		logger.info("OCR finished");
-		
-//		String jsonres=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) +"/python/data.json");
+
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
 		String year=current.getString("year");
@@ -70,13 +63,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		String temperature=current.getString("temperature");
 		String irradiance=current.getString("irradiance");
 		
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();
-		
-		//modification of array
-//		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Weather.csv");
-//		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
-		// later replaced by query from the owl file of the sensor
-		
+		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
 		//query the data from the existing owl file
 		
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
