@@ -72,8 +72,8 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
 				+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				//+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
-				+ "}";
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+//				+ "}";
 
 		String result = new QueryBroker().queryFile(iritempsensor, sensorinfo);
 		String[] keys = JenaResultSetFormatter.getKeys(result);

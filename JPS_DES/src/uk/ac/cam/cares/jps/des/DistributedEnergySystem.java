@@ -104,7 +104,10 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String powerdir=baseUrl+"/totgen.csv";
 		String content2 = new QueryBroker().readFileLocal(powerdir);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
-		
+		//enable this once new python code runs
+//		String rhdir=baseUrl+"/rh1.csv";
+//		String content3 = new QueryBroker().readFileLocal(rhdir);
+//		List<String[]> residentialresult = MatrixConverter.fromCsvToArray(content3);
 		JSONObject dataresult= new JSONObject();
 		
 		JSONArray temperature=new JSONArray();
@@ -120,16 +123,21 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			temperature.put(weatherResult.get(x)[4]);
 			irradiation.put(weatherResult.get(x)[8]);
 		}
-		
+		//log to check if it's reading the right one. 
 		int sizeofsimulation=simulationResult.size();
-		for (int x=sizeofsimulation-24;x<sizeofsimulation;x++) {
+		for (int x=0;x<sizeofsimulation;x++) {
 			fuelcellconsumption.put(simulationResult.get(0)[x]);
 			residentialconsumption.put(simulationResult.get(1)[x]);
 			industrialconsumption.put(simulationResult.get(2)[x]);
 			buildingconsumption.put(simulationResult.get(3)[x]);
 		}
-		
-		
+		//enable this once new python code runs
+//		for (int x=0;x<sizeofsimulation;x++) {
+//			fuelcellconsumption.put(residentialresult.get(0)[x]);
+//			residentialconsumption.put(residentialresult.get(1)[x]);
+//			industrialconsumption.put(residentialresult.get(2)[x]);
+//			buildingconsumption.put(residentialresult.get(3)[x]);
+//		}
 		dataresult.put("temperature", temperature);
 		dataresult.put("irradiation", irradiation);
 		dataresult.put("fuelcell", fuelcellconsumption);

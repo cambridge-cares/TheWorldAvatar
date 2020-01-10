@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -72,7 +73,65 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-	
+	public void testStartDESScenariotr() throws IOException  {
+
+		String producerdata="PV_parameters.csv";
+		String consumerdata1="FuelCell.csv";
+		QueryBroker broker = new QueryBroker();
+		DistributedEnergySystem a = new DistributedEnergySystem();
+        String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES";
+		String iriofnetwork = ENIRI;
+		String iriofdistrict = DISIRI;
+		OntModel model = readModelGreedy(iriofnetwork);
+		List<String[]> producer = a.provideGenlist(model); // instance iri
+		List<String[]> consumer = a.provideLoadFClist(model); // instance iri
+		String producercsv = MatrixConverter.fromArraytoCsv(producer);
+		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
+
+		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
+		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
+		
+		a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		String weatherdir=baseUrl+"/Weather.csv";
+		String content = new QueryBroker().readFileLocal(weatherdir);
+		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
+		
+		String powerdir=baseUrl+"/totgen.csv";
+		String content2 = new QueryBroker().readFileLocal(powerdir);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
+
+		JSONArray temperature=new JSONArray();
+		JSONArray irradiation=new JSONArray();
+		JSONArray fuelcellconsumption=new JSONArray();
+		JSONArray residentialconsumption=new JSONArray();
+		JSONArray industrialconsumption=new JSONArray();
+		JSONArray buildingconsumption=new JSONArray();
+		JSONObject dataresult= new JSONObject();
+		
+		//25-48 (last 24)
+		int sizeofweather=weatherResult.size();
+		for (int x=sizeofweather-24;x<sizeofweather;x++) {
+			temperature.put(weatherResult.get(x)[4]);
+			irradiation.put(weatherResult.get(x)[8]);
+		}
+		//log to check if it's reading the right one. 
+		int sizeofsimulation=simulationResult.size();
+		for (int x=0;x<sizeofsimulation;x++) {
+			fuelcellconsumption.put(simulationResult.get(0)[x]);
+			residentialconsumption.put(simulationResult.get(1)[x]);
+			industrialconsumption.put(simulationResult.get(2)[x]);
+			buildingconsumption.put(simulationResult.get(3)[x]);
+		}
+		
+		dataresult.put("temperature", temperature);
+		dataresult.put("irradiation", irradiation);
+		dataresult.put("fuelcell", fuelcellconsumption);
+		dataresult.put("residential", residentialconsumption);
+		dataresult.put("industrial", industrialconsumption);
+		dataresult.put("building", buildingconsumption);
+		
+		System.out.println("result: "+dataresult.toString());
+	}
 	public void testStartDESScenario() throws IOException  {
 		
 
@@ -108,8 +167,8 @@ public class Test_DES extends TestCase{
 		jo.put("jpscontext", "base");
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
-		//a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 	}
 	
 	public void testcsvmanipulation () {
