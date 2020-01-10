@@ -73,13 +73,13 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-	public void testStartDESScenariotr() throws IOException  {
+	public void testStartDESScenariotemp() throws IOException  {
 
 		String producerdata="PV_parameters.csv";
 		String consumerdata1="FuelCell.csv";
 		QueryBroker broker = new QueryBroker();
 		DistributedEnergySystem a = new DistributedEnergySystem();
-        String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES";
+        String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
 		String iriofnetwork = ENIRI;
 		String iriofdistrict = DISIRI;
 		OntModel model = readModelGreedy(iriofnetwork);
@@ -114,21 +114,14 @@ public class Test_DES extends TestCase{
 			temperature.put(weatherResult.get(x)[4]);
 			irradiation.put(weatherResult.get(x)[8]);
 		}
-		//log to check if it's reading the right one. 
-		int sizeofsimulation=simulationResult.size();
-		for (int x=0;x<sizeofsimulation;x++) {
-			fuelcellconsumption.put(simulationResult.get(0)[x]);
-			residentialconsumption.put(simulationResult.get(1)[x]);
-			industrialconsumption.put(simulationResult.get(2)[x]);
-			buildingconsumption.put(simulationResult.get(3)[x]);
-		}
+		//log to check if it's reading the right one. x
 		
 		dataresult.put("temperature", temperature);
 		dataresult.put("irradiation", irradiation);
-		dataresult.put("fuelcell", fuelcellconsumption);
-		dataresult.put("residential", residentialconsumption);
-		dataresult.put("industrial", industrialconsumption);
-		dataresult.put("building", buildingconsumption);
+		dataresult.put("fuelcell", simulationResult.get(3));
+		dataresult.put("residential", simulationResult.get(0));
+		dataresult.put("industrial", simulationResult.get(2));
+		dataresult.put("building", simulationResult.get(1));
 		
 		System.out.println("result: "+dataresult.toString());
 	}
