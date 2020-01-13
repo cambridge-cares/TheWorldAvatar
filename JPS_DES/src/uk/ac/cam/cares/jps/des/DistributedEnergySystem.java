@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -32,9 +33,10 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 
-@WebServlet(urlPatterns = { "/DESAgent" })
+@WebServlet(urlPatterns = { "/DESAgent", "/showDESResult" })
 public class DistributedEnergySystem extends JPSHttpServlet {
-	
+	public static final String SIM_START_PATH = "/DESAgent";
+	public static final String SIM_SHOW_PATH = "/showDESResult";
 	public static String weather="Weather.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
 	
@@ -60,43 +62,91 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     }
 
     @Override
-    protected JSONObject processRequestParameters(JSONObject requestParams) {
-		QueryBroker broker = new QueryBroker();
-		
-        String scenarioUrl = BucketHelper.getScenarioUrl();
-        String usecaseUrl = BucketHelper.getUsecaseUrl();
-        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
-        String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES";
-		String iriofnetwork = requestParams.getString("electricalnetwork");
-		String iriofdistrict = requestParams.getString("district");
-		OntModel model = readModelGreedy(iriofnetwork);
-		List<String[]> producer = provideGenlist(model); // instance iri
-		List<String[]> consumer = provideLoadFClist(model); // instance iri
+    protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
+    	String path = request.getServletPath();
+    	 JSONObject responseParams = requestParams;
+    	 if (SIM_START_PATH.equals(path)) {
+    	    	QueryBroker broker = new QueryBroker();
+    			
+    	        String scenarioUrl = BucketHelper.getScenarioUrl();
+    	        String usecaseUrl = BucketHelper.getUsecaseUrl();
+    	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
+    	        String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES";
+    			String iriofnetwork = requestParams.getString("electricalnetwork");
+    			String iriofdistrict = requestParams.getString("district");
+    			OntModel model = readModelGreedy(iriofnetwork);
+    			List<String[]> producer = provideGenlist(model); // instance iri
+    			List<String[]> consumer = provideLoadFClist(model); // instance iri
 
-		String producercsv = MatrixConverter.fromArraytoCsv(producer);
-		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
+    			String producercsv = MatrixConverter.fromArraytoCsv(producer);
+    			broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
 
-		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
-		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
-		
-		extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+    			String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
+    			broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
+    			
+    			extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 
-		
-		try {
-			runOptimization(baseUrl);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			logger.error(e.getMessage());
-			e.printStackTrace();
-		}
+    			
+    			try {
+    				runOptimization(baseUrl);
+    			} catch (IOException e) {
+    				// TODO Auto-generated catch block
+    				logger.error(e.getMessage());
+    				e.printStackTrace();
+    			} catch (InterruptedException e) {
+    				// TODO Auto-generated catch block
+    				logger.error(e.getMessage());
+    				e.printStackTrace();
+    			} catch (Exception e) {
+    				// TODO Auto-generated catch block
+    				logger.error(e.getMessage());
+    				e.printStackTrace();
+    			}
+    			responseParams = provideJSONResult(baseUrl);
+    		 
+    	 }
+    	 else if(SIM_SHOW_PATH.contentEquals(path)) {
+    		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
+    		 String directorychosen=getLastModifiedDirectory(new File(dir));
+    		 responseParams = provideJSONResult(directorychosen);
+    	 }
+    		
+		return responseParams;
+    	
+    }
+    
+    public static String getLastModifiedDirectory(File directory) {
+        File[] files = directory.listFiles();
+        if (files.length == 0) return directory.getAbsolutePath();
+        Arrays.sort(files, new Comparator<File>() {
+            public int compare(File o1, File o2) {
+                return new Long(o2.lastModified()).compareTo(o1.lastModified()); //latest 1st
+            }});
+        File filechosen= new File("");
+        for(File file:files) {
+        	String[] x=file.list();
+            if(x[0].contentEquals("JPS_DES")) {
+            	File[]childfile=file.listFiles();
+            	for(File filex:childfile) {
+            		String[] y=filex.list();
+            		//System.out.println("namefilechild="+y[10]);
+            		if(y[10].contentEquals("totgen.csv")) {
+            			//System.out.println("directory last date="+file.lastModified());
+            			filechosen=file;
+            			break;
+            		}
+            	}
+            	
+            	
+            	
+            	break;
+            }
+        }
+        return filechosen.getAbsolutePath()+"/JPS_DES";
+    }
+
+	public JSONObject provideJSONResult(String baseUrl) {
+		JSONObject responseParams;
 		String weatherdir=baseUrl+"/Weather.csv";
 		String content = new QueryBroker().readFileLocal(weatherdir);
 		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
@@ -132,9 +182,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		dataresult.put("rh2",rhResult.subList(3, 6).toArray());
 		dataresult.put("rh3",rhResult.subList(6, rhResult.size()).toArray());
 		
-		return dataresult;
-    	
-    }
+		responseParams=dataresult;
+		return responseParams;
+	}
     
 	public static OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "

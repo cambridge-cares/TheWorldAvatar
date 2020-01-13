@@ -421,8 +421,14 @@ public class Test_DES extends TestCase{
 	
 	public void testCreateJSON() {
 		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
-		JSONObject d= new DistributedEnergySystem().convertResultJSON(baseUrl);
+		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
 		System.out.println(d.toString());
+	}
+	
+	public void testfindlatestdirectory() {
+		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
+		 File baseUrl=new File(dir);
+		 System.out.println("date latest directory= "+ new DistributedEnergySystem().getLastModifiedDirectory(baseUrl));
 	}
 	
 
