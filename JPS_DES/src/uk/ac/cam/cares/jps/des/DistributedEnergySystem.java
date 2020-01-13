@@ -108,6 +108,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	 else if(SIM_SHOW_PATH.contentEquals(path)) {
     		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
     		 String directorychosen=getLastModifiedDirectory(new File(dir));
+    		 logger.info("latest directory= "+directorychosen);
     		 responseParams = provideJSONResult(directorychosen);
     	 }
     		
@@ -130,7 +131,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
             	for(File filex:childfile) {
             		String[] y=filex.list();
             		//System.out.println("namefilechild="+y[10]);
-            		if(y[10].contentEquals("totgen.csv")) {
+            		if(y[11].contentEquals("totgen.csv")&&y[9].contentEquals("rh1.csv")) {
             			//System.out.println("directory last date="+file.lastModified());
             			filechosen=file;
             			break;

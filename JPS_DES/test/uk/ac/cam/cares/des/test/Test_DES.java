@@ -431,6 +431,21 @@ public class Test_DES extends TestCase{
 		 System.out.println("date latest directory= "+ new DistributedEnergySystem().getLastModifiedDirectory(baseUrl));
 	}
 	
+	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
+		
+
+		JSONObject jo = new JSONObject();
+	
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
+		
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+
+	}
+	
 
 	
 	
