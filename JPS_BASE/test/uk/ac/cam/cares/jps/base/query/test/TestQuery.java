@@ -115,7 +115,7 @@ public class TestQuery extends TestCase implements ITestConstants{
 			assertEquals(5, size);
 			size = model.size();
 			System.out.println("size triples=" + size);
-			assertEquals(7812, size);
+			assertEquals(7810, size);
 		} finally {
 			JPSHttpServlet.disableScenario();
 		}

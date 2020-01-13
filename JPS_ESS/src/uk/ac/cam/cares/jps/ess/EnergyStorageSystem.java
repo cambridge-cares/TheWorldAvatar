@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
-@WebServlet(urlPatterns = { "/ESSAgent" , "/ESSBatterySearch"})
+@WebServlet(urlPatterns = { "/ESSAgent"})
 
 public class EnergyStorageSystem extends JPSHttpServlet {
 
@@ -77,7 +77,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-//        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
+        //String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
 		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
         String[] cmdArray = new String[7];

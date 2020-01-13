@@ -21,6 +21,7 @@ public class TestAgentDescriptions extends TestCase {
 	private static final String JPS_POWSYS = "http://www.theworldavatar.com/JPS_POWSYS";
 	private static final String JPS_SCENARIO = "http://www.theworldavatar.com/JPS_SCENARIO";
 	private static final String JPS_DES = "http://www.theworldavatar.com/JPS_DES";
+	private static final String JPS_ESS = "http://www.theworldavatar.com/JPS_ESS";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
 	
@@ -332,6 +333,16 @@ public class TestAgentDescriptions extends TestCase {
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#T-Sensor", "tempsensor")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor", "irradiationsensor")
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#F-Sensor", "speedsensor")
+				.build();
+	}
+		private Service createDescrForAgentEnergyStorageSystem() {
+		return new ServiceBuilder()
+				.operation(null, JPS_ESS + "/ESSAgent")
+				.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", "RenewableEnergyGenerator")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "BatteryCatalog")
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#Battery",true, "batterylist",false)
+				.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#EnergyStorageSystem",true, "batterylist",false)
 				.build();
 	}
 	

@@ -205,7 +205,7 @@ public class Test_DES extends TestCase{
 		return broker.readModelGreedy(useriri, electricalnodeInfo);
 	}
 	
-	public void xxxtestquerygreedymultiple() { //testing for csv creation related to residential
+	public void testquerygreedymultiple() { //testing for csv creation related to residential
 		String iriofnetworkdistrict="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 		OntModel model = readModelGreedy(iriofnetworkdistrict);	
 		String groupInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -417,6 +417,12 @@ public class Test_DES extends TestCase{
 		OntModel model = readModelGreedy(ENIRI);
 		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
+	}
+	
+	public void testCreateJSON() {
+		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
+		JSONObject d= new DistributedEnergySystem().convertResultJSON(baseUrl);
+		System.out.println(d.toString());
 	}
 	
 
