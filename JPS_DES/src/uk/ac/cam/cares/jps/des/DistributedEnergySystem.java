@@ -130,17 +130,19 @@ public class DistributedEnergySystem extends JPSHttpServlet {
             	File[]childfile=file.listFiles();
             	for(File filex:childfile) {
             		String[] y=filex.list();
-            		//System.out.println("namefilechild="+y[10]);
-            		if(y[11].contentEquals("totgen.csv")&&y[9].contentEquals("rh1.csv")) {
+            		List<String> list = Arrays.asList(y);
+            		
+            		//System.out.println("size= "+list.size()+"  ,listcontent= "+list.get(0));
+            			if(list.contains("totgen.csv")&&list.contains("rh1.csv")) {
+            				System.out.println("it goes here");
+            				filechosen=file;
+                			break;
+            			}
             			//System.out.println("directory last date="+file.lastModified());
-            			filechosen=file;
-            			break;
-            		}
+            			
+            		
             	}
-            	
-            	
-            	
-            	break;
+            	//break;
             }
         }
         return filechosen.getAbsolutePath()+"/JPS_DES";

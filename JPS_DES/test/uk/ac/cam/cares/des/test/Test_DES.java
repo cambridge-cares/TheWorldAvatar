@@ -119,7 +119,7 @@ public class Test_DES extends TestCase{
 		
 		System.out.println("result: "+dataresult.toString());
 	}
-	public void testStartDESScenario() throws IOException  {
+	public void xxnotneededxxtestStartDESScenario() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
@@ -174,10 +174,11 @@ public class Test_DES extends TestCase{
 		System.out.println("sizeofresult="+resultListfromqueryirr.size());
 		System.out.println("element= "+resultListfromqueryirr.get(0)[2]);
 		String content=resultListfromqueryirr.get(48)[2];
-		System.out.println("year= "+content.split("#")[1].split("-")[0]);
-		System.out.println("month= "+content.split("#")[1].split("-")[1]);
-		System.out.println("date= "+content.split("#")[1].split("-")[2].split("T")[0]);
-		System.out.println("time= "+content.split("#")[1].split("-")[2].split("T")[1].split("\\+")[0]);
+		System.out.println("content="+content);
+		System.out.println("year= "+content.split("-")[0]);
+		System.out.println("month= "+content.split("-")[1]);
+		System.out.println("date= "+content.split("-")[2].split("T")[0]);
+		System.out.println("time= "+content.split("-")[2].split("T")[1].split("\\+")[0]);
 	}
 	
 	public static OntModel readModelGreedy(String iriofnetwork) {
