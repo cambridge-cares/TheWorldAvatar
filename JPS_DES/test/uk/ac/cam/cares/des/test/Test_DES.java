@@ -9,6 +9,7 @@ import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -72,7 +73,52 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
-	
+	public void testStartDESScenariotemp() throws IOException  {
+
+		DistributedEnergySystem a = new DistributedEnergySystem();
+        String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
+		String iriofnetwork = ENIRI;
+		String iriofdistrict = DISIRI;
+		OntModel model = readModelGreedy(iriofnetwork);
+		
+		a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		String weatherdir=baseUrl+"/Weather.csv";
+		String content = new QueryBroker().readFileLocal(weatherdir);
+		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
+		
+		String powerdir=baseUrl+"/totgen.csv";
+		String content2 = new QueryBroker().readFileLocal(powerdir);
+		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
+		
+		String rhdir=baseUrl+"/rh1.csv";
+		String content3 = new QueryBroker().readFileLocal(rhdir);
+		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
+
+		JSONArray temperature=new JSONArray();
+		JSONArray irradiation=new JSONArray();
+		JSONObject dataresult= new JSONObject();
+
+		
+		//25-48 (last 24)
+		int sizeofweather=weatherResult.size();
+		for (int x=sizeofweather-24;x<sizeofweather;x++) {
+			temperature.put(weatherResult.get(x)[4]);
+			irradiation.put(weatherResult.get(x)[8]);
+		}
+		//log to check if it's reading the right one. x
+		
+		dataresult.put("temperature", temperature);
+		dataresult.put("irradiation", irradiation);
+		dataresult.put("fuelcell", simulationResult.get(3));
+		dataresult.put("residential", simulationResult.get(0));
+		dataresult.put("industrial", simulationResult.get(2));
+		dataresult.put("building", simulationResult.get(1));
+		dataresult.put("rh1",rhResult.subList(0, 3).toArray());
+		dataresult.put("rh2",rhResult.subList(3, 6).toArray());
+		dataresult.put("rh3",rhResult.subList(6, rhResult.size()).toArray());
+		
+		System.out.println("result: "+dataresult.toString());
+	}
 	public void testStartDESScenario() throws IOException  {
 		
 
@@ -108,8 +154,8 @@ public class Test_DES extends TestCase{
 		jo.put("jpscontext", "base");
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
-		//a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 	}
 	
 	public void testcsvmanipulation () {

@@ -15,7 +15,7 @@ import os
 from datetime import datetime
 
 with open('timekeep.txt','w') as outfile:
-    outfile.write(str(datetime.now()) + ' started import \n')
+    outfile.write(str(datetime.now()) + ' started ')
 
 
 # ### Renewable
@@ -1257,8 +1257,7 @@ class Organizer:
 
 # In[67]:
 
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' started optimizing \n')
+
 # electricity bill structure
 household_below = 1/50*0.01*np.ones(24)
 household_above = 1/50*0.02*np.ones(24)
@@ -1428,8 +1427,7 @@ ip_test.set_starting_point()
 
 
 # In[75]:
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' started organization \n')
+
 
 # game organizer
 org = Organizer()
@@ -1440,9 +1438,8 @@ for a in agent_list:
 
 
 # In[76]:
-import joblib
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' started  training \n ')
+
+
 # receding horizon optimization
 opt_res = list()
 np.random.seed(0)
@@ -1502,8 +1499,8 @@ try:
             org.collect_load(ip, ip.report_load(), ip.report_change())
             i = i + 1
             print('##### Finish Iteration: ' + str(i) + ' #####')
-            with open('timekeep.txt','a') as outfile:
-                outfile.write(str(datetime.now()) + '##### Finish Iteration: ' + str(i) + ' #####' + "\n")
+            with open('timekeep.txt', 'a') as outfile:
+                outfile.write(str(datetime.now()) + '##### Finish Iteration: ' + str(i) + ' #####'+ '\n')
             if i >= 10:
                 print('##### Forced Stop After 10 Iterations #####')
                 break
@@ -1534,19 +1531,16 @@ try:
         ip.rolling_prev_solution()
         
         org.rolling_load_change()
-        with open('timekeep.txt','a') as outfile:
-             outfile.write(str(datetime.now()) + 'Finish RHO: %d\n' % (RHO+1) + "\n")
-        print('Finish RHO: %d\n' % (RHO+1))
         
+        print('Finish RHO: %d\n' % (RHO+1))
+        with open('timekeep.txt', 'a') as outfile:
+            outfile.write(str(datetime.now()) + 'Finish RHO: %d\n' % (RHO+1)+'\n')
 except Exception as e:
-    with open('timekeep.txt','a') as outfile:
-             outfile.write(str(datetime.now()) + "Error "+ e.message+ "\n")
-    
+    with open('timekeep.txt', 'a') as outfile:
+        outfile.write(str(datetime.now()) + e.message+'\n')   
+
+
 # ### Results
-
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' finished training  \n')
-
 
 # In[77]:
 
@@ -1576,8 +1570,6 @@ rh1_res[rh1.sp::rh1.t+1] = opt_res[0][rh1][rh1.sp::rh1.t+1]
 rh2_res[rh2.sp::rh2.t+1] = opt_res[0][rh2][rh2.sp::rh2.t+1]
 rh3_res[rh3.sp::rh3.t+1] = opt_res[0][rh3][rh3.sp::rh3.t+1]
 
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' created result \n ')
 
 # In[78]:
 
@@ -1624,8 +1616,6 @@ rh3_test.get_aggregate_load(l1+l2+l4+l5)
 cb_test.get_aggregate_load(l1+l2+l3+l5)
 ip_test.get_aggregate_load(l1+l2+l3+l4)
 
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' finished prediction \n  ')
 
 # ### Discussion
 
@@ -1647,6 +1637,8 @@ x3 = rh3_res
 ref3 = np.dot(rh3_test.Ta, rh3_test.sche)
 opt3 = np.dot(rh3_test.Ta, x3[:rh3_test.sp])
 load3 = np.dot(rh3_test.Tx, x3)
+
+np.savetxt("rh1.csv",[ref1, opt1, load1,ref2, opt2, load2 ,ref3, opt3, load3], delimiter=",")
 
 # plt.figure(0)
 # plt.plot(ref1)
@@ -1729,8 +1721,6 @@ reside = l1+l2+l3
 
 # In[84]:
 
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' dumped graph \n ')
 
 print('cost:', rh1_test.objfunction(rh1_res), 'load:', np.sum(l1), 'cost/load:', rh1_test.objfunction(rh1_res)/np.sum(l1))
 print('cost:', rh2_test.objfunction(rh2_res), 'load:', np.sum(l2), 'cost/load:', rh2_test.objfunction(rh2_res)/np.sum(l2))
@@ -1744,7 +1734,7 @@ print('cost:', ip_test.objfunction(ip_res), 'load:', np.sum(l5), 'cost/load:', i
 
 np.savetxt("totgen.csv",[reside, l4, l5, totGen], delimiter=",")
 with open('timekeep.txt', 'a') as outfile:
-    outfile.write(str(datetime.now()) + ' ended')
+    outfile.write(str(datetime.now()) + ' ended \n')
 
 
 

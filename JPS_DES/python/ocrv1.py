@@ -17,7 +17,6 @@ def ocr():
 	im.close()
 	r = text.split('\n')
 	result = {}
-	print(r)
 	for i in r:
 		#print(i)
 		if i.startswith('Ambient'):
@@ -53,8 +52,7 @@ def ocr():
 try:
 	ocr()
 except Exception as e:
-	with open ('data2.txt', 'w') as outfile:
-		outfile.write('error occurred')
-		outfile.write('end of message')
+	with open ('error log.txt', 'w') as outfile:
+		outfile.write('error occurred\n')
 		outfile.write(str(e))
 		outfile.write('I said end of message')

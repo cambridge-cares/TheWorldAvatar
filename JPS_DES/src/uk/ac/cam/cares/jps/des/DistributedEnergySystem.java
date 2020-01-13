@@ -97,14 +97,6 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			logger.error(e.getMessage());
 			e.printStackTrace();
 		}
-		
-		JSONObject dataresult = convertResultJSON(baseUrl);
-		
-		return dataresult;
-    	
-    }
-
-	public JSONObject convertResultJSON(String baseUrl) {
 		String weatherdir=baseUrl+"/Weather.csv";
 		String content = new QueryBroker().readFileLocal(weatherdir);
 		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
@@ -112,28 +104,14 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String powerdir=baseUrl+"/totgen.csv";
 		String content2 = new QueryBroker().readFileLocal(powerdir);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
-		
-		String rh1path=baseUrl+"/rh1.csv";
-		String contenta = new QueryBroker().readFileLocal(rh1path);
-		List<String[]> simulationResult1 = MatrixConverter.fromCsvToArray(contenta);
-		String rh2path=baseUrl+"/rh2.csv";
-		String contentb = new QueryBroker().readFileLocal(rh2path);
-		List<String[]> simulationResult2 = MatrixConverter.fromCsvToArray(contentb);
-		String rh3path=baseUrl+"/rh3.csv";
-		String contentc = new QueryBroker().readFileLocal(rh3path);
-		List<String[]> simulationResult3 = MatrixConverter.fromCsvToArray(contentc);
-		
 		JSONObject dataresult= new JSONObject();
+
+		String rhdir=baseUrl+"/rh1.csv";
+		String content3 = new QueryBroker().readFileLocal(rhdir);
+		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
 		
 		JSONArray temperature=new JSONArray();
 		JSONArray irradiation=new JSONArray();
-		JSONArray fuelcellconsumption=new JSONArray();
-		JSONArray residentialconsumption=new JSONArray();
-		JSONArray industrialconsumption=new JSONArray();
-		JSONArray buildingconsumption=new JSONArray();
-		JSONArray rh1arr=new JSONArray();
-		JSONArray rh2arr=new JSONArray();
-		JSONArray rh3arr=new JSONArray();
 		
 		//25-48 (last 24)
 		int sizeofweather=weatherResult.size();
@@ -141,42 +119,22 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 			temperature.put(weatherResult.get(x)[4]);
 			irradiation.put(weatherResult.get(x)[8]);
 		}
-		
-		int sizeofsimulationtime=simulationResult.get(0).length;
-		for (int x=sizeofsimulationtime-24;x<sizeofsimulationtime;x++) {
-			System.out.println(x);
-			fuelcellconsumption.put(simulationResult.get(3)[x]);
-			residentialconsumption.put(simulationResult.get(0)[x]);
-			industrialconsumption.put(simulationResult.get(2)[x]);
-			buildingconsumption.put(simulationResult.get(1)[x]);
-		}
-		
-		for(int y=0;y<simulationResult1.size();y++) {
-			JSONArray rharrcomp1=new JSONArray();
-			JSONArray rharrcomp2=new JSONArray();
-			JSONArray rharrcomp3=new JSONArray();
-			for(int x=0;x<simulationResult1.get(0).length;x++) {
-				
-				rharrcomp1.put(simulationResult1.get(y)[x]);
-				rharrcomp2.put(simulationResult2.get(y)[x]);
-				rharrcomp3.put(simulationResult3.get(y)[x]);
-			}	
-			rh1arr.put(rharrcomp1);
-			rh2arr.put(rharrcomp2);
-			rh3arr.put(rharrcomp3);
-		}
 
-		dataresult.put("rh1", rh1arr);
-		dataresult.put("rh2", rh2arr);
-		dataresult.put("rh3", rh3arr);
+		//log to check if it's reading the right one. x
+		
 		dataresult.put("temperature", temperature);
 		dataresult.put("irradiation", irradiation);
-		dataresult.put("fuelcell", fuelcellconsumption);
-		dataresult.put("residential", residentialconsumption);
-		dataresult.put("industrial", industrialconsumption);
-		dataresult.put("building", buildingconsumption);
+		dataresult.put("fuelcell", simulationResult.get(3));
+		dataresult.put("residential", simulationResult.get(0));
+		dataresult.put("industrial", simulationResult.get(2));
+		dataresult.put("building", simulationResult.get(1));
+		dataresult.put("rh1",rhResult.subList(0, 3).toArray());
+		dataresult.put("rh2",rhResult.subList(3, 6).toArray());
+		dataresult.put("rh3",rhResult.subList(6, rhResult.size()).toArray());
+		
 		return dataresult;
-	}
+    	
+    }
     
 	public static OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
