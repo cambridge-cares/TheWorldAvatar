@@ -75,21 +75,11 @@ public class Test_DES extends TestCase{
 	}
 	public void testStartDESScenariotemp() throws IOException  {
 
-		String producerdata="PV_parameters.csv";
-		String consumerdata1="FuelCell.csv";
-		QueryBroker broker = new QueryBroker();
 		DistributedEnergySystem a = new DistributedEnergySystem();
         String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
 		String iriofnetwork = ENIRI;
 		String iriofdistrict = DISIRI;
 		OntModel model = readModelGreedy(iriofnetwork);
-		List<String[]> producer = a.provideGenlist(model); // instance iri
-		List<String[]> consumer = a.provideLoadFClist(model); // instance iri
-		String producercsv = MatrixConverter.fromArraytoCsv(producer);
-		broker.putLocal(baseUrl + "/"+producerdata, producercsv); //csv for pv
-
-		String consumercsv = MatrixConverter.fromArraytoCsv(consumer);
-		broker.putLocal(baseUrl + "/"+consumerdata1, consumercsv); //csv for fuelcell
 		
 		a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 		String weatherdir=baseUrl+"/Weather.csv";
@@ -99,14 +89,15 @@ public class Test_DES extends TestCase{
 		String powerdir=baseUrl+"/totgen.csv";
 		String content2 = new QueryBroker().readFileLocal(powerdir);
 		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
+		
+		String rhdir=baseUrl+"/rh1.csv";
+		String content3 = new QueryBroker().readFileLocal(rhdir);
+		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
 
 		JSONArray temperature=new JSONArray();
 		JSONArray irradiation=new JSONArray();
-		JSONArray fuelcellconsumption=new JSONArray();
-		JSONArray residentialconsumption=new JSONArray();
-		JSONArray industrialconsumption=new JSONArray();
-		JSONArray buildingconsumption=new JSONArray();
 		JSONObject dataresult= new JSONObject();
+
 		
 		//25-48 (last 24)
 		int sizeofweather=weatherResult.size();
@@ -122,6 +113,9 @@ public class Test_DES extends TestCase{
 		dataresult.put("residential", simulationResult.get(0));
 		dataresult.put("industrial", simulationResult.get(2));
 		dataresult.put("building", simulationResult.get(1));
+		dataresult.put("rh1",rhResult.subList(0, 3).toArray());
+		dataresult.put("rh2",rhResult.subList(3, 6).toArray());
+		dataresult.put("rh3",rhResult.subList(6, rhResult.size()).toArray());
 		
 		System.out.println("result: "+dataresult.toString());
 	}
