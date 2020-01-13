@@ -53,26 +53,21 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		BigDecimal carbontax = jo.getBigDecimal("carbontax");
 		prepareConstantCSV(carbontax,newdir);
 		
-		try {
-			logger.info("start optimization for carbon tax = " + carbontax);
-			if (!AgentLocator.isJPSRunningForTest()) {
+		logger.info("start optimization for carbon tax = " + carbontax);
+		//if (!AgentLocator.isJPSRunningForTest()) {
+		//	runGAMS(newdir);
+		//}else { //18 oct 19
+			try {
 				runGAMS(newdir);
-			}else { //18 oct 19
-				//runGAMS(newdir); need to change if we want to run the gams code itself 
-				String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
-				//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results2.csv";
-				File file = new File(source);
-				String destinationUrl = newdir+"/results.csv";
-				new QueryBroker().putLocal(destinationUrl, file);
-				
-			}
-			
-			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("the gams not running successfully");
-		}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} //need to change if we want to run the gams code itself 
+			String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
+			//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results2.csv";
+			File file = new File(source);
+			String destinationUrl = newdir+"/results.csv";
+			new QueryBroker().putLocal(destinationUrl, file);
 				
 		JSONObject result=giveResult(newdir+"/results.csv",plant);
 		logger.info("optimization result = " + result);
