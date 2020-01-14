@@ -1,3 +1,3 @@
 cd C:\Users\LONG01\TOMCAT\webapps
-java -jar JPS_MISC-1.0.0-jar-with-dependencies.jar HttpGet http://localhost:8080/JPS_DES/DESAgent?query=%7B%22electricalnetwork%22%3A%22http%3A%2F%2Fwww.theworldavatar.com%2Fkb%2Fsgp%2Fsingapore%2Fsingaporeelectricalnetwork%2FSingaporeElectricalnetwork.owl%23SingaporeElectricalnetwork%22%2C%22district%22%3A%22http%3A%2F%2Fwww.theworldavatar.com%2Fkb%2Fsgp%2Fsingapore%2FDistrict-001.owl%23District-001%22%7D
+java -jar JPS_MISC-1.0.0-jar-with-dependencies.jar HttpGet http://localhost:8080/JPS_DES/DESAgent
 timeout 30

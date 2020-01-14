@@ -72,8 +72,17 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	        String usecaseUrl = BucketHelper.getUsecaseUrl();
     	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
     	        String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES";
-    			String iriofnetwork = requestParams.getString("electricalnetwork");
-    			String iriofdistrict = requestParams.getString("district");
+    	        String iriofnetwork = null;
+    	        String iriofdistrict = null;
+    	        try {
+    	        	iriofnetwork = requestParams.getString("electricalnetwork");
+    	        	iriofdistrict = requestParams.getString("district");
+    	        	}
+    	        catch (Exception e) {
+
+    	        	iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+    	        	iriofdistrict = "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+    	        }
     			OntModel model = readModelGreedy(iriofnetwork);
     			List<String[]> producer = provideGenlist(model); // instance iri
     			List<String[]> consumer = provideLoadFClist(model); // instance iri
