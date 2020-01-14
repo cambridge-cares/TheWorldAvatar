@@ -4,7 +4,7 @@
   <groupId>uk.ac.cam.cares.jps</groupId>
   <artifactId>JPS_COMPOSITION_LITE</artifactId>
   <packaging>war</packaging>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>1.0.0</version>
   <name>JPS_COMPOSITION_LITE Maven Webapp</name>
   <url>http://maven.apache.org</url>
   <dependencies>
@@ -76,6 +76,15 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.2</version>
             </plugin>
+            
+                  <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.2.1</version>
+        <configuration>
+         <warName>${project.artifactId}##${project.version}</warName>
+                    <outputDirectory>${tomcatPath}/webapps</outputDirectory>
+        </configuration>
+      </plugin>
          
         </plugins>
   </build>
