@@ -442,6 +442,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         displayCO2(json);
         kmlURL = null;
         
+        
     }
     function refreshLayer(iriofnetwork, kmlURL){
         if (kmlLayer){
@@ -748,7 +749,7 @@ function openWindowGen(id){
 
         console.log(inputsHTML);
         var div = document.getElementById('inputsContainer');
-        div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+        div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
 
 
@@ -803,12 +804,12 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
         console.log(inputsHTML);
         if (id.includes("Bus")){
             var div = document.getElementById('inputsContainer');
-            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
             '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
             }
             
             else if (callback == null){
-                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                 infoWindow.setContent(innerHTML);
             }
@@ -818,7 +819,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
                     resolve('Success');
             });
                 newPromise.then((successMessage) => {
-                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                     console.log(innerHTML);
                     callback(innerHTML);
@@ -1064,7 +1065,6 @@ asyncLoop({
             }, delayInMilliseconds);
             console.log('DONE SIMULATION')
             openWindow(filename);
-            document.getElementById("loader").style.display = "none";
         });
 
 
