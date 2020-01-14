@@ -4,8 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -30,29 +32,34 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
  * 
  * Servlet implementation class CrossValidation
  * 
+ * Runs Cross validation java code that is stored on HPC machine. Generates json
+ * files as output of the calculation for each step in cross validation
+ * algorithm. Json files contain species name, enthslpy of formation for each
+ * reaction, validity of species, reactions list.
  */
 
 @WebServlet("/crossValidation")
 public class CrossValidation extends HttpServlet {
-	
+
 	private static final long serialVersionUID = 1L;
-	
+
 	/** The Constant logger. */
 	public static Logger logger = Logger.getLogger(CrossValidation.class.getName());
-	
+
 	/**
 	 * 
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
 	 *      response)
 	 * 
 	 */
-	
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		response.setContentType("text/html;charset=UTF-8");		
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
+		response.setContentType("text/html;charset=UTF-8");
+
 		BasicConfigurator.configure();
-		
+
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk) Reads input parameter and stores it
@@ -62,86 +69,106 @@ public class CrossValidation extends HttpServlet {
 		 *         folders should be store on server side (HPC machine).
 		 * 
 		 */
-		
+
 		JSONObject parameterOne = AgentCaller.readJsonParameter(request);
 		
+		
+
 		String speciesJson = parameterOne.getString("jsonfile");
-		
+
 		JSONObject jsonFile = readsJsonFileFromUrl(speciesJson);
-		
+
 		logger.info("jsonFile- reference species: " + jsonFile.get("ReferenceSpecies"));
-		
+
 		logger.info("jsonFile- target species: " + jsonFile.get("TargetSpecies"));
-		
+
 		SSHClient ssh = new SSHClient();
 
 		try {
 
-		ssh.addHostKeyVerifier(new PromiscuousVerifier());
+			ssh.addHostKeyVerifier(new PromiscuousVerifier());
 
-		ssh.loadKnownHosts();
+			ssh.loadKnownHosts();
 
 			/**
 			 * 
 			 * Connection to the HPC
 			 * 
 			 */
-			
-		ssh.connect("172.25.186.150");
 
-		ssh.authPassword("nkrd01", ";;Nk4c19;;");
+			ssh.connect("172.25.186.150");
 
-		final Session session = ssh.startSession();
+			ssh.authPassword("nkrd01", "..Nk4c19..");
 
-		try {
+			final Session session = ssh.startSession();
+
+			try {
 
 				/**
 				 * 
 				 * Remote execution simple Java code as jar file on remote HPC cluster.
 				 * 
 				 */
-				
+
 //			final Session.Command cmd_ssh = session.exec("ssh cn01; java -cp /home/nkrd01/jartest_1.jar uk.ac.ceb.cam.Printing "+ " " + jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies"));
-			
-			/**
-			 * 
-			 * Run Cross validation (Philipp's) code on HPC by using ssh execution.
-			 * 
-			 */
-			String dirName = UUID.randomUUID().toString();
-			
-			/**
-			 * Creates a unique folder on HPC where all results of cross validation calculation will be saved. Runs Cross validation java implementation (jar file) stored on the HPC machine with input parameters.
-			 * Input parameters: folder where Gaussian files are stored, folder path where csv file is stored, and folder path where  all results of cross validation calculation will be saved.
-			 */
-			final Session.Command cmd_ssh = session.exec("mkdir /home/nkrd01/"+ dirName +"; ssh cn01; java -jar /home/nkrd01/cv_isg_ti_r5_args_v1.jar " + " " + jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName);			
-			
-			logger.info("Printing message from HPC: " + IOUtils.readFully(cmd_ssh.getInputStream()).toString() + " " + jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies"));
 
-			response.getWriter().append("exit status: " + cmd_ssh.getExitStatus());
-				
-			response.getWriter().append("jsonFile- reference species: " + jsonFile.get("ReferenceSpecies"));
-				
-			response.getWriter().append("Served at: ").append(request.getContextPath() + ".");
-				
-			response.getWriter().append("species json: " + speciesJson);
-				
-			logger.info("species json: " + speciesJson);
+				/**
+				 * 
+				 * Run Cross validation (Philipp's) code on HPC by using ssh execution.
+				 * 
+				 */
 
-			cmd_ssh.join(10, TimeUnit.SECONDS);			
+				/**
+				 * 
+				 * Creates a unique folder on HPC where all results of cross validation
+				 * calculation will be saved. Runs Cross validation java implementation (jar
+				 * file) stored on the HPC machine with input parameters.
+				 */
+
+				String dirName = generateUniqueFolderName("crossvalidation");
+
+				/**
+				 * 
+				 * Input parameters: folder where Gaussian files are stored, folder path where
+				 * csv file is stored, folder path where files used by GLPK solver are used
+				 * (.temp folder), and folder path where all results of cross validation
+				 * calculation will be saved.
+				 * 
+				 */
+
+				final Session.Command cmd_ssh = session.exec("mkdir /home/nkrd01/" + dirName + "; mkdir /home/nkrd01/"
+						+ dirName + "/" + "LeaveOneOutCrossValidation_temp"
+						+ "; ssh cn01; java -jar /home/nkrd01/cv_isg_ti_r5_args_v1.jar " + " "
+						+ jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName + " "
+						+ "/home/nkrd01/" + dirName + "/" + "LeaveOneOutCrossValidation_temp");
+
+				logger.info("Printing message from HPC: " + IOUtils.readFully(cmd_ssh.getInputStream()).toString() + " "
+						+ jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName);
+
+				response.getWriter().append("exit status: " + cmd_ssh.getExitStatus());
+
+				response.getWriter().append("jsonFile- reference species: " + jsonFile.get("ReferenceSpecies"));
+
+				response.getWriter().append("Served at: ").append(request.getContextPath() + ".");
+
+				response.getWriter().append("species json: " + speciesJson);
+
+				logger.info("species json: " + speciesJson);
+
+				cmd_ssh.join(10, TimeUnit.SECONDS);
 
 			} finally {
 
-			session.close();
+				session.close();
 
 			}
 
 		} finally {
 
-		ssh.disconnect();
-		
-		ssh.close();
-			
+			ssh.disconnect();
+
+			ssh.close();
+
 		}
 	}
 
@@ -151,14 +178,14 @@ public class CrossValidation extends HttpServlet {
 	 *      response)
 	 * 
 	 */
-	
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-	doGet(request, response);
-	
+		doGet(request, response);
+
 	}
-	
+
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -168,35 +195,74 @@ public class CrossValidation extends HttpServlet {
 	 * @throws IOException
 	 * @throws JSONException
 	 * 
-	 * Reads the content of json file from URL and prints it out on console.
+	 *                       Reads the content of json file from URL and prints it
+	 *                       out on console.
 	 * 
 	 */
-	
-	public static JSONObject readsJsonFileFromUrl(String jsonUrl) throws IOException, JSONException {
-	    
-		InputStream inputStream = new URL(jsonUrl).openStream();
-	    
-	    try {
 
-	    BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
-	      
-	    StringBuilder stringBuilder = new StringBuilder();
-		   
-	    int line;
-		
-		while ((line = rd.read()) != -1) {
-			  
-		stringBuilder.append((char) line);
-		      
+	public static JSONObject readsJsonFileFromUrl(String jsonUrl) throws IOException, JSONException {
+
+		InputStream inputStream = new URL(jsonUrl).openStream();
+
+		try {
+
+			BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
+
+			StringBuilder stringBuilder = new StringBuilder();
+
+			int line;
+
+			while ((line = rd.read()) != -1) {
+
+				stringBuilder.append((char) line);
+
+			}
+
+			JSONObject jsonObject = new JSONObject(stringBuilder.toString());
+
+			return jsonObject;
+
+		} finally {
+
+			inputStream.close();
 		}
-	    
-		JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-	      
-	    return jsonObject;
-	      
-	    } finally {
-	    	
-	      inputStream.close();	      
-	    }
 	}
+
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param fileName a String that represents file name.
+	 * @return String as a unique folder name.
+	 * @throws UnsupportedEncodingException the exception.
+	 * 
+	 */
+	public static String generateUniqueFolderName(String fileName) throws UnsupportedEncodingException {
+
+		long milliseconds = System.currentTimeMillis();
+
+		String datetime = new Date().toString();
+
+		datetime = datetime.replace(" ", "");
+		datetime = datetime.replace(":", "");
+
+		/**
+		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
+		 * 
+		 *         Generates source for universally unique identifier (uuid) based on
+		 *         file name, date, time, and cpu milliseconds.
+		 * 
+		 */
+
+		String source = fileName + datetime + milliseconds;
+
+		byte[] bytes = source.getBytes("UTF-8");
+
+		UUID uuid = UUID.nameUUIDFromBytes(bytes);
+
+		return uuid.toString();
+
+	}
+
 }
