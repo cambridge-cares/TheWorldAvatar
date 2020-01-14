@@ -11,7 +11,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -23,23 +22,19 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
 	@Override 
 	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) {
-		JSONObject joforDES = AgentCaller.readJsonParameter(req);
-		String folder = joforDES.getString("folder");
-//		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-//		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
-//		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
-		String iriirradiationsensor=joforDES.getString("irradiationsensor");
-		String iritempsensor=joforDES.getString("tempsensor");
-		String irispeedsensor=joforDES.getString("speedsensor");
+
+		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = dataPath + "/JPS_DES";
+		
+		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
+		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
+		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
 		try {
-			readWritedatatoOWL(folder,iritempsensor,iriirradiationsensor,irispeedsensor);
+			readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		JSONObject resultoftaking = new JSONObject();
-//		resultoftaking.put("weatherdata", requestlatestdata());
 		
  
 		logger.info("return the result from weather agent");		
