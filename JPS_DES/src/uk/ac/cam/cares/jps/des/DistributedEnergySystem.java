@@ -124,6 +124,8 @@ public class DistributedEnergySystem extends JPSHttpServlet {
                 return new Long(o2.lastModified()).compareTo(o1.lastModified()); //latest 1st
             }});
         File filechosen= new File("");
+
+    	outerloop:
         for(File file:files) {
         	String[] x=file.list();
             if(x[0].contentEquals("JPS_DES")) {
@@ -136,7 +138,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
             			if(list.contains("totgen.csv")&&list.contains("rh1.csv")) {
             				System.out.println("it goes here");
             				filechosen=file;
-                			break;
+                			break outerloop;
             			}
             			//System.out.println("directory last date="+file.lastModified());
             			

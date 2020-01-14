@@ -49,6 +49,10 @@
 						<directory>python</directory>
 						<targetPath>python</targetPath>
 					</resource>
+					<resource>
+						<directory>resources</directory>
+						<targetPath>resources</targetPath>
+					</resource>
 					
 				</webResources>
 
