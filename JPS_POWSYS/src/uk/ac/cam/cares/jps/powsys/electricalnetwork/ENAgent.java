@@ -9,6 +9,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -222,7 +223,27 @@ public class ENAgent extends JPSHttpServlet {
 				+ "?vapf   j2:numericalValue ?apfvalue ." // apf
 
 				+ "}";
+		String batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+				
+				+ "SELECT DISTINCT ?entity ?V_ActivePowerInjection_of_VRB "
+				+ "WHERE {?entity  a  j1:VanadiumRedoxBattery ."
 
+				+ "?entity   j9:hasActivePowerInjection ?cap ."
+				+"?cap j2:hasValue ?vcap ."
+				+"?vcap  j2:numericalValue ?V_ActivePowerInjection_of_VRB ."
+				+ " {?class rdfs:subClassOf j1:Battery ."
+				+ "} "
+				+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
+				+ "}";
 		String genInfocost = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -437,10 +458,26 @@ public class ENAgent extends JPSHttpServlet {
 
 		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
+		//only add if battery is available. 
+		List<String[]> batterylist = extractOWLinArray(model, iriofnetwork, batteryInfo, "battery", baseUrl);
+		if (!batterylist.isEmpty()) {
+			content += createDummyValueTSV(batterylist); 
+			
+		}
 		broker.putLocal(baseUrl + "/gen.txt", content);
 		
 		List<String[]> gencostlist = extractOWLinArray(model, iriofnetwork, genInfocost, "generatorcost", baseUrl);
 		content = createNewTSV(gencostlist, baseUrl + "/mappingforgeneratorcost.csv", baseUrl + "/mappingforbus.csv");
+		
+		if (!batterylist.isEmpty()) {
+			String[] dummyarray = new String[7];
+			Arrays.fill(dummyarray, "0");
+			for (int i = 0; i < batterylist.size(); i++) {
+				String message = String.join("\t", dummyarray)+"\n";
+				content += message;
+			}
+			
+		}
 		broker.putLocal(baseUrl + "/genCost.txt", content);
 
 		List<String[]> branchlist = extractOWLinArray(model, iriofnetwork, branchInfo, "branch", baseUrl);
@@ -451,8 +488,10 @@ public class ENAgent extends JPSHttpServlet {
 		File file = new File(resourceDir + "/baseMVA.txt");
 		broker.putLocal(baseUrl + "/baseMVA.txt", file);
 
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
-		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+//		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
+//		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/SGPowergrid.py");
+		broker.putLocal(baseUrl + "/SGPowergrid.py", file2);
 		
 		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
 		broker.putLocal(baseUrl + "/runpy.bat", file3);
@@ -510,7 +549,19 @@ public class ENAgent extends JPSHttpServlet {
 
 		return resultList;
 	}
-
+	public String createDummyValueTSV(List<String[]> activePower) throws IOException {
+		String content = "";
+		for (int i = 0; i < activePower.size(); i++) {
+			String[] dummyarray = new String[21];
+			Arrays.fill(dummyarray, "0");
+			dummyarray[3] = activePower.get(i)[1].toString();
+			String message = String.join("\t", dummyarray)+"\n";
+			content += message;
+	    }
+		
+		
+		return content;
+	}
 	public String createNewTSV(List<String[]> componentlist, String mapdir, String mapdirbus) throws IOException {
 		StringWriter writer = new StringWriter();
 //			try (BufferedWriter bw = new BufferedWriter(new FileWriter(tsvFileout))) {
@@ -625,15 +676,6 @@ public class ENAgent extends JPSHttpServlet {
 	}
 
 	public void runModel(String baseUrl) throws IOException {
-
-		 //String result = PythonHelper.callPython("model/PyPower-PF-OPF-JA-8.py",null, this);
-		// directory need to be changed soon
-		// String targetFolder = AgentLocator.getNewPathToPythonScript("model", this);
-
-		ArrayList<String> args = new ArrayList<String>();
-		args.add("python");
-		args.add("PyPower-PF-OPF-JA-8.py");
-
 		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runpy.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);

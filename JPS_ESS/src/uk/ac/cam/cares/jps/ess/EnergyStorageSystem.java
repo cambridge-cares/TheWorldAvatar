@@ -37,7 +37,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
-@WebServlet(urlPatterns = { "/ESSAgent" , "/ESSBatterySearch"})
+@WebServlet(urlPatterns = { "/ESSAgent"})
 
 public class EnergyStorageSystem extends JPSHttpServlet {
 
@@ -77,7 +77,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-//        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
+        //String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
 		 String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl.replace("//", "/");
         String[] cmdArray = new String[7];
@@ -203,7 +203,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 
 		// System.out.println("model= "+model);
 
-		String batteryquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		String pvquery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -237,7 +237,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 
 		for (int w = 0; w < pvGenIRI.size(); w++) {
 
-			String result = new QueryBroker().queryFile(pvGenIRI.get(w), batteryquery);
+			String result = new QueryBroker().queryFile(pvGenIRI.get(w), pvquery);
 			keyspv = JenaResultSetFormatter.getKeys(result);
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyspv);
 
@@ -502,6 +502,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 	}
 	
+	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -512,38 +513,33 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
 			String batIRI=joforess.getString("BatteryCatalog");
 			String ENIRI=joforess.getString("electricalnetwork");
-			String scenario=joforess.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];
-			System.out.println("current scenario directory= "+scenario);
 			
-			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
-			if (f.exists()&& f.isDirectory()) {
-				FileUtils.deleteDirectory(f);
-			}
+			String dirOfOPF=joforess.getString("folder");
+			
 			System.out.println("GENERATOR: " + pvGenIRI);
 			System.out.println("parameter got= "+joforess.toString());
 			
-			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-			//1st step done
-			
-			
 			//modified the EN with the additional renewable gen added
 			
-			logger.info("sent to the retrofit= "+joforess.toString());
-			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
-	
+//			logger.info("sent to the retrofit= "+joforess.toString());
+//			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
+//	
+//			
+//			//run the scenario for EN after it is retrofitted
+//			logger.info("starting the OPF");
+//			
+//			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
+//			String dirOfOPF = new JSONObject(resultStart).getString("folder");
 			
-			//run the scenario for EN after it is retrofitted
-			logger.info("starting the OPF");
 			
-			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
-			String dirOfOPF = new JSONObject(resultStart).getString("folder");
-			
+			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
 			//make battery owl file
 			JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
 			List<String>battlist=new ArrayList<String>();
 			for(int d=0;d<a.length();d++) {
 				battlist.add(a.getJSONArray(d).getString(0));
 			}
+			
 			addObjectToElectricalNetwork(ENIRI, battlist);
 
 		    System.gc();
@@ -553,29 +549,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			AgentCaller.printToResponse(listofbat, response);
 		}
 	
-	private void cleanDirectory() {
-		//	clear the folder SRM first
-		File folder = new File("C:/JPS_DATA/workingdir/JPS/SRM");
-				
-		File[] listOfFiles = folder.listFiles();
-
-		if (listOfFiles != null) {
-			for (int i = 0; i < listOfFiles.length; i++) {
-				if (listOfFiles[i].isFile() && !listOfFiles[i].getName().equals("ontokin.jar")
-						&& !listOfFiles[i].getName().equals("InputParams.xml")
-						&& !listOfFiles[i].getName().equals("InputEngineML.xml")
-						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-valid_v2.json")
-						&& !listOfFiles[i].getName().equals("OutputCase00001Cyc0001ADMS-NOx-SOx-O3-PM.json")
-						&& !listOfFiles[i].getName().equals("convert.exe")
-						&& !listOfFiles[i].getName().equals("ontokinConvertOwlToBin.bat")) {
-
-					listOfFiles[i].delete();
-				}
-			}
-		}
-	}
-	
-	public List<String[]> getBatteryCoord(OntModel model) {
+/*	public List<String[]> getBatteryCoord(OntModel model) { must be the complete model (not needed at the moment
 		String gencoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -607,7 +581,8 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			
 		return resultList;
-	}
+	}*/
+	
 	public JSONArray createBatteryOwlFile(String ENIRI, JSONObject resultofbattery, String dir) throws IOException {
 		ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
 		int size=resultfrommodelbranch.size();

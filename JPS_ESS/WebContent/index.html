@@ -121,7 +121,7 @@
 			The technical constraints, as well as several objectives including minimizing cost, maximizing technical suitability and minimizing the environment impact of the selected technology, 
 			were considered in the selection process. An augumented E-constraint method was used to find the Pareto optimum for the problem.
 			<br/>
-			In here, Jurong Islandâ€™s electrical, power and grid models are reverse-engineered with assumptions. 
+			In here, Jurong Island’s electrical, power and grid models are reverse-engineered with assumptions. 
 			<br/>
 			The user can enter the custom scenario that he chooses to create, and click on the button "Run Simulation". It will run the OPF simulation 
 			and estimate the placement of the energy storage technologies, based on power losses identified by this OPF simulation.  
@@ -150,9 +150,236 @@
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
 				+ "SELECT ?entity ?V_R ?V_X ?V_B ?V_RateA ?V_RateB ?V_RateC ?V_RatioCoeff ?V_Angle ?V_Angle_unit ?V_Status ?V_AngleMin ?V_AngleMin_unit ?V_AngleMax ?V_AngleMax_unit ?V_ToBusNumber "
 			
-				+ "WHERE {?entity  a  j1:UndergroundCable  ." 
-				+ "?entity   j2:isModeledBy ?model ."
-				+ "?model   j5:hasModelVariable ?res ." 
+	+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+	+ "?y  j2:hasValue ?vy ." 
+	+ "?vy  j2:numericalValue ?V_y ."//longitude
+	+ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
+
+	+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+	+ "?x  j2:hasValue ?vx ." 
+	+ "?vx  j2:numericalValue ?V_x ."//latitude
+	+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//latitude
+	
+
+	+ "}";
+var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+	+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+	+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+	+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+	+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+	+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+	+ "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+	+ "SELECT ?entity ?V_BusNumber ?V_PGen ?V_PGen_unit ?V_QGen ?V_QGen_unit ?V_Qmax ?V_Qmax_unit ?V_Qmin ?V_Qmin_unit ?V_Vg ?V_mBase ?V_mBase_unit "
+	+ "?V_Pmax ?V_Pmax_unit ?V_Pmin ?V_Pmin_unit ?V_Pc1 ?V_Pc2 ?V_Qc1Min ?V_Qc1Max "
+	+ "?V_Qc2Min ?V_Qc2Max ?V_Ramp_agc ?V_Ramp_10 ?V_Ramp_30 ?V_Ramp_q ?V_APF "
+	+ "?V_StartupCost ?V_ShutdownCost ?V_genCostn ?V_genCostn1 ?V_genCostn2 ?V_genCostc0 "
+
+	+ "WHERE {?entity  a  j1:PowerGenerator  ."
+	+ "?entity   j2:isModeledBy ?model ."
+
+	+ "?model   j5:hasModelVariable ?num ." 
+	+ "?num  a  j3:BusNumber  ." 
+	+ "?num  j2:hasValue ?vnum ."
+	+ "?vnum   j2:numericalValue ?V_BusNumber ." // number
+
+	+ "?model   j5:hasModelVariable ?Pg ." 
+	+ "?Pg  a  j3:Pg  ." 
+	+ "?Pg  j2:hasValue ?vpg ."
+	+ "?vpg   j2:numericalValue ?V_PGen ." // pg
+	+ "?vpg   j2:hasUnitOfMeasure ?V_PGen_unit ." // pg
+
+	+ "?model   j5:hasModelVariable ?Qg ." 
+	+ "?Qg  a  j3:Qg  ." 
+	+ "?Qg  j2:hasValue ?vqg ."
+	+ "?vqg   j2:numericalValue ?V_QGen ." // qg
+	+ "?vqg   j2:hasUnitOfMeasure ?V_QGen_unit ." // qg
+
+	+ "?model   j5:hasModelVariable ?qmax ." 
+	+ "?qmax  a  j3:QMax  ." 
+	+ "?qmax  j2:hasValue ?vqmax ."
+	+ "?vqmax   j2:numericalValue ?V_Qmax ." // qmax
+	+ "?vqmax   j2:hasUnitOfMeasure ?V_Qmax_unit ." // qmax
+
+	+ "?model   j5:hasModelVariable ?qmin ." 
+	+ "?qmin  a  j3:QMin  ." 
+	+ "?qmin  j2:hasValue ?vqmin ."
+	+ "?vqmin   j2:numericalValue ?V_Qmin ." // qmin
+	+ "?vqmin   j2:hasUnitOfMeasure ?V_Qmin_unit ." // qmin
+
+	+ "?model   j5:hasModelVariable ?Vg ." 
+	+ "?Vg  a  j3:Vg  ." 
+	+ "?Vg  j2:hasValue ?vVg ."
+	+ "?vVg   j2:numericalValue ?V_Vg ." // vg
+
+	+ "OPTIONAL{?model   j5:hasModelVariable ?mbase }" 
+	+ "OPTIONAL{?mbase  a  j3:mBase  }" 
+	+ "OPTIONAL{?mbase  j2:hasValue ?vmbase }"
+	+ "OPTIONAL{?vmbase   j2:numericalValue ?V_mBase }" // mbase
+	+ "OPTIONAL{?vmbase   j2:hasUnitOfMeasure ?V_mBase_unit }" // mbase
+
+	+ "?model   j5:hasModelVariable ?pmax ." 
+	+ "?pmax  a  j3:PMax  ." 
+	+ "?pmax  j2:hasValue ?vpmax ."
+	+ "?vpmax   j2:numericalValue ?V_Pmax ." // pmax
+	+ "?vpmax   j2:hasUnitOfMeasure  ?V_Pmax_unit ." // pmax
+
+	+ "?model   j5:hasModelVariable ?pmin ." 
+	+ "?pmin  a  j3:PMin  ." 
+	+ "?pmin  j2:hasValue ?vpmin ."
+	+ "?vpmin   j2:numericalValue ?V_Pmin ." // pmin
+	+ "?vpmin   j2:hasUnitOfMeasure?V_Pmin_unit ." // pmin
+
+	+ "?model   j5:hasModelVariable ?pc1 ." 
+	+ "?pc1  a  j3:Pc1  ." 
+	+ "?pc1  j2:hasValue ?vpc1 ."
+	+ "?vpc1   j2:numericalValue ?V_Pc1 ." // pc1
+
+	+ "?model   j5:hasModelVariable ?pc2 ." 
+	+ "?pc2  a  j3:Pc2  ." 
+	+ "?pc2  j2:hasValue ?vpc2 ."
+	+ "?vpc2   j2:numericalValue ?V_Pc2 ." // pc2
+
+	+ "?model   j5:hasModelVariable ?qc1min ." 
+	+ "?qc1min  a  j3:QC1Min  ."
+	+ "?qc1min  j2:hasValue ?vqc1min ." 
+	+ "?vqc1min   j2:numericalValue ?V_Qc1Min ." // qc1min
+
+	+ "?model   j5:hasModelVariable ?Qc1max ." 
+	+ "?Qc1max  a  j3:QC1Max  ."
+	+ "?Qc1max  j2:hasValue ?vQc1max ." 
+	+ "?vQc1max   j2:numericalValue ?V_Qc1Max ." // qc1max
+
+	+ "?model   j5:hasModelVariable ?qc2min ." 
+	+ "?qc2min  a  j3:QC2Min  ."
+	+ "?qc2min  j2:hasValue ?vqc2min ."
+	+ "?vqc2min   j2:numericalValue ?V_Qc2Min ." // qc2min
+
+	+ "?model   j5:hasModelVariable ?Qc2max ."
+	+ "?Qc2max  a  j3:QC2Max  ."
+	+ "?Qc2max  j2:hasValue ?vQc2max ." 
+	+ "?vQc2max   j2:numericalValue ?V_Qc2Max ." // qc2max
+
+	+ "?model   j5:hasModelVariable ?rampagc ." 
+	+ "?rampagc  a  j3:Rampagc  ."
+	+ "?rampagc  j2:hasValue ?vrampagc ." 
+	+ "?vrampagc   j2:numericalValue ?V_Ramp_agc ." // rampagc
+
+	+ "?model   j5:hasModelVariable ?ramp10 ." 
+	+ "?ramp10  a  j3:Ramp10  ."
+	+ "?ramp10  j2:hasValue ?vramp10 ."
+	+ "?vramp10   j2:numericalValue ?V_Ramp_10 ." // ramp10
+
+	+ "?model   j5:hasModelVariable ?ramp30 ." 
+	+ "?ramp30  a  j3:Ramp30  ."
+	+ "?ramp30  j2:hasValue ?vramp30 ." 
+	+ "?vramp30   j2:numericalValue ?V_Ramp_30 ." // ramp30
+
+	+ "?model   j5:hasModelVariable ?rampq ." 
+	+ "?rampq  a  j3:Rampq  ." 
+	+ "?rampq  j2:hasValue ?vrampq ."
+	+ "?vrampq   j2:numericalValue ?V_Ramp_q ." // rampq
+
+	+ "?model   j5:hasModelVariable ?apf ."
+	+ "?apf  a  j3:APF  ." 
+	+ "?apf  j2:hasValue ?vapf ."
+	+ "?vapf   j2:numericalValue ?V_APF ." // apf
+	
+	+ "?model   j5:hasModelVariable ?startup ." 
+	+ "?startup  a  j3:StartCost  ."
+	+ "?startup  j2:hasValue ?vstartup ." 
+	+ "?vstartup   j2:numericalValue ?V_StartupCost ." //startup cost
+
+	+ "?model   j5:hasModelVariable ?shutdown ." 
+	+ "?shutdown  a  j3:StopCost  ."
+	+ "?shutdown  j2:hasValue ?vshutdown ." 
+	+ "?vshutdown   j2:numericalValue ?V_ShutdownCost ."  //shutdown cost
+	
+	+ "?model   j5:hasModelVariable ?gencostn ." 
+	+ "?gencostn  a  j3:genCostn  ."
+	+ "?gencostn  j2:hasValue ?vgencostn ." 
+	+ "?vgencostn   j2:numericalValue ?V_genCostn ." //genCostn
+
+	+ "?model   j5:hasModelVariable ?gencostn1 ." 
+	+ "?gencostn1  a  j3:genCostcn-1  ."
+	+ "?gencostn1  j2:hasValue ?vgencostn1 ." 
+	+ "?vgencostn1   j2:numericalValue ?V_genCostn1 ." //genCostn-1
+
+	+ "?model   j5:hasModelVariable ?gencostn2 ." 
+	+ "?gencostn2  a  j3:genCostcn-2  ."
+	+ "?gencostn2  j2:hasValue ?vgencostn2 ." 
+	+ "?vgencostn2   j2:numericalValue ?V_genCostn2 ."//genCostn-2
+
+	+ "?model   j5:hasModelVariable ?gencostc ." 
+	+ "?gencostc  a  j3:genCostc0  ."
+	+ "?gencostc  j2:hasValue ?vgencostc ." 
+	+ "?vgencostc   j2:numericalValue ?V_genCostc0 ." //genCostc0
+
+	+ "}";
+var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+		+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
+		+ "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+		+ "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
+
+		+ "WHERE {?entity  a  j1:PowerGenerator  ."
+		+ "?entity   technical_system:realizes ?generation ."
+
+		+ "?generation j9:hasEmission ?emission ." 
+		+ "?emission a j9:Actual_CO2_Emission ."
+		+ "?emission   j2:hasValue ?valueemission ."
+		+ "?valueemission   j2:numericalValue ?V_Actual_CO2_Emission ." //
+		+ "?valueemission   j2:hasUnitOfMeasure ?V_Actual_CO2_Emission_unit ." //
+
+		+ "?v_emission a j9:CO2_emission ."
+		+ "OPTIONAL {?v_emission   j2:hasValue ?valueemission_d }"
+		+ "OPTIONAL {?valueemission_d   j2:numericalValue ?V_Design_CO2_Emission }" //
+		+ "OPTIONAL {?valueemission_d   j2:hasUnitOfMeasure ?V_Design_CO2_Emission_unit }" //
+
+		+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+		+ "?y  j2:hasValue ?vy ." 
+		+ "?vy  j2:numericalValue ?V_y ."
+		+ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."
+		//
+		+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+		+ "?x  j2:hasValue ?vx ." 
+		+ "?vx  j2:numericalValue ?V_x ."//longitude
+		+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
+
+
+		+ "}";
+	var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+		+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+		+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+		+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+		+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+		+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+		+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#> "
+		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+		
+		+ "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_ActivePowerInjection_of_VRB ?V_ActivePowerInjection_of_VRB_unit "
+		+ "WHERE {?entity   j9:hasActivePowerInjection ?cap ."
+		+"?cap j2:hasValue ?vcap ."
+		+"?vcap  j2:numericalValue ?V_ActivePowerInjection_of_VRB ."
+		+"?vcap  j2:hasUnitOfMeasure ?V_ActivePowerInjection_of_VRB_unit ."
+
+		+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+
+		+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+		+ "?y  j2:hasValue ?vy ." 
+		+ "?vy  j2:numericalValue ?V_y ."
+		+ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."
+
+		+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+		+ "?x  j2:hasValue ?vx ." 
+		+ "?vx  j2:numericalValue ?V_x ."//longitude
+		+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
+
+		+ "}";
 			
 				+ "?res  a  j3:R  ." 
 				+ "?res  j2:hasValue ?vres ."
@@ -830,12 +1057,300 @@
 			        markers.push(marker);
 				}
 				
-				function drawBattery() 	{
-					document.getElementById("run-btn").disabled = true;
-					document.getElementById("loader").style.display = "block";
-					scenario = document.getElementById("scenarioTxt").value;
-					if (scenario == ''){
-						scenario = "testBatt1"; //fixed temporarily, will be changed along with user input
+
+	request.fail(function(jqXHR, textStatus) {
+		console.log(jqXHR);
+		console.log(textStatus);
+	});
+	}
+	function drawMarkers(){
+	    var agenturl=  prefix + '/JPS_POWSYS/ENVisualization/createMarkers'; 
+	    var kmlurl = createUrlForAgent(scenario, agenturl, {"electricalnetwork":electricalnetwork});
+	    console.log(kmlurl);
+	    var request = $.ajax({
+	        url: kmlurl,
+	        type: 'GET',
+	        async: true,
+	        contentType: 'application/json; charset=utf-8'
+	    });     
+	    
+	    request.done(function(data) {
+	        var obj0 = JSON.parse(data).result;
+	        var size=obj0.length; 
+	        
+	    //We currently know of a few cases:
+	    var x;
+	    // scan some duplicates
+	    dict = {"solar": 0, "gas": 0, "oil": 0};
+	    var markerdict = new Map();
+	    var latLng = new Map();
+	    for (x=0; x< size; x++){
+	        var obj = JSON.parse(obj0[x]);  
+	        var fueltype = obj.fueltype;
+	        var name = obj.name;
+	        if (fueltype== "NaturalGasGeneration"){
+	            var icon = {
+	                url: 'images/naturalgas.png',
+	                scaledSize : new google.maps.Size(40, 40),
+	            };
+	            dict["gas"] += 1;
+	        }else if (fueltype== "OilGeneration"){
+	            var icon = {
+	                url: 'images/oil.png',
+	                scaledSize : new google.maps.Size(40, 40),
+	            };
+	            dict["oil"] += 1;
+	        }else{
+	            var icon = {
+	                url: 'images/solar.png', 
+	                scaledSize : new google.maps.Size(40, 40),
+	            };
+	            dict["solar"] += 1;
+	        }
+	        if (markerdict.has(obj.coors.lat)){
+	        	var v = markerdict.get(obj.coors.lat);
+	        	v.push(name);
+	        	markerdict.set(obj.coors.lat, v);
+	        }else{
+	        	markerdict.set(obj.coors.lat, [name]);
+	        	
+	        	latLng.set(obj.coors.lat, [obj.coors.lng, icon]);
+	        	}
+        }
+
+	    for (var [key, value] of latLng.entries()) {
+	    	createMarker(key, value, markerdict);
+		      
+	    }
+
+		searchBatteryCoord(batterylist);	
+	    });
+	    }
+	function createMarker(key, value, markerdict){
+		var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(key, value[0]),
+            map: map,
+            icon: value[1]
+          });
+		marker.addListener('click', function(){
+			_content = setMarkerMenu(markerdict.get(key));
+			infowindow.setContent(_content);
+			infowindow.open(map, this);
+		});
+        markers.push(marker);
+	}
+	
+	function drawBattery() 	{
+		document.getElementById("run-btn").disabled = true;
+		document.getElementById("loader").style.display = "block";
+		scenario = document.getElementById("scenarioTxt").value;
+		if (scenario == ''){
+			scenario = "testBatt1"; //fixed temporarily, will be changed along with user input
+		}
+		var batteryjson= {}
+		batteryjson["electricalnetwork"] = electricalnetwork;
+		batteryjson["BatteryCatalog"] = batIRI;
+		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
+		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
+	
+		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
+		console.log(batteryurl);
+	    var request = $.ajax({
+	        url: batteryurl,
+	        type: 'GET',
+	        data: batteryjson,
+	        contentType: 'application/json; charset=utf-8',
+	        success: function(){  
+	        },
+	        error: function(ts) {
+	            alert(ts.responseText);
+	        }   
+	    });
+	    request.done( function(data) {
+	        console.log ("success create request");
+	        batterylist = JSON.parse(data).batterylist;
+	        console.log(batterylist);
+			drawMarkers();
+			drawLines();
+
+		});
+
+
+	}
+	function searchBatteryCoord(srcdata) {
+    		var size=srcdata.length; 
+    		console.log(size);
+    		console.log(srcdata);
+    		var x;
+    		var markerdict = new Map();
+    	    for (x=0; x< size; x++){
+    	    	createBattery(srcdata[x][0], srcdata[x][2], srcdata[x][1]);
+    	       }
+
+			document.getElementById("loader").style.display = "none";
+			document.getElementById("run-btn").disabled = false;
+	}
+	function createBattery(iri, lat, lng){//to be integrated with createMarker once variables have been commonified. 
+		var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(String(lat), String(lng)),
+            map: map,
+            title: String(iri),
+            icon: "images/battery.png"
+          });
+		marker.addListener('click', function(){
+        	var jsonArray = marker.title.split('/');
+        	console.log(jsonArray);
+        	var spec = marker.title + '#' + jsonArray[jsonArray.length-1];
+			_content = setMarkerMenu([spec]);
+			infowindow.setContent(_content);
+			infowindow.open(map, this);
+		});
+        markers.push(marker);
+	}
+
+	function calLengthOfLine(x1,x2,y1,y2) {
+
+		return (x1 - x2)(x1 - x2) + (y1 - y2)(y1 - y2)
+	}
+	function clearMarkers() {
+        if(!markers){
+            return;
+        }
+        for(marker of markers){
+            marker.setMap(null);
+            marker=null;
+        }
+    }
+	function constructLineMenu(id,callback)
+	{
+		// var url = 'http://www.theworldavatar.com/kb/sgp/jurongisland/jurongislandpowernetwork' + id;
+		selectedId = id.split('/')[1];
+		// sendRequest(url,function (response) {
+    var promise1 = new Promise(function (resolve, reject){
+        resolve(openWindowLineAndBus('http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId +'#'+selectedId.split('.')[0], branchInfo, callback));
+    }); 
+    promise1.catch(alert);
+	}
+
+
+
+	function setKMLMenu(kmlEvent)
+	{
+		var data = kmlEvent.featureData;
+		var nameString = data.name.substr(1);
+		console.log(nameString);
+		var names = nameString.split('[');
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(buttonsList);
+		for(var index in names)
+		{
+			var name = names[index];
+
+			 buttonsList = buttonsList + '<div><label>' + name.split('#')[1] + '</label>' +
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
+
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+	}
+	
+	function setMarkerMenu(jsonArray)
+	{
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(jsonArray);
+		for(var index in jsonArray)
+		{
+			var name = jsonArray[index];
+			console.log(name);
+			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
+
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+		console.log(infoWindowHtml);
+		return infoWindowHtml;
+
+	}
+
+	function selectEBus(event) {
+	selectedId =  event.srcElement.id;
+	openWindow(selectedId);
+}
+
+function openWindow(selectedId){
+	if (selectedId.includes("Bus")){
+		openWindowLineAndBus(selectedId, busInfo);
+	}else if (selectedId.includes('VRB')){
+		openWindowLineAndBus(selectedId, batteryInfo);
+	}
+	else if (selectedId.includes("ine")){
+		//recreate infowindow if present. 
+		openWindowLineAndBus(selectedId, branchInfo);
+	}
+	else{
+		openWindowGen(selectedId);
+	}
+	
+}
+function openWindowGen(id){
+ //since geninfo too large for request header, I'll split it up
+	selectedId =  id; //this needs to be saved on a local version, and not towards here. 
+	var kmljson = {};
+	kmljson["sparqlquery"] = genInfo;
+	kmljson["scenarioresource"] = selectedId.split('#')[0];
+	var inputsHTML = '';
+	var kmlurl = prefix + '/jps/scenario/'+scenario+'/query?query=' + encodeURIComponent(JSON.stringify(kmljson));
+	kmljson["sparqlquery"] = genInfo2;
+	var kmlurl2 = prefix +'/jps/scenario/'+scenario+'/query?query=' + encodeURIComponent(JSON.stringify(kmljson));
+	console.log(kmlurl);
+	console.log(kmlurl2);
+	$.when(
+		$.ajax({
+		url: kmlurl,
+		type: 'GET',
+		contentType: 'application/json; charset=utf-8',
+		success: function(data){ 
+			var obj0 = JSON.parse(data);
+			obj1 = obj0['results']['bindings'][0];
+		},
+		error: function(ts) {
+			alert(ts.responseText);
+		}   
+		 }),
+	
+		$.ajax({
+		url: kmlurl2,
+		type: 'GET',
+		contentType: 'application/json; charset=utf-8',
+		success: function(data){   
+			var obj0 = JSON.parse(data);
+			console.log(obj0);
+			obj2 = obj0['results']['bindings'][0];
+			console.log(obj2);
+		},
+		error: function(ts) {
+			alert(ts.responseText);
+		}   
+	})).then( function(){
+		var obj0 = Object.assign(obj1, obj2);
+		console.log(obj0,obj1, obj2)
+		var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+		nameSet = [];
+		console.log(selectedId);
+		var owlName = selectedId.split('#')[1].split('.')[0];
+		for(var item in result)
+		{
+			var pair = result[item];
+			if (pair[0] == "entity"){}
+			else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
+			{
+				if (owlName.includes('.')){
+					owlName = owlName.split('.')[0]
 					}
 					var batteryjson= {}
 					batteryjson["electricalnetwork"] = electricalnetwork;
@@ -1430,3 +1945,122 @@
 	</body>
 </html>
 
+				console.log('deleteUpdate',deleteUpdate);
+				console.log('insertUpdate',insertUpdate);
+
+				sampleUpdate.push(deleteUpdate);
+				sampleUpdate.push(insertUpdate);
+				
+				uri.push(filename);
+				uri.push(filename);
+				
+			}
+		}
+		console.log(scenario);
+		console.log(sampleUpdate); 
+		var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
+		var request = $.ajax({
+			url: myUrl,
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8'
+		});
+		console.log(myUrl);
+		request.done(function(data) {
+			console.log('data received', data);
+			loop();
+
+
+		});
+
+		request.fail(function(jqXHR, textStatus) {
+			// your failure code here
+		});
+
+
+	},
+	callback : function(){
+
+		//var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
+
+		document.getElementById("loader").style.display = "block";
+
+		var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
+		data = { "electricalnetwork":electricalnetwork}
+		url = createUrlForAgent(scenario, agenturl, data);
+		console.log(url);
+		var delayInMilliseconds = 10000; //1 second
+
+			setTimeout(function() {
+				console.log('timeout');
+			}, delayInMilliseconds);
+		var request = $.ajax({
+			url: url,
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8'
+		});
+
+		request.done(function() {
+			json = { "electricalnetwork":electricalnetwork ,"flag": scenario };
+			console.log('DONE SIMULATION');
+			openWindow(filename);
+            document.getElementById("loader").style.display = "none";
+		});
+
+
+	}
+});
+
+}
+   
+function animateCircle(line,timeOut) {
+		var count = 0;
+		window.setInterval(function() {
+			count = (count + 1) % 200;
+
+			var icons = line.get('icons');
+			icons[0].offset = (count / 2) + '%';
+			line.set('icons', icons);
+		}, timeOut);
+	}
+function clearAnimatedLines(){
+	animatedLines.forEach((line)=>
+	{
+		line.setMap(null);
+	})
+	animatedLines=[];
+}
+	function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
+
+		var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
+		urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
+		url2 += encodeURIComponent(JSON.stringify(urljson)); 
+		//url2 += JSON.stringify(urljson); 
+		return url2;    
+	}
+function createUrlForSparqlQuery(scenarioname, iri, sparql) {
+		var url2 = prefix + '/jps/scenario/' + scenarioname + '/query?query=';
+		urljson = {"scenarioresource":iri,"sparqlquery":sparql};
+		url2 += encodeURIComponent(JSON.stringify(urljson)); 
+		//url2 += JSON.stringify(urljson); 
+		return url2;    
+	}
+function createUrlForAgent(scenarioname, agenturl, agentparams) {
+
+		var url;
+		if ((scenarioname == null) || scenarioname == "base") {
+			url = agenturl;
+		} else {
+			agentparams['scenarioagentoperation'] = agenturl;
+			var scenariourl = prefix + '/jps/scenario/' + scenarioname + '/call';
+			url = scenariourl;
+		}
+
+		return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
+	}
+
+</script>
+<script async defer
+		src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap">
+</script>
+</body>
+</html>
