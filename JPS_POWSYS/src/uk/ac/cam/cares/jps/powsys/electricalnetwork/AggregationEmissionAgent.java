@@ -189,14 +189,15 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         List<String> emplantunique = new ArrayList<String>();
 
         for (int d = 0; d < genList.size(); d++) {
-            String result = broker.queryFile(genList.get(d)[0], genInfo);
+        	String result = broker.queryFile(genList.get(d)[0], genInfo);
             String[] keys = JenaResultSetFormatter.getKeys(result);
             List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-            if (!plantunique.contains(resultList.get(0)[3])) { //plant=resultList.get(0)[3]
-                plantunique.add(resultList.get(0)[3]);
-            }
-            emplantunique.add(resultList.get(0)[2] + "separate" +resultList.get(0)[1] + "separate" + resultList.get(0)[3]);
-
+			if (resultList.size() > 0) {
+				if (!plantunique.contains(resultList.get(0)[3])) { // plant=resultList.get(0)[3]
+					plantunique.add(resultList.get(0)[3]);
+				}
+				emplantunique.add(resultList.get(0)[2] + "separate" + resultList.get(0)[1] + "separate" + resultList.get(0)[3]);
+			}
         }
 
         int sizeofplant = plantunique.size();

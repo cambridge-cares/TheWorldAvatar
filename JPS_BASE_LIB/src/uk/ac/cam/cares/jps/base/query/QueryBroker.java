@@ -36,6 +36,7 @@ public class QueryBroker {
 	}
 	
 	public String readFileLocal(String path) {
+		System.out.println("PATH = "+ path);
 		if (path.startsWith("http")) {
 			throw new JPSRuntimeException("destinationUrl must not be a URL");
 		}
