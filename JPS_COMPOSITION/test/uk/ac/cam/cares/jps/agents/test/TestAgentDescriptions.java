@@ -20,6 +20,7 @@ public class TestAgentDescriptions extends TestCase {
 	private static final String JPS_MEN = "http://www.theworldavatar.com/JPS_MEN";
 	private static final String JPS_POWSYS = "http://www.theworldavatar.com/JPS_POWSYS";
 	private static final String JPS_SCENARIO = "http://www.theworldavatar.com/JPS_SCENARIO";
+	private static final String JPS_DES = "http://www.theworldavatar.com/JPS_DES";
 	private static final String JPS_ESS = "http://www.theworldavatar.com/JPS_ESS";
 	
 	private static final String WEATHER = "https://www.auto.tuwien.ac.at/downloads/thinkhome/ontology/WeatherOntology.owl";
@@ -59,6 +60,17 @@ public class TestAgentDescriptions extends TestCase {
 		backAndforthAndWrite(service, "_SurrogateModel");
 		service = createDescrForAgentNuclearPP();
 		backAndforthAndWrite(service, "_NuclearAgent_startsimulation");
+		service=createDescrForAgentMEN();
+		backAndforthAndWrite(service, "_MEN");
+		service=createDescrForAgentSRMEmissions();
+		backAndforthAndWrite(service, "_SRM");
+		service=createDescrForAgentCarbonTax();
+		backAndforthAndWrite(service, "_CarbonTax");
+		service=createDescrForAgentDistributionEnergySystem();
+		backAndforthAndWrite(service, "_DES");
+		service=createDescrForAgentWeatherRetriever();
+		backAndforthAndWrite(service, "_SingporeWeatherDataRetriever");
+		
 	}
 	
 	public static void backAndforthAndWrite(Service service, String name) throws URISyntaxException, FileNotFoundException {
@@ -306,7 +318,24 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
-	private Service createDescrForAgentEnergyStorageSystem() {
+	private Service createDescrForAgentDistributionEnergySystem() {
+		return new ServiceBuilder()
+				.operation(null, JPS_DES + "/DESAgent")
+				.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#District", "district")
+				.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+				.output("https://www.w3.org/ns/csvw#Table", "consumptiongrid")
+				.build();
+	}
+	
+	private Service createDescrForAgentWeatherRetriever() {
+		return new ServiceBuilder()
+				.operation(null, JPS_DES + "/GetIrradiationandWeatherData")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#T-Sensor", "tempsensor")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#Q-Sensor", "irradiationsensor")
+				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#F-Sensor", "speedsensor")
+				.build();
+	}
+		private Service createDescrForAgentEnergyStorageSystem() {
 		return new ServiceBuilder()
 				.operation(null, JPS_ESS + "/ESSAgent")
 				.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", "RenewableEnergyGenerator")

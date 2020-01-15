@@ -23,32 +23,16 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
 	@Override 
 	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) {
-		
-//		String value = req.getParameter("query");
-//		JSONObject input = new JSONObject(value);
-		System.out.println("HELLO");
 		JSONObject joforDES = AgentCaller.readJsonParameter(req);
-		String folder;
-		if (joforDES.has("folder")){
-				folder = joforDES.getString("folder");
-		}else {
-			String dataPath = QueryBroker.getLocalDataPath();
-			String baseUrl = dataPath + "/JPS_DES";
-			folder = baseUrl;
-		}
+		String folder = joforDES.getString("folder");
 //		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
 //		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
 //		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
 		String iriirradiationsensor=joforDES.getString("irradiationsensor");
 		String iritempsensor=joforDES.getString("tempsensor");
 		String irispeedsensor=joforDES.getString("speedsensor");
-		System.out.println("jpscontet needed?0");
 		try {
-			System.out.println("Check here then?");
-			String jo = readWritedatatoOWL(folder,iritempsensor,iriirradiationsensor,irispeedsensor);
-			AgentCaller.printToResponse(jo, res);
-			
-			
+			readWritedatatoOWL(folder,iritempsensor,iriirradiationsensor,irispeedsensor);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -61,7 +45,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		logger.info("return the result from weather agent");		
 	}
 	
-	public String readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
+	public void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
 		
@@ -69,8 +53,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(startbatCommand);
 		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
 		logger.info("OCR finished");
-		
-//		String jsonres=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) +"/python/data.json");
+
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
 		String year=current.getString("year");
@@ -80,14 +63,8 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		String temperature=current.getString("temperature");
 		String irradiance=current.getString("irradiance");
 		
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();
-		
-		//modification of array
-//		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Weather.csv");
-//		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
-		// later replaced by query from the owl file of the sensor
-		
-		
+		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
+		//query the data from the existing owl file
 		
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -138,13 +115,14 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		
 		
 		
-		
+		//make new csv
 		readingFromCSV.remove(0); //if with header,later need to be changed TODO KEVIN
 		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
+		System.out.println("datemonth="+datemonth);
 		readingFromCSV.add(newline);
 		 new QueryBroker().putLocal(folder + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
 		
-		
+		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
 		String irifortemp=converter.startConversion(readingFromCSV,"temperature");
 		System.out.println(irifortemp+" is updated");
@@ -152,11 +130,6 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(iriforirradiation+" is updated");
 		String iriforwind=converter.startConversion(readingFromCSV,"windpseed");
 		System.out.println(iriforwind+" is updated");
-		JSONObject jo = new JSONObject();
-		//knowing that it would be the last updated value from the owl file, we'll see this being updated every hour once this is run
-		jo.put("temperature", temperature);
-		jo.put("irrad",irradiance);
-		return jo.toString();
 	}
 	
 

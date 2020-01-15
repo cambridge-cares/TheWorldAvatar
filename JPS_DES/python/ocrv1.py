@@ -5,15 +5,9 @@ from datetime import datetime
 import json
 import time
 import random
-import math
 
 #read and download image
-def is_number(s):
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
+
 def ocr():
 	url = 'https://www.solar-repository.sg/ftp_up/weather/500_Weather.png'
 	response = urllib.request.urlretrieve(url, '500_image.png')
@@ -49,11 +43,6 @@ def ocr():
 		result['windspeed'] = str(random.randint(0,13))
 	elif (float(result['windspeed']) > 13):
 		result['windspeed'] = str(float(result['windspeed'])/10)
-	for i in result.keys():
-		if (not is_number(result[i])):
-			with open ('errorlog.txt', 'w') as outfile:
-				outfile.write('invalidnumber')
-			result[i] = str(random.randint(0,31))
 	result['year']= now.strftime("%Y")
 	result['month'] = now.strftime("%m")
 	result['date']= now.strftime("%d")
@@ -63,7 +52,7 @@ def ocr():
 try:
 	ocr()
 except Exception as e:
-	with open ('errorlog.txt', 'w') as outfile:
+	with open ('error log.txt', 'w') as outfile:
 		outfile.write('error occurred\n')
 		outfile.write(str(e))
 		outfile.write('I said end of message')

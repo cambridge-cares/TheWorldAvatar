@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.powsys.retrofit;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -14,6 +15,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
@@ -64,6 +66,14 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 		}
 		else if ("/retrofitGenerator".equals(path)){
+			String scenario=jo.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];	
+			System.out.println("current scenario directory= "+scenario);
+			
+			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
+			if (f.exists()&& f.isDirectory()) {
+				FileUtils.deleteDirectory(f);
+			}
+			//above is done as the retrofit cannot be done twice for ESS esp.
 			JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
 			List<String> RenewableGenerators = MiscUtil.toList(ja);
 			retrofitGenerator(electricalNetwork, RenewableGenerators);
