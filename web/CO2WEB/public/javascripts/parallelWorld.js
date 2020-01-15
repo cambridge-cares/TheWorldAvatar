@@ -1,6 +1,6 @@
 var scenario;
-var prefix = "http://localhost:8080";
-// var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
+// var prefix = "http://localhost:8080";
+var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
@@ -378,14 +378,20 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-    var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
-    var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml";
-    // var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalBASE.kml';
-    // var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
+    // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml";
+    var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalbase.kml';
+    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
     setInterval(function(){
         distotalemission();
     }, 5000);
-    
+
+    var checkExist = setInterval(function() {
+        if ($('#map').length) {
+           runKML(0)
+           clearInterval(checkExist);
+        }
+     }, 100); // check every 100ms
     $(document).on('input', 'input', function () {//when user makes input
         console.log("input changed");
         cleanMsg();
@@ -405,7 +411,6 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
     //TODO: submit button that sends out simulation
     let runBtn = $("#run-btn");
     let selectedId = 0 ;
-   
     // updatePredefined(selectedId)
     $("select#predefined-select").on('change', function () {
          selectedId = parseInt($("select#predefined-select option:checked").val());
@@ -418,7 +423,6 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         runKML(selectedId);
     })
     
-
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
         console.log('predefinedID = ', predefinedId);
