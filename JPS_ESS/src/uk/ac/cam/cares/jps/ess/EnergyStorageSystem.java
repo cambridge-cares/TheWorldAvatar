@@ -513,38 +513,33 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
 			String batIRI=joforess.getString("BatteryCatalog");
 			String ENIRI=joforess.getString("electricalnetwork");
-			String scenario=joforess.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];
-			System.out.println("current scenario directory= "+scenario);
 			
-			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
-			if (f.exists()&& f.isDirectory()) {
-				FileUtils.deleteDirectory(f);
-			}
+			String dirOfOPF=joforess.getString("folder");
+			
 			System.out.println("GENERATOR: " + pvGenIRI);
 			System.out.println("parameter got= "+joforess.toString());
 			
-			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-			//1st step done
-			
-			
 			//modified the EN with the additional renewable gen added
 			
-			logger.info("sent to the retrofit= "+joforess.toString());
-			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
-	
+//			logger.info("sent to the retrofit= "+joforess.toString());
+//			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
+//	
+//			
+//			//run the scenario for EN after it is retrofitted
+//			logger.info("starting the OPF");
+//			
+//			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
+//			String dirOfOPF = new JSONObject(resultStart).getString("folder");
 			
-			//run the scenario for EN after it is retrofitted
-			logger.info("starting the OPF");
 			
-			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
-			String dirOfOPF = new JSONObject(resultStart).getString("folder");
-			
+			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
 			//make battery owl file
 			JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
 			List<String>battlist=new ArrayList<String>();
 			for(int d=0;d<a.length();d++) {
 				battlist.add(a.getJSONArray(d).getString(0));
 			}
+			
 			addObjectToElectricalNetwork(ENIRI, battlist);
 
 		    System.gc();

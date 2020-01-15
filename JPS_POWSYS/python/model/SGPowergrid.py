@@ -1,3 +1,4 @@
+# coding: iso-8859-1
 import sys
 import numpy
 import scipy
@@ -205,7 +206,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
     # busName = "bus.txt"
     # genName = "gen.txt"
     # branchName = "branch.txt"
-    # splitCharacter = '	'
+    # splitCharacter = '    '
     # outputBusName = "outputBus.txt"
     # outputBranchName = "outputBranch.txt"
     # outputBranchName = "outputGen.txt"
@@ -242,7 +243,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
         print("printOutput must be 0 or 1, 0 for no stdout printed output, and 1 if that is desired. Both still output to text files.")
     
     # (A) --pf_alg = PF_ALG  # power flow algorithm : 
-    # 1 - Newtonâ€™s method, 
+    # 1 - Newton’s method, 
     # 2 - FastDecoupled (XB version), 
     # 3 - Fast-Decoupled (BX
     # version), 
@@ -258,7 +259,7 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
 
     # (C) --out_all = OUT_ALL # controls printing of results: 
     # -1 - individual flags control what prints, 
-    # 0 - donâ€™t print anything
+    # 0 - don’t print anything
     # (overrides individual flags, except OUT_RAW), 
     # 1 - print everything (overrides individual flags, except OUT_RAW) 
     # [default: -1]
@@ -365,7 +366,11 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
             f = open(outputBranchName, 'w')
             i = 0
             while (i < branchCount):
-                f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14])) + '\n')
+            #P, Q and S (average)
+                PAve = (r['branch'][i][15] + r['branch'][i][13])/2.0
+                QAve = (r['branch'][i][14] + r['branch'][i][16])/2.0
+                SAve = numpy.sqrt(((PAve * PAve) + (QAve * QAve)))
+                f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14]))+ splitCharacter + str(PAve) + splitCharacter + str(QAve) + splitCharacter + str(SAve) + '\n')
                 i += 1
             f.close()
         
@@ -423,9 +428,9 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
 
 #MAIN
 # Run the main function here (all variables after the 'optimal' 0/1 are only needed for the optimal power flow analysis, but some unused input is still required). 
-# mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusPF.txt", "outputBranchPF.txt", "outputGenPF.txt", 1, 0, "areas.txt", "genCost.txt") # Runs PF
-mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBusOPF.txt", "outputBranchOPF.txt", "outputGenOPF.txt", 1, 1, "areas.txt", "genCost.txt") # Runs OPF
-# mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '	', "outputBus.txt", "outputBranch.txt", "outputGen.txt", 0, 0, "areas.txt", "genCost.txt")
+# mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '    ', "outputBusPF.txt", "outputBranchPF.txt", "outputGenPF.txt", 1, 0, "areas.txt", "genCost.txt") # Runs PF
+mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '\t', "outputBusOPF.txt", "outputBranchOPF.txt", "outputGenOPF.txt", 1, 1, "areas.txt", "genCost.txt") # Runs OPF
+# mainJAPowerFlow("baseMVA.txt", "bus.txt", "gen.txt", "branch.txt", '    ', "outputBus.txt", "outputBranch.txt", "outputGen.txt", 0, 0, "areas.txt", "genCost.txt")
 sys.exit()
 
 ########
