@@ -1,6 +1,9 @@
 /***
 Implements the Sim prototype. for Mau.
 ***/
+prefix = "http://localhost:8080";
+ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 const toggleDisplay = elemId =>
 {
     let x = document.getElementById(elemId);
@@ -27,17 +30,31 @@ document.addEventListener("click", function (evt){
     }
     
 });
-  addWeatherData();
-  d3.csv("images/weather.csv").then(makeChart);
-  var time;
+  // addWeatherData();
+  var hourOfDay = [];
+  function createHourlyIntervals(){
+    var d = new Date();
+    var n = d.getHours();
+    for (i = 0; i < 24; i++){
+      hourOfDay.push(n + ":00");
+      n++; 
+      if (n == 24){
+        n = 0;
+      }
+
+    }
+
+  }
   function makeChart(data){
     //data is an array of objects where each object represents a datapoint
-    time = data.map(function(d){return d.Time});
-    var temperature = data.map(function(d){return d.AirTemp})
+    console.log(hourOfDay);
+    var temperature = data.temperature;
+    temperature.forEach(function(obj) { obj = parseFloat(obj)});
+    console.log(temperature)
     tempGraph = new Chart("temperature", {
       type: 'bar',
       data: {
-        labels:time,
+        labels:hourOfDay,
         datasets: [
           {
           backgroundColor:'rgba(126, 158, 211, 1)',
@@ -75,11 +92,13 @@ document.addEventListener("click", function (evt){
       }
     });
     
-    var irradiation = data.map(function(d){return d.IncomingRadiation})
+    var irradiation = data.irradiation;
+    
+    irradiation.forEach(function(obj) { obj = parseFloat(obj)});
     irradGraph = new Chart("irradiation", {
       type: 'line',
       data: {
-        labels:time,
+        labels:hourOfDay,
         datasets: [
           {
             pointRadius:10,
@@ -120,74 +139,117 @@ document.addEventListener("click", function (evt){
       }
     });
   }
+  //run AddWeatherData upon activation)
   function addWeatherData(){
     var weatherjson = {};
-    weatherjson["tempsensor"] = "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
-    weatherjson["speedsensor"]="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
-    weatherjson["irradiationsensor"]="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-    weatherjson["jpscontext"]= "base";
-    var weatherurl = "http://localhost:8080/JPS_DES/GetIrradiationandWeatherData"  + "?query=" + encodeURIComponent(JSON.stringify(weatherjson));
-    console.log(weatherurl);
+    weatherjson["electricalnetwork"] = ENIRI;
+    weatherjson["district"]=DISIRI;
+    console.log(encodeURIComponent(JSON.stringify(weatherjson)))
     var request = $.ajax({
-      url: "http://localhost:8080/JPS_DES/GetIrradiationandWeatherData",
+      url: prefix + "/JPS_DES/showDESResult",
       type: 'GET',
       data: weatherjson,
+      timeout:1.08e+7,
       contentType: 'application/json; charset=utf-8'
   });
 
   request.done(function(data) {
     console.log(data);
-    radiation = JSON.parse(data).irrad;
-    temp = JSON.parse(data).temperature;
-    addData(tempGraph, temp);
-    addData(irradGraph, radiation);
-    irradGraph.data.labels.pop();
-    irradGraph.update();
-    removeData(tempGraph);
-    setTimeout(function() {
-        console.log('timeout');  
-        irradGraph.data.datasets[0].data.shift();
-        irradGraph.update();
-    }, 2000);
-  //   setTimeout(function() {
-  //     console.log('timeout');
-  //     removeLine(irradGraph); 
-  // }, 10000);
+    response = JSON.parse(data);
+    console.log(response);
+    createHourlyIntervals();
+    makeChart(response);
+    makeOutputChart(response);
+    configRH("rh1", response.rh1);
+    configRH("rh2", response.rh2);
+    configRH("rh3", response.rh3);
   });
-  }
 
-  //add data totgenbu
-  function addData(chart, elem){
-    chart.data.labels.push(new Date().toLocaleTimeString());
-    console.log(elem);
-    chart.data.datasets[0].data.push(elem);
-    chart.update();
   }
   function removeData(chart) {
     chart.data.labels.shift();
     chart.data.datasets[0].data.shift();
     chart.update();
 }
-function removeLine(chart) { //for line since there seems to be an error
-  chart.data.labels.pop();
-  chart.data.datasets[0].data.shift();
-  chart.update();
+  function addData(chart, elem){
+    //get date
+    var d = new Date(); 
+    h = d.getHours();
+    stmp = h + ":" + m ;
+    chart.data.labels.push(new Date().toLocaleTimeString());
+    console.log(elem);
+    chart.data.datasets[0].data.push(elem);
+    chart.update();
+  }
+  
+ 
+function configRH(idofgraph, data){
+  
+  data[0].forEach(function(obj) { obj = parseFloat(obj)});
+  
+  data[1].forEach(function(obj) { obj = parseFloat(obj)});
+  
+  data[2].forEach(function(obj) { obj = parseFloat(obj)});
+  console.log(data[0])
+  
+  console.log(data[1])
+  
+  console.log(data[2])
+  var chart = new Chart(idofgraph, {
+    type: 'line',
+    data: {
+      labels:hourOfDay,
+      datasets: [
+        {
+          label:'Ref',
+          pointRadius:2,
+          pointHoverRadius:5,
+          borderColor:"#2ecc71",
+          data: data[0], 
+          fill: false,
+        }, 
+        {
+          label:'Opt',
+          pointRadius:2,
+          pointHoverRadius:5,
+          borderColor:"#f1c40f",
+          data: data[1], 
+          fill: false,
+        },  {
+          label:'Load',
+          pointRadius:2,
+          pointHoverRadius:5,
+          borderColor:"#e74c3c",
+          data: data[2], 
+          fill: false,
+        }
+      ]
+    },
+    options:{
+      title:{ 
+        text:idofgraph,
+        display: true
+      }
+    },
+    responsive: true,
+    maintainAspectRatio: true
+  })
 }
-  //Outputs to be taken from csv here. 
-  d3.csv("images/totgenbu.csv").then(makeOutputChart);
   function makeOutputChart(data){
-    cA = data.map(function(d){return d.cA});
-    cB = data.map(function(d){return d.cB});
-    cC = data.map(function(d){return d.cC});
-    cD = data.map(function(d){return d.cD});
-    console.log(cA);
-    console.log(cB);
-    console.log(cC);
-    console.log(cD);
-    var chart = new Chart("graph4", {
+    cA = data.residential;
+    cB = data.industrial;
+    cC = data.building;
+    cD = data.fuelcell;
+    
+    cA.forEach(function(obj) { obj = parseFloat(obj)});
+    cB.forEach(function(obj) { obj = parseFloat(obj)});
+    cC.forEach(function(obj) { obj = parseFloat(obj)});
+    cD.forEach(function(obj) { obj = parseFloat(obj)});
+
+    outputGraph = new Chart("graph4", {
       type: 'line',
       data: {
-        labels:time,
+        labels:hourOfDay,
         datasets: [
           {
             label:'Home',
@@ -253,4 +315,18 @@ function removeLine(chart) { //for line since there seems to be an error
     });
   
   }
-  
+  addWeatherData()		
+  // fetch('images/des.json')
+  //   .then((response) => {
+  //     return response.json();
+  //   })
+  // .then((myJson) => {
+  //   console.log(myJson)
+  //   createHourlyIntervals();
+  //   makeChart(myJson)
+  //   makeOutputChart(myJson);
+
+  //   configRH("rh1", myJson.rh1);
+  //   configRH("rh2", myJson.rh2);
+  //   configRH("rh3", myJson.rh3);
+  // });

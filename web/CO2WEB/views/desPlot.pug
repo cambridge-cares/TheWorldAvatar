@@ -21,16 +21,25 @@ block content
         display: flex;
         flex-direction: row;
         overflow:auto;
+        flex-wrap: wrap;
         }
         .ediv{
             zoom:2px;
             width:45vw;
             height:50vh;
         }
+        .chart-container{
+            width:30vw;
+            margin-left:10px;
+            margin-right:10px;
+        }
         
         @media screen and (max-width: 1300px) {
         .container1 {
             flex-direction: column;
+        }
+        .ediv{
+            height:45vh;
         }
         
         }
@@ -49,6 +58,13 @@ block content
             canvas#irradiation
     h1 Outputs
     canvas#graph4
-    svg#viz
+    .container1
+        .chart-container
+            canvas#rh1
+        .chart-container
+            canvas#rh2
+        .chart-container
+            canvas#rh3
+
     
 
