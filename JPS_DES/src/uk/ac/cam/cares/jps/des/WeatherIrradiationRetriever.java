@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -21,11 +22,9 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
 	@Override 
-	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) {
-
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_DES";
-		
+	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
+		JSONObject jo = AgentCaller.readJsonParameter(request);
+		String baseUrl = jo.getString("baseUrl");
 		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
 		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
 		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";

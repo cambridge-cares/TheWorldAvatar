@@ -22,6 +22,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.des.DESCoordination;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
@@ -75,7 +76,7 @@ public class Test_DES extends TestCase{
 	}
 	public void testStartDESScenariotemp() throws IOException  {
 
-		DistributedEnergySystem a = new DistributedEnergySystem();
+		DESCoordination a = new DESCoordination();
         String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
 		String iriofnetwork = ENIRI;
 		String iriofdistrict = DISIRI;
@@ -416,7 +417,7 @@ public class Test_DES extends TestCase{
 	
 	public void testquerygen() {
 		OntModel model = readModelGreedy(ENIRI);
-		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
+		List<String[]> producer = new DESCoordination().provideGenlist(model); // instance iri
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
 	}
 	
