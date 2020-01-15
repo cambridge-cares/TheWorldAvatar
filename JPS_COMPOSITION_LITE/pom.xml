@@ -81,6 +81,49 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.1</version>
         <configuration>
+                  <webResources>
+						<resource>
+           					<directory>WebContent/assets</directory>
+           					<targetPath>assets</targetPath>
+           				</resource>
+           				<resource>
+           					<directory>WebContent/MapPointSelection</directory>
+           					<targetPath>MapPointSelection</targetPath>
+           				</resource>
+						<resource>
+							<directory>WebContent/OutputVisualization</directory>
+							<targetPath>OutputVisualization</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/image</directory>
+							<targetPath>/image</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/regionSelection</directory>
+							<targetPath>/regionSelection</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/release</directory>
+							<targetPath>/release</targetPath>
+						</resource>
+						<resource>
+							<directory>WebContent/themes</directory>
+							<targetPath>/themes</targetPath>
+						</resource>
+					 	<resource>
+							<directory>WebContent/javascripts</directory>
+							<targetPath>/javascripts</targetPath>
+						</resource>
+
+						<resource>
+           					<directory>WebContent</directory>
+				     			<includes>
+                				<include>*.html</include>
+                				<include>*.txt</include>
+                				<include>*.js</include>
+              				</includes>
+            			</resource>
+					</webResources>
          <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>${tomcatPath}/webapps</outputDirectory>
         </configuration>
