@@ -121,7 +121,7 @@
 			The technical constraints, as well as several objectives including minimizing cost, maximizing technical suitability and minimizing the environment impact of the selected technology, 
 			were considered in the selection process. An augumented E-constraint method was used to find the Pareto optimum for the problem.
 			<br/>
-			In here, Jurong Island’s electrical, power and grid models are reverse-engineered with assumptions. 
+			In here, Jurong Islandï¿½s electrical, power and grid models are reverse-engineered with assumptions. 
 			<br/>
 			The user can enter the custom scenario that he chooses to create, and click on the button "Run Simulation". It will run the OPF simulation 
 			and estimate the placement of the energy storage technologies, based on power losses identified by this OPF simulation.  
@@ -381,10 +381,119 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 
 		+ "}";
 			
-				+ "?res  a  j3:R  ." 
-				+ "?res  j2:hasValue ?vres ."
-				+ "?vres   j2:numericalValue ?V_R ." // resistance
-				+ "?vres   j2:hasUnitOfMeasure ?V_R_unit ." // resistance
+var opt = 'OPF';
+var globalKMLEventinfoWindowHtml;
+var selectedId;
+var txt;
+var scenario = "base";
+//var prefix = "http://localhost:8080"
+var prefix = "http://www.theworldavatar.com"
+//var prefix = "http://www.jparksimulator.com"
+var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
+var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
+var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001"];//to be a jsonarray
+var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
+var markers = [];
+var animatedLines = [];
+var batterylist = null;
+var infowindow;
+ 
+ 
+// Perform other work here ...
+ 
+// Set another completion function for the request above
+ 
+		 const toggleDisplay = elemId => {
+		let x = document.getElementById(elemId);
+		if (x.style.display !== 'block') {
+			x.style.display = 'block';
+		} else {
+			x.style.display = 'none';
+		}
+	};
+
+	$("#readme-button").click(function() {
+		toggleDisplay("readme-text");
+	});
+
+	document.addEventListener("click", function(evt) {
+		var readmeButtonElement = document.getElementById('readme-button'),
+			readmeTextElement = document.getElementById('readme-text'),
+			targetElement = evt.target;  // clicked element
+
+		if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+			return; //readme-button or readme-text is clicked. do nothing.
+		}
+
+		if(readmeTextElement.style.display === 'block') {
+			readmeTextElement.style.display = 'none';
+		}
+	}); 
+	
+	function Branch(coors, vols, thickness,type,name) {
+		this.name = name;
+		this.vols = vols;
+		this.thickness = thickness;
+		this.type = type;
+		this.coors = coors;
+	}
+	
+	function point(lat, lng) {
+		this.lat = lat;
+		this.lng = lng;
+	}
+		
+	function initMap() {
+
+		document.getElementById("loader").style.display = "block";
+		map = new google.maps.Map(document.getElementById('map'), {
+			zoom: 14,
+			center: {lat: 1.2624421, lng: 103.7007045}
+		});
+		infowindow = new google.maps.InfoWindow({
+            content: '<h2>Sup!</h2>'
+        });
+		drawLines();
+		drawMarkers();
+		
+
+	}
+	document.getElementById("run-btn").addEventListener("click", drawBattery);
+	function drawLines(){
+		clearMarkers();
+		clearAnimatedLines();
+		//load the line at the starting
+		var agenturl = prefix + '/JPS_POWSYS/ENVisualization/createLineJS';
+        var url = createUrlForAgent(scenario, agenturl, {"electricalnetwork":electricalnetwork});
+		var lines=[];
+		var request = $.ajax({
+			url: url,
+			type: 'GET',
+			contentType: 'application/json; charset=utf-8'
+		});
+		
+		request.done(function(data) {
+		
+		
+		obj0 = JSON.parse(data).result;
+		if (scenario != "base"){
+			var line223 ="{\"coors\": [{\"lat\": "+String(1.206334)+", \"lng\": "+String(103.780312)+"}, {\"lat\": "+String(1.2794833)+", \"lng\": "+String(103.7271667)+"}], \"vols\": ["+String(228.0)+","+String(227.0)+"], \"thickness\": "+String(6)+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
+	    	obj0.push(line223);
+		}
+	    console.log(obj0);
+		var size=obj0.length;
+		console.log("size="+size);   
+
+		
+		var x;
+		for(x=0;x<size;x++){
+			var obj = JSON.parse(obj0[x]);  
+			var point0= new point(obj.coors[0].lat,obj.coors[0].lng);
+			var point1= new point(obj.coors[1].lat,obj.coors[1].lng);
+			var temparr=[point0,point1];
+			var vol0=obj.vols[0];			
+			var vol1=obj.vols[1];
+			var temparrvol=[vol0,vol1];
 			
 				+ "?model   j5:hasModelVariable ?rea ." 
 				+ "?rea  a  j3:X  ." 
@@ -1123,7 +1232,11 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 		      
 	    }
 
-		searchBatteryCoord(batterylist);	
+		if (batterylist != null){
+			searchBatteryCoord(batterylist);	
+		}else{
+			document.getElementById("loader").style.display = "none";
+		}
 	    });
 	    }
 	function createMarker(key, value, markerdict){
@@ -1944,119 +2057,6 @@ function openWindowGen(id){
 			src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap"></script>
 	</body>
 </html>
-
-				console.log('deleteUpdate',deleteUpdate);
-				console.log('insertUpdate',insertUpdate);
-
-				sampleUpdate.push(deleteUpdate);
-				sampleUpdate.push(insertUpdate);
-				
-				uri.push(filename);
-				uri.push(filename);
-				
-			}
-		}
-		console.log(scenario);
-		console.log(sampleUpdate); 
-		var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
-		var request = $.ajax({
-			url: myUrl,
-			type: 'GET',
-			contentType: 'application/json; charset=utf-8'
-		});
-		console.log(myUrl);
-		request.done(function(data) {
-			console.log('data received', data);
-			loop();
-
-
-		});
-
-		request.fail(function(jqXHR, textStatus) {
-			// your failure code here
-		});
-
-
-	},
-	callback : function(){
-
-		//var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
-
-		document.getElementById("loader").style.display = "block";
-
-		var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
-		data = { "electricalnetwork":electricalnetwork}
-		url = createUrlForAgent(scenario, agenturl, data);
-		console.log(url);
-		var delayInMilliseconds = 10000; //1 second
-
-			setTimeout(function() {
-				console.log('timeout');
-			}, delayInMilliseconds);
-		var request = $.ajax({
-			url: url,
-			type: 'GET',
-			contentType: 'application/json; charset=utf-8'
-		});
-
-		request.done(function() {
-			json = { "electricalnetwork":electricalnetwork ,"flag": scenario };
-			console.log('DONE SIMULATION');
-			openWindow(filename);
-            document.getElementById("loader").style.display = "none";
-		});
-
-
-	}
-});
-
-}
-   
-function animateCircle(line,timeOut) {
-		var count = 0;
-		window.setInterval(function() {
-			count = (count + 1) % 200;
-
-			var icons = line.get('icons');
-			icons[0].offset = (count / 2) + '%';
-			line.set('icons', icons);
-		}, timeOut);
-	}
-function clearAnimatedLines(){
-	animatedLines.forEach((line)=>
-	{
-		line.setMap(null);
-	})
-	animatedLines=[];
-}
-	function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
-
-		var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
-		urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
-		url2 += encodeURIComponent(JSON.stringify(urljson)); 
-		//url2 += JSON.stringify(urljson); 
-		return url2;    
-	}
-function createUrlForSparqlQuery(scenarioname, iri, sparql) {
-		var url2 = prefix + '/jps/scenario/' + scenarioname + '/query?query=';
-		urljson = {"scenarioresource":iri,"sparqlquery":sparql};
-		url2 += encodeURIComponent(JSON.stringify(urljson)); 
-		//url2 += JSON.stringify(urljson); 
-		return url2;    
-	}
-function createUrlForAgent(scenarioname, agenturl, agentparams) {
-
-		var url;
-		if ((scenarioname == null) || scenarioname == "base") {
-			url = agenturl;
-		} else {
-			agentparams['scenarioagentoperation'] = agenturl;
-			var scenariourl = prefix + '/jps/scenario/' + scenarioname + '/call';
-			url = scenariourl;
-		}
-
-		return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
-	}
 
 </script>
 <script async defer
