@@ -106,7 +106,7 @@ netzero..     sum(i,dC(i))=e=0;
 
 
 Model optim /all/;
-option minlp=baron,resLIM=10000,optCR=.1,decimals=6;
+option minlp=baron,resLIM=4000,optCR=.1,decimals=6;
 Solve optim using minlp maximizing z;
 Display gp,a,Q.l,dC.l,X.l,M.l,z.l,fc.l;
 

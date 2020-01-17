@@ -488,8 +488,10 @@ public class ENAgent extends JPSHttpServlet {
 		File file = new File(resourceDir + "/baseMVA.txt");
 		broker.putLocal(baseUrl + "/baseMVA.txt", file);
 
-		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
-		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+//		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/PyPower-PF-OPF-JA-8.py");
+//		broker.putLocal(baseUrl + "/PyPower-PF-OPF-JA-8.py", file2);
+		File file2 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/SGPowergrid.py");
+		broker.putLocal(baseUrl + "/SGPowergrid.py", file2);
 		
 		File file3 = new File(AgentLocator.getNewPathToPythonScript("model", this) + "/runpy.bat");
 		broker.putLocal(baseUrl + "/runpy.bat", file3);
@@ -674,15 +676,6 @@ public class ENAgent extends JPSHttpServlet {
 	}
 
 	public void runModel(String baseUrl) throws IOException {
-
-		 //String result = PythonHelper.callPython("model/PyPower-PF-OPF-JA-8.py",null, this);
-		// directory need to be changed soon
-		// String targetFolder = AgentLocator.getNewPathToPythonScript("model", this);
-
-		ArrayList<String> args = new ArrayList<String>();
-		args.add("python");
-		args.add("PyPower-PF-OPF-JA-8.py");
-
 		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runpy.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);

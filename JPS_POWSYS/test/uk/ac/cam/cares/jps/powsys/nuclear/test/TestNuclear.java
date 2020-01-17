@@ -76,7 +76,7 @@ public class TestNuclear extends TestCase {
 		assertEquals(4, result.size());
 	}
 	
-public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
+	public void testStartSimulationAndProcessResultAgentCallForTestScenario() throws NumberFormatException, IOException, URISyntaxException, InterruptedException {
 		JSONArray ja = getSubstitutionalGenerators();
 		
 		JSONObject jo = new JSONObject();

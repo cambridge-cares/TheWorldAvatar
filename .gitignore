@@ -32,3 +32,5 @@ target
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
 *.class
 /JPS_ESS/target
+/JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/listener/BaseOntologyModelManager.java
+/JPS_BASE/conf/jpstest.properties
