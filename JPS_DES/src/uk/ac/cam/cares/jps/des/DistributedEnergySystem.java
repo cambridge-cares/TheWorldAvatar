@@ -74,17 +74,74 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     		String baseUrl=null;
  	        String iriofnetwork = null;
  	        String iriofdistrict = null;
+ 	        String irioftemp=null;
+ 	       String iriofirr=null;
+ 	      String iriofwind=null;
  	        try {
  	        	baseUrl = jo.getString("baseUrl");
  	        	iriofnetwork = requestParams.getString("electricalnetwork");
  	        	iriofdistrict = requestParams.getString("district");
+ 	        	irioftemp=requestParams.getString("temperaturesensor");
+ 	        	iriofirr=requestParams.getString("irradiationsensor");
+ 	        	iriofwind=requestParams.getString("windspeedsensor");
+ 	        	
  	        	}
  	        catch (Exception e) {
  	        	baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
  	        	iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
  	        	iriofdistrict = "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+ 	        	iriofirr="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
+ 	        	irioftemp="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
+ 	        	iriofwind="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
+ 	        
  	        }
-    		
+ 	        
+ 	       String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+ 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+ 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+ 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+ 					+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+ 					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+ 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+
+ 			String result = new QueryBroker().queryFile(irioftemp, sensorinfo);
+ 			String[] keys = JenaResultSetFormatter.getKeys(result);
+ 			List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+
+ 			String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+ 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+ 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+ 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+ 					+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+ 					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+ 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+
+ 			String result2 = new QueryBroker().queryFile(iriofirr, sensorinfo2);
+ 			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+ 			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+ 			
+ 			String sensorinfo3 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+ 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+ 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+ 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+ 					+ "WHERE { ?entity a j5:F-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+ 					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+ 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+
+ 			String result3 = new QueryBroker().queryFile(iriofwind, sensorinfo3);
+ 			String[] keys3 = JenaResultSetFormatter.getKeys(result3);
+ 			List<String[]> resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
+ 			
+ 			List<String[]> readingFromCSV = new ArrayList<String[]>();
+ 			for (int d=0;d<resultListfromqueryirr.size();d++) {
+ 				String timewholecsv=resultListfromquerytemp.get(d)[2];
+ 				String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
+ 				String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
+ 				String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
+ 				readingFromCSV.add(e);
+ 			}
+ 			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+ 			
     		OntModel model = readModelGreedy(iriofnetwork);
     		List<String[]> producer = provideGenlist(model); // instance iri
     		List<String[]> consumer = provideLoadFClist(model); // instance iri

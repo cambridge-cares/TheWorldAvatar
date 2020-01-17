@@ -15,7 +15,6 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = {"/GetIrradiationandWeatherData" })
 public class WeatherIrradiationRetriever extends JPSHttpServlet {
@@ -112,12 +111,12 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		
 		
 		
-		//make new csv
+		//update the array value list
 		readingFromCSV.remove(0); //if with header,later need to be changed TODO KEVIN
 		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
 		System.out.println("datemonth="+datemonth);
 		readingFromCSV.add(newline);
-		 new QueryBroker().putLocal(folder + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+		 //new QueryBroker().putLocal(folder + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
@@ -128,7 +127,12 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		String iriforwind=converter.startConversion(readingFromCSV,"windpseed");
 		System.out.println(iriforwind+" is updated");
 		JSONObject resultweather = new JSONObject();
-		resultweather.put("folder",folder );
+		//resultweather.put("folder",folder );
+		resultweather.put("temperaturesensor",irifortemp );
+		resultweather.put("irradiationsensor",iriforirradiation );
+		resultweather.put("windspeedsensor",iriforwind );
+		
+		
 		return resultweather;
 	}
 	

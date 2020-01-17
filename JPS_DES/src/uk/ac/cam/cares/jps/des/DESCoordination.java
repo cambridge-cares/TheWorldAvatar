@@ -38,8 +38,12 @@ public class DESCoordination extends JPSHttpServlet{
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
 
  	        String dir=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", requestParams.toString());
- 	        JSONObject folder= new JSONObject(dir);
- 	        requestParams.put("baseUrl",folder.get("folder"));
+ 	        String temp= new JSONObject(dir).getString("temperaturesensor");
+ 	       String irr= new JSONObject(dir).getString("irradiationsensor");
+ 	      String wind= new JSONObject(dir).getString("windspeedsensor");
+ 	        requestParams.put("temperaturesensor",temp);
+ 	       requestParams.put("irradiationsensor",irr);
+ 	      requestParams.put("windspeedsensor",wind);
  	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
  	        responseParams = new JSONObject(t);
  			
