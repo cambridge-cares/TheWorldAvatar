@@ -53,10 +53,6 @@
 						<targetPath>python</targetPath>
 					</resource>
 					<resource>
-						<directory>WebContent/css</directory>
-						<targetPath>css</targetPath>
-					</resource>
-					<resource>
 						<directory>WebContent/images</directory>
 						<targetPath>/images</targetPath>
 					</resource>

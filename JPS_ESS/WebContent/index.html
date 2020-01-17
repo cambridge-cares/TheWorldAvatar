@@ -553,7 +553,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
 var animatedLines = [];
-var batterylist;
+var batterylist = null;
 var infowindow;
  
  
@@ -602,6 +602,8 @@ var infowindow;
 	}
 		
 	function initMap() {
+
+		document.getElementById("loader").style.display = "block";
 		map = new google.maps.Map(document.getElementById('map'), {
 			zoom: 14,
 			center: {lat: 1.2624421, lng: 103.7007045}
@@ -609,6 +611,9 @@ var infowindow;
 		infowindow = new google.maps.InfoWindow({
             content: '<h2>Sup!</h2>'
         });
+		drawLines();
+		drawMarkers();
+		
 
 	}
 	document.getElementById("run-btn").addEventListener("click", drawBattery);
@@ -629,13 +634,14 @@ var infowindow;
 		
 		
 		obj0 = JSON.parse(data).result;
-		var line223 ="{\"coors\": [{\"lat\": "+String(1.206334)+", \"lng\": "+String(103.780312)+"}, {\"lat\": "+String(1.2794833)+", \"lng\": "+String(103.7271667)+"}], \"vols\": ["+String(228.0)+","+String(227.0)+"], \"thickness\": "+String(6)+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
-	    obj0.push(line223);
+		if (scenario != "base"){
+			var line223 ="{\"coors\": [{\"lat\": "+String(1.206334)+", \"lng\": "+String(103.780312)+"}, {\"lat\": "+String(1.2794833)+", \"lng\": "+String(103.7271667)+"}], \"vols\": ["+String(228.0)+","+String(227.0)+"], \"thickness\": "+String(6)+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
+	    	obj0.push(line223);
+		}
 	    console.log(obj0);
 		var size=obj0.length;
 		console.log("size="+size);   
 
-		//Temporary: Because there are two lines created due to Parallel World, need to get rid of them. 
 		
 		var x;
 		for(x=0;x<size;x++){
@@ -823,7 +829,11 @@ var infowindow;
 		      
 	    }
 
-		searchBatteryCoord(batterylist);	
+		if (batterylist != null){
+			searchBatteryCoord(batterylist);	
+		}else{
+			document.getElementById("loader").style.display = "none";
+		}
 	    });
 	    }
 	function createMarker(key, value, markerdict){
@@ -851,7 +861,7 @@ var infowindow;
 		batteryjson["electricalnetwork"] = electricalnetwork;
 		batteryjson["BatteryCatalog"] = batIRI;
 		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
-		var agenturl = prefix + '/JPS_ESS/ESSAgent';  
+		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
 	
 		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
 		console.log(batteryurl);

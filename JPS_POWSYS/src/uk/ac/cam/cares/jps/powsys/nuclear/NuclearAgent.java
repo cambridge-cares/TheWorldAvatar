@@ -46,8 +46,8 @@ public class NuclearAgent extends JPSHttpServlet {
     public static final String KEY_CALLBACK_URL = "callback";
     private static final long serialVersionUID = -4199209974912271432L;
     public static final String AGENT_TAG = "GAMS_NuclearAgent";
-    private String modelname="Parallel_wrld_location.gms";
-    
+    //private String modelname="Parallel_wrld_location.gms";
+    private String modelname="Location_5hr_solveropt.gms";
 
     public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
     	modifyTemplate(baseUrl, modelname);
@@ -239,7 +239,9 @@ public class NuclearAgent extends JPSHttpServlet {
 
         prepareCSVPartialRemaining(plantlist, iriofnetwork, baseUrl);
         //-----------------------------------------5th input file finished-------------------------------------------------------------------
-
+        file = new File(resourceDir + "/baron.opt");
+        broker.putLocal(baseUrl + "/baron.opt", file);
+        
         if (runGams) {
         	//runGAMS(baseUrl);
         	runGAMSAsync(baseUrl);

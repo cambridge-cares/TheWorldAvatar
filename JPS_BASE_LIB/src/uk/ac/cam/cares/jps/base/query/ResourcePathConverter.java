@@ -47,6 +47,10 @@ public class ResourcePathConverter {
 		
 		URI uri = AgentCaller.createURI(path);
 		String root = KeyValueManager.get("absdir.root");
+		if ((path.startsWith("C:")) || (!AgentLocator.isJPSRunningForTest())) {
+			JPSBaseLogger.info(getInstance(),path);
+			return path;
+		}
 		String converted = root + uri.getPath();
 		
 		JPSBaseLogger.info(getInstance(), "convertToLocalPath(): converted resource path " + path + " to " + converted);
