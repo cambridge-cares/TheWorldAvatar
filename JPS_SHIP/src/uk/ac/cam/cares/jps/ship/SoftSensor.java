@@ -176,7 +176,7 @@ public class SoftSensor extends HttpServlet {
 			propercsv.add(header);
 			logger.info("size= "+listmap.size());
 			for(int v=1;v<listmap.size();v++) {
-				System.out.println("agent involved= "+listmap.get(v)[2]);
+				//System.out.println("agent involved= "+listmap.get(v)[2]);
 				File name = new File(listmap.get(v)[0]);
 				if(name.exists()&&name.length()!=0) {
 					String csv = new QueryBroker().readFileLocal(listmap.get(v)[0]);
