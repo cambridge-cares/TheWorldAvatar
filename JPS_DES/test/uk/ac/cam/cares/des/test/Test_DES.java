@@ -59,21 +59,6 @@ public class Test_DES extends TestCase{
 		}
 			System.out.println(returnValue);
 		}
-
-	public void testStartDESScenariobase() throws IOException  {
-		
-
-		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
-	}
 	
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
@@ -82,6 +67,9 @@ public class Test_DES extends TestCase{
 	
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("district", DISIRI);
+		jo.put("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+    	jo.put("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+    	jo.put("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		
 		System.out.println(jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());

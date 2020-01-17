@@ -23,13 +23,15 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	@Override 
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
+
 		//String baseUrl = jo.getString("baseUrl");
 	    String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
-		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
-		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
+		
 		JSONObject result=new JSONObject();
 		try {
+	    	String iritempsensor=jo.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+	    	String iriirradiationsensor=jo.optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+	    	String irispeedsensor=jo.optString("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		 result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
 		
 		} catch (Exception e) {

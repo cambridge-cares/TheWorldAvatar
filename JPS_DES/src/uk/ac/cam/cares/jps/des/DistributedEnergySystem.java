@@ -71,14 +71,12 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	 if (SIM_START_PATH.equals(path)) {
     	    QueryBroker broker= new QueryBroker();
     	    JSONObject jo = AgentCaller.readJsonParameter(request);    		
-    		String baseUrl=null;
  	        String iriofnetwork = null;
  	        String iriofdistrict = null;
  	        String irioftemp=null;
  	       String iriofirr=null;
  	      String iriofwind=null;
  	        try {
- 	        	baseUrl = jo.getString("baseUrl");
  	        	iriofnetwork = requestParams.getString("electricalnetwork");
  	        	iriofdistrict = requestParams.getString("district");
  	        	irioftemp=requestParams.getString("temperaturesensor");
@@ -87,7 +85,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  	        	
  	        	}
  	        catch (Exception e) {
- 	        	baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
+
  	        	iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
  	        	iriofdistrict = "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
  	        	iriofirr="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
@@ -95,6 +93,8 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  	        	iriofwind="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
  	        
  	        }
+ 	        
+	        	String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
  	        
  	       String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
  					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
