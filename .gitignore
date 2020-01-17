@@ -34,3 +34,5 @@ target
 /JPS_ESS/target
 /JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/listener/BaseOntologyModelManager.java
 /JPS_BASE/conf/jpstest.properties
+/JPS_COMPOSITION_LITE/target
+/JPS_NLP/target
