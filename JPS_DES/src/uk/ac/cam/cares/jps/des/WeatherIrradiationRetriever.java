@@ -24,22 +24,25 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	@Override 
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
-		String baseUrl = jo.getString("baseUrl");
+		//String baseUrl = jo.getString("baseUrl");
+	    String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
 		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
 		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
 		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
+		JSONObject result=new JSONObject();
 		try {
-			readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+		 result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		AgentCaller.printToResponse(result, res);
  
 		logger.info("return the result from weather agent");		
 	}
 	
-	public void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
+	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
 		
@@ -124,6 +127,9 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(iriforirradiation+" is updated");
 		String iriforwind=converter.startConversion(readingFromCSV,"windpseed");
 		System.out.println(iriforwind+" is updated");
+		JSONObject resultweather = new JSONObject();
+		resultweather.put("folder",folder );
+		return resultweather;
 	}
 	
 
