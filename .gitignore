@@ -24,7 +24,13 @@
 /JPS_SHIP/classes/
 /JPS/python/caresjpsadmsinputs/caresjpsadmsinputs.iml
 /JPS_SHIP/workingdir/test.*
+/JPS_ARBITRAGE/.settings/*
+/JPS_ARBITRAGE/build/*
+target
+*.jar
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/MANIFEST.MF
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
-/JPS_COMPOSITION_LITE/target
-/JPS_NLP/target
+*.class
+/JPS_ESS/target
+/JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/listener/BaseOntologyModelManager.java
+/JPS_BASE/conf/jpstest.properties

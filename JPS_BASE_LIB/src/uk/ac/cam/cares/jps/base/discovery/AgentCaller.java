@@ -13,6 +13,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -22,6 +24,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.ContentType;
@@ -43,18 +46,6 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 
 public class AgentCaller {
-
-    public enum MediaType {
-        TEXT_CSV("text/csv"),
-        APPLICATION_JSON("application/json"),
-        APLICATION_SPARQL("application/sparql-results+json");
-
-        String type = null;
-
-        private MediaType(String type) {
-            this.type = type;
-        }
-    }
 
     private static final String JSON_PARAMETER_KEY = "query";
     private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
@@ -125,6 +116,38 @@ public class AgentCaller {
 
         return response_body;
     }
+    
+    public static String executePut(String path, String body) {
+    	return executePut(path, body, null);
+    }
+    
+    public static String executePut(String path, String body, String jsonParam) {
+        String response_body;
+        URIBuilder builder = getUriBuilderForPath(path);
+        StringEntity entity = new StringEntity(body, ContentType.APPLICATION_JSON);
+
+        if (jsonParam != null) {
+        	builder.setParameter(JSON_PARAMETER_KEY, jsonParam);
+        }
+        
+        try {
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpPut request = new HttpPut(builder.build());
+            request.setEntity(entity);
+            
+            HttpResponse response = httpClient.execute(request);
+            if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+                HttpEntity rsp_entity = response.getEntity();
+                response_body = EntityUtils.toString(rsp_entity, "UTF-8");
+            } else {
+                throw new JPSRuntimeException(response.getStatusLine().toString());
+            }
+        } catch (URISyntaxException | IOException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+
+        return response_body;
+    }
 
     /**
      * General method to get bare URI builder for a given resource name.
@@ -135,7 +158,13 @@ public class AgentCaller {
     private static URIBuilder getUriBuilderForPath(String path) {
         // TODO-AE maybe use directly class java.net.URI
         // TODO-AE refactor get hostname
-        return new URIBuilder().setScheme("http").setHost(getHostPort()).setPath(path);
+        URIBuilder builder;
+        try {
+            builder = new URIBuilder(createURI(path));
+        } catch (Exception e) {
+            builder = new URIBuilder().setScheme("http").setHost(getHostPort()).setPath(path);
+        }
+        return builder;
     }
 
     public static String executeGetWithURL(String url) {
@@ -176,7 +205,7 @@ public class AgentCaller {
             builder.setPort(port);
         }
 
-        if (keyOrValue != null) {
+        if (!ArrayUtils.isEmpty(keyOrValue)) {
             for (int i = 0; i < keyOrValue.length; i = i + 2) {
                 String key = keyOrValue[i];
                 String value = keyOrValue[i + 1];
@@ -238,8 +267,14 @@ public class AgentCaller {
     public static JSONObject readJsonParameter(HttpServletRequest request) {
 
         try {
+            String json = null;
 
-            String json = request.getParameter(JSON_PARAMETER_KEY);
+            if (request.getMethod().equals(HttpPost.METHOD_NAME)) {
+                json = IOUtils.toString(request.getReader());
+            } else if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
+                json = request.getParameter(JSON_PARAMETER_KEY);
+            }
+
             if (json != null) {
                 return new JSONObject(json);
             }
@@ -253,7 +288,7 @@ public class AgentCaller {
             }
             return jsonobject;
 
-        } catch (JSONException e) {
+        } catch (JSONException | IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
     }

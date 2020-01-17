@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.scenario;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Date;
 
 import javax.servlet.ServletException;
@@ -11,21 +12,29 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAbstract;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseAgent;
+import uk.ac.cam.cares.jps.scenario.kb.KnowledgeBaseManager;
 
 @WebServlet(urlPatterns = {"/scenario/*"})
-public class ScenarioAgent extends HttpServlet {
+public class ScenarioAgent extends KnowledgeBaseAgent {
 	
 	private static final long serialVersionUID = 3746092168199681624L;
 
@@ -59,8 +68,8 @@ public class ScenarioAgent extends HttpServlet {
 		// calling the scenario agent. However, it is needed as soon
 		// as the scenario agent calls other agents.
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
-			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
-			JPSContext.putScenarioUrl(jo, scenarioUrl);
+			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			JPSContext.putScenarioUrl(jo, scenariourl);
 		}
 				
 		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
@@ -69,11 +78,23 @@ public class ScenarioAgent extends HttpServlet {
 		String result = "";
 		if (operation == null) {
 			
-			// do nothing, the scenario log file has been already created above
+			if (jo.has(JPSConstants.SCENARIO_RESOURCE)) {
+				
+				doGetNew(request, response, scenarioName, copyOnRead);
+				return;
+				
+//				if (jo.has(JPSConstants.QUERY_SPARQL_QUERY)) {
+//					result = queryFile(jo, scenarioName, copyOnRead);
+//				} else {
+//					result = readFile(jo, scenarioName, copyOnRead);
+//				}
+			} else {
 			
-			JSONObject resultjo = new JSONObject(log.getLogAsString());
-			// pretty print with 2 spaces to indent
-			result = resultjo.toString(2);
+				// just return the scenario log
+				JSONObject resultjo = new JSONObject(log.getLogAsString());
+				// pretty print with 2 spaces to indent
+				result = resultjo.toString(2);
+			}
 		
 		} else if ("/option".equals(operation)) {
 			
@@ -161,11 +182,13 @@ public class ScenarioAgent extends HttpServlet {
 		
 		// start the scenario by calling the operation (an operation can be called even if no agent or a different agent was given)
 		String operation = jo.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
+		System.out.println("operation: "+ operation  + " scenario name "+ scenarioName + " jo: "+ jo);
 	 	if (operation.startsWith("http")) {
 	 		result = ScenarioManagementAgent.execute(scenarioName, operation, jo);
 	 	} else {
 	 		//throw new RuntimeException("can't call operation without http, operation = " + operation);
 	 		 ScenarioManagementAgent.addJpsContext(scenarioName, jo);
+	 		 //test to see if it was really put into context
 	 		return AgentCaller.executeGetWithJsonParameter(operation, jo.toString());
 	 	}
 	 	
@@ -202,10 +225,11 @@ public class ScenarioAgent extends HttpServlet {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (fileWithinBucket.exists()) {
+	    if (fileWithinBucket.exists()) { 	
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
-	    	String content = new QueryBroker().readFile(resource);
+
+	    	String content = new QueryBroker().readFileLocal(resource);
 	    	FileUtil.writeFileLocally(completePathWithinBucket, content);
 	    	return completePathWithinBucket;
 	    }  
@@ -227,7 +251,8 @@ public class ScenarioAgent extends HttpServlet {
 		String resource = getResourcePath(jo, scenarioName, copyOnRead);
 		// TODO-AE SC the prepare method might create a scenario copy; in this case prepare method already reads the content; i.e. in this case
 		// we read it here a second time --> refactor the code such that this is not required; the same for queryFile
-		return new QueryBroker().readFile(resource);
+
+		return new QueryBroker().readFileLocal(resource);
 	}
 	
 	private String queryFile(JSONObject jo, String scenarioName, boolean copyOnRead) {
@@ -237,7 +262,7 @@ public class ScenarioAgent extends HttpServlet {
 		
 		logger.debug("sparqlquery=" + sparqlQuery);
 		
-		return new QueryBroker().queryFile(resource, sparqlQuery);
+		return new QueryBroker().queryFileOld(resource, sparqlQuery); //swap to queryFileOLD due to queryFil location not including http check and used within bucket
 	}
 	
 	private void updateFile(JSONObject jo, String scenarioName) {
@@ -373,6 +398,112 @@ public class ScenarioAgent extends HttpServlet {
 				}
 			} 
 			// else skip the scenario log json file
+		}
+	}
+	
+	protected void updateKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql) {
+		
+		logger.info("updateKnowledgeBase");
+		
+		String datasetUrl = kb.getDatasetUrl();
+		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		
+		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
+			// at the moment, the knowledge base impl for Fuseki does not support SPARQL update if the named graph is given as extra resource URL
+			// KnowledgeBaseClient.update(metadatasetUrl, datasetUrl, sparql);
+			// for this reason, we have to set resource URL to null and use the GRAPH clause within the SPARQL update string itself 
+			// (which is done bz the MetaDataAnnotator)
+			KnowledgeBaseClient.update(metadatasetUrl, null, sparql);
+			return;
+		}
+		
+		if (!kb.exists(resourceUrl)) {
+			String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+			kb.put(resourceUrl, content, null);
+		}
+		kb.update(resourceUrl, sparql);
+	}
+	
+	protected String getFromKnowledgeBase(KnowledgeBaseAbstract kb, String externalDatasetUrl, String resourceUrl, boolean copyOnRead, String accept) {
+		if (kb.exists(resourceUrl)) {
+			return kb.get(resourceUrl, accept);
+		} 
+		
+		String content = KnowledgeBaseClient.get(externalDatasetUrl, resourceUrl, accept);
+		if (copyOnRead) {
+			kb.put(resourceUrl, content, accept);
+			if (accept != null) {
+				// read it again but this time form the knowledge base and in the correct format
+				return kb.get(resourceUrl, accept);
+			} 
+		}
+
+		return content;
+	}
+	
+	protected String queryKnowledgeBase(KnowledgeBaseAbstract kb, String resourceUrl, String sparql, boolean copyOnRead) {
+
+		logger.info("queryKnowledgeBase");
+		
+		String metadatasetUrl = MetaDataAnnotator.getMetadataSetUrl();
+		if ((resourceUrl != null) && resourceUrl.equals(metadatasetUrl)) {
+			// will not work with current knowledge base implementation for Fuseki
+			//String datasetUrl = kb.getDatasetUrl();
+			//return KnowledgeBaseClient.query(metadatasetUrl, datasetUrl, sparql);
+			return KnowledgeBaseClient.query(metadatasetUrl, null, sparql);
+		}
+		
+		if (kb.exists(resourceUrl)) {
+			return kb.query(resourceUrl, sparql);
+		} 
+		
+		String content = KnowledgeBaseClient.get(null, resourceUrl, null);
+		if (copyOnRead) {
+			kb.put(resourceUrl, content, null);
+			return kb.query(resourceUrl, sparql);
+		} else {
+			logger.info("query from KnowledgeBaseAbstract");
+			InputStream inputStream = FileUtil.stringToInputStream(content);
+			RDFFormat format =  KnowledgeBaseAbstract.getRDFFormatFromFileType(resourceUrl);
+			return KnowledgeBaseAbstract.query(inputStream, format, sparql);
+		}
+	}
+	
+	private void doGetNew(HttpServletRequest req, HttpServletResponse resp, String scenarioName, boolean copyOnRead) 
+			throws ServletException, IOException {
+		
+		String requestUrl = req.getRequestURL().toString();
+		String path = req.getPathInfo();
+		JSONObject input = Http.readJsonParameter(req);
+		String sparql = MiscUtil.optNullKey(input, JPSConstants.QUERY_SPARQL_QUERY);
+		String paramDatasetUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_DATASET);
+		String paramResourceUrl = MiscUtil.optNullKey(input, JPSConstants.SCENARIO_RESOURCE);
+		String contentType = req.getContentType();
+		
+		try {
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, false);
+			
+			String accept = getAccept(req);
+			
+			String scenarioUrl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			KnowledgeBaseAbstract kb = KnowledgeBaseManager.getKnowledgeBase(scenarioUrl);
+			String resourceUrl = getResourceUrl(scenarioUrl, requestUrl, paramResourceUrl);
+			
+			String result = "";	
+			if (sparql == null) {
+				//result = kb.get(resourceUrl, accept);
+				result = getFromKnowledgeBase(kb, paramDatasetUrl, resourceUrl, copyOnRead, accept);
+			} else {
+				//result = kb.query(resourceUrl, sparql);
+				result = queryKnowledgeBase(kb, resourceUrl, sparql, copyOnRead);
+			}
+			
+			Http.printToResponse(result, resp);
+
+		} catch (RuntimeException e) {
+			e.printStackTrace();
+			logInputParams("GET", requestUrl, path, paramDatasetUrl, paramResourceUrl, contentType, sparql, true);
+			throw e;
 		}
 	}
 }

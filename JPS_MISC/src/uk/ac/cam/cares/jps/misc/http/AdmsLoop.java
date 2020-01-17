@@ -7,9 +7,7 @@ import java.util.List;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
-import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 
 public class AdmsLoop {
 
@@ -77,12 +75,20 @@ public class AdmsLoop {
 			String currentTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(current);
 			System.out.println("starting ADMS for index = " + i + ", time = " + currentTime);
 			
-			JSONObject jo = new JSONObject();
-			jo.put("scenarioname", scenarioName);
-			jo.put("simulationtime", currentTime);
+
 			
-			String url = "http://www.theworldavatar.com/JPS_SHIP//ADMSCoordinationAgentForShipWithoutComposition";
-			//String result = AgentCaller.executeGetWithURLAndJSON(url, jo.toString());
+			//JSONObject jo = new JSONObject();
+			//jo.put("scenarioname", scenarioName);
+			//jo.put("simulationtime", currentTime);
+			
+			
+			//JPSContext.
+			
+			JSONObject jo = new JSONObject();
+			
+			// TODO-AE SC URGENT 20190919
+			String url = "http://localhost:8080/JPS_SHIP/CollectorCoordination";
+			String result = AgentCaller.executeGetWithURLAndJSON(url, jo.toString());
 		}
 	}
 	

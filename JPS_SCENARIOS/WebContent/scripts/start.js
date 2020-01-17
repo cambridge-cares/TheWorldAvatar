@@ -3,8 +3,8 @@ $(function() {
   var selected = [];
   var loadeddata;
   var table = $("#tablescenarios").DataTable();
-  //var host = "http://www.theworldavatar.com";
-  var host = "http://localhost:8080";
+  var host = "http://www.theworldavatar.com";
+  //var host = "http://localhost:8080";
   var listScenariosUrl = host + "/jps/scenariomanagement/list"
   var selectedScenario;
   var selectedOperation;
@@ -208,6 +208,10 @@ $(function() {
       var type = params[i].hasType;
 	  var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
 	  var isarray = params[i].isArray;
+	  if(isarray==null){
+		  isarray=false
+	  }
+	  console.log("input isArray= "+isarray);
 	  var value =  "<input type=\"text\" id=\"inparamvalue" + i + "\">";
 
       if (name === "scenarioagent") {
@@ -245,6 +249,10 @@ $(function() {
       var type = params[i].hasType;
       var typelink = '<a href="' + type + '" target="_blank">' + type + '</a>';
       var isarray = params[i].isArray;
+	  if(isarray==null){
+		  isarray=false
+	  }
+      console.log("output isArray= "+isarray);
       var value = "---";
       
       

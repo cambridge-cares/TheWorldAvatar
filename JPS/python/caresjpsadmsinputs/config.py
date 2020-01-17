@@ -145,7 +145,7 @@ class Constants(object):
                                  'OptAllSources', 'OptNumGroups', 'OptIncludedGroups', 'OptIncludedSource',
                                  'OptCreateComprehensiveFile'])
     KEY_GRPTANK = 'Grouptank001'
-    KEY_SRC_NAMES = 'SrcNames'
+    KEY_SHIP_OPT_SRCNAME = 'SrcNames'
 
 
 class QueryStrings(object):

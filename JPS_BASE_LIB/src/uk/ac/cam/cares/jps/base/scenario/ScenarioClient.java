@@ -2,11 +2,14 @@ package uk.ac.cam.cares.jps.base.scenario;
 
 import java.net.URI;
 
+import org.apache.http.client.methods.HttpGet;
 import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
 public class ScenarioClient {
 	
@@ -75,12 +78,24 @@ public class ScenarioClient {
 	
 	public URI getReadUrl(String scenarioUrl, String resourceUrl) {
 		
-		String json = new JSONStringer().object()
-				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
-				.endObject().toString();
-	
-		String url = scenarioUrl + "/read";
-		return AgentCaller.createURIWithURLandJSON(url, json);
+		//throw new UnsupportedOperationException();
+		
+		Object[] a = KnowledgeBaseClient.createRequestUrl(null, resourceUrl, false);
+		String requestUrl = (String) a[0];
+		JSONObject joparams = (JSONObject) a[1];
+		HttpGet get = Http.get(requestUrl, null, joparams);
+		return get.getURI();
+			
+//		String requestUrl = cutHashFragment(resourceUrl);
+//		return Http.execute(Http.get(requestUrl, accept));
+		
+//		OLD IMPLEMENTATION: 
+//		String json = new JSONStringer().object()
+//				.key(JPSConstants.SCENARIO_RESOURCE).value(resourceUrl)
+//				.endObject().toString();
+//	
+//		String url = scenarioUrl + "/read";
+//		return AgentCaller.createURIWithURLandJSON(url, json);
 	}
 	
 	public String query(String scenarioUrl, String resourceUrl, String sparqlQuery) {
