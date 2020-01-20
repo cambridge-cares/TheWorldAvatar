@@ -6,7 +6,6 @@ package uk.ac.cam.ceb.como.nist;
 
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -15,16 +14,20 @@ import java.net.URLConnection;
 /**
  *
  * @author pb556
+ * 
  */
+
 public class URLDownload {
 
     final static int size = 1024;
 
     public static void fileUrl(String fAddress, String localFileName, String destinationDir) {
-        OutputStream outStream = null;
+
+    	OutputStream outStream = null;
         URLConnection uCon = null;
 
         InputStream is = null;
+        
         try {
             URL Url;
             byte[] buf;
