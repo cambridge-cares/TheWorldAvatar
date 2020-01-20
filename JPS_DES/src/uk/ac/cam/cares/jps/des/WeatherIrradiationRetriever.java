@@ -32,7 +32,8 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	    	String iritempsensor=jo.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
 	    	String iriirradiationsensor=jo.optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
 	    	String irispeedsensor=jo.optString("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-		 result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+		 System.out.println("tempsensor= "+iritempsensor);
+	    	result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
