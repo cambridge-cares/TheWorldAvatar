@@ -9,23 +9,36 @@ import java.util.ArrayList;
 /**
  *
  * @author pb556
+ * 
  */
 public class Combination {
 
     public static ArrayList<ArrayList<Object>> compute(ArrayList<Object> restOfVals) {
+    	
         if (restOfVals.size() < 2) {
+        	
             ArrayList<ArrayList<Object>> c = new ArrayList<ArrayList<Object>>();
             c.add(restOfVals);
+            
             return c;
+            
         } else {
+        	
             ArrayList<ArrayList<Object>> newList = new ArrayList<ArrayList<Object>>();
             for (Object o : restOfVals) {
 //make a copy of the array
-                ArrayList<Object> rest = new ArrayList<Object>(restOfVals);
+            ArrayList<Object> rest = new ArrayList<Object>(restOfVals);
 //remove the object
-                rest.remove(o);
-                newList.addAll(prependToEach(o, compute(rest)));
+            rest.remove(o);
+            newList.addAll(prependToEach(o, compute(rest)));
+            
             }
+            
+//            for(Object o: newList) {
+            	
+//            	System.out.println("o.toString(): " + o.toString());            	
+//            }
+            
             return newList;
         }
 
