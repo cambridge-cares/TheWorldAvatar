@@ -67,12 +67,12 @@ public class CrossValidation extends HttpServlet {
 		 *         folder path to Gaussian files (reference species) and folder path for
 		 *         target species (csv file). In this version of the web service, both
 		 *         folders should be store on server side (HPC machine).
+		 *         
+		 *         Json file "species.json" is located in ROOT folder of Apache Tomcat server. For example: C:\apache-tomcat-8.5.35\webapps\ROOT\data\species\species.json
 		 * 
 		 */
 
 		JSONObject parameterOne = AgentCaller.readJsonParameter(request);
-		
-		
 
 		String speciesJson = parameterOne.getString("jsonfile");
 
@@ -98,7 +98,7 @@ public class CrossValidation extends HttpServlet {
 
 			ssh.connect("172.25.186.150");
 
-			ssh.authPassword("nkrd01", "..Nk4c19..");
+			ssh.authPassword("nkrd01", "pass-to-add");
 
 			final Session session = ssh.startSession();
 
