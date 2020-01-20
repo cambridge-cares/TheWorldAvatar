@@ -35,8 +35,8 @@ public class TestSoftSensor extends TestCase {
 		ja.put(location3);
 		
 		JSONObject time = new JSONObject();
-		time.put("from", "2019-06-24T08:00:00");
-		time.put("to", "2019-06-24T12:00:00");
+		time.put("from", "2020-01-14T01:00:00");
+		time.put("to", "2020-01-14T04:00:00");
 		JSONObject jo = new JSONObject();
 		jo.put("timeinterval", time);
 		jo.put("coordinates", ja);
@@ -45,7 +45,7 @@ public class TestSoftSensor extends TestCase {
 		System.out.println("result= "+result);
 		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
 		int number=JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").length();
-		assertEquals(36, number); //2time x 3point x 6pollutant  
+		assertEquals(81, number); //2time x 3point x 9pollutant  
 		
 	}
 	

@@ -146,7 +146,7 @@ public class SoftSensor extends HttpServlet {
 			int j=(simulationResult.get(0).length-k)/zamount;
 			for(int i=0;i<j;i++) {
 				conc.add(simulationResult.get(0)[i+k]);
-				conc.add("");
+				conc.add("unknown");
 			}
 		}
 		
@@ -168,16 +168,26 @@ public class SoftSensor extends HttpServlet {
 		String timeto=result.getJSONObject("timeinterval").optString("to", "none");
 		String agentiri = result.optString("agent",null);			
 
-			String resultfromfuseki = MetaDataQuery.queryResources(agentiri, timefrom, timeto);
-			List<String[]> listmap = MatrixConverter.fromCsvToArray(resultfromfuseki);
+			//String resultfromfuseki = MetaDataQuery.queryResources(agentiri, timefrom, timeto);
+		List<String> topics= new ArrayList<String>();
+		topics.add("http://dbpedia.org/resource/Hong_Kong");
+		String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, timefrom, timeto,null,topics);
+			//System.out.println("resultfuseki= "+resultfromfuseki);
+			//List<String[]> listmap = MatrixConverter.fromCsvToArray(resultfromfuseki);
+			 //String[] keys = {"agent", "creationTime", "resource", "simulationTime"};
+			 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
+			 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
 			
 			List<String[]>propercsv=new ArrayList<String[]>();
 			String[]header= {"time","x","y","z","crs","pollutant","observes","value","unit"};
 			propercsv.add(header);
 			logger.info("size= "+listmap.size());
-			for(int v=1;v<listmap.size();v++) {
-				//System.out.println("agent involved= "+listmap.get(v)[2]);
+			for(int v=0;v<listmap.size();v++) {
+				//System.out.println("agent involved= "+listmap.get(v)[3]);
 				File name = new File(listmap.get(v)[0]);
+				//System.out.println("name= "+listmap.get(v)[0]);
+				
+				
 				if(name.exists()&&name.length()!=0) {
 					String csv = new QueryBroker().readFileLocal(listmap.get(v)[0]);
 					List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
@@ -195,7 +205,7 @@ public class SoftSensor extends HttpServlet {
 						
 						List<String>concentration=findtheconcentration(simulationResult,realx,realy,realz);
 						
-						String timeinst=listmap.get(v)[1];
+						String timeinst=listmap.get(v)[4];
 						double sumpm10=0;
 						double sumpm25=0;
 						for (int r = 0; r < concentration.size(); r += 2) {
@@ -210,11 +220,17 @@ public class SoftSensor extends HttpServlet {
 							content[7] = concentration.get(r + 1);
 							content[8] = "http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m";
 							
-							
+							//logger.info("content[7]= "+content[7]);
 							if(content[5].toLowerCase().contains("pm2.5")) {
+								if(content[7].contains("unknown")) {
+									content[7]="0";
+								}
 								sumpm25=sumpm25+Double.valueOf(content[7]);	
 							}
 							else if(content[5].toLowerCase().contains("pm10")){
+								if(content[7].contains("unknown")) {
+									content[7]="0";
+								}
 								sumpm10=sumpm10+Double.valueOf(content[7]);	
 							} 
 							else {
