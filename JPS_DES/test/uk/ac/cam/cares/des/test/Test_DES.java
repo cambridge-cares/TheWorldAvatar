@@ -59,22 +59,26 @@ public class Test_DES extends TestCase{
 		}
 			System.out.println(returnValue);
 		}
-
-	public void testStartDESScenariobase() throws IOException  {
+	
+	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
 	
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("district", DISIRI);
+		jo.put("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+    	jo.put("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+    	jo.put("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		
 		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
 		System.out.println(resultStart);
 		System.out.println("finished execute");
 
 	}
-	public void testStartDESScenariotemp() throws IOException  {
+	
+	public void xxxtestStartDESScenariotemp() throws IOException  {
 
 		DESCoordination a = new DESCoordination();
         String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
@@ -82,7 +86,7 @@ public class Test_DES extends TestCase{
 		String iriofdistrict = DISIRI;
 		OntModel model = readModelGreedy(iriofnetwork);
 		
-		a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
+		//a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
 		String weatherdir=baseUrl+"/Weather.csv";
 		String content = new QueryBroker().readFileLocal(weatherdir);
 		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
@@ -417,7 +421,7 @@ public class Test_DES extends TestCase{
 	
 	public void testquerygen() {
 		OntModel model = readModelGreedy(ENIRI);
-		List<String[]> producer = new DESCoordination().provideGenlist(model); // instance iri
+		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
 	}
 	

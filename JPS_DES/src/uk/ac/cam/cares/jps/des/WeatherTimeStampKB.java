@@ -190,9 +190,9 @@ public class WeatherTimeStampKB {
 		String mainobject2name = "SGSolarIrradiationSensor-001"; // still hard-coded for the sample
 		String mainobject3name = "SGWindSpeedSensor-001"; // still hard-coded for the sample
 		String Prefix="http://www.theworldavatar.com/kb/sgp/singapore/";
-		String filePath1 = Prefix + mainobjectname + ".owl"; // the result of written owl file
-		String filePath2 = Prefix + mainobject2name + ".owl"; // the result of written owl file
-		String filePath3 = Prefix + mainobject3name + ".owl"; // the result of written owl file
+		String filePath1 = Prefix + mainobjectname + ".owl#"+ mainobjectname; // the result of written owl file
+		String filePath2 = Prefix + mainobject2name + ".owl#"+ mainobject2name; // the result of written owl file
+		String filePath3 = Prefix + mainobject3name + ".owl#"+ mainobject3name; // the result of written owl file
 		
 		if (flag.toLowerCase().contains("temperature")) {
 			System.out.println("creating temperature");
