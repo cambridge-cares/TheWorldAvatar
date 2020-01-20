@@ -56,7 +56,7 @@ public class ConsistencyTest {
 		 */
 
 		Reasoner hermit = new Reasoner(getOntology(new File("src/test/resources/ontology/compchem_ontology/ontocompchem.rdf")));
-
+		
 		System.out.println("OntoCompchem ontology consistecy: " + hermit.isConsistent());
 
 	}

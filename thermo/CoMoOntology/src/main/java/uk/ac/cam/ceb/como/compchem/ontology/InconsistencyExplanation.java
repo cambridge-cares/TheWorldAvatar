@@ -35,17 +35,19 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  *         <p>Hermit reasoner licence type is: 'GNU Lesser General Public License'
  *         Hermit reasoner licence is available at:
  *         http://www.hermit-reasoner.com/download/1.3.8/readme.txt</p>
- *         
+ *
  */
 
 public class InconsistencyExplanation {	
-	
-	/** File path to generated ontologies (Abox of Compchem ontology). */
-//    static String compchemFilePath = "src/test/resources/compchem_abox"; //ontokin compchem_abox
-      static String compchemFilePath = "C:\\Users\\NK\\git\\thermochemistry\\CoMoOntology\\src\\test\\resources\\ontology\\compchem_abox";
+
+	/** File path to generated ontologies (Abox of Compchem ontology). **/
+    static String compchemFilePath = "src/test/resources/compchem_abox"; //ontokin compchem_abox
     
+//  static String compchemFilePath = "C:\\Users\\NK\\git\\thermochemistry\\CoMoOntology\\src\\test\\resources\\ontology\\compchem_abox";
+//  static String compchemFilePath = "C:\\Users\\NK\\git\\thermochemistry\\CoMoOntology\\src\\test\\resources\\ontology\\onto_engine";
     
 	/**
+	 * 
 	 * The main method.
 	 *
 	 * @param args the arguments
@@ -53,6 +55,7 @@ public class InconsistencyExplanation {
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 * 
 	 */
+      
 	public static void main(String[] args) throws OWLOntologyCreationException, IOException {
 		
 		Utility utility = new FileUtility();
@@ -260,10 +263,12 @@ public class InconsistencyExplanation {
 	}
 
 	/**
+	 * 
 	 * Prints the explanation.
 	 *
 	 * @param multiExplanator the multi explanator
 	 * @param dataFactory the data factory
+	 * 
 	 */
 	
 	public static void printExplanation(HSTExplanationGenerator multiExplanator, OWLDataFactory dataFactory) {
@@ -389,5 +394,4 @@ public static boolean getConsistencyOWLFile(String aboxOwlFilePath) throws OWLOn
 		
 		return inconsistency;
 	}
-
 }

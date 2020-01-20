@@ -42,7 +42,7 @@
     xmlns:owl="http://www.w3.org/2002/07/owl#"
     xmlns:convention="http://www.xml-cml.org/convention" xmlns:cc="http://www.xml-cml.org/dictionary/compchem" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi" xmlns:si="http://www.xml-cml.org/unit/si"
 	xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"  xmlns:compchemkb="https://como.cheng.cam.ac.uk/kb/compchem.owl#"
-	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:gc="http://purl.org/gc/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:fn="http://www.w3.org/2005/xpath-functions"
 	xmlns:uuid="java.util.UUID" xmlns:math="java.lang.Math" exclude-result-prefixes="math uuid convention cc xsd nonSi si s">
 	
     <xsl:output method="xml" indent="yes"/>
@@ -65,10 +65,10 @@
 			</owl:Ontology>
 
 			<xsl:apply-templates select="s:module/s:module/*[local-name() = 'module']"/>
-			<xsl:apply-templates
-				select="s:module/s:module/s:module/*[local-name() = 'module']"/>
+			<xsl:apply-templates select="s:module/s:module/s:module/*[local-name() = 'module']"/>
+		
 		</rdf:RDF>
- 
+		    
 	</xsl:template>
 
 	<xsl:variable name="id">
@@ -88,7 +88,8 @@
 	<xsl:variable name="folder_name">
 	<xsl:value-of select="$xmlFolderName"/>
 	</xsl:variable>
-	
+
+		        
 	<!-- 
 	This template matches nodes that has cc:jobList and cc:job attributes 
 	value. It creates root and its child rdf nodes for molecular system by using 
@@ -121,16 +122,14 @@
         <xsl:variable name ="formula_name">	
     	<xsl:value-of select="s:module/s:molecule/*[local-name() = 'formula']/@concise" />
         </xsl:variable>
-				
-		<!-- 
-		
+			
+		<!-- 		
 		Creates root rdf node that is instance of 'G09' ontology class. It 
 		also creates property relation between root node and node that has a tree 
-		structure of information stored in initialization module. 
-		
+		structure of information stored in initialization module. 		
 		-->
 		
-<!-- 		<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
+<!--   <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}">-->
             
             <owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$folder_name}">
 			<rdf:type rdf:resource="https://como.cheng.cam.ac.uk/kb/compchem.owl#G09"/>
@@ -144,8 +143,9 @@
 		    
 		    <!-- Mapping between name of species and unique URI for each species specified  in species ontology.-->
 		    
-		    <!-- begin  date: 2019-02-04 -->
+		    <!-- begin -->
 		    
+		    <!--  edited date: 2019-02-04  -->
 		    <xsl:if test="$formula_name='Ar 1 '">
 		    <compchemkb:hasUniqueSpeciesIRI rdf:resource="http://como.cheng.cam.ac.uk/kb/species.owl#species_10"/>
 		    </xsl:if>
@@ -253,8 +253,8 @@
 	</xsl:template>
 
 	<!-- 
-	This template transforms all information that are available in initialisation 
-	and finalisation modules of CompChem xml file. 
+	This template transforms all information that are available in initialization 
+	and finalization modules of CompChem xml files. 
 	-->
 
 	<xsl:template match="s:module/s:module/s:module/*[local-name() = 'module']">
@@ -954,5 +954,7 @@
 		<xsl:value-of select="." />
 	</xsl:template>
 	
+
+
 	
 </xsl:transform>
