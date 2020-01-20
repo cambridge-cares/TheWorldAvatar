@@ -4,8 +4,6 @@
  */
 package uk.ac.cam.ceb.como.openbabel.wrapper;
 
-import uk.ac.cam.ceb.como.openbabel.cml.OpenBabelException;
-import uk.ac.cam.ceb.como.openbabel.util.OpenBabelUtil;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -16,6 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
 import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.DefaultExecutor;
 import org.apache.commons.exec.ExecuteWatchdog;
@@ -24,9 +23,13 @@ import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 
+import uk.ac.cam.ceb.como.openbabel.cml.OpenBabelException;
+import uk.ac.cam.ceb.como.openbabel.util.OpenBabelUtil;
+
 /**
  *
  * @author pb556
+ * 
  */
 public class OpenBabelWrapper {
 
