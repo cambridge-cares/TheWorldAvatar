@@ -150,7 +150,9 @@ public class LeaveOneOutCrossValidation {
                         }
                         Collections.shuffle(refPool);
                         ExecutorService executor = Executors.newSingleThreadExecutor();
-//                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
+                        
+//                      PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
+                        
                         PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HDReactionType()));
                         poolModCalc.setMaximumSearchDepth(50);
                         MultiRunCalculator c

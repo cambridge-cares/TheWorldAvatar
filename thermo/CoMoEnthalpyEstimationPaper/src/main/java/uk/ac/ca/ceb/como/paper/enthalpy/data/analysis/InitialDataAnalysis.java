@@ -674,8 +674,6 @@ public class InitialDataAnalysis {
 								printedResultsFile.write(ttip.getRef() + " " + ttip.getHf());
 								
 								printedResultsFile.write("\n");
-
-								
 								
 								}
 							}

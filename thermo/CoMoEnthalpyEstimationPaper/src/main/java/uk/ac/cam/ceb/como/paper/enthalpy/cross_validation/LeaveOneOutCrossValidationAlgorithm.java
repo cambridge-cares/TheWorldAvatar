@@ -127,11 +127,13 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	
 //	static String destRList = "ti_isg/";
-	static String destRList = "hco_hhd/";
+//	static String destRList = "hco_hhd/";
 //	static String destRList = "hco_isd/";
 //	static String destRList = "hco_isg/";
 //	static String destRList = "hco_hd/";
-	
+	static String destRList = "hco_hhd_111/";
+//	static String destRList = "hco_hd_111/";
+	 
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -146,7 +148,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings temp folder path.
 	 * 
 	 */
-	static String tempFolder = "LeaveOneOutCrossValidation_hhd/";
+	static String tempFolder = "LeaveOneOutCrossValidation_hhd_111/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
@@ -207,7 +209,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 //	String destRList = args[2]; //"ti_isg/";
 	
 	/**
+	 * 
 	 * Path to .temp folder that stores all  files used by GLPK solver.
+	 * 
 	 */
 //	String tempFolder = args[3]; //"LeaveOneOutCrossValidation_temp/"
 	
@@ -254,8 +258,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * metrics for reactions and species. Recommends a list of rejected species and the list of valid species.
 		 * 
 		 */
-    
-//	ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 	
 	HHDReactionType hhdReactionTypePreProcessing = new HHDReactionType();
 	

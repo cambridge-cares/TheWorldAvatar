@@ -15,7 +15,7 @@ public class FolderUtils {
 	 * @throws UnsupportedEncodingException the exception.
 	 * 
 	 */
-	public static String generateUniqueFolderName(String fileName) throws UnsupportedEncodingException {
+	public String generateUniqueFolderName(String fileName) throws UnsupportedEncodingException {
 
 		long milliseconds = System.currentTimeMillis();
 
@@ -42,5 +42,5 @@ public class FolderUtils {
 		return uuid.toString();
 
 	}
-	
+
 }

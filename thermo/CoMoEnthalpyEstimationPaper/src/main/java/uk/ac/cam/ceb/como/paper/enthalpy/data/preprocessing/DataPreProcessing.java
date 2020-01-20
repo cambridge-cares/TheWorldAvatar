@@ -41,7 +41,6 @@ import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
 import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
-import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 import uk.ac.cam.ceb.paper.sort.Sort;
 
@@ -70,10 +69,7 @@ import uk.ac.cam.ceb.paper.sort.Sort;
 * 
 */
 
-public class DataPreProcessing {
-
-	
-	
+public class DataPreProcessing {	
 	
     /**
      * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -349,11 +345,11 @@ public class DataPreProcessing {
                     
 //                  Collections.shuffle(refPool);
                     
-                     ExecutorService executor = Executors.newSingleThreadExecutor();
+                    ExecutorService executor = Executors.newSingleThreadExecutor();
                     
-//                     PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HHDReactionType()));
+//                  PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new HHDReactionType()));
                     
-                   PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, reactionType));
+                    PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, reactionType));
                     
                     poolModCalc.setMaximumSearchDepth(50); //50
                     
@@ -754,18 +750,17 @@ public class DataPreProcessing {
      * @param ctrRuns Number of runs.
      * @param ctrRes Number of reactions that will be generated.
      * @param ctrRadicals Number of radicals.
-     * @param reactionType Reaction type (ISG, ISD. Hd, HHD)
+     * @param reactionType Reaction type (ISG, ISD. HD, HHD)
      * @throws Exception The exception.
      * 
      * Method generates chemical reaction for target species, and estimates standard ethalpy of formation for each reaction based on given reaction type.
      *  
      */
-    public void getPreProcessingErrorBalanceReaction(String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
+    
+    public void getPreProcessingErrorBalanceReaction(String folderName, String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {    	
     	
-    	
-		FolderUtils folderUtils = new FolderUtils();
-		
-		String folderName = FolderUtils.generateUniqueFolderName("isg_isd");		
+//		FolderUtils folderUtils = new FolderUtils();
+//		String  = FolderUtils.generateUniqueFolderName("isg_isd_hd_hhd");
 
 		Files.createDirectories(Paths.get(destRList +"/" +folderName));
 		
