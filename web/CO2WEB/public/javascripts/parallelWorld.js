@@ -372,9 +372,9 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-    // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
     // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario.kml";
-    var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalbase.kml';
+     // var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalbase.kml';
     var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
     setInterval(function(){
         distotalemission();
