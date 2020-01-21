@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
@@ -36,14 +37,12 @@ public class DESCoordination extends JPSHttpServlet{
  	        String scenarioUrl = BucketHelper.getScenarioUrl();
  	        String usecaseUrl = BucketHelper.getUsecaseUrl();
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
-
+ 	        responseParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
  	        String dir=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", requestParams.toString());
- 	        String temp= new JSONObject(dir).getString("temperaturesensor");
- 	       String irr= new JSONObject(dir).getString("irradiationsensor");
- 	      String wind= new JSONObject(dir).getString("windspeedsensor");
- 	        requestParams.put("temperaturesensor",temp);
- 	       requestParams.put("irradiationsensor",irr);
- 	      requestParams.put("windspeedsensor",wind);
+ 	        String dir2=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
+ 	        
+ 	        requestParams.put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
+ 	        requestParams.put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
  	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
  	        responseParams = new JSONObject(t);
  			

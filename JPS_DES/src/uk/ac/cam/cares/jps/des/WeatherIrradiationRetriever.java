@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = {"/GetIrradiationandWeatherData" })
 public class WeatherIrradiationRetriever extends JPSHttpServlet {
@@ -24,8 +25,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 
-		//String baseUrl = jo.getString("baseUrl");
-	    String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
+		String baseUrl = jo.optString("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
 		
 		JSONObject result=new JSONObject();
 		try {
@@ -47,7 +47,6 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
-		
 		String startbatCommand =folder+"/runpyocr.bat";
 		System.out.println(startbatCommand);
 		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
@@ -119,7 +118,9 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
 		System.out.println("datemonth="+datemonth);
 		readingFromCSV.add(newline);
-		 //new QueryBroker().putLocal(folder + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+		List<String[]> actualWeather = new ArrayList<String[]>();
+		actualWeather.add(newline);
+		new QueryBroker().putLocal(folder + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(actualWeather));
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";

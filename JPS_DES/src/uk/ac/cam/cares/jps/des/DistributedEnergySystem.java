@@ -70,31 +70,15 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     	 JSONObject responseParams = requestParams;
     	 if (SIM_START_PATH.equals(path)) {
     	    QueryBroker broker= new QueryBroker();
-    	    JSONObject jo = AgentCaller.readJsonParameter(request);    		
- 	        String iriofnetwork = null;
- 	        String iriofdistrict = null;
- 	        String irioftemp=null;
- 	       String iriofirr=null;
- 	      String iriofwind=null;
- 	        try {
- 	        	iriofnetwork = requestParams.getString("electricalnetwork");
- 	        	iriofdistrict = requestParams.getString("district");
- 	        	irioftemp=requestParams.getString("temperaturesensor");
- 	        	iriofirr=requestParams.getString("irradiationsensor");
- 	        	iriofwind=requestParams.getString("windspeedsensor");
+    	    JSONObject jo = AgentCaller.readJsonParameter(request);    	
+ 	        String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
+ 	        String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+ 	        String irioftemp=requestParams.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+ 	        String iriofirr=requestParams.optString("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+ 	        String iriofwind=requestParams.optString("windspeedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
  	        	
- 	        	}
- 	        catch (Exception e) {
-
- 	        	iriofnetwork = "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
- 	        	iriofdistrict = "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
- 	        	iriofirr="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
- 	        	irioftemp="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
- 	        	iriofwind="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
  	        
- 	        }
- 	        
-	        	String baseUrl = QueryBroker.getLocalDataPath()+"/JPS_DES"; //create unique uuid
+	        String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
  	        
  	       String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
  					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -141,7 +125,10 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  				readingFromCSV.add(e);
  			}
  			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
- 			
+	        File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/resources/" + "WeatherInitialize.csv");
+    		String destinationUrl = baseUrl + "/WeatherInitialize.csv";
+    		broker.putLocal(destinationUrl, file);
+    		
     		OntModel model = readModelGreedy(iriofnetwork);
     		List<String[]> producer = provideGenlist(model); // instance iri
     		List<String[]> consumer = provideLoadFClist(model); // instance iri

@@ -159,8 +159,10 @@ public class Test_DES extends TestCase{
 		jo.put("jpscontext", "base");
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
-		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+//		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+		System.out.println(resultStart);
 	}
 	
 	public void testcsvmanipulation () {
@@ -425,7 +427,7 @@ public class Test_DES extends TestCase{
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
 	}
 	
-	public void testCreateJSON() {
+	public void xxxtestCreateJSON() {
 		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
 		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
 		System.out.println(d.toString());

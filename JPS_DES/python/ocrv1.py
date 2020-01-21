@@ -5,10 +5,24 @@ from datetime import datetime
 import json
 import time
 import random
-
+import requests
 #read and download image
-
+def is_number(s):
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
 def ocr():
+	result = {}
+# 	URL = "https://api.data.gov.sg/v1/environment/air-temperature"
+# 	r = requests.get(url = URL)
+# 	data = r.json()
+# 	temp = str(data["items"][0]["readings"][1]["value"])
+# 	URL2 = "https://api.data.gov.sg/v1/environment/wind-speed"
+# 	r = requests.get(url = URL2)
+# 	data = r.json()
+# 	speed = str(data["items"][0]["readings"][1]["value"])
 	url = 'https://www.solar-repository.sg/ftp_up/weather/500_Weather.png'
 	response = urllib.request.urlretrieve(url, '500_image.png')
 	#scan image provided. 
@@ -16,7 +30,6 @@ def ocr():
 	text = image_to_string(im)
 	im.close()
 	r = text.split('\n')
-	result = {}
 	for i in r:
 		#print(i)
 		if i.startswith('Ambient'):
@@ -25,24 +38,33 @@ def ocr():
 				temp = i.split(' ')[3]
 			if (len(temp.split('.')))>2:
 				temp = temp[:-1]
-			result['temperature'] = temp
+			if (not is_number(temp)):
+				temp = str(random.uniform (26, 32))
 		if i.startswith('Global'):
 			irrad = i.split(' ')[2]
 			if (irrad == '|'):
 				irrad = i.split(' ')[3]
 			if (len(irrad.split('.')))>2:
 				irrad = irrad[:-1]
-			result['irradiance'] = irrad
+			if (not is_number(irrad)):
+				#check the time. if night, then print zero. 
+				hou = datetime.now().hour
+				if (( hou <= 7 )or (hou > 18)):
+					irrad = 0 
+				else:
+					irrad=str(random.uniform(0,100)) 
+			result['irradiance'] =irrad
 		if i.startswith('Wind Speed'):
 			speed = i.split(' ')[2]
 			if (speed == '|'):
 				speed = i.split(' ')[3]
-			result['windspeed'] = speed
+			if (not is_number(temp)):
+				speed = str(random.uniform (0, 5))
+	
+	result["temperature"] = temp
+	result["windspeed"] = speed
 	now = datetime.now() # current date and time
-	if ('windspeed' not in result):
-		result['windspeed'] = str(random.randint(0,13))
-	elif (float(result['windspeed']) > 13):
-		result['windspeed'] = str(float(result['windspeed'])/10)
+	
 	result['year']= now.strftime("%Y")
 	result['month'] = now.strftime("%m")
 	result['date']= now.strftime("%d")
