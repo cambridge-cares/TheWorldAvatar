@@ -147,8 +147,8 @@ public class Test_DES extends TestCase{
 	}
 	
 	public void testIrradiationRetreiver() throws Exception {
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_DES";
+//		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
 		
 		JSONObject jo = new JSONObject();
 		
@@ -159,10 +159,10 @@ public class Test_DES extends TestCase{
 		jo.put("jpscontext", "base");
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
-//		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
-	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-		System.out.println(resultStart);
+		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+//	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+//		System.out.println(resultStart);
 	}
 	
 	public void testcsvmanipulation () {

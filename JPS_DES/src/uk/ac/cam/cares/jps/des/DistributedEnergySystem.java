@@ -125,6 +125,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  				readingFromCSV.add(e);
  			}
  			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+ 			List<String[]> ty = new ArrayList<String[]>();
+ 			ty.add(readingFromCSV.get((readingFromCSV.size()-1)));
+ 			broker.putLocal(baseUrl + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(ty));
 	        File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/resources/" + "WeatherInitialize.csv");
     		String destinationUrl = baseUrl + "/WeatherInitialize.csv";
     		broker.putLocal(destinationUrl, file);
@@ -579,10 +582,11 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 		dataresult.put("temperature", temperature);
 		dataresult.put("irradiation", irradiation);
-		dataresult.put("fuelcell", simulationResult.get(3));
+		dataresult.put("gridsupply", simulationResult.get(4));
+		dataresult.put("solar", simulationResult.get(3));
 		dataresult.put("residential", simulationResult.get(0));
 		dataresult.put("industrial", simulationResult.get(2));
-		dataresult.put("building", simulationResult.get(1));
+		dataresult.put("commercial", simulationResult.get(1));
 		dataresult.put("rh1", rhResult.subList(0, 3).toArray());
 		dataresult.put("rh2", rhResult.subList(3, 6).toArray());
 		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());

@@ -28,5 +28,5 @@ except Exception as ex:
 	print("An error has occurred ")
 	with open ('error log.txt', 'w') as outfile:
 		outfile.write('error occurred\n')
-		outfile.write(str(e))
-		outfile.write('I said end of message')
+		outfile.write(str(e)+'\n')
+		outfile.write('There is only 10 calls per day for the solar radiation api. If you call more than that, then forecast would not be created.\n')
