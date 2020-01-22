@@ -412,7 +412,13 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         runKML(selectedId);
     })
     
-
+  var checkExist = setInterval(function() {
+        if ($('#map').length) {
+           console.log("Exists!");
+           runKML(0);
+           clearInterval(checkExist);
+        }
+     }, 100); // check every 100ms
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
         console.log('predefinedID = ', predefinedId);
