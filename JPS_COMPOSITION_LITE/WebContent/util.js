@@ -304,13 +304,14 @@ function sendToExecutor(){
     $('#visualizationSelection').show();
 	
 	var compositeServiceObj = composite_agent;
-  
+	console.log("input for executor= ");
+	console.log(JSON.stringify(compositeServiceObj));
  
 
     $.ajax({
         method: "POST",
-        url: hostname + "ServiceExecutorEndpoint",
-        data: JSON.stringify(compositeServiceObj),
+        url: hostname + "ExecutionEndpoint",
+        data: {'query':JSON.stringify(compositeServiceObj)},
         timeout: 2000
 
     })
@@ -337,8 +338,8 @@ function sendToExecutor(){
 function optimizeService() {
     $.ajax({
         method: "POST",
-        url: hostname + "ServiceOptimizationEndpoint",
-        data: compositeService,
+        url: hostname + "OptimizationEndpoint",
+        data: {'query':compositeService},
         timeout: 10000
 
     })
