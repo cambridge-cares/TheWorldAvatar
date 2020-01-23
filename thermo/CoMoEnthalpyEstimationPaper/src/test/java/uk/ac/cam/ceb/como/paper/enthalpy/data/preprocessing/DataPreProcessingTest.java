@@ -128,7 +128,7 @@ public class DataPreProcessingTest {
 
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing);
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing, "valid-test-results-isd-ti-1-1-5");
 
 	}
 	
@@ -154,7 +154,7 @@ public class DataPreProcessingTest {
 		
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
-		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, isgReactionTypePreProcessing);
+		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, isgReactionTypePreProcessing, "valid-test-results-isg-hco-1-1-0");
 		
 	}
 
@@ -180,7 +180,7 @@ public class DataPreProcessingTest {
 		
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, isdReactionTypePreProcessing);
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, isdReactionTypePreProcessing, "valid-test-results-isd-hco-1-1-0");
 		
 	}
 	
@@ -206,7 +206,7 @@ public class DataPreProcessingTest {
 		
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
-		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing);
+		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing,"valid-test-results-isg-hco-1-1-5");
 		
 		
 	}
@@ -227,13 +227,13 @@ public class DataPreProcessingTest {
 //	@Test
 	public void getDataPreProcessingISDReactionHCO115Test() throws Exception {
 
-		String folderName = new FolderUtils().generateUniqueFolderName("iss_HCO_115");
+		String folderName = new FolderUtils().generateUniqueFolderName("isd_HCO_115");
 		
 		DataPreProcessing dataPreProcessingISD = new DataPreProcessing();
 		
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing);		
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing,"valid-test-results-isd-hco-1-1-5");		
 	}
 	
 	
@@ -266,6 +266,6 @@ public class DataPreProcessingTest {
 		
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
-		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing);
+		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing, "valid-test-results-isg-ti-1-1-5");
 	}
 }

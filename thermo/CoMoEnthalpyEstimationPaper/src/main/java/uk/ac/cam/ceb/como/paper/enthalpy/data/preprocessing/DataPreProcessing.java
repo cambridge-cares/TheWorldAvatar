@@ -758,7 +758,7 @@ public class DataPreProcessing {
      *  
      */
     
-    public void getPreProcessingErrorBalanceReaction(String folderName, String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {    	
+    public void getPreProcessingErrorBalanceReaction(String folderName, String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType, String validTestResults) throws Exception {    	
     	
 //	FolderUtils folderUtils = new FolderUtils();
 //	String  = FolderUtils.generateUniqueFolderName("isg_isd_hd_hhd");
@@ -979,16 +979,16 @@ public class DataPreProcessing {
 				/**
 				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
-				 * Compares generated results (files) with approved results stored in folder "valid-test-results".
+				 * Compares generated results (files) with approved results stored in folder as valid test results.
 				 * 
 				 */
-				File sourceDirectory = new File(destRList +"\\" + "valid-test-results");
+				File sourceDirectory = new File(destRList +"\\" + validTestResults);
 			       
 			    if(sourceDirectory.exists() && sourceDirectory.isDirectory()){
 			    	   
 			    File sourceFolderList[] = sourceDirectory.listFiles();
 			        
-			    FolderUtils.compareFiles(sourceFolderList, folderName,0);
+			    FolderUtils.compareFiles(sourceFolderList, folderName,validTestResults,0);
 			    
 			      }
 			       

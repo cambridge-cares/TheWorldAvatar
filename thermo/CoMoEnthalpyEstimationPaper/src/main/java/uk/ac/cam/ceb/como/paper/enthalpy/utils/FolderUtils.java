@@ -58,13 +58,13 @@ public class FolderUtils {
 	 * @param depth the level (depth) of folder structure (hierarchy).
 	 * 
 	 */
-	public static void compareFiles(File[] sourceFiles, String targetFolder, int depth){
+	public static void compareFiles(File[] sourceFiles, String targetFolder, String validTestResults, int depth){
        
         for (File sourceFile : sourceFiles){
         	
             if(sourceFile.isFile()){
             	
-            File targetFile = new File(sourceFile.getAbsolutePath().replaceFirst("valid-test-results", targetFolder));
+            File targetFile = new File(sourceFile.getAbsolutePath().replaceFirst(validTestResults, targetFolder));
                 
             try {
                 	
@@ -90,7 +90,7 @@ public class FolderUtils {
             	
             if(sourceFile.isDirectory()){
             		
-            compareFiles(sourceFile.listFiles(), targetFolder,depth + 1);
+            compareFiles(sourceFile.listFiles(), targetFolder,validTestResults,depth + 1);
             
            } 
         } 
