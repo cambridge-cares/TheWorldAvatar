@@ -41,6 +41,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
 import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
+import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 import uk.ac.cam.ceb.paper.sort.Sort;
 
@@ -759,8 +760,8 @@ public class DataPreProcessing {
     
     public void getPreProcessingErrorBalanceReaction(String folderName, String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {    	
     	
-//		FolderUtils folderUtils = new FolderUtils();
-//		String  = FolderUtils.generateUniqueFolderName("isg_isd_hd_hhd");
+//	FolderUtils folderUtils = new FolderUtils();
+//	String  = FolderUtils.generateUniqueFolderName("isg_isd_hd_hhd");
 
 		Files.createDirectories(Paths.get(destRList +"/" +folderName));
 		
@@ -913,6 +914,7 @@ public class DataPreProcessing {
 			 * Settings on PC machine.
 			 * 
 			 */
+			
 //			BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
 			
 			/**
@@ -959,6 +961,7 @@ public class DataPreProcessing {
 				System.out.println("Sorted species compared by error bars:");
 				
 				printedResultsTxtFile.write("Sorted species compared by error bars:");
+				
 				printedResultsTxtFile.write("\n");
 
 				for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
@@ -972,14 +975,31 @@ public class DataPreProcessing {
 				}
 				
 				printedResultsTxtFile.close();
-				
+				 
+				/**
+				 * 
+				 * @author NK510 (caresssd@hermes.cam.ac.uk)
+				 * Compares generated results (files) with approved results stored in folder "valid-test-results".
+				 * 
+				 */
+				File sourceDirectory = new File(destRList +"\\" + "valid-test-results");
+			       
+			    if(sourceDirectory.exists() && sourceDirectory.isDirectory()){
+			    	   
+			    File sourceFolderList[] = sourceDirectory.listFiles();
+			        
+			    FolderUtils.compareFiles(sourceFolderList, folderName,0);
+			    
+			      }
+			       
 				/**
 				 * 
 				 * @author nk510 (caresssd@hermes.cam.ac.uk)
 				 * Terminates program
 				 * 
 				 */
-			
-			     System.exit(0);
-    }
+			       
+			    System.exit(0);
+				
+    }    
 }

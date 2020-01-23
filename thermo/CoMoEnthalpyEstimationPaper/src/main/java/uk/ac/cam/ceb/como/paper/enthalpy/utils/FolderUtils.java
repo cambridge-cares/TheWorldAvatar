@@ -1,8 +1,14 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.utils;
 
+import static org.junit.Assert.assertEquals;
+
+import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.UUID;
+
+import org.apache.commons.io.FileUtils;
 
 public class FolderUtils {
 
@@ -42,5 +48,52 @@ public class FolderUtils {
 		return uuid.toString();
 
 	}
-
+	
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param sourceFiles Files that are stored in "valid-test-restults" folder
+	 * @param targetFolder Files that are stored in folder automatically generated on each run of pre-processing step.
+	 * @param depth the level (depth) of folder structure (hierarchy).
+	 * 
+	 */
+	public static void compareFiles(File[] sourceFiles, String targetFolder, int depth){
+       
+        for (File sourceFile : sourceFiles){
+        	
+            if(sourceFile.isFile()){
+            	
+            File targetFile = new File(sourceFile.getAbsolutePath().replaceFirst("valid-test-results", targetFolder));
+                
+            try {
+                	
+        	boolean areTwoFilesEqual = FileUtils.contentEquals(sourceFile, targetFile);
+        	
+            System.out.println("Files: " + sourceFile.getCanonicalPath() + " and "  + targetFile.getCanonicalPath() + " are equal: " + areTwoFilesEqual);
+            
+            /**
+             * 
+             * @author NK510 (caresssd@hermes.cam.ac.uk)
+             * Junit test of equality the content of two files.
+             * 
+             */
+            assertEquals("Difference between files: ", FileUtils.readFileToString(sourceFile, "utf-8"), FileUtils.readFileToString(targetFile, "utf-8"));
+            
+			}catch (IOException e) {
+					
+			e.printStackTrace();
+			
+			}                
+            
+            }else { 
+            	
+            if(sourceFile.isDirectory()){
+            		
+            compareFiles(sourceFile.listFiles(), targetFolder,depth + 1);
+            
+           } 
+        } 
+      }
+   } 
 }

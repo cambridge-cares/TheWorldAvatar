@@ -3,6 +3,7 @@ package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Result;
 import org.junit.runner.notification.Failure;
+
 /**
  * 
  * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -23,8 +24,7 @@ public class RunDataPreProcessingTest {
 		
 		}
 		
-		System.out.println(testResult.wasSuccessful());
-
+        System.out.println("Junit test result was successful: " + testResult.wasSuccessful());
+    
 	}
-
 }

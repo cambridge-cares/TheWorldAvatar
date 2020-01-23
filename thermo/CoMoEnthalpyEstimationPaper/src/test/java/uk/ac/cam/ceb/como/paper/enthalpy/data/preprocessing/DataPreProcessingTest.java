@@ -105,42 +105,7 @@ public class DataPreProcessingTest {
 	static int[] ctrRadicals_1 = new int[] { 1 }; // 0, 1, 2, 3, 4, 5 //100
 	static int[] ctrRadicals_5 = new int[] { 5 }; // 0, 1, 2, 3, 4, 5 //100
 	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk) Junit test that generates ISG type
-	 *         of EBR for selected Ti-species and estimates enthalpy of
-	 *         formation for each reaction. On each run, the results are stored in a
-	 *         folders created as sub-folders of "ti_isg", "ti_isd", "hco_isg", "hco_isd". 
-	 *         
-	 *         Parameters used in these testings are: 
-	 *         
-	 *         - Number of runs: 1
-	 *         - Number of reactions: 1
-	 *         - Number of radicals: 5
-	 * 
-	 *         To run these Junit tests please go to
-	 *         uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver class,
-	 *         and uncomment "map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); " line in order to allow GLPK solver to work on Windows machine.
-	 *
-	 * 
-	 */
-
-	@Test
-	public void getDataPreProcessingISGReactionTi115Test() throws Exception {
 		
-		String folderName = new FolderUtils().generateUniqueFolderName("isg_Ti_115");
-		
-		DataPreProcessing dataPreProcessingISG = new DataPreProcessing();
-		
-		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
-
-		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing);
-		
-//		assertTrue("The files differ!", FileUtils.contentEquals(file1, file2));
-		
-		
-	}
-	
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk) Junit test that generates ISD type
@@ -268,8 +233,39 @@ public class DataPreProcessingTest {
 		
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing);
-		
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing);		
 	}
 	
+	
+	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk) Junit test that generates ISG type
+	 *         of EBR for selected Ti-species and estimates enthalpy of
+	 *         formation for each reaction. On each run, the results are stored in a
+	 *         folders created as sub-folders of "ti_isg", "ti_isd", "hco_isg", "hco_isd". 
+	 *         
+	 *         Parameters used in these testings are: 
+	 *         
+	 *         - Number of runs: 1
+	 *         - Number of reactions: 1
+	 *         - Number of radicals: 5
+	 * 
+	 *         To run these Junit tests please go to
+	 *         uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver class,
+	 *         and uncomment "map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); " line in order to allow GLPK solver to work on Windows machine.
+	 *
+	 * 
+	 */
+
+	@Test
+	public void getDataPreProcessingISGReactionTi115Test() throws Exception {
+		
+		String folderName = new FolderUtils().generateUniqueFolderName("isg_Ti_115");
+		
+		DataPreProcessing dataPreProcessingISG = new DataPreProcessing();
+		
+		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
+
+		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing);
+	}
 }
