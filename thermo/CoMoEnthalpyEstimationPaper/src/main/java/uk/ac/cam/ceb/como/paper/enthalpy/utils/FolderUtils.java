@@ -68,7 +68,7 @@ public class FolderUtils {
                 
             try {
                 	
-        	boolean areTwoFilesEqual = FileUtils.contentEquals(sourceFile, targetFile);
+        	boolean areTwoFilesEqual = FileUtils.contentEqualsIgnoreEOL(sourceFile, targetFile,"utf-8");
         	
             System.out.println("Files: " + sourceFile.getCanonicalPath() + " and "  + targetFile.getCanonicalPath() + " are equal: " + areTwoFilesEqual);
             
