@@ -60,7 +60,7 @@
 				<outputDirectory>${tomcatPath}/webapps</outputDirectory>
 			</configuration>
 		</plugin>
-
+	
 	</plugins>
 </build>
 	
