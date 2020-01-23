@@ -1,0 +1,344 @@
+REF: Processing 1 / 25
+ClOClO.g09: 
+REF: Processing 2 / 25
+Cl2O3.g09: 
+REF: Processing 3 / 25
+Cl2O4.g09: 
+REF: Processing 4 / 25
+Cl2O7.g09: 
+REF: Processing 5 / 25
+ClClO2.g09: 
+REF: Processing 6 / 25
+ClOO.g09: 
+REF: Processing 7 / 25
+ClOCl.g09: 
+REF: Processing 8 / 25
+ClO_2let.g09: 
+REF: Processing 9 / 25
+ClO3.g09: 
+REF: Processing 10 / 25
+ClOOCl.g09: 
+REF: Processing 11 / 25
+ClClO.g09: 
+REF: Processing 12 / 25
+Cl2O5.g09: 
+REF: Processing 13 / 25
+Cl2O6.g09: 
+REF: Processing 14 / 25
+ClO4_2let.g09: 
+REF: Processing 15 / 25
+OClO.g09: 
+REF: Processing 16 / 25
+O2_3let.g09: 
+REF: Processing 17 / 25
+Cl2.g09: 
+REF: Processing 18 / 25
+TiCl3.g09: 
+REF: Processing 19 / 25
+Ti(O)(Cl)2.g09: 
+REF: Processing 20 / 25
+TiCl2.g09: 
+REF: Processing 21 / 25
+TiCl.g09: 
+REF: Processing 22 / 25
+TiO2.g09: 
+REF: Processing 23 / 25
+TiO.g09: 
+REF: Processing 24 / 25
+TiCl4.g09: 
+REF: Processing 25 / 25
+Ti(Cl)(O).g09: 
+refSpecies.isEmpty() before solver (main method): false
+- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -
+Process configuration isg_runs1_res1_radicals5_1500s
+refSpecies.isEmpty()(getPreProcessingCorssValidation method i class DataPreProcessing) : false
+Estimating dHf(298.15K) for species ClOClO (1 / 25)
+Ref species name: ClOClO  ref species Hf: 175.5
+reactionList.size(): 1
+Species name for reaction list : ClOClO
+Writting complete reaction list...
+ Reaction(0): ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" Species (ref) enthalpy: 175.5 Calculated Hf for reaction(0): 145.0066546031041
+Median Reaction: ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" medianReaction species Hf: 175.5 : medianReaction.calculateHf(): 145.0066546031041[ Species name: ClOClO  Species (reference) enthalpy: 175.5 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O3 (2 / 25)
+Ref species name: Cl2O3  ref species Hf: 137.0
+reactionList.size(): 1
+Species name for reaction list : Cl2O3
+Writting complete reaction list...
+ Reaction(0): Cl2O3: 1.0x"Cl2O3" <-> 0.2x"Cl2O7" + 0.8x"ClOClO" Species (ref) enthalpy: 137.0 Calculated Hf for reaction(0): 151.41359999993819
+Median Reaction: Cl2O3: 1.0x"Cl2O3" <-> 0.2x"Cl2O7" + 0.8x"ClOClO" medianReaction species Hf: 137.0 : medianReaction.calculateHf(): 151.41359999993819[ Species name: Cl2O3  Species (reference) enthalpy: 137.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O4 (3 / 25)
+Ref species name: Cl2O4  ref species Hf: 186.1
+reactionList.size(): 1
+Species name for reaction list : Cl2O4
+Writting complete reaction list...
+ Reaction(0): Cl2O4: 1.0x"Cl2O4" <-> 0.4x"Cl2O7" + 0.6x"ClOClO" Species (ref) enthalpy: 186.1 Calculated Hf for reaction(0): 203.78520000044256
+Median Reaction: Cl2O4: 1.0x"Cl2O4" <-> 0.4x"Cl2O7" + 0.6x"ClOClO" medianReaction species Hf: 186.1 : medianReaction.calculateHf(): 203.78520000044256[ Species name: Cl2O4  Species (reference) enthalpy: 186.1 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O7 (4 / 25)
+Ref species name: Cl2O7  ref species Hf: 321.3
+reactionList.size(): 1
+Species name for reaction list : Cl2O7
+Writting complete reaction list...
+ Reaction(0): Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" Species (ref) enthalpy: 321.3 Calculated Hf for reaction(0): 353.86592500017883
+Median Reaction: Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" medianReaction species Hf: 321.3 : medianReaction.calculateHf(): 353.86592500017883[ Species name: Cl2O7  Species (reference) enthalpy: 321.3 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClClO2 (5 / 25)
+Ref species name: ClClO2  ref species Hf: 154.2
+reactionList.size(): 1
+Species name for reaction list : ClClO2
+Writting complete reaction list...
+ Reaction(0): ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" Species (ref) enthalpy: 154.2 Calculated Hf for reaction(0): 245.25372000011177
+Median Reaction: ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" medianReaction species Hf: 154.2 : medianReaction.calculateHf(): 245.25372000011177[ Species name: ClClO2  Species (reference) enthalpy: 154.2 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClOO (6 / 25)
+Ref species name: ClOO  ref species Hf: 98.0
+reactionList.size(): 1
+Species name for reaction list : ClOO
+Writting complete reaction list...
+ Reaction(0): ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" Species (ref) enthalpy: 98.0 Calculated Hf for reaction(0): 120.49334539652334
+Median Reaction: ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" medianReaction species Hf: 98.0 : medianReaction.calculateHf(): 120.49334539652334[ Species name: ClOO  Species (reference) enthalpy: 98.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClOCl (7 / 25)
+Ref species name: ClOCl  ref species Hf: 82.8
+reactionList.size(): 1
+Species name for reaction list : ClOCl
+Writting complete reaction list...
+ Reaction(0): ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" Species (ref) enthalpy: 82.8 Calculated Hf for reaction(0): 104.66007499989198
+Median Reaction: ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" medianReaction species Hf: 82.8 : medianReaction.calculateHf(): 104.66007499989198[ Species name: ClOCl  Species (reference) enthalpy: 82.8 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClO_2let (8 / 25)
+Ref species name: ClO_2let  ref species Hf: 101.62936
+reactionList.size(): 1
+Species name for reaction list : ClO_2let
+Writting complete reaction list...
+ Reaction(0): ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Species (ref) enthalpy: 101.62936 Calculated Hf for reaction(0): 56.102499999944115
+Median Reaction: ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" medianReaction species Hf: 101.62936 : medianReaction.calculateHf(): 56.102499999944115[ Species name: ClO_2let  Species (reference) enthalpy: 101.62936 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClO3 (9 / 25)
+Ref species name: ClO3  ref species Hf: 201.0
+reactionList.size(): 1
+Species name for reaction list : ClO3
+Writting complete reaction list...
+ Reaction(0): ClO3: 1.0x"ClO3" <-> 0.166667x"ClClO2" + 0.666667x"ClO4_2let" Species (ref) enthalpy: 201.0 Calculated Hf for reaction(0): 196.49692374032122
+Median Reaction: ClO3: 1.0x"ClO3" <-> 0.166667x"ClClO2" + 0.666667x"ClO4_2let" medianReaction species Hf: 201.0 : medianReaction.calculateHf(): 196.49692374032122[ Species name: ClO3  Species (reference) enthalpy: 201.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClOOCl (10 / 25)
+Ref species name: ClOOCl  ref species Hf: 133.0
+reactionList.size(): 1
+Species name for reaction list : ClOOCl
+Writting complete reaction list...
+ Reaction(0): ClOOCl: 1.0x"ClOOCl" + 0.75x"ClO4_2let" + 0.75x"O2_3let" <-> 1.0x"Cl2O5" + 0.75x"ClOO" Species (ref) enthalpy: 133.0 Calculated Hf for reaction(0): 125.23022500032783
+Median Reaction: ClOOCl: 1.0x"ClOOCl" + 0.75x"ClO4_2let" + 0.75x"O2_3let" <-> 1.0x"Cl2O5" + 0.75x"ClOO" medianReaction species Hf: 133.0 : medianReaction.calculateHf(): 125.23022500032783[ Species name: ClOOCl  Species (reference) enthalpy: 133.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClClO (11 / 25)
+Ref species name: ClClO  ref species Hf: 90.0
+reactionList.size(): 1
+Species name for reaction list : ClClO
+Writting complete reaction list...
+ Reaction(0): ClClO: 0.25x"ClOO" + 1.0x"ClClO" <-> 0.25x"ClO4_2let" + 1.0x"Cl2" + 0.25x"O2_3let" Species (ref) enthalpy: 90.0 Calculated Hf for reaction(0): 100.9909250001788
+Median Reaction: ClClO: 0.25x"ClOO" + 1.0x"ClClO" <-> 0.25x"ClO4_2let" + 1.0x"Cl2" + 0.25x"O2_3let" medianReaction species Hf: 90.0 : medianReaction.calculateHf(): 100.9909250001788[ Species name: ClClO  Species (reference) enthalpy: 90.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O5 (12 / 25)
+Ref species name: Cl2O5  ref species Hf: 258.3
+reactionList.size(): 1
+Species name for reaction list : Cl2O5
+Writting complete reaction list...
+ Reaction(0): Cl2O5: 0.75x"ClOO" + 1.0x"Cl2O5" <-> 0.75x"ClO4_2let" + 1.0x"ClOOCl" + 0.75x"O2_3let" Species (ref) enthalpy: 258.3 Calculated Hf for reaction(0): 266.0697749996722
+Median Reaction: Cl2O5: 0.75x"ClOO" + 1.0x"Cl2O5" <-> 0.75x"ClO4_2let" + 1.0x"ClOOCl" + 0.75x"O2_3let" medianReaction species Hf: 258.3 : medianReaction.calculateHf(): 266.0697749996722[ Species name: Cl2O5  Species (reference) enthalpy: 258.3 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2O6 (13 / 25)
+Ref species name: Cl2O6  ref species Hf: 278.5
+reactionList.size(): 1
+Species name for reaction list : Cl2O6
+Writting complete reaction list...
+ Reaction(0): Cl2O6: 1.0x"Cl2O6" <-> 0.8x"Cl2O7" + 0.2x"ClOClO" Species (ref) enthalpy: 278.5 Calculated Hf for reaction(0): 261.1394000005536
+Median Reaction: Cl2O6: 1.0x"Cl2O6" <-> 0.8x"Cl2O7" + 0.2x"ClOClO" medianReaction species Hf: 278.5 : medianReaction.calculateHf(): 261.1394000005536[ Species name: Cl2O6  Species (reference) enthalpy: 278.5 ]
+Writting species list...
+Estimating dHf(298.15K) for species ClO4_2let (14 / 25)
+Ref species name: ClO4_2let  ref species Hf: 229.2832
+reactionList.size(): 1
+Species name for reaction list : ClO4_2let
+Writting complete reaction list...
+ Reaction(0): ClO4_2let: 1.0x"ClO4_2let" + 0.166667x"ClOCl" <-> 1.0x"ClO3" + 0.166667x"Cl2O7" Species (ref) enthalpy: 229.2832 Calculated Hf for reaction(0): 231.3756546028657
+Median Reaction: ClO4_2let: 1.0x"ClO4_2let" + 0.166667x"ClOCl" <-> 1.0x"ClO3" + 0.166667x"Cl2O7" medianReaction species Hf: 229.2832 : medianReaction.calculateHf(): 231.3756546028657[ Species name: ClO4_2let  Species (reference) enthalpy: 229.2832 ]
+Writting species list...
+Estimating dHf(298.15K) for species OClO (15 / 25)
+Ref species name: OClO  ref species Hf: 94.5584
+reactionList.size(): 1
+Species name for reaction list : OClO
+Writting complete reaction list...
+ Reaction(0): OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" Species (ref) enthalpy: 94.5584 Calculated Hf for reaction(0): 65.96577625943848
+Median Reaction: OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" medianReaction species Hf: 94.5584 : medianReaction.calculateHf(): 65.96577625943848[ Species name: OClO  Species (reference) enthalpy: 94.5584 ]
+Writting species list...
+Estimating dHf(298.15K) for species O2_3let (16 / 25)
+Ref species name: O2_3let  ref species Hf: 0.0
+reactionList.size(): 1
+Species name for reaction list : O2_3let
+Writting complete reaction list...
+ Reaction(0): O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" Species (ref) enthalpy: 0.0 Calculated Hf for reaction(0): -22.493345396523353
+Median Reaction: O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" medianReaction species Hf: 0.0 : medianReaction.calculateHf(): -22.493345396523353[ Species name: O2_3let  Species (reference) enthalpy: 0.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species Cl2 (17 / 25)
+Ref species name: Cl2  ref species Hf: 0.0
+reactionList.size(): 1
+Species name for reaction list : Cl2
+Writting complete reaction list...
+ Reaction(0): Cl2: 1.0x"Cl2" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClClO" Species (ref) enthalpy: 0.0 Calculated Hf for reaction(0): -10.990925000178812
+Median Reaction: Cl2: 1.0x"Cl2" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClClO" medianReaction species Hf: 0.0 : medianReaction.calculateHf(): -10.990925000178812[ Species name: Cl2  Species (reference) enthalpy: 0.0 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl3 (18 / 25)
+Ref species name: TiCl3  ref species Hf: -508.356
+reactionList.size(): 1
+Species name for reaction list : TiCl3
+Writting complete reaction list...
+ Reaction(0): TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" Species (ref) enthalpy: -508.356 Calculated Hf for reaction(0): -514.5350207990997
+Median Reaction: TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" medianReaction species Hf: -508.356 : medianReaction.calculateHf(): -514.5350207990997[ Species name: TiCl3  Species (reference) enthalpy: -508.356 ]
+Writting species list...
+Estimating dHf(298.15K) for species Ti(O)(Cl)2 (19 / 25)
+Ref species name: Ti(O)(Cl)2  ref species Hf: -593.2912
+reactionList.size(): 1
+Species name for reaction list : Ti(O)(Cl)2
+Writting complete reaction list...
+ Reaction(0): Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" Species (ref) enthalpy: -593.2912 Calculated Hf for reaction(0): -591.0400000001117
+Median Reaction: Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" medianReaction species Hf: -593.2912 : medianReaction.calculateHf(): -591.0400000001117[ Species name: Ti(O)(Cl)2  Species (reference) enthalpy: -593.2912 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl2 (20 / 25)
+Ref species name: TiCl2  ref species Hf: -205.016
+reactionList.size(): 1
+Species name for reaction list : TiCl2
+Writting complete reaction list...
+ Reaction(0): TiCl2: 1.0x"TiCl2" <-> 0.666667x"TiCl" + 0.333333x"TiCl4" Species (ref) enthalpy: -205.016 Calculated Hf for reaction(0): -203.0353792021445
+Median Reaction: TiCl2: 1.0x"TiCl2" <-> 0.666667x"TiCl" + 0.333333x"TiCl4" medianReaction species Hf: -205.016 : medianReaction.calculateHf(): -203.0353792021445[ Species name: TiCl2  Species (reference) enthalpy: -205.016 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl (21 / 25)
+Ref species name: TiCl  ref species Hf: 171.1256
+reactionList.size(): 1
+Species name for reaction list : TiCl
+Writting complete reaction list...
+ Reaction(0): TiCl: 0.5x"TiO2" + 1.0x"TiCl" <-> 0.5x"TiCl2" + 1.0x"TiO" Species (ref) enthalpy: 171.1256 Calculated Hf for reaction(0): 169.58349999964983
+Median Reaction: TiCl: 0.5x"TiO2" + 1.0x"TiCl" <-> 0.5x"TiCl2" + 1.0x"TiO" medianReaction species Hf: 171.1256 : medianReaction.calculateHf(): 169.58349999964983[ Species name: TiCl  Species (reference) enthalpy: 171.1256 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiO2 (22 / 25)
+Ref species name: TiO2  ref species Hf: -305.43
+reactionList.size(): 1
+Species name for reaction list : TiO2
+Writting complete reaction list...
+ Reaction(0): TiO2: 1.0x"TiCl" + 1.0x"TiO2" <-> 1.0x"TiO" + 1.0x"Ti(Cl)(O)" Species (ref) enthalpy: -305.43 Calculated Hf for reaction(0): -305.9430000004172
+Median Reaction: TiO2: 1.0x"TiCl" + 1.0x"TiO2" <-> 1.0x"TiO" + 1.0x"Ti(Cl)(O)" medianReaction species Hf: -305.43 : medianReaction.calculateHf(): -305.9430000004172[ Species name: TiO2  Species (reference) enthalpy: -305.43 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiO (23 / 25)
+Ref species name: TiO  ref species Hf: 54.39
+reactionList.size(): 1
+Species name for reaction list : TiO
+Writting complete reaction list...
+ Reaction(0): TiO: 1.0x"TiO" + 0.166667x"TiCl4" <-> 0.5x"TiO2" + 0.666667x"TiCl" Species (ref) enthalpy: 54.39 Calculated Hf for reaction(0): 53.12962079860054
+Median Reaction: TiO: 1.0x"TiO" + 0.166667x"TiCl4" <-> 0.5x"TiO2" + 0.666667x"TiCl" medianReaction species Hf: 54.39 : medianReaction.calculateHf(): 53.12962079860054[ Species name: TiO  Species (reference) enthalpy: 54.39 ]
+Writting species list...
+Estimating dHf(298.15K) for species TiCl4 (24 / 25)
+Ref species name: TiCl4  ref species Hf: -763.16
+reactionList.size(): 1
+Species name for reaction list : TiCl4
+Writting complete reaction list...
+ Reaction(0): TiCl4: 0.5x"TiCl" + 1.0x"TiCl4" <-> 1.5x"TiCl3" Species (ref) enthalpy: -763.16 Calculated Hf for reaction(0): -752.0792999999255
+Median Reaction: TiCl4: 0.5x"TiCl" + 1.0x"TiCl4" <-> 1.5x"TiCl3" medianReaction species Hf: -763.16 : medianReaction.calculateHf(): -752.0792999999255[ Species name: TiCl4  Species (reference) enthalpy: -763.16 ]
+Writting species list...
+Estimating dHf(298.15K) for species Ti(Cl)(O) (25 / 25)
+Ref species name: Ti(Cl)(O)  ref species Hf: -286.2844
+reactionList.size(): 1
+Species name for reaction list : Ti(Cl)(O)
+Writting complete reaction list...
+ Reaction(0): Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.5x"TiO2" + 0.166667x"TiCl4" + 0.333333x"TiCl" Species (ref) enthalpy: -286.2844 Calculated Hf for reaction(0): -284.51102079771766
+Median Reaction: Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.5x"TiO2" + 0.166667x"TiCl4" + 0.333333x"TiCl" medianReaction species Hf: -286.2844 : medianReaction.calculateHf(): -284.51102079771766[ Species name: Ti(Cl)(O)  Species (reference) enthalpy: -286.2844 ]
+Writting species list...
+Valid reactions writing . . . 
+Reaction: ClOOCl: 1.0x"ClOOCl" + 0.75x"ClO4_2let" + 0.75x"O2_3let" <-> 1.0x"Cl2O5" + 0.75x"ClOO" Calc enthalpy: 125.23022500032783 Ref enthalpy: 133.0 (error: 7.7697749996721654 )
+Reaction: TiCl2: 1.0x"TiCl2" <-> 0.666667x"TiCl" + 0.333333x"TiCl4" Calc enthalpy: -203.0353792021445 Ref enthalpy: -205.016 (error: 1.9806207978554937 )
+Reaction: TiCl4: 0.5x"TiCl" + 1.0x"TiCl4" <-> 1.5x"TiCl3" Calc enthalpy: -752.0792999999255 Ref enthalpy: -763.16 (error: 11.080700000074444 )
+Reaction: TiO: 1.0x"TiO" + 0.166667x"TiCl4" <-> 0.5x"TiO2" + 0.666667x"TiCl" Calc enthalpy: 53.12962079860054 Ref enthalpy: 54.39 (error: 1.2603792013994592 )
+Reaction: Cl2O3: 1.0x"Cl2O3" <-> 0.2x"Cl2O7" + 0.8x"ClOClO" Calc enthalpy: 151.41359999993819 Ref enthalpy: 137.0 (error: 14.413599999938185 )
+Reaction: ClO3: 1.0x"ClO3" <-> 0.166667x"ClClO2" + 0.666667x"ClO4_2let" Calc enthalpy: 196.49692374032122 Ref enthalpy: 201.0 (error: 4.503076259678778 )
+Reaction: ClO4_2let: 1.0x"ClO4_2let" + 0.166667x"ClOCl" <-> 1.0x"ClO3" + 0.166667x"Cl2O7" Calc enthalpy: 231.3756546028657 Ref enthalpy: 229.2832 (error: 2.0924546028657005 )
+Reaction: TiCl: 0.5x"TiO2" + 1.0x"TiCl" <-> 0.5x"TiCl2" + 1.0x"TiO" Calc enthalpy: 169.58349999964983 Ref enthalpy: 171.1256 (error: 1.5421000003501604 )
+Reaction: Cl2O5: 0.75x"ClOO" + 1.0x"Cl2O5" <-> 0.75x"ClO4_2let" + 1.0x"ClOOCl" + 0.75x"O2_3let" Calc enthalpy: 266.0697749996722 Ref enthalpy: 258.3 (error: 7.7697749996721654 )
+Reaction: TiCl3: 1.0x"TiCl3" <-> 0.333333x"TiCl" + 0.666667x"TiCl4" Calc enthalpy: -514.5350207990997 Ref enthalpy: -508.356 (error: 6.179020799099703 )
+Reaction: Cl2O4: 1.0x"Cl2O4" <-> 0.4x"Cl2O7" + 0.6x"ClOClO" Calc enthalpy: 203.78520000044256 Ref enthalpy: 186.1 (error: 17.685200000442563 )
+Reaction: TiO2: 1.0x"TiCl" + 1.0x"TiO2" <-> 1.0x"TiO" + 1.0x"Ti(Cl)(O)" Calc enthalpy: -305.9430000004172 Ref enthalpy: -305.43 (error: 0.5130000004172075 )
+Reaction: Cl2O6: 1.0x"Cl2O6" <-> 0.8x"Cl2O7" + 0.2x"ClOClO" Calc enthalpy: 261.1394000005536 Ref enthalpy: 278.5 (error: 17.36059999944638 )
+Reaction: ClClO: 0.25x"ClOO" + 1.0x"ClClO" <-> 0.25x"ClO4_2let" + 1.0x"Cl2" + 0.25x"O2_3let" Calc enthalpy: 100.9909250001788 Ref enthalpy: 90.0 (error: 10.990925000178805 )
+Reaction: Cl2: 1.0x"Cl2" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClClO" Calc enthalpy: -10.990925000178812 Ref enthalpy: 0.0 (error: 10.990925000178812 )
+Reaction: Ti(O)(Cl)2: 1.0x"Ti(O)(Cl)2" <-> 0.5x"TiO2" + 0.5x"TiCl4" Calc enthalpy: -591.0400000001117 Ref enthalpy: -593.2912 (error: 2.2511999998882857 )
+Reaction: Ti(Cl)(O): 1.0x"Ti(Cl)(O)" <-> 0.5x"TiO2" + 0.166667x"TiCl4" + 0.333333x"TiCl" Calc enthalpy: -284.51102079771766 Ref enthalpy: -286.2844 (error: 1.7733792022823422 )
+Invalid reactions writing . . .
+Reaction: Cl2O7: 0.25x"ClOO" + 1.0x"Cl2O7" <-> 1.0x"Cl2O6" + 0.25x"ClO4_2let" + 0.25x"O2_3let" Calc enthalpy: 353.86592500017883 Ref enthalpy: 321.3 (error: 32.56592500017882 )
+Reaction: ClO_2let: 1.0x"ClO_2let" <-> 0.5x"ClClO2" Calc enthalpy: 56.102499999944115 Ref enthalpy: 101.62936 (error: 45.52686000005589 )
+Reaction: ClClO2: 1.0x"ClClO2" <-> 2.0x"ClO_2let" Calc enthalpy: 245.25372000011177 Ref enthalpy: 154.2 (error: 91.05372000011178 )
+Reaction: ClOCl: 1.0x"ClOCl" + 0.25x"ClO4_2let" + 0.25x"O2_3let" <-> 0.25x"ClOO" + 1.0x"ClOClO" Calc enthalpy: 104.66007499989198 Ref enthalpy: 82.8 (error: 21.860074999891978 )
+Reaction: ClOO: 1.0x"ClOO" + 0.166667x"Cl2O7" <-> 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" Calc enthalpy: 120.49334539652334 Ref enthalpy: 98.0 (error: 22.49334539652334 )
+Reaction: O2_3let: 0.5x"ClClO2" + 1.0x"O2_3let" + 0.166667x"ClOCl" <-> 1.0x"ClOO" + 0.166667x"Cl2O7" Calc enthalpy: -22.493345396523353 Ref enthalpy: 0.0 (error: 22.493345396523353 )
+Reaction: OClO: 1.0x"OClO" <-> 0.333333x"ClClO2" + 0.333333x"ClO4_2let" Calc enthalpy: 65.96577625943848 Ref enthalpy: 94.5584 (error: 28.59262374056152 )
+Reaction: ClOClO: 1.0x"ClOClO" <-> 0.166667x"Cl2O7" + 0.833333x"ClOCl" Calc enthalpy: 145.0066546031041 Ref enthalpy: 175.5 (error: 30.493345396895904 )
+Valid species writing . . . 
+Species name: Cl2O3
+Species name: Cl2O4
+Species name: ClO3
+Species name: ClOOCl
+Species name: ClClO
+Species name: Cl2O5
+Species name: Cl2O6
+Species name: ClO4_2let
+Species name: Cl2
+Species name: TiCl3
+Species name: Ti(O)(Cl)2
+Species name: TiCl2
+Species name: TiCl
+Species name: TiO2
+Species name: TiO
+Species name: TiCl4
+Species name: Ti(Cl)(O)
+Invalid species writing . . .
+Species name: ClOClO
+Species name: Cl2O7
+Species name: ClClO2
+Species name: ClOO
+Species name: ClOCl
+Species name: ClO_2let
+Species name: OClO
+Species name: O2_3let
+- - - -  - - - Unique species names from invalid reactions:  - - - - - -  - - - - - - 
+Species name: ClOClO
+Species name: ClClO2
+Species name: ClO_2let
+Species name: O2_3let
+Species name: ClOCl
+Species name: OClO
+Species name: Cl2O7
+Species name: ClOO
+- - - -  - - -  Species names from invalid reactions and their error bars: - - - - - -  - - - - - - 
+Species name: ClOClO , error bar: 30.493345396895904
+Species name: ClClO2 , error bar: 91.05372000011178
+Species name: ClO_2let , error bar: 45.52686000005589
+Species name: O2_3let , error bar: 22.493345396523353
+Species name: ClOCl , error bar: 21.860074999891978
+Species name: OClO , error bar: 28.59262374056152
+Species name: Cl2O7 , error bar: 32.56592500017882
+Species name: ClOO , error bar: 22.49334539652334
+-----------------Species from invalid (rejected) list with error bar: 
+ClOClO 30.493345396895904
+ClClO2 91.05372000011178
+ClO_2let 45.52686000005589
+O2_3let 22.493345396523353
+ClOCl 21.860074999891978
+OClO 28.59262374056152
+Cl2O7 32.56592500017882
+ClOO 22.49334539652334
+Sorted species compared by error bars:
+ClClO2 91.05372000011178
+ClO_2let 45.52686000005589
+Cl2O7 32.56592500017882
+ClOClO 30.493345396895904
+OClO 28.59262374056152
+O2_3let 22.493345396523353
+ClOO 22.49334539652334
+ClOCl 21.860074999891978
