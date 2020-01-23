@@ -233,16 +233,15 @@ public class DataPreProcessingTest {
 		
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing,"valid-test-results-isd-hco-1-1-5");		
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing,"valid-test-results-isd-hco-1-1-5");
 	}
-	
 	
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk) Junit test that generates ISG type
 	 *         of EBR for selected Ti-species and estimates enthalpy of
 	 *         formation for each reaction. On each run, the results are stored in a
-	 *         folders created as sub-folders of "ti_isg", "ti_isd", "hco_isg", "hco_isd". 
+	 *         folders created as sub-folders of "ti_isg", "ti_isd", "hco_isg", "hco_isd".
 	 *         
 	 *         Parameters used in these testings are: 
 	 *         
