@@ -27,7 +27,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/molhub/WebContent/WEB-INF/lib/JmolLib.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/molhub/WebContent/WEB-INF/lib/JmolData.jar"/>
+	<classpathentry kind="lib" path="D:/JPS-git/thermochemistry/molhub/WebContent/WEB-INF/lib/JmolLib.jar"/>
+	<classpathentry kind="lib" path="D:/JPS-git/thermochemistry/molhub/WebContent/WEB-INF/lib/JmolData.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

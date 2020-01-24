@@ -29,7 +29,7 @@
             <artifactId>commons-math3</artifactId>
             <version>3.4.1</version>
         </dependency>
-        <dependency>
+                <dependency>
             
             <!-- fixed by removing org. -->
             <groupId>com.cmclinnovations</groupId>
@@ -40,6 +40,7 @@
             <version>0.0.1-SNAPSHOT</version>
             
         </dependency>
+
     </dependencies>
     <repositories>
     

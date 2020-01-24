@@ -21,6 +21,8 @@
         <version>3.2.1</version>
         <configuration>
           <warSourceDirectory>WebContent</warSourceDirectory>
+                              <warName>${project.artifactId}##${project.version}</warName>
+                    <outputDirectory>${tomcatPath}/webapps</outputDirectory>
         </configuration>
       </plugin>
     </plugins>

@@ -68,7 +68,7 @@ public class MoleculeViewAction extends ActionSupport {
 	private String owlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".owl");
 
 	/** The nasa file name. */
-	private String nasaFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, "nasa.json");
+	private String nasaFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".json");
 
 	/** The molecule property list. */
 	List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
