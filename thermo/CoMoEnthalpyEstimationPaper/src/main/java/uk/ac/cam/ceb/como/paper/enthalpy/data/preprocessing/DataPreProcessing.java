@@ -91,23 +91,21 @@ public class DataPreProcessing {
      * @throws Exception the exception.
      * 
      */
-
 	
     public void getPreProcessingCorssValidation(ReactionType reactionType, int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction,  BufferedWriter printedResultsFile) throws Exception {
     	
-    	for (int z = 0; z < ctrRadicals.length; z++) {
+    for (int z = 0; z < ctrRadicals.length; z++) {
         	
-            int maxRadical = ctrRadicals[z];
+    int maxRadical = ctrRadicals[z];
             
-//          timeout = 1500; // remove this when call this method
-            
+//          timeout = 1500; // remove this when call this method            
 //          Stopping run the code condition
             
-            int stop = 1;
+    int stop = 1;
             
-            for (int i = 0; i < ctrRuns.length; i++) {
+    for (int i = 0; i < ctrRuns.length; i++) {
         
-        	for (int k = 0; k < ctrRes.length; k++) {
+    for (int k = 0; k < ctrRes.length; k++) {
             
         		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                 
@@ -128,7 +126,7 @@ public class DataPreProcessing {
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
                  	   * Folder path settings on HPC machine
                 	   */
-        		if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
+     if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
         			
                 	  /**
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -999,7 +997,7 @@ public class DataPreProcessing {
 				 * 
 				 */
 			       
-			    System.exit(0);
+//			    System.exit(0);
 				
     }    
 }
