@@ -41,6 +41,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
 import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
+import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 import uk.ac.cam.ceb.paper.sort.Sort;
 
@@ -90,23 +91,21 @@ public class DataPreProcessing {
      * @throws Exception the exception.
      * 
      */
-
 	
     public void getPreProcessingCorssValidation(ReactionType reactionType, int timeout, int maxErr, String destRList, int[] ctrRadicals, int[] ctrRuns,  int[] ctrRes, List<Species> refSpecies,  Map<Species, Integer> spinMultiplicity, LPSolver solver, LinkedHashSet<Species> validSpecies,  LinkedHashSet<Species> invalidSpecies, Map<Reaction, Double> validReaction, Map<Reaction, Double> invalidReaction,  BufferedWriter printedResultsFile) throws Exception {
     	
-    	for (int z = 0; z < ctrRadicals.length; z++) {
+    for (int z = 0; z < ctrRadicals.length; z++) {
         	
-            int maxRadical = ctrRadicals[z];
+    int maxRadical = ctrRadicals[z];
             
-//          timeout = 1500; // remove this when call this method
-            
+//          timeout = 1500; // remove this when call this method            
 //          Stopping run the code condition
             
-            int stop = 1;
+    int stop = 1;
             
-            for (int i = 0; i < ctrRuns.length; i++) {
+    for (int i = 0; i < ctrRuns.length; i++) {
         
-        	for (int k = 0; k < ctrRes.length; k++) {
+    for (int k = 0; k < ctrRes.length; k++) {
             
         		String config = "isg_runs" + ctrRuns[i] + "_res" + ctrRes[k] + "_radicals" + maxRadical + "_" + timeout + "s";
                 
@@ -127,7 +126,7 @@ public class DataPreProcessing {
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
                  	   * Folder path settings on HPC machine
                 	   */
-        		if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
+     if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
         			
                 	  /**
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -757,10 +756,10 @@ public class DataPreProcessing {
      *  
      */
     
-    public void getPreProcessingErrorBalanceReaction(String folderName, String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {    	
+    public void getPreProcessingErrorBalanceReaction(String folderName, String srcCompoundsRef, String srcRefPool, String destRList, String tempFolder, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType, String validTestResults) throws Exception {    	
     	
-//		FolderUtils folderUtils = new FolderUtils();
-//		String  = FolderUtils.generateUniqueFolderName("isg_isd_hd_hhd");
+//	FolderUtils folderUtils = new FolderUtils();
+//	String  = FolderUtils.generateUniqueFolderName("isg_isd_hd_hhd");
 
 		Files.createDirectories(Paths.get(destRList +"/" +folderName));
 		
@@ -913,6 +912,7 @@ public class DataPreProcessing {
 			 * Settings on PC machine.
 			 * 
 			 */
+			
 //			BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
 			
 			/**
@@ -959,6 +959,7 @@ public class DataPreProcessing {
 				System.out.println("Sorted species compared by error bars:");
 				
 				printedResultsTxtFile.write("Sorted species compared by error bars:");
+				
 				printedResultsTxtFile.write("\n");
 
 				for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
@@ -972,14 +973,31 @@ public class DataPreProcessing {
 				}
 				
 				printedResultsTxtFile.close();
-				
+				 
+				/**
+				 * 
+				 * @author NK510 (caresssd@hermes.cam.ac.uk)
+				 * Compares generated results (files) with approved results stored in folder as valid test results.
+				 * 
+				 */
+				File sourceDirectory = new File(destRList +"\\" + validTestResults);
+			       
+			    if(sourceDirectory.exists() && sourceDirectory.isDirectory()){
+			    	   
+			    File sourceFolderList[] = sourceDirectory.listFiles();
+			        
+			    FolderUtils.compareFiles(sourceFolderList, folderName,validTestResults,0);
+			    
+			      }
+			       
 				/**
 				 * 
 				 * @author nk510 (caresssd@hermes.cam.ac.uk)
 				 * Terminates program
 				 * 
 				 */
-			
-			     System.exit(0);
-    }
+			       
+//			    System.exit(0);
+				
+    }    
 }
