@@ -2,7 +2,6 @@ package uk.ac.cam.cares.jps.base.query;
 
 import java.net.URI;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
@@ -23,7 +22,7 @@ public class ResourcePathConverter {
 		//TODO-AE SC URGENT 20191021 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
 		// maybe change back not necessary any more, because of the solution below
 		
-		if (!AgentLocator.isJPSRunningForTest()) {			
+		if (true) {			
 			return path;
 		}
 	
