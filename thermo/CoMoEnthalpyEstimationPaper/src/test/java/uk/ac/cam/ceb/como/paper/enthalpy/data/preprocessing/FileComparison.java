@@ -1,7 +1,13 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
 import java.io.File;
-
+/**
+ * 
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * 
+ * This code is borrowed from the web.
+ *
+ */
 public class FileComparison {
 
 	public static void main(String[] args) {

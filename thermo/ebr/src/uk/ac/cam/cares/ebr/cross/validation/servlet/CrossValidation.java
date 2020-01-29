@@ -36,6 +36,12 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
  * files as output of the calculation for each step in cross validation
  * algorithm. Json files contain species name, enthslpy of formation for each
  * reaction, validity of species, reactions list.
+ * 
+ * To run it localy on a machine you need:
+ * 
+ * - Credentials for HPC machine
+ * - Jar file for cross validation code
+ * - Adapt code in session.exec by using your hpc credentials. 
  */
 
 @WebServlet("/crossValidation")
@@ -98,7 +104,9 @@ public class CrossValidation extends HttpServlet {
 
 			ssh.connect("172.25.186.150");
 
-			ssh.authPassword("nkrd01", "pass-to-add");
+//			ssh.authPassword("nkrd01", "pass-to-add");
+			ssh.authPassword("kadi01", "P@ssw0rd");
+			
 
 			final Session session = ssh.startSession();
 
@@ -136,11 +144,13 @@ public class CrossValidation extends HttpServlet {
 				 * 
 				 */
 
-				final Session.Command cmd_ssh = session.exec("mkdir /home/nkrd01/" + dirName + "; mkdir /home/nkrd01/"
+//				String userhpccommand="nkrd01";
+				String userhpccommand="kadi01";
+				final Session.Command cmd_ssh = session.exec("mkdir /home/"+userhpccommand+"/" + dirName + "; mkdir /home/"+userhpccommand+"/"
 						+ dirName + "/" + "LeaveOneOutCrossValidation_temp"
-						+ "; ssh cn01; java -jar /home/nkrd01/cv_isg_ti_r5_args_v1.jar " + " "
+						+ "; ssh cn01; java -jar /home/"+userhpccommand+"/cv_isg_ti_r5_args_v1.jar " + " "
 						+ jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName + " "
-						+ "/home/nkrd01/" + dirName + "/" + "LeaveOneOutCrossValidation_temp");
+						+ "/home/"+userhpccommand+"/" + dirName + "/" + "LeaveOneOutCrossValidation_temp");
 
 				logger.info("Printing message from HPC: " + IOUtils.readFully(cmd_ssh.getInputStream()).toString() + " "
 						+ jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName);
