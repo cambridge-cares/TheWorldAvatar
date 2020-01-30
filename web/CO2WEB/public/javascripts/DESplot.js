@@ -165,7 +165,7 @@ document.addEventListener("click", function (evt){
     configRH("rh1", response.rh1);
     configRH("rh2", response.rh2);
     configRH("rh3", response.rh3);
-    displayHash(response.txHash);
+    displayHash(response.txHash, response.sandr);
     document.getElementById("loader").style.display = "none";
   });
 
@@ -175,20 +175,19 @@ document.addEventListener("click", function (evt){
     chart.data.datasets[0].data.shift();
     chart.update();
 }
-  function displayHash(data){
+  function displayHash(data, sandr){
     console.log(data);
     var lst = document.getElementById("txhashes");
-    for (var x in data){
+    var le = [];
+    for (let x in data){
       console.log(x + " : "+data[x]);
       var li = document.createElement("li");
-      li.appendChild(document.createTextNode(data[x]));
-      li.href = "https://rinkeby.etherscan.io/tx/"+data[x];
-      li.addEventListener("click", function(e){
-        console.log(e);
-        console.log(e.target);
+      li.appendChild(document.createTextNode(data[x] + "\t" + sandr[x]));
+      li.addEventListener("click", function(){
         window.open( "https://rinkeby.etherscan.io/tx/"+data[x], "_blank");
       }, false);
       lst.appendChild(li);
+      le.push(li);
     }
   }
   function addData(chart, elem){
