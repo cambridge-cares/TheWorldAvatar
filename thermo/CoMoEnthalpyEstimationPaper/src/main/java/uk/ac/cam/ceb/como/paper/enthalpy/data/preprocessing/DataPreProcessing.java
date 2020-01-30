@@ -979,6 +979,10 @@ public class DataPreProcessing {
 				 * Compares generated results (files) with approved results stored in folder as valid test results.
 				 * 
 				 */
+				
+				/**
+				 * 
+				 */
 //				File sourceDirectory = new File(destRList +"\\" + validTestResults);
 //			       
 //			    if(sourceDirectory.exists() && sourceDirectory.isDirectory()){
