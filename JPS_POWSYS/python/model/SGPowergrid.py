@@ -316,9 +316,9 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
         # print ("\nBranch Losses= \n", branchLoss)
 
 
-        sumGen = round(busGenP.sum(),3) # round off up to 2 decimal points.
-        sumLoad = round(busLoadP.sum(),3)
-        sumLoss = round(branchLoss.sum(),3)
+        sumGen = round(busGenP.sum(),2) # round off up to 2 decimal points.
+        sumLoad = round(busLoadP.sum(),2)
+        sumLoss = round(branchLoss.sum(),2)
 
         print("\n")
 
