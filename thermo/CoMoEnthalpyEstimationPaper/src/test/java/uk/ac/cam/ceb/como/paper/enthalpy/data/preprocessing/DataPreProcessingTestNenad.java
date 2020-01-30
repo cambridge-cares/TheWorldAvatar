@@ -1,5 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
+import org.junit.Test;
 import org.junit.experimental.categories.Category;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HDReactionType;
@@ -292,7 +293,7 @@ public class DataPreProcessingTestNenad {
 	 * 
 	 */
 
-//	@Test
+	@Test
 	public void getDataPreProcessingISGReactionTi115Test() throws Exception {
 		
 		String folderName = new FolderUtils().generateUniqueFolderName("isg_Ti_115");
