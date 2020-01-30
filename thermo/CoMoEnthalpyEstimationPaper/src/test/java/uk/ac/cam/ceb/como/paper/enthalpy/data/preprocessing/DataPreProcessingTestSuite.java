@@ -1,9 +1,12 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
-//@RunWith(Suite.class)
-//@Suite.SuiteClasses(
-//DataPreProcessingTestNenad.class				
-//)
+
+import org.junit.runners.Suite;
+
+
+@Suite.SuiteClasses(
+DataPreProcessingTestNenad.class				
+)
 
 public class DataPreProcessingTestSuite {
 

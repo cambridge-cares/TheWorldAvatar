@@ -20,6 +20,7 @@ import uk.ac.ca.ceb.como.paper.enthalpy.data.analysis.InitialDataAnalysis;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.reaction.Reaction;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHelper;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HHDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing.DataPreProcessing;
 import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSolver;
@@ -69,14 +70,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based reference species
 	 * 
 	 */
-//	static String srcCompoundsRef = "g09/";
+	static String srcCompoundsRef = "g09/";
 	
 	/**
 	 * 
 	 * HCO-based reference species
 	 *  
 	 */
-	static String srcCompoundsRef = "esc/g09/";
+//	static String srcCompoundsRef = "esc/g09/";
 	
 	/**
 	 * 
@@ -100,7 +101,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based target species
 	 * 
 	 */
-//	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
+	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	/**
 	 * 
@@ -109,7 +110,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
+//	static String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
 	
 	/**
 	 * 
@@ -126,12 +127,12 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-//	static String destRList = "ti_isg/";
+	static String destRList = "ti_isg/";
 //	static String destRList = "hco_hhd/";
 //	static String destRList = "hco_isd/";
 //	static String destRList = "hco_isg/";
 //	static String destRList = "hco_hd/";
-	static String destRList = "hco_hhd_111/";
+//	static String destRList = "hco_hhd_111/";
 //	static String destRList = "hco_hd_111/";
 	 
 	/**
@@ -148,7 +149,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings temp folder path.
 	 * 
 	 */
-	static String tempFolder = "LeaveOneOutCrossValidation_hhd_111/";
+	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
@@ -189,7 +190,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static int[] ctrRadicals = new int[] {1}; // 0, 1, 2, 3, 4, 5 //100
+	static int[] ctrRadicals = new int[] {0}; // 0, 1, 2, 3, 4, 5 //100
 
 	public static void main(String[] args) throws Exception {
 	
@@ -259,9 +260,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
 	
-	HHDReactionType hhdReactionTypePreProcessing = new HHDReactionType();
+	ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 	
-	dpp.getPreProcessingCorssValidation(hhdReactionTypePreProcessing,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
+	dpp.getPreProcessingCorssValidation(isgReactionTypePreProcessing,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
 				spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
 				validReaction, invalidReaction,printedResultsTxtFile);
 
