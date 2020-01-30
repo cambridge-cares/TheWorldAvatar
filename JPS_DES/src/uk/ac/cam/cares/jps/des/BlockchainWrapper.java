@@ -49,6 +49,10 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
 		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
 		//use Transfer class to send ether
+		//check value of moneyEth. if moneyEth is too small, there's a UnsupportedOperationException error thrown. 
+		if (moneyEth < 1E-12) {
+			return "Value too small, transaction not completed";
+		}
 		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
@@ -61,6 +65,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		double totalresid = Double.parseDouble((String) jo.get("residential"));
 		double totalcommer = Double.parseDouble((String) jo.get("commercial"));
 		List<String> totalList = new ArrayList<String>();
+		List<String> whoTowho = new ArrayList<String>();
 		JSONObject jS = new JSONObject();
 		try {
 		if (totalsolar == 0) {
@@ -73,25 +78,31 @@ public class BlockchainWrapper extends JPSHttpServlet{
 			double ethResid = totalcommer*220;
 			String transactionhash3 = dotransact(addrOfR, ElectricPublicKey,ethResid);
 			totalList.add(transactionhash1);
+			whoTowho.add("Industrial to Grid");
 			totalList.add(transactionhash2);
+			whoTowho.add("Commercial to Grid");
 			totalList.add(transactionhash3);
+			whoTowho.add("Residential to Grid");
 		}else {
 			//when solar is available, get solar
 			//again give nominal sum since we don't have enough ether to go around yet. 
 			if (totalindus < totalsolar) {
 				double ethIndus = totalindus*136.36;
 				String transacthash1 = dotransact(addrOfI, SolarPublicKey,ethIndus);
+				whoTowho.add("Industrial to Solar");
 				totalsolar -= totalindus;
 
 				totalList.add(transacthash1);
 				if (totalresid < totalsolar) {
 					double ethResid = totalresid*136.36;
 					String transacthash2 = dotransact(addrOfR, SolarPublicKey,ethResid);
+					whoTowho.add("Residential to Solar");
 					totalsolar -= totalresid;
 					totalList.add(transacthash2);
 					if (totalcommer < totalsolar) {
 						double ethComme = totalcommer*136.36;
 						String transacthash3 = dotransact(addrOfC, SolarPublicKey,ethComme);
+						whoTowho.add("Commercial to Solar");
 						totalsolar -= totalcommer;
 						totalList.add(transacthash3);
 						//this should only occur once electric grid  is negative. 
@@ -99,6 +110,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 							//electric should buy solar
 							double ethElectric = totalelectric *-100;
 							String transacthash4 = dotransact(ElectricPublicKey, SolarPublicKey,ethElectric);
+							whoTowho.add("Grid to Solar");
 							totalList.add(transacthash4);
 													
 						}
@@ -106,44 +118,54 @@ public class BlockchainWrapper extends JPSHttpServlet{
 						//
 						double ethComme = totalcommer*136.36;
 						String transacthashs3 = dotransact(addrOfC, SolarPublicKey,ethComme);
+						whoTowho.add("Commercial to Solar");
 						totalList.add(transacthashs3);
 						totalcommer -= totalsolar;
 						ethComme = totalcommer*220;
 						String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
+						whoTowho.add("Commercial to Grid");
 						totalList.add(transactionhash2);
 						
 					}
 				}else {
 					double ethResid = totalresid*136.36;
 					String transactionhashs2 = dotransact(addrOfC, SolarPublicKey,ethResid);
+					whoTowho.add("Commercial to Solar");
 					totalresid -= totalsolar;
 					totalList.add(transactionhashs2);
 					
 					ethResid = totalresid*220;
 					String transactionhash3 = dotransact(addrOfR, ElectricPublicKey,ethResid);
+					whoTowho.add("Residential to Grid");
 					totalList.add(transactionhash3);
 					
 					double ethComme = totalcommer*220;
 					String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
+					whoTowho.add("Commercial to Grid");
 					totalList.add(transactionhash2);
 				}
 			}else {
 				double ethIndus = totalindus*136.36;
 				String transactionhashs = dotransact(addrOfI, SolarPublicKey,ethIndus);
+				whoTowho.add("Industrial to Solar");
 				totalList.add(transactionhashs);
 				totalindus -= totalsolar;
 				ethIndus = totalindus*220;
 				String transactionhash1 = dotransact(addrOfI, ElectricPublicKey,ethIndus);
+				whoTowho.add("Industrial to Grid");
 				totalList.add(transactionhash1);
 				double ethComme = totalcommer*220;
 				String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
+				whoTowho.add("Commercial to Grid");
 				totalList.add(transactionhash2);
 				double ethResid = totalresid*220;
 				String transactionhash3 = dotransact(addrOfR, ElectricPublicKey,ethResid);
+				whoTowho.add("Residential to Grid");
 				totalList.add(transactionhash3);
 				
 			}
 			jS.put("txHash",totalList.toArray());
+			jS.put("sandr",whoTowho.toArray());
 		}
 	}catch (Exception e) {
 			e.printStackTrace();

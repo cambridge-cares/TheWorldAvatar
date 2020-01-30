@@ -62,6 +62,8 @@ public class DESCoordination extends JPSHttpServlet{
  			System.out.println("Called GetBlock" + v);
  			JSONObject tempJO = new JSONObject(v);
  			responseParams.put("txHash", tempJO.get("txHash"));
+ 			responseParams.put("sandr", tempJO.get("sandr"));
+ 			System.gc();
     	return responseParams;
     }
 
