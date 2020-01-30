@@ -18,6 +18,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 
 import com.opencsv.CSVReader;
+import com.sun.istack.logging.Logger;
 
 import junit.framework.Assert;
 
@@ -206,33 +207,40 @@ public class Utils {
 			List<List<String>> sourceFile = openCSVSourceFile(srcFilePath);
 			List<List<String>> targetFile = openCSVSourceFile(resultFileMap.get(srcFilePath));
 			
-			List<String> sourceList = new ArrayList<String>();
-			List<String> targetList = new ArrayList<String>();
+			List<String> sourceListPart = new ArrayList<String>();
+			List<String> targetListPart = new ArrayList<String>();
+
+			List<String> sourceListFull = new ArrayList<String>();
+			List<String> targetListFull = new ArrayList<String>();
+
 			int count;
 			for(List<String> line: sourceFile){
 				count = 0;
 				for(String column:line){
-					sourceList.add(column);
 					count++;
-					if(count>=3){
-						break;
+					if(count<=3){
+						sourceListPart.add(column);
 					}
+					sourceListFull.add(column);
 				}
 			}
 			for(List<String> line: targetFile){
 				count = 0;
 				for(String column:line){
-					targetList.add(column);
 					count++;
-					if(count>=3){
-						break;
+					if(count<=3){
+						targetListPart.add(column);
 					}
+					targetListFull.add(column);
 				}
 			}
-			Collections.sort(sourceList);
-			Collections.sort(targetList);
-			System.out.println(srcFilePath+" = "+resultFileMap.get(srcFilePath)+": "+ sourceList.equals(targetList));
-			Assert.assertEquals(sourceList, targetList);
+			Collections.sort(sourceListPart);
+			Collections.sort(targetListPart);
+			System.out.println(srcFilePath+" = "+resultFileMap.get(srcFilePath)+": "+ sourceListPart.equals(targetListPart));
+			Assert.assertEquals(sourceListPart, targetListPart);
+			if(!sourceListFull.equals(targetListFull)){
+				System.out.println("Only the first 3 columns of the following files are identical and a Git Diff like comparator has found some differences between the files:\n   "+srcFilePath+" = "+resultFileMap.get(srcFilePath));
+			}
 		}catch(IOException e){
 			e.printStackTrace();
 		}
@@ -251,6 +259,7 @@ public class Utils {
 			
 			List<String> sourceList = new ArrayList<String>();
 			List<String> targetList = new ArrayList<String>();
+
 			String line;
 			while((line=sourceFile.readLine())!=null){
 				sourceList.add(line);
@@ -258,6 +267,11 @@ public class Utils {
 			while((line=targetFile.readLine())!=null){
 				targetList.add(line);
 			}
+
+			if(!sourceList.equals(targetList)){
+				System.out.println("Only the sorted lists of the reactions found in the following two files are identifical and a Git Diff like comparator has identified some differences between the files:\n   "+srcFilePath+" = "+resultFileMap.get(srcFilePath));
+			}
+			
 			Collections.sort(sourceList);
 			Collections.sort(targetList);
 			System.out.println(srcFilePath+" = "+resultFileMap.get(srcFilePath)+": "+ sourceList.equals(targetList));
