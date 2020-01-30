@@ -5,7 +5,7 @@ import org.junit.runners.Suite;
 
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
-DataPreProcessingTest.class				
+DataPreProcessingTestNenad.class				
 )
 
 public class DataPreProcessingTestSuite {

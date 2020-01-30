@@ -37,11 +37,13 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
  * algorithm. Json files contain species name, enthslpy of formation for each
  * reaction, validity of species, reactions list.
  * 
- * To run it localy on a machine you need:
+ * To run the cross validation code on HPC, please go to 
+ *          uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver class,
+ *         and uncomment " map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol"); " line in order to allow GLPK solver to work on Windows machine.
+ *         and comment the line " map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); ".
+ *
+ *
  * 
- * - Credentials for HPC machine
- * - Jar file for cross validation code
- * - Adapt code in session.exec by using your hpc credentials. 
  */
 
 @WebServlet("/crossValidation")
@@ -131,6 +133,7 @@ public class CrossValidation extends HttpServlet {
 				 * Creates a unique folder on HPC where all results of cross validation
 				 * calculation will be saved. Runs Cross validation java implementation (jar
 				 * file) stored on the HPC machine with input parameters.
+				 * 
 				 */
 
 				String dirName = generateUniqueFolderName("crossvalidation");
@@ -152,8 +155,7 @@ public class CrossValidation extends HttpServlet {
 						+ jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName + " "
 						+ "/home/"+userhpccommand+"/" + dirName + "/" + "LeaveOneOutCrossValidation_temp");
 
-				logger.info("Printing message from HPC: " + IOUtils.readFully(cmd_ssh.getInputStream()).toString() + " "
-						+ jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName);
+				logger.info("Printing message from HPC: " + IOUtils.readFully(cmd_ssh.getInputStream()).toString() + " " + jsonFile.get("ReferenceSpecies") + " " + jsonFile.get("TargetSpecies") + " " + dirName);
 
 				response.getWriter().append("exit status: " + cmd_ssh.getExitStatus());
 
