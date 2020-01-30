@@ -385,13 +385,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
     setInterval(function(){
         distotalemission();
     }, 5000);
-
-    var checkExist = setInterval(function() {
-        if ($('#map').length) {
-           runKML(0)
-           clearInterval(checkExist);
-        }
-     }, 100); // check every 100ms
+    
     $(document).on('input', 'input', function () {//when user makes input
         console.log("input changed");
         cleanMsg();
@@ -411,6 +405,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
     //TODO: submit button that sends out simulation
     let runBtn = $("#run-btn");
     let selectedId = 0 ;
+   
     // updatePredefined(selectedId)
     $("select#predefined-select").on('change', function () {
          selectedId = parseInt($("select#predefined-select option:checked").val());
@@ -423,6 +418,13 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         runKML(selectedId);
     })
     
+    var checkExist = setInterval(function() {
+        if ($('#map').length) {
+           console.log("Exists!");
+           runKML(0);
+           clearInterval(checkExist);
+        }
+     }, 100); // check every 100ms
     //TODO: register for changes if want blinking effect of modification
     function runKML(predefinedId){
         console.log('predefinedID = ', predefinedId);
@@ -486,7 +488,6 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         $("#NucGen").text(dict["nuclear"]);
         $("#OilGen").text(dict["oil"]);
         $("#NatGasGen").text(dict["gas"]);
-        // $("#numberOfGenerators").text(numTypeGen);
     }
     //TODO: define err msg panel
     function cleanMsg() {

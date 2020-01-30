@@ -33,7 +33,7 @@ var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-var MAU = require("./routes/runMAU")
+// var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
@@ -112,7 +112,7 @@ app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-app.use("/MAU", MAU);
+// app.use("/MAU", MAU); //won't get MAU to work because of java/nodejs incompat as node latest version doesn't support node-java
 
 
 
@@ -247,8 +247,8 @@ app.use(function(err, req, res, next) {
 /********************/
 
 
-http.listen(port, function () {
+app.listen(port, function () {
   console.log('Server listening on port '+port);
 });
 
-module.exports = http;
+module.exports = app;
