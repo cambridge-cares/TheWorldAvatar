@@ -41,7 +41,6 @@ import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
 import uk.ac.cam.ceb.como.paper.enthalpy.threading.EnthalpyEstimationThread;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
-import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 import uk.ac.cam.ceb.como.tools.file.writer.StringWriter;
 import uk.ac.cam.ceb.paper.sort.Sort;
 
@@ -980,15 +979,15 @@ public class DataPreProcessing {
 				 * Compares generated results (files) with approved results stored in folder as valid test results.
 				 * 
 				 */
-				File sourceDirectory = new File(destRList +"\\" + validTestResults);
-			       
-			    if(sourceDirectory.exists() && sourceDirectory.isDirectory()){
-			    	   
-			    File sourceFolderList[] = sourceDirectory.listFiles();
-			        
-			    FolderUtils.compareFiles(sourceFolderList, folderName,validTestResults,0);
-			    
-			      }
+//				File sourceDirectory = new File(destRList +"\\" + validTestResults);
+//			       
+//			    if(sourceDirectory.exists() && sourceDirectory.isDirectory()){
+//			    	   
+//			    File sourceFolderList[] = sourceDirectory.listFiles();
+//			        
+//			    FolderUtils.compareFiles(sourceFolderList, folderName,validTestResults,0);
+//			    
+//			      }
 			       
 				/**
 				 * 

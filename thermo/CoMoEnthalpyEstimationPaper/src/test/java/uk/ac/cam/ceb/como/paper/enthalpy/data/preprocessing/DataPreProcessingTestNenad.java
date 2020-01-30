@@ -14,8 +14,8 @@ import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
  * Junit tests which generate chemical reactions and estimate enthalpy of formation for 25 Ti-based species.
  *
  */
-@Category(DataPreProcessingTest.class)
-public class DataPreProcessingTest {
+@Category(DataPreProcessingTestNenad.class)
+public class DataPreProcessingTestNenad {
 
 	/**
 	 * @author nk510 (caresssd@hermes.cam.ac.uk) Folder contains Gaussian files for
@@ -133,8 +133,6 @@ public class DataPreProcessingTest {
 	//@Test
 	public void getDataPreProcessingHDReactionHCO110Test() throws Exception {
 		
-		String validTestResults = "valid-test-results-hd-hco-1-1-0";
-		
 		String folderName = new FolderUtils().generateUniqueFolderName("hd_hco_110");
 		
 		DataPreProcessing dataPreProcessingISG = new DataPreProcessing();
@@ -142,8 +140,6 @@ public class DataPreProcessingTest {
 		HDReactionType hdReactionTypePreProcessing = new HDReactionType();
 
 		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco_hd, srcRefPool_hco_hd, destRList_hco_hd, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, hdReactionTypePreProcessing, "valid-test-results-hd-hco-1-1-0");
-		
-		(new Utils()).compareFiles(folderName, destRList_hco_hd, validTestResults);
 	}
 	
 	/**
@@ -162,8 +158,6 @@ public class DataPreProcessingTest {
 //	@Test
 	public void getDataPreProcessingISDReactionTi115Test() throws Exception {
 		
-		String validTestResults = "valid-test-results-hd-hco-1-1-0";
-		
 		String folderName = new FolderUtils().generateUniqueFolderName("isd_Ti_115");
 		
 		DataPreProcessing dataPreProcessingISD = new DataPreProcessing();
@@ -172,7 +166,6 @@ public class DataPreProcessingTest {
 
 		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing, "valid-test-results-hd-hco-1-1-0");
 
-		(new Utils()).compareFiles(folderName, destRList_ti_isd, validTestResults);
 	}
 	
 	/**
@@ -191,8 +184,6 @@ public class DataPreProcessingTest {
 //	@Test
 	public void getDataPreProcessingISGReactionHCO110Test() throws Exception {
 
-		String validTestResults = "valid-test-results-isg-hco-1-1-0";
-		
 		String folderName = new FolderUtils().generateUniqueFolderName("isg_HCO_110");
 		
 		DataPreProcessing dataPreProcessingISG = new DataPreProcessing();
@@ -200,8 +191,7 @@ public class DataPreProcessingTest {
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
 		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, isgReactionTypePreProcessing, "valid-test-results-isg-hco-1-1-0");
-	
-		(new Utils()).compareFiles(folderName, destRList_hco_isg, validTestResults);
+		
 	}
 
 	/**
@@ -220,8 +210,6 @@ public class DataPreProcessingTest {
 //	@Test
 	public void getDataPreProcessingISDReactionHCO110Test() throws Exception {
 
-		String validTestResults = "valid-test-results-isd-hco-1-1-0";
-		
 		String folderName = new FolderUtils().generateUniqueFolderName("isd_HCO_110");
 		
 		DataPreProcessing dataPreProcessingISD = new DataPreProcessing();
@@ -230,7 +218,6 @@ public class DataPreProcessingTest {
 
 		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_0, isdReactionTypePreProcessing, "valid-test-results-isd-hco-1-1-0");
 		
-		(new Utils()).compareFiles(folderName, destRList_hco_isd, validTestResults);
 	}
 	
 	/**
@@ -249,17 +236,15 @@ public class DataPreProcessingTest {
 //	@Test
 	public void getDataPreProcessingISGReactionHCO115Test() throws Exception {
 
-		String validTestResults = "valid-test-results-isg-hco-1-1-5";
-		
 		String folderName = new FolderUtils().generateUniqueFolderName("isg_HCO_115");
 		
 		DataPreProcessing dataPreProcessingISG = new DataPreProcessing();
 		
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
-		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing, validTestResults);
+		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing,"valid-test-results-isg-hco-1-1-5");
 		
-		(new Utils()).compareFiles(folderName, destRList_hco_isg, validTestResults);
+		
 	}
 	
 	/**
@@ -278,18 +263,13 @@ public class DataPreProcessingTest {
 //	@Test
 	public void getDataPreProcessingISDReactionHCO115Test() throws Exception {
 
-		String validTestResults = "valid-test-results-isd-hco-1-1-5";
-		
 		String folderName = new FolderUtils().generateUniqueFolderName("isd_HCO_115");
 		
 		DataPreProcessing dataPreProcessingISD = new DataPreProcessing();
 		
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing, validTestResults);
-		
-		(new Utils()).compareFiles(folderName, destRList_hco_isd, validTestResults);
-
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_hco, srcRefPool_hco, destRList_hco_isd, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isdReactionTypePreProcessing,"valid-test-results-isd-hco-1-1-5");
 	}
 	
 	/**
@@ -312,10 +292,8 @@ public class DataPreProcessingTest {
 	 * 
 	 */
 
-	//@Test
+//	@Test
 	public void getDataPreProcessingISGReactionTi115Test() throws Exception {
-		
-		String validTestResults = "valid-test-results-isg-ti-1-1-5";
 		
 		String folderName = new FolderUtils().generateUniqueFolderName("isg_Ti_115");
 		
@@ -324,8 +302,5 @@ public class DataPreProcessingTest {
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
 		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName,srcCompoundsRef_ti, srcRefPool_ti, destRList_ti_isg, tempFolder, ctrRuns, ctrRes, ctrRadicals_5, isgReactionTypePreProcessing, "valid-test-results-isg-ti-1-1-5");
-
-		(new Utils()).compareFiles(folderName, destRList_ti_isg, validTestResults);
 	}
-	
 }
