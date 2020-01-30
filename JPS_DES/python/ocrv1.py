@@ -31,18 +31,19 @@ def ocr():
     im.close()
     r = text.split('\n')
     for i in r:
-        #print(i)
-        if i.startswith('Ambient'):
+        print(i)
+        if 'Temperature' in i:
             temp = i.split(' ')[2]
             if (temp == '|'):
                 temp = i.split(' ')[3]
             if (len(temp.split('.')))>2:
                 temp = temp[:-1]
             if (not is_number(temp)):
-                temp = str(random.uniform (26, 32))
+                temp = "{0:.2f}".format(random.uniform (26, 32))
+
             
             result["temperature"] = temp
-        if i.startswith('Global'):
+        elif i.startswith('Global'):
             irrad = i.split(' ')[2]
             if (irrad == '|'):
                 irrad = i.split(' ')[3]
@@ -54,22 +55,36 @@ def ocr():
                 if (( hou <= 7 )or (hou > 18)):
                     irrad = 0 
                 else:
-                    irrad=str(random.uniform(0,100)) 
+                    irrad="{0:.2f}".format(random.uniform(0,100))
             result['irradiance'] =irrad
-        if i.startswith('Wind Speed'):
+        elif "Irradiance" in i: 
+            irrad = i.split(' ')[7]
+            if (irrad == '|'):
+                irrad = i.split(' ')[3]
+            if (len(irrad.split('.')))>2:
+                irrad = irrad[:-1]
+            if (not is_number(irrad)):
+                #check the time. if night, then print zero. 
+                hou = datetime.now().hour
+                if (( hou <= 7 )or (hou > 18)):
+                    irrad = 0 
+                else:
+                    irrad="{0:.2f}".format(random.uniform(0,100))
+            result['irradiance'] =irrad
+        elif 'Speed' in i:
             speed = i.split(' ')[2]
             if (speed == '|'):
                 speed = i.split(' ')[3]
-            if (not is_number(temp)):
-                speed = str(random.uniform (0, 5))
+            if (not is_number(speed)):
+                speed = "{0:.2f}".format(random.uniform(0,5))
             
             result["windspeed"] = speed
     if "windspeed" not in result:
         result["windspeed"] = "0"
     if "irradiance" not in result:
-        result["irradiance"] =str(random.uniform(0,100)) 
+        result["irradiance"] ="{0:.2f}".format(random.uniform(0,100))
     if "temperature" not in result:
-        result["temperature"] =  str(random.uniform (26, 32))
+        result["temperature"] =  "{0:.2f}".format(random.uniform(26,32))
     now = datetime.now() # current date and time
     
     result['year']= now.strftime("%Y")

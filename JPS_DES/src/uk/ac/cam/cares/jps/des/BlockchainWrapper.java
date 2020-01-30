@@ -1,12 +1,14 @@
 package uk.ac.cam.cares.jps.des;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
@@ -17,126 +19,137 @@ import org.web3j.protocol.core.methods.response.TransactionReceipt;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
+import org.web3j.utils.Convert;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet(urlPatterns = {"/GetBlock" })
 public class BlockchainWrapper extends JPSHttpServlet{
 	private static String ElectricPublicKey = "0xCB37bDCAfb98463d5bfB573781f022Cd1D2EDB81";
 	private static String SolarPublicKey = "0xAf70f1C1D6B1c0C28cbDCa6b49217Aa6FA17b6A8";
-	private static String addrOfI = "0x6708a3A3D9CA9624D1C26Ce2a033f7b332a78dde";
-	private static String addrOfC = "0xF7312b19628D3B862596DbCBCAC090135555a4aD";
-	private static String addrOfR = "0x1eD35d5845F8162B40df26c34562cFabd4892017";
+	private static String addrOfI = "industrial.json";
+	private static String addrOfC = "commercial.json";
+	private static String addrOfR = "residential.json";
 	private static final long serialVersionUID = 1L;
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
-		JSONObject jo = AgentCaller.readJsonParameter(request);
+	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
-		String baseUrl = jo.optString("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
-		
+		System.out.println(requestParams.toString());
 		JSONObject result=new JSONObject();
 		try {
-			calculateTrade(baseUrl, jo);
+			result = calculateTrade(requestParams);
+			System.out.println(result);
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		AgentCaller.printToResponse(result, res);
+		return result;
  
-		logger.info("return the result from forecast agent");		
 	}
-	public static String dotransact(String sender, String recipient, double moneyEth) throws IOException {
+	public static String dotransact(String sender, String recipient, double moneyEth) throws IOException, Exception {
 		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
 		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
 		//use Transfer class to send ether
-		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "resources/keyfile"); //password
-		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , moneyEth, Convert.Unit.ETHER).send();
-		return "";
+		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\"+sender); //password
+		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
+		return  transactionReceipt.getTransactionHash();
 		
 	}
-	public static void calculateTrade(String baseUrl, JSONObject jo) {
-		JSONArray solar = (JSONArray) jo.get("solar");
-		double totalsolar = solar.getDouble(0);
-		JSONArray elecgrid = (JSONArray) jo.get("gridsupply");
-		double totalelectric = elecgrid.getDouble(0);
-		JSONArray indus = (JSONArray) jo.get("industrial");
-		double totalindus = indus.getDouble(0);
-		JSONArray resid = (JSONArray) jo.get("residential");
-		double totalresid = resid.getDouble(0);
-		JSONArray commerce = (JSONArray) jo.get("commercial");
-		double totalcommer = commerce.getDouble(0);
+	public static JSONObject calculateTrade(JSONObject jo) {
+		double totalsolar = Double.parseDouble((String) jo.get("solar"));
+		double totalelectric =Double.parseDouble((String) jo.get("gridsupply"));
+		double totalindus = Double.parseDouble((String)jo.get("industrial"));
+		double totalresid = Double.parseDouble((String) jo.get("residential"));
+		double totalcommer = Double.parseDouble((String) jo.get("commercial"));
+		List<String> totalList = new ArrayList<String>();
+		JSONObject jS = new JSONObject();
 		try {
 		if (totalsolar == 0) {
 			//if no electricity is generated from the solar powered electricity:
-			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has
-			double ethIndus = totalindus*0.0005;
+			//give nominal sum -> Not precisely true because the amount of ether that they need to pay is 220 eth per kwh which no one has so downgrade
+			double ethIndus = totalindus*220;
 			String transactionhash1 = dotransact(addrOfI, ElectricPublicKey,ethIndus);
-			double ethComme = totalcommer*0.0005;
+			double ethComme = totalcommer*220;
 			String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
-			double ethResid = totalcommer*0.0005;
+			double ethResid = totalcommer*220;
 			String transactionhash3 = dotransact(addrOfR, ElectricPublicKey,ethResid);
+			totalList.add(transactionhash1);
+			totalList.add(transactionhash2);
+			totalList.add(transactionhash3);
 		}else {
 			//when solar is available, get solar
 			//again give nominal sum since we don't have enough ether to go around yet. 
 			if (totalindus < totalsolar) {
-				double ethIndus = totalindus*0.0004;
-				String transactionhashs = dotransact(addrOfI, SolarPublicKey,ethIndus);
+				double ethIndus = totalindus*136.36;
+				String transacthash1 = dotransact(addrOfI, SolarPublicKey,ethIndus);
 				totalsolar -= totalindus;
+
+				totalList.add(transacthash1);
 				if (totalresid < totalsolar) {
-					double ethResid = totalresid*0.0004;
-					String transacthashs2 = dotransact(addrOfC, SolarPublicKey,ethResid);
+					double ethResid = totalresid*136.36;
+					String transacthash2 = dotransact(addrOfR, SolarPublicKey,ethResid);
 					totalsolar -= totalresid;
-					
+					totalList.add(transacthash2);
 					if (totalcommer < totalsolar) {
-						double ethComme = totalcommer*0.0004;
-						String transacthashs3 = dotransact(addrOfC, SolarPublicKey,ethComme);
+						double ethComme = totalcommer*136.36;
+						String transacthash3 = dotransact(addrOfC, SolarPublicKey,ethComme);
 						totalsolar -= totalcommer;
+						totalList.add(transacthash3);
 						//this should only occur once electric grid  is negative. 
 						if (totalelectric < 0 ) {
 							//electric should buy solar
-							double ethElectric = totalelectric *-0.0003;
-							String transacthashs4 = dotransact(ElectricPublicKey, SolarPublicKey,ethElectric);
-							
+							double ethElectric = totalelectric *-100;
+							String transacthash4 = dotransact(ElectricPublicKey, SolarPublicKey,ethElectric);
+							totalList.add(transacthash4);
+													
 						}
 					}else {
 						//
-						double ethComme = totalcommer*0.0004;
+						double ethComme = totalcommer*136.36;
 						String transacthashs3 = dotransact(addrOfC, SolarPublicKey,ethComme);
+						totalList.add(transacthashs3);
 						totalcommer -= totalsolar;
-						ethComme = totalcommer*0.0005;
+						ethComme = totalcommer*220;
 						String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
+						totalList.add(transactionhash2);
 						
 					}
 				}else {
-					double ethResid = totalresid*0.0004;
+					double ethResid = totalresid*136.36;
 					String transactionhashs2 = dotransact(addrOfC, SolarPublicKey,ethResid);
 					totalresid -= totalsolar;
+					totalList.add(transactionhashs2);
 					
-					ethResid = totalresid*0.0005;
+					ethResid = totalresid*220;
 					String transactionhash3 = dotransact(addrOfR, ElectricPublicKey,ethResid);
+					totalList.add(transactionhash3);
 					
-					double ethComme = totalcommer*0.0005;
+					double ethComme = totalcommer*220;
 					String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
+					totalList.add(transactionhash2);
 				}
 			}else {
-				double ethIndus = totalindus*0.0004;
+				double ethIndus = totalindus*136.36;
 				String transactionhashs = dotransact(addrOfI, SolarPublicKey,ethIndus);
+				totalList.add(transactionhashs);
 				totalindus -= totalsolar;
-				ethIndus = totalindus*0.0005;
+				ethIndus = totalindus*220;
 				String transactionhash1 = dotransact(addrOfI, ElectricPublicKey,ethIndus);
-				double ethComme = totalcommer*0.0005;
+				totalList.add(transactionhash1);
+				double ethComme = totalcommer*220;
 				String transactionhash2 = dotransact(addrOfC, ElectricPublicKey,ethComme);
-				double ethResid = totalresid*0.0005;
+				totalList.add(transactionhash2);
+				double ethResid = totalresid*220;
 				String transactionhash3 = dotransact(addrOfR, ElectricPublicKey,ethResid);
+				totalList.add(transactionhash3);
 				
 			}
-			
+			jS.put("txHash",totalList.toArray());
 		}
 	}catch (Exception e) {
 			e.printStackTrace();
 	}
-		
+
+		return jS;
 	}
 	public static void main(String[] args) throws IOException {
 		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
@@ -145,9 +158,14 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		System.out.println("Connected to Ethereum Client Version: " + clientVersion);
 		try {
 			//Get abalance
-			EthGetBalance ethGetBalance=web3.ethGetBalance("0x6708a3A3D9CA9624D1C26Ce2a033f7b332a78dde", DefaultBlockParameterName.LATEST).sendAsync().get();
+			EthGetBalance ethGetBalance=web3.ethGetBalance("0x1eD35d5845F8162B40df26c34562cFabd4892017", DefaultBlockParameterName.LATEST).sendAsync().get();
 			java.math.BigInteger wei = ethGetBalance.getBalance();
 			System.out.println(wei);
+			Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\residential.json");
+			TransactionReceipt transactionReceipt = Transfer.sendFunds(
+			        web3, credentials, "0x9e64A50EfA603BCD127001b689635fca4669ba9d",
+			        BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
+			System.out.println(transactionReceipt);
 //			String pk = "04dab771c776d8345c8877a70f26c03a3bd7927abbc65ceff14e74ee23ab0fe8"; //private key of industrial
 //		   Credentials credentials = Credentials.create(pk);
 		}catch (Exception ex) {

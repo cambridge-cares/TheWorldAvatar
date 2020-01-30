@@ -1,12 +1,15 @@
 package uk.ac.cam.cares.jps.des;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +48,20 @@ public class DESCoordination extends JPSHttpServlet{
  	        requestParams.put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
  	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
  	        responseParams = new JSONObject(t);
-// 			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/EtherWrapper", t);
+ 	        //header's way too large so shrink it to the first element. we only need the first element
+ 	        JSONObject jo = new JSONObject();
+ 	        String[] types = {"solar", "gridsupply", "industrial", "commercial", "residential"};
+ 	        List<String> l = Arrays.asList(types);
+ 	        for (String i: l ) {
+ 	        	System.out.println(responseParams.get(i));
+ 	        	JSONArray j =  (JSONArray) responseParams.get(i);
+ 	        	jo.put(i,j.get(0));
+ 	        }
+ 	        System.out.println(jo);
+ 			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
+ 			System.out.println("Called GetBlock" + v);
+ 			JSONObject tempJO = new JSONObject(v);
+ 			responseParams.put("txHash", tempJO.get("txHash"));
     	return responseParams;
     }
 

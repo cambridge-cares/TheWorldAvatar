@@ -22,10 +22,10 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DESCoordination;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
-
 
 public class Test_DES extends TestCase{
 	
@@ -77,7 +77,27 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
+	public void testBlockchainWrapperDirectCall() throws IOException{
+		JSONObject jo = new JSONObject();
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+		System.out.println(new BlockchainWrapper().calculateTrade(jo));
+	}
 	
+	public void testBlockchainWrapperAgentCall() throws IOException{
+		JSONObject jo = new JSONObject();
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+	    System.out.println(jo.toString());
+		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
+		System.out.println(v);
+	}
 	public void xxxtestStartDESScenariotemp() throws IOException  {
 
 		DESCoordination a = new DESCoordination();
