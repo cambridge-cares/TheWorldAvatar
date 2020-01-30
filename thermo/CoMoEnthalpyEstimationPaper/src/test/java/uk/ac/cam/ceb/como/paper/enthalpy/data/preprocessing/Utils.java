@@ -22,6 +22,34 @@ import com.opencsv.CSVReader;
 import junit.framework.Assert;
 
 public class Utils {
+	
+	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk) Number of runs.
+	 * 
+	 */
+
+	static int[] ctrRuns = new int[] { 1 };
+
+	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk) Number of reactions that will be
+	 *         generated for each species from target list.
+	 * 
+	 */
+
+	static int[] ctrRes = new int[] { 1 }; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10 //5
+
+	/**
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk) Number of radicals.
+	 * 
+	 */
+
+	static int[] ctrRadicals_0 = new int[] { 0 }; // 0, 1, 2, 3, 4, 5 //100
+	static int[] ctrRadicals_1 = new int[] { 1 }; // 0, 1, 2, 3, 4, 5 //100
+	static int[] ctrRadicals_5 = new int[] { 5 }; // 0, 1, 2, 3, 4, 5 //100
+	
 	HashMap<String, String> pairedFileList = new HashMap<>();
 	/**
 	 * Compares validated test results with the thermo-code generated results. 

@@ -23,7 +23,7 @@ public class ISDReactionTest {
 		
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 
-		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_HCO.getFolderName(), Folder.REF_POOL_HCO.getFolderName(), Folder.REACTIONS_HCO_ISD.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), DataPreProcessingTest.ctrRuns, DataPreProcessingTest.ctrRes, DataPreProcessingTest.ctrRadicals_0, isdReactionTypePreProcessing, validTestResults);
+		dataPreProcessingISD.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_HCO.getFolderName(), Folder.REF_POOL_HCO.getFolderName(), Folder.REACTIONS_HCO_ISD.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, isdReactionTypePreProcessing, validTestResults);
 	}
 	
 	@Test

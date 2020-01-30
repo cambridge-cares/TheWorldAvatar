@@ -24,7 +24,7 @@ public class ISGReactionTest {
 		
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 
-		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), DataPreProcessingTest.ctrRuns, DataPreProcessingTest.ctrRes, DataPreProcessingTest.ctrRadicals_5, isgReactionTypePreProcessing, validTestResults);
+		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionTypePreProcessing, validTestResults);
 	}
 	
 	@Test
