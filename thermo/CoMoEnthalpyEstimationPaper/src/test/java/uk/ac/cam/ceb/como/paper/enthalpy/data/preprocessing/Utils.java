@@ -239,7 +239,7 @@ public class Utils {
 			System.out.println(srcFilePath+" = "+resultFileMap.get(srcFilePath)+": "+ sourceListPart.equals(targetListPart));
 			Assert.assertEquals(sourceListPart, targetListPart);
 			if(!sourceListFull.equals(targetListFull)){
-				System.out.println("Only the first 3 columns of the following files are identical and a Git Diff like comparator has found some differences between the files:\n   "+srcFilePath+" = "+resultFileMap.get(srcFilePath));
+				System.out.println("Only the first 3 columns of the following two files are identical and a Git Diff like comparator has found some differences between the files:\n   "+srcFilePath+" = "+resultFileMap.get(srcFilePath));
 			}
 		}catch(IOException e){
 			e.printStackTrace();
