@@ -9,27 +9,27 @@ package com.cmclinnovations.jps.agent.quantum.calculation;
  *
  * @author pb556
  */
-public class QuantumCalculationException extends Exception {
+public class DFTAgentException extends Exception {
 	
 	private static final long serialVersionUID = 1976L;
 	
-    public QuantumCalculationException() {
+    public DFTAgentException() {
         super();
     }
 
-    public QuantumCalculationException(String message) {
+    public DFTAgentException(String message) {
         super(message);
     }
 
-    public QuantumCalculationException(String message, Throwable cause) {
+    public DFTAgentException(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public QuantumCalculationException(Throwable cause) {
+    public DFTAgentException(Throwable cause) {
         super(cause);
     }
 
-    protected QuantumCalculationException(String message, Throwable cause,
+    protected DFTAgentException(String message, Throwable cause,
             boolean enableSuppression,
             boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);

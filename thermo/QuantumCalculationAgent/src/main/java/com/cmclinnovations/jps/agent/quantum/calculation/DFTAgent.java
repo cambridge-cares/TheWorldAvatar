@@ -47,7 +47,7 @@ public class DFTAgent extends HttpServlet{
 	/**
 	 * Initialises property values.
 	 * 
-	 * @throws QuantumCalculationException
+	 * @throws DFTAgentException
 	 */
 	public void init() throws ServletException{
         logger.info("----------");
