@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -26,14 +25,15 @@ import ch.ethz.ssh2.StreamGobbler;
 import ch.ethz.ssh2.Session;
 
 /**
- *  
+ * Quantum Calculation Agent developed for setting-up and running quantum
+ * jobs at increasing levels of theory.   
  * 
  * @author msff2
  *
  */
 @Controller
-public class QuantumJob extends HttpServlet{
-	private Logger logger = LoggerFactory.getLogger(QuantumJob.class);	
+public class DFTAgent extends HttpServlet{
+	private Logger logger = LoggerFactory.getLogger(DFTAgent.class);	
 	String server = "login-skylake.hpc.cam.ac.uk";
 	String username = "msff2";
 	String password = "Abcdl955_l7_l7_l7_aB";
@@ -131,7 +131,7 @@ public class QuantumJob extends HttpServlet{
 	}
 	
 	/**
-	 * Run a quantum job.
+	 * Runs a quantum job.
 	 * 
 	 * @param command
 	 * @throws IOException
