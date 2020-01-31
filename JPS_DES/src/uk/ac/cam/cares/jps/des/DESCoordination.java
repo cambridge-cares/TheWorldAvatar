@@ -35,18 +35,17 @@ public class DESCoordination extends JPSHttpServlet{
     }
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	 JSONObject responseParams = requestParams;
  			
  	        String scenarioUrl = BucketHelper.getScenarioUrl();
  	        String usecaseUrl = BucketHelper.getUsecaseUrl();
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
- 	        responseParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
+ 	       requestParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
  	        String dir2=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
  	        
  	        requestParams.put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
  	        requestParams.put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
  	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
- 	        responseParams = new JSONObject(t);
+ 	        JSONObject responseParams = new JSONObject(t);
  	        //header's way too large so shrink it to the first element. we only need the first element
  	        JSONObject jo = new JSONObject();
  	        String[] types = {"solar", "gridsupply", "industrial", "commercial", "residential"};

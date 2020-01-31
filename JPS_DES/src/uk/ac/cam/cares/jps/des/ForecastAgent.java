@@ -34,7 +34,7 @@ public class ForecastAgent extends JPSHttpServlet{
  
 		logger.info("return the result from forecast agent");		
 	}
-	private JSONObject forecastNextDay(String folder) throws InterruptedException, FileNotFoundException{
+	public JSONObject forecastNextDay(String folder) throws InterruptedException, FileNotFoundException{
 		new DistributedEnergySystem().copyFromPython(folder, "runpyforecast.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"scrapy.py");
 		String startbatCommand =folder+"/runpyforecast.bat";

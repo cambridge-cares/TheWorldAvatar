@@ -19,41 +19,14 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
+import uk.ac.cam.cares.jps.des.ForecastAgent;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 public class Test_DES extends TestCase{
 	
 	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
-	
-	public void testrunpython() throws IOException {
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-	}
-	
-	public void testrunpython2() throws IOException {
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		int returnValue = -1;
-		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-		try {
-			pr.waitFor();
-			returnValue = pr.exitValue();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.out.println(e);
-		}
-			System.out.println(returnValue);
-		}
-	
+
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 
@@ -127,7 +100,30 @@ public class Test_DES extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 	}
-	
+	public void xxxtestForeCastAgentDirectCall() throws Exception{
+		String baseUrl =  QueryBroker.getLocalDataPath()+"/JPS_DES";
+		ForecastAgent a = new ForecastAgent();
+		a.forecastNextDay(baseUrl); 	
+	}
+	public void xxxtestForeCastAgentAgentCall() throws Exception{
+		JSONObject jo = new JSONObject();
+		String baseUrl =  QueryBroker.getLocalDataPath()+"/JPS_DES";
+		jo.put("baseUrl", baseUrl);
+	    String dir2=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData",jo.toString());
+	}
+	public void testDESAgentAgentCall() throws Exception {
+		JSONObject jo = new JSONObject();
+		
+		jo.put("folder", QueryBroker.getLocalDataPath()+"/JPS_DES");
+		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+		jo.put("jpscontext", "base");
+	    jo.put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
+	    jo.put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
+	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+		System.out.println(t);
+	}
 	public void testcsvmanipulation () {
 		String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -388,12 +384,6 @@ public class Test_DES extends TestCase{
 		OntModel model = readModelGreedy(ENIRI);
 		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
-	}
-	
-	public void xxxtestCreateJSON() {
-		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
-		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
-		System.out.println(d.toString());
 	}
 	
 	public void testfindlatestdirectory() {
