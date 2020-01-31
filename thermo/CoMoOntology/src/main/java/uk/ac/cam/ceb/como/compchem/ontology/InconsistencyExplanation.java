@@ -41,7 +41,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 public class InconsistencyExplanation {	
 
 	/** File path to generated ontologies (Abox of Compchem ontology). **/
-    static String compchemFilePath = "src/test/resources/compchem_abox"; //ontokin compchem_abox
+    static String compchemFilePath = "src/test/resources/ontology/compchem_abox"; //ontokin compchem_abox
     
 //  static String compchemFilePath = "C:\\Users\\NK\\git\\thermochemistry\\CoMoOntology\\src\\test\\resources\\ontology\\compchem_abox";
 //  static String compchemFilePath = "C:\\Users\\NK\\git\\thermochemistry\\CoMoOntology\\src\\test\\resources\\ontology\\onto_engine";
