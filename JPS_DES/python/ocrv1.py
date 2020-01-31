@@ -80,7 +80,7 @@ def ocr():
             
             result["windspeed"] = speed
     if "windspeed" not in result:
-        result["windspeed"] = "0"
+        result["windspeed"] = "0.0"
     if "irradiance" not in result:
         result["irradiance"] ="{0:.2f}".format(random.uniform(0,100))
     if "temperature" not in result:
