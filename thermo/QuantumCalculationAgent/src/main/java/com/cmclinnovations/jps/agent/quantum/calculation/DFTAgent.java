@@ -50,13 +50,16 @@ public class DFTAgent extends HttpServlet{
 	 * @throws DFTAgentException
 	 */
 	public void init() throws ServletException{
-        logger.info("----------");
         logger.info("---------- Quantum Calculation Agent has started ----------");
-        logger.info("----------");
-        	runQuantumJobs();
-        	System.out.println("The jobs are over.");
+       	runQuantumJobs();
+       	logger.info("---------- Quantum Calculation Agent has terminated ----------");
 	}
 	
+	/**
+	 * Runs a set of quantum jobs.
+	 * 
+	 * @return
+	 */
 	private String runQuantumJobs(){
 		try {
 			setupJob();
@@ -80,8 +83,8 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * The method decides the time interval between the current and next</br>
-	 * status check operations.   
+	 * Decides the time interval between the current and next</br>
+	 * status check operations of a quantum job.   
 	 * 
 	 * @param count
 	 * @throws InterruptedException
@@ -96,17 +99,29 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * Checks if a job is still running using the job id.
+	 * 
+	 * @param jobId
+	 * @return
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private boolean isJobRunning(String jobId) throws IOException, InterruptedException{
-		System.out.println("Closed the connection.");
 		String command = "squeue -j " + jobId + "--start";
-		System.out.println("Running the following command:"+command);
 		ArrayList<String> outputs = executeCommand(command);
-		System.out.println("Command executed.");
 		boolean jobRunning = isJobRunning(outputs);
-		System.out.println("Job running status:"+jobRunning);
 		return jobRunning;
 	}
 	
+	/**
+	 * Analyses the outputs following the execution of the</br>
+	 * job status check command to understand if the job</br>
+	 * is still running or terminated.
+	 * 
+	 * @param outputs
+	 * @return
+	 */
 	private boolean isJobRunning(ArrayList<String> outputs){
 		if(outputs!=null && outputs.size()==1){
 			return false;
@@ -114,6 +129,12 @@ public class DFTAgent extends HttpServlet{
 		return true;
 	}
 	
+	/**
+	 * Extracts the job id from the 
+	 * 
+	 * @param outputs
+	 * @return
+	 */
 	private String getJobId(ArrayList<String> outputs){
 		for(String output: outputs){
 			if(output.contains("Submitted batch job")){
@@ -131,7 +152,8 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Runs a quantum job.
+	 * Runs a quantum job and copies the output file (log file) from CSD3
+	 * to the machine where DFT Agent is hosted.
 	 * 
 	 * @param command
 	 * @throws IOException
