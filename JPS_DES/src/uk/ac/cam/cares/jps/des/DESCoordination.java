@@ -41,7 +41,6 @@ public class DESCoordination extends JPSHttpServlet{
  	        String usecaseUrl = BucketHelper.getUsecaseUrl();
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
  	        responseParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
-// 	        String dir=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", requestParams.toString());
  	        String dir2=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
  	        
  	        requestParams.put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
