@@ -743,15 +743,16 @@ function openWindowGen(id){
             if (pair[0] == "entity"){}
             else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
             {
-                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"></td></tr>';
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
                 nameSet.push(pair[0]);
             }else {
                 //for units, just place below the box. 
                 //remove the last 
-                inputsHTML = inputsHTML.slice(0, -10)
+                inputsHTML = inputsHTML.slice(0, -101)
                 //add in the units 
-                var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td><td> </td></tr>';
+                var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
                 inputsHTML = inputsHTML + inputLine;
             }
         }
@@ -797,15 +798,16 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
             if (pair[0] == "entity"){}
             else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
             {
-                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"></td></tr>';
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
                 nameSet.push(pair[0]);
             }else {
                 //for units, just place below the box. 
                 //remove the last 
-                inputsHTML = inputsHTML.slice(0, -10)
+                inputsHTML = inputsHTML.slice(0, -101)
                 //add in the units 
-                var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td><td> </td></tr>';
+                var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
                 inputsHTML = inputsHTML + inputLine;
             }
         }
