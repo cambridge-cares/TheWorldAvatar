@@ -49,12 +49,10 @@ public class ErrorBarCalculation {
      	printedResultsFile.write("Reaction: " + v.getKey().toString() + " Calc enthalpy: " + v.getKey().calculateHf() + " Ref enthalpy: " + v.getKey().getSpecies().getHf() + " (error: " + v.getValue()+ " )");
      	
      	printedResultsFile.write("\n");
-     	
     	
      }
  	
      reactionFile.close();
-     
  }
  
  /**
@@ -163,10 +161,8 @@ public class ErrorBarCalculation {
      	   invalidSpeciesJsonInitialList.add(jsonAllInitialInvalidSpecies);
      	   
  	       }
- 	       
  	}
- 	       
-
+ 	
  	printedJsonFileInitialInvalidSpecies.write(invalidSpeciesJsonInitialList.toJSONString());
  	
  	printedJsonFileInitialInvalidSpecies.close();
@@ -224,7 +220,6 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
 	    		jsonAllInvalidSpecies.put("species", jsonInvalidSpecies);
 	    		
 	    		invalidSpeciesJsonList.add(jsonAllInvalidSpecies);
-	    		
 	 	       
 	 	       }
 	 	       
@@ -263,8 +258,9 @@ public void generateInvalidSpeciesFileAfterInitialAnalysis(int loop, BufferedWri
       for(Map.Entry<Reaction, Double> invspm: invalidReaction.entrySet()) {
      	 
       if(!uniqueinvSetOfSpecies.contains(invspm.getKey().getSpecies())) {
-     	
+	
      	uniqueinvSetOfSpecies.add(invspm.getKey().getSpecies());
+
      
       }
       

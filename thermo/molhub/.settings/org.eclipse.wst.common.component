@@ -31,15 +31,6 @@
         <dependent-module archiveName="CoMoMath-0.0.0.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/CoMoMath/CoMoMath">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="CMCLData-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/CMCLData/CMCLData">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="CMCLIO-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/CMCLIO/CMCLIO">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="CMCLPattern-0.0.1-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/CMCLPattern/CMCLPattern">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="context-root" value="molhub"/>
         <property name="java-output-path" value="/molhub/build/classes"/>
     </wb-module>

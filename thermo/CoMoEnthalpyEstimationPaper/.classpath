@@ -13,7 +13,7 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_201">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
@@ -23,15 +23,9 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoEnthalpyEstimation/target/CoMoEnthalpyEstimation-0.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoIOChemistry/target/CoMoIOChemistry-0.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoThermodynamics/target/CoMoThermodynamics-0.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoMath/target/CoMoMath-0.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoOpenBabel/target/CoMoOpenBabel-0.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoCompChem/target/CoMoCompChem-0.0.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/NK/git/thermochemistry/CoMoTools/target/CoMoTools-0.0.0.jar"/>
 	<classpathentry kind="lib" path="C:/Users/NK/git/mechanism-viewer/CMCLData/target/CMCLData-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/Users/NK/git/mechanism-viewer/CMCLIO/target/CMCLIO-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="C:/Users/NK/git/mechanism-viewer/CMCLPattern/target/CMCLPattern-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

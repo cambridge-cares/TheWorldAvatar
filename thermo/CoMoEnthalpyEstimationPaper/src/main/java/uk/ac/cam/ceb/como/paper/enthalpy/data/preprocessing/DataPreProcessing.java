@@ -120,13 +120,13 @@ public class DataPreProcessing {
            	   * Folder path settings on PC machine
           	   */
         		
-//              if (new File(destRList + "data-pre-processing" + "\\" + config + ".txt").exists()) {
+   if (new File(destRList + "\\"+"data-pre-processing" + "\\" + config + ".txt").exists()) {
                 	  
                 	  /**
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
                  	   * Folder path settings on HPC machine
                 	   */
-     if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
+//     if(new File(destRList + "/data-pre-processing" + "/" + config + ".txt").exists()) {
         			
                 	  /**
                 	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -134,14 +134,17 @@ public class DataPreProcessing {
                 	   */
 
                 	
-//              System.out.println("Skipping " + destRList  + "data-pre-processing" + "\\" + config);
+     System.out.println("Skipping " + destRList+"\\"  + "data-pre-processing" + "\\" + config);
                    /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                   	 * Folder path settings on HPC machine
                   	 */  
-        		System.out.println("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
+//        		System.out.println("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
         		
-        		printedResultsFile.write("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
+//        		printedResultsFile.write("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
+              
+        		printedResultsFile.write("Skipping " + destRList+"\\"  + "\\" +"data-pre-processing" + "\\" + config);
+        		
                 
         		printedResultsFile.write("\n");
         		
@@ -170,13 +173,17 @@ public class DataPreProcessing {
                 	 */
                     Map<Species, Collection<ReactionList>> results = new HashMap<Species, Collection<ReactionList>>();
                     
-                    System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
+//                System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                 
-                    printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
+//                printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                     
-                    printedResultsFile.write("\n");
+                  System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " \\ " + refSpecies.size() + ")");
                     
-                    ctr++;
+                  printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " \\ " + refSpecies.size() + ")");
+                    
+                  printedResultsFile.write("\n");
+                    
+                  ctr++;
                     
                     /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -184,13 +191,13 @@ public class DataPreProcessing {
                      * 
                      */
 
-//                  if (new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
+                  if (new File(destRList+"\\"  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
                     /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
                 	 * Folder path settings on HPC machine
                 	 * 
                 	 */
-                if (new File(destRList  +"/"+ "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
+//                if (new File(destRList  +"/"+ "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct").exists()) {
                     
                     continue;
                     
@@ -480,14 +487,14 @@ public class DataPreProcessing {
                          * 
                          */
 
-//                   if(!new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
+                   if(!new File(destRList+"\\"  + "data-pre-processing" + "\\"+ target.getRef() + "\\").exists()) {
                         /**
                          * 
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
                     	 * 
                     	 */
-                     if(!new File(destRList  + "/"+"data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
+//                     if(!new File(destRList  + "/"+"data-pre-processing" + "/"+ target.getRef() + "/").exists()) {
                         	
                         	/**
                         	 * 
@@ -495,14 +502,14 @@ public class DataPreProcessing {
                         	 * PC machine settings.
                         	 * 
                         	 */
-//                   new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
+                   new File(destRList+"\\"  + "data-pre-processing" + "\\"+ target.getRef() + "\\").mkdirs();
                         /**
                          * 
                          * @author nk510 ( caresssd@hermes.cam.ac.uk )
                     	 * HPC settings
                     	 * 
                     	 */
-                      new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
+//                      new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/").mkdirs();
                         
                         }
 
@@ -512,7 +519,7 @@ public class DataPreProcessing {
                       * PC machine settings.
                       * 
                       */
-//                   ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
+                   ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList +"\\" + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct"));
                      
                     /**
                      * 
@@ -520,7 +527,7 @@ public class DataPreProcessing {
                   	 * HPC settings
                   	 * 
                   	 */
-                     ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
+//                     ReactionListWriter rListWriter = new ReactionListWriter(new File(destRList  + "/" + "data-pre-processing" + "/"+ target.getRef() + "/" + config + "_reaction-list.rct"));
                         
                         /**
                          * 
@@ -536,7 +543,7 @@ public class DataPreProcessing {
                       * 
                       */
                      
-//                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
+                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList+"\\" + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".csv"));
                     
                     /**
                      * 
@@ -545,10 +552,12 @@ public class DataPreProcessing {
                   	 * 
                   	 */
                     
-                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
+//                  SpeciesPoolWriter spWriter = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                   
                                           
-                  BufferedWriter printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".json", true));
+//                  BufferedWriter printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".json", true));
+                  
+                BufferedWriter printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis = new BufferedWriter(new FileWriter(destRList+ "\\" +"data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".json", true));
                   
                   JSONArray medianEnthalpyReactionJsonList = new JSONArray();
                   
@@ -718,14 +727,14 @@ public class DataPreProcessing {
                      * 
                      */
                     
-//              writer.set(destRList  + "data-pre-processing" + "\\"+ config + ".txt");
+              writer.set(destRList+"\\"  + "data-pre-processing" + "\\"+ config + ".txt");
                     
                 /**
                  * @author nk510 ( caresssd@hermes.cam.ac.uk )
               	 * HPC settings
               	 * 
               	 */
-                writer.set(destRList  + "/"+ "data-pre-processing" + "/"+ config + ".txt");
+//                writer.set(destRList  + "/"+ "data-pre-processing" + "/"+ config + ".txt");
                     
                  writer.write();
                     

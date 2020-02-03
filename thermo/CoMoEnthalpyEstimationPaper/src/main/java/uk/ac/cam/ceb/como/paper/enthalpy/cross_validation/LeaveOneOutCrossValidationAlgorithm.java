@@ -57,7 +57,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-//	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
 	
 	/**
 	 * 
@@ -70,7 +70,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based reference species
 	 * 
 	 */
-	static String srcCompoundsRef = "g09/";
+//	static String srcCompoundsRef = "g09/";
 	
 	/**
 	 * 
@@ -86,7 +86,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 
-//	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
 	
 	/**
 	 * 
@@ -101,7 +101,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based target species
 	 * 
 	 */
-	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
+//	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	/**
 	 * 
@@ -118,7 +118,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-//	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg\\";
+	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ti_isg";
 	
 	/**
 	 * 
@@ -127,7 +127,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static String destRList = "ti_isg/";
+//	static String destRList = "ti_isg/";
 //	static String destRList = "hco_hhd/";
 //	static String destRList = "hco_isd/";
 //	static String destRList = "hco_isg/";
@@ -141,7 +141,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-//	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
 	
 	/**
 	 * 
@@ -149,7 +149,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings temp folder path.
 	 * 
 	 */
-	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
+//	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
 	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
 
@@ -220,8 +220,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
     
     JSONObject speciesJsonObject = new JSONObject();
     
-	BufferedWriter printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
-	
+//	BufferedWriter printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
+	BufferedWriter printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"\\" + "printed_results" + ".txt", true));
 	    /**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -273,7 +273,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * 
 		 */
 	
-//	BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
+	BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "\\"+"data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
 
 	/**
 	 * 
@@ -282,7 +282,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
+//	BufferedWriter validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
 
 	System.out.println("Valid reactions writing . . . ");
 	
@@ -294,13 +294,13 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Printing invalid reactions in txt file and on console.
+		 * Printing invalid reactions in txt file and on console. PC machine settings.
 		 * 
 		 */
 	
 	BufferedWriter invalidReactionFile = new BufferedWriter(
 	
-//  new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
+  new FileWriter(destRList +"\\"+ "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
     
 	/**
 	 * 
@@ -309,7 +309,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 
-	new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
+//	new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
 	System.out.println("Invalid reactions writing . . .");
 	
@@ -332,7 +332,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	BufferedWriter validSpeciesFile = new BufferedWriter(
 	
-//	new FileWriter(destRList + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
+	new FileWriter(destRList+"\\" + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
 	
 	/**
 	 * 
@@ -340,7 +340,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings
 	 * 
 	 */
-	new FileWriter(destRList + "/"+"data-pre-processing" + "/"+ "valid_species" + ".txt", true));
+//	new FileWriter(destRList + "/"+"data-pre-processing" + "/"+ "valid_species" + ".txt", true));
 
 	/**
 	 * 
@@ -348,7 +348,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Saves initial valid species into json format. This initial valid species is generated in pre-processing step of cross validation algorithm.
 	 *   
 	 */
-	BufferedWriter printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
+//	BufferedWriter printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
+	BufferedWriter printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"\\" +"data-pre-processing" + "\\"+ "printed_initial_valid_species" +".json", true));
 	
 	errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, printedResultsTxtFile,printedJsonFileInitialValidSpecies,validSpecies);
 
@@ -370,7 +371,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Settings on PC machine.
 	 * 
 	 */
-//	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
+	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "\\"+"data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
 	
 	/**
 	 * 
@@ -379,7 +380,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+//	BufferedWriter invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
 
 	/**
 	 * 
@@ -388,7 +389,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 *   
 	 */
 	
-	BufferedWriter printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_invalid_species" +".json", true));
+//	BufferedWriter printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_invalid_species" +".json", true));
+	BufferedWriter printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"\\" +"data-pre-processing" + "\\"+ "printed_initial_invalid_species" +".json", true));
 	
 	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, printedJsonFileInitialInvalidSpecies,invalidSpecies, validSpecies);
 
@@ -660,7 +662,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 */
 	JSONArray validSpeciesJsonList = new JSONArray();
 	
-	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_valid_species_loop_"+loop +".json", true));
+//	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_valid_species_loop_"+loop +".json", true));
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * Line below is settings that works on PC (Windows) machine
+	 *  
+	 */
+	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList + "\\"+"initial-analysis" + "\\" + "loop_" + loop +"\\"+ "printed_valid_species_loop_"+loop +".json", true));
 
 	for(Species s: validSpecies) {
 
@@ -707,7 +716,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Settings for PC machine.
 	 */
-//	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList +"\\"+"initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	
 	/**
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -715,7 +724,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 *  Txt file that saves invalid species in each loop of initial analysis step of cross validation algorithm.
 	 */
 	
-	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList +"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+//	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList +"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	
 	/**
 	 * 
@@ -723,7 +732,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Json file that saves invalid species in each loop of initial analysis step of cross validation algorithm.
 	 * 
 	 */
-	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_invalid_species_loop_"+loop +".json", true));
+//	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_invalid_species_loop_"+loop +".json", true));
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * Line below is settings that works on PC (Windows) machine
+	 *  
+	 */
+	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "\\"+"initial-analysis" + "\\" + "loop_" + loop +"\\"+ "printed_invalid_species_loop_"+loop +".json", true));
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, printedJsonFileInvalidSpeciesInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies,printedResultsTxtFile);
 	
