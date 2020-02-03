@@ -169,7 +169,7 @@ public class DFTAgent extends HttpServlet{
 		jobPool.add(jobId);
 		boolean isJobRunning = isJobRunning(jobId);
 		int count = 0;
-		System.out.println("Is the job running?" + isJobRunning);
+		System.out.println("Is the job running? " + isJobRunning);
 		while (isJobRunning) {
 			count++;
 			waitBeforeStatusCheck(count);

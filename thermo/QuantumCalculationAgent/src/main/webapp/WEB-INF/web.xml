@@ -11,7 +11,7 @@
   <servlet>
     <servlet-name>auto-executor</servlet-name>
     <servlet-class>
-            com.cmclinnovations.jps.agent.quantum.calculation.QuantumJob
+            com.cmclinnovations.jps.agent.quantum.calculation.DFTAgent
         </servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
