@@ -108,7 +108,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 						//this should only occur once electric grid  is negative. 
 						if (totalelectric < 0 ) {
 							//electric should buy solar
-							double ethElectric = totalelectric *-100;
+							double ethElectric = totalelectric *100;
 							String transacthash4 = dotransact(ElectricPublicKey, SolarPublicKey,ethElectric);
 							whoTowho.add("Grid to Solar");
 							totalList.add(transacthash4);
