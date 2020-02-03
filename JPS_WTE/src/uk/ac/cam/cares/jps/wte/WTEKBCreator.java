@@ -48,6 +48,9 @@ public class WTEKBCreator {
 	private OntClass tech1class = null;
 	private OntClass tech2class = null;
 	private OntClass tech3class = null;
+	private OntClass tech4class = null;
+	private OntClass tech5class = null;
+	private OntClass tech6class = null;
 	private OntClass techcapclass = null;
 	private OntClass manpowercostclass = null;
 	private OntClass treatmenttaxclass = null;
@@ -109,6 +112,13 @@ public class WTEKBCreator {
 	private DatatypeProperty numval = null;
 	private DatatypeProperty year = null;
 	private DatatypeProperty name= null;
+	
+	private DatatypeProperty uppboundincineration = null;
+	private DatatypeProperty uppbounddigestion = null;
+	private DatatypeProperty uppboundanaerobic = null;
+	private DatatypeProperty uppboundtech4 = null;
+	private DatatypeProperty uppboundtech5 = null;
+	private DatatypeProperty uppboundtech6 = null;
 
 	static Individual kWh;
 	static Individual energy;
@@ -142,6 +152,9 @@ public class WTEKBCreator {
 		tech1class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#OffSiteIncineration");
 		tech2class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#OffSiteCoDigestion");
 		tech3class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#OffSiteAnaerobicDigestion");
+		tech4class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#OnSiteTechnology1");
+		tech5class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#OnSiteDigester");
+		tech6class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#OnSiteTechnology3");
 		EOSclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#EconomyOfScaleFactor");
 		resourceconsumptionclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#ResourceConsumption");
 		installationcostclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#InstallationCostsForSystemsRealization");
@@ -211,6 +224,12 @@ public class WTEKBCreator {
 //		lowerlimit = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#lowerLimit");
 		year=jenaOwlModel.getDatatypeProperty("http://www.w3.org/2006/time#year");
 		name = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasName");
+		uppboundincineration = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOffsiteIncinerationUpperBound");
+		uppbounddigestion = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOffsiteCoDigestionUpperBound");
+		uppboundanaerobic = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOffsiteAnerobicDigestionUpperBound");
+		uppboundtech4 = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOnsiteTech1UpperBound");
+		uppboundtech5 = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOnsiteDigesterUpperBound");
+		uppboundtech6 = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOnsiteTech3UpperBound");
 		
 		kWh=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kWh");
 		energy=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#energy");
@@ -319,11 +338,11 @@ public class WTEKBCreator {
 		return Prefix+mainobjectname+".owl#"+mainobjectname;
 	}
 	
-	public String doConversionWTF(OntModel jenaOwlModel,String Prefix, String mainobjectname, int indexnodewtfclass){
+	public String doConversionWTF(OntModel jenaOwlModel,String Prefix, String mainobjectname){
 
 		Individual mainobjinst = objectwtfoff.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
 
-		if (indexnodewtfclass == 1) {
+
 			Individual tech1 = tech1class
 					.createIndividual(Prefix + mainobjectname + ".owl#OffSiteIncinerationOf" + mainobjectname);
 			mainobjinst.addProperty(useTechnology, tech1);
@@ -335,7 +354,21 @@ public class WTEKBCreator {
 			Individual tech3 = tech3class
 					.createIndividual(Prefix + mainobjectname + ".owl#OffSiteAnaerobicDigestionOf" + mainobjectname);
 			mainobjinst.addProperty(useTechnology, tech3);
-
+			
+			if(mainobjectname.contains("-1")) {
+				mainobjinst.setPropertyValue(uppboundincineration, jenaOwlModel.createTypedLiteral(new Integer(45)));
+				mainobjinst.setPropertyValue(uppbounddigestion, jenaOwlModel.createTypedLiteral(new Integer(10)));
+				mainobjinst.setPropertyValue(uppboundanaerobic, jenaOwlModel.createTypedLiteral(new Integer(10)));
+			}else if(mainobjectname.contains("-2")) {
+				mainobjinst.setPropertyValue(uppboundincineration, jenaOwlModel.createTypedLiteral(new Integer(26)));
+				mainobjinst.setPropertyValue(uppbounddigestion, jenaOwlModel.createTypedLiteral(new Integer(10)));
+				mainobjinst.setPropertyValue(uppboundanaerobic, jenaOwlModel.createTypedLiteral(new Integer(10)));
+			} else if(mainobjectname.contains("-3")) {
+				mainobjinst.setPropertyValue(uppboundincineration, jenaOwlModel.createTypedLiteral(new Integer(4)));
+				mainobjinst.setPropertyValue(uppbounddigestion, jenaOwlModel.createTypedLiteral(new Integer(10)));
+				mainobjinst.setPropertyValue(uppboundanaerobic, jenaOwlModel.createTypedLiteral(new Integer(10)));
+			}
+			
 			for (int tech=1;tech<=3;tech++) {
 				Individual eos = EOSclass.createIndividual(Prefix + mainobjectname + ".owl#EOSOfTech"+tech+"Of" + mainobjectname);
 				Individual Veos = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_EOSOfTech"+tech+"Of" + mainobjectname);
@@ -383,6 +416,9 @@ public class WTEKBCreator {
 					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(60000)));
 					Voperationcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(100)));
 					Vpolltreatmenttax.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(150)));
+					if(mainobjectname.contains("-4")) {
+						Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(1095000)));
+					}
 				}
 				else if (tech==2) {
 					tech2.addProperty(hasProperty, eos);
@@ -409,89 +445,135 @@ public class WTEKBCreator {
 					Vpolltreatmenttax.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
 				}
 				
-			}
+				//resource consumption
+				for (int resource = 1; resource <= 2; resource++) {
+					Individual ResourceConsumption = resourceconsumptionclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#ResourceConsumption_Tech" + tech + "_" + resource + "Of" + mainobjectname);
+
+					Individual vResourceConsumption = scalarvalueclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#V_ResourceConsumption_Tech" + tech + "_" + resource + "Of" + mainobjectname);
+					ResourceConsumption.addProperty(hasvalue, vResourceConsumption);
+
+					if (tech == 1) { // add property revenue to main object also
+						tech1.addProperty(requiredConsumption, ResourceConsumption);
+						Individual ResourceConsumptionCost = resourceconsumptioncostclass.createIndividual(Prefix
+								+ mainobjectname + ".owl#ResourceConsumptionCost" + resource + "Of" + mainobjectname);
+
+						Individual vResourceConsumptionCost = scalarvalueclass.createIndividual(Prefix + mainobjectname
+								+ ".owl#V_ResourceConsumptionCost" + resource + "Of" + mainobjectname);
+						ResourceConsumptionCost.addProperty(hasvalue, vResourceConsumptionCost);
+						mainobjinst.addProperty(hasUtilityCost, ResourceConsumptionCost);
+						vResourceConsumptionCost.addProperty(hasunit, $);
+
+						if (resource == 1) {
+							ResourceConsumptionCost.addProperty(inContextOf, water);
+							vResourceConsumptionCost.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						} else if (resource == 2) {
+							ResourceConsumptionCost.addProperty(inContextOf, energy);
+							vResourceConsumptionCost.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0.1)));
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(70)));
+						}
+
+					} else if (tech == 2) {
+						tech2.addProperty(requiredConsumption, ResourceConsumption);
+						if (resource == 2) {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(62)));
+						} else {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+
+					} else if (tech == 3) {
+						tech3.addProperty(requiredConsumption, ResourceConsumption);
+						if (resource == 2) {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(57)));
+						} else {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+
+					}
+
+					if (resource == 1) {
+						ResourceConsumption.addProperty(inContextOf, water);
+						vResourceConsumption.addProperty(hasunit, ton);
+
+					} else {
+						ResourceConsumption.addProperty(inContextOf, energy);
+						vResourceConsumption.addProperty(hasunit, kWh);
+
+					}
+				}
+				
+				
+				//resource recovery
+				for (int recoveredsource = 1; recoveredsource <= 3; recoveredsource++) {
+					Individual TransferRate = transferrateclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#TransferRate_Tech" + tech + "_" + recoveredsource + "Of" + mainobjectname);
+
+					Individual vTransferRate = scalarvalueclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#V_TransferRate_Tech" + tech + "_" + recoveredsource + "Of" + mainobjectname);
+					TransferRate.addProperty(hasvalue, vTransferRate);
+
+					if (tech == 1) { // add property REVENUE to main object also
+						tech1.addProperty(hasTransferRate, TransferRate);
+						Individual Revenue = revenueclass.createIndividual(
+								Prefix + mainobjectname + ".owl#Revenue" + recoveredsource + "Of" + mainobjectname);
+						mainobjinst.addProperty(hasRevenue, Revenue);
+
+						Individual vRevenue = scalarvalueclass.createIndividual(
+								Prefix + mainobjectname + ".owl#V_Revenue" + recoveredsource + "Of" + mainobjectname);
+						Revenue.addProperty(hasvalue, vRevenue);
+						vRevenue.addProperty(hasunit, $);
+						if (recoveredsource == 1) {
+							Revenue.addProperty(obtainedFrom, recoveredwaste_a);
+							vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+
+						} else if (recoveredsource == 2) {
+							Revenue.addProperty(obtainedFrom, recoveredwaste_b);
+							vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+
+						} else if (recoveredsource == 3) {
+							Revenue.addProperty(obtainedFrom, electricity);
+							vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0.1)));
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(290)));
+						}
+					} else if (tech == 2) {
+						tech2.addProperty(hasTransferRate, TransferRate);
+						if (recoveredsource == 3) {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(460)));
+						} else {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+					} else if (tech == 3) {
+						tech3.addProperty(hasTransferRate, TransferRate);
+						if (recoveredsource == 3) {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(288)));
+						} else {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+					}
+					if (recoveredsource == 1) {
+						TransferRate.addProperty(obtainedFrom, recoveredwaste_a);
+						vTransferRate.addProperty(hasunit, ton);
+					} else if (recoveredsource == 2) {
+						TransferRate.addProperty(obtainedFrom, recoveredwaste_b);
+						vTransferRate.addProperty(hasunit, ton);
+					} else if (recoveredsource == 3) {
+						TransferRate.addProperty(obtainedFrom, electricity);
+						vTransferRate.addProperty(hasunit, kWh);
+					}
+				}
 			
-			//resource recovery
-			for (int recoveredsource = 1; recoveredsource <= 3; recoveredsource++) {
-				Individual TransferRate = transferrateclass.createIndividual(
-						Prefix + mainobjectname + ".owl#TransferRate" + recoveredsource + "Of" + mainobjectname);
-				tech1.addProperty(hasTransferRate, TransferRate);
-				tech2.addProperty(hasTransferRate, TransferRate);
-				tech3.addProperty(hasTransferRate, TransferRate);
-				
-				Individual Revenue = revenueclass.createIndividual(
-						Prefix + mainobjectname + ".owl#Revenue" + recoveredsource + "Of" + mainobjectname);
-				mainobjinst.addProperty(hasRevenue, Revenue);
-//				tech1.addProperty(hasRevenue, Revenue);
-//				tech2.addProperty(hasRevenue, Revenue);
-//				tech3.addProperty(hasRevenue, Revenue);
-
-				Individual vTransferRate = scalarvalueclass.createIndividual(
-						Prefix + mainobjectname + ".owl#V_TransferRate" + recoveredsource + "Of" + mainobjectname);
-				TransferRate.addProperty(hasvalue, vTransferRate);
-				vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0.2))); //still depends on the instance of technology
-				
-				Individual vRevenue = scalarvalueclass.createIndividual(
-						Prefix + mainobjectname + ".owl#V_Revenue" + recoveredsource + "Of" + mainobjectname);
-				Revenue.addProperty(hasvalue, vRevenue);
-				
-				 vRevenue.addProperty(hasunit, $);
-				if (recoveredsource == 1) {
-					TransferRate.addProperty(obtainedFrom,recoveredwaste_a );
-					Revenue.addProperty(obtainedFrom, recoveredwaste_a);
-					vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
-					vTransferRate.addProperty(hasunit, ton);
-				} else if (recoveredsource == 2) {
-					TransferRate.addProperty(obtainedFrom, recoveredwaste_b);
-					Revenue.addProperty(obtainedFrom, recoveredwaste_b);
-					vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
-					 vTransferRate.addProperty(hasunit, ton);
-				}else if (recoveredsource == 3) {
-					TransferRate.addProperty(obtainedFrom, electricity);
-					Revenue.addProperty(obtainedFrom, electricity);
-					vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0.1)));
-					 vTransferRate.addProperty(hasunit, kWh);
-				}
-			}
-
-			//resource consumption
-			for (int resource = 1; resource <= 2; resource++) {
-				Individual ResourceConsumption = resourceconsumptionclass.createIndividual(
-						Prefix + mainobjectname + ".owl#ResourceConsumption" + resource + "Of" + mainobjectname);
-				tech1.addProperty(requiredConsumption, ResourceConsumption);
-				tech2.addProperty(requiredConsumption, ResourceConsumption);
-				tech3.addProperty(requiredConsumption, ResourceConsumption);
-				
-				Individual ResourceConsumptionCost = resourceconsumptioncostclass.createIndividual(
-						Prefix + mainobjectname + ".owl#ResourceConsumptionCost" + resource + "Of" + mainobjectname);
-				tech1.addProperty(hasUtilityCost, ResourceConsumptionCost);
-				tech2.addProperty(hasUtilityCost, ResourceConsumptionCost);
-				tech3.addProperty(hasUtilityCost, ResourceConsumptionCost);
-
-				Individual vResourceConsumption = scalarvalueclass.createIndividual(
-						Prefix + mainobjectname + ".owl#V_ResourceConsumption" + resource + "Of" + mainobjectname);
-				ResourceConsumption.addProperty(hasvalue, vResourceConsumption);
-				vResourceConsumption.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0.1))); //still depends on the instance of technology
-				
-				Individual vResourceConsumptionCost = scalarvalueclass.createIndividual(
-						Prefix + mainobjectname + ".owl#V_ResourceConsumptionCost" + resource + "Of" + mainobjectname);
-				ResourceConsumptionCost.addProperty(hasvalue, vResourceConsumptionCost);
-				
-				vResourceConsumptionCost.addProperty(hasunit, $);
-				if (resource == 1) {
-					ResourceConsumption.addProperty(inContextOf, water);
-					ResourceConsumptionCost.addProperty(inContextOf, water);
-					vResourceConsumption.addProperty(hasunit, ton);
-					vResourceConsumptionCost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
-				} else {
-					ResourceConsumption.addProperty(inContextOf, energy);
-					ResourceConsumptionCost.addProperty(inContextOf, energy);
-					vResourceConsumption.addProperty(hasunit, kWh);
-					vResourceConsumptionCost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0.1)));
-					
-				}
-			}
-
 		}
 		
 		
@@ -516,16 +598,275 @@ public class WTEKBCreator {
 		wtfcoordinate.addProperty(hasy,ycoordinate);
 		xcoordinate.addProperty(hasvalue,xcoordinatevalue);
 		ycoordinate.addProperty(hasvalue,ycoordinatevalue);
-		xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
-		ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
 		xcoordinatevalue.addProperty(hasunit, degree);
 		ycoordinatevalue.addProperty(hasunit, degree);
 		mainobjinst.addProperty(hascoordinatesystem, wtfcoordinate);
+		if(mainobjectname.contains("-1")) {
+			xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("103.797798"));
+			ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("1.463083"));
+		}else if(mainobjectname.contains("-2")) {
+			xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("103.626523"));
+			ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("1.277098"));
+		} else if(mainobjectname.contains("-3")) {
+			xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("103.943946"));
+			ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("1.337292"));
+		} else if(mainobjectname.contains("-4")) {
+			xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("103.620614"));
+			ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("1.29591"));
+		}
+		
+
 		
 		return Prefix+mainobjectname+".owl#"+mainobjectname;
 	}
 	
-	
+	public String doConversionOnSite(OntModel jenaOwlModel,String Prefix, String mainobjectname) {
+		Individual mainobjinst = objectwtfon.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
+		
+		//coordinate
+		Individual wtfcoordinate = coordinatesystemclass.createIndividual(Prefix+mainobjectname+".owl#CoordinateSystemOf"+mainobjectname);
+		Individual xcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#xCoordinateOf"+mainobjectname);
+		Individual ycoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#yCoordinateOf"+mainobjectname);
+		Individual xcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname+".owl#V_xCoordinateOf"+mainobjectname);
+		Individual ycoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname+".owl#V_yCoordinateOf"+mainobjectname);
+		wtfcoordinate.addProperty(hasx,xcoordinate);
+		wtfcoordinate.addProperty(hasy,ycoordinate);
+		xcoordinate.addProperty(hasvalue,xcoordinatevalue);
+		ycoordinate.addProperty(hasvalue,ycoordinatevalue);
+		xcoordinatevalue.addProperty(hasunit, degree);
+		ycoordinatevalue.addProperty(hasunit, degree);
+		mainobjinst.addProperty(hascoordinatesystem, wtfcoordinate);
+		
+		//unit land cost
+		Individual LandCost = landcostclass.createIndividual(Prefix + mainobjectname + ".owl#LandCostOf" + mainobjectname);
+		Individual VLandCost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_LandCostOf" + mainobjectname);
+		LandCost.addProperty(hasvalue, VLandCost);
+		VLandCost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(500)));
+		VLandCost.addProperty(hasunit, $);
+		mainobjinst.addProperty(hasCost, LandCost);
+		
+		Individual tech1 = tech4class
+				.createIndividual(Prefix + mainobjectname + ".owl#OnSiteTech1Of" + mainobjectname);
+		mainobjinst.addProperty(useTechnology, tech1);
+		
+		Individual tech2 = tech5class
+				.createIndividual(Prefix + mainobjectname + ".owl#OnSiteDigesterOf" + mainobjectname);
+		mainobjinst.addProperty(useTechnology, tech2);
+
+		Individual tech3 = tech6class
+				.createIndividual(Prefix + mainobjectname + ".owl#OnSiteTech3Of" + mainobjectname);
+		mainobjinst.addProperty(useTechnology, tech3);
+		
+			mainobjinst.setPropertyValue(uppboundtech4, jenaOwlModel.createTypedLiteral(new Integer(0)));
+			mainobjinst.setPropertyValue(uppboundtech5, jenaOwlModel.createTypedLiteral(new Integer(10)));
+			mainobjinst.setPropertyValue(uppboundtech6, jenaOwlModel.createTypedLiteral(new Integer(0)));
+
+			for (int tech=1;tech<=3;tech++) {
+				Individual eos = EOSclass.createIndividual(Prefix + mainobjectname + ".owl#EOSOfTech"+tech+"Of" + mainobjectname);
+				Individual Veos = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_EOSOfTech"+tech+"Of" + mainobjectname);
+				eos.addProperty(hasvalue, Veos);
+				Veos.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(1)));
+				
+				Individual techcap = techcapclass.createIndividual(Prefix + mainobjectname + ".owl#TechnologyCapacity"+tech+"Of" + mainobjectname);
+				Individual Vtechcap = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_TechnologyCapacity"+tech+"Of" + mainobjectname);
+				techcap.addProperty(hasvalue, Vtechcap);
+				
+				 Vtechcap.addProperty(hasunit, ton_per_day);
+				
+				Individual installcost = installationcostclass.createIndividual(Prefix + mainobjectname + ".owl#InstallationCost"+tech+"Of" + mainobjectname);
+				Individual Vinstallcost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_InstallationCost"+tech+"Of" + mainobjectname);
+				installcost.addProperty(hasvalue, Vinstallcost);
+				
+				Vinstallcost.addProperty(hasunit, $);
+				
+				Individual operationcost = operationcostclass.createIndividual(Prefix + mainobjectname + ".owl#OperationalCost"+tech+"Of" + mainobjectname);
+				Individual Voperationcost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_OperationalCost"+tech+"Of" + mainobjectname);
+				operationcost.addProperty(hasvalue, Voperationcost);
+				
+				Voperationcost.addProperty(hasunit, $);
+				
+				Individual manpowercost = manpowercostclass.createIndividual(Prefix + mainobjectname + ".owl#ManPowerCost"+tech+"Of" + mainobjectname);
+				Individual Vmanpowercost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_ManPowerCost"+tech+"Of" + mainobjectname);
+				manpowercost.addProperty(hasvalue, Vmanpowercost);
+				Vmanpowercost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+				Vmanpowercost.addProperty(hasunit, $);
+				
+				Individual polltreatmenttax = treatmenttaxclass.createIndividual(Prefix + mainobjectname + ".owl#PollutionTreatmentTax"+tech+"Of" + mainobjectname);
+				Individual Vpolltreatmenttax = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_PollutionTreatmentTax"+tech+"Of" + mainobjectname);
+				polltreatmenttax.addProperty(hasvalue, Vpolltreatmenttax);
+				
+				Vpolltreatmenttax.addProperty(hasunit, $);
+				
+				if(tech==1) {
+					tech1.addProperty(hasProperty, eos);
+					tech1.addProperty(hastechcap, techcap);
+					tech1.addProperty(hasInstallationCost, installcost);
+					tech1.addProperty(hasCost, operationcost);
+					tech1.addProperty(hasLaborCost, manpowercost);
+					tech1.addProperty(hasTax, polltreatmenttax);
+					Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+					Voperationcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+					Vpolltreatmenttax.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+				}
+				else if (tech==2) {
+					tech2.addProperty(hasProperty, eos);
+					tech2.addProperty(hastechcap, techcap);
+					tech2.addProperty(hasInstallationCost, installcost);
+					tech2.addProperty(hasCost, operationcost);
+					tech2.addProperty(hasLaborCost, manpowercost);
+					tech2.addProperty(hasTax, polltreatmenttax);
+					Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(1)));
+					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(117000)));
+					Voperationcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(36)));
+					Vpolltreatmenttax.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+				}
+				else if (tech==3) {
+					tech3.addProperty(hasProperty, eos);
+					tech3.addProperty(hastechcap, techcap);
+					tech3.addProperty(hasInstallationCost, installcost);
+					tech3.addProperty(hasCost, operationcost);
+					tech3.addProperty(hasLaborCost, manpowercost);
+					tech3.addProperty(hasTax, polltreatmenttax);
+					Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+					Voperationcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+					Vpolltreatmenttax.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+				}
+				
+				//resource consumption
+				for (int resource = 1; resource <= 2; resource++) {
+					Individual ResourceConsumption = resourceconsumptionclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#ResourceConsumption_Tech" + tech + "_" + resource + "Of" + mainobjectname);
+
+					Individual vResourceConsumption = scalarvalueclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#V_ResourceConsumption_Tech" + tech + "_" + resource + "Of" + mainobjectname);
+					ResourceConsumption.addProperty(hasvalue, vResourceConsumption);
+
+					if (tech == 1) { // add property revenue to main object also
+						tech1.addProperty(requiredConsumption, ResourceConsumption);
+						Individual ResourceConsumptionCost = resourceconsumptioncostclass.createIndividual(Prefix
+								+ mainobjectname + ".owl#ResourceConsumptionCost" + resource + "Of" + mainobjectname);
+
+						Individual vResourceConsumptionCost = scalarvalueclass.createIndividual(Prefix + mainobjectname
+								+ ".owl#V_ResourceConsumptionCost" + resource + "Of" + mainobjectname);
+						ResourceConsumptionCost.addProperty(hasvalue, vResourceConsumptionCost);
+						mainobjinst.addProperty(hasUtilityCost, ResourceConsumptionCost);
+						vResourceConsumptionCost.addProperty(hasunit, $);
+
+						if (resource == 1) {
+							ResourceConsumptionCost.addProperty(inContextOf, water);
+							vResourceConsumptionCost.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						} else if (resource == 2) {
+							ResourceConsumptionCost.addProperty(inContextOf, energy);
+							vResourceConsumptionCost.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0.1)));
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+
+					} else if (tech == 2) {
+						tech2.addProperty(requiredConsumption, ResourceConsumption);
+						if (resource == 2) {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						} else {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+
+					} else if (tech == 3) {
+						tech3.addProperty(requiredConsumption, ResourceConsumption);
+						if (resource == 2) {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						} else {
+							vResourceConsumption.setPropertyValue(numval,
+									jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+
+					}
+
+					if (resource == 1) {
+						ResourceConsumption.addProperty(inContextOf, water);
+						vResourceConsumption.addProperty(hasunit, ton);
+
+					} else {
+						ResourceConsumption.addProperty(inContextOf, energy);
+						vResourceConsumption.addProperty(hasunit, kWh);
+
+					}
+				}
+				
+				
+				//resource recovery
+				for (int recoveredsource = 1; recoveredsource <= 3; recoveredsource++) {
+					Individual TransferRate = transferrateclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#TransferRate_Tech" + tech + "_" + recoveredsource + "Of" + mainobjectname);
+
+					Individual vTransferRate = scalarvalueclass.createIndividual(Prefix + mainobjectname
+							+ ".owl#V_TransferRate_Tech" + tech + "_" + recoveredsource + "Of" + mainobjectname);
+					TransferRate.addProperty(hasvalue, vTransferRate);
+
+					if (tech == 1) { // add property REVENUE to main object also
+						tech1.addProperty(hasTransferRate, TransferRate);
+						Individual Revenue = revenueclass.createIndividual(
+								Prefix + mainobjectname + ".owl#Revenue" + recoveredsource + "Of" + mainobjectname);
+						mainobjinst.addProperty(hasRevenue, Revenue);
+
+						Individual vRevenue = scalarvalueclass.createIndividual(
+								Prefix + mainobjectname + ".owl#V_Revenue" + recoveredsource + "Of" + mainobjectname);
+						Revenue.addProperty(hasvalue, vRevenue);
+						vRevenue.addProperty(hasunit, $);
+						if (recoveredsource == 1) {
+							Revenue.addProperty(obtainedFrom, recoveredwaste_a);
+							vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+
+						} else if (recoveredsource == 2) {
+							Revenue.addProperty(obtainedFrom, recoveredwaste_b);
+							vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+
+						} else if (recoveredsource == 3) {
+							Revenue.addProperty(obtainedFrom, electricity);
+							vRevenue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0.1)));
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+					} else if (tech == 2) {
+						tech2.addProperty(hasTransferRate, TransferRate);
+						if (recoveredsource == 3) {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						} else {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+					} else if (tech == 3) {
+						tech3.addProperty(hasTransferRate, TransferRate);
+						if (recoveredsource == 3) {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						} else {
+							vTransferRate.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+						}
+					}
+					if (recoveredsource == 1) {
+						TransferRate.addProperty(obtainedFrom, recoveredwaste_a);
+						vTransferRate.addProperty(hasunit, ton);
+					} else if (recoveredsource == 2) {
+						TransferRate.addProperty(obtainedFrom, recoveredwaste_b);
+						vTransferRate.addProperty(hasunit, ton);
+					} else if (recoveredsource == 3) {
+						TransferRate.addProperty(obtainedFrom, electricity);
+						vTransferRate.addProperty(hasunit, kWh);
+					}
+				}
+			
+		}
+		
+		return Prefix+mainobjectname+".owl#"+mainobjectname;
+	}
 	
 	
 	public void doConversionWasteSystem(OntModel jenaOwlModel,String Prefix, String mainobjectname, String transportiri, List<String>foodcourt, List<String>wtf) {
@@ -666,7 +1007,7 @@ public class WTEKBCreator {
 					jenaOwlModel.read(in, null);
 					initOWLClasses(jenaOwlModel);
 					String wtfname="WasteTreatment-"+d; 
-					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname,1);
+					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
 					wtf.add(iriofwtf);
 					String content = JenaHelper.writeToString(jenaOwlModel);
 					new QueryBroker().putOld(Prefix+wtfname+".owl", content);
@@ -674,7 +1015,7 @@ public class WTEKBCreator {
 				System.out.println("it is processed= " + flag);
 			 
 			}
-			else {
+			else if(flag.contains("system")) { //for the waste treatment system
 				inFile = new FileInputStream(filePath);
 				in = new InputStreamReader(inFile, "UTF-8");
 				OntModel jenaOwlModel = ModelFactory.createOntologyModel();
@@ -710,12 +1051,8 @@ public class WTEKBCreator {
 		converter.executeConversion();
 		
 		/**list of uncomplete features:
-		 * put coordinates in wtf
-		 * incinerator creation
-		 * unit for some variables
-		 * resource consumption value
-		 * transfer rate value
-		 * upperbound capacity
+		 * put coordinates in onsite wtf
+		 * start conversion of onsite wtf
 		
 		*/
 
