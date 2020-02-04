@@ -311,7 +311,7 @@ public class WTEKBCreator {
 			vWasteProduction.addProperty(hastime, timestampwaste);
 			Individual generaldescriptiontimewaste = generaltimeclass.createIndividual(Prefix+mainobjectname+".owl#GeneralDescriptionYearOfWasteProducedOf"+mainobjectname+"_"+x);
 			timestampwaste.setPropertyValue(indatetimedescription, generaldescriptiontimewaste); //value need to be changed later
-			generaldescriptiontimewaste.setPropertyValue(year, jenaOwlModel.createTypedLiteral(new String (""+x))); //value need to be changed later
+			generaldescriptiontimewaste.setPropertyValue(year, jenaOwlModel.createTypedLiteral(new Integer(""+x))); //value need to be changed later
 			
 			WasteProduction.addProperty(hasvalue, vWasteProduction);
 			vWasteProduction.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(data[2+x])));
@@ -367,6 +367,10 @@ public class WTEKBCreator {
 				mainobjinst.setPropertyValue(uppboundincineration, jenaOwlModel.createTypedLiteral(new Integer(4)));
 				mainobjinst.setPropertyValue(uppbounddigestion, jenaOwlModel.createTypedLiteral(new Integer(10)));
 				mainobjinst.setPropertyValue(uppboundanaerobic, jenaOwlModel.createTypedLiteral(new Integer(10)));
+			}else {
+				mainobjinst.setPropertyValue(uppboundincineration, jenaOwlModel.createTypedLiteral(new Integer(0)));
+				mainobjinst.setPropertyValue(uppbounddigestion, jenaOwlModel.createTypedLiteral(new Integer(0)));
+				mainobjinst.setPropertyValue(uppboundanaerobic, jenaOwlModel.createTypedLiteral(new Integer(0)));
 			}
 			
 			for (int tech=1;tech<=3;tech++) {
