@@ -1,11 +1,15 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -62,7 +66,9 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private String runQuantumJobs(){
 		try {
-			setupJob();
+			getUnfinishedJobs(); // In future jobs will be extracted from the JPS knowledge graph.
+			
+			setupJob(); // In the next iteration of development, we will include code for setting up jobs.   
 			String slurmScriptName = "G09Slurm_darwin_S1.sh";
 			String inputFileName = "water_ex.com";
 			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(inputFileName),
@@ -80,6 +86,63 @@ public class DFTAgent extends HttpServlet{
 			logger.error(e.getMessage());
 		}
 		return null;
+	}
+	/**
+	 * Go to the DFT Agent's job space to retrieve the status of jobs.</br>
+	 * Jobs with status running or not started yet, will be sent to the</br>
+	 * calling method.
+	 * 
+	 * @return
+	 */
+	public Map<String, ArrayList<String>> getUnfinishedJobs() throws IOException{
+		File jobsFolder = new File(Jobs.FOLDER.getName());
+		Map<String, List<String>> jobs = new HashMap<String, List<String>>(); 
+		if(jobsFolder!=null && jobsFolder.exists() && jobsFolder.isDirectory()){
+			File[] jobFiles = jobsFolder.listFiles();
+			for(File jobFolder:jobFiles){
+				retrieveJobs(jobs, jobFolder);
+			}
+		}
+		return null;
+	}
+	
+	public void retrieveJobs(Map<String, List<String>> jobs, File jobFolder) throws IOException{
+		if(jobFolder.isDirectory()){
+			File[] individualJobFiles = jobFolder.listFiles();
+			List<String> unfinishedJobsDetails = new ArrayList<>();
+			for(File individualJobFile:individualJobFiles){
+				boolean finished = isJobFinished(jobFolder.getAbsolutePath().concat(Jobs.STATUS_FILE.getName()));
+				if(!finished 
+						&& (individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
+						|| individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName()))){
+					unfinishedJobsDetails.add(individualJobFile.getAbsolutePath());
+				}
+			}
+			if(unfinishedJobsDetails.size()>=3){
+				jobs.put(jobFolder.getName(), unfinishedJobsDetails);
+			}
+		}
+	}
+	
+	/**
+	 * Check the status if a job finished.
+	 * 
+	 * @param statusFilePath
+	 * @return
+	 * @throws IOException
+	 */
+	public boolean isJobFinished(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Jobs.STATUS_JOB_FINISHED.getName())){
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
 	}
 	
 	/**
