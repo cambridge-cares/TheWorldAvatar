@@ -23,8 +23,9 @@ public class ResourcePathConverter {
 		//TODO-AE SC URGENT 20191021 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
 		// maybe change back not necessary any more, because of the solution below
 		
-		if (!AgentLocator.isJPSRunningForTest()) {			
-			return path;
+		if ((path.startsWith("C:")) || (!AgentLocator.isJPSRunningForTest())) {
+						JPSBaseLogger.info(getInstance(),path);
+				return path;
 		}
 	
 		// i.e. the code is not running on claudius 
@@ -47,10 +48,10 @@ public class ResourcePathConverter {
 		
 		URI uri = AgentCaller.createURI(path);
 		String root = KeyValueManager.get("absdir.root");
-		if ((path.startsWith("C:")) || (!AgentLocator.isJPSRunningForTest())) {
-			JPSBaseLogger.info(getInstance(),path);
-			return path;
-		}
+//		if ((path.startsWith("C:")) || (!AgentLocator.isJPSRunningForTest())) {
+//			JPSBaseLogger.info(getInstance(),path);
+//			return path;
+//		}
 		String converted = root + uri.getPath();
 		
 		JPSBaseLogger.info(getInstance(), "convertToLocalPath(): converted resource path " + path + " to " + converted);

@@ -89,8 +89,8 @@
 	margin: 0px 100px 0px 0px;
 
 	position: absolute;
-	top: 32px;
-	right: 6px;
+	/*top: 32px;*/
+	/*right: 6px;*/
 
 	background: white;
 	z-index: 1;
@@ -136,12 +136,13 @@
  
 	 <span id="readme-button">?</span>
 
-		<span id="readme-text">
-			The ESS agent extends the Jurong island electrical network model with an additional solar generator and some batteries included.
-			<br/><br/>
-			The user can enter the custom scenario that he chooses to create, and click on the button "Run Simulation". It will run the OPF simulation with the new generator
-			 and estimate the placement of the batteries. The location of the batteries is determined by the power losses identified by this OPF simulation.
-		</span>
+	<span id="readme-text">
+		This feature is mainly the extension of the Jurong island electrical network model with the use case of additional solar generator and some batteries included.
+		<br/><br/>
+		The first model inside will choose which type of battery is the most suitable for the selected solar generator added and it will run the OPF simulation with the new generator added.
+		<br/>
+		The final step will be locating the selected battery with specific amount and locations to cover the power losses identified by this OPF simulation.
+	</span>
 
  
   <h1 id="head1">Energy Storage System</h1>
@@ -519,9 +520,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
 		
 		+ "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_ActivePowerInjection_of_VRB ?V_ActivePowerInjection_of_VRB_unit "
-		+ "WHERE {?entity  a  j1:VanadiumRedoxBattery ."
-
-		+ "?entity   j9:hasActivePowerInjection ?cap ."
+		+ "WHERE {?entity   j9:hasActivePowerInjection ?cap ."
 		+"?cap j2:hasValue ?vcap ."
 		+"?vcap  j2:numericalValue ?V_ActivePowerInjection_of_VRB ."
 		+"?vcap  j2:hasUnitOfMeasure ?V_ActivePowerInjection_of_VRB_unit ."
@@ -538,9 +537,6 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 		+ "?vx  j2:numericalValue ?V_x ."//longitude
 		+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
 
-		+ " {?class rdfs:subClassOf j1:Battery ."
-		+ "} "
-		+ "UNION { ?class rdfs:subClassOf j1:EnergyStorageSystem . } ."
 		+ "}";
 			
 var opt = 'OPF';
@@ -557,7 +553,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
 var animatedLines = [];
-var batterylist;
+var batterylist = null;
 var infowindow;
  
  
@@ -606,6 +602,8 @@ var infowindow;
 	}
 		
 	function initMap() {
+
+		document.getElementById("loader").style.display = "block";
 		map = new google.maps.Map(document.getElementById('map'), {
 			zoom: 14,
 			center: {lat: 1.2624421, lng: 103.7007045}
@@ -613,6 +611,9 @@ var infowindow;
 		infowindow = new google.maps.InfoWindow({
             content: '<h2>Sup!</h2>'
         });
+		drawLines();
+		drawMarkers();
+		
 
 	}
 	document.getElementById("run-btn").addEventListener("click", drawBattery);
@@ -633,13 +634,14 @@ var infowindow;
 		
 		
 		obj0 = JSON.parse(data).result;
-		var line223 ="{\"coors\": [{\"lat\": "+String(1.206334)+", \"lng\": "+String(103.780312)+"}, {\"lat\": "+String(1.2794833)+", \"lng\": "+String(103.7271667)+"}], \"vols\": ["+String(228.0)+","+String(227.0)+"], \"thickness\": "+String(6)+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
-	    obj0.push(line223);
+		if (scenario != "base"){
+			var line223 ="{\"coors\": [{\"lat\": "+String(1.206334)+", \"lng\": "+String(103.780312)+"}, {\"lat\": "+String(1.2794833)+", \"lng\": "+String(103.7271667)+"}], \"vols\": ["+String(228.0)+","+String(227.0)+"], \"thickness\": "+String(6)+", \"type\": \""+"distribute"+"\", \"name\": \"/"+"/Eline-221.owl\"}";
+	    	obj0.push(line223);
+		}
 	    console.log(obj0);
 		var size=obj0.length;
 		console.log("size="+size);   
 
-		//Temporary: Because there are two lines created due to Parallel World, need to get rid of them. 
 		
 		var x;
 		for(x=0;x<size;x++){
@@ -752,7 +754,6 @@ var infowindow;
 				console.log ("success create request");
 						var kmlLayer = new google.maps.KmlLayer({
 							url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
-							url:'https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml'+ "?r="+(new Date()).getTime(),
 							suppressInfoWindows: false,
 							map: map
 						});
@@ -828,7 +829,11 @@ var infowindow;
 		      
 	    }
 
-		searchBatteryCoord(batterylist);	
+		if (batterylist != null){
+			searchBatteryCoord(batterylist);	
+		}else{
+			document.getElementById("loader").style.display = "none";
+		}
 	    });
 	    }
 	function createMarker(key, value, markerdict){
@@ -856,7 +861,7 @@ var infowindow;
 		batteryjson["electricalnetwork"] = electricalnetwork;
 		batteryjson["BatteryCatalog"] = batIRI;
 		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
-		var agenturl = prefix + '/JPS_ESS/ESSAgent';  
+		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
 	
 		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
 		console.log(batteryurl);
@@ -1367,6 +1372,7 @@ asyncLoop({
 
 		//var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
 
+		document.getElementById("loader").style.display = "block";
 
 		var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt; //call upon battery simulation rather than OPF/PF
 		data = { "electricalnetwork":electricalnetwork}
@@ -1386,8 +1392,8 @@ asyncLoop({
 		request.done(function() {
 			json = { "electricalnetwork":electricalnetwork ,"flag": scenario };
 			console.log('DONE SIMULATION');
-			drawBattery();
 			openWindow(filename);
+            document.getElementById("loader").style.display = "none";
 		});
 
 

@@ -89,7 +89,6 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 	public void testCoordinateOPFDirectCall() throws URISyntaxException, IOException { //request header is too large???
 		
 		String scenarioName = "testPOWSYSCoordinateOPF";
-		copy("aasc5", scenarioName);
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
@@ -241,7 +240,8 @@ public class TestCoordinationAgent extends TestCase implements Prefixes, Paths {
 	
 	public void testCoordinateOnServer() { //worked after the old scenario folder is deleted; only worked one time (no more working???)
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testCoordinateOnServer1111new2");
+		//String scenarioUrl = BucketHelper.getScenarioUrl("testCoordinateOnServer1111new2");
+		String scenarioUrl = BucketHelper.getScenarioUrl("testCoordinateOnServer2020ver2");
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		System.out.println("usecaseUrl=" + usecaseUrl);

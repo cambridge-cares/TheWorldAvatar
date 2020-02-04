@@ -35,7 +35,8 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 	private static final long serialVersionUID = -2354646810093235777L;
 	List<NuclearGenType>plant =new ArrayList<NuclearGenType>();	
 	private Logger logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
-	private String modelname="prllelwrld_dynamicvar.gms";
+	//private String modelname="prllelwrld_dynamicvar.gms";
+	private String modelname="Final_parallel_wrld.gms";
 
 	@Override
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -52,26 +53,21 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		BigDecimal carbontax = jo.getBigDecimal("carbontax");
 		prepareConstantCSV(carbontax,newdir);
 		
-		try {
-			logger.info("start optimization for carbon tax = " + carbontax);
-			if (!AgentLocator.isJPSRunningForTest()) {
+		logger.info("start optimization for carbon tax = " + carbontax);
+		//if (!AgentLocator.isJPSRunningForTest()) {
+		//	runGAMS(newdir);
+		//}else { //18 oct 19
+			try {
 				runGAMS(newdir);
-			}else { //18 oct 19
-				//runGAMS(newdir); need to change if we want to run the gams code itself 
-				String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
-				//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results2.csv";
-				File file = new File(source);
-				String destinationUrl = newdir+"/results.csv";
-				new QueryBroker().putLocal(destinationUrl, file);
-				
-			}
-			
-			
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			logger.error("the gams not running successfully");
-		}
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} //need to change if we want to run the gams code itself 
+			String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results.csv";
+			//String source = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir" + "/results2.csv";
+			File file = new File(source);
+			String destinationUrl = newdir+"/results.csv";
+			new QueryBroker().putLocal(destinationUrl, file);
 				
 		JSONObject result=giveResult(newdir+"/results.csv",plant);
 		logger.info("optimization result = " + result);
@@ -121,7 +117,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		
 		logger.info("Start");
 		//logger.info("separator= "+File.separator);
-        String executablelocation ="C:/GAMS/win64/26.1/gams.exe"; //depends where is in claudius
+        String executablelocation ="C:/GAMS/win64/28.2/gams.exe"; //depends where is in claudius
         String folderlocation =baseUrl; //+"/";
         //String folderlocation ="C:/JPS_DATA/workingdir/JPS_POWSYS/parallelworld/";
         String[] cmdArray = new String[7];
@@ -272,7 +268,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
 		String[]header= {"Parameter","Value"};
 		String[]delta= {"delta","0.05"};
 		String[]tau= {"tau",""+tax};
-		String[]D= {"D","0.1"};
+		String[]D= {"D","0.02"};
 		String[]L= {"L","30"};
 		constant.add(header);
 		constant.add(delta);
