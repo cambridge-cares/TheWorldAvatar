@@ -314,7 +314,7 @@ public class DFTAgent extends HttpServlet{
 		sftpChannel.disconnect();
 		System.out.println("Closing the connection.");
 	}
-
+	
 	public void downloadFile(String src, String dest) throws JSchException, SftpException{
 		JSch jsch = new JSch();
 		com.jcraft.jsch.Session session = jsch.getSession(username, server);
@@ -331,53 +331,58 @@ public class DFTAgent extends HttpServlet{
 		System.out.println("Closing the connection.");
 	}
 
+	/**
+	 * Delete a folder or file name from an HPC, if the complete path is provided.</br>
+	 * For example, to delete a folder called "test", user needs to provide "rds/.../test"
+	 * 
+	 * @param folderOrFileName 
+	 * @throws JSchException
+	 * @throws SftpException
+	 */
+	public void deleteFolderOrFile(String folderOrFileName) throws JSchException, SftpException{
+		executeCommand("rm -r "+folderOrFileName);
+	}
 
+	/**
+	 * Create a folder on an HPC, if the complete path is provided.</br>
+	 * For example, to create a folder called "test", user needs to provide "rds/.../test"
+	 * 
+	 * @param folder 
+	 * @throws JSchException
+	 * @throws SftpException
+	 */
+	public void createFolder(String folder) throws JSchException, SftpException{
+		executeCommand("mkdir "+folder);
+	}
+	
 	public ArrayList<String> executeCommand(String Command){
 		ArrayList<String> outputs = null;
-		try{JSch jsch = new JSch();
-		com.jcraft.jsch.Session session = jsch.getSession(username, server);
-		String pwd = getPassword(password);
-		session.setPassword(pwd);
-        session.setConfig("StrictHostKeyChecking", "no");
-        System.out.println("Establishing a connection to perform the following command:"+Command);
-        session.connect();
-        Channel channel=session.openChannel("exec");
-        ((ChannelExec)channel).setCommand(Command);
-        channel.setInputStream(null);
-        ((ChannelExec)channel).setErrStream(System.err);
-        
-//        InputStream in=channel.getInputStream();
-        /////////////////////////
-        BufferedReader stdInput = new BufferedReader(new
-				InputStreamReader(channel.getInputStream()));		
-        ////////////////////////////
-        channel.connect();
-		outputs = readCommandOutput(stdInput);
-//        byte[] tmp=new byte[1024];
-//        while(true){
-//          while(in.available()>0){
-//        	  int i=in.read(tmp, 0, 1024);
-//            if(i<0)break;
-//            System.out.print(new String(tmp, 0, i));
-//          }
-//          if(channel.isClosed()){
-//            System.out.println("exit-status: "+channel.getExitStatus());
-//            break;
-//          }
-//          try{Thread.sleep(1000);}catch(Exception ee){}
-//        }
-        channel.disconnect();
-        session.disconnect();
-        System.out.println("DONE");
-    }catch(JSchException e){
-    	e.printStackTrace();
-	}catch(Exception e){
-    	e.printStackTrace();
-    }
+		try {
+			JSch jsch = new JSch();
+			com.jcraft.jsch.Session session = jsch.getSession(username, server);
+			String pwd = getPassword(password);
+			session.setPassword(pwd);
+			session.setConfig("StrictHostKeyChecking", "no");
+			System.out.println("Establishing a connection to perform the following command:" + Command);
+			session.connect();
+			Channel channel = session.openChannel("exec");
+			((ChannelExec) channel).setCommand(Command);
+			channel.setInputStream(null);
+			((ChannelExec) channel).setErrStream(System.err);
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(channel.getInputStream()));
+			channel.connect();
+			outputs = readCommandOutput(stdInput);
+			channel.disconnect();
+			session.disconnect();
+			System.out.println("DONE");
+		} catch (JSchException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		return outputs;
 	}
 
-	
 	public void SSHClient(String serverIp,String command, String username,String password) throws IOException{
         System.out.println("inside the ssh function");
         try
