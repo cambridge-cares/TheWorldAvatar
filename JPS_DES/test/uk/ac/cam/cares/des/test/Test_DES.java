@@ -19,6 +19,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
+import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 public class Test_DES extends TestCase{
@@ -399,7 +400,7 @@ public class Test_DES extends TestCase{
 	public void testfindlatestdirectory() {
 		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
 		 File baseUrl=new File(dir);
-		 System.out.println("date latest directory= "+ new DistributedEnergySystem().getLastModifiedDirectory(baseUrl));
+		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory(baseUrl));
 	}
 	
 	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success

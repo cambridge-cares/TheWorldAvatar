@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,13 +36,12 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 
-@WebServlet(urlPatterns = { "/DESAgent", "/showDESResult"})
+@WebServlet(urlPatterns = { "/DESAgent"})
 /*
  * Wrapper for the python agent and displaying the result
  */
 public class DistributedEnergySystem extends JPSHttpServlet {
 	public static final String SIM_START_PATH = "/DESAgent";
-	public static final String SIM_SHOW_PATH = "/showDESResult";
 	public static String weather="Weather.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
 	
@@ -166,12 +164,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     		 
     	 }
     	 
-    	 else if(SIM_SHOW_PATH.contentEquals(path)) {
-    		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
-    		 String directorychosen=getLastModifiedDirectory(new File(dir));
-    		 logger.info("latest directory= "+directorychosen);
-    		 responseParams = provideJSONResult(directorychosen);
-    	 }
+    	
     		
 		return responseParams;
     	
@@ -523,39 +516,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 	}
 
-	public static String getLastModifiedDirectory(File directory) {
-		File[] files = directory.listFiles();
-		if (files.length == 0)
-			return directory.getAbsolutePath();
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File o1, File o2) {
-				return new Long(o2.lastModified()).compareTo(o1.lastModified()); // latest 1st
-			}
-		});
-		File filechosen = new File("");
-
-		outerloop: for (File file : files) {
-			String[] x = file.list();
-			if (x[0].contentEquals("JPS_DES")) {
-				File[] childfile = file.listFiles();
-				for (File filex : childfile) {
-					String[] y = filex.list();
-					List<String> list = Arrays.asList(y);
-
-					// System.out.println("size= "+list.size()+" ,listcontent= "+list.get(0));
-					if (list.contains("totgen.csv") && list.contains("rh1.csv")) {
-						System.out.println("it goes here");
-						filechosen = file;
-						break outerloop;
-					}
-					// System.out.println("directory last date="+file.lastModified());
-
-				}
-				// break;
-			}
-		}
-		return filechosen.getAbsolutePath() + "/JPS_DES";
-	}
+	
 
 	public JSONObject provideJSONResult(String baseUrl) {
 		JSONObject responseParams;
@@ -572,7 +533,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String content3 = new QueryBroker().readFileLocal(rhdir);
 		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
 		
-		String timer = baseUrl + "/timer.csv";
+		String timer = baseUrl + "/timer .csv";
 		String content4 = new QueryBroker().readFileLocal(timer);
 		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
 		
