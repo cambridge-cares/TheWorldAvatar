@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.StringJoiner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -567,7 +571,11 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String rhdir = baseUrl + "/rh1.csv";
 		String content3 = new QueryBroker().readFileLocal(rhdir);
 		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
-
+		
+		String timer = baseUrl + "/timer.csv";
+		String content4 = new QueryBroker().readFileLocal(timer);
+		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
+		
 		JSONArray temperature = new JSONArray();
 		JSONArray irradiation = new JSONArray();
 
@@ -587,6 +595,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		dataresult.put("residential", simulationResult.get(0));
 		dataresult.put("industrial", simulationResult.get(2));
 		dataresult.put("commercial", simulationResult.get(1));
+		dataresult.put("timer",timerResult.get(0));
 		dataresult.put("rh1", rhResult.subList(0, 3).toArray());
 		dataresult.put("rh2", rhResult.subList(3, 6).toArray());
 		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());
@@ -603,7 +612,24 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String startbatCommand = baseUrl + "/runpy.bat";
 		String result = executeSingleCommand(baseUrl, startbatCommand);
 		logger.info("final after calling: " + result);
+		createTimer(baseUrl);
 
+	}
+	public void createTimer(String baseUrl) throws Exception {
+		Date date = new Date();
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(date);
+		StringJoiner sj1 = new StringJoiner(",");
+		int n = calendar.get(Calendar.HOUR_OF_DAY);
+		for (int i = 0; i < 24; i++){
+		      sj1.add(n + ":00");
+		      n++; 
+		      if (n == 24){
+		        n = 0;
+		      }
+
+		    }
+		new QueryBroker().putLocal(baseUrl +"/timer.csv", sj1.toString());
 	}
 
 	public void copyFromPython(String baseUrl, String filename) {

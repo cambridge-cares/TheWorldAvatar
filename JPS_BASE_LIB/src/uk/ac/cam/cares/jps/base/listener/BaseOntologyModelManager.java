@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class BaseOntologyModelManager {
@@ -37,7 +38,7 @@ public class BaseOntologyModelManager {
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
     //protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
 //    protected static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
-  protected static final String ABSDIR_ROOT_TEST = "C://Users/LONG01/TOMCAT/webapps/ROOT";
+  protected static final String ABSDIR_ROOT_TEST = KeyValueManager.get("absdir.root");
     private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
     private static final String IRI_BASE_TEST = "http://localhost:8080";
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
