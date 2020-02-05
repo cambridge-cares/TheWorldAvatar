@@ -22,33 +22,31 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(WeatherIrradiationRetriever.class);
 	@Override 
-	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) {
-		JSONObject joforDES = AgentCaller.readJsonParameter(req);
-		String folder = joforDES.getString("folder");
-//		String iriirradiationsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-//		String iritempsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001";
-//		String irispeedsensor="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001";
-		String iriirradiationsensor=joforDES.getString("irradiationsensor");
-		String iritempsensor=joforDES.getString("tempsensor");
-		String irispeedsensor=joforDES.getString("speedsensor");
+	protected void doGetJPS(HttpServletRequest request, HttpServletResponse res) {
+		JSONObject jo = AgentCaller.readJsonParameter(request);
+
+		String baseUrl = jo.optString("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
+		
+		JSONObject result=new JSONObject();
 		try {
-			readWritedatatoOWL(folder,iritempsensor,iriirradiationsensor,irispeedsensor);
+	    	String iritempsensor=jo.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+	    	String iriirradiationsensor=jo.optString("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+	    	String irispeedsensor=jo.optString("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		 System.out.println("tempsensor= "+iritempsensor);
+	    	result=readWritedatatoOWL(baseUrl,iritempsensor,iriirradiationsensor,irispeedsensor);
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-//		JSONObject resultoftaking = new JSONObject();
-//		resultoftaking.put("weatherdata", requestlatestdata());
-		
+		AgentCaller.printToResponse(result, res);
  
 		logger.info("return the result from weather agent");		
 	}
 	
-	public void readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
+	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
-		
 		String startbatCommand =folder+"/runpyocr.bat";
 		System.out.println(startbatCommand);
 		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
@@ -115,12 +113,14 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		
 		
 		
-		//make new csv
+		//update the array value list
 		readingFromCSV.remove(0); //if with header,later need to be changed TODO KEVIN
 		String[]newline= {year,datemonth,time,"100",temperature,"74.9",speed,"115.7",irradiance,"0"};
 		System.out.println("datemonth="+datemonth);
 		readingFromCSV.add(newline);
-		 new QueryBroker().putLocal(folder + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+		List<String[]> actualWeather = new ArrayList<String[]>();
+		actualWeather.add(newline);
+		new QueryBroker().putLocal(folder + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(actualWeather));
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
@@ -130,6 +130,14 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		System.out.println(iriforirradiation+" is updated");
 		String iriforwind=converter.startConversion(readingFromCSV,"windpseed");
 		System.out.println(iriforwind+" is updated");
+		JSONObject resultweather = new JSONObject();
+		//resultweather.put("folder",folder );
+		resultweather.put("temperaturesensor",irifortemp );
+		resultweather.put("irradiationsensor",iriforirradiation );
+		resultweather.put("windspeedsensor",iriforwind );
+		
+		
+		return resultweather;
 	}
 	
 

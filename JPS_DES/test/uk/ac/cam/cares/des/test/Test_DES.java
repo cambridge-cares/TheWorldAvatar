@@ -9,7 +9,6 @@ import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -17,14 +16,10 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
-
 
 public class Test_DES extends TestCase{
 	
@@ -58,92 +53,50 @@ public class Test_DES extends TestCase{
 		}
 			System.out.println(returnValue);
 		}
-
-	public void testStartDESScenariobase() throws IOException  {
+	
+	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 
 		JSONObject jo = new JSONObject();
 	
 		jo.put("electricalnetwork", ENIRI);
 		jo.put("district", DISIRI);
+		jo.put("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+    	jo.put("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+    	jo.put("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		
 		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
 		System.out.println(resultStart);
 		System.out.println("finished execute");
 
 	}
-	public void testStartDESScenariotemp() throws IOException  {
-
-		DistributedEnergySystem a = new DistributedEnergySystem();
-        String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
-		String iriofnetwork = ENIRI;
-		String iriofdistrict = DISIRI;
-		OntModel model = readModelGreedy(iriofnetwork);
-		
-		a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
-		String weatherdir=baseUrl+"/Weather.csv";
-		String content = new QueryBroker().readFileLocal(weatherdir);
-		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
-		
-		String powerdir=baseUrl+"/totgen.csv";
-		String content2 = new QueryBroker().readFileLocal(powerdir);
-		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
-		
-		String rhdir=baseUrl+"/rh1.csv";
-		String content3 = new QueryBroker().readFileLocal(rhdir);
-		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
-
-		JSONArray temperature=new JSONArray();
-		JSONArray irradiation=new JSONArray();
-		JSONObject dataresult= new JSONObject();
-
-		
-		//25-48 (last 24)
-		int sizeofweather=weatherResult.size();
-		for (int x=sizeofweather-24;x<sizeofweather;x++) {
-			temperature.put(weatherResult.get(x)[4]);
-			irradiation.put(weatherResult.get(x)[8]);
-		}
-		//log to check if it's reading the right one. x
-		
-		dataresult.put("temperature", temperature);
-		dataresult.put("irradiation", irradiation);
-		dataresult.put("fuelcell", simulationResult.get(3));
-		dataresult.put("residential", simulationResult.get(0));
-		dataresult.put("industrial", simulationResult.get(2));
-		dataresult.put("building", simulationResult.get(1));
-		dataresult.put("rh1",rhResult.subList(0, 3).toArray());
-		dataresult.put("rh2",rhResult.subList(3, 6).toArray());
-		dataresult.put("rh3",rhResult.subList(6, rhResult.size()).toArray());
-		
-		System.out.println("result: "+dataresult.toString());
-	}
-	public void xxnotneededxxtestStartDESScenario() throws IOException  {
-		
-
+	public void testBlockchainWrapperDirectCall() throws IOException{
 		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testDES");
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+		System.out.println(new BlockchainWrapper().calculateTrade(jo));
 	}
 	
-	public void testIrradiationRetreiver() throws Exception {
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_DES";
+	public void testBlockchainWrapperAgentCall() throws IOException{
+		JSONObject jo = new JSONObject();
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+	    System.out.println(jo.toString());
+		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
+		System.out.println(v);
+	}
+	
+	
+	public void testIrradiationRetreiverDirectCall() throws Exception {
+//		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
 		
 		JSONObject jo = new JSONObject();
 		
@@ -156,6 +109,23 @@ public class Test_DES extends TestCase{
 
 		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 //		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+//	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+//		System.out.println(resultStart);
+	}
+	public void testIrradiationRetreiverAgentCall() throws Exception {
+//		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
+		
+		JSONObject jo = new JSONObject();
+		
+		jo.put("folder", baseUrl);
+		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+		jo.put("jpscontext", "base");
+
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+		System.out.println(resultStart);
 	}
 	
 	public void testcsvmanipulation () {
@@ -420,7 +390,7 @@ public class Test_DES extends TestCase{
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
 	}
 	
-	public void testCreateJSON() {
+	public void xxxtestCreateJSON() {
 		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
 		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
 		System.out.println(d.toString());
