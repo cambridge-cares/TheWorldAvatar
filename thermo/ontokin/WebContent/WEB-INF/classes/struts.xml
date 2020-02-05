@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+    
+<struts>
+
+    <!--<constant name="struts.enable.DynamicMethodInvocation" value="false"/>-->
+    <constant name="struts.devMode" value="true"/>
+    <constant name="struts.custom.i18n.resources" value="ApplicationResources"/>
+	<constant name="struts.multipart.maxSize" value="1000000000"/>
+ 	
+<package name="default" namespace="/" extends="struts-default">
+
+    <action name="upload" class="uk.ac.ceb.como.ontokin.action.UploadAction" method="execute">
+
+     <interceptor-ref name="fileUpload"/>
+     <interceptor-ref name="basicStack"/>
+     
+     <result name="success">/upload.jsp</result>
+     <result name="error">/upload.jsp</result>
+         
+    </action>
+</package>
+        
+</struts>
