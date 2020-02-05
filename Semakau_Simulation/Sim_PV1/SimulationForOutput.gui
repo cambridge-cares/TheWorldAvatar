@@ -1,0 +1,1542 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<simulation model="e3b31479-2550-4332-b7a6-fb6d119917d0" name="Sim_PV1" UUID="fb8169d1-b6d0-4126-93f3-7054a20ceb59">
+    <runState>CREATED</runState>
+    <passiveInputVars></passiveInputVars>
+    <outputVarsScalings/>
+    <casegroups>
+        <casegroup name="CaseGroup1" parent_singlesim="fb8169d1-b6d0-4126-93f3-7054a20ceb59">
+            <CaseSubGroups_PI/>
+            <CaseSubGroups_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus1_NEA%20Transfer%20hub_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus2_Phase%201%20%28Option1%29_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus4_AC%20Link%20bus_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus5_sub%20microgrid%201_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus6_PVfarm1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus7_sub%20microgrid%202_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus8_PVfarm2_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus9_sub%20microgrid%203_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus10_PVfarm3_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus11_11_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus12_12_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus13_Desalination3_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus14_FishHatchery_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus15_Desalination2_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus16_Desalination1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus17_Phase1%20loads_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus18_sub%20load1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus20_sub%20load2_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus22_sub%20load%203_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus24_Load2_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus25_Load3_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus26_Load4_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus27_MarineGenerators_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus28_EnergyStorage1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus29_WindTurbine1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus30_WindSub1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus31_DCstorage1_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus32_DCstorage2_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus33_WindSub2_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus34_DCstorage3_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_PWBUSPUVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_PWBUSANGLE">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_PWBUSKVVOLT">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_BusLoadMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_BusLoadMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_BusGenMW">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+                <CaseSubGroup_O variable="Bus35_WindSub3_BusGenMVR">
+                    <initialReadValues>0.0</initialReadValues>
+                    <boundsvect>
+                        <boundsOffset lowerFactor="1.0" upperFactor="1.0" lowerAbsShift="-1.0" upperAbsShift="1.0"/>
+                    </boundsvect>
+                </CaseSubGroup_O>
+            </CaseSubGroups_O>
+            <cases>
+                <case name="CaseGroup1_Case1"/>
+            </cases>
+            <passiveInputVars></passiveInputVars>
+            <chosenOutputVars>Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT Bus1_NEA%20Transfer%20hub_PWBUSANGLE Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT Bus1_NEA%20Transfer%20hub_BusLoadMW Bus1_NEA%20Transfer%20hub_BusLoadMVR Bus1_NEA%20Transfer%20hub_BusGenMW Bus1_NEA%20Transfer%20hub_BusGenMVR Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT Bus2_Phase%201%20%28Option1%29_PWBUSANGLE Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT Bus2_Phase%201%20%28Option1%29_BusLoadMW Bus2_Phase%201%20%28Option1%29_BusLoadMVR Bus2_Phase%201%20%28Option1%29_BusGenMW Bus2_Phase%201%20%28Option1%29_BusGenMVR Bus4_AC%20Link%20bus_PWBUSPUVOLT Bus4_AC%20Link%20bus_PWBUSANGLE Bus4_AC%20Link%20bus_PWBUSKVVOLT Bus4_AC%20Link%20bus_BusLoadMW Bus4_AC%20Link%20bus_BusLoadMVR Bus4_AC%20Link%20bus_BusGenMW Bus4_AC%20Link%20bus_BusGenMVR Bus5_sub%20microgrid%201_PWBUSPUVOLT Bus5_sub%20microgrid%201_PWBUSANGLE Bus5_sub%20microgrid%201_PWBUSKVVOLT Bus5_sub%20microgrid%201_BusLoadMW Bus5_sub%20microgrid%201_BusLoadMVR Bus5_sub%20microgrid%201_BusGenMW Bus5_sub%20microgrid%201_BusGenMVR Bus6_PVfarm1_PWBUSPUVOLT Bus6_PVfarm1_PWBUSANGLE Bus6_PVfarm1_PWBUSKVVOLT Bus6_PVfarm1_BusLoadMW Bus6_PVfarm1_BusLoadMVR Bus6_PVfarm1_BusGenMW Bus6_PVfarm1_BusGenMVR Bus7_sub%20microgrid%202_PWBUSPUVOLT Bus7_sub%20microgrid%202_PWBUSANGLE Bus7_sub%20microgrid%202_PWBUSKVVOLT Bus7_sub%20microgrid%202_BusLoadMW Bus7_sub%20microgrid%202_BusLoadMVR Bus7_sub%20microgrid%202_BusGenMW Bus7_sub%20microgrid%202_BusGenMVR Bus8_PVfarm2_PWBUSPUVOLT Bus8_PVfarm2_PWBUSANGLE Bus8_PVfarm2_PWBUSKVVOLT Bus8_PVfarm2_BusLoadMW Bus8_PVfarm2_BusLoadMVR Bus8_PVfarm2_BusGenMW Bus8_PVfarm2_BusGenMVR Bus9_sub%20microgrid%203_PWBUSPUVOLT Bus9_sub%20microgrid%203_PWBUSANGLE Bus9_sub%20microgrid%203_PWBUSKVVOLT Bus9_sub%20microgrid%203_BusLoadMW Bus9_sub%20microgrid%203_BusLoadMVR Bus9_sub%20microgrid%203_BusGenMW Bus9_sub%20microgrid%203_BusGenMVR Bus10_PVfarm3_PWBUSPUVOLT Bus10_PVfarm3_PWBUSANGLE Bus10_PVfarm3_PWBUSKVVOLT Bus10_PVfarm3_BusLoadMW Bus10_PVfarm3_BusLoadMVR Bus10_PVfarm3_BusGenMW Bus10_PVfarm3_BusGenMVR Bus11_11_PWBUSPUVOLT Bus11_11_PWBUSANGLE Bus11_11_PWBUSKVVOLT Bus11_11_BusLoadMW Bus11_11_BusLoadMVR Bus11_11_BusGenMW Bus11_11_BusGenMVR Bus12_12_PWBUSPUVOLT Bus12_12_PWBUSANGLE Bus12_12_PWBUSKVVOLT Bus12_12_BusLoadMW Bus12_12_BusLoadMVR Bus12_12_BusGenMW Bus12_12_BusGenMVR Bus13_Desalination3_PWBUSPUVOLT Bus13_Desalination3_PWBUSANGLE Bus13_Desalination3_PWBUSKVVOLT Bus13_Desalination3_BusLoadMW Bus13_Desalination3_BusLoadMVR Bus13_Desalination3_BusGenMW Bus13_Desalination3_BusGenMVR Bus14_FishHatchery_PWBUSPUVOLT Bus14_FishHatchery_PWBUSANGLE Bus14_FishHatchery_PWBUSKVVOLT Bus14_FishHatchery_BusLoadMW Bus14_FishHatchery_BusLoadMVR Bus14_FishHatchery_BusGenMW Bus14_FishHatchery_BusGenMVR Bus15_Desalination2_PWBUSPUVOLT Bus15_Desalination2_PWBUSANGLE Bus15_Desalination2_PWBUSKVVOLT Bus15_Desalination2_BusLoadMW Bus15_Desalination2_BusLoadMVR Bus15_Desalination2_BusGenMW Bus15_Desalination2_BusGenMVR Bus16_Desalination1_PWBUSPUVOLT Bus16_Desalination1_PWBUSANGLE Bus16_Desalination1_PWBUSKVVOLT Bus16_Desalination1_BusLoadMW Bus16_Desalination1_BusLoadMVR Bus16_Desalination1_BusGenMW Bus16_Desalination1_BusGenMVR Bus17_Phase1%20loads_PWBUSPUVOLT Bus17_Phase1%20loads_PWBUSANGLE Bus17_Phase1%20loads_PWBUSKVVOLT Bus17_Phase1%20loads_BusLoadMW Bus17_Phase1%20loads_BusLoadMVR Bus17_Phase1%20loads_BusGenMW Bus17_Phase1%20loads_BusGenMVR Bus18_sub%20load1_PWBUSPUVOLT Bus18_sub%20load1_PWBUSANGLE Bus18_sub%20load1_PWBUSKVVOLT Bus18_sub%20load1_BusLoadMW Bus18_sub%20load1_BusLoadMVR Bus18_sub%20load1_BusGenMW Bus18_sub%20load1_BusGenMVR Bus20_sub%20load2_PWBUSPUVOLT Bus20_sub%20load2_PWBUSANGLE Bus20_sub%20load2_PWBUSKVVOLT Bus20_sub%20load2_BusLoadMW Bus20_sub%20load2_BusLoadMVR Bus20_sub%20load2_BusGenMW Bus20_sub%20load2_BusGenMVR Bus22_sub%20load%203_PWBUSPUVOLT Bus22_sub%20load%203_PWBUSANGLE Bus22_sub%20load%203_PWBUSKVVOLT Bus22_sub%20load%203_BusLoadMW Bus22_sub%20load%203_BusLoadMVR Bus22_sub%20load%203_BusGenMW Bus22_sub%20load%203_BusGenMVR Bus24_Load2_PWBUSPUVOLT Bus24_Load2_PWBUSANGLE Bus24_Load2_PWBUSKVVOLT Bus24_Load2_BusLoadMW Bus24_Load2_BusLoadMVR Bus24_Load2_BusGenMW Bus24_Load2_BusGenMVR Bus25_Load3_PWBUSPUVOLT Bus25_Load3_PWBUSANGLE Bus25_Load3_PWBUSKVVOLT Bus25_Load3_BusLoadMW Bus25_Load3_BusLoadMVR Bus25_Load3_BusGenMW Bus25_Load3_BusGenMVR Bus26_Load4_PWBUSPUVOLT Bus26_Load4_PWBUSANGLE Bus26_Load4_PWBUSKVVOLT Bus26_Load4_BusLoadMW Bus26_Load4_BusLoadMVR Bus26_Load4_BusGenMW Bus26_Load4_BusGenMVR Bus27_MarineGenerators_PWBUSPUVOLT Bus27_MarineGenerators_PWBUSANGLE Bus27_MarineGenerators_PWBUSKVVOLT Bus27_MarineGenerators_BusLoadMW Bus27_MarineGenerators_BusLoadMVR Bus27_MarineGenerators_BusGenMW Bus27_MarineGenerators_BusGenMVR Bus28_EnergyStorage1_PWBUSPUVOLT Bus28_EnergyStorage1_PWBUSANGLE Bus28_EnergyStorage1_PWBUSKVVOLT Bus28_EnergyStorage1_BusLoadMW Bus28_EnergyStorage1_BusLoadMVR Bus28_EnergyStorage1_BusGenMW Bus28_EnergyStorage1_BusGenMVR Bus29_WindTurbine1_PWBUSPUVOLT Bus29_WindTurbine1_PWBUSANGLE Bus29_WindTurbine1_PWBUSKVVOLT Bus29_WindTurbine1_BusLoadMW Bus29_WindTurbine1_BusLoadMVR Bus29_WindTurbine1_BusGenMW Bus29_WindTurbine1_BusGenMVR Bus30_WindSub1_PWBUSPUVOLT Bus30_WindSub1_PWBUSANGLE Bus30_WindSub1_PWBUSKVVOLT Bus30_WindSub1_BusLoadMW Bus30_WindSub1_BusLoadMVR Bus30_WindSub1_BusGenMW Bus30_WindSub1_BusGenMVR Bus31_DCstorage1_PWBUSPUVOLT Bus31_DCstorage1_PWBUSANGLE Bus31_DCstorage1_PWBUSKVVOLT Bus31_DCstorage1_BusLoadMW Bus31_DCstorage1_BusLoadMVR Bus31_DCstorage1_BusGenMW Bus31_DCstorage1_BusGenMVR Bus32_DCstorage2_PWBUSPUVOLT Bus32_DCstorage2_PWBUSANGLE Bus32_DCstorage2_PWBUSKVVOLT Bus32_DCstorage2_BusLoadMW Bus32_DCstorage2_BusLoadMVR Bus32_DCstorage2_BusGenMW Bus32_DCstorage2_BusGenMVR Bus33_WindSub2_PWBUSPUVOLT Bus33_WindSub2_PWBUSANGLE Bus33_WindSub2_PWBUSKVVOLT Bus33_WindSub2_BusLoadMW Bus33_WindSub2_BusLoadMVR Bus33_WindSub2_BusGenMW Bus33_WindSub2_BusGenMVR Bus34_DCstorage3_PWBUSPUVOLT Bus34_DCstorage3_PWBUSANGLE Bus34_DCstorage3_PWBUSKVVOLT Bus34_DCstorage3_BusLoadMW Bus34_DCstorage3_BusLoadMVR Bus34_DCstorage3_BusGenMW Bus34_DCstorage3_BusGenMVR Bus35_WindSub3_PWBUSPUVOLT Bus35_WindSub3_PWBUSANGLE Bus35_WindSub3_PWBUSKVVOLT Bus35_WindSub3_BusLoadMW Bus35_WindSub3_BusLoadMVR Bus35_WindSub3_BusGenMW Bus35_WindSub3_BusGenMVR</chosenOutputVars>
+        </casegroup>
+    </casegroups>
+    <activeInputVars>PVfarm1_GenMW_6_1 PVfarm2_GenMW_8_1 PVfarm3_GenMW_10_1 PVfarm1_BusNomVolt_6 PVfarm2_BusNomVolt_8 PVfarm3_BusNomVolt_10</activeInputVars>
+    <activeInputInitReads>0.15 0.05 0.2 0.75 0.75 0.75</activeInputInitReads>
+    <activeInputBoundsVect>
+        <activeInputBounds lower="0.135" upper="0.16499999999999998"/>
+        <activeInputBounds lower="0.045" upper="0.05500000000000001"/>
+        <activeInputBounds lower="0.18" upper="0.22000000000000003"/>
+        <activeInputBounds lower="0.675" upper="0.825"/>
+        <activeInputBounds lower="0.675" upper="0.825"/>
+        <activeInputBounds lower="0.675" upper="0.825"/>
+    </activeInputBoundsVect>
+    <activeInputScalingsVect>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+        <activeInputScaling>linear</activeInputScaling>
+    </activeInputScalingsVect>
+    <passiveInputBoundsVect/>
+    <passiveInputScalingsVect/>
+    <algorithmManager name="algorithm_manager" parent_singlesim="fb8169d1-b6d0-4126-93f3-7054a20ceb59">
+        <algorithm_list>
+            <algorithm xsi:type="initialAlgorithm" name="Initial" parent_manager="algorithm_manager" algorithm_type="INITIAL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values/>
+                <chosenActiveInputVars></chosenActiveInputVars>
+                <chosenPreviousAlgs xsi:nil="true"/>
+                <allPreviousAlgs xsi:nil="true"/>
+                <warning_message>Case group CaseGroup1 was added!</warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT Bus1_NEA%20Transfer%20hub_PWBUSANGLE Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT Bus1_NEA%20Transfer%20hub_BusLoadMW Bus1_NEA%20Transfer%20hub_BusLoadMVR Bus1_NEA%20Transfer%20hub_BusGenMW Bus1_NEA%20Transfer%20hub_BusGenMVR Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT Bus2_Phase%201%20%28Option1%29_PWBUSANGLE Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT Bus2_Phase%201%20%28Option1%29_BusLoadMW Bus2_Phase%201%20%28Option1%29_BusLoadMVR Bus2_Phase%201%20%28Option1%29_BusGenMW Bus2_Phase%201%20%28Option1%29_BusGenMVR Bus4_AC%20Link%20bus_PWBUSPUVOLT Bus4_AC%20Link%20bus_PWBUSANGLE Bus4_AC%20Link%20bus_PWBUSKVVOLT Bus4_AC%20Link%20bus_BusLoadMW Bus4_AC%20Link%20bus_BusLoadMVR Bus4_AC%20Link%20bus_BusGenMW Bus4_AC%20Link%20bus_BusGenMVR Bus5_sub%20microgrid%201_PWBUSPUVOLT Bus5_sub%20microgrid%201_PWBUSANGLE Bus5_sub%20microgrid%201_PWBUSKVVOLT Bus5_sub%20microgrid%201_BusLoadMW Bus5_sub%20microgrid%201_BusLoadMVR Bus5_sub%20microgrid%201_BusGenMW Bus5_sub%20microgrid%201_BusGenMVR Bus6_PVfarm1_PWBUSPUVOLT Bus6_PVfarm1_PWBUSANGLE Bus6_PVfarm1_PWBUSKVVOLT Bus6_PVfarm1_BusLoadMW Bus6_PVfarm1_BusLoadMVR Bus6_PVfarm1_BusGenMW Bus6_PVfarm1_BusGenMVR Bus7_sub%20microgrid%202_PWBUSPUVOLT Bus7_sub%20microgrid%202_PWBUSANGLE Bus7_sub%20microgrid%202_PWBUSKVVOLT Bus7_sub%20microgrid%202_BusLoadMW Bus7_sub%20microgrid%202_BusLoadMVR Bus7_sub%20microgrid%202_BusGenMW Bus7_sub%20microgrid%202_BusGenMVR Bus8_PVfarm2_PWBUSPUVOLT Bus8_PVfarm2_PWBUSANGLE Bus8_PVfarm2_PWBUSKVVOLT Bus8_PVfarm2_BusLoadMW Bus8_PVfarm2_BusLoadMVR Bus8_PVfarm2_BusGenMW Bus8_PVfarm2_BusGenMVR Bus9_sub%20microgrid%203_PWBUSPUVOLT Bus9_sub%20microgrid%203_PWBUSANGLE Bus9_sub%20microgrid%203_PWBUSKVVOLT Bus9_sub%20microgrid%203_BusLoadMW Bus9_sub%20microgrid%203_BusLoadMVR Bus9_sub%20microgrid%203_BusGenMW Bus9_sub%20microgrid%203_BusGenMVR Bus10_PVfarm3_PWBUSPUVOLT Bus10_PVfarm3_PWBUSANGLE Bus10_PVfarm3_PWBUSKVVOLT Bus10_PVfarm3_BusLoadMW Bus10_PVfarm3_BusLoadMVR Bus10_PVfarm3_BusGenMW Bus10_PVfarm3_BusGenMVR Bus11_11_PWBUSPUVOLT Bus11_11_PWBUSANGLE Bus11_11_PWBUSKVVOLT Bus11_11_BusLoadMW Bus11_11_BusLoadMVR Bus11_11_BusGenMW Bus11_11_BusGenMVR Bus12_12_PWBUSPUVOLT Bus12_12_PWBUSANGLE Bus12_12_PWBUSKVVOLT Bus12_12_BusLoadMW Bus12_12_BusLoadMVR Bus12_12_BusGenMW Bus12_12_BusGenMVR Bus13_Desalination3_PWBUSPUVOLT Bus13_Desalination3_PWBUSANGLE Bus13_Desalination3_PWBUSKVVOLT Bus13_Desalination3_BusLoadMW Bus13_Desalination3_BusLoadMVR Bus13_Desalination3_BusGenMW Bus13_Desalination3_BusGenMVR Bus14_FishHatchery_PWBUSPUVOLT Bus14_FishHatchery_PWBUSANGLE Bus14_FishHatchery_PWBUSKVVOLT Bus14_FishHatchery_BusLoadMW Bus14_FishHatchery_BusLoadMVR Bus14_FishHatchery_BusGenMW Bus14_FishHatchery_BusGenMVR Bus15_Desalination2_PWBUSPUVOLT Bus15_Desalination2_PWBUSANGLE Bus15_Desalination2_PWBUSKVVOLT Bus15_Desalination2_BusLoadMW Bus15_Desalination2_BusLoadMVR Bus15_Desalination2_BusGenMW Bus15_Desalination2_BusGenMVR Bus16_Desalination1_PWBUSPUVOLT Bus16_Desalination1_PWBUSANGLE Bus16_Desalination1_PWBUSKVVOLT Bus16_Desalination1_BusLoadMW Bus16_Desalination1_BusLoadMVR Bus16_Desalination1_BusGenMW Bus16_Desalination1_BusGenMVR Bus17_Phase1%20loads_PWBUSPUVOLT Bus17_Phase1%20loads_PWBUSANGLE Bus17_Phase1%20loads_PWBUSKVVOLT Bus17_Phase1%20loads_BusLoadMW Bus17_Phase1%20loads_BusLoadMVR Bus17_Phase1%20loads_BusGenMW Bus17_Phase1%20loads_BusGenMVR Bus18_sub%20load1_PWBUSPUVOLT Bus18_sub%20load1_PWBUSANGLE Bus18_sub%20load1_PWBUSKVVOLT Bus18_sub%20load1_BusLoadMW Bus18_sub%20load1_BusLoadMVR Bus18_sub%20load1_BusGenMW Bus18_sub%20load1_BusGenMVR Bus20_sub%20load2_PWBUSPUVOLT Bus20_sub%20load2_PWBUSANGLE Bus20_sub%20load2_PWBUSKVVOLT Bus20_sub%20load2_BusLoadMW Bus20_sub%20load2_BusLoadMVR Bus20_sub%20load2_BusGenMW Bus20_sub%20load2_BusGenMVR Bus22_sub%20load%203_PWBUSPUVOLT Bus22_sub%20load%203_PWBUSANGLE Bus22_sub%20load%203_PWBUSKVVOLT Bus22_sub%20load%203_BusLoadMW Bus22_sub%20load%203_BusLoadMVR Bus22_sub%20load%203_BusGenMW Bus22_sub%20load%203_BusGenMVR Bus24_Load2_PWBUSPUVOLT Bus24_Load2_PWBUSANGLE Bus24_Load2_PWBUSKVVOLT Bus24_Load2_BusLoadMW Bus24_Load2_BusLoadMVR Bus24_Load2_BusGenMW Bus24_Load2_BusGenMVR Bus25_Load3_PWBUSPUVOLT Bus25_Load3_PWBUSANGLE Bus25_Load3_PWBUSKVVOLT Bus25_Load3_BusLoadMW Bus25_Load3_BusLoadMVR Bus25_Load3_BusGenMW Bus25_Load3_BusGenMVR Bus26_Load4_PWBUSPUVOLT Bus26_Load4_PWBUSANGLE Bus26_Load4_PWBUSKVVOLT Bus26_Load4_BusLoadMW Bus26_Load4_BusLoadMVR Bus26_Load4_BusGenMW Bus26_Load4_BusGenMVR Bus27_MarineGenerators_PWBUSPUVOLT Bus27_MarineGenerators_PWBUSANGLE Bus27_MarineGenerators_PWBUSKVVOLT Bus27_MarineGenerators_BusLoadMW Bus27_MarineGenerators_BusLoadMVR Bus27_MarineGenerators_BusGenMW Bus27_MarineGenerators_BusGenMVR Bus28_EnergyStorage1_PWBUSPUVOLT Bus28_EnergyStorage1_PWBUSANGLE Bus28_EnergyStorage1_PWBUSKVVOLT Bus28_EnergyStorage1_BusLoadMW Bus28_EnergyStorage1_BusLoadMVR Bus28_EnergyStorage1_BusGenMW Bus28_EnergyStorage1_BusGenMVR Bus29_WindTurbine1_PWBUSPUVOLT Bus29_WindTurbine1_PWBUSANGLE Bus29_WindTurbine1_PWBUSKVVOLT Bus29_WindTurbine1_BusLoadMW Bus29_WindTurbine1_BusLoadMVR Bus29_WindTurbine1_BusGenMW Bus29_WindTurbine1_BusGenMVR Bus30_WindSub1_PWBUSPUVOLT Bus30_WindSub1_PWBUSANGLE Bus30_WindSub1_PWBUSKVVOLT Bus30_WindSub1_BusLoadMW Bus30_WindSub1_BusLoadMVR Bus30_WindSub1_BusGenMW Bus30_WindSub1_BusGenMVR Bus31_DCstorage1_PWBUSPUVOLT Bus31_DCstorage1_PWBUSANGLE Bus31_DCstorage1_PWBUSKVVOLT Bus31_DCstorage1_BusLoadMW Bus31_DCstorage1_BusLoadMVR Bus31_DCstorage1_BusGenMW Bus31_DCstorage1_BusGenMVR Bus32_DCstorage2_PWBUSPUVOLT Bus32_DCstorage2_PWBUSANGLE Bus32_DCstorage2_PWBUSKVVOLT Bus32_DCstorage2_BusLoadMW Bus32_DCstorage2_BusLoadMVR Bus32_DCstorage2_BusGenMW Bus32_DCstorage2_BusGenMVR Bus33_WindSub2_PWBUSPUVOLT Bus33_WindSub2_PWBUSANGLE Bus33_WindSub2_PWBUSKVVOLT Bus33_WindSub2_BusLoadMW Bus33_WindSub2_BusLoadMVR Bus33_WindSub2_BusGenMW Bus33_WindSub2_BusGenMVR Bus34_DCstorage3_PWBUSPUVOLT Bus34_DCstorage3_PWBUSANGLE Bus34_DCstorage3_PWBUSKVVOLT Bus34_DCstorage3_BusLoadMW Bus34_DCstorage3_BusLoadMVR Bus34_DCstorage3_BusGenMW Bus34_DCstorage3_BusGenMVR Bus35_WindSub3_PWBUSPUVOLT Bus35_WindSub3_PWBUSANGLE Bus35_WindSub3_PWBUSKVVOLT Bus35_WindSub3_BusLoadMW Bus35_WindSub3_BusLoadMVR Bus35_WindSub3_BusGenMW Bus35_WindSub3_BusGenMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>false</isVisiable>
+            </algorithm>
+            <algorithm xsi:type="sobolAlgorithm" name="Sobol_Alg_1" parent_manager="algorithm_manager" algorithm_type="SOBOL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values>
+                    <entry>
+                        <key>model_name</key>
+                        <value xsi:type="choiceDetail" detail_name="model_name" explanation="Specify which model to run - either the 'exe' (the user-specified model) or a surrogate model created in a previous algorithm" isVisibleToUser="true">
+                            <possible_value>exe</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>objective_function</key>
+                        <value xsi:type="choiceDetail" detail_name="objective_function" explanation="Objective function by which model is compared to experiment" isVisibleToUser="true">
+                            <possible_value>SumOfSquares</possible_value>
+                            <possible_value>NormalisedSumOfSquares</possible_value>
+                            <possible_value>Euclidean</possible_value>
+                            <possible_value>NormalisedEuclidean</possible_value>
+                            <possible_value>OneNorm</possible_value>
+                            <possible_value>TargetNormalisedOneNorm</possible_value>
+                            <possible_value>Minimise</possible_value>
+                            <possible_value>Maximise</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_by_case</key>
+                        <value xsi:type="choiceDetail" detail_name="output_by_case" explanation="Whether MoDS output splits output information across files by case" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_values</key>
+                        <value xsi:type="choiceDetail" detail_name="output_values" explanation="Whether parameter values will be output to file, else is stored internally only" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>1</default_value_index>
+                            <user_choice_index>1</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>n_points</key>
+                        <value xsi:type="integerDetail" detail_name="n_points" explanation="Number of Sobol points to be generated" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">1000</user_choice>
+                            <max>2147483647</max>
+                            <min>1</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>seed</key>
+                        <value xsi:type="integerDetail" detail_name="seed" explanation="Index of the initial Sobol sequence point" isVisibleToUser="true">
+                            <default_value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">500000</default_value>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">500000</user_choice>
+                            <max>2147483647</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_interval</key>
+                        <value xsi:type="integerDetail" detail_name="output_interval" explanation="The number of points to evaluate before outputting the parameter values to file. Only affects when the values are output, not the values themselves." isVisibleToUser="true">
+                            <default_value xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">100</default_value>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">100</user_choice>
+                            <max>2147483647</max>
+                            <min>1</min>
+                        </value>
+                    </entry>
+                </details_values>
+                <chosenActiveInputVars>PVfarm1_GenMW_6_1 PVfarm2_GenMW_8_1 PVfarm3_GenMW_10_1 PVfarm1_BusNomVolt_6 PVfarm2_BusNomVolt_8 PVfarm3_BusNomVolt_10</chosenActiveInputVars>
+                <chosenPreviousAlgs/>
+                <allPreviousAlgs>
+                    <m_allPreviousAlgs>Initial</m_allPreviousAlgs>
+                </allPreviousAlgs>
+                <warning_message></warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT Bus1_NEA%20Transfer%20hub_PWBUSANGLE Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT Bus1_NEA%20Transfer%20hub_BusLoadMW Bus1_NEA%20Transfer%20hub_BusLoadMVR Bus1_NEA%20Transfer%20hub_BusGenMW Bus1_NEA%20Transfer%20hub_BusGenMVR Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT Bus2_Phase%201%20%28Option1%29_PWBUSANGLE Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT Bus2_Phase%201%20%28Option1%29_BusLoadMW Bus2_Phase%201%20%28Option1%29_BusLoadMVR Bus2_Phase%201%20%28Option1%29_BusGenMW Bus2_Phase%201%20%28Option1%29_BusGenMVR Bus4_AC%20Link%20bus_PWBUSPUVOLT Bus4_AC%20Link%20bus_PWBUSANGLE Bus4_AC%20Link%20bus_PWBUSKVVOLT Bus4_AC%20Link%20bus_BusLoadMW Bus4_AC%20Link%20bus_BusLoadMVR Bus4_AC%20Link%20bus_BusGenMW Bus4_AC%20Link%20bus_BusGenMVR Bus5_sub%20microgrid%201_PWBUSPUVOLT Bus5_sub%20microgrid%201_PWBUSANGLE Bus5_sub%20microgrid%201_PWBUSKVVOLT Bus5_sub%20microgrid%201_BusLoadMW Bus5_sub%20microgrid%201_BusLoadMVR Bus5_sub%20microgrid%201_BusGenMW Bus5_sub%20microgrid%201_BusGenMVR Bus6_PVfarm1_PWBUSPUVOLT Bus6_PVfarm1_PWBUSANGLE Bus6_PVfarm1_PWBUSKVVOLT Bus6_PVfarm1_BusLoadMW Bus6_PVfarm1_BusLoadMVR Bus6_PVfarm1_BusGenMW Bus6_PVfarm1_BusGenMVR Bus7_sub%20microgrid%202_PWBUSPUVOLT Bus7_sub%20microgrid%202_PWBUSANGLE Bus7_sub%20microgrid%202_PWBUSKVVOLT Bus7_sub%20microgrid%202_BusLoadMW Bus7_sub%20microgrid%202_BusLoadMVR Bus7_sub%20microgrid%202_BusGenMW Bus7_sub%20microgrid%202_BusGenMVR Bus8_PVfarm2_PWBUSPUVOLT Bus8_PVfarm2_PWBUSANGLE Bus8_PVfarm2_PWBUSKVVOLT Bus8_PVfarm2_BusLoadMW Bus8_PVfarm2_BusLoadMVR Bus8_PVfarm2_BusGenMW Bus8_PVfarm2_BusGenMVR Bus9_sub%20microgrid%203_PWBUSPUVOLT Bus9_sub%20microgrid%203_PWBUSANGLE Bus9_sub%20microgrid%203_PWBUSKVVOLT Bus9_sub%20microgrid%203_BusLoadMW Bus9_sub%20microgrid%203_BusLoadMVR Bus9_sub%20microgrid%203_BusGenMW Bus9_sub%20microgrid%203_BusGenMVR Bus10_PVfarm3_PWBUSPUVOLT Bus10_PVfarm3_PWBUSANGLE Bus10_PVfarm3_PWBUSKVVOLT Bus10_PVfarm3_BusLoadMW Bus10_PVfarm3_BusLoadMVR Bus10_PVfarm3_BusGenMW Bus10_PVfarm3_BusGenMVR Bus11_11_PWBUSPUVOLT Bus11_11_PWBUSANGLE Bus11_11_PWBUSKVVOLT Bus11_11_BusLoadMW Bus11_11_BusLoadMVR Bus11_11_BusGenMW Bus11_11_BusGenMVR Bus12_12_PWBUSPUVOLT Bus12_12_PWBUSANGLE Bus12_12_PWBUSKVVOLT Bus12_12_BusLoadMW Bus12_12_BusLoadMVR Bus12_12_BusGenMW Bus12_12_BusGenMVR Bus13_Desalination3_PWBUSPUVOLT Bus13_Desalination3_PWBUSANGLE Bus13_Desalination3_PWBUSKVVOLT Bus13_Desalination3_BusLoadMW Bus13_Desalination3_BusLoadMVR Bus13_Desalination3_BusGenMW Bus13_Desalination3_BusGenMVR Bus14_FishHatchery_PWBUSPUVOLT Bus14_FishHatchery_PWBUSANGLE Bus14_FishHatchery_PWBUSKVVOLT Bus14_FishHatchery_BusLoadMW Bus14_FishHatchery_BusLoadMVR Bus14_FishHatchery_BusGenMW Bus14_FishHatchery_BusGenMVR Bus15_Desalination2_PWBUSPUVOLT Bus15_Desalination2_PWBUSANGLE Bus15_Desalination2_PWBUSKVVOLT Bus15_Desalination2_BusLoadMW Bus15_Desalination2_BusLoadMVR Bus15_Desalination2_BusGenMW Bus15_Desalination2_BusGenMVR Bus16_Desalination1_PWBUSPUVOLT Bus16_Desalination1_PWBUSANGLE Bus16_Desalination1_PWBUSKVVOLT Bus16_Desalination1_BusLoadMW Bus16_Desalination1_BusLoadMVR Bus16_Desalination1_BusGenMW Bus16_Desalination1_BusGenMVR Bus17_Phase1%20loads_PWBUSPUVOLT Bus17_Phase1%20loads_PWBUSANGLE Bus17_Phase1%20loads_PWBUSKVVOLT Bus17_Phase1%20loads_BusLoadMW Bus17_Phase1%20loads_BusLoadMVR Bus17_Phase1%20loads_BusGenMW Bus17_Phase1%20loads_BusGenMVR Bus18_sub%20load1_PWBUSPUVOLT Bus18_sub%20load1_PWBUSANGLE Bus18_sub%20load1_PWBUSKVVOLT Bus18_sub%20load1_BusLoadMW Bus18_sub%20load1_BusLoadMVR Bus18_sub%20load1_BusGenMW Bus18_sub%20load1_BusGenMVR Bus20_sub%20load2_PWBUSPUVOLT Bus20_sub%20load2_PWBUSANGLE Bus20_sub%20load2_PWBUSKVVOLT Bus20_sub%20load2_BusLoadMW Bus20_sub%20load2_BusLoadMVR Bus20_sub%20load2_BusGenMW Bus20_sub%20load2_BusGenMVR Bus22_sub%20load%203_PWBUSPUVOLT Bus22_sub%20load%203_PWBUSANGLE Bus22_sub%20load%203_PWBUSKVVOLT Bus22_sub%20load%203_BusLoadMW Bus22_sub%20load%203_BusLoadMVR Bus22_sub%20load%203_BusGenMW Bus22_sub%20load%203_BusGenMVR Bus24_Load2_PWBUSPUVOLT Bus24_Load2_PWBUSANGLE Bus24_Load2_PWBUSKVVOLT Bus24_Load2_BusLoadMW Bus24_Load2_BusLoadMVR Bus24_Load2_BusGenMW Bus24_Load2_BusGenMVR Bus25_Load3_PWBUSPUVOLT Bus25_Load3_PWBUSANGLE Bus25_Load3_PWBUSKVVOLT Bus25_Load3_BusLoadMW Bus25_Load3_BusLoadMVR Bus25_Load3_BusGenMW Bus25_Load3_BusGenMVR Bus26_Load4_PWBUSPUVOLT Bus26_Load4_PWBUSANGLE Bus26_Load4_PWBUSKVVOLT Bus26_Load4_BusLoadMW Bus26_Load4_BusLoadMVR Bus26_Load4_BusGenMW Bus26_Load4_BusGenMVR Bus27_MarineGenerators_PWBUSPUVOLT Bus27_MarineGenerators_PWBUSANGLE Bus27_MarineGenerators_PWBUSKVVOLT Bus27_MarineGenerators_BusLoadMW Bus27_MarineGenerators_BusLoadMVR Bus27_MarineGenerators_BusGenMW Bus27_MarineGenerators_BusGenMVR Bus28_EnergyStorage1_PWBUSPUVOLT Bus28_EnergyStorage1_PWBUSANGLE Bus28_EnergyStorage1_PWBUSKVVOLT Bus28_EnergyStorage1_BusLoadMW Bus28_EnergyStorage1_BusLoadMVR Bus28_EnergyStorage1_BusGenMW Bus28_EnergyStorage1_BusGenMVR Bus29_WindTurbine1_PWBUSPUVOLT Bus29_WindTurbine1_PWBUSANGLE Bus29_WindTurbine1_PWBUSKVVOLT Bus29_WindTurbine1_BusLoadMW Bus29_WindTurbine1_BusLoadMVR Bus29_WindTurbine1_BusGenMW Bus29_WindTurbine1_BusGenMVR Bus30_WindSub1_PWBUSPUVOLT Bus30_WindSub1_PWBUSANGLE Bus30_WindSub1_PWBUSKVVOLT Bus30_WindSub1_BusLoadMW Bus30_WindSub1_BusLoadMVR Bus30_WindSub1_BusGenMW Bus30_WindSub1_BusGenMVR Bus31_DCstorage1_PWBUSPUVOLT Bus31_DCstorage1_PWBUSANGLE Bus31_DCstorage1_PWBUSKVVOLT Bus31_DCstorage1_BusLoadMW Bus31_DCstorage1_BusLoadMVR Bus31_DCstorage1_BusGenMW Bus31_DCstorage1_BusGenMVR Bus32_DCstorage2_PWBUSPUVOLT Bus32_DCstorage2_PWBUSANGLE Bus32_DCstorage2_PWBUSKVVOLT Bus32_DCstorage2_BusLoadMW Bus32_DCstorage2_BusLoadMVR Bus32_DCstorage2_BusGenMW Bus32_DCstorage2_BusGenMVR Bus33_WindSub2_PWBUSPUVOLT Bus33_WindSub2_PWBUSANGLE Bus33_WindSub2_PWBUSKVVOLT Bus33_WindSub2_BusLoadMW Bus33_WindSub2_BusLoadMVR Bus33_WindSub2_BusGenMW Bus33_WindSub2_BusGenMVR Bus34_DCstorage3_PWBUSPUVOLT Bus34_DCstorage3_PWBUSANGLE Bus34_DCstorage3_PWBUSKVVOLT Bus34_DCstorage3_BusLoadMW Bus34_DCstorage3_BusLoadMVR Bus34_DCstorage3_BusGenMW Bus34_DCstorage3_BusGenMVR Bus35_WindSub3_PWBUSPUVOLT Bus35_WindSub3_PWBUSANGLE Bus35_WindSub3_PWBUSKVVOLT Bus35_WindSub3_BusLoadMW Bus35_WindSub3_BusLoadMVR Bus35_WindSub3_BusGenMW Bus35_WindSub3_BusGenMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>true</isVisiable>
+            </algorithm>
+            <algorithm xsi:type="hdmrAlgorithm" name="HDMR_Alg_1" parent_manager="algorithm_manager" algorithm_type="HDMR" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                <details_values>
+                    <entry>
+                        <key>output_by_case</key>
+                        <value xsi:type="choiceDetail" detail_name="output_by_case" explanation="Whether MoDS output splits output information across files by case" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>output_values</key>
+                        <value xsi:type="choiceDetail" detail_name="output_values" explanation="Whether parameter values will be output to file, else is stored internally only" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>1</default_value_index>
+                            <user_choice_index>1</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>surrogate_type</key>
+                        <value xsi:type="stringDetail" detail_name="surrogate_type" explanation="Name of the type of surrogate model to be generated" isVisibleToUser="false">
+                            <default_value xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">HDMR</default_value>
+                            <user_choice xsi:type="xs:string" xmlns:xs="http://www.w3.org/2001/XMLSchema">HDMR</user_choice>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>fit_to_coded_responses</key>
+                        <value xsi:type="choiceDetail" detail_name="fit_to_coded_responses" explanation="Do you want the models to be fitted to the coded or uncoded response values" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>global</key>
+                        <value xsi:type="choiceDetail" detail_name="global" explanation="Should this fit be across passive inputs too?" isVisibleToUser="false">
+                            <possible_value>false</possible_value>
+                            <possible_value>true</possible_value>
+                            <default_value_index>0</default_value_index>
+                            <user_choice_index>0</user_choice_index>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>order</key>
+                        <value xsi:type="integerDetail" detail_name="order" explanation="Maximum polynomial order of the model functions" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">10</user_choice>
+                            <max>20</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>HDMRorder</key>
+                        <value xsi:type="integerDetail" detail_name="HDMRorder" explanation="Maximum degree of inter-parameter interactions to be included in the model" isVisibleToUser="true">
+                            <default_value xsi:nil="true"/>
+                            <user_choice xsi:type="xs:int" xmlns:xs="http://www.w3.org/2001/XMLSchema">2</user_choice>
+                            <max>2</max>
+                            <min>0</min>
+                        </value>
+                    </entry>
+                    <entry>
+                        <key>r_squared_tol</key>
+                        <value xsi:type="doubleDetail" detail_name="r_squared_tol" explanation="Controls the termination conditions due to the quality of the fit" isVisibleToUser="true">
+                            <default_value xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.99999</default_value>
+                            <user_choice xsi:type="xs:double" xmlns:xs="http://www.w3.org/2001/XMLSchema">0.99999</user_choice>
+                            <max>1.7976931348623157E308</max>
+                            <min>0.0</min>
+                        </value>
+                    </entry>
+                </details_values>
+                <chosenActiveInputVars>PVfarm1_GenMW_6_1 PVfarm2_GenMW_8_1 PVfarm3_GenMW_10_1 PVfarm1_BusNomVolt_6 PVfarm2_BusNomVolt_8 PVfarm3_BusNomVolt_10</chosenActiveInputVars>
+                <chosenPreviousAlgs>
+                    <m_chosenPreviousAlgs>Sobol_Alg_1</m_chosenPreviousAlgs>
+                </chosenPreviousAlgs>
+                <allPreviousAlgs>
+                    <m_allPreviousAlgs>Initial</m_allPreviousAlgs>
+                    <m_allPreviousAlgs>Sobol_Alg_1</m_allPreviousAlgs>
+                </allPreviousAlgs>
+                <warning_message></warning_message>
+                <chosenCaseGroupOutVarPairs>
+                    <Entries>
+                        <Key caseGroup="CaseGroup1">
+                            <outVars>Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT Bus1_NEA%20Transfer%20hub_PWBUSANGLE Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT Bus1_NEA%20Transfer%20hub_BusLoadMW Bus1_NEA%20Transfer%20hub_BusLoadMVR Bus1_NEA%20Transfer%20hub_BusGenMW Bus1_NEA%20Transfer%20hub_BusGenMVR Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT Bus2_Phase%201%20%28Option1%29_PWBUSANGLE Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT Bus2_Phase%201%20%28Option1%29_BusLoadMW Bus2_Phase%201%20%28Option1%29_BusLoadMVR Bus2_Phase%201%20%28Option1%29_BusGenMW Bus2_Phase%201%20%28Option1%29_BusGenMVR Bus4_AC%20Link%20bus_PWBUSPUVOLT Bus4_AC%20Link%20bus_PWBUSANGLE Bus4_AC%20Link%20bus_PWBUSKVVOLT Bus4_AC%20Link%20bus_BusLoadMW Bus4_AC%20Link%20bus_BusLoadMVR Bus4_AC%20Link%20bus_BusGenMW Bus4_AC%20Link%20bus_BusGenMVR Bus5_sub%20microgrid%201_PWBUSPUVOLT Bus5_sub%20microgrid%201_PWBUSANGLE Bus5_sub%20microgrid%201_PWBUSKVVOLT Bus5_sub%20microgrid%201_BusLoadMW Bus5_sub%20microgrid%201_BusLoadMVR Bus5_sub%20microgrid%201_BusGenMW Bus5_sub%20microgrid%201_BusGenMVR Bus6_PVfarm1_PWBUSPUVOLT Bus6_PVfarm1_PWBUSANGLE Bus6_PVfarm1_PWBUSKVVOLT Bus6_PVfarm1_BusLoadMW Bus6_PVfarm1_BusLoadMVR Bus6_PVfarm1_BusGenMW Bus6_PVfarm1_BusGenMVR Bus7_sub%20microgrid%202_PWBUSPUVOLT Bus7_sub%20microgrid%202_PWBUSANGLE Bus7_sub%20microgrid%202_PWBUSKVVOLT Bus7_sub%20microgrid%202_BusLoadMW Bus7_sub%20microgrid%202_BusLoadMVR Bus7_sub%20microgrid%202_BusGenMW Bus7_sub%20microgrid%202_BusGenMVR Bus8_PVfarm2_PWBUSPUVOLT Bus8_PVfarm2_PWBUSANGLE Bus8_PVfarm2_PWBUSKVVOLT Bus8_PVfarm2_BusLoadMW Bus8_PVfarm2_BusLoadMVR Bus8_PVfarm2_BusGenMW Bus8_PVfarm2_BusGenMVR Bus9_sub%20microgrid%203_PWBUSPUVOLT Bus9_sub%20microgrid%203_PWBUSANGLE Bus9_sub%20microgrid%203_PWBUSKVVOLT Bus9_sub%20microgrid%203_BusLoadMW Bus9_sub%20microgrid%203_BusLoadMVR Bus9_sub%20microgrid%203_BusGenMW Bus9_sub%20microgrid%203_BusGenMVR Bus10_PVfarm3_PWBUSPUVOLT Bus10_PVfarm3_PWBUSANGLE Bus10_PVfarm3_PWBUSKVVOLT Bus10_PVfarm3_BusLoadMW Bus10_PVfarm3_BusLoadMVR Bus10_PVfarm3_BusGenMW Bus10_PVfarm3_BusGenMVR Bus11_11_PWBUSPUVOLT Bus11_11_PWBUSANGLE Bus11_11_PWBUSKVVOLT Bus11_11_BusLoadMW Bus11_11_BusLoadMVR Bus11_11_BusGenMW Bus11_11_BusGenMVR Bus12_12_PWBUSPUVOLT Bus12_12_PWBUSANGLE Bus12_12_PWBUSKVVOLT Bus12_12_BusLoadMW Bus12_12_BusLoadMVR Bus12_12_BusGenMW Bus12_12_BusGenMVR Bus13_Desalination3_PWBUSPUVOLT Bus13_Desalination3_PWBUSANGLE Bus13_Desalination3_PWBUSKVVOLT Bus13_Desalination3_BusLoadMW Bus13_Desalination3_BusLoadMVR Bus13_Desalination3_BusGenMW Bus13_Desalination3_BusGenMVR Bus14_FishHatchery_PWBUSPUVOLT Bus14_FishHatchery_PWBUSANGLE Bus14_FishHatchery_PWBUSKVVOLT Bus14_FishHatchery_BusLoadMW Bus14_FishHatchery_BusLoadMVR Bus14_FishHatchery_BusGenMW Bus14_FishHatchery_BusGenMVR Bus15_Desalination2_PWBUSPUVOLT Bus15_Desalination2_PWBUSANGLE Bus15_Desalination2_PWBUSKVVOLT Bus15_Desalination2_BusLoadMW Bus15_Desalination2_BusLoadMVR Bus15_Desalination2_BusGenMW Bus15_Desalination2_BusGenMVR Bus16_Desalination1_PWBUSPUVOLT Bus16_Desalination1_PWBUSANGLE Bus16_Desalination1_PWBUSKVVOLT Bus16_Desalination1_BusLoadMW Bus16_Desalination1_BusLoadMVR Bus16_Desalination1_BusGenMW Bus16_Desalination1_BusGenMVR Bus17_Phase1%20loads_PWBUSPUVOLT Bus17_Phase1%20loads_PWBUSANGLE Bus17_Phase1%20loads_PWBUSKVVOLT Bus17_Phase1%20loads_BusLoadMW Bus17_Phase1%20loads_BusLoadMVR Bus17_Phase1%20loads_BusGenMW Bus17_Phase1%20loads_BusGenMVR Bus18_sub%20load1_PWBUSPUVOLT Bus18_sub%20load1_PWBUSANGLE Bus18_sub%20load1_PWBUSKVVOLT Bus18_sub%20load1_BusLoadMW Bus18_sub%20load1_BusLoadMVR Bus18_sub%20load1_BusGenMW Bus18_sub%20load1_BusGenMVR Bus20_sub%20load2_PWBUSPUVOLT Bus20_sub%20load2_PWBUSANGLE Bus20_sub%20load2_PWBUSKVVOLT Bus20_sub%20load2_BusLoadMW Bus20_sub%20load2_BusLoadMVR Bus20_sub%20load2_BusGenMW Bus20_sub%20load2_BusGenMVR Bus22_sub%20load%203_PWBUSPUVOLT Bus22_sub%20load%203_PWBUSANGLE Bus22_sub%20load%203_PWBUSKVVOLT Bus22_sub%20load%203_BusLoadMW Bus22_sub%20load%203_BusLoadMVR Bus22_sub%20load%203_BusGenMW Bus22_sub%20load%203_BusGenMVR Bus24_Load2_PWBUSPUVOLT Bus24_Load2_PWBUSANGLE Bus24_Load2_PWBUSKVVOLT Bus24_Load2_BusLoadMW Bus24_Load2_BusLoadMVR Bus24_Load2_BusGenMW Bus24_Load2_BusGenMVR Bus25_Load3_PWBUSPUVOLT Bus25_Load3_PWBUSANGLE Bus25_Load3_PWBUSKVVOLT Bus25_Load3_BusLoadMW Bus25_Load3_BusLoadMVR Bus25_Load3_BusGenMW Bus25_Load3_BusGenMVR Bus26_Load4_PWBUSPUVOLT Bus26_Load4_PWBUSANGLE Bus26_Load4_PWBUSKVVOLT Bus26_Load4_BusLoadMW Bus26_Load4_BusLoadMVR Bus26_Load4_BusGenMW Bus26_Load4_BusGenMVR Bus27_MarineGenerators_PWBUSPUVOLT Bus27_MarineGenerators_PWBUSANGLE Bus27_MarineGenerators_PWBUSKVVOLT Bus27_MarineGenerators_BusLoadMW Bus27_MarineGenerators_BusLoadMVR Bus27_MarineGenerators_BusGenMW Bus27_MarineGenerators_BusGenMVR Bus28_EnergyStorage1_PWBUSPUVOLT Bus28_EnergyStorage1_PWBUSANGLE Bus28_EnergyStorage1_PWBUSKVVOLT Bus28_EnergyStorage1_BusLoadMW Bus28_EnergyStorage1_BusLoadMVR Bus28_EnergyStorage1_BusGenMW Bus28_EnergyStorage1_BusGenMVR Bus29_WindTurbine1_PWBUSPUVOLT Bus29_WindTurbine1_PWBUSANGLE Bus29_WindTurbine1_PWBUSKVVOLT Bus29_WindTurbine1_BusLoadMW Bus29_WindTurbine1_BusLoadMVR Bus29_WindTurbine1_BusGenMW Bus29_WindTurbine1_BusGenMVR Bus30_WindSub1_PWBUSPUVOLT Bus30_WindSub1_PWBUSANGLE Bus30_WindSub1_PWBUSKVVOLT Bus30_WindSub1_BusLoadMW Bus30_WindSub1_BusLoadMVR Bus30_WindSub1_BusGenMW Bus30_WindSub1_BusGenMVR Bus31_DCstorage1_PWBUSPUVOLT Bus31_DCstorage1_PWBUSANGLE Bus31_DCstorage1_PWBUSKVVOLT Bus31_DCstorage1_BusLoadMW Bus31_DCstorage1_BusLoadMVR Bus31_DCstorage1_BusGenMW Bus31_DCstorage1_BusGenMVR Bus32_DCstorage2_PWBUSPUVOLT Bus32_DCstorage2_PWBUSANGLE Bus32_DCstorage2_PWBUSKVVOLT Bus32_DCstorage2_BusLoadMW Bus32_DCstorage2_BusLoadMVR Bus32_DCstorage2_BusGenMW Bus32_DCstorage2_BusGenMVR Bus33_WindSub2_PWBUSPUVOLT Bus33_WindSub2_PWBUSANGLE Bus33_WindSub2_PWBUSKVVOLT Bus33_WindSub2_BusLoadMW Bus33_WindSub2_BusLoadMVR Bus33_WindSub2_BusGenMW Bus33_WindSub2_BusGenMVR Bus34_DCstorage3_PWBUSPUVOLT Bus34_DCstorage3_PWBUSANGLE Bus34_DCstorage3_PWBUSKVVOLT Bus34_DCstorage3_BusLoadMW Bus34_DCstorage3_BusLoadMVR Bus34_DCstorage3_BusGenMW Bus34_DCstorage3_BusGenMVR Bus35_WindSub3_PWBUSPUVOLT Bus35_WindSub3_PWBUSANGLE Bus35_WindSub3_PWBUSKVVOLT Bus35_WindSub3_BusLoadMW Bus35_WindSub3_BusLoadMVR Bus35_WindSub3_BusGenMW Bus35_WindSub3_BusGenMVR</outVars>
+                        </Key>
+                    </Entries>
+                </chosenCaseGroupOutVarPairs>
+                <isVisiable>true</isVisiable>
+            </algorithm>
+        </algorithm_list>
+    </algorithmManager>
+    <remoteExecutor xsi:type="selfMPIExecutor" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <connections>
+            <connection xsi:type="selfConnection" machineOrIP="localhost" OS="WINDOWS" absoluteWorkingDir="{Sim Directory}"/>
+        </connections>
+        <numProc>1</numProc>
+    </remoteExecutor>
+</simulation>
