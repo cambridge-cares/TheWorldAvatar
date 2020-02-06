@@ -36,5 +36,4 @@ public class HCOISGReaction0RadicalTest {
 			(new Utils()).compareFiles(srcFilePath, sourceFile, targetFile, resultFileMap);
 		}
 	}
-
 }

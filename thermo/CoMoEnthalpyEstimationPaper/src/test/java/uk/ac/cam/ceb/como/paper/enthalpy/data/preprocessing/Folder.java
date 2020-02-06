@@ -20,6 +20,7 @@ public enum Folder {
 	REACTIONS_HCO_ISD("test_data/test_results/hco_isd/"),
 	REACTIONS_HCO_HD("test_data/test_results/hco_hd/"),
 	CROSS_VALIDATION(System.getProperty("user.home").concat("/")),
+	VALID_TEST_RESULT_ISD_TI_115("valid-test-results-isd-ti-1-1-5"),
 	VALID_TEST_RESULT_ISG_TI_115("valid-test-results-isg-ti-1-1-5"),
 	VALID_TEST_RESULT_ISG_HCO_110("valid-test-results-isg-hco-1-1-0"),
 	VALID_TEST_RESULT_ISG_HCO_115("valid-test-results-isg-hco-1-1-5"),

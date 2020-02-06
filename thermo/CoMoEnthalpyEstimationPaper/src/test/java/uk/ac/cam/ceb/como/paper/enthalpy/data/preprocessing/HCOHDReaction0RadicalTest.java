@@ -19,15 +19,10 @@ public class HCOHDReaction0RadicalTest {
 	@Before
 	public void generateTestResults() throws Exception{
 		validTestResults = Folder.VALID_TEST_RESULT_HD_HCO_110.getFolderName();
-		
 		folderName = new FolderUtils().generateUniqueFolderName(Folder.HD_HCO_110.getFolderName());
-		
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
-		
 		HDReactionType hdReactionTypePreProcessing = new HDReactionType();
-
 		Files.createDirectories(Paths.get(Folder.REACTIONS_HCO_HD.getFolderName()+folderName));
-		
 		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_HCO_HD.getFolderName(), Folder.REF_POOL_HCO_HD.getFolderName(), Folder.REACTIONS_HCO_HD.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, hdReactionTypePreProcessing);
 	}
 	

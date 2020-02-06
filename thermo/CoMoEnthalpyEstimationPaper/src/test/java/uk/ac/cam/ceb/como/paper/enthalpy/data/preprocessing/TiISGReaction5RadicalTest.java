@@ -20,18 +20,10 @@ public class TiISGReaction5RadicalTest {
 	@Before
 	public void generateTestResults() throws Exception{
 		validTestResults = Folder.VALID_TEST_RESULT_ISG_TI_115.getFolderName();
-		
-		System.out.println("validTestResults: " + validTestResults);
-		
 		folderName = new FolderUtils().generateUniqueFolderName(Folder.ISG_TI_115.getFolderName());
-		
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
-		
 		ISGReactionType isgReactionType = new ISGReactionType(true);
-
 		Files.createDirectories(Paths.get(Folder.REACTIONS_TI_ISG.getFolderName()+folderName));
-		
-		System.out.println(Folder.REACTIONS_TI_ISG.getFolderName()+folderName);
 		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionType);
 	}
 	
