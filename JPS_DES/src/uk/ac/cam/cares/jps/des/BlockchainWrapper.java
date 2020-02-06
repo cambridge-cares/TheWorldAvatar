@@ -53,7 +53,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		if (moneyEth < 1E-12) {
 			return "Value too small, transaction not completed";
 		}
-		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\"+sender); //password
+		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		
@@ -130,7 +130,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 				}else {
 					double ethResid = totalresid*136.36;
 					String transactionhashs2 = dotransact(addrOfC, SolarPublicKey,ethResid);
-					whoTowho.add("Commercial to Solar");
+					whoTowho.add("Residential to Solar");
 					totalresid -= totalsolar;
 					totalList.add(transactionhashs2);
 					
