@@ -23,7 +23,9 @@ public class HDReactionTest {
 		
 		HDReactionType hdReactionTypePreProcessing = new HDReactionType();
 
-		dataPreProcessingHD.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_HCO_HD.getFolderName(), Folder.REF_POOL_HCO_HD.getFolderName(), Folder.REACTIONS_HCO_HD.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, hdReactionTypePreProcessing, validTestResults);
+		//Feroz, update this.
+//		dataPreProcessingHD.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_HCO_HD.getFolderName(), Folder.REF_POOL_HCO_HD.getFolderName(), Folder.REACTIONS_HCO_HD.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, hdReactionTypePreProcessing, validTestResults);
+		
 	}
 	
 	@Test
