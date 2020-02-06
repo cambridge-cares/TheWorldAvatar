@@ -25,23 +25,20 @@ public class ISGReactionTest {
 		
 		folderName = new FolderUtils().generateUniqueFolderName(Folder.ISG_TI_115.getFolderName());
 		
-//		DataPreProcessing dataPreProcessingISG = new DataPreProcessing();
-		
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
 		
 		ISGReactionType isgReactionType = new ISGReactionType(true);
 
-//		dataPreProcessingISG.getPreProcessingErrorBalanceReaction(folderName, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName(), Folder.CROSS_VALIDATION.getFolderName(), Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionTypePreProcessing, validTestResults);
 		Files.createDirectories(Paths.get(Folder.REACTIONS_TI_ISG.getFolderName()+folderName));
 		
 		System.out.println(Folder.REACTIONS_TI_ISG.getFolderName()+folderName);
 		
-		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionType);
+		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, isgReactionType);
 	}
 	
 	@Test
 	public void comparisonTest() {
-		HashMap<String, String> resultFileMap = (new Utils()).generatePairedFileList(folderName, Folder.REACTIONS_TI_ISG.getFolderName()+folderName,  validTestResults);
+		HashMap<String, String> resultFileMap = (new Utils()).generatePairedFileList(folderName, Folder.REACTIONS_TI_ISG.getFolderName(),  validTestResults);
 		for(String srcFilePath:resultFileMap.keySet()){
 			File sourceFile = new File(srcFilePath);
 			File targetFile = new File (resultFileMap.get(srcFilePath));

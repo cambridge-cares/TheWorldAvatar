@@ -474,14 +474,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		printedResultsTxtFile.write("\n");
 		
 		}
-
-		System.out.println("No. of valid reactions: " + validReaction.size() +  " No of invalid reactions: " + invalidReaction.size());
 		
-		printedResultsTxtFile.write("No. of valid reactions: " + validReaction.size() +  " No of invalid reactions: " + invalidReaction.size());
-		
-		printedResultsTxtFile.write("\n");
-		
-		if(isTest) {
+		if(!isTest) {
 			
 		
 		System.out.println("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
@@ -897,7 +891,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 */
 		}
 		printedResultsTxtFile.close();
-	     System.exit(0);
+//	     System.exit(0);
 		
 	}
 	
