@@ -12,7 +12,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.LeaveOneOutCrossValida
 import uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing.DataPreProcessing;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 
-public class ISGReactionTest {
+public class TiISGReaction5RadicalTest {
 	
 	String folderName;
 	String validTestResults;
@@ -32,7 +32,6 @@ public class ISGReactionTest {
 		Files.createDirectories(Paths.get(Folder.REACTIONS_TI_ISG.getFolderName()+folderName));
 		
 		System.out.println(Folder.REACTIONS_TI_ISG.getFolderName()+folderName);
-		
 		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionType);
 	}
 	

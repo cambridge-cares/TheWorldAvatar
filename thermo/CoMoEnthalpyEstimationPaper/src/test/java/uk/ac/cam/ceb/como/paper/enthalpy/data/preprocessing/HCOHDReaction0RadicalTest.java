@@ -12,7 +12,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiont
 import uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.LeaveOneOutCrossValidationAlgorithm;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 
-public class HDReactionTest {
+public class HCOHDReaction0RadicalTest {
 	String folderName;
 	String validTestResults;
 	
