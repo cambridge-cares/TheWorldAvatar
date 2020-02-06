@@ -27,34 +27,12 @@ public class Test_DES extends TestCase{
 	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 	
-	public void testrunpython() throws IOException {
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-	}
-	
-	public void testrunpython2() throws IOException {
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		int returnValue = -1;
-		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-		try {
-			pr.waitFor();
-			returnValue = pr.exitValue();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.out.println(e);
-		}
-			System.out.println(returnValue);
-		}
-	
+	/*
+	 * Periodic call to run the (Forecast+DESpython wrapper)
+	 * Every four hours, so six calls in a day this would be called
+	 * 
+	 */
+
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
 
@@ -72,6 +50,27 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
+	/*
+	 * Calls upon the FrontEnd Coordination agent that would call the latest DES run (Forecast+DESpython wrapper)
+	 * And afterwards blockchain wrapper
+	 */
+	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
+		
+
+		JSONObject jo = new JSONObject();
+	
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
+		
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+
+	}
+	/*
+	 * Calls and runs the Blockchain transaction with test values
+	 */
 	public void testBlockchainWrapperDirectCall() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("industrial", "2.311116263469459966e+01");
@@ -81,7 +80,9 @@ public class Test_DES extends TestCase{
 		jo.put("solar","3.784461764480557235e+01");
 		System.out.println(new BlockchainWrapper().calculateTrade(jo));
 	}
-	
+	/*
+	 * Calls and runs the Blockchain transaction with test values (thru TOMCAT)
+	 */
 	public void testBlockchainWrapperAgentCall() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("industrial", "2.311116263469459966e+01");
@@ -94,7 +95,10 @@ public class Test_DES extends TestCase{
 		System.out.println(v);
 	}
 	
-	
+
+	/*
+	 * Calls and runs the hourly weather retriever, that uses OCR
+	 */
 	public void testIrradiationRetreiverDirectCall() throws Exception {
 //		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
@@ -113,6 +117,9 @@ public class Test_DES extends TestCase{
 //	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
 //		System.out.println(resultStart);
 	}
+	/*
+	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
+	 */
 	public void testIrradiationRetreiverAgentCall() throws Exception {
 //		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
@@ -128,7 +135,10 @@ public class Test_DES extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 	}
-	
+
+	/*
+	 * Tests the retrieval of data from one sensor. 
+	 */
 	public void testcsvmanipulation () {
 		String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -384,7 +394,9 @@ public class Test_DES extends TestCase{
 		System.out.println(schedulecsv);
 		
 	}
-	
+	/*
+	 * tests the call of electrical network
+	 */
 	public void testquerygen() {
 		OntModel model = readModelGreedy(ENIRI);
 		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
@@ -396,27 +408,15 @@ public class Test_DES extends TestCase{
 		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
 		System.out.println(d.toString());
 	}
-	
+	/*
+	 * Finds the latest directory, as part of the coordinate agent. 
+	 */
 	public void testfindlatestdirectory() {
 		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
 		 File baseUrl=new File(dir);
 		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory(baseUrl));
 	}
 	
-	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
-		
-
-		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
-	}
 	
 
 	
