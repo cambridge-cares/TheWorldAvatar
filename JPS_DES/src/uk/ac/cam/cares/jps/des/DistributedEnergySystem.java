@@ -128,7 +128,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  			}
  			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
  			List<String[]> ty = new ArrayList<String[]>();
- 			ty.add(readingFromCSV.get((readingFromCSV.size()-1)));
+ 			ty.add(readingFromCSV.get((readingFromCSV.size()-1))); //grab the most recent real time reading. 
  			broker.putLocal(baseUrl + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(ty));
 	        File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/resources/" + "WeatherInitialize.csv");
     		String destinationUrl = baseUrl + "/WeatherInitialize.csv";
@@ -533,7 +533,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String content3 = new QueryBroker().readFileLocal(rhdir);
 		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
 		
-		String timer = baseUrl + "/timer .csv";
+		String timer = baseUrl + "/timer.csv";
 		String content4 = new QueryBroker().readFileLocal(timer);
 		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
 		

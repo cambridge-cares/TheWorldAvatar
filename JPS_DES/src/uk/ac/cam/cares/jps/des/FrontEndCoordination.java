@@ -2,8 +2,10 @@ package uk.ac.cam.cares.jps.des;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,7 +13,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
@@ -38,16 +40,9 @@ public class FrontEndCoordination extends JPSHttpServlet{
 	    	logger.info("latest directory= "+directorychosen);
 	    	DistributedEnergySystem a = new DistributedEnergySystem();
 	    	responseParams = a.provideJSONResult(directorychosen);
-
- 	        JSONObject jo = new JSONObject();
- 	        String[] types = {"solar", "gridsupply", "industrial", "commercial", "residential"};
- 	        List<String> l = Arrays.asList(types);
- 	        for (String i: l ) {
- 	        	System.out.println(responseParams.get(i));
- 	        	JSONArray j =  (JSONArray) responseParams.get(i);
- 	        	jo.put(i,j.get(0));
- 	        }
- 	        System.out.println(jo);
+	    	
+ 	        JSONObject jo = determineValue(responseParams);
+ 		    System.out.println(jo.toString());
  			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
  			System.out.println("Called GetBlock" + v);
  			JSONObject tempJO = new JSONObject(v);
@@ -91,5 +86,57 @@ public class FrontEndCoordination extends JPSHttpServlet{
 		}
 		return filechosen.getAbsolutePath() + "/JPS_DES";
 	}
+    
+    public static JSONObject determineValue (JSONObject responseParams) throws JSONException {
 
+		JSONObject jo = new JSONObject();
+    	try {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		String date = sdf.format(new Date());
+		Date date2 = sdf.parse(date);
+		//figure out time in which 
+		String[] tim = (String[]) responseParams.get("timer");
+		for (int i = 0; i< tim.length; i++) {
+			Date date1;
+				date1 = sdf.parse(tim[i]);
+				// TODO Auto-generated catch block
+			long difference = date2.getTime() - date1.getTime();
+			difference = difference/60000;
+			if (difference < 29) {
+				//need to figure out the difference gradient
+				jo = deriveValue(i, false, responseParams);
+				break;
+			}
+			else if (difference < 60){
+				//get the next one. 
+				jo = deriveValue(i, true, responseParams);
+				break;
+			}
+		}
+    	
+    	}catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+
+		return jo;
+    }
+    public static JSONObject deriveValue(int index, boolean inbetween, JSONObject responseParams) {
+
+    	JSONObject jo = new JSONObject();
+    	String[] types = {"solar", "gridsupply", "industrial", "commercial", "residential"};
+    	List<String> l = Arrays.asList(types);
+    	if (inbetween) {
+    		for (String i: l ) {
+    			String[] j =  (String[]) responseParams.get(i);
+    			jo.put(i,j[index]);
+    		}
+        }else {
+        	for (String i: l ) {
+        		String[] j  =  (String[]) responseParams.get(i);
+    			double getAvg = ( Double.parseDouble(j[index]) + Double.parseDouble(j[index+1])) /2;
+    			jo.put(i,Double.toString(getAvg));
+    		}
+        }
+        return jo;
+    }
 }

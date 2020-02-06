@@ -63,30 +63,88 @@ public class WeatherTimeStampKB {
 		mpers=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#m_per_s");
 			
 	}
+	public void doConversiontempsensor(OntModel jenaOwlModel, String mainobjectname,String Prefix,List<String[]> readingFromCSV) throws FileNotFoundException, URISyntaxException{
+		System.out.println("it is processed= " + mainobjectname);
+		//String mainobjectname= SGTemperatureSensor-001
+
+		
+		
+		Individual mainobjinst = mainobjclass.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
+		
+		Individual outsidetemp = tempclass.createIndividual(Prefix+mainobjectname+".owl#MeasuredTemperatureOf"+mainobjectname);
+		mainobjinst.addProperty(observes, outsidetemp);
+		for(int x=1;x<=49;x++) {
+			String tempvalue=readingFromCSV.get(x-1)[4];
+			String year=readingFromCSV.get(x-1)[0];
+			String month=readingFromCSV.get(x-1)[1].split("-")[1]; //need to map from june
+			String date=readingFromCSV.get(x-1)[1].split("-")[0];
+			String time=readingFromCSV.get(x-1)[2];
+			String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
+			
+			Individual voutsidetemp = scalarvalueclass.createIndividual(Prefix+mainobjectname+".owl#V_MeasuredTemperatureOf"+mainobjectname+"_"+x);
+			Individual timestamptemp = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasuredTemperatureOf"+mainobjectname+"_"+x);
+			outsidetemp.addProperty(hasvalue, voutsidetemp);
+			voutsidetemp.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (tempvalue)));
+			voutsidetemp.addProperty(hasunit, C);
+			
+			voutsidetemp.addProperty(hastime, timestamptemp);
+			timestamptemp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampvalue))); //value need to be changed later
+			
+		}
+	}
 	
-	public void doConversion(OntModel jenaOwlModel, String mainobjectname2,String Prefix,List<String[]> readingFromCSV, String typeOfW, Individual uniq) throws FileNotFoundException, URISyntaxException{
+	public void doConversionirradiationsensor(OntModel jenaOwlModel, String mainobjectname2,String Prefix,List<String[]> readingFromCSV) throws FileNotFoundException, URISyntaxException{
 
 		System.out.println("it is processed= " + mainobjectname2);
 		
 		Individual mainobjinst = mainobj2class.createIndividual(Prefix+mainobjectname2+".owl#"+mainobjectname2);
 		
-		Individual outside = outsidepropclass.createIndividual(Prefix+mainobjectname2+".owl#MeasuredIrradiationOf"+mainobjectname2);
-		mainobjinst.addProperty(observes, outside);
+		Individual outsideirradiation = outsidepropclass.createIndividual(Prefix+mainobjectname2+".owl#MeasuredIrradiationOf"+mainobjectname2);
+		mainobjinst.addProperty(observes, outsideirradiation);
 		for(int x=1;x<=49;x++) {
 			String irradiationvalue=readingFromCSV.get(x-1)[8];
+			//System.out.println("irradvalue= "+irradiationvalue);
 			String year=readingFromCSV.get(x-1)[0];
 			String month=readingFromCSV.get(x-1)[1].split("-")[1]; 
 			String date=readingFromCSV.get(x-1)[1].split("-")[0];
 			String time=readingFromCSV.get(x-1)[2];
 			String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
-			Individual voutside = scalarvalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_Measured"+typeOfW+"Of"+mainobjectname2+"_"+x);
-			Individual timestampirradiation = timeinstanceclass.createIndividual(Prefix+mainobjectname2+".owl#TimeOfMeasured"+typeOfW+"Of"+mainobjectname2+"_"+x);
-			outside.addProperty(hasvalue, voutside);
-			voutside.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (irradiationvalue)));
-			voutside.addProperty(hasunit, uniq);
+			Individual voutsideirradiation = scalarvalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_MeasuredIrradiationOf"+mainobjectname2+"_"+x);
+			Individual timestampirradiation = timeinstanceclass.createIndividual(Prefix+mainobjectname2+".owl#TimeOfMeasuredIrradiationOf"+mainobjectname2+"_"+x);
+			outsideirradiation.addProperty(hasvalue, voutsideirradiation);
+			voutsideirradiation.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (irradiationvalue)));
+			voutsideirradiation.addProperty(hasunit, Wperm2);
 			
-			voutside.addProperty(hastime, timestampirradiation);
+			voutsideirradiation.addProperty(hastime, timestampirradiation);
 			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
+			
+		}
+		
+	}
+	
+	public void doConversionWindSpeedsensor(OntModel jenaOwlModel, String mainobjectname3,String Prefix,List<String[]> readingFromCSV) throws FileNotFoundException, URISyntaxException{
+
+		System.out.println("it is processed= " + mainobjectname3);
+		
+		Individual mainobjinst = mainobj3class.createIndividual(Prefix+mainobjectname3+".owl#"+mainobjectname3);
+		
+		Individual outsidewindspeed = outsidewindspeedclass.createIndividual(Prefix+mainobjectname3+".owl#MeasuredWindSpeedOf"+mainobjectname3);
+		mainobjinst.addProperty(observes, outsidewindspeed);
+		for(int x=1;x<=49;x++) {
+			String winspeedvalue=readingFromCSV.get(x-1)[6];
+			String year=readingFromCSV.get(x-1)[0];
+			String month=readingFromCSV.get(x-1)[1].split("-")[1]; 
+			String date=readingFromCSV.get(x-1)[1].split("-")[0];
+			String time=readingFromCSV.get(x-1)[2];
+			String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
+			Individual voutsidewindspeed = scalarvalueclass.createIndividual(Prefix+mainobjectname3+".owl#V_MeasuredWindSpeedOf"+mainobjectname3+"_"+x);
+			Individual timestampwindpseed = timeinstanceclass.createIndividual(Prefix+mainobjectname3+".owl#TimeOfMeasuredWindSpeedOf"+mainobjectname3+"_"+x);
+			outsidewindspeed.addProperty(hasvalue, voutsidewindspeed);
+			voutsidewindspeed.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (winspeedvalue)));
+			voutsidewindspeed.addProperty(hasunit, mpers);
+			
+			voutsidewindspeed.addProperty(hastime, timestampwindpseed);
+			timestampwindpseed.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
 			
 		}
 		
@@ -102,31 +160,32 @@ public class WeatherTimeStampKB {
 		OntModel jenaOwlModel = ModelFactory.createOntologyModel();
 		jenaOwlModel.read(in, null);
 		initOWLClasses(jenaOwlModel);
+		
+		String mainobjectname = "SGTemperatureSensor-001"; // still hard-coded for the sample
+		String mainobject2name = "SGSolarIrradiationSensor-001"; // still hard-coded for the sample
+		String mainobject3name = "SGWindSpeedSensor-001"; // still hard-coded for the sample
 		String Prefix="http://www.theworldavatar.com/kb/sgp/singapore/";
+		String filePath1 = Prefix + mainobjectname + ".owl#"+ mainobjectname; // the result of written owl file
+		String filePath2 = Prefix + mainobject2name + ".owl#"+ mainobject2name; // the result of written owl file
+		String filePath3 = Prefix + mainobject3name + ".owl#"+ mainobject3name; // the result of written owl file
 		
 		if (flag.toLowerCase().contains("temperature")) {
 			System.out.println("creating temperature");
-			String mainobjectname = "SGTemperatureSensor-001"; // still hard-coded for the sample
-			String filePath1 = Prefix + mainobjectname + ".owl#"+ mainobjectname; // the result of written owl file
-			doConversion(jenaOwlModel, mainobjectname,Prefix,readingFromCSV, "Temperature", C); 
+			doConversiontempsensor(jenaOwlModel, mainobjectname,Prefix,readingFromCSV); 
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			new QueryBroker().putOld(Prefix+mainobjectname+".owl", content);
 			return filePath1;
 		}
 		else if (flag.toLowerCase().contains("irradiation")) {
 			System.out.println("creating irradiation");
-			String mainobject2name = "SGSolarIrradiationSensor-001"; // still hard-coded for the sample
-			String filePath2 = Prefix + mainobject2name + ".owl#"+ mainobject2name; // the result of written owl file
-			doConversion(jenaOwlModel, mainobject2name,Prefix,readingFromCSV, "Irradiation", Wperm2);
+			doConversionirradiationsensor(jenaOwlModel, mainobject2name,Prefix,readingFromCSV);
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			new QueryBroker().putOld(Prefix+mainobject2name+".owl", content);
 			return filePath2;
 		}
 		else {
 			System.out.println("creating speed");
-			String mainobject3name = "SGWindSpeedSensort-001"; // still hard-coded for the sample
-			String filePath3 = Prefix + mainobject3name + ".owl#"+ mainobject3name; // the result of written owl file
-			doConversion(jenaOwlModel, mainobject3name,Prefix,readingFromCSV,"WindSpeed", mpers );
+			doConversionWindSpeedsensor(jenaOwlModel, mainobject3name,Prefix,readingFromCSV);
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			new QueryBroker().putOld(Prefix+mainobject3name+".owl", content);
 			return filePath3;
