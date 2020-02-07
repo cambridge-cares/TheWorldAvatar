@@ -54,8 +54,6 @@ import uk.ac.cam.ceb.paper.sort.Sort;
  */
 
 public class LeaveOneOutCrossValidationAlgorithm {
-	String tempFolder = System.getProperty("user.dir").concat(File.separator);
-	
 	public Map<String, Integer[]> mapElPairing = new HashMap<>();
 	public Map<Species, Integer> spinMultiplicity = new HashMap<>();
 	public LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
@@ -63,9 +61,42 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	public Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
 	public Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
 	public Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
-
+    BufferedWriter printedResultsTxtFile;
+    Map<Species, Double> sortedInvalidSpeciesErrorBar;
+    ErrorBarCalculation errorBarCalculation;
+    long startTime;
+    LoadSpecies ls;
+    
+    /**
+     * Implement the Global Cross-Validation algorithm that consists of two</br>
+     * two parts.</br>
+     * - Data Preprocessing, and
+     * - Initial Data Analysis.
+     * 
+     * @param srcCompoundsRef
+     * @param srcRefPool
+     * @param destRList
+	 * @param ctrRuns Number of runs. In the calling method, define this as follows: int[] ctrRuns = new int[] {1};
+	 * @param ctrRes Number of reactions that will be generated for each species. In the calling method, define this as follows: int[] ctrRes = new int[] {1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10  //5
+	 * @param ctrRadicals Number of radicals. In the calling method, define this as follows: int[] ctrRadicals = new int[] {5}; // 0, 1, 2, 3, 4, 5 //100
+	 * @param reactionType
+     * @param tempFolder
+     * @throws Exception
+     */
+    public void runGlobalCrossValidation(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType, String tempFolder) throws Exception{
+		System.out.println(destRList+"/" + "printed_results" + ".txt");	
+		printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
+		startTime = System.currentTimeMillis();
+		ls = new LoadSpecies();
+    	runPreProcessing(srcCompoundsRef, srcRefPool, destRList, ctrRuns, ctrRes, ctrRadicals, reactionType, tempFolder);
+    	runInitialDataAnalysis(srcCompoundsRef, srcRefPool, destRList, ctrRuns, ctrRes, ctrRadicals, reactionType, tempFolder);
+    	printedResultsTxtFile.close();
+    	System.out.println("Results file has been closed.");
+    }
+    
 	/**
-	 * 
+	 * This method performs the data preprocessing step of the Global</br> 
+	 * Cross-Validation algorithm.
 	 * 
 	 * @param srcCompoundsRef
 	 * @param srcRefPool
@@ -76,187 +107,109 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * @param reactionType
 	 * @throws Exception
 	 */
-	public void preProcessingAndInitialDataAnalysis(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
-	
-	/**
-	 * Folder that contains Gaussian files.
-	 */
-//	String srcCompoundsRef = args[0]; //"g09/";
-	
-	/**
-	 * File that contains information about target species.
-	 */
-//	String srcRefPool = args[1]; //"csv/ref_scaled_kJperMols_v8.csv";
-	
-	/**
-	 * Folder that stores all results of cross validation calculations: chemical reactions, enthalpy, valid species, invalid species, etc..
-	 */
-//	String destRList = args[2]; //"ti_isg/";
-	
-	/**
-	 * 
-	 * Path to .temp folder that stores all  files used by GLPK solver.
-	 * 
-	 */
-//	String tempFolder = args[3]; //"LeaveOneOutCrossValidation_temp/"
-	
-    JSONArray listOfJsonSpeciesData = new JSONArray();
-    
-    JSONObject speciesJsonObject = new JSONObject();
-    
-    BufferedWriter printedResultsTxtFile;
-   	System.out.println(destRList+"/" + "printed_results" + ".txt");	
-   	printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
-	    /**
-		 * 
-		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * The start current time in milliseconds.
-		 * 
-		 *  
-		 * */
-	
-    long startTime = System.currentTimeMillis();
-
-	LoadSpecies ls = new LoadSpecies();
-
-	List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing, printedResultsTxtFile);
-
-	System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
-	
-	printedResultsTxtFile.write("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
-	
-	printedResultsTxtFile.write("\n");
-	
-	LoadSolver lSolver = new LoadSolver();
-
-	DataPreProcessing dpp = new DataPreProcessing();
-
-	ErrorBarCalculation errorBarCalculation = new ErrorBarCalculation();
-
-    System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
-    
-	printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
-	
-	printedResultsTxtFile.write("\n");
-	
+	private void runPreProcessing(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType, String tempFolder) throws Exception {
+		List<Species> refSpecies = ls.loadSpeciesProperties(ls.loadReferenceSpeciesFiles(srcRefPool), spinMultiplicity,srcCompoundsRef, mapElPairing, printedResultsTxtFile);
+		System.out.println("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
+		printedResultsTxtFile.write("refSpecies.isEmpty() before solver (main method): " + refSpecies.isEmpty());
+		printedResultsTxtFile.write("\n");
+		LoadSolver lSolver = new LoadSolver();
+		DataPreProcessing dpp = new DataPreProcessing();
+		errorBarCalculation = new ErrorBarCalculation();
+	    System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
+		printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
+		printedResultsTxtFile.write("\n");
 		/**
 		 * 
 		 * Data pre-processing step in cross validation algorithm. Determine the error
 		 * metrics for reactions and species. Recommends a list of rejected species and the list of valid species.
 		 * 
 		 */
-	
-	
-	
-	dpp.getPreProcessingCorssValidation(reactionType,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
-				spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
-				validReaction, invalidReaction,printedResultsTxtFile);
-
-
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	BufferedWriter validReactionFile;
-	validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
-
-	System.out.println("Valid reactions writing . . . ");
-	
-	printedResultsTxtFile.write("Valid reactions writing . . . ");
-	printedResultsTxtFile.write("\n");
-	
-	errorBarCalculation.generateInitialReactionListFile(validReactionFile, printedResultsTxtFile,validReaction);
-	
-
-    
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	BufferedWriter invalidReactionFile;
-    invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
-
-
-	System.out.println("Invalid reactions writing . . .");
-	
-	printedResultsTxtFile.write("Invalid reactions writing . . .");
-	printedResultsTxtFile.write("\n");
-	
-	errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, printedResultsTxtFile,invalidReaction);
-
+		dpp.getPreProcessingCorssValidation(reactionType,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
+					spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
+					validReaction, invalidReaction,printedResultsTxtFile);
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Printing valid species in txt file and on console.
+		 * HPC settings
 		 * 
 		 */
-	
-	System.out.println("Valid species writing . . . ");
-	
-	printedResultsTxtFile.write("Valid species writing . . . ");
-	printedResultsTxtFile.write("\n");
-	
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	BufferedWriter validSpeciesFile;
-	validSpeciesFile = new BufferedWriter(new FileWriter(destRList + "/"+"data-pre-processing" + "/"+ "valid_species" + ".txt", true));
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * Saves initial valid species into json format. This initial valid species is generated in pre-processing step of cross validation algorithm.
-	 *   
-	 */
-	BufferedWriter printedJsonFileInitialValidSpecies;
-	printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
-	
-	errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, printedResultsTxtFile,printedJsonFileInitialValidSpecies,validSpecies);
-
+		BufferedWriter validReactionFile;
+		validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
+		System.out.println("Valid reactions writing . . . ");
+		printedResultsTxtFile.write("Valid reactions writing . . . ");
+		printedResultsTxtFile.write("\n");
+		errorBarCalculation.generateInitialReactionListFile(validReactionFile, printedResultsTxtFile,validReaction);
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Printing invalid species in txt file and on console.
+		 * HPC settings
 		 * 
 		 */
-	
-	System.out.println("Invalid species writing . . .");
-	
-	printedResultsTxtFile.write("Invalid species writing . . .");
-	printedResultsTxtFile.write("\n");
-
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Settings on PC machine.
-	 * 
-	 */
-	BufferedWriter invalidSpeciesFile;
-
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * Saves initial invalid species into json format. This initial invalid species is generated in pre-processing step of cross validation algorithm.
-	 *   
-	 */
-	BufferedWriter printedJsonFileInitialInvalidSpecies;
-	printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_invalid_species" +".json", true));
-	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, printedJsonFileInitialInvalidSpecies,invalidSpecies, validSpecies);
-
+		BufferedWriter invalidReactionFile;
+	    invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
+		System.out.println("Invalid reactions writing . . .");
+		printedResultsTxtFile.write("Invalid reactions writing . . .");
+		printedResultsTxtFile.write("\n");
+		errorBarCalculation.generateInitialReactionListFile(invalidReactionFile, printedResultsTxtFile,
+				invalidReaction);
+		/**
+		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk) Printing valid species in
+		 *         txt file and on console.
+		 * 
+		 */
+		System.out.println("Valid species writing . . . ");
+		printedResultsTxtFile.write("Valid species writing . . . ");
+		printedResultsTxtFile.write("\n");
+		/**
+		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
+		 * HPC settings
+		 * 
+		 */
+		BufferedWriter validSpeciesFile;
+		validSpeciesFile = new BufferedWriter(new FileWriter(destRList + "/"+"data-pre-processing" + "/"+ "valid_species" + ".txt", true));
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Saves initial valid species into json format. This initial valid species is generated in pre-processing step of cross validation algorithm.
+		 *   
+		 */
+		BufferedWriter printedJsonFileInitialValidSpecies;
+		printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
+		errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, printedResultsTxtFile,printedJsonFileInitialValidSpecies,validSpecies);
+		/**
+		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk) Printing invalid species in
+		 *         txt file and on console.
+		 * 
+		 */
+		System.out.println("Invalid species writing . . .");
+		printedResultsTxtFile.write("Invalid species writing . . .");
+		printedResultsTxtFile.write("\n");
+		/**
+		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
+		 * Settings on PC machine.
+		 * 
+		 */
+		BufferedWriter invalidSpeciesFile;
+		/**
+		 * 
+		 * @author nk510 (caresssd@hermes.cam.ac.uk)
+		 * HPC settings
+		 * 
+		 */
+		invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Saves initial invalid species into json format. This initial invalid species is generated in pre-processing step of cross validation algorithm.
+		 *   
+		 */
+		BufferedWriter printedJsonFileInitialInvalidSpecies;
+		printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_invalid_species" +".json", true));
+		errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, printedJsonFileInitialInvalidSpecies,invalidSpecies, validSpecies);
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -266,115 +219,102 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 * Calculates error bar for each species in invalid set of species.
 		 * 
 		 */
-
-	invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies,printedResultsTxtFile));
+		invalidSpeciesErrorBar.putAll(errorBarCalculation.calculateSpeciesErrorBar(invalidReaction, validSpecies, invalidSpecies,printedResultsTxtFile));
 
 		/**
-		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Sorted hash map in decreasing order comparing by error bar value in Java 1.8.
+		 * @author nk510 (caresssd@hermes.cam.ac.uk) Sorted hash map in
+		 *         decreasing order comparing by error bar value in Java 1.8.
 		 * 
 		 */
-		
-		Map<Species, Double> sortedInvalidSpeciesErrorBar = Sort.sortingSpeciesMapComparingByValue(invalidSpeciesErrorBar);
-
+		sortedInvalidSpeciesErrorBar = Sort.sortingSpeciesMapComparingByValue(invalidSpeciesErrorBar);
 		System.out.println("Sorted species compared by error bars:");
-		
 		printedResultsTxtFile.write("Sorted species compared by error bars:");
-		
 		printedResultsTxtFile.write("\n");
-
 		for (Map.Entry<Species, Double> ss : sortedInvalidSpeciesErrorBar.entrySet()) {
-
-		System.out.println(ss.getKey().getRef() + " " +  ss.getValue());
-
-		printedResultsTxtFile.write(ss.getKey().getRef() + " " +  ss.getValue());
-		
-		printedResultsTxtFile.write("\n");
+			System.out.println(ss.getKey().getRef() + " " + ss.getValue());
+			printedResultsTxtFile.write(ss.getKey().getRef() + " " + ss.getValue());
+			printedResultsTxtFile.write("\n");
 		}
+	}
 
+	/**
+	 * 
+	 * The code below runs initial data analysis part of cross validation algorithm.
+	 * 
+	 * This method performs the initial data analysis step of the Global</br> 
+	 * Cross-Validation algorithm.
+	 * 
+	 * The code iterates over sorted invalid set of species and their error bars.
+	 * For each species from the list of invalid species the code below runs initial analysis of
+	 * cross validation algorithm.  It is using valid set of species as reference set
+	 * and one species as a target species from invalid set of species. For each
+	 * species from invalid set, the code tries to estimate lower error bar
+	 * than current error bar for the selected target species (invalid species
+	 * with maximum error bar). If calculated error bar is lower that the error bar of
+	 * selected species in rejected list then the code adds that species into valid
+	 * set of species. The code takes next species from invalid set of species with
+	 * the maximum error bar and repeats the procedure above. 
+	 * 
+	 * Iteration stops (terminates) if there will be no rejected species that are added into valid set of species.  
+	 * 
+	 * If the cross validation algorithm can not find and generate a number of
+	 * reactions for selected species, then that species will stay as a member of
+	 * invalid set of species.
+	 * 
+	 * As a final result, the code below generates a set of rejected and set of
+	 * accepted species.
+	 * 
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param srcCompoundsRef
+	 * @param srcRefPool
+	 * @param destRList
+	 * @param ctrRuns Number of runs. In the calling method, define this as follows: int[] ctrRuns = new int[] {1};
+	 * @param ctrRes Number of reactions that will be generated for each species. In the calling method, define this as follows: int[] ctrRes = new int[] {1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10  //5
+	 * @param ctrRadicals Number of radicals. In the calling method, define this as follows: int[] ctrRadicals = new int[] {5}; // 0, 1, 2, 3, 4, 5 //100
+	 * @param reactionType
+	 * @throws Exception
+	 */
+	private void runInitialDataAnalysis(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType, String tempFolder) throws Exception{
 		System.out.println("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
 		printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
 		printedResultsTxtFile.write("\n");
-
-		/**
-		 * 
-		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * The code below runs initial data analysis part of cross validation algorithm.
-		 * 
-		 * The code iterates over sorted invalid set of species and their error bars.
-		 * For each species from the list of invalid species the code below runs initial analysis of
-		 * cross validation algorithm.  It is using valid set of species as reference set
-		 * and one species as a target species from invalid set of species. For each
-		 * species from invalid set, the code tries to estimate lower error bar
-		 * than current error bar for the selected target species (invalid species
-		 * with maximum error bar). If calculated error bar is lower that the error bar of
-		 * selected species in rejected list then the code adds that species into valid
-		 * set of species. The code takes next species from invalid set of species with
-		 * the maximum error bar and repeats the procedure above. 
-		 * 
-		 * Iteration stops (terminates) if there will be no rejected species that are added into valid set of species.  
-		 * 
-		 * If the cross validation algorithm can not find and generate a number of
-		 * reactions for selected species, then that species will stay as a member of
-		 * invalid set of species.
-		 * 
-		 * As a final result, the code below generates a set of rejected and set of
-		 * accepted species.
-		 * 
-		 */
-		
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Determines whether a species is added into valid set of species
 		 * 
 		 */
-		
 		boolean addedSpeciesToValidSet=true;
-		
 		int  loop = 1;
-		
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Iteration that terminates when there will be no more species added into the set of valid species.
 		 * 
 		 */
-		
 		while(addedSpeciesToValidSet) {
-		
 		int iteration = 1;
-		
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Set of species that are still member of invalid set of species after completed cross validation algorithm.
 		 *  
 		 */
-		
 		LinkedHashSet<Species> tempInvalidSetOfSpecies = new LinkedHashSet<Species>();
-		
 		LinkedHashSet<Species> tempValidSpecies = new LinkedHashSet<Species>();
-		
 		tempValidSpecies.addAll(validSpecies);
-		
 		int tempValidSpeciesSize = tempValidSpecies.size();
-		
 		/**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
 		 * Iteration through a set of invalid species.
 		 * 
 		 */
-		
 		for (Map.Entry<Species, Double> errorMap : sortedInvalidSpeciesErrorBar.entrySet()) {
-		
 		System.out.println("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
-		
 		printedResultsTxtFile.write("Loop number: " + loop + " Iteration number: " + iteration+ " in Initial analysis of species: " + errorMap.getKey().getRef());
-		
 		printedResultsTxtFile.write("\n");		
-			    
 			    /**
 			     * 
 			     * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -690,8 +630,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	}
 	
 	};
-	printedResultsTxtFile.close();
-	System.out.println("Results file has been closed.");
 	}
 	
 	/**
