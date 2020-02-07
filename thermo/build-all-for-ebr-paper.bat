@@ -1,0 +1,10 @@
+call mvn clean install -DskipTests -f CoMoMath/pom.xml
+call mvn clean install -DskipTests -f CoMoCompChem/pom.xml
+call mvn clean install -DskipTests -f CoMoChemistry/pom.xml
+call mvn clean install -DskipTests -f CoMoOpenBabel/pom.xml
+call mvn clean install -DskipTests -f CoMoTools/pom.xml
+call mvn clean install -DskipTests -f CoMoEnthalpyEstimation/pom.xml
+call mvn clean install -DskipTests -f CoMoThemodynamics/pom.xml
+call mvn clean install -DskipTests -f CoMoIOChemistry/pom.xml
+call mvn clean install -DskipTests -f CoMoNISTWebbook/pom.xml
+call mvn clean install -DskipTests -f CoMoEnthalpyEstimationPaper/pom.xml
