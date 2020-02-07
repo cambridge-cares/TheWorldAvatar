@@ -127,7 +127,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  				String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
  				readingFromCSV.add(e);
  			}
- 			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+ 			
  			List<String[]> ty = new ArrayList<String[]>();
  			ty.add(readingFromCSV.get((readingFromCSV.size()-1))); //grab the most recent real time reading. 
  			broker.putLocal(baseUrl + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(ty));

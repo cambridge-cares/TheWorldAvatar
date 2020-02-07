@@ -37,7 +37,7 @@ public class FrontEndCoordination extends JPSHttpServlet{
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	 JSONObject responseParams = requestParams;
-
+    	 	
 			String directorychosen= getLastModifiedDirectory();
 	    	logger.info("latest directory= "+directorychosen);
 	    	DistributedEnergySystem a = new DistributedEnergySystem();
@@ -55,6 +55,9 @@ public class FrontEndCoordination extends JPSHttpServlet{
  			
     	return responseParams;
     }
+    /*
+     * Gets the latest file created using rdf4j
+     */
     public static String getLastModifiedDirectory() {
     	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
     	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,null);
@@ -62,6 +65,9 @@ public class FrontEndCoordination extends JPSHttpServlet{
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
     }
+    /*
+     * Gets the latest file without using rdf4j. Needs to input the string location of the base folder
+     */
     public static String getLastModifiedDirectoryOld(File directory) {
 		File[] files = directory.listFiles();
 		if (files.length == 0)
@@ -95,6 +101,9 @@ public class FrontEndCoordination extends JPSHttpServlet{
 		}
 		return filechosen.getAbsolutePath() + "/JPS_DES";
 	}
+    /*
+     * Derive and estimate the values to be transacted over the blockchain, to the closest half an hour. 
+     */
     
     public static JSONObject determineValue (JSONObject responseParams) throws JSONException {
 
@@ -129,6 +138,9 @@ public class FrontEndCoordination extends JPSHttpServlet{
 
 		return jo;
     }
+    /*
+     * helper function to determineValue()s
+     */
     public static JSONObject deriveValue(int index, boolean inbetween, JSONObject responseParams) {
 
     	JSONObject jo = new JSONObject();
