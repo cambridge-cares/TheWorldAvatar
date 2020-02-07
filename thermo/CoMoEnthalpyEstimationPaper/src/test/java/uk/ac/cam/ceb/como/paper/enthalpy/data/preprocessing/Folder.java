@@ -1,5 +1,7 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing;
 
+import java.io.File;
+
 /**
  * List of folder created for using across all tests.
  * 
@@ -33,7 +35,8 @@ public enum Folder {
 	ISD_TI_115("isd_ti_115"),
 	ISD_HCO_110("isd_hco_110"),
 	ISD_HCO_115("isd_hco_115"),
-	HD_HCO_110("hd_hco_110");
+	HD_HCO_110("hd_hco_110"),
+	TEMP_FOLDER(System.getProperty("user.home").concat(File.separator));
 	
 	
 	private String folderName;
