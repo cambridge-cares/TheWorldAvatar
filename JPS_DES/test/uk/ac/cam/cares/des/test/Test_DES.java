@@ -122,11 +122,9 @@ public class Test_DES extends TestCase{
 	 */
 	public void testIrradiationRetreiverAgentCall() throws Exception {
 //		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
-		
 		JSONObject jo = new JSONObject();
 		
-		jo.put("folder", baseUrl);
+		jo.put("folder", QueryBroker.getLocalDataPath()+"/JPS_DES");
 		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
 		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
