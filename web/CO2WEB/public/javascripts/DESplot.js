@@ -1,7 +1,7 @@
 /***
 Implements the Sim prototype. for Mau.
 ***/
-console.log('reached DESPLOT here')
+console.log('desplot live find')
 prefix = "http://jparksimulator.com";
 ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
@@ -55,7 +55,7 @@ document.addEventListener("click", function (evt){
     tempGraph = new Chart("temperature", {
       type: 'bar',
       data: {
-        labels:hourOfDay,
+        labels:data.timer,
         datasets: [
           {
           backgroundColor:'rgba(126, 158, 211, 1)',
@@ -99,7 +99,7 @@ document.addEventListener("click", function (evt){
     irradGraph = new Chart("irradiation", {
       type: 'line',
       data: {
-        labels:hourOfDay,
+        labels:data.timer,
         datasets: [
           {
             pointRadius:10,
@@ -145,6 +145,7 @@ document.addEventListener("click", function (evt){
     var weatherjson = {};
     weatherjson["electricalnetwork"] = ENIRI;
     weatherjson["district"]=DISIRI;
+    document.getElementById("loader").style.display = "block";
     console.log(encodeURIComponent(JSON.stringify(weatherjson)))
     var request = $.ajax({
       url: prefix + "/JPS_DES/showDESResult",
@@ -161,9 +162,12 @@ document.addEventListener("click", function (evt){
     createHourlyIntervals();
     makeChart(response);
     makeOutputChart(response);
+    hourOfDay = response.timer;
     configRH("rh1", response.rh1);
     configRH("rh2", response.rh2);
     configRH("rh3", response.rh3);
+    displayHash(response.txHash, response.sandr);
+    document.getElementById("loader").style.display = "none";
   });
 
   }
@@ -172,6 +176,21 @@ document.addEventListener("click", function (evt){
     chart.data.datasets[0].data.shift();
     chart.update();
 }
+  function displayHash(data, sandr){
+    console.log(data);
+    var lst = document.getElementById("txhashes");
+    var le = [];
+    for (let x in data){
+      console.log(x + " : "+data[x]);
+      var li = document.createElement("li");
+      li.appendChild(document.createTextNode(data[x] + "\t" + sandr[x]));
+      li.addEventListener("click", function(){
+        window.open( "https://rinkeby.etherscan.io/tx/"+data[x], "_blank");
+      }, false);
+      lst.appendChild(li);
+      le.push(li);
+    }
+  }
   function addData(chart, elem){
     //get date
     var d = new Date(); 
@@ -205,7 +224,7 @@ function configRH(idofgraph, data){
           label:'Ref',
           pointRadius:2,
           pointHoverRadius:5,
-          borderColor:"#2ecc71",
+          borderColor:"#0ff253",
           data: data[0], 
           fill: false,
         }, 
@@ -220,7 +239,7 @@ function configRH(idofgraph, data){
           label:'Load',
           pointRadius:2,
           pointHoverRadius:5,
-          borderColor:"#e74c3c",
+          borderColor:"#f20fae",
           data: data[2], 
           fill: false,
         }
@@ -238,19 +257,21 @@ function configRH(idofgraph, data){
 }
   function makeOutputChart(data){
     cA = data.residential;
-    cB = data.industrial;
-    cC = data.building;
-    cD = data.fuelcell;
+    cB = data.commercial;
+    cC = data.industrial;
+    cD = data.solar;
+    cE = data.gridsupply;
     
     cA.forEach(function(obj) { obj = parseFloat(obj)});
     cB.forEach(function(obj) { obj = parseFloat(obj)});
     cC.forEach(function(obj) { obj = parseFloat(obj)});
     cD.forEach(function(obj) { obj = parseFloat(obj)});
+    cE.forEach(function(obj) { obj = parseFloat(obj)});
 
     outputGraph = new Chart("graph4", {
       type: 'line',
       data: {
-        labels:hourOfDay,
+        labels:data.timer,
         datasets: [
           {
             label:'Home',
@@ -261,25 +282,33 @@ function configRH(idofgraph, data){
             fill: false,
           }, 
           {
-            label:'Industrial',
+            label:'Commercial',
             pointRadius:10,
             pointHoverRadius:11,
             borderColor:"rgba(85, 71, 189, 1)",
             data: cB, 
             fill: false,
           },  {
-            label:'Commercial',
+            label:'Industrial',
             pointRadius:10,
             pointHoverRadius:11,
             borderColor:"rgba(186, 34, 191, 1)",
             data: cC, 
             fill: false,
           },  {
-            label:'Fuel Cell',
+            label:'Renewable',
             pointRadius:10,
             pointHoverRadius:11,
             borderColor:"rgba(221, 44, 127, 1)",
             data: cD, 
+            fill: false,
+          } ,
+          {
+            label:'Grid Supply',
+            pointRadius:10,
+            pointHoverRadius:11,
+            borderColor:'#d8de2c',
+            data: cE, 
             fill: false,
           }
         ]
@@ -316,4 +345,4 @@ function configRH(idofgraph, data){
     });
   
   }
-  addWeatherData()	
+  addWeatherData()    
