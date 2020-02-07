@@ -1,0 +1,13 @@
+package uk.ac.cam.cares.ebr;
+
+/**
+ * Hello world!
+ *
+ */
+public class App 
+{
+    public static void main( String[] args )
+    {
+        System.out.println( "Hello World!" );
+    }
+}
