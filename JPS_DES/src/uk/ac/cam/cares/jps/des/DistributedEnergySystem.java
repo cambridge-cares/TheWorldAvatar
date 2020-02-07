@@ -24,6 +24,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -574,6 +575,8 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String result = executeSingleCommand(baseUrl, startbatCommand);
 		logger.info("final after calling: " + result);
 		createTimer(baseUrl);
+		String agent = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+		MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
 	}
 	public void createTimer(String baseUrl) throws Exception {

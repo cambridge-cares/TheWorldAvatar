@@ -414,7 +414,7 @@ public class Test_DES extends TestCase{
 	public void testfindlatestdirectory() {
 		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
 		 File baseUrl=new File(dir);
-		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory(baseUrl));
+		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory());
 	}
 	
 	

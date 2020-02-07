@@ -21,6 +21,7 @@ import org.web3j.protocol.http.HttpService;
 import org.web3j.tx.Transfer;
 import org.web3j.utils.Convert;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet(urlPatterns = {"/GetBlock" })
 public class BlockchainWrapper extends JPSHttpServlet{
@@ -45,7 +46,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		return result;
  
 	}
-	public static String dotransact(String sender, String recipient, double moneyEth) throws IOException, Exception {
+	public  String dotransact(String sender, String recipient, double moneyEth) throws IOException, Exception {
 		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
 		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
 		//use Transfer class to send ether
@@ -53,12 +54,15 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		if (moneyEth < 1E-12) {
 			return "Value too small, transaction not completed";
 		}
-		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\"+sender); //password
+		//why is this taking so much time? 
+		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", AgentLocator.getCurrentJpsAppDirectory(this) + "/resources/" +  sender); //password
+		
+//		Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\"+sender); //password
 		TransactionReceipt transactionReceipt = Transfer.sendFunds(web3,  credentials, recipient , new BigDecimal(moneyEth, MathContext.DECIMAL64), Convert.Unit.SZABO).send();
 		return  transactionReceipt.getTransactionHash();
 		
 	}
-	public static JSONObject calculateTrade(JSONObject jo) {
+	public  JSONObject calculateTrade(JSONObject jo) {
 		double totalsolar = Double.parseDouble((String) jo.get("solar"));
 		double totalelectric =Double.parseDouble((String) jo.get("gridsupply"));
 		double totalindus = Double.parseDouble((String)jo.get("industrial"));

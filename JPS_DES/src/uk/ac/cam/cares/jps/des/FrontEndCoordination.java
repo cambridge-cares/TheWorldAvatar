@@ -17,7 +17,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 @WebServlet(urlPatterns = { "/showDESResult"})
@@ -35,8 +37,8 @@ public class FrontEndCoordination extends JPSHttpServlet{
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
     	 JSONObject responseParams = requestParams;
-    	 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
-			String directorychosen= getLastModifiedDirectory(new File(dir));
+
+			String directorychosen= getLastModifiedDirectory();
 	    	logger.info("latest directory= "+directorychosen);
 	    	DistributedEnergySystem a = new DistributedEnergySystem();
 	    	responseParams = a.provideJSONResult(directorychosen);
@@ -53,7 +55,14 @@ public class FrontEndCoordination extends JPSHttpServlet{
  			
     	return responseParams;
     }
-    public static String getLastModifiedDirectory(File directory) {
+    public static String getLastModifiedDirectory() {
+    	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,null);
+		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
+		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
+    	return listmap.get(0)[0];
+    }
+    public static String getLastModifiedDirectoryOld(File directory) {
 		File[] files = directory.listFiles();
 		if (files.length == 0)
 			return directory.getAbsolutePath();
