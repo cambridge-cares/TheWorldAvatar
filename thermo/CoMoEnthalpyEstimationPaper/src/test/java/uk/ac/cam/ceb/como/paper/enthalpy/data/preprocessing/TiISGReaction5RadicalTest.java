@@ -24,7 +24,7 @@ public class TiISGReaction5RadicalTest {
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
 		ISGReactionType isgReactionType = new ISGReactionType(true);
 		Files.createDirectories(Paths.get(Folder.REACTIONS_TI_ISG.getFolderName()+folderName));
-		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionType);
+		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(Folder.COMPOUNDS_REF_TI.getFolderName(), Folder.REF_POOL_TI.getFolderName(), Folder.REACTIONS_TI_ISG.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isgReactionType);
 	}
 	
 	@Test

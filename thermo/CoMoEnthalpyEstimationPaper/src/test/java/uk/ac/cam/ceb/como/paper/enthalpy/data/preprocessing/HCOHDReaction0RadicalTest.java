@@ -23,7 +23,7 @@ public class HCOHDReaction0RadicalTest {
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
 		HDReactionType hdReactionTypePreProcessing = new HDReactionType();
 		Files.createDirectories(Paths.get(Folder.REACTIONS_HCO_HD.getFolderName()+folderName));
-		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_HCO_HD.getFolderName(), Folder.REF_POOL_HCO_HD.getFolderName(), Folder.REACTIONS_HCO_HD.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, hdReactionTypePreProcessing);
+		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(Folder.COMPOUNDS_REF_HCO_HD.getFolderName(), Folder.REF_POOL_HCO_HD.getFolderName(), Folder.REACTIONS_HCO_HD.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_0, hdReactionTypePreProcessing);
 	}
 	
 	@Test
