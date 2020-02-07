@@ -27,12 +27,12 @@ public enum Folder {
 	VALID_TEST_RESULT_ISD_HCO_110("valid-test-results-isd-hco-1-1-0"),
 	VALID_TEST_RESULT_ISD_HCO_115("valid-test-results-isd-hco-1-1-5"),
 	VALID_TEST_RESULT_HD_HCO_110("valid-test-results-hd-hco-1-1-0"),
-	ISG_TI_115("isg_Ti_115"),
-	ISG_HCO_115("isg_HCO_115"),
-	ISG_HCO_110("isg_HCO_110"),
-	ISD_TI_115("isd_Ti_115"),
-	ISD_HCO_110("isd_HCO_110"),
-	ISD_HCO_115("isd_HCO_115"),
+	ISG_TI_115("isg_ti_115"),
+	ISG_HCO_115("isg_hco_115"),
+	ISG_HCO_110("isg_hco_110"),
+	ISD_TI_115("isd_ti_115"),
+	ISD_HCO_110("isd_hco_110"),
+	ISD_HCO_115("isd_hco_115"),
 	HD_HCO_110("hd_hco_110");
 	
 	

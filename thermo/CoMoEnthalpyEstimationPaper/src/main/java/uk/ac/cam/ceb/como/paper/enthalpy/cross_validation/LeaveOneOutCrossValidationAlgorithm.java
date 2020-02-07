@@ -59,7 +59,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-	static String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+	String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
 	
 	/**
 	 * 
@@ -72,14 +72,14 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based reference species
 	 * 
 	 */
-//	static String srcCompoundsRef = "g09/";
+//	String srcCompoundsRef = "g09/";
 	
 	/**
 	 * 
 	 * HCO-based reference species
 	 * 	 *  
 	 */
-//	static String srcCompoundsRef = "esc/g09/";
+//	String srcCompoundsRef = "esc/g09/";
 	
 	/**
 	 * 
@@ -88,8 +88,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 
-	static String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
-//	static String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
+	String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+//	String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
 	
 	/**
 	 * 
@@ -104,7 +104,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Ti-based target species
 	 * 
 	 */
-//	static String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
+//	String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
 
 	/**
 	 * 
@@ -113,9 +113,9 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-//	static String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
+//	String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
 	
-//	static String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
+//	String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -123,7 +123,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\";
+	String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\";
 	
 	/**
 	 * 
@@ -132,13 +132,13 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-//	static String destRList = "ti_isg/";
-//	static String destRList = "hco_hhd/";
-//	static String destRList = "hco_isd/";
-//	static String destRList = "hco_isg/";
-//	static String destRList = "hco_hd/";
-//	static String destRList = "hco_hhd_111/";
-//	static String destRList = "hco_hd_111/";
+//	String destRList = "ti_isg/";
+//	String destRList = "hco_hhd/";
+//	String destRList = "hco_isd/";
+//	String destRList = "hco_isg/";
+//	String destRList = "hco_hd/";
+//	String destRList = "hco_hhd_111/";
+//	String destRList = "hco_hd_111/";
 	 
 	/**
 	 * 
@@ -146,7 +146,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-	static String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+	String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
 	
 	/**
 	 * 
@@ -154,21 +154,21 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings temp folder path.
 	 * 
 	 */
-//	static String tempFolder = "LeaveOneOutCrossValidation_temp/";
+//	String tempFolder = "LeaveOneOutCrossValidation_temp/";
 
-	public static Map<String, Integer[]> mapElPairing = new HashMap<>();
+	public Map<String, Integer[]> mapElPairing = new HashMap<>();
 
-	public static Map<Species, Integer> spinMultiplicity = new HashMap<>();
+	public Map<Species, Integer> spinMultiplicity = new HashMap<>();
 
-	public static LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
+	public LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
 
-	public static LinkedHashSet<Species> invalidSpecies = new LinkedHashSet<Species>();
+	public LinkedHashSet<Species> invalidSpecies = new LinkedHashSet<Species>();
 
-	public static Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
+	public Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
 
-	public static Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
+	public Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
 
-	public static Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
+	public Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
 
 	/**
 	 * 
@@ -177,7 +177,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static int[] ctrRuns = new int[] {1};
+	int[] ctrRuns = new int[] {1};
 
 	/**
 	 * 
@@ -186,7 +186,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static int[] ctrRes = new int[] {1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10  //5
+	int[] ctrRes = new int[] {1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10  //5
 
 	/**
 	 * 
@@ -195,18 +195,19 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	static int[] ctrRadicals = new int[] {5}; // 0, 1, 2, 3, 4, 5 //100
+	int[] ctrRadicals = new int[] {5}; // 0, 1, 2, 3, 4, 5 //100
 
 	
 	public static void main(String[] args) throws Exception {
 		
 		String folderName="ti_isg";
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
-		preProcessingAndInitialDataAnalysis(false, srcCompoundsRef, srcRefPool, destRList+folderName, ctrRuns, ctrRes, ctrRadicals, isgReactionTypePreProcessing);
+		LeaveOneOutCrossValidationAlgorithm crossValidation = new LeaveOneOutCrossValidationAlgorithm();
+		crossValidation.preProcessingAndInitialDataAnalysis(false, crossValidation.srcCompoundsRef, crossValidation.srcRefPool, crossValidation.destRList+folderName, crossValidation.ctrRuns, crossValidation.ctrRes, crossValidation.ctrRadicals, isgReactionTypePreProcessing);
 		
 	}
 	
-	public static void preProcessingAndInitialDataAnalysis(boolean isTest, String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
+	public void preProcessingAndInitialDataAnalysis(boolean isTest, String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
 	
 	/**
 	 * Folder that contains Gaussian files.
@@ -891,8 +892,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		 */
 		}
 		printedResultsTxtFile.close();
-//	     System.exit(0);
-		
 	}
 	
 	/**
