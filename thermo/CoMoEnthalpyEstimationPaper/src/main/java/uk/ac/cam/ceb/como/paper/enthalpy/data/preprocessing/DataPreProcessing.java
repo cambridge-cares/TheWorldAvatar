@@ -176,9 +176,9 @@ public class DataPreProcessing {
                 	 */
                     Map<Species, Collection<ReactionList>> results = new HashMap<Species, Collection<ReactionList>>();
                     
-                      System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " \\ " + refSpecies.size() + ")");
+                      System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                         
-                      printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " \\ " + refSpecies.size() + ")");
+                      printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                   printedResultsFile.write("\n");
                     
                   ctr++;

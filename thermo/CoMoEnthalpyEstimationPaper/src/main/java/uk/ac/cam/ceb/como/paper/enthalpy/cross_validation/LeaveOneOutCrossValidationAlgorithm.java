@@ -1,6 +1,7 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.cross_validation;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -35,183 +36,46 @@ import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalcu
 import uk.ac.cam.ceb.paper.sort.Sort;
 
 /**
+ * This class contains the method that runs the Global Cross Validation
+ * algorithm published in [1].
  * 
- * @author nk510 (caresssd@hermes.cam.ac.uk)
- * @author am2145(am2145@cam.ac.uk) *         This class contains main method that runs Global cross validation
- *         algorithm published in [1].
+ * References:
  * 
- *         References used in documentation:
+ * [1] Philipp Buerger, First-Principles Investigation of Titanium
+ * Dioxide Gas-Phase Precursor Chemistry, PhD thesis, St Edmund’s
+ * College, February 7, 2017.
  * 
- *         [1] Philipp Buerger, First-Principles Investigation of Titanium
- *         Dioxide Gas-Phase Precursor Chemistry, PhD thesis, St Edmund’s
- *         College, February 7, 2017.
+ * This code requires at least Java 1.8
+ * This code can run from shell on HPC or local machine.
  * 
- *         This code requires at least Java 1.8
- *         
- *         This code is running (start) from shell on HPC or local machine.
- *
+ * @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ * @author Angiras Menon (am2145@cam.ac.uk)
+ * @author Feroz Farazi (msff2@cam.ac.uk)
  */
 
 public class LeaveOneOutCrossValidationAlgorithm {
-    
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Local Windows machine settings.
-	 * 
-	 */
-	String srcCompoundsRef = "D:/Users/NK/Documents/philipp/180-pb556/g09/";
-	//String srcCompoundsRef = "test_data/Gaussian/hco/";
+	String tempFolder = System.getProperty("user.dir").concat(File.separator);
 	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	/**
-	 * 
-	 * Ti-based reference species
-	 * 
-	 */
-//	String srcCompoundsRef = "g09/";
-	
-	/**
-	 * 
-	 * HCO-based reference species
-	 * 	 *  
-	 */
-//	String srcCompoundsRef = "esc/g09/";
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Local Windows machine settings.
-	 * Ti-based species.
-	 * 
-	 */
-
-	String srcRefPool = "D:/Users/NK/Documents/philipp/180-pb556/ref_scaled_kJperMols_v8.csv";
-//	String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Ti-based target species
-	 * 
-	 */
-//	String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
-	/**
-	 * HCO-based target species for HD reactions.
-	 */
-	//String srcRefPool = "test_data/csv/calc-enthalpy_scaled_kJperMol-junit-hd.csv";
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HCO-based target species
-	 * 
-	 */
-	
-//	String srcRefPool = "test_data/csv/ref-enthalpy_scaled_kJperMol.csv";
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Local Windows machine settings.
-	 * 
-	 */
-	
-	String destRList = "D:/Users/NK/Documents/philipp/180-pb556/";
-//	String destRList = "test_data/test_results/";
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings
-	 * 
-	 */
-	
-//	String destRList = "ti_isg/";
-//	String destRList = "hco_hhd/";
-//	String destRList = "hco_isd/";
-//	String destRList = "hco_isg/";
-//	String destRList = "hco_hd/";
-//	String destRList = "hco_hhd_111/";
-//	String destRList = "hco_hd_111/";
-	 
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Local Windows machine settings.
-	 * 
-	 */
-	String tempFolder = "D:/Data-Philip/LeaveOneOutCrossValidation_temp/";
-	
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * HPC settings temp folder path.
-	 * 
-	 */
-//	String tempFolder = "LeaveOneOutCrossValidation_temp/";
-
 	public Map<String, Integer[]> mapElPairing = new HashMap<>();
-
 	public Map<Species, Integer> spinMultiplicity = new HashMap<>();
-
 	public LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
-
 	public LinkedHashSet<Species> invalidSpecies = new LinkedHashSet<Species>();
-
 	public Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
-
 	public Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
-
 	public Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
 
 	/**
 	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Number of runs.
 	 * 
+	 * @param srcCompoundsRef
+	 * @param srcRefPool
+	 * @param destRList
+	 * @param ctrRuns Number of runs. In the calling method, define this as follows: int[] ctrRuns = new int[] {1};
+	 * @param ctrRes Number of reactions that will be generated for each species. In the calling method, define this as follows: int[] ctrRes = new int[] {1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10  //5
+	 * @param ctrRadicals Number of radicals. In the calling method, define this as follows: int[] ctrRadicals = new int[] {5}; // 0, 1, 2, 3, 4, 5 //100
+	 * @param reactionType
+	 * @throws Exception
 	 */
-	
-	int[] ctrRuns = new int[] {1};
-
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Number of reactions that will be generated for each species.
-	 * 
-	 */
-	
-	int[] ctrRes = new int[] {1}; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10  //5
-
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * Number of radicals.
-	 * 
-	 */
-	
-	int[] ctrRadicals = new int[] {5}; // 0, 1, 2, 3, 4, 5 //100
-
-	
-	public static void main(String[] args) throws Exception {
-		
-		String folderName="ti_isg";
-		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
-		LeaveOneOutCrossValidationAlgorithm crossValidation = new LeaveOneOutCrossValidationAlgorithm();
-		crossValidation.preProcessingAndInitialDataAnalysis(crossValidation.srcCompoundsRef, crossValidation.srcRefPool, crossValidation.destRList+folderName, crossValidation.ctrRuns, crossValidation.ctrRes, crossValidation.ctrRadicals, isgReactionTypePreProcessing);
-	}
-	
 	public void preProcessingAndInitialDataAnalysis(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
 	
 	/**
@@ -819,8 +683,6 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		String runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
 		
 		System.out.println("Cross Validattion algorithm terminated (completed) in " + runningTime);
-		
-		printedResultsTxtFile.write("Cross Validattion algorithm terminated (completed) in " + runningTime);
 		
 		printedResultsTxtFile.write("\n");
 		
