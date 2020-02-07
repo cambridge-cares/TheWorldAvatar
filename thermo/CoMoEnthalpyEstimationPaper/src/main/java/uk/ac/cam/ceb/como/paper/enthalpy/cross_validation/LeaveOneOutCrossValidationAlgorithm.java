@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -59,7 +60,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-	String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\\";
+	String srcCompoundsRef = "D:/Users/NK/Documents/philipp/180-pb556/g09/";
+	//String srcCompoundsRef = "test_data/Gaussian/hco/";
 	
 	/**
 	 * 
@@ -85,10 +87,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Local Windows machine settings.
+	 * Ti-based species.
 	 * 
 	 */
 
-	String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\ref_scaled_kJperMols_v8.csv";
+	String srcRefPool = "D:/Users/NK/Documents/philipp/180-pb556/ref_scaled_kJperMols_v8.csv";
 //	String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
 	
 	/**
@@ -105,7 +108,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 //	String srcRefPool = "csv/ref_scaled_kJperMols_v8.csv";
-
+	/**
+	 * HCO-based target species for HD reactions.
+	 */
+	//String srcRefPool = "test_data/csv/calc-enthalpy_scaled_kJperMol-junit-hd.csv";
+	
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -113,9 +120,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-//	String srcRefPool = "csv/ref-enthalpy_scaled_kJperMol.csv";
-	
-//	String srcRefPool = "test_data/csv/ref_scaled_kJperMols_v8.csv";
+//	String srcRefPool = "test_data/csv/ref-enthalpy_scaled_kJperMol.csv";
 	/**
 	 * 
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -123,7 +128,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	
-	String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\";
+	String destRList = "D:/Users/NK/Documents/philipp/180-pb556/";
+//	String destRList = "test_data/test_results/";
 	
 	/**
 	 * 
@@ -146,7 +152,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Local Windows machine settings.
 	 * 
 	 */
-	String tempFolder = "D:\\Data-Philip\\LeaveOneOutCrossValidation_temp\\";
+	String tempFolder = "D:/Data-Philip/LeaveOneOutCrossValidation_temp/";
 	
 	/**
 	 * 
@@ -203,11 +209,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		String folderName="ti_isg";
 		ISGReactionType isgReactionTypePreProcessing = new ISGReactionType(true);
 		LeaveOneOutCrossValidationAlgorithm crossValidation = new LeaveOneOutCrossValidationAlgorithm();
-		crossValidation.preProcessingAndInitialDataAnalysis(false, crossValidation.srcCompoundsRef, crossValidation.srcRefPool, crossValidation.destRList+folderName, crossValidation.ctrRuns, crossValidation.ctrRes, crossValidation.ctrRadicals, isgReactionTypePreProcessing);
-		
+		crossValidation.preProcessingAndInitialDataAnalysis(crossValidation.srcCompoundsRef, crossValidation.srcRefPool, crossValidation.destRList+folderName, crossValidation.ctrRuns, crossValidation.ctrRes, crossValidation.ctrRadicals, isgReactionTypePreProcessing);
 	}
 	
-	public void preProcessingAndInitialDataAnalysis(boolean isTest, String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
+	public void preProcessingAndInitialDataAnalysis(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType) throws Exception {
 	
 	/**
 	 * Folder that contains Gaussian files.
@@ -236,14 +241,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
     JSONObject speciesJsonObject = new JSONObject();
     
     BufferedWriter printedResultsTxtFile;
-    if(isTest) {
-    	
-    	System.out.println(destRList+"/" + "printed_results" + ".txt");
-    	
-	 printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
-    }else {
-	 printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"\\" + "printed_results" + ".txt", true));
-    }
+   	System.out.println(destRList+"/" + "printed_results" + ".txt");	
+   	printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
 	    /**
 		 * 
 		 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -287,7 +286,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	
 	dpp.getPreProcessingCorssValidation(reactionType,1500, 20, destRList, ctrRadicals, ctrRuns, ctrRes, refSpecies,
 				spinMultiplicity, lSolver.loadLPSolver(mapElPairing, 15000, tempFolder), validSpecies, invalidSpecies,
-				validReaction, invalidReaction,printedResultsTxtFile,isTest);
+				validReaction, invalidReaction,printedResultsTxtFile);
 
 
 	/**
@@ -297,19 +296,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	BufferedWriter validReactionFile;
-	if(isTest) {
 	validReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "valid_reactions" + ".txt", true));
-	}
-	/**
-	 * 
-	 * @author nk510 (caresssd@hermes.cam.ac.uk)
-	 * After completing pre-processing step, it prints valid reactions in txt file and on console.
-	 * 
-	 */
-	else {
- validReactionFile = new BufferedWriter(new FileWriter(destRList + "\\"+"data-pre-processing" + "\\"+ "valid_reactions" + ".txt", true));
-	}
-
 
 	System.out.println("Valid reactions writing . . . ");
 	
@@ -327,19 +314,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	BufferedWriter invalidReactionFile;
-	if(isTest) {
-     invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
-	}else {
-		
-		/**
-		 * 
-		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Printing invalid reactions in txt file and on console. PC machine settings.
-		 * 
-		 */
-	
-	invalidReactionFile = new BufferedWriter(new FileWriter(destRList +"\\"+ "data-pre-processing" + "\\"+ "invalid_reactions" + ".txt", true));
-	}
+    invalidReactionFile = new BufferedWriter(new FileWriter(destRList + "/" +"data-pre-processing" + "/"+ "invalid_reactions" + ".txt", true));
 
 
 	System.out.println("Invalid reactions writing . . .");
@@ -369,14 +344,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 	BufferedWriter validSpeciesFile;
-	if(isTest) {
 	validSpeciesFile = new BufferedWriter(new FileWriter(destRList + "/"+"data-pre-processing" + "/"+ "valid_species" + ".txt", true));
-	}else {
-
-	 validSpeciesFile = new BufferedWriter(new FileWriter(destRList+"\\" + "data-pre-processing" + "\\"+ "valid_species" + ".txt", true));
-	}
-
-	
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -384,11 +352,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 *   
 	 */
 	BufferedWriter printedJsonFileInitialValidSpecies;
-	if(isTest) {
-	 printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
-	}else {
-	 printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"\\" +"data-pre-processing" + "\\"+ "printed_initial_valid_species" +".json", true));
-	}
+	printedJsonFileInitialValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_valid_species" +".json", true));
 	
 	errorBarCalculation.generateInitialValidSpeciesFile(validSpeciesFile, printedResultsTxtFile,printedJsonFileInitialValidSpecies,validSpecies);
 
@@ -418,14 +382,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * HPC settings
 	 * 
 	 */
-	if(isTest) {
 	invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList+"/" + "data-pre-processing" + "/"+ "invalid_species" + ".txt", true));
-	}else {
-
-	invalidSpeciesFile = new BufferedWriter(new FileWriter(destRList + "\\"+"data-pre-processing" + "\\"+ "invalid_species" + ".txt", true));
-	}
-	
-
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -433,11 +390,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 *   
 	 */
 	BufferedWriter printedJsonFileInitialInvalidSpecies;
-	if(isTest) {
 	printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"/" +"data-pre-processing" + "/"+ "printed_initial_invalid_species" +".json", true));
-	}else {
-	printedJsonFileInitialInvalidSpecies = new BufferedWriter(new FileWriter(destRList+"\\" +"data-pre-processing" + "\\"+ "printed_initial_invalid_species" +".json", true));
-	}
 	errorBarCalculation.generateInitialInvalidSpeciesFile(invalidSpeciesFile, printedResultsTxtFile, printedJsonFileInitialInvalidSpecies,invalidSpecies, validSpecies);
 
 		/**
@@ -473,16 +426,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
 		printedResultsTxtFile.write(ss.getKey().getRef() + " " +  ss.getValue());
 		
 		printedResultsTxtFile.write("\n");
-		
 		}
-		
-		if(!isTest) {
-			
-		
+
 		System.out.println("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
-		
 		printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Initial Analysis step - - - - - - - - - - - - - - - -");
-		
 		printedResultsTxtFile.write("\n");
 
 		/**
@@ -718,7 +665,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Line below is settings that works on PC (Windows) machine
 	 *  
 	 */
-	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList + "\\"+"initial-analysis" + "\\" + "loop_" + loop +"\\"+ "printed_valid_species_loop_"+loop +".json", true));
+	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList + "/"+"initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_valid_species_loop_"+loop +".json", true));
 
 	for(Species s: validSpecies) {
 
@@ -765,7 +712,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * Settings for PC machine.
 	 */
-	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList +"\\"+"initial-analysis" + "\\" + "loop_" + loop +"\\"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
+	BufferedWriter invalidSpeciesFileAfterInitialAnalysis = new BufferedWriter(new FileWriter(destRList +"/"+"initial-analysis" + "/" + "loop_" + loop +"/"+ "invalid_species_after_"+loop+"._loop" + ".txt", true));
 	
 	/**
 	 * @author nk510 (caresssd@hermes.cam.ac.uk)
@@ -788,7 +735,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * Line below is settings that works on PC (Windows) machine
 	 *  
 	 */
-	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "\\"+"initial-analysis" + "\\" + "loop_" + loop +"\\"+ "printed_invalid_species_loop_"+loop +".json", true));
+	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "/"+"initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_invalid_species_loop_"+loop +".json", true));
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, printedJsonFileInvalidSpeciesInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies,printedResultsTxtFile);
 	
@@ -881,17 +828,8 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	}
 	
 	};
-	
-	
-	
-		/**
-		 * 
-		 * @author nk510 (caresssd@hermes.cam.ac.uk)
-		 * Terminates program
-		 * 
-		 */
-		}
-		printedResultsTxtFile.close();
+	printedResultsTxtFile.close();
+	System.out.println("Results file has been closed.");
 	}
 	
 	/**
