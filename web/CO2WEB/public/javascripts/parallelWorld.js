@@ -740,13 +740,14 @@ function openWindowGen(id){
             if (pair[0] == "entity"){}
             else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
             {
-                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"></td></tr>';
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
                 nameSet.push(pair[0]);
             }else {
                 //for units, just place below the box. 
                 //remove the last 
-                inputsHTML = inputsHTML.slice(0, -10)
+                inputsHTML = inputsHTML.slice(0, -101)
                 //add in the units 
                 var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td><td> </td></tr>';
                 inputsHTML = inputsHTML + inputLine;
@@ -794,13 +795,14 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
             if (pair[0] == "entity"){}
             else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
             {
-                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'] + '" style="float: right;"></td></tr>';
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
                 nameSet.push(pair[0]);
             }else {
                 //for units, just place below the box. 
                 //remove the last 
-                inputsHTML = inputsHTML.slice(0, -10)
+                inputsHTML = inputsHTML.slice(0, -101)
                 //add in the units 
                 var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td><td> </td></tr>';
                 inputsHTML = inputsHTML + inputLine;
@@ -855,15 +857,9 @@ function SubmitTable(e) {
         var value = row.getElementsByTagName('input')[0].value;
         
         
+		value =parseFloat(value)
         if(name.includes('EBus-001')){ // This is a slack bus, the magnitude is always 1 and the angle is always 0
-            //console.log("label forbidden= "+label);
-            if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
-                if (value !== 1){
-                    alert('The value of the voltage magnitude and Vm for a slack bus should always be 1 kV (in p.u format)')
-                    proceed = false;
-                }
-            }
-            
+            //console.log("label forbidden= "+label);            
             if (name.includes('VoltageAngle')|| name.includes('Va_EBus')){
                 if (value !== 0){
                     alert('The value of the voltage angle and Va for a slack bus should always be 0 degree')
@@ -1062,7 +1058,12 @@ asyncLoop({
             contentType: 'application/json; charset=utf-8'
         });
 
-        request.done(function() {
+        request.done(function(data) {
+            //check for alert
+            response = JSON.parse(data);
+            if (response.status != "converged"){
+                alert("This simulation has not converged. Use different values.");
+            }
             json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
             displayCO2(json);
             var delayInMilliseconds = 10000; //1 second
