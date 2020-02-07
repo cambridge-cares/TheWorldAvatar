@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -65,6 +66,14 @@ public class FrontEndCoordination extends JPSHttpServlet{
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
     }
+    public static String getTimeInXsdTimeStampFormat(long millis) { 
+		Date date = new Date(millis);
+	    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"); 
+		format.setTimeZone(TimeZone.getTimeZone("GMT+0:00"));
+	    String timestamp = format.format(date);
+	    return timestamp.replace(" ", "T");
+	} 
+    
     /*
      * Gets the latest file without using rdf4j. Needs to input the string location of the base folder
      */
