@@ -54,13 +54,13 @@ import uk.ac.cam.ceb.paper.sort.Sort;
  */
 
 public class LeaveOneOutCrossValidationAlgorithm {
-	public Map<String, Integer[]> mapElPairing = new HashMap<>();
-	public Map<Species, Integer> spinMultiplicity = new HashMap<>();
+	public Map<String, Integer[]> mapElPairing = new LinkedHashMap<>();
+	public Map<Species, Integer> spinMultiplicity = new LinkedHashMap<>();
 	public LinkedHashSet<Species> validSpecies = new LinkedHashSet<Species>();
 	public LinkedHashSet<Species> invalidSpecies = new LinkedHashSet<Species>();
-	public Map<Reaction, Double> validReaction = new HashMap<Reaction, Double>();
-	public Map<Reaction, Double> invalidReaction = new HashMap<Reaction, Double>();
-	public Map<Species, Double> invalidSpeciesErrorBar = new HashMap<Species, Double>();
+	public Map<Reaction, Double> validReaction = new LinkedHashMap<Reaction, Double>();
+	public Map<Reaction, Double> invalidReaction = new LinkedHashMap<Reaction, Double>();
+	public Map<Species, Double> invalidSpeciesErrorBar = new LinkedHashMap<Species, Double>();
     BufferedWriter printedResultsTxtFile;
     Map<Species, Double> sortedInvalidSpeciesErrorBar;
     ErrorBarCalculation errorBarCalculation;
