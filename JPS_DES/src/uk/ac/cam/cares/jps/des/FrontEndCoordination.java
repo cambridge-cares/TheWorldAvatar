@@ -157,8 +157,8 @@ public class FrontEndCoordination extends JPSHttpServlet{
     	List<String> l = Arrays.asList(types);
     	if (inbetween) {
     		for (String i: l ) {
-    			String[] j =  (String[]) responseParams.get(i);
-    			jo.put(i,j[index]);
+    			String[] j =  (String[]) responseParams.get(i );
+    			jo.put(i,j[index +1]);
     		}
         }else {
         	for (String i: l ) {

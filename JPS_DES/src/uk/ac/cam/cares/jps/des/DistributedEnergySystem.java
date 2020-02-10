@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -437,62 +438,77 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		List<String[]> csvofschedule = new ArrayList<String[]>();
 		List<String> header = new ArrayList<String>();
 		header.add("");
-		for (int x = 1; x <= sizeofiriuser; x++) {
-			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x - 1));
+		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
+		//grab the current time
+		List<String> lst = Arrays.asList(timeschedu);
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
+		//rotate it according to the current hour to get the appropriate profile
+		Collections.rotate(lst, h);
+		for(int x=1;x<=sizeofiriuser;x++) {
+			List<String[]> subList =  new ArrayList<String[]>();
+			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
 			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
-			System.out.println("sizeofresult=" + resultListx.size());
+			System.out.println("sizeofresult="+resultListx.size());
 
-			List<String> groupPmax = new ArrayList<String>();
-			groupPmax.add(iriofgroupuser.get(x - 1));
-			List<String> groupPmin = new ArrayList<String>();
-			groupPmin.add(iriofgroupuser.get(x - 1));
-			List<String> groupw = new ArrayList<String>();
-			groupw.add(iriofgroupuser.get(x - 1));
-			List<String> groupschedule = new ArrayList<String>();
-			groupschedule.add(iriofgroupuser.get(x - 1));
-			int countr = 1;
-			groupschedule.add("t1");
-			for (int d = 0; d < resultListx.size(); d++) {
-				// for(int t=0;t<keysx.length;t++) {
-				// System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
-				if (resultListx.get(d)[5].contentEquals("1")) {
-					if (x == 1) {
+			List<String>groupPmax=new ArrayList<String>();
+			groupPmax.add(iriofgroupuser.get(x-1));
+			List<String>groupPmin=new ArrayList<String>();
+			groupPmin.add(iriofgroupuser.get(x-1));
+			List<String>groupw=new ArrayList<String>();
+			groupw.add(iriofgroupuser.get(x-1));
+			List<String>groupschedule=new ArrayList<String>();
+			groupschedule.add(iriofgroupuser.get(x-1));
+			//Set to ensure no repeats
+			int countr = 1; 
+			groupschedule.add(lst.get(0));
+			for(int d=0;d<resultListx.size();d++) {
+					if(resultListx.get(d)[5].contentEquals("1")) {
+						//System.out.println("equipment= "+resultListx.get(d)[0]);
+						if(x==1) {
 						header.add(resultListx.get(d)[0].split("#")[1].split("-")[0]);
+						}
+						groupPmax.add(resultListx.get(d)[1]);
+						groupPmin.add(resultListx.get(d)[2]);
+						groupw.add(resultListx.get(d)[3]);
 					}
-					groupPmax.add(resultListx.get(d)[1]);
-					groupPmin.add(resultListx.get(d)[2]);
-					groupw.add(resultListx.get(d)[3]);
-				}
-				// HashMap
-				countr++;
-				if (countr < 12) { // 11 appliances
-					groupschedule.add(resultListx.get(d)[4]);
-				} else {
-					groupschedule.add(resultListx.get(d)[4]);
-					String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-					csvofschedule.add(arr4);
-					// clear groupschedule
-					groupschedule = new ArrayList<String>();
-					countr = 1;
-					if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
-						groupschedule.add(iriofgroupuser.get(x - 1));
-						groupschedule.add("t" + Integer.toString(Integer.parseInt(resultListx.get(d)[5]) + 1));
-					}
-				}
-
+					//HashMap
+					countr ++; 
+					if (countr < 12) { //11 appliances
+						groupschedule.add(resultListx.get(d)[4]);
+					} else {
+						groupschedule.add(resultListx.get(d)[4]);
+						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
+						subList.add(arr4);
+						//clear groupschedule
+						groupschedule=new ArrayList<String>();
+						countr = 1;
+						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
+							groupschedule.add(iriofgroupuser.get(x-1));
+//							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+							groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
+						}
+					}				
 			}
 
+			
 			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
 			csvofpmax.add(arr1);
 			String[] arr2 = groupPmin.toArray(new String[groupPmin.size()]);
 			csvofpmin.add(arr2);
 			String[] arr3 = groupw.toArray(new String[groupw.size()]);
 			csvofw.add(arr3);
+			System.out.println(groupschedule.toArray().toString());
 			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-			csvofschedule.add(arr4);
+			subList.add(arr4);
+			Collections.rotate(subList, -h);
+			csvofschedule.addAll(subList);
 
 		}
 

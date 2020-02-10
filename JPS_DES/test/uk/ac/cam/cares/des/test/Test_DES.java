@@ -3,8 +3,12 @@ package uk.ac.cam.cares.des.test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
@@ -113,15 +117,11 @@ public class Test_DES extends TestCase{
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
 		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
-//	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-//		System.out.println(resultStart);
 	}
 	/*
 	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
 	 */
 	public void testIrradiationRetreiverAgentCall() throws Exception {
-//		String dataPath = QueryBroker.getLocalDataPath();
 		JSONObject jo = new JSONObject();
 		
 		jo.put("folder", QueryBroker.getLocalDataPath()+"/JPS_DES");
@@ -315,7 +315,19 @@ public class Test_DES extends TestCase{
 		List<String[]> csvofschedule= new ArrayList<String[]>();
 		List<String>header=new ArrayList<String>();
 		header.add("");
+		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
+		//grab the current time
+		List<String> lst = Arrays.asList(timeschedu);
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
+		//rotate it according to the current hour to get the appropriate profile
+		Collections.rotate(lst, h);
+		header.add("");
 		for(int x=1;x<=sizeofiriuser;x++) {
+			List<String[]> subList =  new ArrayList<String[]>();
 			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
@@ -333,7 +345,7 @@ public class Test_DES extends TestCase{
 			groupschedule.add(iriofgroupuser.get(x-1));
 			//Set to ensure no repeats
 			int countr = 1; 
-			groupschedule.add("t1");
+			groupschedule.add(lst.get(0));
 			for(int d=0;d<resultListx.size();d++) {
 					if(resultListx.get(d)[5].contentEquals("1")) {
 						//System.out.println("equipment= "+resultListx.get(d)[0]);
@@ -351,13 +363,14 @@ public class Test_DES extends TestCase{
 					} else {
 						groupschedule.add(resultListx.get(d)[4]);
 						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-						csvofschedule.add(arr4);
+						subList.add(arr4);
 						//clear groupschedule
 						groupschedule=new ArrayList<String>();
 						countr = 1;
 						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
 							groupschedule.add(iriofgroupuser.get(x-1));
-							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+//							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+							groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
 						}
 					}				
 			}
@@ -369,8 +382,11 @@ public class Test_DES extends TestCase{
 			csvofpmin.add(arr2);
 			String[] arr3 = groupw.toArray(new String[groupw.size()]);
 			csvofw.add(arr3);
+			System.out.println(groupschedule.toArray().toString());
 			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-			csvofschedule.add(arr4);
+			subList.add(arr4);
+			Collections.rotate(subList, -h);
+			csvofschedule.addAll(subList);
 
 		}
 		String[] arr0 = header.toArray(new String[header.size()]);		
@@ -387,7 +403,7 @@ public class Test_DES extends TestCase{
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
 		
-		//csvofschedule.add(0, arr0);
+		csvofschedule.add(0, arr0);
 		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
 		System.out.println(schedulecsv);
 		
