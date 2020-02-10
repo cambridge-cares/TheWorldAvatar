@@ -48,6 +48,8 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	public static final String PROP_OBJ_ENTHALPY = "hasStandardEnthalpyOfFormation";
 	public static final String PROP_DAT_UNITS = "units";
 	public static final String PROP_DAT_CAS_REG_ID = "casRegistryID";
+	public static final String PROP_DAT_GEOMETRY = "hasGeometry";
+	public static final String PROP_DAT_ATOMIC_BONDS = "hasAtomicBond";
 	public static final String PROP_OBJ_TEMPERATURE = "hasReferenceTemperature";
 	public static final String VALUE_REF_TEMPERATURE = "298.15";
 	public static final String VALUE_REF_TEMP_UNITS = "K";
@@ -216,6 +218,8 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 		addEnthalpyOfFormation(speciesInfo);
 		addCASRegistryNumber(speciesInfo);
 		addAlternativeNames(speciesInfo);
+		addGeometryString(speciesInfo);
+		addAtomicBondsString(speciesInfo);
 	}
 	
 	/**
@@ -331,6 +335,30 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 			for(String altName: speciesInfo.getOtherNames()){
 				iNistOWLWriter.addDataPropertyToIndividual(individual, SKOS_URL, PROP_DAT_ALT_LABEL, HASH, altName);
 			}
+		}
+	}
+	
+	/**
+	 * Adds the geometry to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addGeometryString(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getSpeciesGeometry()!=null)
+		{
+			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_GEOMETRY, HASH, speciesInfo.getSpeciesGeometry().getString());
+		}
+	}
+	
+	/**
+	 * Adds all atomic bonds as a string to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addAtomicBondsString(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getSpeciesGeometry()!=null)
+		{
+			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_ATOMIC_BONDS, HASH, speciesInfo.getSpeciesGeometry().getAtomicBondsString());
 		}
 	}
 	
