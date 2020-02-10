@@ -29,17 +29,16 @@ public class DESCoordination extends JPSHttpServlet{
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	 	JSONObject responseParams = requestParams;
  			
  	        String scenarioUrl = BucketHelper.getScenarioUrl();
  	        String usecaseUrl = BucketHelper.getUsecaseUrl();
  	        logger.info("DES scenarioUrl = " + scenarioUrl + ", usecaseUrl = " + usecaseUrl);
- 	        responseParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
+ 	        requestParams.put("baseUrl",  QueryBroker.getLocalDataPath()+"/JPS_DES");
  	        AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData", requestParams.toString());
  	        String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", requestParams.toString());
  	       
  			System.gc();
-    	return responseParams;
+    	return requestParams;
     }
 
 }
