@@ -23,7 +23,7 @@ public class HCOISDReaction5RadicalTest {
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
 		ISDReactionType isdReactionTypePreProcessing = new ISDReactionType();
 		Files.createDirectories(Paths.get(Folder.REACTIONS_HCO_ISD.getFolderName()+folderName));
-		leaveOneOutCrossValidationAlgorithm.preProcessingAndInitialDataAnalysis(true, Folder.COMPOUNDS_REF_HCO.getFolderName(), Folder.REF_POOL_HCO.getFolderName(), Folder.REACTIONS_HCO_ISD.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isdReactionTypePreProcessing);
+		leaveOneOutCrossValidationAlgorithm.runGlobalCrossValidation(Folder.COMPOUNDS_REF_HCO.getFolderName(), Folder.REF_POOL_HCO.getFolderName(), Folder.REACTIONS_HCO_ISD.getFolderName()+folderName, Utils.ctrRuns, Utils.ctrRes, Utils.ctrRadicals_5, isdReactionTypePreProcessing, Folder.TEMP_FOLDER.getFolderName());
 	}
 	
 	@Test
