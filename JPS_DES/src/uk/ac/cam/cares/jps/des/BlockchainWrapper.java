@@ -131,7 +131,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 				}else {
 					double ethResid = totalresid*136.36;
 					String transactionhashs2 = dotransact(addrOfC, SolarPublicKey,ethResid);
-					whoTowho.add("Commercial to Solar");
+					whoTowho.add("Residential to Solar");
 					totalresid -= totalsolar;
 					totalList.add(transactionhashs2);
 					

@@ -1,0 +1,5219 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mods xmlns="http://como.cheng.cam.ac.uk/MoDS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd">
+<algorithms>
+<algorithm name="Sobol_Alg_1">
+<details>
+<detail name="algorithm_type">Sobol</detail>
+<detail name="model_name">exe</detail>
+<detail name="objective_function">SumOfSquares</detail>
+<detail name="output_by_case">false</detail>
+<detail name="output_values">true</detail>
+<detail name="n_points">1000</detail>
+<detail name="seed">500000</detail>
+<detail name="output_interval">100</detail>
+<detail name="optimisable_param_subtypes">subtype_PVfarm1_GenMW_6_1 subtype_PVfarm2_GenMW_8_1 subtype_PVfarm3_GenMW_10_1 subtype_PVfarm1_BusNomVolt_6 subtype_PVfarm2_BusNomVolt_8 subtype_PVfarm3_BusNomVolt_10</detail>
+<detail name="response_param_subtypes">subtype_Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT subtype_Bus1_NEA%20Transfer%20hub_PWBUSANGLE subtype_Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT subtype_Bus1_NEA%20Transfer%20hub_BusLoadMW subtype_Bus1_NEA%20Transfer%20hub_BusLoadMVR subtype_Bus1_NEA%20Transfer%20hub_BusGenMW subtype_Bus1_NEA%20Transfer%20hub_BusGenMVR subtype_Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT subtype_Bus2_Phase%201%20%28Option1%29_PWBUSANGLE subtype_Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT subtype_Bus2_Phase%201%20%28Option1%29_BusLoadMW subtype_Bus2_Phase%201%20%28Option1%29_BusLoadMVR subtype_Bus2_Phase%201%20%28Option1%29_BusGenMW subtype_Bus2_Phase%201%20%28Option1%29_BusGenMVR subtype_Bus4_AC%20Link%20bus_PWBUSPUVOLT subtype_Bus4_AC%20Link%20bus_PWBUSANGLE subtype_Bus4_AC%20Link%20bus_PWBUSKVVOLT subtype_Bus4_AC%20Link%20bus_BusLoadMW subtype_Bus4_AC%20Link%20bus_BusLoadMVR subtype_Bus4_AC%20Link%20bus_BusGenMW subtype_Bus4_AC%20Link%20bus_BusGenMVR subtype_Bus5_sub%20microgrid%201_PWBUSPUVOLT subtype_Bus5_sub%20microgrid%201_PWBUSANGLE subtype_Bus5_sub%20microgrid%201_PWBUSKVVOLT subtype_Bus5_sub%20microgrid%201_BusLoadMW subtype_Bus5_sub%20microgrid%201_BusLoadMVR subtype_Bus5_sub%20microgrid%201_BusGenMW subtype_Bus5_sub%20microgrid%201_BusGenMVR subtype_Bus6_PVfarm1_PWBUSPUVOLT subtype_Bus6_PVfarm1_PWBUSANGLE subtype_Bus6_PVfarm1_PWBUSKVVOLT subtype_Bus6_PVfarm1_BusLoadMW subtype_Bus6_PVfarm1_BusLoadMVR subtype_Bus6_PVfarm1_BusGenMW subtype_Bus6_PVfarm1_BusGenMVR subtype_Bus7_sub%20microgrid%202_PWBUSPUVOLT subtype_Bus7_sub%20microgrid%202_PWBUSANGLE subtype_Bus7_sub%20microgrid%202_PWBUSKVVOLT subtype_Bus7_sub%20microgrid%202_BusLoadMW subtype_Bus7_sub%20microgrid%202_BusLoadMVR subtype_Bus7_sub%20microgrid%202_BusGenMW subtype_Bus7_sub%20microgrid%202_BusGenMVR subtype_Bus8_PVfarm2_PWBUSPUVOLT subtype_Bus8_PVfarm2_PWBUSANGLE subtype_Bus8_PVfarm2_PWBUSKVVOLT subtype_Bus8_PVfarm2_BusLoadMW subtype_Bus8_PVfarm2_BusLoadMVR subtype_Bus8_PVfarm2_BusGenMW subtype_Bus8_PVfarm2_BusGenMVR subtype_Bus9_sub%20microgrid%203_PWBUSPUVOLT subtype_Bus9_sub%20microgrid%203_PWBUSANGLE subtype_Bus9_sub%20microgrid%203_PWBUSKVVOLT subtype_Bus9_sub%20microgrid%203_BusLoadMW subtype_Bus9_sub%20microgrid%203_BusLoadMVR subtype_Bus9_sub%20microgrid%203_BusGenMW subtype_Bus9_sub%20microgrid%203_BusGenMVR subtype_Bus10_PVfarm3_PWBUSPUVOLT subtype_Bus10_PVfarm3_PWBUSANGLE subtype_Bus10_PVfarm3_PWBUSKVVOLT subtype_Bus10_PVfarm3_BusLoadMW subtype_Bus10_PVfarm3_BusLoadMVR subtype_Bus10_PVfarm3_BusGenMW subtype_Bus10_PVfarm3_BusGenMVR subtype_Bus11_11_PWBUSPUVOLT subtype_Bus11_11_PWBUSANGLE subtype_Bus11_11_PWBUSKVVOLT subtype_Bus11_11_BusLoadMW subtype_Bus11_11_BusLoadMVR subtype_Bus11_11_BusGenMW subtype_Bus11_11_BusGenMVR subtype_Bus12_12_PWBUSPUVOLT subtype_Bus12_12_PWBUSANGLE subtype_Bus12_12_PWBUSKVVOLT subtype_Bus12_12_BusLoadMW subtype_Bus12_12_BusLoadMVR subtype_Bus12_12_BusGenMW subtype_Bus12_12_BusGenMVR subtype_Bus13_Desalination3_PWBUSPUVOLT subtype_Bus13_Desalination3_PWBUSANGLE subtype_Bus13_Desalination3_PWBUSKVVOLT subtype_Bus13_Desalination3_BusLoadMW subtype_Bus13_Desalination3_BusLoadMVR subtype_Bus13_Desalination3_BusGenMW subtype_Bus13_Desalination3_BusGenMVR subtype_Bus14_FishHatchery_PWBUSPUVOLT subtype_Bus14_FishHatchery_PWBUSANGLE subtype_Bus14_FishHatchery_PWBUSKVVOLT subtype_Bus14_FishHatchery_BusLoadMW subtype_Bus14_FishHatchery_BusLoadMVR subtype_Bus14_FishHatchery_BusGenMW subtype_Bus14_FishHatchery_BusGenMVR subtype_Bus15_Desalination2_PWBUSPUVOLT subtype_Bus15_Desalination2_PWBUSANGLE subtype_Bus15_Desalination2_PWBUSKVVOLT subtype_Bus15_Desalination2_BusLoadMW subtype_Bus15_Desalination2_BusLoadMVR subtype_Bus15_Desalination2_BusGenMW subtype_Bus15_Desalination2_BusGenMVR subtype_Bus16_Desalination1_PWBUSPUVOLT subtype_Bus16_Desalination1_PWBUSANGLE subtype_Bus16_Desalination1_PWBUSKVVOLT subtype_Bus16_Desalination1_BusLoadMW subtype_Bus16_Desalination1_BusLoadMVR subtype_Bus16_Desalination1_BusGenMW subtype_Bus16_Desalination1_BusGenMVR subtype_Bus17_Phase1%20loads_PWBUSPUVOLT subtype_Bus17_Phase1%20loads_PWBUSANGLE subtype_Bus17_Phase1%20loads_PWBUSKVVOLT subtype_Bus17_Phase1%20loads_BusLoadMW subtype_Bus17_Phase1%20loads_BusLoadMVR subtype_Bus17_Phase1%20loads_BusGenMW subtype_Bus17_Phase1%20loads_BusGenMVR subtype_Bus18_sub%20load1_PWBUSPUVOLT subtype_Bus18_sub%20load1_PWBUSANGLE subtype_Bus18_sub%20load1_PWBUSKVVOLT subtype_Bus18_sub%20load1_BusLoadMW subtype_Bus18_sub%20load1_BusLoadMVR subtype_Bus18_sub%20load1_BusGenMW subtype_Bus18_sub%20load1_BusGenMVR subtype_Bus20_sub%20load2_PWBUSPUVOLT subtype_Bus20_sub%20load2_PWBUSANGLE subtype_Bus20_sub%20load2_PWBUSKVVOLT subtype_Bus20_sub%20load2_BusLoadMW subtype_Bus20_sub%20load2_BusLoadMVR subtype_Bus20_sub%20load2_BusGenMW subtype_Bus20_sub%20load2_BusGenMVR subtype_Bus22_sub%20load%203_PWBUSPUVOLT subtype_Bus22_sub%20load%203_PWBUSANGLE subtype_Bus22_sub%20load%203_PWBUSKVVOLT subtype_Bus22_sub%20load%203_BusLoadMW subtype_Bus22_sub%20load%203_BusLoadMVR subtype_Bus22_sub%20load%203_BusGenMW subtype_Bus22_sub%20load%203_BusGenMVR subtype_Bus24_Load2_PWBUSPUVOLT subtype_Bus24_Load2_PWBUSANGLE subtype_Bus24_Load2_PWBUSKVVOLT subtype_Bus24_Load2_BusLoadMW subtype_Bus24_Load2_BusLoadMVR subtype_Bus24_Load2_BusGenMW subtype_Bus24_Load2_BusGenMVR subtype_Bus25_Load3_PWBUSPUVOLT subtype_Bus25_Load3_PWBUSANGLE subtype_Bus25_Load3_PWBUSKVVOLT subtype_Bus25_Load3_BusLoadMW subtype_Bus25_Load3_BusLoadMVR subtype_Bus25_Load3_BusGenMW subtype_Bus25_Load3_BusGenMVR subtype_Bus26_Load4_PWBUSPUVOLT subtype_Bus26_Load4_PWBUSANGLE subtype_Bus26_Load4_PWBUSKVVOLT subtype_Bus26_Load4_BusLoadMW subtype_Bus26_Load4_BusLoadMVR subtype_Bus26_Load4_BusGenMW subtype_Bus26_Load4_BusGenMVR subtype_Bus27_MarineGenerators_PWBUSPUVOLT subtype_Bus27_MarineGenerators_PWBUSANGLE subtype_Bus27_MarineGenerators_PWBUSKVVOLT subtype_Bus27_MarineGenerators_BusLoadMW subtype_Bus27_MarineGenerators_BusLoadMVR subtype_Bus27_MarineGenerators_BusGenMW subtype_Bus27_MarineGenerators_BusGenMVR subtype_Bus28_EnergyStorage1_PWBUSPUVOLT subtype_Bus28_EnergyStorage1_PWBUSANGLE subtype_Bus28_EnergyStorage1_PWBUSKVVOLT subtype_Bus28_EnergyStorage1_BusLoadMW subtype_Bus28_EnergyStorage1_BusLoadMVR subtype_Bus28_EnergyStorage1_BusGenMW subtype_Bus28_EnergyStorage1_BusGenMVR subtype_Bus29_WindTurbine1_PWBUSPUVOLT subtype_Bus29_WindTurbine1_PWBUSANGLE subtype_Bus29_WindTurbine1_PWBUSKVVOLT subtype_Bus29_WindTurbine1_BusLoadMW subtype_Bus29_WindTurbine1_BusLoadMVR subtype_Bus29_WindTurbine1_BusGenMW subtype_Bus29_WindTurbine1_BusGenMVR subtype_Bus30_WindSub1_PWBUSPUVOLT subtype_Bus30_WindSub1_PWBUSANGLE subtype_Bus30_WindSub1_PWBUSKVVOLT subtype_Bus30_WindSub1_BusLoadMW subtype_Bus30_WindSub1_BusLoadMVR subtype_Bus30_WindSub1_BusGenMW subtype_Bus30_WindSub1_BusGenMVR subtype_Bus31_DCstorage1_PWBUSPUVOLT subtype_Bus31_DCstorage1_PWBUSANGLE subtype_Bus31_DCstorage1_PWBUSKVVOLT subtype_Bus31_DCstorage1_BusLoadMW subtype_Bus31_DCstorage1_BusLoadMVR subtype_Bus31_DCstorage1_BusGenMW subtype_Bus31_DCstorage1_BusGenMVR subtype_Bus32_DCstorage2_PWBUSPUVOLT subtype_Bus32_DCstorage2_PWBUSANGLE subtype_Bus32_DCstorage2_PWBUSKVVOLT subtype_Bus32_DCstorage2_BusLoadMW subtype_Bus32_DCstorage2_BusLoadMVR subtype_Bus32_DCstorage2_BusGenMW subtype_Bus32_DCstorage2_BusGenMVR subtype_Bus33_WindSub2_PWBUSPUVOLT subtype_Bus33_WindSub2_PWBUSANGLE subtype_Bus33_WindSub2_PWBUSKVVOLT subtype_Bus33_WindSub2_BusLoadMW subtype_Bus33_WindSub2_BusLoadMVR subtype_Bus33_WindSub2_BusGenMW subtype_Bus33_WindSub2_BusGenMVR subtype_Bus34_DCstorage3_PWBUSPUVOLT subtype_Bus34_DCstorage3_PWBUSANGLE subtype_Bus34_DCstorage3_PWBUSKVVOLT subtype_Bus34_DCstorage3_BusLoadMW subtype_Bus34_DCstorage3_BusLoadMVR subtype_Bus34_DCstorage3_BusGenMW subtype_Bus34_DCstorage3_BusGenMVR subtype_Bus35_WindSub3_PWBUSPUVOLT subtype_Bus35_WindSub3_PWBUSANGLE subtype_Bus35_WindSub3_PWBUSKVVOLT subtype_Bus35_WindSub3_BusLoadMW subtype_Bus35_WindSub3_BusLoadMVR subtype_Bus35_WindSub3_BusGenMW subtype_Bus35_WindSub3_BusGenMVR</detail>
+</details>
+</algorithm>
+<algorithm name="HDMR_Alg_1">
+<details>
+<detail name="algorithm_type">Surrogate</detail>
+<detail name="output_by_case">false</detail>
+<detail name="output_values">true</detail>
+<detail name="surrogate_type">HDMR</detail>
+<detail name="fit_to_coded_responses">false</detail>
+<detail name="global">false</detail>
+<detail name="order">10</detail>
+<detail name="HDMRorder">2</detail>
+<detail name="r_squared_tol">0.99999</detail>
+<detail name="optimisable_param_subtypes">subtype_PVfarm1_GenMW_6_1 subtype_PVfarm2_GenMW_8_1 subtype_PVfarm3_GenMW_10_1 subtype_PVfarm1_BusNomVolt_6 subtype_PVfarm2_BusNomVolt_8 subtype_PVfarm3_BusNomVolt_10</detail>
+<detail name="response_param_subtypes">subtype_Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT subtype_Bus1_NEA%20Transfer%20hub_PWBUSANGLE subtype_Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT subtype_Bus1_NEA%20Transfer%20hub_BusLoadMW subtype_Bus1_NEA%20Transfer%20hub_BusLoadMVR subtype_Bus1_NEA%20Transfer%20hub_BusGenMW subtype_Bus1_NEA%20Transfer%20hub_BusGenMVR subtype_Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT subtype_Bus2_Phase%201%20%28Option1%29_PWBUSANGLE subtype_Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT subtype_Bus2_Phase%201%20%28Option1%29_BusLoadMW subtype_Bus2_Phase%201%20%28Option1%29_BusLoadMVR subtype_Bus2_Phase%201%20%28Option1%29_BusGenMW subtype_Bus2_Phase%201%20%28Option1%29_BusGenMVR subtype_Bus4_AC%20Link%20bus_PWBUSPUVOLT subtype_Bus4_AC%20Link%20bus_PWBUSANGLE subtype_Bus4_AC%20Link%20bus_PWBUSKVVOLT subtype_Bus4_AC%20Link%20bus_BusLoadMW subtype_Bus4_AC%20Link%20bus_BusLoadMVR subtype_Bus4_AC%20Link%20bus_BusGenMW subtype_Bus4_AC%20Link%20bus_BusGenMVR subtype_Bus5_sub%20microgrid%201_PWBUSPUVOLT subtype_Bus5_sub%20microgrid%201_PWBUSANGLE subtype_Bus5_sub%20microgrid%201_PWBUSKVVOLT subtype_Bus5_sub%20microgrid%201_BusLoadMW subtype_Bus5_sub%20microgrid%201_BusLoadMVR subtype_Bus5_sub%20microgrid%201_BusGenMW subtype_Bus5_sub%20microgrid%201_BusGenMVR subtype_Bus6_PVfarm1_PWBUSPUVOLT subtype_Bus6_PVfarm1_PWBUSANGLE subtype_Bus6_PVfarm1_PWBUSKVVOLT subtype_Bus6_PVfarm1_BusLoadMW subtype_Bus6_PVfarm1_BusLoadMVR subtype_Bus6_PVfarm1_BusGenMW subtype_Bus6_PVfarm1_BusGenMVR subtype_Bus7_sub%20microgrid%202_PWBUSPUVOLT subtype_Bus7_sub%20microgrid%202_PWBUSANGLE subtype_Bus7_sub%20microgrid%202_PWBUSKVVOLT subtype_Bus7_sub%20microgrid%202_BusLoadMW subtype_Bus7_sub%20microgrid%202_BusLoadMVR subtype_Bus7_sub%20microgrid%202_BusGenMW subtype_Bus7_sub%20microgrid%202_BusGenMVR subtype_Bus8_PVfarm2_PWBUSPUVOLT subtype_Bus8_PVfarm2_PWBUSANGLE subtype_Bus8_PVfarm2_PWBUSKVVOLT subtype_Bus8_PVfarm2_BusLoadMW subtype_Bus8_PVfarm2_BusLoadMVR subtype_Bus8_PVfarm2_BusGenMW subtype_Bus8_PVfarm2_BusGenMVR subtype_Bus9_sub%20microgrid%203_PWBUSPUVOLT subtype_Bus9_sub%20microgrid%203_PWBUSANGLE subtype_Bus9_sub%20microgrid%203_PWBUSKVVOLT subtype_Bus9_sub%20microgrid%203_BusLoadMW subtype_Bus9_sub%20microgrid%203_BusLoadMVR subtype_Bus9_sub%20microgrid%203_BusGenMW subtype_Bus9_sub%20microgrid%203_BusGenMVR subtype_Bus10_PVfarm3_PWBUSPUVOLT subtype_Bus10_PVfarm3_PWBUSANGLE subtype_Bus10_PVfarm3_PWBUSKVVOLT subtype_Bus10_PVfarm3_BusLoadMW subtype_Bus10_PVfarm3_BusLoadMVR subtype_Bus10_PVfarm3_BusGenMW subtype_Bus10_PVfarm3_BusGenMVR subtype_Bus11_11_PWBUSPUVOLT subtype_Bus11_11_PWBUSANGLE subtype_Bus11_11_PWBUSKVVOLT subtype_Bus11_11_BusLoadMW subtype_Bus11_11_BusLoadMVR subtype_Bus11_11_BusGenMW subtype_Bus11_11_BusGenMVR subtype_Bus12_12_PWBUSPUVOLT subtype_Bus12_12_PWBUSANGLE subtype_Bus12_12_PWBUSKVVOLT subtype_Bus12_12_BusLoadMW subtype_Bus12_12_BusLoadMVR subtype_Bus12_12_BusGenMW subtype_Bus12_12_BusGenMVR subtype_Bus13_Desalination3_PWBUSPUVOLT subtype_Bus13_Desalination3_PWBUSANGLE subtype_Bus13_Desalination3_PWBUSKVVOLT subtype_Bus13_Desalination3_BusLoadMW subtype_Bus13_Desalination3_BusLoadMVR subtype_Bus13_Desalination3_BusGenMW subtype_Bus13_Desalination3_BusGenMVR subtype_Bus14_FishHatchery_PWBUSPUVOLT subtype_Bus14_FishHatchery_PWBUSANGLE subtype_Bus14_FishHatchery_PWBUSKVVOLT subtype_Bus14_FishHatchery_BusLoadMW subtype_Bus14_FishHatchery_BusLoadMVR subtype_Bus14_FishHatchery_BusGenMW subtype_Bus14_FishHatchery_BusGenMVR subtype_Bus15_Desalination2_PWBUSPUVOLT subtype_Bus15_Desalination2_PWBUSANGLE subtype_Bus15_Desalination2_PWBUSKVVOLT subtype_Bus15_Desalination2_BusLoadMW subtype_Bus15_Desalination2_BusLoadMVR subtype_Bus15_Desalination2_BusGenMW subtype_Bus15_Desalination2_BusGenMVR subtype_Bus16_Desalination1_PWBUSPUVOLT subtype_Bus16_Desalination1_PWBUSANGLE subtype_Bus16_Desalination1_PWBUSKVVOLT subtype_Bus16_Desalination1_BusLoadMW subtype_Bus16_Desalination1_BusLoadMVR subtype_Bus16_Desalination1_BusGenMW subtype_Bus16_Desalination1_BusGenMVR subtype_Bus17_Phase1%20loads_PWBUSPUVOLT subtype_Bus17_Phase1%20loads_PWBUSANGLE subtype_Bus17_Phase1%20loads_PWBUSKVVOLT subtype_Bus17_Phase1%20loads_BusLoadMW subtype_Bus17_Phase1%20loads_BusLoadMVR subtype_Bus17_Phase1%20loads_BusGenMW subtype_Bus17_Phase1%20loads_BusGenMVR subtype_Bus18_sub%20load1_PWBUSPUVOLT subtype_Bus18_sub%20load1_PWBUSANGLE subtype_Bus18_sub%20load1_PWBUSKVVOLT subtype_Bus18_sub%20load1_BusLoadMW subtype_Bus18_sub%20load1_BusLoadMVR subtype_Bus18_sub%20load1_BusGenMW subtype_Bus18_sub%20load1_BusGenMVR subtype_Bus20_sub%20load2_PWBUSPUVOLT subtype_Bus20_sub%20load2_PWBUSANGLE subtype_Bus20_sub%20load2_PWBUSKVVOLT subtype_Bus20_sub%20load2_BusLoadMW subtype_Bus20_sub%20load2_BusLoadMVR subtype_Bus20_sub%20load2_BusGenMW subtype_Bus20_sub%20load2_BusGenMVR subtype_Bus22_sub%20load%203_PWBUSPUVOLT subtype_Bus22_sub%20load%203_PWBUSANGLE subtype_Bus22_sub%20load%203_PWBUSKVVOLT subtype_Bus22_sub%20load%203_BusLoadMW subtype_Bus22_sub%20load%203_BusLoadMVR subtype_Bus22_sub%20load%203_BusGenMW subtype_Bus22_sub%20load%203_BusGenMVR subtype_Bus24_Load2_PWBUSPUVOLT subtype_Bus24_Load2_PWBUSANGLE subtype_Bus24_Load2_PWBUSKVVOLT subtype_Bus24_Load2_BusLoadMW subtype_Bus24_Load2_BusLoadMVR subtype_Bus24_Load2_BusGenMW subtype_Bus24_Load2_BusGenMVR subtype_Bus25_Load3_PWBUSPUVOLT subtype_Bus25_Load3_PWBUSANGLE subtype_Bus25_Load3_PWBUSKVVOLT subtype_Bus25_Load3_BusLoadMW subtype_Bus25_Load3_BusLoadMVR subtype_Bus25_Load3_BusGenMW subtype_Bus25_Load3_BusGenMVR subtype_Bus26_Load4_PWBUSPUVOLT subtype_Bus26_Load4_PWBUSANGLE subtype_Bus26_Load4_PWBUSKVVOLT subtype_Bus26_Load4_BusLoadMW subtype_Bus26_Load4_BusLoadMVR subtype_Bus26_Load4_BusGenMW subtype_Bus26_Load4_BusGenMVR subtype_Bus27_MarineGenerators_PWBUSPUVOLT subtype_Bus27_MarineGenerators_PWBUSANGLE subtype_Bus27_MarineGenerators_PWBUSKVVOLT subtype_Bus27_MarineGenerators_BusLoadMW subtype_Bus27_MarineGenerators_BusLoadMVR subtype_Bus27_MarineGenerators_BusGenMW subtype_Bus27_MarineGenerators_BusGenMVR subtype_Bus28_EnergyStorage1_PWBUSPUVOLT subtype_Bus28_EnergyStorage1_PWBUSANGLE subtype_Bus28_EnergyStorage1_PWBUSKVVOLT subtype_Bus28_EnergyStorage1_BusLoadMW subtype_Bus28_EnergyStorage1_BusLoadMVR subtype_Bus28_EnergyStorage1_BusGenMW subtype_Bus28_EnergyStorage1_BusGenMVR subtype_Bus29_WindTurbine1_PWBUSPUVOLT subtype_Bus29_WindTurbine1_PWBUSANGLE subtype_Bus29_WindTurbine1_PWBUSKVVOLT subtype_Bus29_WindTurbine1_BusLoadMW subtype_Bus29_WindTurbine1_BusLoadMVR subtype_Bus29_WindTurbine1_BusGenMW subtype_Bus29_WindTurbine1_BusGenMVR subtype_Bus30_WindSub1_PWBUSPUVOLT subtype_Bus30_WindSub1_PWBUSANGLE subtype_Bus30_WindSub1_PWBUSKVVOLT subtype_Bus30_WindSub1_BusLoadMW subtype_Bus30_WindSub1_BusLoadMVR subtype_Bus30_WindSub1_BusGenMW subtype_Bus30_WindSub1_BusGenMVR subtype_Bus31_DCstorage1_PWBUSPUVOLT subtype_Bus31_DCstorage1_PWBUSANGLE subtype_Bus31_DCstorage1_PWBUSKVVOLT subtype_Bus31_DCstorage1_BusLoadMW subtype_Bus31_DCstorage1_BusLoadMVR subtype_Bus31_DCstorage1_BusGenMW subtype_Bus31_DCstorage1_BusGenMVR subtype_Bus32_DCstorage2_PWBUSPUVOLT subtype_Bus32_DCstorage2_PWBUSANGLE subtype_Bus32_DCstorage2_PWBUSKVVOLT subtype_Bus32_DCstorage2_BusLoadMW subtype_Bus32_DCstorage2_BusLoadMVR subtype_Bus32_DCstorage2_BusGenMW subtype_Bus32_DCstorage2_BusGenMVR subtype_Bus33_WindSub2_PWBUSPUVOLT subtype_Bus33_WindSub2_PWBUSANGLE subtype_Bus33_WindSub2_PWBUSKVVOLT subtype_Bus33_WindSub2_BusLoadMW subtype_Bus33_WindSub2_BusLoadMVR subtype_Bus33_WindSub2_BusGenMW subtype_Bus33_WindSub2_BusGenMVR subtype_Bus34_DCstorage3_PWBUSPUVOLT subtype_Bus34_DCstorage3_PWBUSANGLE subtype_Bus34_DCstorage3_PWBUSKVVOLT subtype_Bus34_DCstorage3_BusLoadMW subtype_Bus34_DCstorage3_BusLoadMVR subtype_Bus34_DCstorage3_BusGenMW subtype_Bus34_DCstorage3_BusGenMVR subtype_Bus35_WindSub3_PWBUSPUVOLT subtype_Bus35_WindSub3_PWBUSANGLE subtype_Bus35_WindSub3_PWBUSKVVOLT subtype_Bus35_WindSub3_BusLoadMW subtype_Bus35_WindSub3_BusLoadMVR subtype_Bus35_WindSub3_BusGenMW subtype_Bus35_WindSub3_BusGenMVR</detail>
+<detail name="previous_algorithms">Sobol_Alg_1</detail>
+</details>
+</algorithm>
+</algorithms>
+<cases>
+<case name="CaseGroup1_Case1">
+<details>
+<detail name="executable_name">cmd.exe</detail>
+<detail name="working_directory"/>
+<detail name="args">/c ..\..\..\Run.bat </detail>
+</details>
+</case>
+</cases>
+<files>
+<file file_name="MODS_SIM_INITFILE_CaseGroup1.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+<file file_name="MODS_SIM_INITFILE_AIVarInitReadFile.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+<file file_name="IN.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+<file file_name="OUT.csv">
+<details>
+<detail name="file_type">DSV</detail>
+<detail name="delimiter">,</detail>
+</details>
+</file>
+</files>
+<parameters>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_BusGenMW" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus1_NEA%20Transfer%20hub_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus1_NEA%20Transfer%20hub_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA%20Transfer%20hub_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus1_NEA Transfer hub_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_BusGenMW" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus2_Phase%201%20%28Option1%29_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus2_Phase%201%20%28Option1%29_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase%201%20%28Option1%29_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus2_Phase 1 (Option1)_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_BusGenMW" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus4_AC%20Link%20bus_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus4_AC%20Link%20bus_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC%20Link%20bus_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus4_AC Link bus_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_BusGenMW" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus5_sub%20microgrid%201_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus5_sub%20microgrid%201_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub%20microgrid%201_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus5_sub microgrid 1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus6_PVfarm1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus6_PVfarm1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus6_PVfarm1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_BusGenMW" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus7_sub%20microgrid%202_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus7_sub%20microgrid%202_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub%20microgrid%202_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus7_sub microgrid 2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_BusGenMW" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus8_PVfarm2_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus8_PVfarm2_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus8_PVfarm2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_BusGenMW" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus9_sub%20microgrid%203_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus9_sub%20microgrid%203_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub%20microgrid%203_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus9_sub microgrid 3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_BusGenMW" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus10_PVfarm3_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus10_PVfarm3_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus10_PVfarm3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus11_11_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus11_11_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus11_11_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus11_11_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus11_11_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_BusGenMW" preserve_white_space="true" subtype="subtype_Bus11_11_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus11_11_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus11_11_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus11_11_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus12_12_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus12_12_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus12_12_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus12_12_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus12_12_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_BusGenMW" preserve_white_space="true" subtype="subtype_Bus12_12_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus12_12_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus12_12_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus12_12_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_BusGenMW" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus13_Desalination3_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus13_Desalination3_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus13_Desalination3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_BusGenMW" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus14_FishHatchery_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus14_FishHatchery_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus14_FishHatchery_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_BusGenMW" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus15_Desalination2_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus15_Desalination2_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus15_Desalination2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus16_Desalination1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus16_Desalination1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus16_Desalination1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_BusGenMW" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus17_Phase1%20loads_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus17_Phase1%20loads_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1%20loads_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus17_Phase1 loads_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus18_sub%20load1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus18_sub%20load1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub%20load1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus18_sub load1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_BusGenMW" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus20_sub%20load2_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus20_sub%20load2_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub%20load2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus20_sub load2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_BusGenMW" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus22_sub%20load%203_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus22_sub%20load%203_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub%20load%203_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus22_sub load 3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus24_Load2_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus24_Load2_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus24_Load2_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus24_Load2_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus24_Load2_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_BusGenMW" preserve_white_space="true" subtype="subtype_Bus24_Load2_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus24_Load2_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus24_Load2_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus24_Load2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus25_Load3_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus25_Load3_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus25_Load3_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus25_Load3_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus25_Load3_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_BusGenMW" preserve_white_space="true" subtype="subtype_Bus25_Load3_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus25_Load3_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus25_Load3_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus25_Load3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus26_Load4_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus26_Load4_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus26_Load4_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus26_Load4_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus26_Load4_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_BusGenMW" preserve_white_space="true" subtype="subtype_Bus26_Load4_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus26_Load4_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus26_Load4_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus26_Load4_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_BusGenMW" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus27_MarineGenerators_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus27_MarineGenerators_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus27_MarineGenerators_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus28_EnergyStorage1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus28_EnergyStorage1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus28_EnergyStorage1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus29_WindTurbine1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus29_WindTurbine1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus29_WindTurbine1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus30_WindSub1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus30_WindSub1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus30_WindSub1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_BusGenMW" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus31_DCstorage1_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus31_DCstorage1_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus31_DCstorage1_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_BusGenMW" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus32_DCstorage2_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus32_DCstorage2_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus32_DCstorage2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_BusGenMW" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus33_WindSub2_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus33_WindSub2_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus33_WindSub2_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_BusGenMW" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus34_DCstorage3_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus34_DCstorage3_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus34_DCstorage3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_PWBUSPUVOLT" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_PWBUSPUVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_PWBUSPUVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_PWBUSANGLE" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_PWBUSANGLE" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_PWBUSANGLE</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_PWBUSKVVOLT" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_PWBUSKVVOLT" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_PWBUSKVVOLT</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_BusLoadMW" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_BusLoadMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusLoadMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_BusLoadMVR" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_BusLoadMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusLoadMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_BusGenMW" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_BusGenMW" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusGenMW</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter case_detail_sep=";" n_params_per_case="1" name="Bus35_WindSub3_BusGenMVR" preserve_white_space="true" subtype="subtype_Bus35_WindSub3_BusGenMVR" type="active_output">
+<scaling>-999</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_CaseGroup1.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</initial_read>
+<working_read file_name="OUT.csv">
+<details>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Bus35_WindSub3_BusGenMVR</detail>
+<detail name="row">0</detail>
+</details>
+</working_read>
+</files>
+</parameter>
+<parameter n_params_per_case="1" name="PVfarm1_GenMW_6_1" preserve_white_space="true" subtype="subtype_PVfarm1_GenMW_6_1" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">0</detail>
+<detail name="lb_abs">0.135</detail>
+<detail name="ub_abs">0.16499999999999998</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">PVfarm1_GenMW_6_1</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter n_params_per_case="1" name="PVfarm2_GenMW_8_1" preserve_white_space="true" subtype="subtype_PVfarm2_GenMW_8_1" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">1</detail>
+<detail name="lb_abs">0.045</detail>
+<detail name="ub_abs">0.05500000000000001</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">PVfarm2_GenMW_8_1</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter n_params_per_case="1" name="PVfarm3_GenMW_10_1" preserve_white_space="true" subtype="subtype_PVfarm3_GenMW_10_1" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">2</detail>
+<detail name="lb_abs">0.18</detail>
+<detail name="ub_abs">0.22000000000000003</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">PVfarm3_GenMW_10_1</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter n_params_per_case="1" name="PVfarm1_BusNomVolt_6" preserve_white_space="true" subtype="subtype_PVfarm1_BusNomVolt_6" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">3</detail>
+<detail name="lb_abs">0.675</detail>
+<detail name="ub_abs">0.825</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">PVfarm1_BusNomVolt_6</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter n_params_per_case="1" name="PVfarm2_BusNomVolt_8" preserve_white_space="true" subtype="subtype_PVfarm2_BusNomVolt_8" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">4</detail>
+<detail name="lb_abs">0.675</detail>
+<detail name="ub_abs">0.825</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">PVfarm2_BusNomVolt_8</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+<parameter n_params_per_case="1" name="PVfarm3_BusNomVolt_10" preserve_white_space="true" subtype="subtype_PVfarm3_BusNomVolt_10" type="active_input">
+<scaling>linear</scaling>
+<cases>
+<case>CaseGroup1_Case1</case>
+</cases>
+<files>
+<initial_read>
+<details>
+<detail name="file_name">MODS_SIM_INITFILE_AIVarInitReadFile.csv</detail>
+<detail name="read_function">Get_DSV_double</detail>
+<detail name="column">Initial_read_value</detail>
+<detail name="row">5</detail>
+<detail name="lb_abs">0.675</detail>
+<detail name="ub_abs">0.825</detail>
+</details>
+</initial_read>
+<working_write file_name="IN.csv">
+<details>
+<detail name="write_function">Set_DSV_formatted_double</detail>
+<detail name="format">%.17e</detail>
+<detail name="column">PVfarm3_BusNomVolt_10</detail>
+<detail name="row">0</detail>
+</details>
+</working_write>
+</files>
+</parameter>
+</parameters>
+</mods>

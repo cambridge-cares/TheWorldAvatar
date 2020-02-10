@@ -6,9 +6,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.StringJoiner;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -33,13 +38,12 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 
-@WebServlet(urlPatterns = { "/DESAgent", "/showDESResult"})
+@WebServlet(urlPatterns = { "/DESAgent"})
 /*
  * Wrapper for the python agent and displaying the result
  */
 public class DistributedEnergySystem extends JPSHttpServlet {
 	public static final String SIM_START_PATH = "/DESAgent";
-	public static final String SIM_SHOW_PATH = "/showDESResult";
 	public static String weather="Weather.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
 	
@@ -126,7 +130,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  			}
  			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
  			List<String[]> ty = new ArrayList<String[]>();
- 			ty.add(readingFromCSV.get((readingFromCSV.size()-1)));
+ 			ty.add(readingFromCSV.get((readingFromCSV.size()-1))); //grab the most recent real time reading. 
  			broker.putLocal(baseUrl + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(ty));
 	        File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/resources/" + "WeatherInitialize.csv");
     		String destinationUrl = baseUrl + "/WeatherInitialize.csv";
@@ -162,12 +166,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     		 
     	 }
     	 
-    	 else if(SIM_SHOW_PATH.contentEquals(path)) {
-    		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
-    		 String directorychosen=getLastModifiedDirectory(new File(dir));
-    		 logger.info("latest directory= "+directorychosen);
-    		 responseParams = provideJSONResult(directorychosen);
-    	 }
+    	
     		
 		return responseParams;
     	
@@ -439,62 +438,77 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		List<String[]> csvofschedule = new ArrayList<String[]>();
 		List<String> header = new ArrayList<String>();
 		header.add("");
-		for (int x = 1; x <= sizeofiriuser; x++) {
-			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x - 1));
+		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
+		//grab the current time
+		List<String> lst = Arrays.asList(timeschedu);
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
+		//rotate it according to the current hour to get the appropriate profile
+		Collections.rotate(lst, h);
+		for(int x=1;x<=sizeofiriuser;x++) {
+			List<String[]> subList =  new ArrayList<String[]>();
+			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
 			String[] keysx = JenaResultSetFormatter.getKeys(resultx);
 			List<String[]> resultListx = JenaResultSetFormatter.convertToListofStringArrays(resultx, keysx);
-			System.out.println("sizeofresult=" + resultListx.size());
+			System.out.println("sizeofresult="+resultListx.size());
 
-			List<String> groupPmax = new ArrayList<String>();
-			groupPmax.add(iriofgroupuser.get(x - 1));
-			List<String> groupPmin = new ArrayList<String>();
-			groupPmin.add(iriofgroupuser.get(x - 1));
-			List<String> groupw = new ArrayList<String>();
-			groupw.add(iriofgroupuser.get(x - 1));
-			List<String> groupschedule = new ArrayList<String>();
-			groupschedule.add(iriofgroupuser.get(x - 1));
-			int countr = 1;
-			groupschedule.add("t1");
-			for (int d = 0; d < resultListx.size(); d++) {
-				// for(int t=0;t<keysx.length;t++) {
-				// System.out.println("elementonquery3 "+t+"= "+resultListx.get(d)[t]);
-				if (resultListx.get(d)[5].contentEquals("1")) {
-					if (x == 1) {
+			List<String>groupPmax=new ArrayList<String>();
+			groupPmax.add(iriofgroupuser.get(x-1));
+			List<String>groupPmin=new ArrayList<String>();
+			groupPmin.add(iriofgroupuser.get(x-1));
+			List<String>groupw=new ArrayList<String>();
+			groupw.add(iriofgroupuser.get(x-1));
+			List<String>groupschedule=new ArrayList<String>();
+			groupschedule.add(iriofgroupuser.get(x-1));
+			//Set to ensure no repeats
+			int countr = 1; 
+			groupschedule.add(lst.get(0));
+			for(int d=0;d<resultListx.size();d++) {
+					if(resultListx.get(d)[5].contentEquals("1")) {
+						//System.out.println("equipment= "+resultListx.get(d)[0]);
+						if(x==1) {
 						header.add(resultListx.get(d)[0].split("#")[1].split("-")[0]);
+						}
+						groupPmax.add(resultListx.get(d)[1]);
+						groupPmin.add(resultListx.get(d)[2]);
+						groupw.add(resultListx.get(d)[3]);
 					}
-					groupPmax.add(resultListx.get(d)[1]);
-					groupPmin.add(resultListx.get(d)[2]);
-					groupw.add(resultListx.get(d)[3]);
-				}
-				// HashMap
-				countr++;
-				if (countr < 12) { // 11 appliances
-					groupschedule.add(resultListx.get(d)[4]);
-				} else {
-					groupschedule.add(resultListx.get(d)[4]);
-					String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-					csvofschedule.add(arr4);
-					// clear groupschedule
-					groupschedule = new ArrayList<String>();
-					countr = 1;
-					if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
-						groupschedule.add(iriofgroupuser.get(x - 1));
-						groupschedule.add("t" + Integer.toString(Integer.parseInt(resultListx.get(d)[5]) + 1));
-					}
-				}
-
+					//HashMap
+					countr ++; 
+					if (countr < 12) { //11 appliances
+						groupschedule.add(resultListx.get(d)[4]);
+					} else {
+						groupschedule.add(resultListx.get(d)[4]);
+						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
+						subList.add(arr4);
+						//clear groupschedule
+						groupschedule=new ArrayList<String>();
+						countr = 1;
+						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
+							groupschedule.add(iriofgroupuser.get(x-1));
+//							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+							groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
+						}
+					}				
 			}
 
+			
 			String[] arr1 = groupPmax.toArray(new String[groupPmax.size()]);
 			csvofpmax.add(arr1);
 			String[] arr2 = groupPmin.toArray(new String[groupPmin.size()]);
 			csvofpmin.add(arr2);
 			String[] arr3 = groupw.toArray(new String[groupw.size()]);
 			csvofw.add(arr3);
+			System.out.println(groupschedule.toArray().toString());
 			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-			csvofschedule.add(arr4);
+			subList.add(arr4);
+			Collections.rotate(subList, -h);
+			csvofschedule.addAll(subList);
 
 		}
 
@@ -519,39 +533,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 	}
 
-	public static String getLastModifiedDirectory(File directory) {
-		File[] files = directory.listFiles();
-		if (files.length == 0)
-			return directory.getAbsolutePath();
-		Arrays.sort(files, new Comparator<File>() {
-			public int compare(File o1, File o2) {
-				return new Long(o2.lastModified()).compareTo(o1.lastModified()); // latest 1st
-			}
-		});
-		File filechosen = new File("");
-
-		outerloop: for (File file : files) {
-			String[] x = file.list();
-			if (x[0].contentEquals("JPS_DES")) {
-				File[] childfile = file.listFiles();
-				for (File filex : childfile) {
-					String[] y = filex.list();
-					List<String> list = Arrays.asList(y);
-
-					// System.out.println("size= "+list.size()+" ,listcontent= "+list.get(0));
-					if (list.contains("totgen.csv") && list.contains("rh1.csv")) {
-						System.out.println("it goes here");
-						filechosen = file;
-						break outerloop;
-					}
-					// System.out.println("directory last date="+file.lastModified());
-
-				}
-				// break;
-			}
-		}
-		return filechosen.getAbsolutePath() + "/JPS_DES";
-	}
+	
 
 	public JSONObject provideJSONResult(String baseUrl) {
 		JSONObject responseParams;
@@ -567,7 +549,11 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String rhdir = baseUrl + "/rh1.csv";
 		String content3 = new QueryBroker().readFileLocal(rhdir);
 		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
-
+		
+		String timer = baseUrl + "/timer.csv";
+		String content4 = new QueryBroker().readFileLocal(timer);
+		List<String[]> timerResult = MatrixConverter.fromCsvToArray(content4);
+		
 		JSONArray temperature = new JSONArray();
 		JSONArray irradiation = new JSONArray();
 
@@ -587,6 +573,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		dataresult.put("residential", simulationResult.get(0));
 		dataresult.put("industrial", simulationResult.get(2));
 		dataresult.put("commercial", simulationResult.get(1));
+		dataresult.put("timer",timerResult.get(0));
 		dataresult.put("rh1", rhResult.subList(0, 3).toArray());
 		dataresult.put("rh2", rhResult.subList(3, 6).toArray());
 		dataresult.put("rh3", rhResult.subList(6, rhResult.size()).toArray());
@@ -603,7 +590,26 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 		String startbatCommand = baseUrl + "/runpy.bat";
 		String result = executeSingleCommand(baseUrl, startbatCommand);
 		logger.info("final after calling: " + result);
+		createTimer(baseUrl);
+		String agent = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
+		MetaDataAnnotator.annotate(baseUrl, null, agent, true, null);
 
+	}
+	public void createTimer(String baseUrl) throws Exception {
+		Date date = new Date();
+		Calendar calendar = GregorianCalendar.getInstance();
+		calendar.setTime(date);
+		StringJoiner sj1 = new StringJoiner(",");
+		int n = calendar.get(Calendar.HOUR_OF_DAY);
+		for (int i = 0; i < 24; i++){
+		      sj1.add(n + ":00");
+		      n++; 
+		      if (n == 24){
+		        n = 0;
+		      }
+
+		    }
+		new QueryBroker().putLocal(baseUrl +"/timer.csv", sj1.toString());
 	}
 
 	public void copyFromPython(String baseUrl, String filename) {

@@ -3,8 +3,12 @@ package uk.ac.cam.cares.des.test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
@@ -19,13 +23,19 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
-import uk.ac.cam.cares.jps.des.ForecastAgent;
+import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
 
 public class Test_DES extends TestCase{
 	
 	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
+	
+	/*
+	 * Periodic call to run the (Forecast+DESpython wrapper)
+	 * Every four hours, so six calls in a day this would be called
+	 * 
+	 */
 
 	public void testStartCoordinationDESScenariobase() throws IOException  {
 		
@@ -44,6 +54,27 @@ public class Test_DES extends TestCase{
 		System.out.println("finished execute");
 
 	}
+	/*
+	 * Calls upon the FrontEnd Coordination agent that would call the latest DES run (Forecast+DESpython wrapper)
+	 * And afterwards blockchain wrapper
+	 */
+	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
+		
+
+		JSONObject jo = new JSONObject();
+	
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
+		
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+
+	}
+	/*
+	 * Calls and runs the Blockchain transaction with test values
+	 */
 	public void testBlockchainWrapperDirectCall() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("industrial", "2.311116263469459966e+01");
@@ -53,7 +84,9 @@ public class Test_DES extends TestCase{
 		jo.put("solar","3.784461764480557235e+01");
 		System.out.println(new BlockchainWrapper().calculateTrade(jo));
 	}
-	
+	/*
+	 * Calls and runs the Blockchain transaction with test values (thru TOMCAT)
+	 */
 	public void testBlockchainWrapperAgentCall() throws IOException{
 		JSONObject jo = new JSONObject();
 		jo.put("industrial", "2.311116263469459966e+01");
@@ -66,7 +99,10 @@ public class Test_DES extends TestCase{
 		System.out.println(v);
 	}
 	
-	
+
+	/*
+	 * Calls and runs the hourly weather retriever, that uses OCR
+	 */
 	public void testIrradiationRetreiverDirectCall() throws Exception {
 //		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
@@ -81,17 +117,14 @@ public class Test_DES extends TestCase{
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
 		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
-//	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-//		System.out.println(resultStart);
 	}
+	/*
+	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
+	 */
 	public void testIrradiationRetreiverAgentCall() throws Exception {
-//		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
-		
 		JSONObject jo = new JSONObject();
 		
-		jo.put("folder", baseUrl);
+		jo.put("folder", QueryBroker.getLocalDataPath()+"/JPS_DES");
 		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
 		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
 		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
@@ -100,30 +133,10 @@ public class Test_DES extends TestCase{
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 		System.out.println(resultStart);
 	}
-	public void xxxtestForeCastAgentDirectCall() throws Exception{
-		String baseUrl =  QueryBroker.getLocalDataPath()+"/JPS_DES";
-		ForecastAgent a = new ForecastAgent();
-		a.forecastNextDay(baseUrl); 	
-	}
-	public void xxxtestForeCastAgentAgentCall() throws Exception{
-		JSONObject jo = new JSONObject();
-		String baseUrl =  QueryBroker.getLocalDataPath()+"/JPS_DES";
-		jo.put("baseUrl", baseUrl);
-	    String dir2=AgentCaller.executeGetWithJsonParameter("JPS_DES/GetForecastData",jo.toString());
-	}
-	public void testDESAgentAgentCall() throws Exception {
-		JSONObject jo = new JSONObject();
-		
-		jo.put("folder", QueryBroker.getLocalDataPath()+"/JPS_DES");
-		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
-		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
-		jo.put("jpscontext", "base");
-	    jo.put("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
-	    jo.put("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
-	    String t =  AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-		System.out.println(t);
-	}
+
+	/*
+	 * Tests the retrieval of data from one sensor. 
+	 */
 	public void testcsvmanipulation () {
 		String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -302,7 +315,19 @@ public class Test_DES extends TestCase{
 		List<String[]> csvofschedule= new ArrayList<String[]>();
 		List<String>header=new ArrayList<String>();
 		header.add("");
+		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
+		//grab the current time
+		List<String> lst = Arrays.asList(timeschedu);
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
+		//rotate it according to the current hour to get the appropriate profile
+		Collections.rotate(lst, h);
+		header.add("");
 		for(int x=1;x<=sizeofiriuser;x++) {
+			List<String[]> subList =  new ArrayList<String[]>();
 			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
@@ -320,7 +345,7 @@ public class Test_DES extends TestCase{
 			groupschedule.add(iriofgroupuser.get(x-1));
 			//Set to ensure no repeats
 			int countr = 1; 
-			groupschedule.add("t1");
+			groupschedule.add(lst.get(0));
 			for(int d=0;d<resultListx.size();d++) {
 					if(resultListx.get(d)[5].contentEquals("1")) {
 						//System.out.println("equipment= "+resultListx.get(d)[0]);
@@ -338,13 +363,14 @@ public class Test_DES extends TestCase{
 					} else {
 						groupschedule.add(resultListx.get(d)[4]);
 						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-						csvofschedule.add(arr4);
+						subList.add(arr4);
 						//clear groupschedule
 						groupschedule=new ArrayList<String>();
 						countr = 1;
 						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
 							groupschedule.add(iriofgroupuser.get(x-1));
-							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+//							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+							groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
 						}
 					}				
 			}
@@ -356,8 +382,11 @@ public class Test_DES extends TestCase{
 			csvofpmin.add(arr2);
 			String[] arr3 = groupw.toArray(new String[groupw.size()]);
 			csvofw.add(arr3);
+			System.out.println(groupschedule.toArray().toString());
 			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-			csvofschedule.add(arr4);
+			subList.add(arr4);
+			Collections.rotate(subList, -h);
+			csvofschedule.addAll(subList);
 
 		}
 		String[] arr0 = header.toArray(new String[header.size()]);		
@@ -374,38 +403,34 @@ public class Test_DES extends TestCase{
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
 		
-		//csvofschedule.add(0, arr0);
+		csvofschedule.add(0, arr0);
 		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
 		System.out.println(schedulecsv);
 		
 	}
-	
+	/*
+	 * tests the call of electrical network
+	 */
 	public void testquerygen() {
 		OntModel model = readModelGreedy(ENIRI);
 		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
 	}
 	
+	public void xxxtestCreateJSON() {
+		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
+		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
+		System.out.println(d.toString());
+	}
+	/*
+	 * Finds the latest directory, as part of the coordinate agent. 
+	 */
 	public void testfindlatestdirectory() {
 		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
 		 File baseUrl=new File(dir);
-		 System.out.println("date latest directory= "+ new DistributedEnergySystem().getLastModifiedDirectory(baseUrl));
+		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory());
 	}
 	
-	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
-		
-
-		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
-	}
 	
 
 	

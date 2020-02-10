@@ -1,0 +1,68 @@
+% Reduced chi^2:
+5.90715e-012
+% R^2:
+1
+% Dimension (number of independent variables):
+6
+% Variable names:
+x_0 = PVfarm1_GenMW_6_1
+x_1 = PVfarm2_GenMW_8_1
+x_2 = PVfarm3_GenMW_10_1
+x_3 = PVfarm1_BusNomVolt_6
+x_4 = PVfarm2_BusNomVolt_8
+x_5 = PVfarm3_BusNomVolt_10
+% Surrogate model type:
+HDMR
+%  Interaction order:
+2
+% Order at each interaction level:
+0: 1
+1: 0
+%
+% First Order Sensitivities:
+7.15023e-011
+8.26116e-011
+3.01233e-011
+1.5431e-010
+1
+1.69254e-010
+% Second Order Sensitivities:
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+0
+% Sum of Variances:
+0.00187481
+%
+% Zeroth Order Coefficient:
+0.75
+% First Order Coefficients:
+5.1779e-007*(3/2)^0.5*x_0
+-5.56563e-007*(3/2)^0.5*x_1
+3.36082e-007*(3/2)^0.5*x_2
+-7.6066e-007*(3/2)^0.5*x_3
+0.0612341*(3/2)^0.5*x_4
+-7.96641e-007*(3/2)^0.5*x_5
+% Second Order Coefficients:
+%
+% Zeroth Order Terms:
+0.75
+% First Order Terms:
+6.34161e-007*x_0
+-6.81647e-007*x_1
+4.11614e-007*x_2
+-9.31614e-007*x_3
+0.0749962*x_4
+-9.75682e-007*x_5
+% Second Order Terms:

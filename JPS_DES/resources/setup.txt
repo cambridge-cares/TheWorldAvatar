@@ -22,17 +22,17 @@ How to setup and test DES?
 3) Now you are ready to begin your tests!
 4) The flow of the project is this: 
 	a)Every hour, WeatherIrradiationRetriever would run and collect information via OCR. Test this method by running http://localhost:8080/GetIrradiationandWeatherData
-		i) Input: Three IRI for irradiation, wind speed and 
+		i) Input: Three IRI for irradiation, wind speed and temperature
 		ii) Output: Three IRI
 	b)Check in JPS_DATA/.../scenario/base for that folder. see if there's an error log. 
 
-	c) The DES Coordination Agent has three subcomponents and can be found in DESCoordination.java.
+	c) The DES Coordination Agent has two subcomponents and can be found in DESCoordination.java. This is called periodically due to the 10 call per limit that forecasting solar data imposes on us. 
 		i) Input: Contains the electrical network, and the district IRI
-		ii) Output: A JSON packet that has the predictions for the next twenty four hours of the a) residential, commercial, industrial, solar and electric grid profile and b) the profiles of three types of residential households. 
+		ii) Output: A folder that has the predictions for the next twenty four hours of the a) residential, commercial, industrial, solar and electric grid profile and b) the profiles of three types of residential households. 
 	d) DES Coordination calls on the Forecast Agent to check and print the next twenty four hours. It calls "/getForecastData"
 	Forecast Agent takes in 
 		i) Input: baseURL that dictates where the weather forecast files are written. 
-		ii) Output: Weather.csv is written into the baseURL folder
+		ii) Output: WeatherForecast.csv is written into the baseURL folder
 	e) DESCoordination then calls upon DESAgent, the wrapper for the python code that uses Game Theory to model a simulation via /DESAgent
 	DESAgent takes in
 		i) Input: Electrical network IRI, District IRI, baseURL
@@ -48,15 +48,20 @@ How to setup and test DES?
 			4) Three sets of residential type profiles
 			i) Each set has 3 sets of profiles over 24 hours. 
 		The sum total should take three minutes. 
-	f) Due to the large size of the JSON packet, the DESCoordination agent reduces it to a JSON size of five, with each key having just 1 value. 
+	f) When executing, the FrontEnd Coordination is called. This is called from the nodeJS frontend, DESPlot.js (in public/javascripts) 
+		i)Input: Nothing
+		ii) Output: A JSON packet that has the predictions for the next twenty four hours of the a) residential, commercial, industrial, solar and electric grid profile and b) the profiles of three types of residential households. 
+		as well as c) the transaction hashes and corresponding senders and receivers
+	g) FrontEnd Coordination uses rdf4j to get the last complete run of DESCoordination. This is done by annotating the folder and keeping a record in runOptimization in DESAgent before querying it in FrontEndCoordination
+	h) Due to the large size of the JSON packet, the  agent reduces it to a JSON size of five, with each key having just 1 value. 
 	Then, it calls upon the BlockchainWrapper agent that communicates with the blockchain. 
 		i) Input: A JSON of five elements. 
 		ii) Output: JSON of two keys
 			1) txHash, the list of transaction hashes. A transaction hash can be treated as a receipt. 
 			2) sandr, the list of senders and receivers. 
-	g) Coordination Agent can be tested by using "testStartCoordinationDESScenariobase()"
-	h) Weather Agent (RealTime) can be collected via testIrradiationRetrieverDirectCall() and testIrradiationRetrieverAgentCall()
-	j) forecastAgent can be tested along with Coordination. I would prefer not to test it unless it is strictly necessary due to the aforementioned calls, thus I have hid it with triple xses
-	k) DES Agent can be tested along with DESAgent. Since DESAgent requires the necessary folders to be available, check to see if there was a successful run by running testStartDESScenariobaseshowingresult(). If there isn't, you'll need to see why it isn't running. Use testDESAgentAgentCall() to start running
-	l) BlockchainWrapper can be tested via testBlockchainWrapperDirectCall and testBlockchainWrapperAgentCall. 
+	i) Coordination Agent can be tested by using "testStartCoordinationDESScenariobase()"
+	k) Weather Agent (RealTime) can be collected via testIrradiationRetrieverDirectCall() and testIrradiationRetrieverAgentCall()
+	l) forecastAgent can be tested along with Coordination. I would prefer not to test it unless it is strictly necessary due to the aforementioned calls, thus I have hid it with triple xses
+	m) DES Agent can be tested along with DESAgent. Since DESAgent requires the necessary folders to be available, check to see if there was a successful run by running testStartDESScenariobaseshowingresult(). If there isn't, you'll need to see why it isn't running. Use testDESAgentAgentCall() to start running
+	n) BlockchainWrapper can be tested via testBlockchainWrapperDirectCall and testBlockchainWrapperAgentCall. 
 	
