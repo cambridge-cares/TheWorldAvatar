@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[58]:
+# In[1]:
 
 
 import numpy as np
@@ -12,15 +12,11 @@ import xlrd
 import time
 import pandas as pd
 import os
-from datetime import datetime
-
-with open('timekeep.txt','w') as outfile:
-    outfile.write(str(datetime.now()) + ' started \n')
 
 
 # ### Renewable
 
-# In[59]:
+# In[10]:
 
 
 class RenewableGeneration:
@@ -137,7 +133,7 @@ class RenewableGeneration:
 
 # ### Residential
 
-# In[60]:
+# In[27]:
 
 
 class ResidentialHousehold:
@@ -352,7 +348,7 @@ class ResidentialHousehold:
 
 # ### Commercial
 
-# In[61]:
+# In[28]:
 
 
 class Building_Temperature_Dynamics:
@@ -441,7 +437,7 @@ class Building_Temperature_Dynamics:
     
 
 
-# In[62]:
+# In[29]:
 
 
 class CommercialBuilding:
@@ -624,7 +620,7 @@ class CommercialBuilding:
 
 # ### Industrial
 
-# In[63]:
+# In[43]:
 
 
 class Electrolyzer_Temperature_Dynamics:
@@ -863,7 +859,7 @@ class Electrolyzer_Temperature_Dynamics:
         
 
 
-# In[64]:
+# In[45]:
 
 
 class Fuel_Cell:
@@ -874,7 +870,7 @@ class Fuel_Cell:
     DF_FC = pd.read_csv("FuelCell.csv", header=None )
     
     # physical constants:
-    F = 96485.34           #[A*s/mol]
+    F = 96548.34           #[A*s/mol]
     z = DF_FC.iloc[0,1]           # no. of electrons transferred per reaction
     
     # polarization curve parameters:
@@ -959,7 +955,7 @@ class Fuel_Cell:
     
 
 
-# In[65]:
+# In[32]:
 
 
 class IndustrialPlant:
@@ -1213,7 +1209,7 @@ class IndustrialPlant:
 
 # ### Game Organizer
 
-# In[66]:
+# In[33]:
 
 
 class Organizer:
@@ -1255,7 +1251,7 @@ class Organizer:
 
 # ### Optimization
 
-# In[67]:
+# In[34]:
 
 
 # electricity bill structure
@@ -1267,49 +1263,45 @@ industry_below = 0.77*1/50*0.01*np.ones(24)
 industry_above = 0.77*1/50*0.02*np.ones(24)
 
 
-# In[68]:
+# In[35]:
 
 
+#Read File from CSV 
+import pandas as pd
+import os
 
-# In[69]:
+data = pd.read_csv("Weather.csv", header=None, skiprows=[48])
+# air (ambient) temperature in [C]
+AllAirTempActual = data[4].to_numpy()
+# wind speed in [m/s]
+AllWindSpeedActual = data[6].to_numpy()
+# solar irradiation [W/m^2]
+AllRadiationActual = data[8].to_numpy()
+
+
+# In[36]:
 
 
 # renewable generations
 rg = RenewableGeneration(24)
+rg_test = RenewableGeneration(24)
 
 
-# In[70]:
-
-
-df0 = pd.read_csv('ApplianceScheduleLoad1.csv', header= None )
-sche1 = np.asarray( [ [df0.iloc[t, 2+a] for a in range(11)] for t in range(72) ] )
-
-lst0 = []
-for x in range(sche1.shape[0]):
-    lst1 = []
-    for y in range(sche1.shape[1]):
-        if (sche1[x,y] != 0):
-            lst1.append('yes')
-        else:
-            lst1.append('0')
-    lst0.append(lst1)
-
-    
-tb0 = np.asarray(lst0)
-tb0 = pd.DataFrame(tb0)
-
-
-# In[71]:
+# In[37]:
 
 
 # 3 residential households
 # 24 time slots, 11 appliances, 1 battery
 rh1 = ResidentialHousehold(24, 11, 1)
+rh1_test = ResidentialHousehold(24, 11, 1)
 rh2 = ResidentialHousehold(24, 11, 1)
+rh2_test = ResidentialHousehold(24, 11, 1)
 rh3 = ResidentialHousehold(24, 11, 1)
+rh3_test = ResidentialHousehold(24, 11, 1)
 rh_list = list([rh1, rh2, rh3])
+rh_test_list = list([rh1_test, rh2_test, rh3_test])
 
-#df = pd.read_csv('ApplianceScheduleLoad1.csv', header= None )
+df = pd.read_csv('ApplianceScheduleLoad1.csv', header= None )
 df1 = pd.read_csv('Pmin.csv', header = None)
 df2 = pd.read_csv('Pmax.csv', header = None)
 df3 = pd.read_csv('unwill.csv', header = None)
@@ -1318,24 +1310,29 @@ df4 = pd.read_csv('bcap.csv', header = None)
 
 
 for r in range(0, 3):
-    tb = np.asarray([ [tb0.iloc[24*r+t, a] for a in range(11)] for t in range(24) ])
+    tb = np.asarray([ [df.iloc[24*r+t, 2+a] for a in range(11)] for t in range(24) ])
     flex = (np.array(tb) == 'yes')
     rh_list[r].set_flexibility(flex)
+    rh_test_list[r].set_flexibility(flex)
     
-    sche = np.asarray( [ [df0.iloc[24*r+t, 2+a] for a in range(11)] for t in range(24) ] )
+    sche = np.asarray( [ [df.iloc[24*r+t, 16+a] for a in range(11)] for t in range(24) ] )
     rh_list[r].set_schedule(sche)
+    rh_test_list[r].set_schedule(sche)
 
-    
+
 for r in range(0, 3):
     low = np.asarray([df1.iloc[r, 1+a] for a in range(11)])
     high = np.asarray([df2.iloc[r, 1+a] for a in range(11)])
     rh_list[r].set_power_limit(high,low)
+    rh_test_list[r].set_power_limit(high,low)
     
     unwill = np.asarray([df3.iloc[r, 1+a] for a in range(11)])
     rh_list[r].set_unwilling(unwill)
+    rh_test_list[r].set_unwilling(unwill)
     
     bcap = df4.iloc[r, 1]
     rh_list[r].set_bat_cap(bcap)
+    rh_test_list[r].set_bat_cap(bcap)
 
 cd = 0.003
 for rh in rh_list:
@@ -1346,8 +1343,16 @@ for rh in rh_list:
     rh.set_var_bounds()
     rh.set_starting_point()
 
+for rh_test in rh_test_list:
+    rh_test.electricity_bill_structure(household_below, household_above)
+    rh_test.discomfort_factor(cd)
+    rh_test.define_aggregator()
+    rh_test.set_q0(0*rh_test.bcap)
+    rh_test.set_var_bounds()
+    rh_test.set_starting_point()
 
-# In[73]:
+
+# In[38]:
 
 
 # 1 commercial building
@@ -1367,8 +1372,12 @@ cb.electricity_bill_structure(business_below, business_above)
 cb.get_x0(np.array([28.3, 28.2, 28.6]))
 cb.set_starting_point()
 
+cb_test.electricity_bill_structure(business_below, business_above)
+cb_test.get_x0(np.array([28.3, 28.2, 28.6]))
+cb_test.set_starting_point()
 
-# In[74]:
+
+# In[39]:
 
 
 # 1 industrial plant
@@ -1386,8 +1395,13 @@ ip.fuel_cost_factor(cf)
 ip.get_T0(99)
 ip.set_starting_point()
 
+ip_test.electricity_bill_structure(industry_below, industry_above)
+ip_test.fuel_cost_factor(cf)
+ip_test.get_T0(99)
+ip_test.set_starting_point()
 
-# In[75]:
+
+# In[40]:
 
 
 # game organizer
@@ -1398,234 +1412,314 @@ for a in agent_list:
     org.collect_load(a, np.zeros(24), True)
 
 
-# In[76]:
+# In[41]:
 
 
 # receding horizon optimization
 opt_res = list()
-#init Values for reading
-data = pd.read_csv("WeatherInitialize.csv", header=None)
-#current hour in [0 to 23]
-h = 0
-# weather forecast for next 24 hours
-AirTempForecast = data[4].to_numpy()
-WindSpeedForecast = data[6].to_numpy()
-RadiationForecast = data[8].to_numpy()
-
-# solar generation in [kWh]
-sg = 30*100*rg.solar_energy(RadiationForecast, AirTempForecast)/1000
-# wind generation in [kWh]
-wg = 0*rg.wind_energy(WindSpeedForecast, AirTempForecast)/1000
-totGen = sg + wg
-
-for a in agent_list:
-    a.cutoff_load(totGen)
-
-# disturbance for commercial
-delta1 = AirTempForecast
-delta2 = 1/1000*1/2*1200*0.5*RadiationForecast
-delta3 = 1/1000*3600*HeatSource[h:h+24]
-W = np.vstack([delta1, delta2, delta3])
-T1_low = RoomTempLow[h:h+24]
-T1_high = RoomTempHigh[h:h+24]
-cb.get_disturbance(W)
-cb.get_T1_range(3600, T1_low, T1_high)
-
-# disturbance for industrial
-Ta = AirTempForecast
-ip.get_ambient_temperature(Ta)
-
-# sequential game
-start_time = time.time()
-i = 0
-while not org.check_termination():
-    # residential
+np.random.seed(0)
+for RHO in range(24):
+    # actual weather conditions
+    AirTempActual = AllAirTempActual[RHO:RHO+24]
+    WindSpeedActual = AllWindSpeedActual[RHO:RHO+24]
+    RadiationActual = AllRadiationActual[RHO:RHO+24]
+    # weather forecast
+    rand1 = np.concatenate([2*np.random.rand(12)-1, 4*np.random.rand(12)-2])
+    AirTempForecast = AirTempActual + rand1
+    rand2 = np.concatenate([0.1*np.random.rand(12)+0.95, 0.2*np.random.rand(12)+0.9])
+    WindSpeedForecast = WindSpeedActual*rand2
+    rand3 = np.concatenate([0.1*np.random.rand(12)+0.95, 0.2*np.random.rand(12)+0.9])
+    RadiationForecast = RadiationActual*rand3
+    
+    # solar generation in [kWh]
+    sg = 30*100*rg.solar_energy(RadiationForecast, AirTempForecast)/1000
+    # wind generation in [kWh]
+    wg = 0*rg.wind_energy(WindSpeedForecast, AirTempForecast)/1000
+    totGen = sg + wg
+    
+    for a in agent_list:
+        a.cutoff_load(totGen)
+    
+    # disturbance for commercial
+    delta1 = AirTempForecast
+    delta2 = 1/1000*1/2*1200*0.5*RadiationForecast
+    delta3 = 1/1000*3600*HeatSource[RHO:RHO+24]
+    W = np.vstack([delta1, delta2, delta3])
+    T1_low = RoomTempLow[RHO:RHO+24]
+    T1_high = RoomTempHigh[RHO:RHO+24]
+    cb.get_disturbance(W)
+    cb.get_T1_range(3600, T1_low, T1_high)
+    
+    # disturbance for industrial
+    Ta = AirTempForecast
+    ip.get_ambient_temperature(Ta)
+    
+    # sequential game
+    start_time = time.time()
+    i = 0
+    while not org.check_termination():
+        # residential
+        for rh in rh_list:
+            rh.get_aggregate_load(org.provide_load(rh))
+            rh.residential_optimize()
+            org.collect_load(rh, rh.report_load(), rh.report_change())
+        # commercial
+        cb.get_aggregate_load(org.provide_load(cb))
+        cb.commercial_optimize()
+        org.collect_load(cb, cb.report_load(), cb.report_change())
+        # industrial
+        ip.get_aggregate_load(org.provide_load(ip))
+        ip.industrial_optimize()
+        org.collect_load(ip, ip.report_load(), ip.report_change())
+        i = i + 1
+        print('##### Finish Iteration: ' + str(i) + ' #####')
+        if i >= 10:
+            print('##### Forced Stop After 10 Iterations #####')
+            break
+    print('--- %s seconds ---' % (time.time() - start_time))
+    
+    # save result
+    opt_res.append({rh1: rh1.res.x,
+                    rh2: rh2.res.x,
+                    rh3: rh3.res.x,
+                    cb: cb.res.x,
+                    ip: ip.res.x})
+    
+    # rolling
     for rh in rh_list:
-        rh.get_aggregate_load(org.provide_load(rh))
-        rh.residential_optimize()
-        org.collect_load(rh, rh.report_load(), rh.report_change())
-    # commercial
-    cb.get_aggregate_load(org.provide_load(cb))
-    cb.commercial_optimize()
-    org.collect_load(cb, cb.report_load(), cb.report_change())
-    # industrial
-    ip.get_aggregate_load(org.provide_load(ip))
-    ip.industrial_optimize()
-    org.collect_load(ip, ip.report_load(), ip.report_change())
-    i = i + 1
-    print('##### Finish Iteration: ' + str(i) + ' #####')
-    if i >= 10:
-        print('##### Forced Stop After 10 Iterations #####')
-        break
-print('--- %s seconds ---' % (time.time() - start_time))
-
-AirTempCorrected = np.copy(AirTempForecast)
-WindSpeedCorrected = np.copy(WindSpeedForecast)
-RadiationCorrected = np.copy(RadiationForecast)
-
-
-# ### Updated Hourly
-
-# In[19]:
-
-
-# weather forecast for next 24 hours
-fore_data = pd.read_csv("WeatherForecast.csv", header=None)
-# actual weather for the last hour
-hist_data = pd.read_csv("WeatherActual.csv", header=None)
-
-# current hour in [0 to 23]
-h = (h + 1)%24
-
-# weather forecast for next 24 hours
-AirTempForecast = fore_data[4].to_numpy()
-WindSpeedForecast = fore_data[6].to_numpy()
-RadiationForecast = fore_data[8].to_numpy()
-
-# actual weather for the last hour
-AirTemp = hist_data[4].to_numpy()
-WindSpeed = hist_data[6].to_numpy()
-Radiation = hist_data[8].to_numpy()
-
-# corrected weather forecast
-AirTempCorrected[0] = AirTemp
-WindSpeedCorrected[0] = WindSpeed
-RadiationCorrected[0] = Radiation
-
-# rolling
-for rh in rh_list:
-    rh.rolling_q0()
-    rh.rolling_para_values()
-    rh.set_var_bounds()
-    rh.set_starting_point()
-
-delta1 = AirTempCorrected
-delta2 = 1/1000*1/2*1200*0.5*RadiationCorrected
-delta3 = 1/1000*3600*HeatSource[h:h+24]
-W_actual = np.vstack([delta1, delta2, delta3])
-cb.rolling_x0(W_actual)
-cb.rolling_prev_solution()
-
-ip.rolling_T0(AirTempCorrected)
-ip.rolling_prev_solution()
-
-org.rolling_load_change()
-
-# solar generation in [kWh]
-sg = 30*100*rg.solar_energy(RadiationForecast, AirTempForecast)/1000
-# wind generation in [kWh]
-wg = 0*rg.wind_energy(WindSpeedForecast, AirTempForecast)/1000
-totGen = sg + wg
-
-for a in agent_list:
-    a.cutoff_load(totGen)
-
-# disturbance for commercial
-delta1 = AirTempForecast
-delta2 = 1/1000*1/2*1200*0.5*RadiationForecast
-delta3 = 1/1000*3600*HeatSource[h:h+24]
-W = np.vstack([delta1, delta2, delta3])
-T1_low = RoomTempLow[h:h+24]
-T1_high = RoomTempHigh[h:h+24]
-cb.get_disturbance(W)
-cb.get_T1_range(3600, T1_low, T1_high)
-
-# disturbance for industrial
-Ta = AirTempForecast
-ip.get_ambient_temperature(Ta)
-
-# sequential game
-start_time = time.time()
-i = 0
-while not org.check_termination():
-    # residential
-    for rh in rh_list:
-        rh.get_aggregate_load(org.provide_load(rh))
-        rh.residential_optimize()
-        org.collect_load(rh, rh.report_load(), rh.report_change())
-    # commercial
-    cb.get_aggregate_load(org.provide_load(cb))
-    cb.commercial_optimize()
-    org.collect_load(cb, cb.report_load(), cb.report_change())
-    # industrial
-    ip.get_aggregate_load(org.provide_load(ip))
-    ip.industrial_optimize()
-    org.collect_load(ip, ip.report_load(), ip.report_change())
-    i = i + 1
-    print('##### Finish Iteration: ' + str(i) + ' #####')
-    if i >= 10:
-        print('##### Forced Stop After 10 Iterations #####')
-        break
-    with open('timekeep.txt','a') as outfile:
-    	outfile.write(str(datetime.now()) + ' Finish Iteration:' + str(i) +'\n')
-print('--- %s seconds ---' % (time.time() - start_time))
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' finished iteration \n')
-# save result
-opt_res.append({rh1: rh1.res.x,
-                rh2: rh2.res.x,
-                rh3: rh3.res.x,
-                cb: cb.res.x,
-                ip: ip.res.x})
-
-AirTempCorrected = np.copy(AirTempForecast)
-WindSpeedCorrected = np.copy(WindSpeedForecast)
-RadiationCorrected = np.copy(RadiationForecast)
+        rh.rolling_q0()
+        rh.rolling_para_values()
+        rh.set_var_bounds()
+        rh.set_starting_point()
+    
+    delta1 = AirTempActual
+    delta2 = 1/1000*1/2*1200*0.5*RadiationActual
+    delta3 = 1/1000*3600*HeatSource[RHO:RHO+24]
+    W_actual = np.vstack([delta1, delta2, delta3])
+    cb.rolling_x0(W_actual)
+    cb.rolling_prev_solution()
+    
+    ip.rolling_T0(AirTempActual)
+    ip.rolling_prev_solution()
+    
+    org.rolling_load_change()
+    
+    print('Finish RHO: %d\n' % (RHO+1))
 
 
 # ### Results
 
-# In[20]:
+# In[528]:
 
+
+# convert result
+rh1_res = np.zeros_like(rh1.res.x, dtype=float)
+rh2_res = np.zeros_like(rh2.res.x, dtype=float)
+rh3_res = np.zeros_like(rh3.res.x, dtype=float)
+cb_res = np.zeros_like(cb.res.x, dtype=float)
+ip_res = np.zeros_like(ip.res.x, dtype=float)
+for i in range(0, 24):
+    rh1_res[i:rh1.sp:rh1.t] = opt_res[i][rh1][:rh1.sp:rh1.t]
+    rh1_res[rh1.sp+i+1::rh1.t+1] = opt_res[i][rh1][rh1.sp+1::rh1.t+1]
+
+    rh2_res[i:rh2.sp:rh2.t] = opt_res[i][rh2][:rh2.sp:rh2.t]
+    rh2_res[rh2.sp+i+1::rh2.t+1] = opt_res[i][rh2][rh2.sp+1::rh2.t+1]
+
+    rh3_res[i:rh3.sp:rh3.t] = opt_res[i][rh3][:rh3.sp:rh3.t]
+    rh3_res[rh3.sp+i+1::rh3.t+1] = opt_res[i][rh3][rh3.sp+1::rh3.t+1]
+
+    cb_res[i] = opt_res[i][cb][0]
+    
+    ip_res[i] = opt_res[i][ip][0]
+    ip_res[ip.Nc+i] = opt_res[i][ip][ip.Nc]
+
+rh1_res[rh1.sp::rh1.t+1] = opt_res[0][rh1][rh1.sp::rh1.t+1]
+rh2_res[rh2.sp::rh2.t+1] = opt_res[0][rh2][rh2.sp::rh2.t+1]
+rh3_res[rh3.sp::rh3.t+1] = opt_res[0][rh3][rh3.sp::rh3.t+1]
+
+
+# In[529]:
+
+
+# weather conditions
+AirTemp = AllAirTempActual[:24]
+WindSpeed = AllWindSpeedActual[:24]
+Radiation = AllRadiationActual[:24]
+
+# renewable generations
+sg = 30*100*rg_test.solar_energy(Radiation, AirTemp)/1000
+wg = 0*rg_test.wind_energy(WindSpeed, AirTemp)/1000
+totGen = sg + wg
+
+for rh_test in rh_test_list:
+    rh_test.cutoff_load(totGen)
+cb_test.cutoff_load(totGen)
+ip_test.cutoff_load(totGen)
+
+# disturbance for commercial
+delta1 = AirTemp
+delta2 = 1/1000*1/2*1200*0.5*Radiation
+delta3 = 1/1000*3600*HeatSource[:24]
+W = np.vstack([delta1, delta2, delta3])
+T1_low = RoomTempLow[:24]
+T1_high = RoomTempHigh[:24]
+cb_test.get_disturbance(W)
+cb_test.get_T1_range(3600, T1_low, T1_high)
+
+# disturbance for industrial
+ip_test.get_ambient_temperature(AirTemp)
 
 # individual load
-l1 = rh1.compute_load(rh1.res.x)['load']
-l2 = rh2.compute_load(rh2.res.x)['load']
-l3 = rh3.compute_load(rh3.res.x)['load']
-l4 = cb.compute_load(cb.res.x)['load']
-l5 = ip.compute_load_fuel(ip.res.x)['load']
+l1 = rh1_test.compute_load(rh1_res)['load']
+l2 = rh2_test.compute_load(rh2_res)['load']
+l3 = rh3_test.compute_load(rh3_res)['load']
+l4 = cb_test.compute_load(cb_res)['load']
+l5 = ip_test.compute_load_fuel(ip_res)['load']
+
+# aggregate load
+rh1_test.get_aggregate_load(l2+l3+l4+l5)
+rh2_test.get_aggregate_load(l1+l3+l4+l5)
+rh3_test.get_aggregate_load(l1+l2+l4+l5)
+cb_test.get_aggregate_load(l1+l2+l3+l5)
+ip_test.get_aggregate_load(l1+l2+l3+l4)
+
+
+# ### Discussion
+
+# In[530]:
+
 
 # residential
-x1 = rh1.res.x
-ref1 = np.dot(rh1.Ta, rh1.sche)
-opt1 = np.dot(rh1.Ta, x1[:rh1.sp])
-load1 = np.dot(rh1.Tx, x1)
+x1 = rh1_res
+ref1 = np.dot(rh1_test.Ta, rh1_test.sche)
+opt1 = np.dot(rh1_test.Ta, x1[:rh1_test.sp])
+load1 = np.dot(rh1_test.Tx, x1)
 
-x2 = rh2.res.x
-ref2 = np.dot(rh2.Ta, rh2.sche)
-opt2 = np.dot(rh2.Ta, x2[:rh2.sp])
-load2 = np.dot(rh2.Tx, x2)
+x2 = rh2_res
+ref2 = np.dot(rh2_test.Ta, rh2_test.sche)
+opt2 = np.dot(rh2_test.Ta, x2[:rh2_test.sp])
+load2 = np.dot(rh2_test.Tx, x2)
 
-x3 = rh3.res.x
-ref3 = np.dot(rh3.Ta, rh3.sche)
-opt3 = np.dot(rh3.Ta, x3[:rh3.sp])
-load3 = np.dot(rh3.Tx, x3)
-np.savetxt("rh1.csv",[ref1, opt1, load1,ref2, opt2, load2 ,ref3, opt3, load3], delimiter=",") 
+x3 = rh3_res
+ref3 = np.dot(rh3_test.Ta, rh3_test.sche)
+opt3 = np.dot(rh3_test.Ta, x3[:rh3_test.sp])
+load3 = np.dot(rh3_test.Tx, x3)
+
+plt.figure(0)
+plt.plot(ref1)
+plt.plot(opt1)
+plt.plot(load1)
+
+plt.figure(1)
+plt.plot(ref2)
+plt.plot(opt2)
+plt.plot(load2)
+
+plt.figure(2)
+plt.plot(ref3)
+plt.plot(opt3)
+plt.plot(load3)
+
+
+# In[531]:
+
+
+# weather
+plt.figure(0)
+plt.plot(AirTemp)
+
+plt.figure(1)
+plt.plot(Radiation)
+
+
+# In[532]:
+
+
 # commercial
-Ud = np.kron(cb.res.x, np.ones(cb.mc))
-RoomTemp = cb.bld.N_time_steps(cb.x0, Ud, cb.W)['T1']
+Ud = np.kron(cb_res, np.ones(cb_test.mc))
+RoomTemp = cb_test.bld.N_time_steps(cb_test.x0, Ud, cb_test.W)['T1']
+
+plt.figure(0)
+plt.plot(cb_res)
+
+plt.figure(1)
+plt.plot(RoomTemp)
+
+
+# In[533]:
+
 
 # industrial
-Id = np.kron(ip.res.x[:ip.Nc], np.ones(ip.mc))
-res_el = ip.el.N_time_steps(Id, ip.T0, ip.Ta)
+Id = np.kron(ip_res[:ip_test.Nc], np.ones(ip_test.mc))
+res_el = ip_test.el.N_time_steps(Id, ip_test.T0, ip_test.Ta)
 conEl = res_el['P']/1000
 genH2 = res_el['n']*3.6
 
-Ig = np.kron(ip.res.x[ip.Nc:], np.ones(ip.mc))
-res_fc = ip.fc.N_time_steps(Ig)
+Ig = np.kron(ip_res[ip_test.Nc:], np.ones(ip_test.mc))
+res_fc = ip_test.fc.N_time_steps(Ig)
 conH2 = res_fc['n']*3.6
 genEl = res_fc['P']/1000
 
+plt.figure(0)
+plt.plot(conEl)
+plt.plot(genEl)
+
+plt.figure(1)
+plt.plot(genH2)
+plt.plot(conH2)
 
 
-residential = l1+l2+l3
-commercial = l4
-industrial = l5
-gridGen = l1+l2+l3+l4+l5 - totGen
-renewableGen = totGen
-
-np.savetxt("totgen.csv",[residential, commercial, industrial, renewableGen, gridGen], delimiter=",")
+# In[536]:
 
 
-with open('timekeep.txt','a') as outfile:
-    outfile.write(str(datetime.now()) + ' ended \n')
+# system load
+plt.figure(0)
+plt.plot(l1+l2+l3)
+plt.plot(l4)
+plt.plot(l5)
+plt.plot(totGen)
+reside = l1+l2+l3
+plt.figure(1)
+plt.plot(l1+l2+l3+l4+l5)
+plt.plot(totGen)
+
+
+# In[535]:
+
+
+print('cost:', rh1_test.objfunction(rh1_res), 'load:', np.sum(l1), 'cost/load:', rh1_test.objfunction(rh1_res)/np.sum(l1))
+print('cost:', rh2_test.objfunction(rh2_res), 'load:', np.sum(l2), 'cost/load:', rh2_test.objfunction(rh2_res)/np.sum(l2))
+print('cost:', rh3_test.objfunction(rh3_res), 'load:', np.sum(l3), 'cost/load:', rh3_test.objfunction(rh3_res)/np.sum(l3))
+print('cost:', cb_test.objfunction(cb_res), 'load:', np.sum(l4), 'cost/load:', cb_test.objfunction(cb_res)/np.sum(l4))
+print('cost:', ip_test.objfunction(ip_res), 'load:', np.sum(l5), 'cost/load:', ip_test.objfunction(ip_res)/np.sum(l5))
+
+
+# In[537]:
+
+
+reside
+
+
+# In[542]:
+
+
+plt.plot(totGen)
+
+
+# In[543]:
+
+
+totGen
+
+
+# In[544]:
+
+
+np.savetxt("totgen.csv", totGen, delimiter=",")
+
+
+# In[ ]:
+
+
+
+
