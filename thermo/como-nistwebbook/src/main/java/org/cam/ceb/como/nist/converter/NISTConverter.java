@@ -326,7 +326,7 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	 * @throws OntoSpeciesException
 	 */
 	private void addCASRegistryNumber(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
-		if(speciesInfo.getPermanentLink()!=null && !speciesInfo.getPermanentLink().trim().isEmpty())
+		if(speciesInfo.getCASRegNr()!=null && !speciesInfo.getCASRegNr().trim().isEmpty())
 		{
 			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_CAS_REG_ID, HASH, speciesInfo.getCASRegNr());
 		}
