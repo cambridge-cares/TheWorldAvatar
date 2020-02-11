@@ -122,10 +122,16 @@ public class SemakauPV extends JPSHttpServlet {
 				if (d == 0) {
 					Double P = Double.valueOf(resultListPV.get(item)[1]) * Double.valueOf(resultListPV.get(item)[2])
 							* Double.valueOf(resultListPV.get(item)[3]) * Double.valueOf(resultListPV.get(item)[4])
-							* irr;
+							* irr/1000000; //in MW
 					xvalue.add(P);
 					String[]content={"property-"+d+"="+P}; //calculated by irr*area*efficiency
 					inputcsv.add(content);
+					System.out.println("P calculated= "+P);
+					for(int r=1;r<=4;r++) {
+						System.out.println("property gotten= "+resultListPV.get(item)[r]);
+					}
+					System.out.println("irr= "+irr);
+					
 				} else {
 					xvalue.add(0.75);
 					String[]content={"property-"+d+"="+0.75}; //supposed to be the voltage of the bus attached to the pv gen
