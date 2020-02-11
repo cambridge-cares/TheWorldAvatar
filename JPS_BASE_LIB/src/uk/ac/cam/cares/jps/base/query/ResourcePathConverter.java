@@ -23,8 +23,7 @@ public class ResourcePathConverter {
 		//TODO-AE SC URGENT 20191021 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
 		// maybe change back not necessary any more, because of the solution below
 		
-		if ((path.startsWith("C:")) || (!AgentLocator.isJPSRunningForTest())) {
-						JPSBaseLogger.info(getInstance(),path);
+		if (!AgentLocator.isJPSRunningForTest()) {
 				return path;
 		}
 	
