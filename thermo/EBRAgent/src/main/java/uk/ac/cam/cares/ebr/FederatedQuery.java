@@ -9,47 +9,52 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 
-
-
-
 /**
  * 
  * @author NK510
- * all methods below are borrowed from https://rdf4j.org/documentation/programming/federation/#core-features
+ * Federated SPARQL query via localhost and remote repository stored on Claudius server.
  *
  */
 public class FederatedQuery {
 	
 	public static void runFederatedSPARQLOnDbpediaWikipedia() throws Exception {
-		
-      Repository repository = FedXFactory.newFederation()
-		.withSparqlEndpoint("http://dbpedia.org/sparql")
-//		.withSparqlEndpoint("https://query.wikidata.org/sparql")
-        .withSparqlEndpoint("http://theworldavatar.com/rdf4j-server/repositories/ontokin")        
+	
+    Repository repository = FedXFactory.newFederation()
+    		/**
+    		 * 
+    		 * @author NK510 
+    		 * Sparql endpoint on localhost for ontocompchem knowledge base
+    		 * 
+    		 */
+	    .withSparqlEndpoint("http://localhost:8080/rdf4j-server/repositories/ontocompchem")
+	    /**
+	     * 
+	     * @author NK510
+	     * Sparql endpoint on Caludius server for ontospecies knowledge base.
+	     * 
+	     */
+        .withSparqlEndpoint("http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb")        
 		.create();
 			
 	try (RepositoryConnection conn = repository.getConnection()) {
-
-//		String query = 
-//			"PREFIX wd: <http://www.wikidata.org/entity/> "
-//			+ "PREFIX wdt: <http://www.wikidata.org/prop/direct/> "
-//			+ "SELECT * WHERE { "
-//			+ " ?country a <http://dbpedia.org/class/yago/WikicatMemberStatesOfTheEuropeanUnion> ."
-//			+ " ?country <http://www.w3.org/2002/07/owl#sameAs> ?countrySameAs . "
-//			+ " ?countrySameAs wdt:P2131 ?gdp ."
-//			+ "}";
-
-		String query = 
-				"SELECT ?s ?o WHERE { "
-				+ "?s <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasElementNumber>  ?o  . "
-				+ "} LIMIT 10";
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * Returns a list of instances of G16 (G09) and species IRI from "ontocompchem" repository that has web link name "species_3_weblink" stored in "ontospecieskb" repository on Claudius.
+	 */
+	String query = 
+				"SELECT distinct ?s ?speciesIri WHERE { "				
+				+ "?s <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#hasUniqueSpeciesIRI> ?speciesIri."										
+				+ "?speciesIri <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#hasWebLink> <http://www.theworldavatar.com/kb/ontospecies/ontospecies.owl#species_3_weblink> ." 
+				+ "}";
 				
 		
 		TupleQuery tq = conn.prepareTupleQuery(query);
+		
 		try (TupleQueryResult tqRes = tq.evaluate()) {
 
 
 			int count = 0;
+			
 			while (tqRes.hasNext()) {
 				BindingSet b = tqRes.next();
 				System.out.println(b);
@@ -59,9 +64,8 @@ public class FederatedQuery {
 			System.out.println("Results: " + count);
 		}
 	}
-			
+	
 	repository.shutDown();
-		
-		
+	
 	}
 }
