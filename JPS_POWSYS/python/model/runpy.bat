@@ -1,3 +1,3 @@
 setlocal
 cd /d %~dp0
-python SGPowergrid.py
+python SGPowergrid.py >outputstatus.txt

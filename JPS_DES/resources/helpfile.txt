@@ -28,6 +28,7 @@ Graph not appearing? There are three agents at play:
 	Once you've checked that infura is connected and there's enough ether value, there's something that I think can only be done. The paper says that this can be self sustaining if each player is a prosumer: It produces and consumes electricity. However, the python model clearly denotes two producers (ElectricGrid + Solar) and Three Users (Commercial + Industrial + Residential) which means in the long run that Ethereum account is going to run out of ether to pay for use. So you need to reset the values as I have shown. 
 	This can be done through the Metamask plugin by sending ether back from Electric Grid and Solar.
 
+You can't find the wallet file? It should be found as a json file in JPS_DES/Resources. If not, generate your own by using the 12 keyword phrase in MyEtherWallet.com. 
 
 This entire process should take less than six minutes to run. If it does more, then look through the above checklist
 Q: What about these errors? 
@@ -40,4 +41,4 @@ Source Map URL: ../sourcemaps/inpage.js.map
 A: Sorry, I'm not sure either. 
 
 
-If there are any further inquiries, message me through my telegram account @laura_ong or through my github account at @kuiqejw. 
+If there are any further inquiries, message me through my github account at @kuiqejw. 
