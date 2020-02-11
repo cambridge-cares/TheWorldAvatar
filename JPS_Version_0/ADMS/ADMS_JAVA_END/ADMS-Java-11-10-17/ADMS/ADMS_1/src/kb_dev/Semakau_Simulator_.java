@@ -1,7 +1,6 @@
 package kb_dev;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -10,35 +9,35 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.text.SimpleDateFormat;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import com.cmclinnovations.modsapi.MoDSAPI;
 import com.hp.hpl.jena.util.FileUtils;
-import com.ibm.icu.util.Calendar;
-import com.ibm.icu.util.GregorianCalendar;
 
 import edu.stanford.smi.protege.exception.OntologyLoadException;
 import edu.stanford.smi.protegex.owl.ProtegeOWL;
 import edu.stanford.smi.protegex.owl.jena.JenaOWLModel;
 import edu.stanford.smi.protegex.owl.model.OWLDatatypeProperty;
 import edu.stanford.smi.protegex.owl.model.OWLIndividual;
-import edu.stanford.smi.protegex.owl.model.OWLModel;
-import edu.stanford.smi.protegex.owl.model.OWLNamedClass;
 
-public class KB_Dev {
+public class Semakau_Simulator_ {
+	public static String tomcatolddir="C:/apache-tomcat-8.0.24/webapps/ROOT";
 	 
-	public static String PVPIN = new String("C:/apache-tomcat-8.0.24/webapps/input/PVPIN.CSV"); 
-	public static String PrPWOUTPVCSV = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/PrPWOUTPV.CSV");
-	public static String Sim4 = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/Sim_PV1"); 
-	public static String XVALUE4 = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/XVALUEPV.CSV");
-	public static String baseURL = "C:\\apache-tomcat-8.0.24/webapps/ROOT/SemakauPV/";
+	public static String PVPIN = new String("D:\\\\JPS-git/JParkSimulator-git/JPS_Version_0/ADMS/ADMS_JAVA_END/ADMS-Java-11-10-17/ADMS/ADMS_1/SemakauPV/PVPIN.CSV"); //not exist yet
+	//public static String PVPIN = new String("C:/apache-tomcat-8.0.24/webapps/input/PVPIN.CSV"); //not exist yet
+	public static String PrPWOUTPVCSV = tomcatolddir+"/PrPWOUTPV.CSV"; //not exist yet 
+	public static String Sim4 = new String(tomcatolddir+"/Sim_PV1"); //exist
+	public static String XVALUE4 = new String(tomcatolddir+"/XVALUEPV.CSV");//not exist yet 
+	
+//	public static String baseURL = "C:\\apache-tomcat-8.0.24/webapps/ROOT/SemakauPV/"; //exist
+	public static String baseURL = "D:\\JPS-git/JParkSimulator-git/JPS_Version_0/ADMS/ADMS_JAVA_END/ADMS-Java-11-10-17/ADMS/ADMS_1/SemakauPV/"; //exist
 	
 	/*
 	 * This piece of code mainly does two things:
@@ -50,7 +49,7 @@ public class KB_Dev {
 	
 	
 		
-	/*public static String Formatting_date(String date) throws Exception {
+	/*public static String Formatting_date(String date) throws Exception { NOT NEEDED
 		
 		// this function takes a string of "dd MMM yyyy HH:mm:ss zz" and processes it into a string digestable by ADMS i.e. "yyyy, DDD, HH"  
 		Calendar cal1 = new GregorianCalendar();
@@ -80,12 +79,14 @@ public class KB_Dev {
 	
 	public static void Downloading() throws Exception {
 		
-		
+		/*no more used
 		String gotoFolder = new String("cd " + baseURL );
 		String Download_script = new String("Request.py"); //  python script downloading and formatting the weather data
 		String Weather_URL = new String("https://inetapps.nus.edu.sg/fas/geog"); //  URL of the weather info page
-		String Weather_Data = new String(baseURL + "data.csv"); //  CSV file that contains the weather information 
 		String runbat = new String("start " + baseURL + "doRequest.bat");
+		*/
+		
+		String Weather_Data = new String(baseURL + "data.csv"); //  CSV file that contains the weather information 
 		/**run the python script downloading the data into a csv file*/
 	
 		/*
@@ -97,10 +98,12 @@ public class KB_Dev {
 		*/
 		
 		
-		ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "doRequest.bat");
-		File dir = new File(baseURL);
-		pb.directory(dir);
-		Process p = pb.start();
+//		ProcessBuilder pb = new ProcessBuilder("cmd", "/c", "doRequest.bat");
+//		File dir = new File(baseURL);
+//		pb.directory(dir);
+//		Process p = pb.start();
+		
+		String result= executeSingleCommand(baseURL+"/",baseURL+"/doRequest.bat");
 		
 		/** start a loop to read weather data from a CSV file; the last line is most recent so only this (and the headers) will be stored*/
 		String line = null;
@@ -119,6 +122,96 @@ public class KB_Dev {
 		 String[] data = last_line.split(",");
 //		 System.out.println(data[0]);
    
+		FileWriter fW_PV_P;
+		
+		
+		//putToOwlFile(data);  
+		 String areavalue = "0.0";
+	       String effvalue = "0.0";
+	       String irvalue = "0.0";
+	       String nomvalue = "0.0";	
+			
+		try {
+			System.out.println("it goes right");
+			fW_PV_P = new FileWriter(PVPIN);
+			
+
+			
+			fW_PV_P.append("   ,OBJECTID, P_set_MW, V_set_kV, setPUVoltage");
+			fW_PV_P.append("\n");
+
+			
+			
+				//for loadpoint  writing
+			for (int i = 0; i < 3; i++) { // iterate over all members of the Load_Point attributeslist (total of 108), which contains information on multiple graphic elements
+				fW_PV_P.append("OBJECTID"); // add the header "FID" to the data stream of the file that will contain the pwr_P value.
+				fW_PV_P.append(",");
+				fW_PV_P.append(String.valueOf(i+1)); // capture the FID value, convert it to a string and add it to the data stream
+				fW_PV_P.append(", ");
+				fW_PV_P.append(String.valueOf(Float.parseFloat(irvalue)*Float.parseFloat(areavalue)*Float.parseFloat(effvalue)/1000000)); // capture the pwr_P value that corresponds to the FID, convert it to a string and add it to the data stream
+				fW_PV_P.append(", ");
+				fW_PV_P.append(nomvalue);
+				fW_PV_P.append(", ");
+				Double a=Double.parseDouble(nomvalue);
+				Double b= a/0.75;
+				String setpuvoltage= Double.toString(b);
+				fW_PV_P.append(setpuvoltage);
+				fW_PV_P.append("\n");
+	
+				}
+
+			
+			
+			fW_PV_P.flush(); // passes the data from fW_PG to PGIN.csv
+						
+			fW_PV_P.close();
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		System.out.println("value of irradiance ="+ Float.parseFloat(irvalue));
+		System.out.println("value of power ="+ Float.parseFloat(irvalue)*Float.parseFloat(areavalue)*Float.parseFloat(effvalue)/1000000);
+		   
+
+		   
+		
+		   
+	}
+	
+	public static String executeSingleCommand(String targetFolder , String command) 
+	{  
+	 
+		//logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		Runtime rt = Runtime.getRuntime();
+		Process pr = null;
+		try {
+			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+				 
+		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
+		String line = "";
+		String resultString = "";
+		try {
+			
+			while((line = bfr.readLine()) != null) {
+				resultString += line;
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return resultString; 
+	}
+
+
+	private static void putToOwlFile(String[] data)
+			throws FileNotFoundException, UnsupportedEncodingException, OntologyLoadException, URISyntaxException {
 		String ontoPath = "http://www.theworldavatar.com/GPVF-001.owl";
 		String ontoPath2 = "http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl";
 		
@@ -174,58 +267,15 @@ public class KB_Dev {
 	       String nomvalue = nomV.getPropertyValueLiteral(jenaOwlModel.getOWLProperty("http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue")).getString();
 	       
 	       individual5.setPropertyValue(property,Float.parseFloat(irvalue)*Float.parseFloat(areavalue)*Float.parseFloat(effvalue)/1000000); 
-		try {
-			
-			fW_PV_P = new FileWriter(PVPIN);
-			
-
-			
-			fW_PV_P.append("   ,OBJECTID, P_set_MW, V_set_kV, setPUVoltage");
-			fW_PV_P.append("\n");
-
-			
-			
-				//for loadpoint  writing
-			for (int i = 0; i < 3; i++) { // iterate over all members of the Load_Point attributeslist (total of 108), which contains information on multiple graphic elements
-				fW_PV_P.append("OBJECTID"); // add the header "FID" to the data stream of the file that will contain the pwr_P value.
-				fW_PV_P.append(",");
-				fW_PV_P.append(String.valueOf(i+1)); // capture the FID value, convert it to a string and add it to the data stream
-				fW_PV_P.append(", ");
-				fW_PV_P.append(String.valueOf(Float.parseFloat(irvalue)*Float.parseFloat(areavalue)*Float.parseFloat(effvalue)/1000000)); // capture the pwr_P value that corresponds to the FID, convert it to a string and add it to the data stream
-				fW_PV_P.append(", ");
-				fW_PV_P.append(nomvalue);
-				fW_PV_P.append(", ");
-				Double a=Double.parseDouble(nomvalue);
-				Double b= a/0.75;
-				String setpuvoltage= Double.toString(b);
-				fW_PV_P.append(setpuvoltage);
-				fW_PV_P.append("\n");
-	
-				}
-
-			
-			
-			fW_PV_P.flush(); // passes the data from fW_PG to PGIN.csv
-						
-			fW_PV_P.close();
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		System.out.println("value of irradiance ="+ Float.parseFloat(irvalue));
-		System.out.println("value of power ="+ Float.parseFloat(irvalue)*Float.parseFloat(areavalue)*Float.parseFloat(effvalue)/1000000);
-		   
-		/**save the updated model file*/
-		Collection errors = new ArrayList();
-		jenaOwlModel.save(new URI("file:////" + filePath.replace("\\", "/")), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
-		System.out.println("File saved with " + errors.size() + " errors.");  
-		   
-		
-		   
+	       
+			/**save the updated model file*/
+			Collection errors = new ArrayList();
+			jenaOwlModel.save(new URI("file:////" + filePath.replace("\\", "/")), FileUtils.langXMLAbbrev, errors, jenaOwlModel.getOntModel());
+			System.out.println("File saved with " + errors.size() + " errors.");
 	}
 	
 	
-	public static void Running_ADMS() throws Exception {
+	public static void running_Semakau() throws Exception {
 		
 		List<List<Double>> xData = new ArrayList<>(1);
 		List<Double> xRow = new ArrayList<>();
@@ -279,7 +329,7 @@ public class KB_Dev {
 		try {			
 			// System.out.println(MoDSAPI.class);
 			fileWriter = new FileWriter(PrPWOUTPVCSV); // filewriter for the output csv
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API_0.1.dll");                     // not recommended--Messing with the library path on the command line		
+			System.load(tomcatolddir+"/MoDS_Java_API_0.1.dll");                     // not recommended--Messing with the library path on the command line		
 			
 //			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);
 			ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
@@ -384,7 +434,7 @@ public class KB_Dev {
 	public static void main(String[] args) throws Exception {
 		System.out.println("Starting Process");
 		Downloading();
-		Running_ADMS();
+		//running_Semakau();
 		 
 	}
 	
