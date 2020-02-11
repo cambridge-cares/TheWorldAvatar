@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.semakaupv;
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 
@@ -28,7 +29,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class SemakauPV extends JPSHttpServlet {
 	public static String tomcatolddir="C:/apache-tomcat-8.0.24/webapps/ROOT";
-
+	private Logger logger = LoggerFactory.getLogger(SemakauPV.class);
 	public static String root=AgentLocator.getProperty("absdir.root");
 	String Sim4 = root+"/Sim_PV1"; // THIS SIMULATION NEED TO BE EXIST 
 	
@@ -126,11 +127,7 @@ public class SemakauPV extends JPSHttpServlet {
 					xvalue.add(P);
 					String[]content={"property-"+d+"="+P}; //calculated by irr*area*efficiency
 					inputcsv.add(content);
-					System.out.println("P calculated= "+P);
-					for(int r=1;r<=4;r++) {
-						System.out.println("property gotten= "+resultListPV.get(item)[r]);
-					}
-					System.out.println("irr= "+irr);
+					System.out.println("P calculated= "+P);//hardcoded value before is 0.34840962
 					
 				} else {
 					xvalue.add(0.75);
@@ -141,23 +138,6 @@ public class SemakauPV extends JPSHttpServlet {
 
 		}
 
-		
-				
-				
-//		for(int n=0;n<6;n++) {
-//			if(n<3) { //PV power 1,2,3
-//				String[]content={"X"+n+"="+"0.34840962"}; //calculated by irr*area*efficiency
-//				inputcsv.add(content);
-//				xvalue.add(0.34840962);
-//			}
-//			else { //PV Voltage 1,2,3
-//				
-//				String[]content={"X"+n+"="+"0.75"}; //queried
-//				inputcsv.add(content);
-//				xvalue.add(0.75);
-//			}
-//			
-//		}
 		
 		String s = MatrixConverter.fromArraytoCsv(inputcsv);
 		new QueryBroker().putLocal(filename, s);
@@ -175,27 +155,17 @@ public class SemakauPV extends JPSHttpServlet {
 
 
 		
-		String simDir = Sim4;                                                                          // pass the directory of the power world sorrogate model to simDir
+		String simDir = Sim4; // pass the directory of the power world sorrogate model to simDir
 		String modelName = "HDMR_Alg_1";
-		FileWriter fileWriter = null;
-		try {			
-					
-			System.load(root+"/MoDS_Java_API_0.1.dll");                     // not recommended--Messing with the library path on the command line
-			// THIS LIBRARY NEED TO BE EXIST 
-			
-			//make header of the output: CURRENTLY STILL FAILS
-			
-//			List<String> yNames = com.cmclinnovations.mods.api.MoDSAPI.getYVarNamesFromAPI(simDir, modelName);	
-//				for (int j = 0; j < yNames.size(); j++) {
-//					fileWriter.append(yNames.get(j));                                                   // write the yNames to the output CSV file
-//					fileWriter.append(",");
-//					System.out.println(yNames.get(j));
-//				}
-				
-			} catch (Error e) {
-		e.printStackTrace();
-				
-			}
+		try {
+
+			System.load(root + "/MoDS_Java_API_0.1.dll"); // not recommended--Messing with the library path on the
+															// command line
+
+		} catch (Error e) {
+			logger.error(e.getMessage());
+
+		}
 		
 		JSONObject ans= new JSONObject();
 
@@ -215,6 +185,8 @@ public class SemakauPV extends JPSHttpServlet {
 		ans.put("QGen", yData.get(34));
 		
 		List<String[]> stringsoutput = new ArrayList<String[]>();
+		// make header of the output: CURRENTLY STILL FAILS
+		//List<String> yNames = com.cmclinnovations.mods.api.MoDSAPI.getYVarNamesFromAPI(simDir, modelName);	
 		int t=0;
 		String[] e= new String[yData.size()];
 		for (Double d : yData) {			
