@@ -3,6 +3,7 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -11,11 +12,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.cmclinnovations.modsapi.MoDSAPI;
+
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+
 /**
  * Servlet implementation class DoSimulation2
  */
 @WebServlet("/DoSimulation2")
-public class DoSimulation2 extends HttpServlet {
+public class DoSimulation2 extends  JPSHttpServlet{
 	private static final long serialVersionUID = 1L;
 	public static String APINCSV = new String( "C:/apache-tomcat-8.0.24/webapps/ROOT/PrAPWWHRinCSV.CSV");    
 	public static String APPWSim = new String("C:/apache-tomcat-8.0.24/webapps/ROOT/BD_WWHR_Sim");
@@ -108,8 +113,7 @@ public class DoSimulation2 extends HttpServlet {
 		
 		try {
 	
-			fileWriter = new FileWriter(PrAPPWOUTCSV);                                        // filewriter for the output of pr aspenplus model
-			System.load("C:/apache-tomcat-8.0.24/webapps/ROOT/MoDS_Java_API.dll");            //the MoDS API at use is version 0.1  D:\MoDS_API\MoDS_Java_API_v0.1
+			fileWriter = new FileWriter(PrAPPWOUTCSV);                                        //the MoDS API at use is version 0.1  D:\MoDS_API\MoDS_Java_API_v0.1
 			
 			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
 			System.out.println("xNames= " + xNames);
