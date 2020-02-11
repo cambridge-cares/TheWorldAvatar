@@ -38,10 +38,12 @@ public class NISTSDFParser {
 	List<Map<String, List<Integer>>> listOfAtomVsBondTypeMap = new ArrayList<Map<String, List<Integer>>>();
 	Map<String, List<Integer>> atomVsBondTypeMap = new HashMap<String, List<Integer>>();
 	List<Integer> bondType = new ArrayList<Integer>();
-	NISTSpeciesGeometry speciesGeometry;
+	NISTSpeciesGeometry speciesGeometry = new NISTSpeciesGeometry();
 	NISTElementGeometry elementGeometry;
 	NISTDipoleMoment dipoleMoment;
 	NISTElectronicEnergy electronicEnergy;
+	StringBuffer geometryString = new StringBuffer();
+	StringBuffer atomicBondsString = new StringBuffer();
 	
 	/**
 	 * A parser designed to extract data from all SDF files.
@@ -74,6 +76,7 @@ public class NISTSDFParser {
 	 * @throws IOException
 	 */
 	private void parse() throws IOException{
+		System.out.println("CAS Reg No:"+reader.getCASRegNr());
 		BufferedReader br = openSourceFile(path);
 		String line = "";
 		lines = new ArrayList<String>();
@@ -94,6 +97,9 @@ public class NISTSDFParser {
 	 */
 	private void parseAtomicBonds(List<String> lines){
 		parseElementalBonds(lines, 0);
+		if(atomicBondsString!=null && !atomicBondsString.toString().isEmpty()){
+			speciesGeometry.setAtomicBondsString(atomicBondsString.toString());
+		}
 		int pairedElectrons = calculatePairedElectrons();
 		reader.setPairedElectrons(pairedElectrons);
 		int unpairedElectrons = calculateUnpairedElectrons(pairedElectrons);
@@ -109,8 +115,14 @@ public class NISTSDFParser {
 	 */
 	private void parseGeometry(List<String> lines){
 		parseElementalBonds(lines, 1);
-		if(speciesGeometry!=null){
+		if(geometryString!=null && !geometryString.toString().isEmpty()){
+			speciesGeometry.setString(geometryString.toString());
+		}
+		if(!geometryString.toString().isEmpty() || !atomicBondsString.toString().isEmpty()){
 			reader.setSpeciesGeometry(speciesGeometry);
+			atomicBondsString = new StringBuffer();
+			geometryString = new StringBuffer();
+			speciesGeometry = new NISTSpeciesGeometry();
 		}
 	}
 
@@ -150,7 +162,6 @@ public class NISTSDFParser {
 		int index = -2;
 		atomVsBondList = new ArrayList<Map<String,Integer>>();
 		listOfAtomVsBondTypeMap = new ArrayList<Map<String, List<Integer>>>();
-		speciesGeometry = new NISTSpeciesGeometry();
 		for(String line:lines){
 			if(line.contains("Copyright by the U.S. Sec.")){
 				flag = true;
@@ -161,7 +172,7 @@ public class NISTSDFParser {
 				if (flag && ++index >= 1 && tokens.length >= 10 && atomVsElectronMap.containsKey(tokens[3])) {
 					parseGeometryBlock(tokens);
 				} else if (index >= 1 && tokens.length >= 3) {
-					parseBondTypeBlock(tokens);
+					parseBondTypeBlock(tokens, atomicBondsString);
 					parseBondType(tokens);
 				}
 			}
@@ -169,10 +180,16 @@ public class NISTSDFParser {
 			// is extracted.
 			if(type == 1){
 				if (flag && ++index >= 1 && tokens.length >= 10 && atomVsElectronMap.containsKey(tokens[3])) {
-					parseGeometryOfAnElement(tokens);
+					parseGeometryOfAnElement(tokens, geometryString);
 				}
 			}
 			if(line.contains("M  END")){
+				if(!geometryString.toString().isEmpty()){
+					speciesGeometry.setString(geometryString.toString());
+				}
+				if(!atomicBondsString.toString().isEmpty()){
+					speciesGeometry.setAtomicBondsString(atomicBondsString.toString());
+				}
 				break;
 			}
 		}
@@ -200,12 +217,17 @@ public class NISTSDFParser {
 	 * 
 	 * @param tokens
 	 */
-	private void parseGeometryOfAnElement(String[] tokens){
+	private void parseGeometryOfAnElement(String[] tokens, StringBuffer geometryString){
 		if(tokens.length>=4 && !NISTInfoReader.isNumeric(tokens[3])){
 			elementGeometry = new NISTElementGeometry();
 			elementGeometry.setElement(tokens[3]);
 			if (NISTInfoReader.isNumeric(tokens[0]) && NISTInfoReader.isNumeric(tokens[1])
 					&& NISTInfoReader.isNumeric(tokens[2])) {
+				geometryString.append(tokens[3])
+				.append(" ").append(tokens[0])
+				.append(" ").append(tokens[1])
+				.append(" ").append(tokens[2])
+				.append("\n");
 				elementGeometry.setX(tokens[0]);
 				elementGeometry.setY(tokens[1]);
 				elementGeometry.setZ(tokens[2]);
@@ -220,7 +242,12 @@ public class NISTSDFParser {
 	 * 
 	 * @param tokens
 	 */
-	private void parseBondTypeBlock(String[] tokens){
+	private void parseBondTypeBlock(String[] tokens, StringBuffer atomicBondsString){
+		// produce a plain string containing the source element, target 
+		// element and number of bond(s) between them
+		atomicBondsString.append(tokens[0]).append(" ")
+		.append(tokens[1]).append(" ")
+		.append(tokens[2]).append("\n");
 		Map<String, Integer> temp = atomVsBondList.get(Integer.parseInt(tokens[0])-1);
 		String key = "";
 		Integer bond = new Integer(0);

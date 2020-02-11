@@ -48,6 +48,8 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 	public static final String PROP_OBJ_ENTHALPY = "hasStandardEnthalpyOfFormation";
 	public static final String PROP_DAT_UNITS = "units";
 	public static final String PROP_DAT_CAS_REG_ID = "casRegistryID";
+	public static final String PROP_DAT_GEOMETRY = "hasGeometry";
+	public static final String PROP_DAT_ATOMIC_BONDS = "hasAtomicBond";
 	public static final String PROP_OBJ_TEMPERATURE = "hasReferenceTemperature";
 	public static final String VALUE_REF_TEMPERATURE = "298.15";
 	public static final String VALUE_REF_TEMP_UNITS = "K";
@@ -121,9 +123,17 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 		NISTWebBookParser nistWebBookParser = new NISTWebBookParser();
 		try{
 		Map<String, NISTSpeciesInfo> data = nistWebBookParser.parseNISTData(sourceHTMLFilePath, sourceStructureFilePath);
+		int count = 0;
 		// Each iteration converts a NIST species into an OWL file.
 		for (String key:data.keySet()) {
 			NISTSpeciesInfo speciesInfo = data.get(key);
+			if(speciesInfo.getCASRegNr().equals("34-41-3")){
+				System.out.println(speciesInfo.getCASRegNr());				
+			}
+			System.out.println(speciesInfo.getCASRegNr());
+			if(speciesInfo.getSpeciesGeometry()==null || speciesInfo.getSpeciesGeometry().getString()==null || speciesInfo.getSpeciesGeometry().getString().trim().equals("")){
+				continue;
+			}
 			// Also initialises the instances of the classes that read
 			// configuration parameters using Spring framework annotations.
 			initNISTConverter = new InitNISTConverter();
@@ -216,6 +226,8 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 		addEnthalpyOfFormation(speciesInfo);
 		addCASRegistryNumber(speciesInfo);
 		addAlternativeNames(speciesInfo);
+		addGeometryString(speciesInfo);
+		addAtomicBondsString(speciesInfo);
 	}
 	
 	/**
@@ -331,6 +343,30 @@ public class NISTConverter extends NISTConverterState implements INISTConverter{
 			for(String altName: speciesInfo.getOtherNames()){
 				iNistOWLWriter.addDataPropertyToIndividual(individual, SKOS_URL, PROP_DAT_ALT_LABEL, HASH, altName);
 			}
+		}
+	}
+
+	/**
+	 * Adds the geometry to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addGeometryString(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getSpeciesGeometry()!=null && speciesInfo.getSpeciesGeometry().getString()!=null)
+		{
+			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_GEOMETRY, HASH, speciesInfo.getSpeciesGeometry().getString());
+		}
+	}
+	
+	/**
+	 * Adds all atomic bonds as a string to the current species.
+	 * 
+	 * @throws OntoSpeciesException
+	 */
+	private void addAtomicBondsString(NISTSpeciesInfo speciesInfo) throws OntoSpeciesException{
+		if(speciesInfo.getSpeciesGeometry()!=null && speciesInfo.getSpeciesGeometry().getAtomicBondsString()!=null)
+		{
+			iNistOWLWriter.addDataPropertyToIndividual(individual, PROP_DAT_ATOMIC_BONDS, HASH, speciesInfo.getSpeciesGeometry().getAtomicBondsString());
 		}
 	}
 	

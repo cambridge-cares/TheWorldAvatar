@@ -42,6 +42,13 @@
             <groupId>gigadot.chom</groupId>
             <artifactId>como-chemfilemgmt</artifactId>
             <version>0.7-SNAPSHOT</version>
-        </dependency> 
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/net.sourceforge.owlapi/owlapi-distribution -->
+		<dependency>
+		    <groupId>net.sourceforge.owlapi</groupId>
+		    <artifactId>owlapi-distribution</artifactId>
+		    <version>5.1.13</version>
+		</dependency>
+         
     </dependencies>
 </project>

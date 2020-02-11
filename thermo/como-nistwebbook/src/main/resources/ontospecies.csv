@@ -27,6 +27,8 @@ http://www.w3.org/2004/02/skos/core#altLabel,Data Property,,,http://www.theworld
 dateOfAccess,Data Property,,,http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Species,String,,The date when a web page was accessed.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 value,Data Property,,,Weblink UNION StandardEnthalpyOfFormation UNION Temperature,String,,"The value of a property. Also in OntoCAPE, http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#value is designed as a data type property.",http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 units,Data Property,,,Temperature UNION StandardEnthalpyOfFormation,String,,The physical units of a quantity.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
-http://purl.org/dc/elements/1.1/identifier,Data Property,,,,,,The label or string that identifies an entity.,http://purl.org/dc/elements/1.1
+http://purl.org/dc/elements/1.1/identifier,Data Property,,,,String,,The label or string that identifies an entity.,http://purl.org/dc/elements/1.1
 hasSpeciesIRI,Data Property,,,ReferenceSpecies,String,,The Internationalised Resource Identifier (IRI) of a species.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
 isReliable,Data Property,,,ReferenceSpecies,String,,The data property that indicates if a species in a given reference set is reliable.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasGeometry,Data Property,,,Species,String,,The data property that represents the geometry of species.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
+hasAtomicBond,Data Property,,,Species,String,,The data property that represents the bonds between all atoms in a species.,http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl
