@@ -55,7 +55,7 @@ document.addEventListener("click", function (evt){
     tempGraph = new Chart("temperature", {
       type: 'bar',
       data: {
-        labels:hourOfDay,
+        labels:data.timer,
         datasets: [
           {
           backgroundColor:'rgba(126, 158, 211, 1)',
@@ -99,7 +99,7 @@ document.addEventListener("click", function (evt){
     irradGraph = new Chart("irradiation", {
       type: 'line',
       data: {
-        labels:hourOfDay,
+        labels:data.timer,
         datasets: [
           {
             pointRadius:10,
@@ -148,7 +148,7 @@ document.addEventListener("click", function (evt){
     document.getElementById("loader").style.display = "block";
     console.log(encodeURIComponent(JSON.stringify(weatherjson)))
     var request = $.ajax({
-      url: prefix + "/JPS_DES/DESCoordination",
+      url: prefix + "/JPS_DES/showDESResult",
       type: 'GET',
       data: weatherjson,
       timeout:1.08e+7,
@@ -162,6 +162,7 @@ document.addEventListener("click", function (evt){
     createHourlyIntervals();
     makeChart(response);
     makeOutputChart(response);
+    hourOfDay = response.timer;
     configRH("rh1", response.rh1);
     configRH("rh2", response.rh2);
     configRH("rh3", response.rh3);
@@ -270,7 +271,7 @@ function configRH(idofgraph, data){
     outputGraph = new Chart("graph4", {
       type: 'line',
       data: {
-        labels:hourOfDay,
+        labels:data.timer,
         datasets: [
           {
             label:'Home',
