@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.semakaupv;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,6 +46,8 @@ public class SemakauPV extends JPSHttpServlet {
 		String irradSensorIRI=joforess.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
 		JSONObject res=runMODS(model,irradSensorIRI);
+		updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+		//hardcoded at the moment the iri due to model restriction
 		
 		AgentCaller.printToResponse(res, response);
 			
@@ -202,5 +206,108 @@ public class SemakauPV extends JPSHttpServlet {
 		
 
 	}
+	
+	public void updateOWLValue(JSONObject ans,String irigen, String iribus ) {
+		
+		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?activepowervalue ?reactivepowervalue ?proptimeval "
 
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j2:isModeledBy ?model ."
+
+				+ "?model   j5:hasModelVariable ?Pg ." 
+				+ "?Pg  a  j3:Pg  ." 
+				+ "?Pg  j2:hasValue ?vpg ."
+				+ "?vpg   j2:numericalValue ?activepowervalue ." // pg
+				+ " ?vpg   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+				
+
+				+ "?model   j5:hasModelVariable ?Qg ." 
+				+ "?Qg  a  j3:Qg  ." 
+				+ "?Qg  j2:hasValue ?vqg ."
+				+ "?vqg   j2:numericalValue ?reactivepowervalue ." // qg
+				+ " ?vqg   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+				+ "}" 
+				+ "ORDER BY ASC(?proptimeval)"; 
+		
+		String result3 = new QueryBroker().queryFile(irigen, genInfo);
+		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
+		List<String[]> resultListfromquerygen = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
+		
+		String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "SELECT ?VoltMagvalue ?VoltAnglevalue ?proptimeval ?BaseKVvalue "
+
+				+ "WHERE {?entity  a  j1:BusNode  ." 
+				+ "?entity   j2:isModeledBy ?model ."
+
+				+ "?model   j5:hasModelVariable ?VM ." 
+				+ "?VM  a  j3:Vm  ." 
+				+ "?VM  j2:hasValue ?vVM ."
+				+ "?vVM   j2:numericalValue ?VoltMagvalue ." // Vm
+				+ " ?vVM   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+
+				+ "?model   j5:hasModelVariable ?VA ." 
+				+ "?VA  a  j3:Va  ." 
+				+ "?VA  j2:hasValue ?vVA ."
+				+ "?vVA   j2:numericalValue ?VoltAnglevalue ." // Va
+				+ " ?vVA   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+
+				+ "?model   j5:hasModelVariable ?BKV ." 
+				+ "?BKV  a  j3:baseKV  ." 
+				+ "?BKV  j2:hasValue ?vBKV ."
+				+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
+				+ "}" 
+				+ "ORDER BY ASC(?proptimeval)"; 
+		
+		String result1 = new QueryBroker().queryFile(iribus, busInfo);
+		String[] keys1 = JenaResultSetFormatter.getKeys(result1);
+		List<String[]> resultListfromquerybus = JenaResultSetFormatter.convertToListofStringArrays(result1, keys1);
+		
+		//postprocessing the merged query result //gen and bus must have 2 same time set element amount
+		List<String[]> readingFromCSV = new ArrayList<String[]>();
+		for (int d=0;d<resultListfromquerygen.size();d++) {
+			String timewholecsv=resultListfromquerygen.get(d)[2];
+			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
+			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
+			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,resultListfromquerygen.get(d)[0],resultListfromquerygen.get(d)[1],resultListfromquerybus.get(d)[0],resultListfromquerybus.get(d)[1]};
+			readingFromCSV.add(e);
+		}
+		
+		//convert volt to pu
+		Double puvalue= ans.getDouble("voltage")/Double.valueOf(resultListfromquerybus.get(0)[3]);
+		   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		   LocalDateTime now = LocalDateTime.now();
+		   String com=dtf.format(now);
+		   String date=com.split("/")[2].split(" ")[0];
+		readingFromCSV.remove(0);
+		String[]newline= {com.split("/")[0],date+"-"+com.split("/")[1],com.split("/")[2].split(" ")[1],""+ans.get("PGen"),""+ans.get("QGen"),""+puvalue,""+ans.get("theta")}; //time in singapore time
+		readingFromCSV.add(newline);
+		String[]header= {"year","datemonth","time","PGen","QGen","VmPu","Va"};
+		readingFromCSV.add(0,header);
+		try {
+			new TimeSeriesConverter().startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl");
+			new TimeSeriesConverter().startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

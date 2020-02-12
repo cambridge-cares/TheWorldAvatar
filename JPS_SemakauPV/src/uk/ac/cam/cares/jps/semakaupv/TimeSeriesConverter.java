@@ -1,9 +1,6 @@
 package uk.ac.cam.cares.jps.semakaupv;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +11,6 @@ import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.ModelFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -153,15 +149,18 @@ public class TimeSeriesConverter {
 			Individual outsideirradiation = jenaOwlModel.getIndividual(resultListiri.get(0)[propnum]);
 			System.out.println(resultListiri.get(0)[propnum]);
 			//outsideirradiation.removeAll(hasvalue);
-			for(int x=1;x<=readingFromCSV.size();x++) {
-				String irradiationvalue=readingFromCSV.get(x-1)[indexcsv[propnum]]; //need to be changed
-				String year=readingFromCSV.get(x-1)[0];
-				String month=readingFromCSV.get(x-1)[1].split("-")[1]; 
-				String date=readingFromCSV.get(x-1)[1].split("-")[0];
-				String time=readingFromCSV.get(x-1)[2];
+			for(int x=1;x<readingFromCSV.size();x++) {
+				String irradiationvalue=readingFromCSV.get(x)[indexcsv[propnum]]; //need to be changed
+				String year=readingFromCSV.get(x)[0];
+				String month=readingFromCSV.get(x)[1].split("-")[1]; 
+				String date=readingFromCSV.get(x)[1].split("-")[0];
+				String time=readingFromCSV.get(x)[2];
 				String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
 				Individual voutsideirradiation = scalarvalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_Calculated"+keys[propnum]+"Of"+mainobjectname2+"_"+x);
-				Individual timestampirradiation = timeinstanceclass.createIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculated"+keys[propnum]+"Of"+mainobjectname2+"_"+x);
+				Individual timestampirradiation = jenaOwlModel.getIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculatedPropertiesOf"+mainobjectname2+"_"+x);
+				if(timestampirradiation==null) {
+				timestampirradiation = timeinstanceclass.createIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculatedPropertiesOf"+mainobjectname2+"_"+x);
+				}
 				outsideirradiation.addProperty(hasvalue, voutsideirradiation);
 				voutsideirradiation.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (irradiationvalue)));
 				if(unit.get(propnum)!=null) {
@@ -177,14 +176,7 @@ public class TimeSeriesConverter {
 	}
 	
 	public void startConversion(List<String[]> readingFromCSV,String flag,String tempfilename) throws Exception {
-		String baseURL = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		String filePath = baseURL + tempfilename; // the empty owl file
-
-		FileInputStream inFile = new FileInputStream(filePath);
-		Reader in = new InputStreamReader(inFile, "UTF-8");
-
-		OntModel jenaOwlModel = ModelFactory.createOntologyModel();
-		jenaOwlModel.read(in, null);
+		OntModel jenaOwlModel = JenaHelper.createModel(tempfilename);
 		initOWLClasses(jenaOwlModel);
 		List<Individual>unit1=new ArrayList<Individual>();
 		unit1.add(MW);
@@ -211,9 +203,9 @@ public class TimeSeriesConverter {
 		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/timeseriespropvalues.csv");
 		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		converter.startConversion(readingFromCSV,"gen","PV-001.owl");
+		converter.startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl");
 		System.out.println("PV finished");
-		converter.startConversion(readingFromCSV,"bus","EBus-006.owl");
+		converter.startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
 
 			
 	}
