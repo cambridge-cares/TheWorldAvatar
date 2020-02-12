@@ -58,7 +58,7 @@
 			}
             table {
                 border-collapse: collapse;
-                border: 2px black solid;
+                border: 1px black solid;
                 font: 12px sans-serif;
             }
 
@@ -73,6 +73,8 @@
 				margin-top: 50px;
 				padding: 10px;
 				border-style:groove;
+				width: 600px;
+				height: 500px;
 			}
 			
 			svg{
@@ -122,33 +124,35 @@
 <h2>Input</h2>	
 <div style="padding: 10px;border-style:groove; width:700px">
 <div class="title">Solar Irradiation (W/m<sup>2</sup>)</div>
-<svg id='graph1' width="600" height="250"></svg>
+<canvas id='graph1' width="600" height="250"></canvas>
 </div>
 <hr/>
 
 <h2>Outputs</h2>	
+<table>
+<tr>
+<th></th>
+</table>
 
 <div class="Graph"><div class="title">PVfarm1_ActualPhaseAngle (degree)</div>
 <div class="Des">Actual phase angle is a parameter to determine how well connected is the bus with the slack (reference) bus.It is more stable if the value is smaller. </div>
-<svg id='graph3' width="600" height="250"></svg>
-
+<canvas id='graph3' width="600" height="500"></canvas>
 </div>
-
 
 <div class="Graph"><div class="title">PVfarm1_ActualVoltage (V)</div>
 <div class="Des">Actual voltage is a parameter to show the real value of the bus(PV farm1) voltage level.</div>
-<svg id='graph4' width="600" height="250"></svg>
+<canvas id='graph4' width="600" height="500"></canvas>
 </div>
 
 
 <div class="Graph"><div class="title">PVfarm1_ActualActivePower (MW)</div>
 <div class="Des">Actual active power is a parameter to show the real power value that is functional for generating work.</div>
-<svg id='graph7' width="600" height="250"></svg>
+<canvas id='graph7' width="600" height="500"></canvas>
 </div>
 
  <div class="Graph"><div class="title">PVfarm1_ActualReactivePower (Mvar)</div>
  <div class="Des">Actual reactive power is a parameter to show the imaginary power value that transfers no net energy to load.</div>
-<svg id='graph8' width="600" height="250"></svg>
+<canvas id='graph8' width="600" height="500"></canvas>
 </div>
 
 </div>
@@ -182,12 +186,9 @@
     });
 
 </script>
-<script src="https://d3js.org/d3.v4.min.js">
-//*****************************************************//
- 
-//*****************************************************//
-
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
      <!--   <script type="text/javascript"charset="utf-8">
             d3.text("PrPWOUTPV.CSV", function(data) {
                 var parsedCSV = d3.csvParseRows(data);

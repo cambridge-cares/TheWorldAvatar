@@ -152,8 +152,8 @@ public class TimeSeriesConverter {
 			for(int x=1;x<readingFromCSV.size();x++) {
 				String irradiationvalue=readingFromCSV.get(x)[indexcsv[propnum]]; //need to be changed
 				String year=readingFromCSV.get(x)[0];
-				String month=readingFromCSV.get(x)[1].split("-")[1]; 
-				String date=readingFromCSV.get(x)[1].split("-")[0];
+				String month=readingFromCSV.get(x)[1].split("-")[0]; 
+				String date=readingFromCSV.get(x)[1].split("-")[1];
 				String time=readingFromCSV.get(x)[2];
 				String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
 				Individual voutsideirradiation = scalarvalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_Calculated"+keys[propnum]+"Of"+mainobjectname2+"_"+x);

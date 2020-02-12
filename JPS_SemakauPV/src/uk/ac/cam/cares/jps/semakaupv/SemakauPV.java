@@ -30,13 +30,10 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns = { "/SemakauPV"})
 
 public class SemakauPV extends JPSHttpServlet {
-	public static String tomcatolddir="C:/apache-tomcat-8.0.24/webapps/ROOT";
 	private Logger logger = LoggerFactory.getLogger(SemakauPV.class);
 	public static String root=AgentLocator.getProperty("absdir.root");
 	String Sim4 = root+"/Sim_PV1"; // THIS SIMULATION NEED TO BE EXIST 
-	
-	public static String XVALUE4 = new String(tomcatolddir+"/XVALUEPV.CSV");//not exist yet 
-	//public static String tomcatdir="C:/apache-tomcat-8.0.24/webapps/ROOT";
+
 	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
@@ -46,10 +43,10 @@ public class SemakauPV extends JPSHttpServlet {
 		String irradSensorIRI=joforess.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
 		JSONObject res=runMODS(model,irradSensorIRI);
-		updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
 		//hardcoded at the moment the iri due to model restriction
 		
-		AgentCaller.printToResponse(res, response);
+		AgentCaller.printToResponse(result, response);
 			
 	}
 	
@@ -207,7 +204,11 @@ public class SemakauPV extends JPSHttpServlet {
 
 	}
 	
-	public void updateOWLValue(JSONObject ans,String irigen, String iribus ) {
+	public JSONObject updateOWLValue(JSONObject ans,String irigen, String iribus ) {
+		
+		JSONObject ans2= new JSONObject();
+		String gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl";
+		String bus="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl";
 		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -298,16 +299,20 @@ public class SemakauPV extends JPSHttpServlet {
 		   String com=dtf.format(now);
 		   String date=com.split("/")[2].split(" ")[0];
 		readingFromCSV.remove(0);
-		String[]newline= {com.split("/")[0],date+"-"+com.split("/")[1],com.split("/")[2].split(" ")[1],""+ans.get("PGen"),""+ans.get("QGen"),""+puvalue,""+ans.get("theta")}; //time in singapore time
+		String[]newline= {com.split("/")[0],com.split("/")[1]+"-"+date,com.split("/")[2].split(" ")[1],""+ans.get("PGen"),""+ans.get("QGen"),""+puvalue,""+ans.get("theta")}; //time in singapore time
 		readingFromCSV.add(newline);
-		String[]header= {"year","datemonth","time","PGen","QGen","VmPu","Va"};
+		String[]header= {"year","monthdate","time","PGen","QGen","VmPu","Va"};
 		readingFromCSV.add(0,header);
 		try {
 			new TimeSeriesConverter().startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl");
 			new TimeSeriesConverter().startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage());
 		}
+		ans2.put("gen",gen);
+		ans2.put("bus",bus);
+		
+		return ans2;
 	}
 }

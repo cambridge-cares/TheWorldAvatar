@@ -34,13 +34,13 @@ public class SemakauPVCoordination extends JPSHttpServlet {
 		
 		//retrofit the generator of solar
 		logger.info("sent to the IrradiationandWeather= "+jo.toString());
-		String result1= AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+		String result1= AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString()); //sensorirradiri
 	
 		String iriofirrad = new JSONObject(result1).getString("irradiationsensor");
 		jo.put("irradiationsensor",iriofirrad);
 		
 		logger.info("started simulation");
-		String result = AgentCaller.executeGetWithJsonParameter("JPS_SemakauPV/SemakauPV", jo.toString());
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_SemakauPV/SemakauPV", jo.toString()); //EN of Semakau
 	
 	
 		JSONObject finres= new JSONObject(result); 
