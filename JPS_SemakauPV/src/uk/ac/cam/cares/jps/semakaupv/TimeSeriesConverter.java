@@ -155,11 +155,12 @@ public class TimeSeriesConverter {
 				String month=readingFromCSV.get(x)[1].split("-")[0]; 
 				String date=readingFromCSV.get(x)[1].split("-")[1];
 				String time=readingFromCSV.get(x)[2];
+				String individualindex=String.format("%02d", x);
 				String timestampvalue=year+"-"+month+"-"+String.format("%02d", Integer.valueOf(date))+"T"+time+"+08:00";
-				Individual voutsideirradiation = scalarvalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_Calculated"+keys[propnum]+"Of"+mainobjectname2+"_"+x);
-				Individual timestampirradiation = jenaOwlModel.getIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculatedPropertiesOf"+mainobjectname2+"_"+x);
+				Individual voutsideirradiation = scalarvalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_Calculated"+keys[propnum]+"Of"+mainobjectname2+"_"+individualindex);
+				Individual timestampirradiation = jenaOwlModel.getIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculatedPropertiesOf"+mainobjectname2+"_"+individualindex);
 				if(timestampirradiation==null) {
-				timestampirradiation = timeinstanceclass.createIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculatedPropertiesOf"+mainobjectname2+"_"+x);
+				timestampirradiation = timeinstanceclass.createIndividual(Prefix+mainobjectname2+".owl#TimeOfCalculatedPropertiesOf"+mainobjectname2+"_"+individualindex);
 				}
 				outsideirradiation.addProperty(hasvalue, voutsideirradiation);
 				voutsideirradiation.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (irradiationvalue)));

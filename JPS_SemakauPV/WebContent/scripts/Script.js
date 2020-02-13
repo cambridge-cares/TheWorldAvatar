@@ -98,7 +98,7 @@ var secondQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/
 	" ?vqg   j6:hasTime ?proptime ." +
 	" ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." +
 	"}" +
-	"ORDER BY ASC(?proptimeval)";
+	"ORDER BY ASC(?proptime)";
 
 var irradiationQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 	+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -112,7 +112,7 @@ var irradiationQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontoca
 	+ " ?vprop   j6:hasTime ?proptime ."
 	+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
 	+ "}" 
-	+ "ORDER BY ASC(?proptimeval)";
+	+ "ORDER BY ASC(?proptime)";
 var prefix = "http://www.jparksimulator.com";
 var bus="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl";
 var gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl";
@@ -189,6 +189,7 @@ function main(){
         for (var i in obj0){
         	activepowervaluelst.push(obj0[i].activepowervalue.value);
         	reactivepowervaluelst.push(obj0[i].reactivepowervalue.value);
+        	console.log(obj0[i].proptimeval.value);
         	propTime.push(obj0[i].proptimeval.value.split('T')[1].split('+')[0]);
         }
         makeChart(activepowervaluelst, propTime , 'graph7', 'MW');
@@ -213,6 +214,7 @@ function makeChart(dataset, time, id, unit){
 }
 function makeChart(dataset, time, id, unit, color){
 	var v = dataset;
+	console.log(time);
 	v.forEach(function(obj){obj = parseFloat(obj)});
 	vGraph = new Chart(id, {
 		type: 'line', 

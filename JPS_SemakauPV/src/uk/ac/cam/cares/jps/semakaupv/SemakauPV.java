@@ -238,7 +238,7 @@ public class SemakauPV extends JPSHttpServlet {
 				+ " ?vqg   j6:hasTime ?proptime ."
 				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
 				+ "}" 
-				+ "ORDER BY ASC(?proptimeval)"; 
+				+ "ORDER BY ASC(?proptime)"; 
 		
 		String result3 = new QueryBroker().queryFile(irigen, genInfo);
 		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
@@ -276,7 +276,7 @@ public class SemakauPV extends JPSHttpServlet {
 				+ "?BKV  j2:hasValue ?vBKV ."
 				+ "?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
 				+ "}" 
-				+ "ORDER BY ASC(?proptimeval)"; 
+				+ "ORDER BY ASC(?proptime)"; 
 		
 		String result1 = new QueryBroker().queryFile(iribus, busInfo);
 		String[] keys1 = JenaResultSetFormatter.getKeys(result1);
@@ -286,9 +286,9 @@ public class SemakauPV extends JPSHttpServlet {
 		List<String[]> readingFromCSV = new ArrayList<String[]>();
 		for (int d=0;d<resultListfromquerygen.size();d++) {
 			String timewholecsv=resultListfromquerygen.get(d)[2];
-			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
+			String monthdatecsv=timewholecsv.split("-")[1]+"-"+timewholecsv.split("-")[2].split("T")[0];			
 			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
-			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,resultListfromquerygen.get(d)[0],resultListfromquerygen.get(d)[1],resultListfromquerybus.get(d)[0],resultListfromquerybus.get(d)[1]};
+			String[]e= {timewholecsv.split("-")[0],monthdatecsv,timecsv,resultListfromquerygen.get(d)[0],resultListfromquerygen.get(d)[1],resultListfromquerybus.get(d)[0],resultListfromquerybus.get(d)[1]};
 			readingFromCSV.add(e);
 		}
 		
