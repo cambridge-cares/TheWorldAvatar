@@ -59,6 +59,15 @@ public class NISTSDFParser {
 		// Populate a list with atom vs valence electrons.   
 		fillAtomVsElectronList();
 		for (File f : sdfFiles) {
+			if(isSDFFileEmpty(f)){
+				continue;
+			}
+			if(containIncompleteConnectivity(f)){
+				continue;
+			}
+			if(containIncompleteGeometry(f)){
+				continue;
+			}
 			if(data.containsKey(f.getName().replace(".sdf", ""))){
 				reader = data.get(f.getName().replace(".sdf", ""));
 			} else{
@@ -358,6 +367,64 @@ public class NISTSDFParser {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Designed to exclude input SDF files which are empty.
+	 * 
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean isSDFFileEmpty(File f) throws IOException{
+		BufferedReader br = openSourceFile(f.getAbsolutePath());
+		String line;
+		while((line=br.readLine())!=null){
+			if(!line.trim().isEmpty()){
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	/**
+	 * Designed to exclude input SDF files which contain "M CHG" in the</br>
+	 * first and second column in the atom connectivity block.
+	 * 
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean containIncompleteConnectivity(File f) throws IOException{
+		BufferedReader br = openSourceFile(f.getAbsolutePath());
+		String line;
+		while((line=br.readLine())!=null){
+			if(line.contains("M  ") && !line.contains("M  END")){
+				return true;
+			}
+			if(line.contains("M  END")){
+				return false;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Designed to exclude input SDF files which do not contain geometry.
+	 * 
+	 * @param f
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean containIncompleteGeometry(File f) throws IOException{
+		BufferedReader br = openSourceFile(f.getAbsolutePath());
+		String line;
+		while((line=br.readLine())!=null){
+			if(line.contains("M  END")){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**
