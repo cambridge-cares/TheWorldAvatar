@@ -198,7 +198,16 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 		String ENIRI=joforess.getString("electricalnetwork");
 		String storagetype=joforess.getString("storage");
 		
-		OntModel model = readModelGreedy(ENIRI);	
+		Double valueboundary=0.3;
+		OntModel model = readModelGreedy(ENIRI);
+		
+		createBatteryOwlFile(model, storagetype,valueboundary);
+		
+		
+	}
+	
+	public List<String[]> prepareSelectedBranch(OntModel model, double valueboundary){
+			
 		
 		String branchoutputInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -218,53 +227,99 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 				
 				+ "?entity   j6:hasInput ?bus1 ."
 				+ "?entity   j6:hasOutput ?bus2 ."
-
+				+ "FILTER (xsd:double(?vploss) >= "+valueboundary+") " 
 				+ "}";
 		
 		
-		String buscoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
-				+ "SELECT ?entity ?valueofx ?valueofy "
-				+ "WHERE {?entity  a  j1:BusNode ."
-				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
-				+ "?y  j2:hasValue ?vy ." 
-				+ "?vy  j2:numericalValue ?valueofy ."
 
-				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
-				+ "?x  j2:hasValue ?vx ." 
-				+ "?vx  j2:numericalValue ?valueofx ."
-				+ "}";
+		ResultSet resultSet = JenaHelper.query(model, branchoutputInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		
+		for(int d=0;d<resultList.size();d++) {
+			
+		}
+		
+		return resultList;
+		
+	}
+	
+	public double[] prepareStorageLocation(OntModel model,String busirichosen,String busirichosen2){
+		
+		List<double[]>group= new ArrayList<double[]>();
+		
+		String iri=busirichosen;
+		for(int x=0;x<2;x++) {
+			if(x==1) {
+				iri=busirichosen2;
+			}
+			
+			String buscoordinate = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+					+ "SELECT ?valueofx ?valueofy "
+					+ "WHERE {"
+					//+ "?entity  a  j1:BusNode ."
+					+ "<"+iri+">   j7:hasGISCoordinateSystem ?coorsys ."
+					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+					+ "?y  j2:hasValue ?vy ." 
+					+ "?vy  j2:numericalValue ?valueofy ."
+
+					+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+					+ "?x  j2:hasValue ?vx ." 
+					+ "?vx  j2:numericalValue ?valueofx ."
+					+ "}";
+			ResultSet resultSet = JenaHelper.query(model, buscoordinate);
+			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+			String[] keys = JenaResultSetFormatter.getKeys(result);
+			List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			double[]coordinatebusresult= new double[2];
+			coordinatebusresult[0]=Double.valueOf(resultList.get(0)[0]);
+			coordinatebusresult[1]=Double.valueOf(resultList.get(0)[1]);
+			group.add(coordinatebusresult);
+			
+		}
+		
+		double xbat = (group.get(0)[0] + group.get(1)[0]) / 2;
+		double ybat = (group.get(0)[1] + group.get(1)[1]) / 2;	
+		
+
+		double[]coordinateresult= new double[2];
+		
+		coordinateresult[0]=xbat;
+		coordinateresult[1]=ybat;
+		
+		
+		return coordinateresult;
 		
 		
 	}
 	
 	
-	public JSONArray createBatteryOwlFile(String ENIRI, JSONObject resultofbattery, String dir) throws IOException {
-		ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
+	public JSONArray createBatteryOwlFile(OntModel model, String resultofbattery,double valueboundary) throws IOException {
+		//ArrayList<String[]> resultfrommodelbranch = readResultfromtxt(dir + "/outputBranch" + "OPF" + ".txt", 6);
+		List<String[]> resultfrommodelbranch = prepareSelectedBranch(model, valueboundary);
 		int size=resultfrommodelbranch.size();
-		double standard=0.3;
 		int d=0;
-		OntModel model = readModelGreedy(ENIRI);
-//		initOWLClasses(model);
+
 		QueryBroker broker=new QueryBroker();
 		JSONArray listofbat= new JSONArray();
 			while(d<size) {
-				if(Double.valueOf(resultfrommodelbranch.get(d)[1])>standard) {
 					JSONArray indbat= new JSONArray();
-					double[]coordinate=prepareBatteryLocationData(resultfrommodelbranch.get(d)[0],dir,model);
+					//double[]coordinate=prepareBatteryLocationData(resultfrommodelbranch.get(d)[0],dir,model);
+					double[]coordinate=prepareStorageLocation(model,resultfrommodelbranch.get(d)[2],resultfrommodelbranch.get(d)[3]);
 					double x=coordinate[0];
 					double y=coordinate[1];
 					double capacity=Double.valueOf(resultfrommodelbranch.get(d)[1]);
-					String typebat=resultofbattery.getString("battery").split("#")[1];
-					OntModel bat= JenaHelper.createModel(resultofbattery.getString("battery"));
+					String typebat=resultofbattery.split("#")[1];
+					OntModel bat= JenaHelper.createModel(resultofbattery);
 
 					initOWLClasses(bat);
 					String iriprefix="http://www.jparksimulator.com/kb/batterycatalog/";
@@ -308,7 +363,7 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					indbat.put(x);
 					indbat.put(y);
 					listofbat.put(indbat);
-				}
+				
 				
 				d++;
 			}
