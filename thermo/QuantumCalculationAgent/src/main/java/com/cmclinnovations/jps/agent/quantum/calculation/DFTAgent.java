@@ -67,14 +67,18 @@ public class DFTAgent extends HttpServlet{
 	private String runQuantumJobs(){
 		try {
 			getUnfinishedJobs(); // In future jobs will be extracted from the JPS knowledge graph.
-			
 			setupJob(); // In the next iteration of development, we will include code for setting up jobs.   
 			String slurmScriptName = "G09Slurm_darwin_S1.sh";
 			String inputFileName = "water_ex.com";
+//			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(inputFileName),
+//					"rds/hpc-work/gaussian");
+//			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(slurmScriptName),
+//					"rds/hpc-work/gaussian");
 			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(inputFileName),
-					"rds/hpc-work/gaussian");
+			"/home/".concat(username));
 			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(slurmScriptName),
-					"rds/hpc-work/gaussian");
+			"/home/".concat(username));
+			
 			runQuantumJob(slurmScriptName, inputFileName);
 		} catch (JSchException e) {
 			logger.error(e.getMessage());
@@ -222,7 +226,9 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 */
 	private String runQuantumJob(String scriptName, String inputFileName) throws IOException, InterruptedException{
-		String command = "cd rds/hpc-work/gaussian && sbatch ".concat(scriptName);
+//		String command = "cd rds/hpc-work/gaussian && sbatch ".concat(scriptName);
+		String command = "cd /home/".concat(username).concat(" && sbatch ").concat(scriptName);
+
 		ArrayList<String> outputs = executeCommand(command);
 		if (outputs == null) {
 			return null;
@@ -239,8 +245,10 @@ public class DFTAgent extends HttpServlet{
 			isJobRunning = isJobRunning(jobId);
 		}
 		try {
-			downloadFile("rds/hpc-work/gaussian/".concat(inputFileName.replace(".com", ".log")),
-					"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
+//			downloadFile("rds/hpc-work/gaussian/".concat(inputFileName.replace(".com", ".log")),
+//					"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
+			downloadFile("/home/msff2/".concat(inputFileName.replace(".com", ".log")),
+			"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
 		} catch (JSchException e) {
 			logger.error(e.getMessage());
 		} catch (SftpException e) {
