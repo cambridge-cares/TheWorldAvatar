@@ -3,7 +3,7 @@
   <!-- <groupId>ebr</groupId>-->
   <groupId>uk.ac.cam.cares.ebr.cross.validation</groupId>
   <artifactId>ebr</artifactId>
- <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <build>
     <sourceDirectory>src</sourceDirectory>
@@ -24,19 +24,20 @@
         </configuration>
       </plugin>
     </plugins>
-<!--  <finalName>cross_validation</finalName> -->    
+  <!--  <finalName>cross_validation</finalName> -->    
   </build>
   
-  <dependencies>
+<dependencies>
   
 <!-- https://mvnrepository.com/artifact/com.jcraft/jsch -->
+
 <!-- 
 <dependency>
 <groupId>com.jcraft</groupId>
 <artifactId>jsch</artifactId>
 <version>0.1.55</version>
 </dependency>
- -->
+-->
  
 <dependency>
 <groupId>com.hierynomus</groupId>
