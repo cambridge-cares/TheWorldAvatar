@@ -64,7 +64,7 @@ var firstQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/P
 	"?vBKV   j2:numericalValue ?BaseKVvalue ." // Base KV
 	+
 	"}" +
-	"ORDER BY ASC(?proptimeval)";
+	"ORDER BY ASC(?proptime)";
 var secondQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> " +
 	"PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> " +
 	"PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> " +
@@ -112,10 +112,10 @@ var irradiationQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontoca
 	+ " ?vprop   j6:hasTime ?proptime ."
 	+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
 	+ "}" 
-	+ "ORDER BY ASC(?proptime)";
+	+ "ORDER BY ASC(?proptimeval)";
 var prefix = "http://www.jparksimulator.com";
 var bus="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl";
-var gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl";
+var gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl";
 var irradiationSensor = "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
 function main(){
 	console.log(bus);
