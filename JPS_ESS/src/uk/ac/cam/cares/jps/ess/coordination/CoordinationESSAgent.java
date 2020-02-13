@@ -41,11 +41,23 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		//retrofit the generator of solar
 		logger.info("sent to the retrofit= "+jo.toString());
 		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
-	
-		//run the scenario for EN after it is retrofitted
-		logger.info("starting the OPF");
 		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+		//run the opf
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
+		JSONObject res1=new JSONObject(result);
+		jo.put("storage",res1.getString("storage"));
+	
+		
+		String result2 = AgentCaller.executeGetWithJsonParameter("JPS_ESS/OptimizationAgent", jo.toString());
+		JSONObject res2=new JSONObject(result2);
+		
+		String optimizationresult=res2.getString("optimization");
+		//jo.put("optimization",optimizationresult);
+		
+		logger.info("starting the method selected"); //in this case OPF
+		
+		String resultStart = AgentCaller.executeGetWithJsonParameter(optimizationresult, jo.toString());
+		
 		String dirOfOPF = new JSONObject(resultStart).getString("folder");
 		
 		
@@ -54,7 +66,7 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		
 		jo.put("folder",dirOfOPF);
 		
-		String result = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
+		
 	
 		logger.info("started creating battery");
 		JSONObject finres= new JSONObject(result); 

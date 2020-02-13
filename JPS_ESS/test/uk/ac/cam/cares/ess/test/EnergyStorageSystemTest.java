@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -50,27 +49,27 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONObject result = new JSONObject();
 	}
 	
-	public void xxxtestgetbatterylocmethod() throws IOException {
-		String indexline ="34"; //--> index no 34
-		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
-	    EnergyStorageSystem c=new EnergyStorageSystem();		
-		OntModel model = c.readModelGreedy(ENIRI);
-		double[]coordinate=c.prepareBatteryLocationData(indexline, baseUrl, model);
-		assertEquals(103.70840835, coordinate[0], 0.001);
-		assertEquals(1.2723166665, coordinate[1], 0.001);
-	}
+//	public void xxxtestgetbatterylocmethod() throws IOException {
+//		String indexline ="34"; //--> index no 34
+//		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
+//	    EnergyStorageSystem c=new EnergyStorageSystem();		
+//		OntModel model = c.readModelGreedy(ENIRI);
+//		double[]coordinate=c.prepareBatteryLocationData(indexline, baseUrl, model);
+//		assertEquals(103.70840835, coordinate[0], 0.001);
+//		assertEquals(1.2723166665, coordinate[1], 0.001);
+//	}
 	
-	public void xxxtestCreateOWLFile() throws IOException {
-
-		String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
-		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
-		JSONObject result=new JSONObject();
-		result.put("battery",resultofbattery);
-	
-		EnergyStorageSystem c=new EnergyStorageSystem();
-		JSONArray a= c.createBatteryOwlFile(ENIRI, result, dir);
-		//assertEquals("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/VRB-001.owl", a.get(0));
-	}
+//	public void xxxtestCreateOWLFile() throws IOException {
+//
+//		String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\123621a1-a8c8-4527-9268-0e132e483082\\JPS_POWSYS_EN";
+//		String resultofbattery="http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB";
+//		JSONObject result=new JSONObject();
+//		result.put("storage",resultofbattery);
+//	
+//		EnergyStorageSystem c=new EnergyStorageSystem();
+//		JSONArray a= c.createBatteryOwlFile(ENIRI, result, dir);
+//		//assertEquals("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/VRB-001.owl", a.get(0));
+//	}
 	
 	
 	
@@ -81,7 +80,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		String baseUrl = dataPath + "/JPS_ESS";
 		pvgeniris.add(pvGenIRI);
 		JSONObject testres= new EnergyStorageSystem ().optimizedBatteryMatching(baseUrl, pvgeniris, batIRI);
-		System.out.println("result battery= "+testres.getString("battery"));
+		System.out.println("result battery= "+testres.getString("storage"));
 		pvgeniris.clear();
 		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB", testres.getString("battery"));
 		
