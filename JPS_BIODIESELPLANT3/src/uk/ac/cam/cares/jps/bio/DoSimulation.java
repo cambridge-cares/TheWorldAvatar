@@ -13,8 +13,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
+import org.json.JSONObject;
+
 import com.cmclinnovations.mods.api.MoDSAPI;
 
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
  
@@ -38,45 +46,112 @@ public class DoSimulation extends JPSHttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		String pumpInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
+				+ "SELECT ?entity ?vmolarFinvalue ?vPinvalue " 
+				+ "WHERE {?entity  a  j1:Pump  ."
+				+ "?entity   j4:realizes  ?proc ." 
+				+ "?proc  j5:hasInput ?input ."
+				+ "?input  j6:refersToGeneralizedAmount ?genAmountin ." 
+				+ "?genAmountin  j2:hasSubsystem ?matAmountin ."
+				+ "?matAmountin  j2:hasProperty ?molarFin ."
+				+ "?molarFin j2:hasValue ?vmolarFin ."
+				+ "?vmolarFin  j2:numericalValue ?vmolarFinvalue ."
+				
+				+ "?matAmountin  j7:refersToMaterial ?matin ."
+				+ "?matin  j8:thermodynamicBehavior ?singphasein ."
+				+ "?singphasein  j9:has_pressure ?Pin ."
+				+ "?Pin  j2:hasValue ?vPin ."
+				+ "?vPin  j2:numericalValue ?vPinvalue ."
+		 
+				+ "}";
 		
-		System.out.println("Request "+ request.getQueryString());
+		String heaterInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
+				+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue " 
+				+ "WHERE {?entity  a  j1:ShellTubeApparatus  ."
+				+ "?entity   j4:realizes  ?proc ." 
+				+ "?proc  j5:hasInput ?input ."
+				+ "?input a j3:RawMaterial ."
+				+ "?input  j6:refersToGeneralizedAmount ?genAmountin ." 
+				+ "?genAmountin  j2:hasSubsystem ?matAmountin ."
+				+ "?matAmountin  j2:hasProperty ?molarFin ."
+				+ "?molarFin j2:hasValue ?vmolarFin ."
+				+ "?vmolarFin  j2:numericalValue ?vmolarFinvalue ."
+				
+				+ "?matAmountin  j7:refersToMaterial ?matin ."
+				+ "?matin  j8:thermodynamicBehavior ?singphasein ."
+				+ "?singphasein  j9:has_temperature ?Tin ."
+				+ "?Tin  j2:hasValue ?vTin ."
+				+ "?vTin  j2:numericalValue ?vTinvalue ."
+				+ "}";
 		
- 
+		String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
+				+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri ?vheatproc " 
+				+ "WHERE {?entity  a  j1:StirredTank  ."
+				+ "?entity   j2:hasElectricalRepresentation  ?loadiri ."
+				+ "?entity   j4:realizes  ?proc ."
+				
+				+ "?proc  j7:hasHeatDuty ?heatproc ."
+				+ "?heatproc j2:hasValue ?vheatproc ." //iri of the output
+
+				+ "?proc  j5:hasInput ?input ."
+				//+ "?input a j3:RawMaterial ." not sure why this is not a raw material
+				+ "?input  j6:refersToGeneralizedAmount ?genAmountin ." 
+				+ "?genAmountin  j2:hasSubsystem ?matAmountin ."
+				+ "?matAmountin  j2:hasProperty ?molarFin ."
+				+ "?molarFin j2:hasValue ?vmolarFin ."
+				+ "?vmolarFin  j2:numericalValue ?vmolarFinvalue ."
+				
+				+ "?matAmountin  j7:refersToMaterial ?matin ."
+				+ "?matin  j8:thermodynamicBehavior ?singphasein ."
+				+ "?singphasein  j9:has_temperature ?Tin ."
+				+ "?Tin  j2:hasValue ?vTin ."
+				+ "?vTin  j2:numericalValue ?vTinvalue ."
+				+ "}";
 		
-		String[] inputs = request.getParameterValues("Input");
-		
-		String[] nums = inputs[0].split(" ");
-		
-		for(String input : nums)
-		{
-		System.out.println("Array---" + input );
-		}
+		JSONObject jo = AgentCaller.readJsonParameter(request);
+		String iriString = jo.optString("PlantIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
+		OntModel model = readModelGreedy(iriString);
+		List<String[]> pumpList = getResultList(model,pumpInfo);
+		List<String[]> heatList = getResultList(model,heaterInfo);
+		List<String[]> reactList = getResultList(model,reactorInfo);
+
+		String[] inputs = {heatList.get(0)[1],heatList.get(0)[2], reactList.get(0)[1],reactList.get(0)[2],pumpList.get(0)[1], pumpList.get(0)[2]};
 		Double input1 = null,input2 = null,input3 = null,input4 = null,input5 = null,input6 = null;
 		
 		
 		Double[] inputs_num = {input1,input2,input3,input4,input5,input6};
-		
-		
-		
-		if(nums.length==6)
-		{
-			 for(int i = 0; i < nums.length ; i++)
-			 {
-				 inputs_num[i] = Double.parseDouble(nums[i]); // convert string inputs to doubles
-			 }
+		inputs_num = new Double[]{33.0,30.0,180.0,30.0,233.135,4.0};
+		for(int i = 0; i < inputs_num.length ; i++){
+			inputs_num[i] = Double.parseDouble(inputs[i]); // convert string inputs to doubles
 		}
-		else // if the request is empty, use the default array to be the inputs
-		{
-			inputs_num = new Double[]{33.0,30.0,180.0,30.0,233.135,4.0};
-		}
-		
-		ArrayList<String[]> result = doSimulation(null,inputs_num);
-		for(String[] arr : result)
-		{
-			response.getWriter().println(arr[0] + "$" + arr[1] + "#") ;
-		}
-  
+		JSONObject result = doSimulation(null,inputs_num);
 
+		AgentCaller.printToResponse(result, response);
+		
 	}
 
 	/**
@@ -87,12 +162,27 @@ public class DoSimulation extends JPSHttpServlet {
 		doGet(request, response);
  
 	}
-	
+	public static OntModel readModelGreedy(String iriofnetwork) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
+	public List<String[]> getResultList(OntModel model, String info){
+	   ResultSet resultSet = JenaHelper.query(model, info);
+	   String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+	   String[] keys = JenaResultSetFormatter.getKeys(result);
+	   List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+	   return resultList;
+   }
 	// The main function that does the simulation which requires two inputs 
 	// SimulationIRI find the simulation individuals in the owl file where the inputs, model name and outputs
 	// The editStack stores the user inputs
 	@SuppressWarnings("resource")
-	public ArrayList<String[]> doSimulation(String SimulationIRI , Double[] Inputs) throws IOException
+	public JSONObject doSimulation(String SimulationIRI , Double[] inputs) throws IOException
 	{
 		// First use hardcoded informations instead of reading info from owl files
 		// 1. Write to APIN.csv 
@@ -106,14 +196,20 @@ public class DoSimulation extends JPSHttpServlet {
 		 *	102- V_Angle_LoadPoint_R-602002				in R-302
 		 *	103- V_ActualVoltage_LoadPoint_R-602002		in R-302
 		 */
-		Double[] x = Inputs;
-		ArrayList<Double> xRow = new ArrayList<Double>(Arrays.asList(x));                                   // extra arraylist to collect the x-value required as input to the pr aspen plus model
+		ArrayList<Double> xRow = new ArrayList<Double>(Arrays.asList(inputs));                                   // extra arraylist to collect the x-value required as input to the pr aspen plus model
 	/*
 		FileWriter filewriter = new FileWriter(APINCSV);
 		filewriter.append("FOIL, TOIL, FMEOH, TMEOH, FREWATER, PBOILER");
 		filewriter.append("33,30.0,180.0,30.0,233.135,4.0");
+		FOIL and TOIL in E-301 (V_molarF_3-1,V_Temperature_3-1 --->http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl#V_molarF_3-1,http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl#V_Temperature_3-1)
+		FREWATER and  PBOILER in P-302 (V_molarF_Utility_FW-301,ValueOfOutletPressureOfP-302--->http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/P-302.owl#V_molarF_Utility_FW-301,http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/P-302.owl#ValueOfOutletPressureOfP-302)
+		FMEOH and TMEOH in reactor 301 most probably (http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl#V_molarF_3-4, http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl#V_Temperature_3-4)
+		
+		input IRI=http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl
+		input IRI=http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl
+		input IRI=http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/P-302.owl
  */
-		List<Double> xData = new ArrayList<>(1);                                    // arraylist to
+		List<Double> xData = new ArrayList<>(1);                                    //Rather than header, insert empty Array List
  
 		String simDir = APPWSim;	
 		String modelName = "Polynomial_Alg_1";
@@ -144,26 +240,23 @@ public class DoSimulation extends JPSHttpServlet {
  		ArrayList<String[]> result = new ArrayList<String[]>();
  		//List y = yData.get(0);
  		
+ 		JSONObject simResult=new JSONObject();
+ 			simResult.put("ValueOfHeatDutyOfR-301",yData.get(25)); //R-301
+ 			simResult.put("V_Angle_LoadPoint_R-301",yData.get(112));//R-301 load
+ 			simResult.put("V_ActualVoltage_LoadPoint_R-301",yData.get(113));//R-301 load
+ 			simResult.put("ValueOfHeatDutyOfR-302",yData.get(23));//R-302
+ 			simResult.put("V_Angle_LoadPoint_R-302",yData.get(102));//R-302 load
+ 			simResult.put("V_ActualVoltage_LoadPoint_R-302",yData.get(103));//R-302 load
+ 			
+ 			
  		
- 		String[] arr = {"ValueOfHeatDutyOfR-301",String.valueOf(yData.get(25))};
- 		result.add(arr);
- 		String[] arr1 = {"V_Angle_LoadPoint_R-301",String.valueOf(yData.get(112))};
- 		result.add(arr1); 		
- 		String[] arr2 = {"V_ActualVoltage_LoadPoint_R-301",String.valueOf(yData.get(113))};
- 		result.add(arr2);
- 		String[] arr3 = {"ValueOfHeatDutyOfR-302",String.valueOf(yData.get(23))};
- 		result.add(arr3);
- 		String[] arr4 = {"V_Angle_LoadPoint_R-302",String.valueOf(yData.get(102))};
- 		result.add(arr4);
- 		String[] arr5 = {"V_ActualVoltage_LoadPoint_R-302",String.valueOf(yData.get(103))};
- 		result.add(arr5);
  		
  		System.out.println("ans:");
  		System.out.println(yData.get(25));
  		System.out.println(yData.get(112));
  		
  		
- 		return result;
+ 		return simResult;
 	}
 
 }
