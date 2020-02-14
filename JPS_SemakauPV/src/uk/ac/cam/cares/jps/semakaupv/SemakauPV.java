@@ -43,7 +43,7 @@ public class SemakauPV extends JPSHttpServlet {
 		String irradSensorIRI=joforess.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
 		JSONObject res=runMODS(model,irradSensorIRI);
-		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/","PV-002.owl","EBus-006.owl");
 		//hardcoded at the moment the iri due to model restriction
 		
 		AgentCaller.printToResponse(result, response);
@@ -204,11 +204,10 @@ public class SemakauPV extends JPSHttpServlet {
 
 	}
 	
-	public JSONObject updateOWLValue(JSONObject ans,String irigen, String iribus ) {
+	public JSONObject updateOWLValue(JSONObject ans,String prefix,String genfilename, String busfilename ) {
 		
 		JSONObject ans2= new JSONObject();
-		String gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl";
-		String bus="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl";
+
 		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -240,7 +239,7 @@ public class SemakauPV extends JPSHttpServlet {
 				+ "}" 
 				+ "ORDER BY ASC(?proptime)"; 
 		
-		String result3 = new QueryBroker().queryFile(irigen, genInfo);
+		String result3 = new QueryBroker().queryFile(prefix+genfilename, genInfo);
 		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
 		List<String[]> resultListfromquerygen = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
 		
@@ -278,7 +277,7 @@ public class SemakauPV extends JPSHttpServlet {
 				+ "}" 
 				+ "ORDER BY ASC(?proptime)"; 
 		
-		String result1 = new QueryBroker().queryFile(iribus, busInfo);
+		String result1 = new QueryBroker().queryFile(prefix+busfilename, busInfo);
 		String[] keys1 = JenaResultSetFormatter.getKeys(result1);
 		List<String[]> resultListfromquerybus = JenaResultSetFormatter.convertToListofStringArrays(result1, keys1);
 		
@@ -304,14 +303,14 @@ public class SemakauPV extends JPSHttpServlet {
 		String[]header= {"year","monthdate","time","PGen","QGen","VmPu","Va"};
 		readingFromCSV.add(0,header);
 		try {
-			new TimeSeriesConverter().startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl");
-			new TimeSeriesConverter().startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+			new TimeSeriesConverter().startConversion(readingFromCSV,"gen",prefix,genfilename);
+			new TimeSeriesConverter().startConversion(readingFromCSV,"bus",prefix,busfilename);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 		}
-		ans2.put("gen",gen);
-		ans2.put("bus",bus);
+		ans2.put("gen",prefix+genfilename);
+		ans2.put("bus",prefix+busfilename);
 		
 		return ans2;
 	}

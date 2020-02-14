@@ -176,8 +176,8 @@ public class TimeSeriesConverter {
 		
 	}
 	
-	public void startConversion(List<String[]> readingFromCSV,String flag,String tempfilename) throws Exception {
-		OntModel jenaOwlModel = JenaHelper.createModel(tempfilename);
+	public void startConversion(List<String[]> readingFromCSV,String flag,String Prefix,String filename) throws Exception {
+		OntModel jenaOwlModel = JenaHelper.createModel(Prefix+filename);
 		initOWLClasses(jenaOwlModel);
 		List<Individual>unit1=new ArrayList<Individual>();
 		unit1.add(MW);
@@ -185,15 +185,16 @@ public class TimeSeriesConverter {
 		List<Individual>unit2=new ArrayList<Individual>();
 		unit2.add(null);
 		unit2.add(degree);
-		String Prefix="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/";
+		//String Prefix="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/";
 		if (flag.contains("gen")) {
-			doConversionForTimeSeries(jenaOwlModel,"PV-001",Prefix , readingFromCSV, unit1,flag);
+			System.out.println(filename.split(".owl")[0]);
+			doConversionForTimeSeries(jenaOwlModel,filename.split(".owl")[0],Prefix , readingFromCSV, unit1,flag);
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+"PV-001.owl", content);
+			new QueryBroker().putOld(Prefix+filename, content);
 		}else {
-			doConversionForTimeSeries(jenaOwlModel,"EBus-006", Prefix,readingFromCSV, unit2,flag);	
+			doConversionForTimeSeries(jenaOwlModel,filename.split(".owl")[0], Prefix,readingFromCSV, unit2,flag);	
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+"EBus-006.owl", content);
+			new QueryBroker().putOld(Prefix+filename, content);
 		}
 		
 	}
@@ -204,9 +205,9 @@ public class TimeSeriesConverter {
 		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/timeseriespropvalues.csv");
 		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		converter.startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl");
+		converter.startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/","PV-002.owl");
 		System.out.println("PV finished");
-		converter.startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+		converter.startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/","EBus-006.owl");
 
 			
 	}
