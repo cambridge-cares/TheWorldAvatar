@@ -1,7 +1,9 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 
+import com.cmclinnovations.jps.agent.workspace.management.Workspace;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
@@ -55,16 +58,43 @@ public class DFTAgent extends HttpServlet{
 	 */
 	public void init() throws ServletException{
         logger.info("---------- Quantum Calculation Agent has started ----------");
-       	runQuantumJobs();
+        // Temporary block asserting the list of 5 jobs starts here.
+        List<String> jobList = new ArrayList<>();
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job1");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job2");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job3");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job4");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job5");
+        // Temporary block asserting the list of 5 jobs ends here.
+        try{
+        for(String job:jobList){
+        	setUpQuantumJob();
+//        	runQuantumJob();
+        }
+        }catch(IOException e){
+        	logger.error(e.getMessage());
+        	e.printStackTrace();
+        }
        	logger.info("---------- Quantum Calculation Agent has terminated ----------");
 	}
+
+	private void setUpQuantumJob() throws IOException{
+		Workspace ws = new Workspace();
+		String workspace = ws.createAgentWorkspace(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
+		if(workspace == null){
+			logger.info("Workspace could not be created.");
+		}else{
+			ws.createInputFile();
+		}
+	}
+	
 	
 	/**
 	 * Runs a set of quantum jobs.
 	 * 
 	 * @return
 	 */
-	private String runQuantumJobs(){
+	private String runQuantumJob(){
 		try {
 			getUnfinishedJobs(); // In future jobs will be extracted from the JPS knowledge graph.
 			setupJob(); // In the next iteration of development, we will include code for setting up jobs.   

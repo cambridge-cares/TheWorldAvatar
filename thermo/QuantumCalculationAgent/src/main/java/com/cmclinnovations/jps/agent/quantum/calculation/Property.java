@@ -16,7 +16,14 @@ public enum Property {
 
 	AGENT_CLASS("DFTAgent"),
 	AGENT_JOB_SPACE(AGENT_CLASS.getPropertyName()),
-	ABSOLUTE_PATH_OF_JOB_SPACE(System.getProperty("user.home").concat(File.separator));
+	AGENT_WORKSPACE_DIR(System.getProperty("user.home")),
+	HPC_CAMBRIDGE_ADDRESS("login-skylake.hpc.cam.ac.uk"),
+	EXTENSION_INPUT_FILE(".com"),
+	EXTENSION_CHK_POINT_FILE(".chk"),
+	JOB_NO_OF_CORES("%nprocshared=16"),
+	JOB_MEMORY("%mem=60GB"),
+	JOB_CHK_POINT_FILE(HPC_CAMBRIDGE_ADDRESS.getPropertyName().concat(".chk")),
+	JOB_PRINT_DIRECTIVE("#n");
 	
 	
 	private String propertyName;
