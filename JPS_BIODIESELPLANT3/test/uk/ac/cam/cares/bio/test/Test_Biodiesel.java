@@ -3,9 +3,6 @@ package uk.ac.cam.cares.bio.test;
 import java.io.IOException;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
@@ -33,12 +30,13 @@ public class Test_Biodiesel extends TestCase{
 	   }
 	   public void testSimulation() throws IOException{
 		   Double[] inputs_num = new Double[]{33.0,30.0,180.0,30.0,233.135,4.0};
-		   JSONObject result=new DoSimulation().doSimulation(null,inputs_num);
+//		   System.out.println(new DoSimulation().doSimulation(inputs_num));
+		   new DoSimulation().callReq("http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
 	   }
 	   public void testSimulationAgent() throws IOException{
 		   JSONObject jo = new JSONObject();
-		   jo.put("PlantIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
-		   String resultStart = DoSimulation.doGet()
+		   jo.put("PLANTIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
+			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_BIODIESEL3/DoSimulation", jo.toString());
 	   }
 	   public static OntModel readModelGreedy(String iriofnetwork) {
 			String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
@@ -56,7 +54,7 @@ public class Test_Biodiesel extends TestCase{
 		   List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		   return resultList;
 	   }
-	   public void testBiodieselPlant() {
+	   public void testreactorInfo() {
 		   String iriofnetwork = "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl";
 		   OntModel model = readModelGreedy(iriofnetwork);
 		   String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
@@ -68,13 +66,10 @@ public class Test_Biodiesel extends TestCase{
 					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
 					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
 					+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
-					+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri ?vheatproc " 
+					+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri " 
 					+ "WHERE {?entity  a  j1:StirredTank  ."
 					+ "?entity   j2:hasElectricalRepresentation  ?loadiri ."
 					+ "?entity   j4:realizes  ?proc ."
-					
-					+ "?proc  j7:hasHeatDuty ?heatproc ."
-					+ "?heatproc j2:hasValue ?vheatproc ." //iri of the output
 
 					+ "?proc  j5:hasInput ?input ."
 					//+ "?input a j3:RawMaterial ." not sure why this is not a raw material
@@ -90,6 +85,24 @@ public class Test_Biodiesel extends TestCase{
 					+ "?Tin  j2:hasValue ?vTin ."
 					+ "?vTin  j2:numericalValue ?vTinvalue ."
 					+ "}";
+	   }
+	   public void testBiodieselPlant() {
+		   String iriofnetwork = "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl";
+		   OntModel reactorModel = readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl");
+		   OntModel model = readModelGreedy(iriofnetwork);
+		   String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
+					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
+					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
+					+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
+					+ "SELECT ?entity  " 
+					+ "WHERE {?entity  a  j1:StirredTank  ."
+					+ "}";
+		   
 		   String pumpInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#> "
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
@@ -148,5 +161,15 @@ public class Test_Biodiesel extends TestCase{
 			List<String[]> reactList = getResultList(model,reactorInfo);
 		   
 		   System.out.println();
+	   }
+	   public void testDumpOWL() {
+		   JSONObject jo = new JSONObject();
+		   jo.put("V_Angle_LoadPoint_R-301",-0.123456);
+		   jo.put("ValueOfHeatDutyOfR-302",0.43186899431558023);
+		   jo.put("V_ActualV_R-302",2.966610277813966);
+		   jo.put("ValueOfHeatDutyOfR-301",1.1612685888155425);
+		   jo.put("V_ActualV_R-301",3.3821878615224006);
+		   jo.put("V_Angle_LoadPoint_R-302",-0.48014259831225964);
+		   new DoSimulation().placeinOWLFiles(jo);
 	   }
 }

@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.jena.ontology.DatatypeProperty;
+import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
@@ -46,7 +49,51 @@ public class DoSimulation extends JPSHttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		String pumpInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#> "
+		JSONObject jo = AgentCaller.readJsonParameter(request);
+		String iriString =  jo.optString("PLANTIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
+		JSONObject result = callReq(iriString);
+
+		placeinOWLFiles(result);
+		
+	}
+	/** calls doSimulation via iriString and 
+	 * 
+	 * @param:iriString, string where biodiesel plant iri is called.  
+	 * @return: returns JSON Object of six results from doSimulation
+	 */
+	public JSONObject callReq(String iriString) throws IOException {
+		String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
+				+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri ?vheatproc " 
+				+ "WHERE {?entity  a  j1:StirredTank  ."
+				+ "?entity   j2:hasElectricalRepresentation  ?loadiri ."
+				+ "?entity   j4:realizes  ?proc ."
+				
+				+ "?proc  j7:hasHeatDuty ?heatproc ."
+				+ "?heatproc j2:hasValue ?vheatproc ." //iri of the output
+
+				+ "?proc  j5:hasInput ?input ."
+				//+ "?input a j3:RawMaterial ." not sure why this is not a raw material
+				+ "?input  j6:refersToGeneralizedAmount ?genAmountin ." 
+				+ "?genAmountin  j2:hasSubsystem ?matAmountin ."
+				+ "?matAmountin  j2:hasProperty ?molarFin ."
+				+ "?molarFin j2:hasValue ?vmolarFin ."
+				+ "?vmolarFin  j2:numericalValue ?vmolarFinvalue ."
+				
+				+ "?matAmountin  j7:refersToMaterial ?matin ."
+				+ "?matin  j8:thermodynamicBehavior ?singphasein ."
+				+ "?singphasein  j9:has_temperature ?Tin ."
+				+ "?Tin  j2:hasValue ?vTin ."
+				+ "?vTin  j2:numericalValue ?vTinvalue ."
+				+ "}";
+	   String pumpInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
@@ -99,41 +146,6 @@ public class DoSimulation extends JPSHttpServlet {
 				+ "?Tin  j2:hasValue ?vTin ."
 				+ "?vTin  j2:numericalValue ?vTinvalue ."
 				+ "}";
-		
-		String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
-				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
-				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
-				+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri ?vheatproc " 
-				+ "WHERE {?entity  a  j1:StirredTank  ."
-				+ "?entity   j2:hasElectricalRepresentation  ?loadiri ."
-				+ "?entity   j4:realizes  ?proc ."
-				
-				+ "?proc  j7:hasHeatDuty ?heatproc ."
-				+ "?heatproc j2:hasValue ?vheatproc ." //iri of the output
-
-				+ "?proc  j5:hasInput ?input ."
-				//+ "?input a j3:RawMaterial ." not sure why this is not a raw material
-				+ "?input  j6:refersToGeneralizedAmount ?genAmountin ." 
-				+ "?genAmountin  j2:hasSubsystem ?matAmountin ."
-				+ "?matAmountin  j2:hasProperty ?molarFin ."
-				+ "?molarFin j2:hasValue ?vmolarFin ."
-				+ "?vmolarFin  j2:numericalValue ?vmolarFinvalue ."
-				
-				+ "?matAmountin  j7:refersToMaterial ?matin ."
-				+ "?matin  j8:thermodynamicBehavior ?singphasein ."
-				+ "?singphasein  j9:has_temperature ?Tin ."
-				+ "?Tin  j2:hasValue ?vTin ."
-				+ "?vTin  j2:numericalValue ?vTinvalue ."
-				+ "}";
-		
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-		String iriString = jo.optString("PlantIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
 		OntModel model = readModelGreedy(iriString);
 		List<String[]> pumpList = getResultList(model,pumpInfo);
 		List<String[]> heatList = getResultList(model,heaterInfo);
@@ -148,10 +160,8 @@ public class DoSimulation extends JPSHttpServlet {
 		for(int i = 0; i < inputs_num.length ; i++){
 			inputs_num[i] = Double.parseDouble(inputs[i]); // convert string inputs to doubles
 		}
-		JSONObject result = doSimulation(null,inputs_num);
-
-		AgentCaller.printToResponse(result, response);
-		
+		JSONObject result = doSimulation(inputs_num);
+		return result;
 	}
 
 	/**
@@ -181,8 +191,13 @@ public class DoSimulation extends JPSHttpServlet {
 	// The main function that does the simulation which requires two inputs 
 	// SimulationIRI find the simulation individuals in the owl file where the inputs, model name and outputs
 	// The editStack stores the user inputs
+	/**
+	 * @param inputs:  double array
+	 * @return JSONObject of six doubles. 
+	 * @throws IOException
+	 */
 	@SuppressWarnings("resource")
-	public JSONObject doSimulation(String SimulationIRI , Double[] inputs) throws IOException
+	public JSONObject doSimulation(Double[] inputs) throws IOException
 	{
 		// First use hardcoded informations instead of reading info from owl files
 		// 1. Write to APIN.csv 
@@ -243,13 +258,12 @@ public class DoSimulation extends JPSHttpServlet {
  		JSONObject simResult=new JSONObject();
  			simResult.put("ValueOfHeatDutyOfR-301",yData.get(25)); //R-301
  			simResult.put("V_Angle_LoadPoint_R-301",yData.get(112));//R-301 load
- 			simResult.put("V_ActualVoltage_LoadPoint_R-301",yData.get(113));//R-301 load
+ 			simResult.put("V_ActualV_R-301",yData.get(113));//R-301 load
  			simResult.put("ValueOfHeatDutyOfR-302",yData.get(23));//R-302
  			simResult.put("V_Angle_LoadPoint_R-302",yData.get(102));//R-302 load
- 			simResult.put("V_ActualVoltage_LoadPoint_R-302",yData.get(103));//R-302 load
+ 			simResult.put("V_ActualV_R-302",yData.get(103));//R-302 load
  			
  			
- 		
  		
  		System.out.println("ans:");
  		System.out.println(yData.get(25));
@@ -257,6 +271,35 @@ public class DoSimulation extends JPSHttpServlet {
  		
  		
  		return simResult;
+	}
+	/**Dump in owl files the simulation result
+	 * @param JSON object containing six values
+	 * @returns null
+	 */
+	public void placeinOWLFiles(JSONObject simResult) {
+		String Prefix = "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/";
+		Iterator<String> keys = simResult.keys();
+		String[] d = {"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl#R-301",
+				"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-302.owl#R-302"};
+		QueryBroker broker = new QueryBroker();
+		for (String i: d) {
+			OntModel jenaOwlModel = JenaHelper.createModel(i);//OBJECT 
+			String reactor = i.substring(i.length()-5);
+			DatatypeProperty numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
+			Individual vH = jenaOwlModel.getIndividual(i.split("#")[0]+ "#ValueOfHeatDutyOf"+reactor);
+			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("ValueOfHeatDutyOf" + reactor).toString()) );
+			Individual vAngle = jenaOwlModel.getIndividual(i.split("#")[0]+  "#V_Angle_LoadPoint_"+reactor);
+			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_Angle_LoadPoint_" + reactor).toString()) );
+			
+			//store in loadfile rather than load
+			String newM = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/" +reactor + "load.owl";
+			jenaOwlModel = JenaHelper.createModel(newM +"#"+reactor+"load");//OBJECT 
+			Individual vVolt = jenaOwlModel.getIndividual(newM+ "#V_ActualV_"+reactor+"load");
+			vVolt.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_ActualV_" + reactor).toString()) );
+			String content = JenaHelper.writeToString(jenaOwlModel);
+			broker.putOld(i, content);
+		}
+		
 	}
 
 }
