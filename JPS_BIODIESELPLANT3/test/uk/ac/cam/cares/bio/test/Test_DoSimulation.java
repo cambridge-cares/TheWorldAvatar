@@ -11,10 +11,9 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.bio.DoSimulation;
 
-public class Test_Biodiesel extends TestCase{
+public class Test_DoSimulation extends TestCase{
 	protected int value1, value2;
 	   
 	   // assigning the values
@@ -36,17 +35,8 @@ public class Test_Biodiesel extends TestCase{
 	   public void testSimulationAgent() throws IOException{
 		   JSONObject jo = new JSONObject();
 		   jo.put("PLANTIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
-			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_BIODIESEL3/DoSimulation", jo.toString());
+			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_BIODIESELPLANT3/DoSimulation", jo.toString());
 	   }
-	   public static OntModel readModelGreedy(String iriofnetwork) {
-			String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "SELECT ?component "
-					+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
-
-			QueryBroker broker = new QueryBroker();
-			return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
-		}
 	   public List<String[]> getResultList(OntModel model, String info){
 		   ResultSet resultSet = JenaHelper.query(model, info);
 		   String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -54,9 +44,12 @@ public class Test_Biodiesel extends TestCase{
 		   List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		   return resultList;
 	   }
-	   public void testreactorInfo() {
+	   
+	   public void testBiodieselPlant() {
 		   String iriofnetwork = "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl";
-		   OntModel model = readModelGreedy(iriofnetwork);
+		   DoSimulation a = new DoSimulation();
+		   OntModel reactorModel = a.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl");
+		   OntModel model = a.readModelGreedy(iriofnetwork);
 		   String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
@@ -84,23 +77,6 @@ public class Test_Biodiesel extends TestCase{
 					+ "?singphasein  j9:has_temperature ?Tin ."
 					+ "?Tin  j2:hasValue ?vTin ."
 					+ "?vTin  j2:numericalValue ?vTinvalue ."
-					+ "}";
-	   }
-	   public void testBiodieselPlant() {
-		   String iriofnetwork = "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl";
-		   OntModel reactorModel = readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl");
-		   OntModel model = readModelGreedy(iriofnetwork);
-		   String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
-					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#>"
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#>"
-					+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#>"
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
-					+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
-					+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
-					+ "SELECT ?entity  " 
-					+ "WHERE {?entity  a  j1:StirredTank  ."
 					+ "}";
 		   
 		   String pumpInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/machine.owl#> "

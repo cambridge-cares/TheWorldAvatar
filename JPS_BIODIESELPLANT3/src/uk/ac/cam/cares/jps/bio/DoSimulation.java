@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.bio;
 
 
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +21,7 @@ import org.json.JSONObject;
 
 import com.cmclinnovations.mods.api.MoDSAPI;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -31,10 +31,10 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
  
 @WebServlet("/DoSimulation")
 public class DoSimulation extends JPSHttpServlet {
-	private static final long serialVersionUID = 1L;
-	public static String APINCSV = new String( "C:\\Users\\LONG01\\RO\\APIN.CSV");    
-	public static String APPWSim = new String("C:\\Users\\LONG01\\RO\\APPWSim");
-	public static String PrAPPWOUTCSV = new String("C:\\Users\\LONG01\\RO\\PrAPPWOUT.CSV"); // output CSV file from the pr aspen plus model
+	public static String root=AgentLocator.getProperty("absdir.root");
+	String Sim4 = root+"/Sim_PV1/APPWSIM"; // THIS SIMULATION NEED TO BE EXIST 
+	private static final long serialVersionUID = 1L;  
+//	public static String APPWSim = new String("C:\\Users\\LONG01\\RO\\APPWSim"); // output CSV file from the pr aspen plus model
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -71,13 +71,10 @@ public class DoSimulation extends JPSHttpServlet {
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#>"
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#>"
 				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#>"
-				+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri ?vheatproc " 
+				+ "SELECT ?entity ?vmolarFinvalue ?vTinvalue ?loadiri " 
 				+ "WHERE {?entity  a  j1:StirredTank  ."
 				+ "?entity   j2:hasElectricalRepresentation  ?loadiri ."
 				+ "?entity   j4:realizes  ?proc ."
-				
-				+ "?proc  j7:hasHeatDuty ?heatproc ."
-				+ "?heatproc j2:hasValue ?vheatproc ." //iri of the output
 
 				+ "?proc  j5:hasInput ?input ."
 				//+ "?input a j3:RawMaterial ." not sure why this is not a raw material
@@ -172,7 +169,7 @@ public class DoSimulation extends JPSHttpServlet {
 		doGet(request, response);
  
 	}
-	public static OntModel readModelGreedy(String iriofnetwork) {
+	public OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "SELECT ?component "
@@ -226,30 +223,14 @@ public class DoSimulation extends JPSHttpServlet {
  */
 		List<Double> xData = new ArrayList<>(1);                                    //Rather than header, insert empty Array List
  
-		String simDir = APPWSim;	
+		String simDir = Sim4;	
 		String modelName = "Polynomial_Alg_1";
-		FileWriter fileWriter = null;
-		
 		xData.addAll(xRow); 
-		
 		try {
-	
-			fileWriter = new FileWriter(PrAPPWOUTCSV);                                        // filewriter for the output of pr aspenplus model
-			System.load("C:\\Users\\LONG01\\TOMCAT\\webapps\\ROOT\\MoDS_Java_API_0.1.dll");            //the MoDS API at use is version 0.1  D:\MoDS_API\MoDS_Java_API_v0.1
-			
-//			ArrayList<String> xNames = MoDSAPI.getXVarNamesFromAPI(simDir, modelName);		
-//			System.out.println("xNames= " + xNames);
-//			ArrayList<String> yNames = MoDSAPI.getYVarNamesFromAPI(simDir, modelName);
-//			System.out.println("yNames= " + yNames);
-//			for (int j = 0; j < yNames.size(); j++) {
-//				fileWriter.append(yNames.get(j));                                               // write the yNames to the output CSV file
-//				fileWriter.append(",");
-//			}									
+			System.load(root + "/MoDS_Java_API_0.1.dll");      //the MoDS API at use is version 0.1  D:\MoDS_API\MoDS_Java_API_v0.1
 		} catch (Error e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		} 
  		List<Double> yData = MoDSAPI.evaluateSurrogate(simDir, modelName, xData);   // call MoDS API to evaluate the surrogate model basing on the MoDS simulation file "simDir -> modelNam"  and  the input xData that was collected before
  		
  		ArrayList<String[]> result = new ArrayList<String[]>();
@@ -290,14 +271,16 @@ public class DoSimulation extends JPSHttpServlet {
 			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("ValueOfHeatDutyOf" + reactor).toString()) );
 			Individual vAngle = jenaOwlModel.getIndividual(i.split("#")[0]+  "#V_Angle_LoadPoint_"+reactor);
 			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_Angle_LoadPoint_" + reactor).toString()) );
+			String content = JenaHelper.writeToString(jenaOwlModel);
+			broker.putOld(i, content);
 			
 			//store in loadfile rather than load
 			String newM = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/" +reactor + "load.owl";
 			jenaOwlModel = JenaHelper.createModel(newM +"#"+reactor+"load");//OBJECT 
 			Individual vVolt = jenaOwlModel.getIndividual(newM+ "#V_ActualV_"+reactor+"load");
 			vVolt.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_ActualV_" + reactor).toString()) );
-			String content = JenaHelper.writeToString(jenaOwlModel);
-			broker.putOld(i, content);
+			content = JenaHelper.writeToString(jenaOwlModel);
+			broker.putOld(newM, content);
 		}
 		
 	}
