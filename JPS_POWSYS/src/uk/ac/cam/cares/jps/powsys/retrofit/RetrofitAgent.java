@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.powsys.retrofit;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -15,7 +14,6 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
@@ -30,20 +28,17 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.sparql.JenaModelWrapper;
-import uk.ac.cam.cares.jps.base.query.sparql.Paths;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
-import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 import uk.ac.cam.cares.jps.base.query.sparql.QueryBuilder;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
-@WebServlet(urlPatterns = {"/retrofit","/retrofitGenerator"})
-public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
+@WebServlet(urlPatterns ="/retrofit")
+public class RetrofitAgent extends GeneralRetrofitAgent {
 
 	private static final long serialVersionUID = 6859324316966357379L;
 	private Logger logger = LoggerFactory.getLogger(RetrofitAgent.class);
@@ -65,20 +60,21 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 			List<String> nuclearPowerPlants = MiscUtil.toList(ja);
 			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 		}
-		else if ("/retrofitGenerator".equals(path)){
-			String scenario=jo.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];	
-			System.out.println("current scenario directory= "+scenario);
-			
-			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
-			if (f.exists()&& f.isDirectory()) {
-				FileUtils.deleteDirectory(f);
-			}
-			//above is done as the retrofit cannot be done twice for ESS esp.
-			JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
-			List<String> RenewableGenerators = MiscUtil.toList(ja);
-			retrofitGenerator(electricalNetwork, RenewableGenerators);
-		}
 		
+//		else if ("/retrofitGenerator".equals(path)){
+//			String scenario=jo.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];	
+//			System.out.println("current scenario directory= "+scenario);
+//			
+//			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
+//			if (f.exists()&& f.isDirectory()) {
+//				FileUtils.deleteDirectory(f);
+//			}
+//			//above is done as the retrofit cannot be done twice for ESS esp.
+//			JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
+//			List<String> RenewableGenerators = MiscUtil.toList(ja);
+//			retrofitGenerator(electricalNetwork, RenewableGenerators);
+//		}
+		AgentCaller.printToResponse(jo, response);
 		
 	}
 	
@@ -91,8 +87,12 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		
 		BusInfo slackBus = findFirstSlackBus(buses);		
 				
+				
+		
 		deletePowerGeneratorsFromElectricalNetwork(electricalNetwork, substitutionalGenerators);
 				
+		
+		
 		completeNuclearPowerGenerators(nuclearPowerPlants);
 		
 		List<GeneratorInfo> newGenerators = queryGenerators(nuclearPowerPlants);
@@ -100,6 +100,8 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		addNuclearPowerGeneratorsToElectricalNetwork(electricalNetwork, newGenerators);
 		
 		//initVoltageMagnitudeInPUForBuses(buses);
+		
+		
 		
 		connectNuclearPowerGeneratorsToOptimalBus(buses, newGenerators, slackBus);
 		logger.info("finished retrofitting");
@@ -137,7 +139,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		
 	}
 	
-	private BusInfo findFirstSlackBus(List<BusInfo> buses) {
+	protected BusInfo findFirstSlackBus(List<BusInfo> buses) {
 		BusInfo slackBus = null;
 		for (BusInfo current : buses) {
 			String busType = current.busType;
@@ -436,7 +438,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		
 	}
 	
-	private void connectGeneratorToBus(String generatorIri, String busNumberIri, String busNumber) {
+	protected void connectGeneratorToBus(String generatorIri, String busNumberIri, String busNumber) {
 		
 		int busNumberValue = Integer.valueOf(busNumber);
 		
@@ -498,7 +500,7 @@ public class RetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
 		return result;
 	}
 	
-	private String getQueryForGenerator() {
+	protected String getQueryForGenerator() {
 		QueryBuilder builder = new QueryBuilder();
 		builder.select("?entity", "?x", "?y" , "?busnumber", "?busnumbervalue");
 		builder.prop("?entity", "?x", PGISCOORDX);

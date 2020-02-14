@@ -96,9 +96,11 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 		Double valueboundary=0.3;
 		OntModel model = readModelGreedy(ENIRI);
 		
-		createBatteryOwlFile(model, storagetype,valueboundary);
+	 JSONArray listbat=createBatteryOwlFile(model, storagetype,valueboundary);
 		
-		
+		JSONObject batterylist=new JSONObject ();
+		batterylist.put("batterylist", listbat);
+		AgentCaller.printToResponse(batterylist, response);
 	}
 	
 	public List<String[]> prepareSelectedBranch(OntModel model, double valueboundary){
@@ -257,8 +259,8 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					
 					broker.putOld(newiri,finalcontent);
 					indbat.put(newiri);
-					indbat.put(x);
-					indbat.put(y);
+//					indbat.put(x);
+//					indbat.put(y);
 					listofbat.put(indbat);
 				
 				
