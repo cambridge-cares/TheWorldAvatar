@@ -208,7 +208,7 @@ public class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Pa
 		
 		for (int i=1; i<=generators.size(); i++) {
 			String current = generators.get(i-1).generatorIri;
-			
+			//String instancename=current.split("#")[1];
 			//should this one below exist???
 			if(!current.contains("jps")) { //only apply for other than nuclear
 				System.out.println("current="+current);
@@ -216,6 +216,8 @@ public class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Pa
 			}
 			
 			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
+			System.out.println("current iri KEVIN print= "+current);
+			logger.info("current iri KEVIN print= "+current);
 			if ((i % 5 == 0) || i == generators.size()) {
 				String sparql = sparqlStart + b.toString() + "} \r\n";
 				logger.info("inserting " + (i % 5) + " power generators to electrical network top node\n" + sparql);

@@ -258,7 +258,7 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
 					
 					broker.putOld(newiri,finalcontent);
-					indbat.put(newiri);
+					indbat.put(newiri+"#"+typebat+"-"+indexline);
 //					indbat.put(x);
 //					indbat.put(y);
 					listofbat.put(indbat);
