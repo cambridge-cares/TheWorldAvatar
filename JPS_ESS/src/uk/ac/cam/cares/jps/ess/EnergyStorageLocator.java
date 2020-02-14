@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.ess;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,14 +18,11 @@ import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.opencsv.CSVReader;
-
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 @WebServlet(urlPatterns = { "/LocateEnergyStorage" })
@@ -90,107 +86,6 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
 	}
 	
-	public ArrayList<String[]> readResultfromtxt(String outputfiledir, int colnum) throws IOException {
-		ArrayList<String[]> entryinstance = new ArrayList<String[]>();
-		
-		logger.info("reading result from " + outputfiledir);
-		String content = new QueryBroker().readFileLocal(outputfiledir);
-		StringReader stringreader = new StringReader(content);
-		CSVReader reader = null;
-		try {
-			reader = new CSVReader(stringreader, '\t');
-			//CSVReader reader = new CSVReader(new FileReader(outputfiledir), '\t');
-			String[] record;
-			while ((record = reader.readNext()) != null) {
-				int element = 0;
-				String[] entityline = new String[colnum];
-				for (String value : record) {
-	
-					entityline[element] = value;
-					element++;
-				}
-				entryinstance.add(entityline);
-	
-			}
-		} finally {
-			reader.close();
-		}
-		return entryinstance;
-	}
-	
-	public double[] prepareBatteryLocationData(String indexline, String baseUrl, OntModel model) throws IOException {
-		String content = new QueryBroker().readFileLocal(baseUrl + "/mappingforbranch" + ".csv");
-		// System.out.println("dir= "+content);
-		List<String[]> readinglist = MatrixConverter.fromCsvToArray(content);
-		int r = readinglist.size();
-		String branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "SELECT ?entity ?num1 ?num2 " + "WHERE {?entity  a  j1:UndergroundCable  ."
-				+ "?entity   j2:hasInput ?num1 ." + "?entity   j2:hasOutput ?num2 ." + "}";
-
-		String busInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?entity ?valx ?valy " + "WHERE {?entity  a  j1:BusNode  ."
-				+ "?entity   j3:hasGISCoordinateSystem ?coor ." + "?coor  j3:hasProjectedCoordinate_x ?x ."
-				+ "?x  j2:hasValue ?valuex ." + "?valuex  j2:numericalValue ?valx ."
-				+ "?coor  j3:hasProjectedCoordinate_y ?y ." + "?y  j2:hasValue ?valuey ."
-				+ "?valuey  j2:numericalValue ?valy ." + "}";
-
-		ResultSet resultSet = JenaHelper.query(model, busInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultListbus = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		List<ElectricalComponentObject> buslist = new ArrayList<ElectricalComponentObject>();
-
-		for (int x = 0; x < resultListbus.size(); x++) {
-			ElectricalComponentObject bus = new ElectricalComponentObject(resultListbus.get(x)[0]);
-			bus.setx(Double.valueOf(resultListbus.get(x)[1]));
-			bus.sety(Double.valueOf(resultListbus.get(x)[2]));
-			buslist.add(bus);
-		}
-
-		int t = 0;
-		double[] ans = new double[2];
-		ans[0] = 0.0;
-		ans[1] = 0.0;
-		while (t < r) {
-			if (readinglist.get(t)[1].equals(indexline)) {
-				String result2 = new QueryBroker().queryFile(readinglist.get(t)[0], branchInfo);
-				String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-
-//				System.out.println("keys="+keys2.length);
-				List<String[]> resultListbranch = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
-//				System.out.println("sizeofresultbranch="+resultListbranch.size());
-				String bus1 = resultListbranch.get(0)[1];
-				String bus2 = resultListbranch.get(0)[2];
-				double bus1x = 0.0;
-				double bus1y = 0.0;
-				double bus2x = 0.0;
-				double bus2y = 0.0;
-				for (int h = 0; h < buslist.size(); h++) {
-					if (buslist.get(h).getObjectIRI().contains(bus1)) {
-						bus1x = buslist.get(h).getx();
-						bus1y = buslist.get(h).gety();
-					}
-					if (buslist.get(h).getObjectIRI().contains(bus2)) {
-						bus2x = buslist.get(h).getx();
-						bus2y = buslist.get(h).gety();
-					}
-				}
-				double xbat = (bus1x + bus2x) / 2;
-				double ybat = (bus1y + bus2y) / 2;
-				System.out.println("x= " + xbat);
-				System.out.println("y= " + ybat);
-
-				ans[0] = xbat;
-				ans[1] = ybat;
-			}
-			t++;
-		}
-		return ans;
-	}
-	
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		
@@ -217,31 +112,32 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#> "
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-				+ "SELECT ?entity ?vploss ?bus1 ?bus2 "
+				+"PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>"
+				+ "SELECT ?entity ?vplossvalue ?bus1 ?bus2 "
 
 				+ "WHERE {?entity  a  j1:UndergroundCable  ." 
 				+ "?entity   j2:isModeledBy ?model ."
 				+ "?model   j5:hasModelVariable ?ploss ." 
 				+ "?ploss  a  j3:PLoss  ." 
 				+ "?ploss  j2:hasValue ?vploss ." // ploss
-				
-				+ "?entity   j6:hasInput ?bus1 ."
-				+ "?entity   j6:hasOutput ?bus2 ."
-				+ "FILTER (xsd:double(?vploss) >= "+valueboundary+") " 
+				+ "?vploss  j2:numericalValue ?vplossvalue ."
+				+ "?entity   j4:hasInput ?bus1 ."
+				+ "?entity   j4:hasOutput ?bus2 ."
 				+ "}";
 		
-		
-
+		List<String[]> newresult= new ArrayList<String[]>();
 		ResultSet resultSet = JenaHelper.query(model, branchoutputInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		
+
 		for(int d=0;d<resultList.size();d++) {
-			
+			if(Double.valueOf(resultList.get(d)[1])>=valueboundary){
+				newresult.add(resultList.get(d));
+			}
 		}
 		
-		return resultList;
+		return newresult;
 		
 	}
 	
@@ -354,7 +250,8 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					activepowerbalancevalue.addProperty(hasunit, MW);
 					
 					String finalcontent=JenaHelper.writeToString(bat);
-					String newiri = QueryBroker.getIriPrefix() + "/sgp/jurongisland/jurongislandpowernetwork/"+typebat+"-"+String.format("%03d", d+1)+".owl";
+					String indexline=resultfrommodelbranch.get(d)[0].split("#ELine-")[1];
+					String newiri = QueryBroker.getIriPrefix() + "/sgp/jurongisland/jurongislandpowernetwork/"+typebat+"-"+indexline+".owl";
 					//String newiri="http://www.jparksimulator.com/kb/
 					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
 					
