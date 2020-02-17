@@ -2,9 +2,9 @@
 map logic for b3 powerplant
 ***/
 var b3map = new PopupMap({useCluster:true,  editable: true});
-
+var prefix = "http://localhost:8080";
 var socket = io();
-
+var scenario = "base";
 //subscribe to socket for data change event
 socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
     ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", withData:true}
@@ -37,10 +37,10 @@ let b2dm  =[
 ]     
 
 var dataMaps = [
-    { url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
+    { url: prefix + "JPSBIODIESELPLANT3/DoSimulation"
         ,dataMap:   new Map(b3dm)}
 
-    ,{ url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation2"
+    ,{ url:prefix + "JPSBIODIESELPLANT3/DoSimulation2"
         ,dataMap:  new Map(b2dm) }
 ];
 /**
@@ -60,7 +60,7 @@ socket.on('update', function (udata) {//when subscribed value updated
     //need to corrspond the updated data with kept copy - by name
 
     console.log("get update event");
-    console.log(udata);
+    console.log(udata); //pair of uri: file on root folder, and filename: file chopped off. 
     //Blinking any modified object
     let uri1 = udata.uri.replace("C:\\TOMCAT\\webapps\\ROOT\\", "http://www.theworldavatar.com/");
 	 uri1 = uri1.replace(/\\/g, "/");
@@ -69,7 +69,7 @@ socket.on('update', function (udata) {//when subscribed value updated
 	uri2 = uri2.replace(/\\/g, "/");
 
                     [uri1, uri2].forEach((uri)=>{
-                        console.log(uri);
+                        console.log(uri);//prints uri1, then uri2
                         //console.log(b3map.getMarker(uri));
                         let mmarker = b3map.getMarker(uri);
 
@@ -85,8 +85,8 @@ socket.on('update', function (udata) {//when subscribed value updated
     console.log(modifs)   
    if(Object.keys(modifs).length > 0){
        Object.keys(modifs).forEach(url=>{
-		   console.log(modifs[url])
-           SendSimulationQuery(url, Array.from(modifs[url].values()));
+		   console.log(modifs[url]); //prints dictionary pair of key (V_molarF) and value
+           SendSimulationQuery(url, Array.from(modifs[url].values()));//send an array of values
        });
    }
 
@@ -124,6 +124,9 @@ variables: values of variables
 function SendSimulationQuery(murl, variables) {
 
 
+    console.log(murl);
+    console.log(variables);
+
     var queryString = "?Input=";
     for (var i = 0; i < variables.length; i++) {
         if (i == 0) {
@@ -134,12 +137,14 @@ function SendSimulationQuery(murl, variables) {
         }
     }
 
+
 	console.log(queryString);
         $.ajax({
             url:   murl + queryString,
 
             success: function(response) {
-
+                //modifications on this end. returns initially results from simulation. 
+                //now won't do anything. 
                 console.log("response from simulation:")
                 console.log(response);
                 /**
@@ -154,7 +159,7 @@ function SendSimulationQuery(murl, variables) {
 
                 let processed =  processResult(response);
                 let divided = dispatchArray(processed);
-                console.log(divided)
+                console.log(divided) //3x2x4: R-301, R-301load, R-302load, second row are delete and insert rows, first row are iri of each triple repeated. 
                 async.each(divided, outputUpdate, function (err) {
                                        displayMessageModal("Update to server failed.");
 
@@ -231,7 +236,7 @@ function processResult(resultStr) {
     console.log(attrObjs);
     let uris =[];
     attrObjs.forEach((item)=>{uris.push(item.uri, item.uri)});
-    console.log(uris);
+    console.log(uris);//uri of the load and r-301/2 changes. 
     return [uris,  constructUpdate(null, attrObjs)];
 }
 
@@ -278,10 +283,10 @@ function  outputUpdate(input,cb) {
 
     let uris = input[0]
     let updateQs = input[1]
-        console.log(uris)
+    console.log(uris)
     console.log(updateQs)
-    var myUrl = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint?uri=' + encodeURIComponent(JSON.stringify(uris)) + '&update=' + encodeURIComponent(JSON.stringify(updateQs)) + '&mode=update';
-
+    var myUrl = createUrlForSparqlUpdate(scenario,uris[0], updateQs.join(';'));
+    console.log(myUrl);
     $.ajax({
         url: myUrl,
         method: "GET",
@@ -306,4 +311,12 @@ function displayMessageModal(msg) {
 
     $('#err-msg-modal').modal('show');
 
+}
+function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
+
+    var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
+    urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
+    url2 += encodeURIComponent(JSON.stringify(urljson)); 
+    //url2 += JSON.stringify(urljson); 
+    return url2;    
 }
