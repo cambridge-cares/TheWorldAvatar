@@ -24,8 +24,6 @@ public class RepositoryManager {
 	public void getUploadOwlFiles(String repositoryUrl, String folderPath, String nameSpace) {
 	
 		File[] owlFiles = new File(folderPath).listFiles();
-		
-		
 			
 		Repository repository = new HTTPRepository(repositoryUrl);
 		
@@ -49,6 +47,7 @@ public class RepositoryManager {
 					repositoryConnection.commit();
 					
 					n++;
+					
 					System.out.println(n + ". uploadded file: " + f.getName());
 				
 

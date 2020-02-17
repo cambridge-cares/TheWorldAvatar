@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.query;
 
-
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -22,8 +21,11 @@ import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
  */
 public class FederatedQuery {
 	
-	public static void runFederatedSPARQL(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
 	
+	public LinkedList<NISTSpeciesId> runFederatedSPARQL(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
+		
+	LinkedList<NISTSpeciesId> nistSpeciesIdList = new LinkedList<NISTSpeciesId>();
+		
     Repository repository = FedXFactory.newFederation()
     		
     		/**
@@ -43,9 +45,12 @@ public class FederatedQuery {
         .withSparqlEndpoint(claudiusServerSparqlEndPoint)
 		.create();
     
+    
+    
     try {
 		
 	RepositoryConnection conn = repository.getConnection();
+	
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -54,14 +59,12 @@ public class FederatedQuery {
 	 */
 	
 	TupleQuery tq = conn.prepareTupleQuery(query);
-		
+	
 	try{
 		
 	TupleQueryResult tqRes = tq.evaluate();
 	
 	int count = 0;
-	
-	ArrayList<NISTSpeciesId> nistSpeciesIdList = new ArrayList<NISTSpeciesId>();
 	
 	while (tqRes.hasNext()) {
 				
@@ -80,7 +83,7 @@ public class FederatedQuery {
 				
 				nistSpeciesIdList.add(nistSpeciesId);
 				
-				System.out.println(bSet.getValue("species").stringValue() + " , " + bSet.getValue("crid").stringValue() + " , " + bSet.getValue("atomicBond").stringValue() + " , " + bSet.getValue("geometry").stringValue());
+//				System.out.println(bSet.getValue("species").stringValue() + " , " + bSet.getValue("crid").stringValue() + " , " + bSet.getValue("atomicBond").stringValue() + " , " + bSet.getValue("geometry").stringValue());
 				
 				count++;
 	}
@@ -90,15 +93,18 @@ public class FederatedQuery {
 	}catch(TupleQueryResultHandlerException e) {
 	
 		e.printStackTrace();
+		
 	}
+	
+	conn.close();
 	
 	}catch(RepositoryException e) {
 	
 		e.printStackTrace();
 	}
-	
-	repository.shutDown();
+    
+	repository.shutDown();	
 
-	}
-	
+	return nistSpeciesIdList;
+	}	
 }

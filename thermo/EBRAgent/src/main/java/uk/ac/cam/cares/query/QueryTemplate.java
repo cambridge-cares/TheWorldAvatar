@@ -38,7 +38,7 @@ public class QueryTemplate {
 				+ "?species OntoSpecies:casRegistryID ?crid . "
 				+ "?species OntoSpecies:hasAtomicBond ?atomicBond . "
 				+ "?species OntoSpecies:hasGeometry ?geometry . "
-				+ "}";
+				+ "} LIMIT 1";
 		
 		return query;
 	}
