@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.des;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,14 +54,19 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
 		logger.info("OCR finished");
 
+		   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		   LocalDateTime now = LocalDateTime.now();
+		   String com=dtf.format(now);
+		   String date=com.split("/")[2].split(" ")[0];
+		   
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
-		String year=current.getString("year");
-		String datemonth=current.getString("date")+"-"+current.getString("month");
-		String time=current.getString("time");
-		String speed=current.getString("windspeed");
-		String temperature=current.getString("temperature");
-		String irradiance=current.getString("irradiance");
+		String year=current.optString("year",com.split("/")[0]);
+		String datemonth=current.optString("date",date)+"-"+current.optString("month",com.split("/")[1]);
+		String time=current.optString("time",com.split("/")[2].split(" ")[1]);
+		String speed=current.optString("windspeed","0");
+		String temperature=current.optString("temperature","26");
+		String irradiance=current.optString("irradiance","0");
 		
 		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
 		//query the data from the existing owl file
