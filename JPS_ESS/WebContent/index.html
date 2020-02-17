@@ -544,8 +544,8 @@ var globalKMLEventinfoWindowHtml;
 var selectedId;
 var txt;
 var scenario = "base";
-//var prefix = "http://localhost:8080"
-var prefix = "http://www.theworldavatar.com"
+var prefix = "http://localhost:8080"
+//var prefix = "http://www.theworldavatar.com"
 //var prefix = "http://www.jparksimulator.com"
 var electricalnetwork='http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
@@ -878,8 +878,23 @@ var infowindow;
 	    });
 	    request.done( function(data) {
 	        console.log ("success create request");
-	        batterylist = JSON.parse(data).batterylist;
+	        console.log(data);
+	        batlist = JSON.parse(data).batterylist;
+	       	batterylist = []
+	        var size=batlist.length;
+	        for(x=0;x<size;x++){
+	        	//query each iri:
+	        		var iri=batlist[x];
+	    	        lstCoord = querybatlocation(iri,batteryInfo);
+	    	        batterylist.push([lstCoord]);
+	    	        console.log([lstCoord]);
+	        	
+	        	
+	        }
+	        
+	        
 	        console.log(batterylist);
+	        
 			drawMarkers();
 			drawLines();
 
@@ -1087,6 +1102,36 @@ function openWindowGen(id){
 	}
 	);
 }
+
+
+function querybatlocation(iri,type){
+	var kmlurl = createUrlForSparqlQuery(scenario, iri.split('#')[0], type);
+	var request = $.ajax({
+		url: kmlurl,
+		type: 'GET',
+		contentType: 'application/json; charset=utf-8',
+		success: function(){  
+		},
+		error: function(ts) {
+			alert(ts.responseText);
+		}   
+	});
+	request.done( function(data) {
+		console.log(data);
+		var obj0 = JSON.parse(data);
+		obj0 = obj0['results']['bindings'][0];
+		console.log(obj0);
+		var batterylistwithposition = [];
+		batterylistwithposition.push(obj0.entity.value,obj0.V_x.value,obj0.V_y.value);
+		return batterylistwithposition;
+		
+	
+	});
+}
+
+
+
+
 function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow cos it's too large. 
 	var kmlurl = createUrlForSparqlQuery(scenario, id.split('#')[0], type);
 	console.log(kmlurl);
