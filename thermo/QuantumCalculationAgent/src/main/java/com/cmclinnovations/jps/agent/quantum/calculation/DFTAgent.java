@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 
 import com.cmclinnovations.jps.agent.workspace.management.Workspace;
+import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
@@ -50,6 +51,43 @@ public class DFTAgent extends HttpServlet{
 	boolean isAuthenticated;
 	
 	static HashSet<String> jobPool = new HashSet<>();
+	public List<String> ontoSpeciesIRIs = new ArrayList<>();
+
+	public DFTAgent(){
+        logger.info("---------- Quantum Calculation Agent has started ----------");
+        // Temporary block the assertion of the list of 5 jobs starts here.
+        List<String> jobList = new ArrayList<>();
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job1");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job2");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job3");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job4");
+        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job5");
+        // Temporary block the assertion of the list of 5 jobs ends here.
+        // Temporary block the assertion of the list of 5 species IRIs starts here.
+        ontoSpeciesIRIs.add("[{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00b7e248-ae24-35bf-b7a0-b470b923ddf6.owl#00b7e248-ae24-35bf-b7a0-b470b923ddf6\"}]");
+        ontoSpeciesIRIs.add("[{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09\"}]");
+        ontoSpeciesIRIs.add("[{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00c4803e-ba0b-3b8a-b8b1-8cd00bb6172d.owl#00c4803e-ba0b-3b8a-b8b1-8cd00bb6172d\"}]");
+        ontoSpeciesIRIs.add("[{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00f46355-2ea4-3ef1-b61a-e3d87e91a8db.owl#00f46355-2ea4-3ef1-b61a-e3d87e91a8db\"}]");
+        ontoSpeciesIRIs.add("[{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/0a1a4723-19ad-3272-b334-615587274e3c.owl#0a1a4723-19ad-3272-b334-615587274e3c\"}]");
+        // Temporary block the assertion of the list of 5 species IRIs ends here.        
+        try{
+        for(String speciesIRI:ontoSpeciesIRIs){
+        	setUpQuantumJob(speciesIRI);
+//        	runQuantumJob();
+        }
+        }catch(IOException e){
+        	logger.error(e.getMessage());
+        	e.printStackTrace();
+        }catch(DFTAgentException e){
+        	logger.error(e.getMessage());
+        	e.printStackTrace();
+        }
+       	logger.info("---------- Quantum Calculation Agent has terminated ----------");		
+	}
+	
+	public static void main(String[] args) throws ServletException, DFTAgentException{
+		new DFTAgent();
+	}
 	
 	/**
 	 * Initialises property values.
@@ -58,36 +96,58 @@ public class DFTAgent extends HttpServlet{
 	 */
 	public void init() throws ServletException{
         logger.info("---------- Quantum Calculation Agent has started ----------");
-        // Temporary block asserting the list of 5 jobs starts here.
+        // Temporary block the assertion of the list of 5 jobs starts here.
         List<String> jobList = new ArrayList<>();
         jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job1");
         jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job2");
         jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job3");
         jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job4");
         jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job5");
-        // Temporary block asserting the list of 5 jobs ends here.
+        // Temporary block the assertion of the list of 5 jobs ends here.
+        // Temporary block the assertion of the list of 5 species IRIs starts here.
+        ontoSpeciesIRIs.add("http://www.theworldavatar.com/kb/ontospecies/00b7e248-ae24-35bf-b7a0-b470b923ddf6.owl#00b7e248-ae24-35bf-b7a0-b470b923ddf6");
+        ontoSpeciesIRIs.add("http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09");
+        ontoSpeciesIRIs.add("http://www.theworldavatar.com/kb/ontospecies/00c4803e-ba0b-3b8a-b8b1-8cd00bb6172d.owl#00c4803e-ba0b-3b8a-b8b1-8cd00bb6172d");
+        ontoSpeciesIRIs.add("http://www.theworldavatar.com/kb/ontospecies/00f46355-2ea4-3ef1-b61a-e3d87e91a8db.owl#00f46355-2ea4-3ef1-b61a-e3d87e91a8db");
+        ontoSpeciesIRIs.add("http://www.theworldavatar.com/kb/ontospecies/0a1a4723-19ad-3272-b334-615587274e3c.owl#0a1a4723-19ad-3272-b334-615587274e3c");
+        // Temporary block the assertion of the list of 5 species IRIs ends here.
+        
         try{
-        for(String job:jobList){
-        	setUpQuantumJob();
+        for(String speciesIRI:ontoSpeciesIRIs){
+        	setUpQuantumJob(speciesIRI);
 //        	runQuantumJob();
         }
         }catch(IOException e){
         	logger.error(e.getMessage());
         	e.printStackTrace();
+        }catch(DFTAgentException e){
+        	logger.error(e.getMessage());
+        	e.printStackTrace();
         }
        	logger.info("---------- Quantum Calculation Agent has terminated ----------");
 	}
-
-	private void setUpQuantumJob() throws IOException{
+	
+	private void setUpQuantumJob(String speciesIRI) throws IOException, DFTAgentException{
 		Workspace ws = new Workspace();
-		String workspace = ws.createAgentWorkspace(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
+		File workspace = ws.createAgentWorkspace(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
 		if(workspace == null){
 			logger.info("Workspace could not be created.");
 		}else{
-			ws.createInputFile();
+			File jobFolder = ws.createJobFolder(workspace.getAbsolutePath());
+			if(jobFolder == null){
+				logger.info("Job folder could not be created.");
+			}else{
+				setUpQuantumJob(ws, jobFolder, speciesIRI);
+			}
 		}
 	}
 	
+	private void setUpQuantumJob(Workspace ws, File jobFolder, String speciesIRI) throws IOException, DFTAgentException{
+		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
+		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
+		System.out.println("SpeciesGeometry:"+speciesGeometry);
+		ws.createInputFile(ws.getInputFilePath(jobFolder), speciesGeometry);
+	}
 	
 	/**
 	 * Runs a set of quantum jobs.

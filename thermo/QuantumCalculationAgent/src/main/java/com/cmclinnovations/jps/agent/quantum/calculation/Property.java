@@ -1,7 +1,5 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
-import java.io.File;
-
 /**
  * This enumerated list defines the name of important properties of</br>
  * DFT Agent. Some example properties are:</br>
@@ -23,8 +21,12 @@ public enum Property {
 	JOB_NO_OF_CORES("%nprocshared=16"),
 	JOB_MEMORY("%mem=60GB"),
 	JOB_CHK_POINT_FILE(HPC_CAMBRIDGE_ADDRESS.getPropertyName().concat(".chk")),
-	JOB_PRINT_DIRECTIVE("#n");
-	
+	SPECIES_CHARGE_ZERO("0"),
+	SPECIES_MULTIPLICITY("1"),
+	JOB_PRINT_DIRECTIVE("#n"),
+	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
+	RDF4J_ONTOSPECIES_REPOSITORY_ID("ontospecies"),
+	PREFIX_BINDING_ONTOSPECIES("PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n");
 	
 	private String propertyName;
 	private Property(String propertyName){
