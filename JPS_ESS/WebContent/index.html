@@ -553,8 +553,9 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 var colorMap = ['#99f','#f99','#9f9','#f9f','#39f'];
 var markers = [];
 var animatedLines = [];
-var batterylist = null;
+var batterylist = [];
 var infowindow;
+var lstCoord = [];
  
  
 // Perform other work here ...
@@ -862,7 +863,6 @@ var infowindow;
 		batteryjson["BatteryCatalog"] = batIRI;
 		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
 		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
-	
 		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
 		console.log(batteryurl);
 	    var request = $.ajax({
@@ -880,14 +880,13 @@ var infowindow;
 	        console.log ("success create request");
 	        console.log(data);
 	        batlist = JSON.parse(data).batterylist;
-	       	batterylist = []
+	        console.log(batlist);
+	       	batterylist = [];
 	        var size=batlist.length;
 	        for(x=0;x<size;x++){
 	        	//query each iri:
 	        		var iri=batlist[x];
-	    	        lstCoord = querybatlocation(iri,batteryInfo);
-	    	        batterylist.push([lstCoord]);
-	    	        console.log([lstCoord]);
+	    	        querybatlocation(iri,batteryInfo);
 	        	
 	        	
 	        }
@@ -1104,7 +1103,7 @@ function openWindowGen(id){
 }
 
 
-function querybatlocation(iri,type){
+function querybatlocation(iri,type){//url of battery, query of info. 
 	var kmlurl = createUrlForSparqlQuery(scenario, iri.split('#')[0], type);
 	var request = $.ajax({
 		url: kmlurl,
@@ -1121,9 +1120,7 @@ function querybatlocation(iri,type){
 		var obj0 = JSON.parse(data);
 		obj0 = obj0['results']['bindings'][0];
 		console.log(obj0);
-		var batterylistwithposition = [];
-		batterylistwithposition.push(obj0.entity.value,obj0.V_x.value,obj0.V_y.value);
-		return batterylistwithposition;
+		batterylist.push([obj0.entity.value,obj0.V_x.value,obj0.V_y.value]);
 		
 	
 	});
