@@ -60,7 +60,8 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		String resultStart = AgentCaller.executeGetWithJsonParameter(optimizationresult, jo.toString());
 		
 		logger.info("optimatization end result= "+resultStart);
-		//String eniri = new JSONObject(resultStart).getString("electricalnetwork");
+		String eniri = new JSONObject(resultStart).getString("electricalnetwork");
+		jo.put("electricalnetwork",eniri);
 		
 		String resultStartLocator = AgentCaller.executeGetWithJsonParameter("JPS_ESS/LocateEnergyStorage", jo.toString());
 				
@@ -72,6 +73,10 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		JSONObject finres= new JSONObject(finresult); 
 		
 		AgentCaller.writeJsonParameter(response, finres);
+		
+//JSONObject finres= new JSONObject(resultStartLocator); 
+//		
+//		AgentCaller.writeJsonParameter(response, finres);
 
 		
 	}

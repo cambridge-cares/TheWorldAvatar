@@ -210,7 +210,7 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 		QueryBroker broker=new QueryBroker();
 		JSONArray listofbat= new JSONArray();
 			while(d<size) {
-					JSONArray indbat= new JSONArray();
+					//JSONArray indbat= new JSONArray();
 					//double[]coordinate=prepareBatteryLocationData(resultfrommodelbranch.get(d)[0],dir,model);
 					double[]coordinate=prepareStorageLocation(model,resultfrommodelbranch.get(d)[2],resultfrommodelbranch.get(d)[3]);
 					double x=coordinate[0];
@@ -258,10 +258,10 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
 					
 					broker.putOld(newiri,finalcontent);
-					indbat.put(newiri+"#"+typebat+"-"+indexline);
+					listofbat.put(newiri+"#"+typebat+"-"+indexline);
 //					indbat.put(x);
 //					indbat.put(y);
-					listofbat.put(indbat);
+					//listofbat.put(indbat);
 				
 				
 				d++;

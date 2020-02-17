@@ -82,7 +82,7 @@ public class EnergyStorageSystemTest extends TestCase {
 		JSONObject testres= new EnergyStorageSystem ().optimizedBatteryMatching(baseUrl, pvgeniris, batIRI);
 		System.out.println("result battery= "+testres.getString("storage"));
 		pvgeniris.clear();
-		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB", testres.getString("battery"));
+		assertEquals("http://www.jparksimulator.com/kb/batterycatalog/VRB.owl#VRB", testres.getString("storage"));
 		
 	}
 
