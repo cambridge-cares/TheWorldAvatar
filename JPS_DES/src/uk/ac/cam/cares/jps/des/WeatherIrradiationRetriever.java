@@ -46,12 +46,19 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		logger.info("return the result from weather agent");		
 	}
 	
-	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
+	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
 		String startbatCommand =folder+"/runpyocr.bat";
 		System.out.println(startbatCommand);
-		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
+		try {
+			String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			logger.error(e1.getMessage()+"python is not running");
+			//later need default file data.json to substitute the loss
+			new DistributedEnergySystem().copyFromPython(folder,"data.json");
+		}
 		logger.info("OCR finished");
 
 		   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
