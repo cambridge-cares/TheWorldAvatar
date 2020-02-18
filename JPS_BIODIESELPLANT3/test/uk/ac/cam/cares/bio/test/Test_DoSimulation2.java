@@ -41,7 +41,7 @@ public class Test_DoSimulation2 extends TestCase{
 		   jo.put("V_molarF_601039",90.00933660142013);
 		   jo.put("ValueOfHeatDutyOfE-601002",290142.05932762893);
 		   jo.put("ValueOfHeatDutyOfE-601003",103803.70706111955);
-		   new DoSimulation2().placeinOWLFiles(jo);
+		   new DoSimulation2().placeinOWLFiles(jo, "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant2/BiodieselPlant2.owl");
 	   }
 }
 

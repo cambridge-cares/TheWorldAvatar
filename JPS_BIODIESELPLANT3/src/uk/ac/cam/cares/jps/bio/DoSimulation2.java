@@ -54,7 +54,7 @@ public class DoSimulation2 extends  JPSHttpServlet{
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String iriString =  jo.optString("PLANTIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant2/BiodieselPlant2.owl");
 		JSONObject result = callReq(iriString);
-		placeinOWLFiles(result);
+		placeinOWLFiles(result, iriString);
 	}
 
 	/**
@@ -69,7 +69,6 @@ public class DoSimulation2 extends  JPSHttpServlet{
 	// The main function that does the simulation which requires two inputs 
 	// SimulationIRI find the simulation individuals in the owl file where the inputs, model name and outputs
 	// The editStack stores the user inputs
-	@SuppressWarnings("resource")
 	public JSONObject callReq(String iriString) throws IOException {
 		String heaterInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -106,7 +105,7 @@ public class DoSimulation2 extends  JPSHttpServlet{
 				+ "?vTout  j2:numericalValue ?vT2invalue ."
 				+ "}";
 		OntModel model = readModelGreedy(iriString);
-		List<String[]> heatList = getResultList(model,heaterInfo);
+		List<String[]> heatList = getResultList(model, heaterInfo);
 		String[] inputs = {heatList.get(0)[1],heatList.get(0)[2], heatList.get(0)[3]};
 		
 		Double input1 = null,input2 = null,input3 = null;
@@ -129,7 +128,7 @@ public class DoSimulation2 extends  JPSHttpServlet{
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
 	}
-	public List<String[]> getResultList(OntModel model, String info){
+	public List<String[]> getResultList( OntModel model, String info){
 	   ResultSet resultSet = JenaHelper.query(model, info);
 	   String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 	   String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -181,7 +180,7 @@ public class DoSimulation2 extends  JPSHttpServlet{
  		
  		return simResult;
 	}
-	public void placeinOWLFiles(JSONObject simResult) {
+	public void placeinOWLFiles(JSONObject simResult, String iriString) {
 		String Prefix = "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/";
 		Iterator<String> keys = simResult.keys();
 		//store in T the molarF individually. 
@@ -190,8 +189,9 @@ public class DoSimulation2 extends  JPSHttpServlet{
 		Individual vH = jenaOwlModel.getIndividual(i+ "#V_molarF_601039");
 		DatatypeProperty numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_molarF_601039").toString()));
+		//have to hard code this directly. Because I don't see how is it V_molarF and not others are the ones to be changed. ???
 		
-		String[] d = {"E-601001.owl","E-601002.owl","E-601003.owl","E-601004.owl"};
+		String[] d = irisToBeUsed(iriString);
 		QueryBroker broker = new QueryBroker();
 		for (String j: d) {
 			jenaOwlModel = JenaHelper.createModel(Prefix + j);//OBJECT 
@@ -203,6 +203,44 @@ public class DoSimulation2 extends  JPSHttpServlet{
 			broker.putOld(i, content);
 		}
 		
+	}
+	private String[] irisToBeUsed(String iriString) {
+		OntModel model =  readModelGreedy(iriString); 
+		String info = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
+					+"PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+"PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
+					+"PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+					+"PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+"PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+					+"PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+"PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+					+"PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+"SELECT Distinct ?entity "
+					+"WHERE {"
+					  +"{"
+					    +"?entity  a  j1:ShellTubeApparatus ."
+						+"?entity   j4:realizes  ?proc ."
+						+"?proc  j5:hasInput ?input ."
+						+"?input a j3:RawMaterial ."
+						+"?proc  j5:hasOutput ?ouput ."
+					  	+"?ouput  a  j3:ProcessStream ."
+						+"?proc  j7:hasHeatDuty ?HD ."
+						+"?HD  j2:hasValue ?vHD ."
+					  +"}UNION { "
+					    +"?entity   j4:realizes  ?proc ."
+						+"?proc  j5:hasInput ?input ."
+						+"?input  a  j3:ProcessStream ."
+						+"?proc  j5:hasOutput ?ouput ."
+					  	+"?ouput  a  j3:ProcessStream ."
+						+"?proc  j7:hasHeatDuty ?HD ."
+						+"?HD  j2:hasValue ?vHD . }"
+						+"}";
+		 List<String[]> a = getResultList(model, info);
+		 String[] ans = new String[a.size()];
+		 for (int i =0; i < a.size(); i++) {
+			 ans[i] = a.get(i)[0].split("#")[1]+".owl";
+		 }
+		 return ans;
 	}
 
 }

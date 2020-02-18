@@ -48,7 +48,6 @@ public class Test_DoSimulation extends TestCase{
 	   public void testBiodieselPlant() {
 		   String iriofnetwork = "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl";
 		   DoSimulation a = new DoSimulation();
-		   OntModel reactorModel = a.readModelGreedy("http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl");
 		   OntModel model = a.readModelGreedy(iriofnetwork);
 		   String reactorInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -146,6 +145,6 @@ public class Test_DoSimulation extends TestCase{
 		   jo.put("ValueOfHeatDutyOfR-301",1.1612685888155425);
 		   jo.put("V_ActualV_R-301",3.3821878615224006);
 		   jo.put("V_Angle_LoadPoint_R-302",-0.48014259831225964);
-		   new DoSimulation().placeinOWLFiles(jo);
+		   new DoSimulation().placeinOWLFiles(jo, "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
 	   }
 }

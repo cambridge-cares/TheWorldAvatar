@@ -4,7 +4,6 @@ package uk.ac.cam.cares.jps.bio;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -53,7 +52,7 @@ public class DoSimulation extends JPSHttpServlet {
 		String iriString =  jo.optString("PLANTIRI", "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
 		JSONObject result = callReq(iriString);
 
-		placeinOWLFiles(result);
+		placeinOWLFiles(result, iriString);
 		
 	}
 	/** calls doSimulation via iriString and 
@@ -144,9 +143,9 @@ public class DoSimulation extends JPSHttpServlet {
 				+ "?vTin  j2:numericalValue ?vTinvalue ."
 				+ "}";
 		OntModel model = readModelGreedy(iriString);
-		List<String[]> pumpList = getResultList(model,pumpInfo);
-		List<String[]> heatList = getResultList(model,heaterInfo);
-		List<String[]> reactList = getResultList(model,reactorInfo);
+		List<String[]> pumpList = getResultList(model, pumpInfo);
+		List<String[]> heatList = getResultList(model, heaterInfo);
+		List<String[]> reactList = getResultList(model, reactorInfo);
 
 		String[] inputs = {heatList.get(0)[1],heatList.get(0)[2], reactList.get(0)[1],reactList.get(0)[2],pumpList.get(0)[1], pumpList.get(0)[2]};
 		Double input1 = null,input2 = null,input3 = null,input4 = null,input5 = null,input6 = null;
@@ -189,7 +188,7 @@ public class DoSimulation extends JPSHttpServlet {
 	// SimulationIRI find the simulation individuals in the owl file where the inputs, model name and outputs
 	// The editStack stores the user inputs
 	/**
-	 * @param inputs:  double array
+	 * @param inputs double array
 	 * @return JSONObject of six doubles. 
 	 * @throws IOException
 	 */
@@ -254,14 +253,11 @@ public class DoSimulation extends JPSHttpServlet {
  		return simResult;
 	}
 	/**Dump in owl files the simulation result
-	 * @param JSON object containing six values
-	 * @returns null
+	 * @param simResult JSONObject containing six values
+	 * @return null
 	 */
-	public void placeinOWLFiles(JSONObject simResult) {
-		String Prefix = "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/";
-		Iterator<String> keys = simResult.keys();
-		String[] d = {"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl#R-301",
-				"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-302.owl#R-302"};
+	public void placeinOWLFiles(JSONObject simResult, String iriString) {
+		String[] d = irisToBeUsed(iriString);
 		QueryBroker broker = new QueryBroker();
 		for (String i: d) {
 			OntModel jenaOwlModel = JenaHelper.createModel(i);//OBJECT 
@@ -283,6 +279,44 @@ public class DoSimulation extends JPSHttpServlet {
 			broker.putOld(newM, content);
 		}
 		
+	}
+	private String[] irisToBeUsed(String iriString) {
+		OntModel model =  readModelGreedy(iriString); 
+		String info = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant_equipment/apparatus.owl#> "
+					+"PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+"PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#> "
+					+"PREFIX j4:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+					+"PREFIX j5:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+					+"PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/chemical_process_system.owl#> "
+					+"PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+					+"PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/material.owl#> "
+					+"PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+					+"SELECT Distinct ?entity "
+					+"WHERE {"
+					  +"{"
+					    +"?entity  a  j1:StirredTank ."
+						+"?entity   j4:realizes  ?proc ."
+						+"?proc  j5:hasInput ?input ."
+						+"?input a j3:RawMaterial ."
+						+"?proc  j5:hasOutput ?ouput ."
+					  	+"?ouput  a  j3:ProcessStream ."
+						+"?proc  j7:hasHeatDuty ?HD ."
+						+"?HD  j2:hasValue ?vHD ."
+					  +"}UNION { "
+					    +"?entity   j4:realizes  ?proc ."
+						+"?proc  j5:hasInput ?input ."
+						+"?input  a  j3:ProcessStream ."
+						+"?proc  j5:hasOutput ?ouput ."
+					  	+"?ouput  a  j3:ProcessStream ."
+						+"?proc  j7:hasHeatDuty ?HD ."
+						+"?HD  j2:hasValue ?vHD . }"
+						+"}";
+		 List<String[]> a = getResultList(model, info);
+		 String[] ans = new String[a.size()];
+		 for (int i =0; i < a.size(); i++) {
+			 ans[i] = a.get(i)[0];
+		 }
+		 return ans;
 	}
 
 }
