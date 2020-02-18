@@ -1,10 +1,12 @@
 package uk.ac.cam.cares.ebr;
 
-import java.util.LinkedHashMap;
+
 import java.util.LinkedList;
+
 
 import uk.ac.cam.cares.query.FederatedQuery;
 import uk.ac.cam.cares.query.QueryTemplate;
+
 import uk.ac.cam.cares.tools.SpeciesGenerator;
 import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
@@ -15,14 +17,12 @@ import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
  */
 public class App {
 	
-	static LinkedList<NISTSpeciesId> linkedSpeciesSet =new LinkedList<NISTSpeciesId>();
-	static LinkedHashMap<Integer,String> speciesHashMap = new LinkedHashMap<Integer,String>();
-	static LinkedHashMap<Integer,String> updatedSpeciesHashMap = new LinkedHashMap<Integer,String>();
+	static String localhostUrl = "http://localhost:8080/rdf4j-server/repositories/ontospecieskb";
+	static String claudiusUrl = "http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb";
 	
-	static LinkedHashMap<String, Integer> speciesFrequencyHashMap = new LinkedHashMap<String, Integer>(); 
+	static LinkedList<NISTSpeciesId> linkedSpeciesSet =new LinkedList<NISTSpeciesId>();	
 	
-	static FederatedQuery fq = new FederatedQuery();
-	
+	static FederatedQuery fq = new FederatedQuery();	
 	static SpeciesGenerator sg = new SpeciesGenerator();
 	
     public static void main( String[] args ) throws Exception {
@@ -45,14 +45,20 @@ public class App {
       * 
       */
      
-linkedSpeciesSet.addAll(fq.runFederatedSPARQL("http://localhost:8080/rdf4j-server/repositories/ontospecieskb","http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb",QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometry())); 
+linkedSpeciesSet.addAll(fq.runFederatedSPARQL(localhostUrl,claudiusUrl,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometry()));
+
+sg.generateSpeciesNameFromGeometryRepresentation(linkedSpeciesSet);
+
+System.out.println("Bond connections: ");
+
+for(NISTSpeciesId speciesId: linkedSpeciesSet) {
+	
+System.out.println(speciesId.getBond());
+
+}
 
 
-speciesHashMap.putAll(sg.generateSpeciesNamesFromGeometryRepresentation(linkedSpeciesSet));
-
-updatedSpeciesHashMap.putAll(sg.getUpdatedSpeciesNameHashMap(sg.getSpeciesNameList(speciesHashMap), speciesHashMap));
-
-speciesFrequencyHashMap.putAll(sg.getSpeciesFrequencyHashMap(speciesHashMap, sg.getSpeciesNameList(speciesHashMap)));
+//CSVGenerator.generateCSVFile(linkedSpeciesSet, csvFilePath);
 
 
 }
