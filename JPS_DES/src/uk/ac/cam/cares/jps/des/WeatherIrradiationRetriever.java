@@ -55,8 +55,11 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 			String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
 		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			logger.error(e1.getMessage()+"python is not running");
+			logger.error(e1.getMessage()+"python is not running interrupted");
 			//later need default file data.json to substitute the loss
+			new DistributedEnergySystem().copyFromPython(folder,"data.json");
+		} catch (Exception ex) {
+			logger.error(ex.getMessage()+"python is not running");
 			new DistributedEnergySystem().copyFromPython(folder,"data.json");
 		}
 		logger.info("OCR finished");
