@@ -961,7 +961,8 @@ public class WTEKBCreator {
 	
 	public void startConversion(String flag) throws Exception {
     	
-    	String filePath = baseURL2 + "wastetemplate.owl"; // the empty owl file
+    	//String filePath = baseURL2 + "wastetemplate.owl"; // the empty owl file
+    	String filePath=AgentLocator.getPathToWorkingDir(this)+"/wastetemplate.owl";
 
 			FileInputStream inFile = new FileInputStream(filePath);
 			Reader in = new InputStreamReader(inFile, "UTF-8");
@@ -982,7 +983,7 @@ public class WTEKBCreator {
 			}
 			else if(flag.contains("foodcourt")) {
 				
-				String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/resource/fcdetails.csv");
+				String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/fcdetails.csv");
 				List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 				int size=readingFromCSV.size();
 

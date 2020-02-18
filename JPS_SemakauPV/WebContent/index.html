@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+
+
+<head>
+     <meta charset="UTF-8">
+	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+     <link rel="stylesheet" type="text/css"href="css/index.css">
+     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <title>Semakau Simulator</title>
+</head>
+
+
+        <style>
+		
+#readme-button {
+    float: right;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    /*position: absolute;*/
+    /*top: 55px;*/
+    /*right: 690px;*/
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 0px 100px 0px 0px;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+    margin: 0px 100px 0px 0px;
+
+    position: absolute;
+    /*top: 32px;*/
+    /*right: 6px;*/
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+}
+		
+		
+			.tables {
+				margin-left: 20px;
+			}
+            table {
+                border-collapse: collapse;
+                border: 1px black solid;
+                font: 12px sans-serif;
+            }
+
+            td {
+                border: 1px black solid;
+                padding: 5px;
+            }
+			
+			.Graph{
+				float: left;
+				margin-left: 20px;
+				margin-top: 50px;
+				padding: 10px;
+				border-style:groove;
+				width: 600px;
+				height: 500px;
+			}
+			
+			svg{
+				float:inherit;
+			}
+			
+			.Des{
+				width: 600px;
+				color: gray;
+			}
+			
+			.title{
+			
+				font-size:20px;
+			}
+        </style>
+
+		<div class="jumbotron text-center" id="topBanner">
+ 
+ 
+ <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
+ <img id="care-banner-img" src="images/cam_lang_negativ1%20NEW_0.png">
+ </a>
+ 
+ <!-- <span id="readme-button">?</span>
+
+    <span id="readme-text">
+		The Semakau model is based on the Semakau Island Smart Grid projects that explore the scenario of equipping Semakau Island with various types of renewable energy sources. The types of generators considered are diesel, photovoltaic cells, marine, wind and batteries. The loads considered are a few desalination plants, buildings and a fish hatchery. Upon clicking on the individual icon, a pop-up window containing the information about the selected component will appear.
+		The initial model was built using the Power World software. 
+	<br/><br/>The model was subsequently parameterised to allow faster and simpler computation. The only dynamic aspect of this model is the photovoltaic cells model, which is computed based on real-time solar irradiation data in Singapore (sourced from https://inetapps.nus.edu.sg/fas/geog/). The solar irradiation data is updated once every five minutes. The outputs from the photovoltaic cells model are: <br/>
+	<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;Actual active power: a parameter to indicate the real power value that is functional for generating work.<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;Actual reactive power: a parameter to indicate the imaginary power value that transfers no net energy to the load.<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;Actual phase angle: a parameter to determine how well connected is the bus with the slack (reference) bus. A smaller value indicates greater stability.<br/>
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;&nbsp;Actual voltage: a parameter to indicate the real value of the bus voltage level. <br/>
+
+	</span> -->
+
+ 
+  <h1 id="head1">Semakau Simulator</h1>
+  <p id="description">A plot of outputs from the simulated photovoltaic cells model based on Semakau Island Smart Grid project. The model is computed based on real-time solar irradiation data in Singapore (sourced from <a style="color:white" href="https://www.solar-repository.sg/ftp_up/weather/500_Weather.png">https://www.solar-repository.sg/ftp_up/weather/500_Weather.png</a>). The solar irradiation data is updated once every 1 hour. </p>  
+
+</div>
+
+<div class="tables">
+
+<h2>Input</h2>	
+<div style="padding: 10px;border-style:groove; width:700px">
+<div class="title">Solar Irradiation (W/m<sup>2</sup>)</div>
+<canvas id='graph1' width="600" height="250"></canvas>
+</div>
+<hr/>
+
+<h2>Outputs</h2>	
+<table>
+<tr>
+<th></th>
+</table>
+
+<div class="Graph"><div class="title">PVfarm1_ActualPhaseAngle (degree)</div>
+<div class="Des">Actual phase angle is a parameter to determine how well connected is the bus with the slack (reference) bus.It is more stable if the value is smaller. </div>
+<canvas id='graph3' width="600" height="500"></canvas>
+</div>
+
+<div class="Graph"><div class="title">PVfarm1_ActualVoltage (V in p.u)</div>
+<div class="Des">Actual voltage is a parameter to show the real value of the bus(PV farm1) voltage level.</div>
+<canvas id='graph4' width="600" height="500"></canvas>
+</div>
+
+
+<div class="Graph"><div class="title">PVfarm1_ActualActivePower (MW)</div>
+<div class="Des">Actual active power is a parameter to show the real power value that is functional for generating work.</div>
+<canvas id='graph7' width="600" height="500"></canvas>
+</div>
+
+ <div class="Graph"><div class="title">PVfarm1_ActualReactivePower (Mvar)</div>
+ <div class="Des">Actual reactive power is a parameter to show the imaginary power value that transfers no net energy to load.</div>
+<canvas id='graph8' width="600" height="500"></canvas>
+</div>
+
+</div>
+<script>
+
+   const toggleDisplay = elemId => {
+        let x = document.getElementById(elemId);
+        if (x.style.display !== 'block') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+    };
+
+    $("#readme-button").click(function() {
+        toggleDisplay("readme-text");
+    });
+
+    document.addEventListener("click", function(evt) {
+        var readmeButtonElement = document.getElementById('readme-button'),
+            readmeTextElement = document.getElementById('readme-text'),
+            targetElement = evt.target;  // clicked element
+
+        if (targetElement == readmeButtonElement || targetElement == readmeTextElement) {
+            return; //readme-button or readme-text is clicked. do nothing.
+        }
+
+        if(readmeTextElement.style.display === 'block') {
+            readmeTextElement.style.display = 'none';
+        }
+    });
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.7.0/d3.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+     <!--   <script type="text/javascript"charset="utf-8">
+            d3.text("PrPWOUTPV.CSV", function(data) {
+                var parsedCSV = d3.csvParseRows(data);
+
+                var container = d3.select("body")
+                    .append("table")
+
+                    .selectAll("tr")
+                        .data(parsedCSV).enter()
+                        .append("tr")
+
+                    .selectAll("td")
+                        .data(function(d) { return d; }).enter()
+                        .append("td")
+                        .text(function(d) { return d; });
+            });
+        </script> -->
+<script src="scripts/Script.js"></script>
+</html>
