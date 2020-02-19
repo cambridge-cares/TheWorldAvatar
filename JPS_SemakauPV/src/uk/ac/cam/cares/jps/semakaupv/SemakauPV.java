@@ -43,7 +43,7 @@ public class SemakauPV extends JPSHttpServlet {
 		String irradSensorIRI=joforess.getString("irradiationsensor");
 		OntModel model = readModelGreedy(ENIRI);
 		JSONObject res=runMODS(model,irradSensorIRI);
-		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
+		JSONObject result=updateOWLValue(res,"http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
 		//hardcoded at the moment the iri due to model restriction
 		
 		AgentCaller.printToResponse(result, response);
@@ -207,7 +207,7 @@ public class SemakauPV extends JPSHttpServlet {
 	public JSONObject updateOWLValue(JSONObject ans,String irigen, String iribus ) {
 		
 		JSONObject ans2= new JSONObject();
-		String gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl";
+		String gen="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl";
 		String bus="http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl";
 		
 		String genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
@@ -304,7 +304,7 @@ public class SemakauPV extends JPSHttpServlet {
 		String[]header= {"year","monthdate","time","PGen","QGen","VmPu","Va"};
 		readingFromCSV.add(0,header);
 		try {
-			new TimeSeriesConverter().startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl");
+			new TimeSeriesConverter().startConversion(readingFromCSV,"gen","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-002.owl");
 			new TimeSeriesConverter().startConversion(readingFromCSV,"bus","http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/EBus-006.owl");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
