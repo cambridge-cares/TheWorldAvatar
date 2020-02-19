@@ -10,6 +10,13 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 
 import org.eclipse.rdf4j.model.Resource;
 
+/**
+ * 
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * 
+ * The repository manager that uploads owl file to remote or local host rdf4j repository.
+ *
+ */
 public class RepositoryManager {
 	
 	/**
@@ -31,8 +38,6 @@ public class RepositoryManager {
 		
 		RepositoryConnection repositoryConnection = repository.getConnection();
 		
-		int n= 0;
-		
 		for(File  f: owlFiles){
 			
 		try {
@@ -45,11 +50,6 @@ public class RepositoryManager {
 					repositoryConnection.add(f, repositoryUrl, RDFFormat.RDFXML, context);
 					
 					repositoryConnection.commit();
-					
-					n++;
-					
-					System.out.println(n + ". uploadded file: " + f.getName());
-				
 
 				
 			}catch(RepositoryException e) {

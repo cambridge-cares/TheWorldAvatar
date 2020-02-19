@@ -21,7 +21,15 @@ import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
  */
 public class FederatedQuery {
 	
-	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param localHostSparqlEndPoint the localhost sparql endpoint.
+	 * @param claudiusServerSparqlEndPoint the remote repository sparql endpoint.
+	 * @param query the query string.
+	 * @return the set of sparql results.
+	 * @throws Exception 
+	 */
 	public LinkedList<NISTSpeciesId> runFederatedSPARQL(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
 		
 	LinkedList<NISTSpeciesId> nistSpeciesIdList = new LinkedList<NISTSpeciesId>();
@@ -64,13 +72,11 @@ public class FederatedQuery {
 		
 	TupleQueryResult tqRes = tq.evaluate();
 	
-	int count = 0;
 	
 	while (tqRes.hasNext()) {
 				
 				BindingSet bSet = tqRes.next();
 				
-//				System.out.println(b);
 				
 				/**
 				 * 
@@ -83,12 +89,10 @@ public class FederatedQuery {
 				
 				nistSpeciesIdList.add(nistSpeciesId);
 				
-//				System.out.println(bSet.getValue("species").stringValue() + " , " + bSet.getValue("crid").stringValue() + " , " + bSet.getValue("atomicBond").stringValue() + " , " + bSet.getValue("geometry").stringValue());
-				
-				count++;
+
 	}
 	
-	System.out.println("Results: " + count);
+
 	
 	}catch(TupleQueryResultHandlerException e) {
 	

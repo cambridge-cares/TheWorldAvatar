@@ -10,7 +10,7 @@ public class QueryTemplate {
 	/**
 	 * 
 	 * @param webLinIri
-	 * @return the species IRIs that have given web link .
+	 * @return the species IRIs that have given web link . This is a test federated query and it is not use in generating csv file.
 	 */
 	public static String getSpeciesIriWtihGivenWebLink(String webLinkIri) {
 		
@@ -38,7 +38,7 @@ public class QueryTemplate {
 				+ "?species OntoSpecies:casRegistryID ?crid . "
 				+ "?species OntoSpecies:hasAtomicBond ?atomicBond . "
 				+ "?species OntoSpecies:hasGeometry ?geometry . "
-				+ "} LIMIT 3";
+				+ "}";
 		
 		return query;
 	}
