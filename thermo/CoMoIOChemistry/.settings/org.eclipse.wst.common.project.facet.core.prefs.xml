@@ -1,7 +1,0 @@
-<root>
-  <facet id="jpt.jaxb">
-    <node name="classgen">
-      <attribute name="package" value="uk.ac.cam.ceb.como.io.chem.file.jaxb"/>
-    </node>
-  </facet>
-</root>
