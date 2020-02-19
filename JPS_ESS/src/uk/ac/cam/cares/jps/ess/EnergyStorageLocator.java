@@ -218,18 +218,19 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					double capacity=Double.valueOf(resultfrommodelbranch.get(d)[1]);
 					String typebat=resultofbattery.split("#")[1];
 					OntModel bat= JenaHelper.createModel(resultofbattery);
+					String indexline=resultfrommodelbranch.get(d)[0].split("#ELine-")[1];
 
 					initOWLClasses(bat);
 					String iriprefix="http://www.jparksimulator.com/kb/batterycatalog/";
 					Individual battery=bat.getIndividual(iriprefix+typebat+".owl#"+typebat);
 					
-					Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + typebat+".owl#CoordinateSystem_of_"+typebat);
-					Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + typebat+".owl#x_coordinate_of_"+typebat);
-					Individual ygencoordinate = coordinateclass.createIndividual(iriprefix + typebat+".owl#y_coordinate_of_"+typebat);
-					Individual xgencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+".owl#v_x_coordinate_of_"+typebat);
-					Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+".owl#v_y_coordinate_of_"+typebat);
-					Individual activepowerbalance=powerbalanceclass.createIndividual(iriprefix + typebat+".owl#ActivePowerInjection_of_"+typebat);
-					Individual activepowerbalancevalue=scalarvalueclass.createIndividual(iriprefix + typebat+".owl#V_ActivePowerInjection_of_"+typebat);
+					Individual gencoordinate = coordinatesystemclass.createIndividual(iriprefix + typebat+".owl#CoordinateSystem_of_"+typebat+"-"+indexline);
+					Individual xgencoordinate = coordinateclass.createIndividual(iriprefix + typebat+".owl#x_coordinate_of_"+typebat+"-"+indexline);
+					Individual ygencoordinate = coordinateclass.createIndividual(iriprefix + typebat+".owl#y_coordinate_of_"+typebat+"-"+indexline);
+					Individual xgencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+".owl#v_x_coordinate_of_"+typebat+"-"+indexline);
+					Individual ygencoordinatevalue = valueclass.createIndividual(iriprefix + typebat+".owl#v_y_coordinate_of_"+typebat+"-"+indexline);
+					Individual activepowerbalance=powerbalanceclass.createIndividual(iriprefix + typebat+".owl#ActivePowerInjection_of_"+typebat+"-"+indexline);
+					Individual activepowerbalancevalue=scalarvalueclass.createIndividual(iriprefix + typebat+".owl#V_ActivePowerInjection_of_"+typebat+"-"+indexline);
 					
 //					System.out.println("relation= "+hascoordinatesystem.getURI());
 					battery.addProperty(hascoordinatesystem,gencoordinate);
@@ -252,10 +253,11 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 					activepowerbalancevalue.addProperty(hasunit, MW);
 					
 					String finalcontent=JenaHelper.writeToString(bat);
-					String indexline=resultfrommodelbranch.get(d)[0].split("#ELine-")[1];
+					
 					String newiri = QueryBroker.getIriPrefix() + "/sgp/jurongisland/jurongislandpowernetwork/"+typebat+"-"+indexline+".owl";
 					//String newiri="http://www.jparksimulator.com/kb/
 					finalcontent=finalcontent.replace(iriprefix+typebat+".owl",newiri); //individual file name changed
+					finalcontent=finalcontent.replace("#"+typebat, "#"+typebat+"-"+indexline);//main instance name changed
 					
 					broker.putOld(newiri,finalcontent);
 					listofbat.put(newiri+"#"+typebat+"-"+indexline);

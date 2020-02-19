@@ -216,8 +216,6 @@ public class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Pa
 			}
 			
 			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
-			System.out.println("current iri KEVIN print= "+current);
-			logger.info("current iri KEVIN print= "+current);
 			if ((i % 5 == 0) || i == generators.size()) {
 				String sparql = sparqlStart + b.toString() + "} \r\n";
 				logger.info("inserting " + (i % 5) + " power generators to electrical network top node\n" + sparql);
