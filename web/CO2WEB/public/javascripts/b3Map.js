@@ -2,6 +2,7 @@
 map logic for b3 powerplant
 ***/
 var b3map = new PopupMap({useCluster:true,  editable: true});
+// var prefix = "http://www.jparksimulator.com";
 var prefix = "http://localhost:8080";
 var socket = io();
 var scenario = "base";
@@ -281,24 +282,20 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
 
     let uris = input[0]
     let updateQs = input[1]
-    console.log(uris)
-    console.log(updateQs)
     var myUrl = createUrlForSparqlUpdate(scenario,uris[0], updateQs.join(';'));
     console.log(myUrl);
     $.ajax({
         url: myUrl,
         method: "GET",
         contentType: "application/json; charset=utf-8",
+        timeout:3600000,
         success: function (data) {//SUCESS updating
             //Update display
             console.log(cb);
-            
+            cb(null, data);
             // callDoSimulation(uris);
-            cb(null, data);//infowindow close. 
-
         },
         error: function (err) {
-            displayMsg(errMsgBox, "Can not update to server", "danger")
             console.log("can not update to server")
         cb(err);
         }

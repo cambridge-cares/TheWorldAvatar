@@ -591,6 +591,7 @@ getIconByType: function (type, highlight) {
      */
     openEditablePopupNet: function(muri, marker) {
         var self = this;
+        //grabs 
         $.ajax({
             url: window.location.origin + "/getAttrList",
             method: "POST",
@@ -612,7 +613,7 @@ getIconByType: function (type, highlight) {
     formatPopup : function (attrPairs, muri, marker) {
         const self = this;
 
-        var infowindow = new google.maps.InfoWindow({
+        let infowindow = new google.maps.InfoWindow({
             content: self.formatContent(attrPairs, muri)
         });
         if (self.editable) {//only define click handler when this map is editable
@@ -654,26 +655,36 @@ getIconByType: function (type, highlight) {
                 $(document).on('click', submitId, function () {
                     if(Object.keys(modifications).length < 1){//do nothing if no modific
                     console.log('no change')
-                        return;
+                    
+                    infowindow.close();
+                    google.maps.event.clearInstanceListeners(infowindow);
+                    return;
                     }
                     console.log(modifications);
-                    console.log("submit btn clicked")
+                    console.log("submit btn clicked");
                     let updateQs = constructUpdate(muri, Object.values(modifications));
                     //send ajax to update
                     let uris = [];
                     for (let i = 0; i < updateQs.length; i++) {
                         uris.push(muri);
                     }
-                    console.log("sent updates: ");console.log(updateQs);console.log(uris);
+                    console.log("sent updates: ");
                     outputUpdate([uris, updateQs], function (data) {//success callback
+                        
+                        console.log("OUTPUT UPDATED");
+                        
                         infowindow.close();
+                        google.maps.event.clearInstanceListeners(infowindow);
                     }, function () {//err callback
                         self.displayMsg(errMsgBox, "Can not update to server", "danger")
 
                     });
+                    infowindow.close();
+                    google.maps.event.clearInstanceListeners(infowindow);
+                    infowindow  = null;
                 });
                 
-                        function getAttrPairFromName(name) {
+            function getAttrPairFromName(name) {
             let searched = mattrs.filter((item) => {
                 return item.name === name;
             });
@@ -684,19 +695,6 @@ getIconByType: function (type, highlight) {
 
         infowindow.open(self.googleMap, marker);
 
-
-        function validateInput(newValue, type) {
-            switch (type) {
-                case "string":
-                    return typeof  newValue === "string";
-                case "decimal":
-                case "float":
-                case "integer":
-                    return !isNaN(parseFloat(newValue)) && isFinite(newValue);
-                default:
-                    console.log("type " + type + " is unknown");
-            }
-        }
     },
 
     /*marker Cluster**/

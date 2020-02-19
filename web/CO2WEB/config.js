@@ -15,7 +15,7 @@ config.baseUri = "http://www.theworldavatar.com"
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
 config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
-//configDevelop();
+// configDevelop();
 configDeploy();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
@@ -43,17 +43,17 @@ config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")
 
 
 function configDevelop() {
-    config.root = path.join(__dirname ,  "testFiles") ; // own folder for testing
-    config.port = 3000;//port for deploy
-    config.registerUrl = "http://localhost:2000";
-    config.changeUrl = "http://localhost:3000";
-    config.ppFolder = path.join(config.root, "powerplants")
-    config.jurongNode = path.join(config.root ,"JurongIsland.owl");
+    // config.root = path.join(__dirname ,  "testFiles") ; // own folder for testing
+    config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
+    config.registerUrl = "http://10.25.188.104";
+    config.changeUrl = "http://www.theworldavatar.com:82";
+    config.ppFolder = path.join(config.root, "kb/powerplants")
     
     //"http://www.thewordavatar.com:82/change";
 }
 
 function configDeploy() {
+    // config.root = path.normalize("C:/TOMCAT/webapps/ROOT");
     config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
 	//config.root2 = path.normalize("C:/TOMCAT/webapps/ROOT/kb/sgp/semakauisland");
     config.port = 82;//port for deploy
