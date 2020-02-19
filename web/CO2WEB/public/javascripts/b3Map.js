@@ -33,14 +33,15 @@ let b3dm  = [
 
 let b2dm  =[
         ["V_molarF_601001",0],
-        ["V_Temperature_601001",0]
+        ["V_Temperature_601001",0],
+        ["V_Temperature_601002",0]
 ]     
 
 var dataMaps = [
-    { url: prefix + "JPSBIODIESELPLANT3/DoSimulation"
+    { url: prefix + "/JPSBIODIESELPLANT3/DoSimulation"
         ,dataMap:   new Map(b3dm)}
 
-    ,{ url:prefix + "JPSBIODIESELPLANT3/DoSimulation2"
+    ,{ url:prefix + "/JPSBIODIESELPLANT3/DoSimulation2"
         ,dataMap:  new Map(b2dm) }
 ];
 /**
@@ -72,7 +73,7 @@ socket.on('update', function (udata) {//when subscribed value updated
                         console.log(uri);//prints uri1, then uri2
                         //console.log(b3map.getMarker(uri));
                         let mmarker = b3map.getMarker(uri);
-
+                        console.log(mmarker +" line 75 ");
                         if(mmarker){
 
                             mmarker.blinkAnimation()
@@ -124,18 +125,15 @@ variables: values of variables
 function SendSimulationQuery(murl, variables) {
 
 
-    console.log(murl);
-    console.log(variables);
+    // var queryString = "?Input=";
+    // for (var i = 0; i < variables.length; i++) {
+    //     if (i == 0) {
+    //         queryString = queryString + variables[i];
 
-    var queryString = "?Input=";
-    for (var i = 0; i < variables.length; i++) {
-        if (i == 0) {
-            queryString = queryString + variables[i];
-
-        } else {
-            queryString = queryString + "+" + variables[i];
-        }
-    }
+    //     } else {
+    //         queryString = queryString + "+" + variables[i];
+    //     }
+    // }
 
 
 	console.log(queryString);
@@ -279,7 +277,7 @@ var constructSingleUpdate = function (uri, attrObj) {
  * @param successCB   callback when success
  * @param errorCB      callback when err
  */
-function  outputUpdate(input,cb) {
+function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the simulation that doesn't run!
 
     let uris = input[0]
     let updateQs = input[1]
@@ -293,8 +291,10 @@ function  outputUpdate(input,cb) {
         contentType: "application/json; charset=utf-8",
         success: function (data) {//SUCESS updating
             //Update display
-            console.log(data);
-            cb(null, data);
+            console.log(cb);
+            
+            // callDoSimulation(uris);
+            cb(null, data);//infowindow close. 
 
         },
         error: function (err) {
@@ -319,4 +319,37 @@ function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
     url2 += encodeURIComponent(JSON.stringify(urljson)); 
     //url2 += JSON.stringify(urljson); 
     return url2;    
+}
+function createUrlForAgent(scenarioname, agenturl, agentparams) {
+
+    var url;
+    if ((scenarioname == null) || scenarioname == "base") {
+        url = agenturl;
+    } else {
+        agentparams['scenarioagentoperation'] = agenturl;
+        var scenariourl = prefix + '/jps/scenario/' + scenarioname + '/call';
+        url = scenariourl;
+    }
+
+    return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
+}
+function callDoSimulation(uris){
+    var agentUrl = prefix + '/JPS_BIODIESELPLANT3/SimCoord'; 
+    //check if it is biodiesel plant 2 or 3: 
+    var data = {};
+    if (uris[0].includes('biodieselplant2')){
+        data = {"PLANTIRI":"http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant2/BiodieselPlant2.owl" }
+    }else{
+        data = {"PLANTIRI": "http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl"}
+    }
+    var simUrl = createUrlForAgent(scenario, agentUrl, data );
+    var request = $.ajax({
+        url: simUrl,
+        method: "GET",
+        timeout:3600000,
+        contentType: "application/json; charset=utf-8",
+    })
+    request.done(function() {
+        console.log("Completed Simulation");
+    });
 }
