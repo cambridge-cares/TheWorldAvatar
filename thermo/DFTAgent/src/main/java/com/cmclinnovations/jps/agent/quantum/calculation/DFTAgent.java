@@ -52,8 +52,9 @@ public class DFTAgent extends HttpServlet{
 	Session session;
 	boolean isAuthenticated;
 	static HashSet<String> jobPool = new HashSet<>();
-	public List<String> jsonRequests = new ArrayList<>();
-
+	
+	private static File taskSpace; 
+	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
 		dftAgent.init();
@@ -69,22 +70,72 @@ public class DFTAgent extends HttpServlet{
         System.out.println("---------- Quantum Calculation Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DFTAgent dftAgent = new DFTAgent();
-        executorService.scheduleAtFixedRate(dftAgent::startScheduledTasks, 20, 15, TimeUnit.SECONDS);
-        logger.info("---------- Quantum Calculation Agent has terminated ----------");
-        for(int i=0;i<=100;i++)
-        System.out.println("---------- Quantum Calculation Agent has terminated ----------");
+       	executorService.scheduleAtFixedRate(dftAgent::monitorTasks, 1, 20, TimeUnit.SECONDS);
+        logger.info("---------- Qunatum jobs are being monitored  ----------");
+        System.out.println("---------- Qunatum jobs are being monitored  ----------");
        	
+	}
+
+	private void monitorTasks(){
+        Workspace workspace = new Workspace();
+        if(taskSpace == null){
+        	taskSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
+        }
+        try {
+        	Map<String, List<String>> jobsUnfinished = Utils.getUnfinishedJobs(taskSpace);
+			System.out.println("Number of unfinished jobs:"+jobsUnfinished.size());
+			int countJob = 0;
+			for(String job:jobsUnfinished.keySet()){
+				System.out.println("Job ["+ ++countJob+"]: "+job);
+			}
+			checkRunningJobs(jobsUnfinished);
+//        	runNotStartedJobs(jobs);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+//		List<String> jobList = new ArrayList<>();
+//        try{
+//        for(String jsonString:jsonRequests){
+//        	setUpQuantumJob(jsonString);
+//			getUnfinishedJobs(taskSpace);
+////        	runQuantumJob();
+//        }
+//        }catch(IOException e){
+//        	logger.error(e.getMessage());
+//        	e.printStackTrace();
+//        }catch(DFTAgentException e){
+//        	logger.error(e.getMessage());
+//        	e.printStackTrace();
+//        }
+ catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void checkRunningJobs(Map<String, List<String>> jobs) throws IOException, InterruptedException{
+		Map<String, List<String>> runningJobs = Utils.getRunningJobs(jobs);
+		for(String runningJob:runningJobs.keySet()){
+			File statusFile = Utils.getStatusFile(runningJobs.get(runningJob));
+			if(statusFile!=null){
+				checkRunningJob(statusFile);
+			}
+		}
+	}
+	
+	private void checkRunningJob(File statusFile) throws IOException, InterruptedException{
+		String jobId = Utils.getJobId(statusFile.getAbsolutePath());
+		if(jobId!=null){
+			boolean isJobRunning = isJobRunning(jobId);
+			if(!isJobRunning){
+				Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_COMPLETED.getName());						
+			}
+		}
 	}
 	
 	private void startScheduledTasks(){
-        // Temporary block the assertion of the list of 5 jobs starts here.
         List<String> jobList = new ArrayList<>();
-        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job1");
-        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job2");
-        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job3");
-        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job4");
-        jobList.add("C:/Users/msff2/Documents/HPC/jobs/Job5");
-        // Temporary block the assertion of the list of 5 jobs ends here.
+        List<String> jsonRequests = new ArrayList<>();
         // Temporary block the assertion of the list of 5 species IRIs starts here.
         jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00b7e248-ae24-35bf-b7a0-b470b923ddf6.owl#00b7e248-ae24-35bf-b7a0-b470b923ddf6\"}");
         jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09\"}");
@@ -94,8 +145,9 @@ public class DFTAgent extends HttpServlet{
         // Temporary block the assertion of the list of 5 species IRIs ends here.        
         try{
         for(String jsonString:jsonRequests){
-        	setUpQuantumJob(jsonString);
-			getUnfinishedJobs();
+        	File workspace = setUpJobOnAgentMachine(jsonString);
+//        	transferJobToHPC(workspace);
+//			getUnfinishedJobs();
 //        	runQuantumJob();
         }
         }catch(IOException e){
@@ -107,7 +159,7 @@ public class DFTAgent extends HttpServlet{
         }
 	}
 	
-	private void setUpQuantumJob(String jsonString) throws IOException, DFTAgentException{
+	private File setUpJobOnAgentMachine(String jsonString) throws IOException, DFTAgentException{
 		Workspace workspace = new Workspace();
 		File workspaceFolder = workspace.createAgentWorkspace(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
 		if(workspaceFolder == null){
@@ -120,6 +172,7 @@ public class DFTAgent extends HttpServlet{
 				setUpQuantumJob(workspace, workspaceFolder, jobFolder, jsonString);
 			}
 		}
+		return workspaceFolder;
 	}
 	
 	private void setUpQuantumJob(Workspace ws, File workspaceFolder, File jobFolder, String jsonString) throws IOException, DFTAgentException{
@@ -163,63 +216,6 @@ public class DFTAgent extends HttpServlet{
 		}
 		return null;
 	}
-	/**
-	 * Go to the DFT Agent's job space to retrieve the status of jobs.</br>
-	 * Jobs with status running or not started yet, will be sent to the</br>
-	 * calling method.
-	 * 
-	 * @return
-	 */
-	public Map<String, ArrayList<String>> getUnfinishedJobs() throws IOException{
-		File jobsFolder = new File(Jobs.FOLDER.getName());
-		Map<String, List<String>> jobs = new HashMap<String, List<String>>(); 
-		if(jobsFolder!=null && jobsFolder.exists() && jobsFolder.isDirectory()){
-			File[] jobFiles = jobsFolder.listFiles();
-			for(File jobFolder:jobFiles){
-				retrieveJobs(jobs, jobFolder);
-			}
-		}
-		return null;
-	}
-	
-	public void retrieveJobs(Map<String, List<String>> jobs, File jobFolder) throws IOException{
-		if(jobFolder.isDirectory()){
-			File[] individualJobFiles = jobFolder.listFiles();
-			List<String> unfinishedJobsDetails = new ArrayList<>();
-			for(File individualJobFile:individualJobFiles){
-				boolean finished = isJobFinished(jobFolder.getAbsolutePath().concat(Jobs.STATUS_FILE.getName()));
-				if(!finished 
-						&& (individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
-						|| individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName()))){
-					unfinishedJobsDetails.add(individualJobFile.getAbsolutePath());
-				}
-			}
-			if(unfinishedJobsDetails.size()>=3){
-				jobs.put(jobFolder.getName(), unfinishedJobsDetails);
-			}
-		}
-	}
-	
-	/**
-	 * Check the status if a job finished.
-	 * 
-	 * @param statusFilePath
-	 * @return
-	 * @throws IOException
-	 */
-	public boolean isJobFinished(String statusFilePath) throws IOException{
-		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
-		String line;
-		while((line=statusFile.readLine())!=null){
-			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Jobs.STATUS_JOB_FINISHED.getName())){
-					return true;
-				}
-			}
-		}
-		statusFile.close();
-		return false;
-	}
 	
 	/**
 	 * Decides the time interval between the current and next</br>
@@ -228,14 +224,8 @@ public class DFTAgent extends HttpServlet{
 	 * @param count
 	 * @throws InterruptedException
 	 */
-	private void waitBeforeStatusCheck(int count) throws InterruptedException{
-		if(count <= 3){
-			Thread.sleep(10000);
-		}else if(count <= 6){
-			Thread.sleep(20000);
-		}else{
-			Thread.sleep(60000*2);
-		}
+	private void waitBeforeStatusCheck() throws InterruptedException{
+		Thread.sleep(2000);
 	}
 	
 	/**
@@ -313,7 +303,7 @@ public class DFTAgent extends HttpServlet{
 		System.out.println("Is the job running? " + isJobRunning);
 		while (isJobRunning) {
 			count++;
-			waitBeforeStatusCheck(count);
+			waitBeforeStatusCheck();
 			isJobRunning = isJobRunning(jobId);
 		}
 		try {

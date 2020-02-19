@@ -9,15 +9,14 @@ import java.io.File;
  *
  */
 public enum Jobs {
-	JOB_SPACE("dft-agent-job-space"),
-	FOLDER(System.getProperty("user.home").concat(File.pathSeparator+JOB_SPACE.getName())),
 	STATUS_FILE("status.txt"),
-	ATTRIBUTE_JOB_STATUS("job_status"),
+	ATTRIBUTE_JOB_STATUS("JobStatus:"),
 	STATUS_JOB_NOT_STARTED("not started"),
 	STATUS_JOB_RUNNING("running"),
-	STATUS_JOB_FINISHED("finished"),
-	ATTRIBUTE_JOB_ID("job_id"),
-	ATTRIBUTE_HPC_ADDRESS("hpc_address"),
+	STATUS_JOB_COMPLETED("completed"),
+	ATTRIBUTE_JOB_ID("JobId:"),
+	ATTRIBUTE_AGENT_ID("AgentId:"),
+	ATTRIBUTE_HPC_ADDRESS("HPCAddress:"),
 	EXTENSION_SLURM_FILE(".sh"),
 	EXTENSION_INPUT_FILE(".com");
 	

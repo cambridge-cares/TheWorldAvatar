@@ -8,8 +8,10 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cmclinnovations.jps.agent.job.request.parser.JSonRequestParser;
+import com.cmclinnovations.jps.agent.quantum.calculation.Jobs;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
 import com.cmclinnovations.jps.agent.quantum.calculation.Utils;
+import com.cmclinnovations.jps.kg.object.model.Job;
 import com.google.common.io.Files;
 
 public class Workspace {
@@ -86,11 +88,13 @@ public class Workspace {
 
 	public void createStatusFile(File workspaceFolder, String statusFilePath) throws IOException{
 		BufferedWriter statusFile = Utils.openBufferedWriter(statusFilePath);
-		statusFile.write(Property.PROPERTY_JOB_STATUS.getPropertyName().concat(" "));
-		statusFile.write(Property.VALUE_JOB_STATUS_NOT_STARTED.getPropertyName().concat("\n"));
-		statusFile.write(Property.PROPERTY_JOB_ID.getPropertyName().concat("\n"));
-		statusFile.write(Property.PROPERTY_JOB_AGENT_ID.getPropertyName().concat(" "));
+		statusFile.write(Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" "));
+		statusFile.write(Jobs.STATUS_JOB_NOT_STARTED.getName().concat("\n"));
+		statusFile.write(Jobs.ATTRIBUTE_JOB_ID.getName().concat("\n"));
+		statusFile.write(Jobs.ATTRIBUTE_AGENT_ID.getName().concat(" "));
 		statusFile.write(workspaceFolder.getName().concat("\n"));
+		statusFile.write(Jobs.ATTRIBUTE_HPC_ADDRESS.getName().concat(" "));
+		statusFile.write(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName().concat("\n"));
 		statusFile.close();
 	}
 	
