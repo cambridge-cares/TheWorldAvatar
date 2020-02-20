@@ -31,7 +31,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet("/DoSimulation")
 public class DoSimulation extends JPSHttpServlet {
 	public static String root=AgentLocator.getProperty("absdir.root");
-	String Sim4 = root+"/Sim_PV1/APPWSIM"; // THIS SIMULATION NEED TO BE EXIST 
+	String Sim4 = root+"/Sim_BIODIESELPLANT/APPWSIM"; // THIS SIMULATION NEED TO BE EXIST 
 	private static final long serialVersionUID = 1L;  
 //	public static String APPWSim = new String("C:\\Users\\LONG01\\RO\\APPWSim"); // output CSV file from the pr aspen plus model
 

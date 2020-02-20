@@ -39,7 +39,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 public class DoSimulation2 extends  JPSHttpServlet{
 	private static final long serialVersionUID = 1L;
 	public static String root=AgentLocator.getProperty("absdir.root");
-	String APPWSim = root+"/Sim_PV1/BD_WWHR_Sim"; // THIS SIMULATION NEED TO BE EXIST 
+	String APPWSim = root+"/Sim_BIODIESELPLANT/BD_WWHR_Sim"; // THIS SIMULATION NEED TO BE EXIST 
     public DoSimulation2() {
         super();
      }
@@ -189,18 +189,19 @@ public class DoSimulation2 extends  JPSHttpServlet{
 		Individual vH = jenaOwlModel.getIndividual(i+ "#V_molarF_601039");
 		DatatypeProperty numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_molarF_601039").toString()));
-		//have to hard code this directly. Because I don't see how is it V_molarF and not others are the ones to be changed. ???
-		
-		String[] d = irisToBeUsed(iriString);
+
 		QueryBroker broker = new QueryBroker();
+		String content = JenaHelper.writeToString(jenaOwlModel);
+		broker.putOld(i, content);
+		String[] d = irisToBeUsed(iriString);
 		for (String j: d) {
 			jenaOwlModel = JenaHelper.createModel(Prefix + j);//OBJECT 
 			String[] reactore = j.split(".owl");
 			String reactor = reactore[0];
 			vH = jenaOwlModel.getIndividual(Prefix + j+ "#ValueOfHeatDutyOf"+reactor);
 			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("ValueOfHeatDutyOf" + reactor).toString()) );
-			String content = JenaHelper.writeToString(jenaOwlModel);
-			broker.putOld(i, content);
+			content = JenaHelper.writeToString(jenaOwlModel);
+			broker.putOld(Prefix + j, content);
 		}
 		
 	}
