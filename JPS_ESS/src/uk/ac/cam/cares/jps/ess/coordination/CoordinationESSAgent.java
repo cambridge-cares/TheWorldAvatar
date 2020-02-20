@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 
+
 @WebServlet(urlPatterns = { "/startsimulationCoordinationESS" })
 public class CoordinationESSAgent extends JPSHttpServlet{
 	
@@ -40,28 +41,50 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		
 		//retrofit the generator of solar
 		logger.info("sent to the retrofit= "+jo.toString());
-		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", jo.toString());
-	
-		//run the scenario for EN after it is retrofitted
-		logger.info("starting the OPF");
+		AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/RenewableGenRetrofit", jo.toString());
 		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
-		String dirOfOPF = new JSONObject(resultStart).getString("folder");
-		
-		
-		
-		//JSONObject jo2= new JSONObject(result);
-		
-		jo.put("folder",dirOfOPF);
-		
+		//run the opf
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_ESS/ESSAgent", jo.toString());
+		JSONObject res1=new JSONObject(result);
+		jo.put("storage",res1.getString("storage"));
+	
+		
+		String result2 = AgentCaller.executeGetWithJsonParameter("JPS_ESS/OptimizationAgent", jo.toString());
+		JSONObject res2=new JSONObject(result2);
+		
+		String optimizationresult=res2.getString("optimization");
+		//jo.put("optimization",optimizationresult);
+		
+		logger.info("starting the method selected"); //in this case OPF
+		
+		String resultStart = AgentCaller.executeGetWithJsonParameter(optimizationresult, jo.toString());
+		
+		logger.info("optimatization end result= "+resultStart);
+		String eniri = new JSONObject(resultStart).getString("electricalnetwork");
+		jo.put("electricalnetwork",eniri);
+		
+		String resultStartLocator = AgentCaller.executeGetWithJsonParameter("JPS_ESS/LocateEnergyStorage", jo.toString());
+				
+		jo.put("batterylist",new JSONObject(resultStartLocator).getJSONArray("batterylist"));
+		
+		String finresult=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
 	
 		logger.info("started creating battery");
-		JSONObject finres= new JSONObject(result); 
+		JSONObject finres= new JSONObject(finresult); 
 		
 		AgentCaller.writeJsonParameter(response, finres);
+		
+//JSONObject finres= new JSONObject(resultStartLocator); 
+//		
+//		AgentCaller.writeJsonParameter(response, finres);
 
 		
 	}
+	
+
+	
+	
+	
+	
 
 }
