@@ -4,6 +4,8 @@ map logic for b3 powerplant
 var b3map = new PopupMap({useCluster:true,  editable: true});
 
 var socket = io();
+var prefix = "http://www.jparksimulator.com";
+var scenario = "base";
 
 //subscribe to socket for data change event
 socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
@@ -74,7 +76,7 @@ socket.on('update', function (udata) {//when subscribed value updated
                         let mmarker = b3map.getMarker(uri);
 
                         if(mmarker){
-
+                            console.log('blinkety blink');
                             mmarker.blinkAnimation()
                         }
 
@@ -86,7 +88,7 @@ socket.on('update', function (udata) {//when subscribed value updated
    if(Object.keys(modifs).length > 0){
        Object.keys(modifs).forEach(url=>{
 		   console.log(modifs[url])
-           SendSimulationQuery(url, Array.from(modifs[url].values()));
+           // SendSimulationQuery(url, Array.from(modifs[url].values()));
        });
    }
 
@@ -280,15 +282,17 @@ function  outputUpdate(input,cb) {
     let updateQs = input[1]
         console.log(uris)
     console.log(updateQs)
-    var myUrl = 'http://www.theworldavatar.com/Service_Node_BiodieselPlant3/SPARQLEndPoint?uri=' + encodeURIComponent(JSON.stringify(uris)) + '&update=' + encodeURIComponent(JSON.stringify(updateQs)) + '&mode=update';
-
+    var myUrl = createUrlForSparqlUpdate(scenario,uris[0], updateQs.join(';'));
+    console.log(myUrl);
     $.ajax({
         url: myUrl,
         method: "GET",
         contentType: "application/json; charset=utf-8",
+        timeout:3600000,
         success: function (data) {//SUCESS updating
             //Update display
             console.log(data);
+            callDoSimulation(uris);
             cb(null, data);
 
         },
@@ -306,4 +310,45 @@ function displayMessageModal(msg) {
 
     $('#err-msg-modal').modal('show');
 
+}
+function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
+
+    var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
+    urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
+    url2 += encodeURIComponent(JSON.stringify(urljson)); 
+    //url2 += JSON.stringify(urljson); 
+    return url2;    
+}
+function createUrlForAgent(scenarioname, agenturl, agentparams) {
+
+    var url;
+    if ((scenarioname == null) || scenarioname == "base") {
+        url = agenturl;
+    } else {
+        agentparams['scenarioagentoperation'] = agenturl;
+        var scenariourl = prefix + '/jps/scenario/' + scenarioname + '/call';
+        url = scenariourl;
+    }
+
+    return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
+}
+function callDoSimulation(uris){
+    var agentUrl = prefix + '/JPS_BIODIESELPLANT3/SimCoord'; 
+    //check if it is biodiesel plant 2 or 3: 
+    var data = {};
+    if (uris[0].includes('biodieselplant2')){
+        data = {"PLANTIRI":"http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant2/BiodieselPlant2.owl" }
+    }else{
+        data = {"PLANTIRI": "http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl"}
+    }
+    var simUrl = createUrlForAgent(scenario, agentUrl, data );
+    var request = $.ajax({
+        url: simUrl,
+        method: "GET",
+        timeout:3600000,
+        contentType: "application/json; charset=utf-8",
+    })
+    request.done(function() {
+        console.log("Completed Simulation");
+    });
 }

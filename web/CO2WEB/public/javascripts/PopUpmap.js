@@ -612,7 +612,7 @@ getIconByType: function (type, highlight) {
     formatPopup : function (attrPairs, muri, marker) {
         const self = this;
 
-        var infowindow = new google.maps.InfoWindow({
+        let infowindow = new google.maps.InfoWindow({
             content: self.formatContent(attrPairs, muri)
         });
         if (self.editable) {//only define click handler when this map is editable
@@ -653,11 +653,13 @@ getIconByType: function (type, highlight) {
                 //submit event handler for popup window**************//
                 $(document).on('click', submitId, function () {
                     if(Object.keys(modifications).length < 1){//do nothing if no modific
-                    console.log('no change')
+                    console.log('no change');
+                    infowindow.close();
+                    google.maps.event.clearInstanceListeners(infowindow);
                         return;
                     }
                     console.log(modifications);
-                    console.log("submit btn clicked")
+                    console.log("submit btn clicked");
                     let updateQs = constructUpdate(muri, Object.values(modifications));
                     //send ajax to update
                     let uris = [];
@@ -666,10 +668,14 @@ getIconByType: function (type, highlight) {
                     }
                     console.log("sent updates: ");console.log(updateQs);console.log(uris);
                     outputUpdate([uris, updateQs], function (data) {//success callback
+                        console.log("OUTPUT UPDATED");
                         infowindow.close();
+                        google.maps.event.clearInstanceListeners(infowindow);
                     }, function () {//err callback
                         self.displayMsg(errMsgBox, "Can not update to server", "danger")
-
+                        infowindow.close();
+                        google.maps.event.clearInstanceListeners(infowindow);
+                        infowindow=null;
                     });
                 });
                 
