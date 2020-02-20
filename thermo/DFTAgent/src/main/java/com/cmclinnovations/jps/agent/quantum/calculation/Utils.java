@@ -82,41 +82,70 @@ public class Utils {
 	
 	/**
 	 * Go to the DFT Agent's job space to retrieve the status of jobs.</br>
-	 * Jobs with status running or not started yet, will be sent to the</br>
-	 * calling method.
+	 * Jobs with status running or not started yet, will be classified</br>
+	 * accordingly.
 	 * 
 	 * @return
 	 */
-	public static Map<String, List<String>> getUnfinishedJobs(File tasksFolder) throws IOException{
-		Map<String, List<String>> jobs = new HashMap<String, List<String>>(); 
+	public static void classifyJobs(Map<String, List<String>> jobsRunning, Map<String, List<String>> jobsNotStarted, File tasksFolder) throws IOException{
 		if(tasksFolder!=null && tasksFolder.exists() && tasksFolder.isDirectory()){
 			File[] jobFolders = tasksFolder.listFiles();
 			for(File jobFolder:jobFolders){
-				retrieveUnfinishedJobs(jobs, jobFolder);
+				classifyJob(jobsRunning, jobsNotStarted, jobFolder);
 			}
-			return jobs;
 		}
-		return null;
 	}
 	
-	public static void retrieveUnfinishedJobs(Map<String, List<String>> jobs, File jobFolder) throws IOException{
+	private static void classifyJob(Map<String, List<String>> jobsRunning, Map<String, List<String>> jobsNotStarted, File jobFolder) throws IOException{
 		if(jobFolder.isDirectory()){
+			if(isJobRunning(jobFolder)){
+				retrieveRunningJobs(jobsRunning, jobFolder);
+			} else if(isJobNotStarted(jobFolder)){
+				retrieveNotStartedJobs(jobsNotStarted, jobFolder);
+			}
+		}
+	}
+	
+	private static boolean isJobRunning(File jobFolder) throws IOException{
+		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+	}
+
+	private static boolean isJobNotStarted(File jobFolder) throws IOException{
+		return isJobNotStarted(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+	}
+	
+	public static void retrieveRunningJobs(Map<String, List<String>> jobsRunning, File jobFolder) throws IOException{
 			File[] individualJobFiles = jobFolder.listFiles();
-			List<String> unfinishedJobsDetails = new ArrayList<>();
+			List<String> runningJobsDetails = new ArrayList<>();
 			for(File individualJobFile:individualJobFiles){
-				boolean finished = isJobFinished(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
-				if(!finished 
-						&& (individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
+				if(individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
 						|| individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName())
-						|| individualJobFile.getAbsolutePath().endsWith(Jobs.STATUS_FILE.getName()))){
-					unfinishedJobsDetails.add(individualJobFile.getAbsolutePath());
+						|| individualJobFile.getAbsolutePath().endsWith(Jobs.STATUS_FILE.getName())){
+					runningJobsDetails.add(individualJobFile.getAbsolutePath());
 				}
 			}
-			if(unfinishedJobsDetails.size()>=2){
-				jobs.put(jobFolder.getName(), unfinishedJobsDetails);
+			if(runningJobsDetails.size()>=2){
+				jobsRunning.put(jobFolder.getName(), runningJobsDetails);
 			}else{
 				logger.error("All files for submitting a job are not available for the following job:"+jobFolder.getAbsolutePath());
 			}
+	}
+	
+
+	public static void retrieveNotStartedJobs(Map<String, List<String>> jobsNotStarted, File jobFolder) throws IOException{
+		File[] individualJobFiles = jobFolder.listFiles();
+		List<String> notStartedJobsDetails = new ArrayList<>();
+		for(File individualJobFile:individualJobFiles){
+			if(individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
+					|| individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName())
+					|| individualJobFile.getAbsolutePath().endsWith(Jobs.STATUS_FILE.getName())){
+				notStartedJobsDetails.add(individualJobFile.getAbsolutePath());
+			}
+		}
+		if(notStartedJobsDetails.size()>=2){
+			jobsNotStarted.put(jobFolder.getName(), notStartedJobsDetails);
+		}else{
+			logger.error("All files for submitting a job are not available for the following job:"+jobFolder.getAbsolutePath());
 		}
 	}
 	
@@ -154,6 +183,28 @@ public class Utils {
 		while((line=statusFile.readLine())!=null){
 			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
 				if(line.contains(Jobs.STATUS_JOB_RUNNING.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Check the status if a job is not started yet.
+	 * 
+	 * @param statusFilePath the absolute path to the status file.
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobNotStarted(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Jobs.STATUS_JOB_NOT_STARTED.getName())){
 					statusFile.close();
 					return true;
 				}

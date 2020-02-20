@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
@@ -19,6 +20,10 @@ import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmclinnovations.jps.agent.job.request.parser.JSonRequestParser;
 import com.cmclinnovations.jps.agent.workspace.management.Workspace;
@@ -57,11 +62,30 @@ public class DFTAgent extends HttpServlet{
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
-		dftAgent.init();
+		dftAgent.monitorJobs();
+//		dftAgent.init();
 	}
 	
 	/**
-	 * Initialises property values.
+     * Allows to perform a SPARQL query of any complexity.</br>
+     * It returns the results in JSON format.
+     * 
+     * @param outputFormat the output format, e.g. JSON or CSV
+     * @param kbiri The IRI of the Knowledge Base on which user is interested 
+     * to perform a query. 
+     * @param query The current query user is willing to perform.
+     * @return
+     */
+	@RequestMapping(value="/job/request", method = RequestMethod.GET)
+    @ResponseBody
+    public String query(@RequestParam String input) throws IOException, DFTAgentException{
+		System.out.println("received query:\n"+input);
+		logger.info("received query:\n"+input);
+		return setUpJob(input);
+    }
+	
+	/**
+	 * Starts the scheduler to monitor the tasks.
 	 * 
 	 * @throws DFTAgentException
 	 */
@@ -70,119 +94,163 @@ public class DFTAgent extends HttpServlet{
         System.out.println("---------- Quantum Calculation Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DFTAgent dftAgent = new DFTAgent();
-       	executorService.scheduleAtFixedRate(dftAgent::monitorTasks, 1, 20, TimeUnit.SECONDS);
+       	executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 60, 60, TimeUnit.SECONDS);
         logger.info("---------- Qunatum jobs are being monitored  ----------");
         System.out.println("---------- Qunatum jobs are being monitored  ----------");
        	
 	}
 
-	private void monitorTasks(){
-        Workspace workspace = new Workspace();
-        if(taskSpace == null){
-        	taskSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
-        }
-        try {
-        	Map<String, List<String>> jobsUnfinished = Utils.getUnfinishedJobs(taskSpace);
-			System.out.println("Number of unfinished jobs:"+jobsUnfinished.size());
-			int countJob = 0;
-			for(String job:jobsUnfinished.keySet()){
-				System.out.println("Job ["+ ++countJob+"]: "+job);
-			}
-			checkRunningJobs(jobsUnfinished);
-//        	runNotStartedJobs(jobs);
+	private void monitorJobs() {
+		Workspace workspace = new Workspace();
+		if (taskSpace == null) {
+			taskSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+					Property.AGENT_CLASS.getPropertyName());
+		}
+		try {
+			Map<String, List<String>> jobsRunning = new LinkedHashMap<>();
+			Map<String, List<String>> jobsNotStarted = new LinkedHashMap<>();
+			Utils.classifyJobs(jobsRunning, jobsNotStarted, taskSpace);
+			System.out.println("Number of unfinished jobs:" + jobsRunning.size());
+			System.out.println("Number of not started jobs:" + jobsNotStarted.size());
+			updateRunningJobsStatus(jobsRunning);
+			runNotStartedJobs(jobsNotStarted, jobsRunning);
 		} catch (IOException e) {
 			e.printStackTrace();
-		} 
-//		List<String> jobList = new ArrayList<>();
-//        try{
-//        for(String jsonString:jsonRequests){
-//        	setUpQuantumJob(jsonString);
-//			getUnfinishedJobs(taskSpace);
-////        	runQuantumJob();
-//        }
-//        }catch(IOException e){
-//        	logger.error(e.getMessage());
-//        	e.printStackTrace();
-//        }catch(DFTAgentException e){
-//        	logger.error(e.getMessage());
-//        	e.printStackTrace();
-//        }
- catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch(SftpException e){
+			e.printStackTrace();
+		} catch(JSchException e){
 			e.printStackTrace();
 		}
 	}
+
+	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning) throws IOException, InterruptedException{
+		for(String runningJob:jobsRunning.keySet()){
+			File statusFile = Utils.getStatusFile(jobsRunning.get(runningJob));
+			updateRunningJobsStatus(jobsRunning, runningJob, statusFile);
+		}
+	}
 	
-	private void checkRunningJobs(Map<String, List<String>> jobs) throws IOException, InterruptedException{
-		Map<String, List<String>> runningJobs = Utils.getRunningJobs(jobs);
-		for(String runningJob:runningJobs.keySet()){
-			File statusFile = Utils.getStatusFile(runningJobs.get(runningJob));
-			if(statusFile!=null){
-				checkRunningJob(statusFile);
+	private void runNotStartedJobs(Map<String, List<String>> jobsNotStarted, Map<String, List<String>> jobsRunning)  throws SftpException, JSchException{
+		int runningJobsCount = jobsRunning.size();
+		int howManyJobCanStart = Property.MAX_NUMBER_OF_JOBS.getValue() - runningJobsCount;
+		int jobsStarted = 0;
+		for(String jobNotStarted: jobsNotStarted.keySet()){
+			if((howManyJobCanStart - jobsStarted) > 0){
+				startJob(jobNotStarted, jobsNotStarted.get(jobNotStarted));
+				jobsStarted++;
 			}
 		}
 	}
 	
-	private void checkRunningJob(File statusFile) throws IOException, InterruptedException{
+	private void startJob(String job, List<String> jobFiles) throws SftpException, JSchException{
+		String jobFolderOnHPC = createJobFolder(job);
+		if(jobFolderOnHPC!=null){
+			uploadFiles(jobFolderOnHPC, jobFiles);
+		}
+	}
+	
+	private void uploadFiles(String jobFolderOnHPC, List<String> jobFiles) throws SftpException, JSchException{
+		for(String jobFile:jobFiles){
+			if(jobFile.endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) || jobFile.endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
+				uploadFile(jobFile, jobFolderOnHPC);
+			}
+		}
+	}
+	
+	private boolean isJobFolderCreated(String job){
+		String command = "cd /home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
+		List<String> outputs = executeCommand(command);
+		if(outputs.size()<=0){
+			return true;
+		}
+		return false;
+	}
+	
+	private String createJobFolder(String job){
+		// Creates the "mkdir" (make directory) command to create the workspace/jobspace directory.
+		command = "mkdir /home/".concat(username).concat("/").concat(taskSpace.getName());
+		// Executes the command to create the workspace/jobspace directory.
+		executeCommand(command);
+		// Creates the command to create the job directory.
+		command = "mkdir /home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
+		// Executes the command for creating the job directory.
+		List<String> outputs = executeCommand(command);
+		if(outputs.size()>0){
+			return null;
+		}
+		return "/home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
+	}
+	
+	
+	
+	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning, String runningJob, File statusFile) throws IOException, InterruptedException{
+		if(statusFile!=null){
+			if(!isJobRunning(statusFile)){
+				jobsRunning.remove(runningJob);
+			}
+		}
+	}
+	
+	private boolean isJobRunning(File statusFile) throws IOException, InterruptedException{
 		String jobId = Utils.getJobId(statusFile.getAbsolutePath());
-		if(jobId!=null){
+		if(jobId==null){
+			return false;
+		} else{
 			boolean isJobRunning = isJobRunning(jobId);
-			if(!isJobRunning){
-				Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_COMPLETED.getName());						
+			if(isJobRunning){
+				return true; 
+			}else{
+				Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_COMPLETED.getName());
+				return false;
 			}
 		}
 	}
 	
-	private void startScheduledTasks(){
-        List<String> jobList = new ArrayList<>();
-        List<String> jsonRequests = new ArrayList<>();
-        // Temporary block the assertion of the list of 5 species IRIs starts here.
-        jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00b7e248-ae24-35bf-b7a0-b470b923ddf6.owl#00b7e248-ae24-35bf-b7a0-b470b923ddf6\"}");
-        jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09\"}");
-        jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00c4803e-ba0b-3b8a-b8b1-8cd00bb6172d.owl#00c4803e-ba0b-3b8a-b8b1-8cd00bb6172d\"}");
-        jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/00f46355-2ea4-3ef1-b61a-e3d87e91a8db.owl#00f46355-2ea4-3ef1-b61a-e3d87e91a8db\"}");
-        jsonRequests.add("{\"job\":{\"levelOfTheory\":\"B3LYP/6-31G(d)\",\"keyword\":\"Opt\",\"algorithmChoice\": \"Freq\"},\"speciesIRI\":\"http://www.theworldavatar.com/kb/ontospecies/0a1a4723-19ad-3272-b334-615587274e3c.owl#0a1a4723-19ad-3272-b334-615587274e3c\"}");
-        // Temporary block the assertion of the list of 5 species IRIs ends here.        
-        try{
-        for(String jsonString:jsonRequests){
-        	File workspace = setUpJobOnAgentMachine(jsonString);
-//        	transferJobToHPC(workspace);
-//			getUnfinishedJobs();
-//        	runQuantumJob();
-        }
-        }catch(IOException e){
-        	logger.error(e.getMessage());
-        	e.printStackTrace();
-        }catch(DFTAgentException e){
-        	logger.error(e.getMessage());
-        	e.printStackTrace();
-        }
-	}
+	private String setUpJob(String jsonString) throws IOException, DFTAgentException{
+        	return setUpJobOnAgentMachine(jsonString);
+    }
 	
-	private File setUpJobOnAgentMachine(String jsonString) throws IOException, DFTAgentException{
+	private String setUpJobOnAgentMachine(String jsonString) throws IOException, DFTAgentException{
 		Workspace workspace = new Workspace();
 		File workspaceFolder = workspace.createAgentWorkspace(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
 		if(workspaceFolder == null){
-			logger.info("Workspace could not be created.");
+			return Jobs.JOB_SETUP_ERROR.getName();
 		}else{
 			File jobFolder = workspace.createJobFolder(workspaceFolder.getAbsolutePath());
 			if(jobFolder == null){
-				logger.info("Job folder could not be created.");
+				return Jobs.JOB_SETUP_ERROR.getName();
 			}else{
-				setUpQuantumJob(workspace, workspaceFolder, jobFolder, jsonString);
+				return setUpQuantumJob(workspace, workspaceFolder, jobFolder, jsonString);
 			}
 		}
-		return workspaceFolder;
 	}
 	
-	private void setUpQuantumJob(Workspace ws, File workspaceFolder, File jobFolder, String jsonString) throws IOException, DFTAgentException{
+	private String setUpQuantumJob(Workspace ws, File workspaceFolder, File jobFolder, String jsonString) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonString);
+    	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
+    		return Jobs.JOB_SETUP_SPECIES_IRI_MISSING.getName();
+    	}
 		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
+    	if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
+    		return Jobs.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName();
+    	}
 		System.out.println("SpeciesGeometry:"+speciesGeometry);
-		ws.createInputFile(ws.getInputFilePath(jobFolder), jobFolder.getName(), speciesGeometry, jsonString);
-		ws.createStatusFile(workspaceFolder, ws.getStatusFilePath(jobFolder));
-		ws.copyScriptFile(Property.SLURM_SCRIPT_FILE_PATH.getPropertyName(), jobFolder.getAbsolutePath());
+		String inputFileMsg = ws.createInputFile(ws.getInputFilePath(jobFolder), jobFolder.getName(), speciesGeometry, jsonString);
+		if(inputFileMsg == null){
+			return Jobs.JOB_SETUP_INPUT_FILE_ERROR.getName();
+		}
+		String statusFileMsg = ws.createStatusFile(workspaceFolder, ws.getStatusFilePath(jobFolder));
+		if(statusFileMsg == null){
+			return null;
+		}
+		String scriptFileMsg = ws.copyScriptFile(Property.SLURM_SCRIPT_FILE_PATH.getPropertyName(), jobFolder.getAbsolutePath());
+		if(scriptFileMsg == null){
+			return null;
+		}
+		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
 	
 	/**

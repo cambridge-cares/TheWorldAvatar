@@ -68,8 +68,11 @@ public class Workspace {
 		return false;
 	}
 	
-	public void createInputFile(String inputFilePath, String jobFolder, String geometry, String jsonString) throws IOException{
+	public String createInputFile(String inputFilePath, String jobFolder, String geometry, String jsonString) throws IOException{
 		BufferedWriter inputFile = Utils.openBufferedWriter(inputFilePath);
+		if(inputFile == null){
+			return null;
+		}
 		inputFile.write(Property.JOB_NO_OF_CORES.getPropertyName().concat("\n"));
 		inputFile.write(Property.JOB_MEMORY.getPropertyName().concat("\n"));
 		inputFile.write(Property.JOB_CHK_POINT_FILE_ADDRESS_PART.getPropertyName().concat("_")
@@ -84,10 +87,14 @@ public class Workspace {
 				.concat(Property.SPECIES_MULTIPLICITY.getPropertyName()).concat("\n"));
 		inputFile.write(geometry.concat("\n"));
 		inputFile.close();
+		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
 
-	public void createStatusFile(File workspaceFolder, String statusFilePath) throws IOException{
+	public String createStatusFile(File workspaceFolder, String statusFilePath) throws IOException{
 		BufferedWriter statusFile = Utils.openBufferedWriter(statusFilePath);
+		if(statusFile == null){
+			return null;
+		}
 		statusFile.write(Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" "));
 		statusFile.write(Jobs.STATUS_JOB_NOT_STARTED.getName().concat("\n"));
 		statusFile.write(Jobs.ATTRIBUTE_JOB_ID.getName().concat("\n"));
@@ -96,6 +103,7 @@ public class Workspace {
 		statusFile.write(Jobs.ATTRIBUTE_HPC_ADDRESS.getName().concat(" "));
 		statusFile.write(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName().concat("\n"));
 		statusFile.close();
+		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
 	
 	public String getWorkspacePath(String workspace){
@@ -135,11 +143,17 @@ public class Workspace {
 		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.STATUS_FILE_NAME.getPropertyName()).concat(Property.STATUS_FILE_EXTENSION.getPropertyName());
 	}
 	
-	public void copyScriptFile(String source, String destination) throws IOException{
+	public String copyScriptFile(String source, String destination) throws IOException{
+		try{
 		copyFile(new File(source.concat(File.separator)
 						.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName())),
 				new File(destination.concat(File.separator)
 						.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName())));
+		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
+		}catch(IOException e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	private void copyFile(File from, File to) throws IOException{
