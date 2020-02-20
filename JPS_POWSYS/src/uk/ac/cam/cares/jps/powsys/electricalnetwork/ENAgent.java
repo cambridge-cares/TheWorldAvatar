@@ -86,7 +86,7 @@ public class ENAgent extends JPSHttpServlet {
 	public JSONObject startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
 		
 		JSONObject resjo=new JSONObject();
-		resjo.put("folder", baseUrl);
+		resjo.put("electricalnetwork", iriofnetwork);
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
@@ -481,6 +481,7 @@ public class ENAgent extends JPSHttpServlet {
 		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
 		//only add if battery is available. 
+		
 		List<String[]> batterylist = extractOWLinArray(model, iriofnetwork, batteryInfo, "battery", baseUrl);
 		if (!batterylist.isEmpty()) {
 			content += createDummyValueTSV(batterylist); 
