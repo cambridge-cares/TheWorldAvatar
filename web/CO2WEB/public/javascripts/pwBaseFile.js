@@ -14,6 +14,7 @@ let wildPercentage =0.0;
 let wildPercentage2 =0.0;
 let dict = {};
 var numTypeGen = '';
+var kmlLayer;
 var branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -575,7 +576,82 @@ function drawMarkers(data){
 	
     });
     }
-    
+   /** opens popup window for generator (In the > button)
+    * 
+    * @param {String} id  iri of generator 
+    */ 
+    function openWindowGen(id){
+        //since geninfo too large for request header, I'll split it up
+           selectedId =  id; //this needs to be saved on a local version, and not towards here. 
+           var inputsHTML = '';
+           var kmlurl = createUrlForSparqlQuery(scenario, selectedId.split('#')[0], genInfo);
+           var kmlurl2 = createUrlForSparqlQuery(scenario, selectedId.split('#')[0], genInfo2);
+           $.when(
+               $.ajax({
+               url: kmlurl,
+               type: 'GET',
+               contentType: 'application/json; charset=utf-8',
+               success: function(data){ 
+                   var obj0 = JSON.parse(data);
+                   obj1 = obj0['results']['bindings'][0];
+               },
+               error: function(ts) {
+                   alert(ts.responseText);
+               }   
+                }),
+           
+               $.ajax({
+               url: kmlurl2,
+               type: 'GET',
+               contentType: 'application/json; charset=utf-8',
+               success: function(data){   
+                   var obj0 = JSON.parse(data);
+                   obj2 = obj0['results']['bindings'][0];
+                   console.log(obj2);
+               },
+               error: function(ts) {
+                   alert(ts.responseText);
+               }   
+           })).then( function(){
+               var obj0 = Object.assign(obj1, obj2);
+               console.log(obj0,obj1, obj2)
+               var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+               nameSet = [];
+               console.log(selectedId);
+               var owlName = selectedId.split('#')[1].split('.')[0];
+               for(var item in result)
+               {
+                   var pair = result[item];
+                   if (pair[0] == "entity"){}
+                   else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
+                   {
+                       var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                       + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
+                       inputsHTML = inputsHTML + inputLine;
+                       nameSet.push(pair[0]);
+                   }else {
+                       //for units, just place below the box. 
+                       //remove the last 
+                       inputsHTML = inputsHTML.slice(0, -101)
+                       //add in the units 
+                       var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
+                       inputsHTML = inputsHTML + inputLine;
+                   }
+               }
+       
+               console.log(inputsHTML);
+               var div = document.getElementById('inputsContainer');
+               div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+               '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
+       
+       
+           }, function (jqXHR, textStatus, errorThrown){
+               alert(textStatus);
+               console.log(errorThrown);
+           }
+           );
+       }
+       
 /** construct update query strings for all modification
  * @param uri iri of resource
  * @param modifications array containing name (uri + # + name of resource), numericalvalue/uri string (attrObj.p), value (for insert statement)
@@ -664,8 +740,15 @@ function SubmitTable(e) {
         var queryLine = constructUpdate(url, JSONArray);
         firstQuery = queryLine[1].slice(0, 20);
         outputUpdate([queryLine[0], firstQuery]);
+        setTimeout(function() {
+            console.log('timeout');
+        }, 10000);
         secondQuery = queryLine[1].slice(20,);
         outputUpdate([queryLine[0], secondQuery]);
+        setTimeout(function() {
+            console.log('timeout');
+        }, 10000);
+        runSimulation(queryLine[0]);
 
     }
 }
@@ -690,10 +773,126 @@ function  outputUpdate(input) { //called in PopupMap for b3Map, not in the simul
         contentType: "application/json; charset=utf-8",
         success: function (data) {//SUCESS updating
             //Update display
-            console.log("Success")
+            console.log("Success");
         },
         error: function (err) {
             console.log("can not update to server");
         }
     });
+}
+/** runs OPF simulation. Launched from Submit table after two successful updates
+ * 
+ * @param {String} filename iri of object to be opened in new infowindow
+ */
+function runSimulation(filename){
+    
+    document.getElementById("loader").style.display = "block";
+    var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulationOPF';
+    data = { "electricalnetwork":iriofnetwork}
+    url = createUrlForAgent(scenario, agenturl, data);
+    console.log(url);
+    var request = $.ajax({
+        url: url,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8'
+    });
+
+    request.done(function() {
+        json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
+        displayCO2(json);
+        console.log('DONE SIMULATION')
+        openWindow(filename);
+        document.getElementById("loader").style.display = "none";
+    });
+
+}
+/** opens infowindow for lines and ebuses. 
+ * 
+ * @param {String} id iri of object
+ * @param {*} type sparql query of respective object
+ * @param {*} callback to display content as given by innerHTML
+ */
+function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow cos it's too large. 
+    var kmlurl = createUrlForSparqlQuery(scenario, id.split('#')[0], type);
+    console.log(kmlurl);
+    var inputsHTML = '';
+    var request = $.ajax({
+        url: kmlurl,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8',
+        success: function(){  
+        },
+        error: function(ts) {
+            alert(ts.responseText);
+        }   
+    });
+    request.done( function(data) {
+        var obj0 = JSON.parse(data);
+        obj0 = obj0['results']['bindings'][0];
+        console.log(obj0)
+
+
+        var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+        nameSet = [];
+        var owlName = id.split('#')[1];
+        for(var item in result)
+        {
+            var pair = result[item];
+            if (pair[0] == "entity"){}
+            else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
+            {
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
+                inputsHTML = inputsHTML + inputLine;
+                nameSet.push(pair[0]);
+            }else {
+                //for units, just place below the box. 
+                //remove the last 
+                inputsHTML = inputsHTML.slice(0, -101)
+                //add in the units 
+                var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
+                inputsHTML = inputsHTML + inputLine;
+            }
+        }
+
+        console.log(inputsHTML);
+        if (id.includes("Bus")){
+            var div = document.getElementById('inputsContainer');
+            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
+            }
+            
+            else if (callback == null){
+                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                        '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+                infoWindow.setContent(innerHTML);
+            }
+            
+            else{
+                const newPromise = new Promise((resolve, reject) => {
+                    resolve('Success');
+            });
+                newPromise.then((successMessage) => {
+                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                        '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+                    console.log(innerHTML);
+                    callback(innerHTML);
+                });
+            }
+
+    });
+
+}
+/** constructs and calls upon openWindowLineAndBus for lines
+ * 
+ * @param {String} id iri of line
+ * @param {function} callback displays content of infowindow as set in drawLines in PopupMap
+ */
+function constructLineMenu(id,callback){
+    selectedId = id.split('/')[1];
+    console.log(selectedId)
+    var promise1 = new Promise(function (resolve, reject){
+        resolve(openWindowLineAndBus('http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/' + selectedId +'#'+selectedId.split('.')[0], branchInfo, callback));
+    }); 
+    promise1.catch(alert);
 }

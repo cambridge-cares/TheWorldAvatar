@@ -47,6 +47,7 @@ var b2Map = require("./routes/mapB2");
 var ppalt = require("./routes/mapPPAlt");
 var parallelWorld = require('./routes/parallelWorld');
 
+var essMap = require('./routes/ess');
 var DESPlot = require('./routes/DESPlot');
 
 var literalData = require('./agents/GetLiteralData');
@@ -92,6 +93,7 @@ app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/pwScenario', parallelWorld);
+app.use('/essMap', essMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
