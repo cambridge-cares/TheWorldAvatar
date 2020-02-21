@@ -292,8 +292,8 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
         success: function (data) {//SUCESS updating
             //Update display
             console.log(cb);
+            callDoSimulation(uris);
             cb(null, data);
-            // callDoSimulation(uris);
         },
         error: function (err) {
             console.log("can not update to server")
