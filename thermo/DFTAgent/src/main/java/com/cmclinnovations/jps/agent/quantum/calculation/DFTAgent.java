@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cmclinnovations.jps.agent.job.request.parser.JSonRequestParser;
 import com.cmclinnovations.jps.agent.workspace.management.Workspace;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
+import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
@@ -63,6 +65,7 @@ public class DFTAgent extends HttpServlet{
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
 		dftAgent.monitorJobs();
+		System.out.println("Finished the first iteration.");
 //		dftAgent.init();
 	}
 	
@@ -125,14 +128,14 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 
-	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning) throws IOException, InterruptedException{
+	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning) throws JSchException, IOException, InterruptedException{
 		for(String runningJob:jobsRunning.keySet()){
 			File statusFile = Utils.getStatusFile(jobsRunning.get(runningJob));
 			updateRunningJobsStatus(jobsRunning, runningJob, statusFile);
 		}
 	}
 	
-	private void runNotStartedJobs(Map<String, List<String>> jobsNotStarted, Map<String, List<String>> jobsRunning)  throws SftpException, JSchException{
+	private void runNotStartedJobs(Map<String, List<String>> jobsNotStarted, Map<String, List<String>> jobsRunning)  throws SftpException, JSchException, IOException, UnknownHostException{
 		int runningJobsCount = jobsRunning.size();
 		int howManyJobCanStart = Property.MAX_NUMBER_OF_JOBS.getValue() - runningJobsCount;
 		int jobsStarted = 0;
@@ -140,35 +143,53 @@ public class DFTAgent extends HttpServlet{
 			if((howManyJobCanStart - jobsStarted) > 0){
 				startJob(jobNotStarted, jobsNotStarted.get(jobNotStarted));
 				jobsStarted++;
+			}else{
+				break;
 			}
 		}
 	}
 	
-	private void startJob(String job, List<String> jobFiles) throws SftpException, JSchException{
+	private void startJob(String job, List<String> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException{
+		// On HPC, the job folder and files have the address of machine where DFT Agent runs.
+		// Therefore, the HPC address is replaced with the address of Agent machine.
+		job = job.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), Utils.getMachineAddress());
 		String jobFolderOnHPC = createJobFolder(job);
 		if(jobFolderOnHPC!=null){
 			uploadFiles(jobFolderOnHPC, jobFiles);
 		}
 	}
-	
-	private void uploadFiles(String jobFolderOnHPC, List<String> jobFiles) throws SftpException, JSchException{
+		
+	private void uploadFiles(String jobFolderOnHPC, List<String> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException{
 		for(String jobFile:jobFiles){
-			if(jobFile.endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) || jobFile.endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
+			if(jobFile.endsWith(Jobs.EXTENSION_SLURM_FILE.getName())){
 				uploadFile(jobFile, jobFolderOnHPC);
+			}
+			if(jobFile.endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
+				String replacedJobFileName = jobFolderOnHPC.concat("/").concat(getJobFileNameReplaced(jobFile));
+				uploadFile(jobFile, replacedJobFileName);
+				replaceFileContent(jobFolderOnHPC, replacedJobFileName);
 			}
 		}
 	}
 	
-	private boolean isJobFolderCreated(String job){
-		String command = "cd /home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
-		List<String> outputs = executeCommand(command);
-		if(outputs.size()<=0){
-			return true;
+	private String getJobFileNameReplaced(String jobFile) throws UnknownHostException{
+		String tokens[];
+		if(jobFile.contains("/")){
+			tokens = jobFile.split("/");
+		}else{
+			tokens = jobFile.split("\\\\");
 		}
-		return false;
+		return tokens[tokens.length-1].replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), Utils.getMachineAddress());
 	}
 	
-	private String createJobFolder(String job){
+	private void replaceFileContent(String jobFolderOnHPC, String replacedJobFileName) throws JSchException, IOException, UnknownHostException{
+		String command = "cd ".concat(jobFolderOnHPC).concat(" && ")
+				.concat("sed -i 's/").concat(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName())
+				.concat("/").concat(Utils.getMachineAddress()).concat("/g' ").concat(replacedJobFileName);
+		executeCommand(command);
+	}
+	
+	private String createJobFolder(String job) throws JSchException, IOException{
 		// Creates the "mkdir" (make directory) command to create the workspace/jobspace directory.
 		command = "mkdir /home/".concat(username).concat("/").concat(taskSpace.getName());
 		// Executes the command to create the workspace/jobspace directory.
@@ -176,16 +197,13 @@ public class DFTAgent extends HttpServlet{
 		// Creates the command to create the job directory.
 		command = "mkdir /home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
 		// Executes the command for creating the job directory.
-		List<String> outputs = executeCommand(command);
-		if(outputs.size()>0){
-			return null;
-		}
+		executeCommand(command);
 		return "/home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
 	}
 	
 	
 	
-	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning, String runningJob, File statusFile) throws IOException, InterruptedException{
+	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning, String runningJob, File statusFile) throws JSchException, IOException, InterruptedException{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
 				jobsRunning.remove(runningJob);
@@ -193,7 +211,7 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
-	private boolean isJobRunning(File statusFile) throws IOException, InterruptedException{
+	private boolean isJobRunning(File statusFile) throws JSchException, IOException, InterruptedException{
 		String jobId = Utils.getJobId(statusFile.getAbsolutePath());
 		if(jobId==null){
 			return false;
@@ -304,7 +322,7 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private boolean isJobRunning(String jobId) throws IOException, InterruptedException{
+	private boolean isJobRunning(String jobId) throws JSchException, IOException, InterruptedException{
 		String command = "squeue -j " + jobId + "--start";
 		ArrayList<String> outputs = executeCommand(command);
 		boolean jobRunning = isJobRunning(outputs);
@@ -355,7 +373,7 @@ public class DFTAgent extends HttpServlet{
 	 * @param command
 	 * @throws IOException
 	 */
-	private String runQuantumJob(String scriptName, String inputFileName) throws IOException, InterruptedException{
+	private String runQuantumJob(String scriptName, String inputFileName) throws JSchException, IOException, InterruptedException{
 //		String command = "cd rds/hpc-work/gaussian && sbatch ".concat(scriptName);
 		String command = "cd /home/".concat(username).concat(" && sbatch ").concat(scriptName);
 
@@ -513,6 +531,7 @@ public class DFTAgent extends HttpServlet{
 
 		sftpChannel.put(src, dest);
 		sftpChannel.disconnect();
+		session.disconnect();
 		System.out.println("Closing the connection.");
 	}
 	
@@ -529,6 +548,7 @@ public class DFTAgent extends HttpServlet{
 
 		sftpChannel.get(src, dest);
 		sftpChannel.disconnect();
+		session.disconnect();
 		System.out.println("Closing the connection.");
 	}
 
@@ -540,7 +560,7 @@ public class DFTAgent extends HttpServlet{
 	 * @throws JSchException
 	 * @throws SftpException
 	 */
-	public void deleteFolderOrFile(String folderOrFileName) throws JSchException, SftpException{
+	public void deleteFolderOrFile(String folderOrFileName) throws JSchException, SftpException, IOException{
 		executeCommand("rm -r "+folderOrFileName);
 	}
 
@@ -552,35 +572,29 @@ public class DFTAgent extends HttpServlet{
 	 * @throws JSchException
 	 * @throws SftpException
 	 */
-	public void createFolder(String folder) throws JSchException, SftpException{
+	public void createFolder(String folder) throws JSchException, SftpException, IOException{
 		executeCommand("mkdir "+folder);
 	}
 	
-	public ArrayList<String> executeCommand(String Command){
+	public ArrayList<String> executeCommand(String Command) throws JSchException, IOException{
 		ArrayList<String> outputs = null;
-		try {
-			JSch jsch = new JSch();
-			com.jcraft.jsch.Session session = jsch.getSession(username, server);
-			String pwd = getPassword(password);
-			session.setPassword(pwd);
-			session.setConfig("StrictHostKeyChecking", "no");
-			System.out.println("Establishing a connection to perform the following command:" + Command);
-			session.connect();
-			Channel channel = session.openChannel("exec");
-			((ChannelExec) channel).setCommand(Command);
-			channel.setInputStream(null);
-			((ChannelExec) channel).setErrStream(System.err);
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(channel.getInputStream()));
-			channel.connect();
-			outputs = readCommandOutput(stdInput);
-			channel.disconnect();
-			session.disconnect();
-			System.out.println("DONE");
-		} catch (JSchException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		JSch jsch = new JSch();
+		com.jcraft.jsch.Session session = jsch.getSession(username, server);
+		String pwd = getPassword(password);
+		session.setPassword(pwd);
+		session.setConfig("StrictHostKeyChecking", "no");
+		System.out.println("Establishing a connection to perform the following command:" + Command);
+		session.connect();
+		Channel channel = session.openChannel("exec");
+		((ChannelExec) channel).setCommand(Command);
+		channel.setInputStream(null);
+		((ChannelExec) channel).setErrStream(System.err);
+		BufferedReader stdInput = new BufferedReader(new InputStreamReader(channel.getInputStream()));
+		channel.connect();
+		outputs = readCommandOutput(stdInput);
+		channel.disconnect();
+		session.disconnect();
+		System.out.println("DONE");
 		return outputs;
 	}
 
