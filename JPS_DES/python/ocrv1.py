@@ -80,7 +80,7 @@ def ocr():
             
             result["windspeed"] = speed
     if "windspeed" not in result:
-        result["windspeed"] = "0"
+        result["windspeed"] = "0.0"
     if "irradiance" not in result:
         result["irradiance"] ="{0:.2f}".format(random.uniform(0,100))
     if "temperature" not in result:
@@ -99,4 +99,19 @@ except Exception as e:
     with open ('error log.txt', 'w') as outfile:
         outfile.write('error occurred\n')
         outfile.write(str(e))
+        result= {}
+        result["windspeed"] = "0.0"
+        
+        hou = datetime.now().hour
+        if (( hou <= 7 )or (hou > 18)):
+            irrad = 0 
+        else:
+            irrad="{0:.2f}".format(random.uniform(0,100))
+        result["temperature"] =  "{0:.2f}".format(random.uniform(26,32))
+        result['year']= now.strftime("%Y")
+        result['month'] = now.strftime("%m")
+        result['date']= now.strftime("%d")
+        result['time'] =now.strftime("%H:%M:%S")
+        with open ('data.json', 'w') as outfile:
+            json.dump(result, outfile)
         outfile.write('I said end of message')

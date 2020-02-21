@@ -329,53 +329,52 @@ def mainJAPowerFlow(baseMVAName, busName, genName, branchName, splitCharacter, o
         print("\n")
 
         
-        if (sumGen >= sumLoad+sumLoss):
+
 
             # Clears the output files (method of writing to them might be altered, so doing this is to be sure
-            open(outputBusName, 'w').close()
-            open(outputBranchName, 'w').close()
-            open(outputGenName, 'w').close()
+        open(outputBusName, 'w').close()
+        open(outputBranchName, 'w').close()
+        open(outputGenName, 'w').close()
 
             # For Optimal Power Flow
 
             #Establish lengths
-            busCount = len(r['bus'])
-            branchCount = len(r['branch'])
-            genCount = len(r['gen'])
+        busCount = len(r['bus'])
+        branchCount = len(r['branch'])
+        genCount = len(r['gen'])
             #Find Generator Per Bus Output
-            busGenP = numpy.zeros(busCount, dtype=numpy.float)
-            busGenQ = numpy.zeros(busCount, dtype=numpy.float)
-            f = open(outputGenName, 'w')
-            i = 0
-            while (i < genCount):
+        busGenP = numpy.zeros(busCount, dtype=numpy.float)
+        busGenQ = numpy.zeros(busCount, dtype=numpy.float)
+        f = open(outputGenName, 'w')
+        i = 0
+        while (i < genCount):
                 #Print Gen Output
-                f.write(str(i+1) + splitCharacter + str(r['gen'][i][1]) + splitCharacter + str(r['gen'][i][2]) + '\n')
+            f.write(str(i+1) + splitCharacter + str(r['gen'][i][1]) + splitCharacter + str(r['gen'][i][2]) + '\n')
                 #For Bus Output --> assign values for busGenP and busGenQ
-                busGenP[int(r['gen'][i][0])] += r['gen'][i][1]
-                busGenQ[int(r['gen'][i][0])] += r['gen'][i][2]
-                i += 1
-            f.close()
+            busGenP[int(r['gen'][i][0])] += r['gen'][i][1]
+            busGenQ[int(r['gen'][i][0])] += r['gen'][i][2]
+            i += 1
+        f.close()
             #Print Bus Output
-            f = open(outputBusName, 'w')
-            i = 0
-            while (i < busCount):
-                f.write(str(i+1) + splitCharacter + str(r['bus'][i][7]) + splitCharacter + str(r['bus'][i][8]) + splitCharacter + str(busGenP[i]) + splitCharacter + str(busGenQ[i]) + splitCharacter + str(r['bus'][i][2]) + splitCharacter + str(r['bus'][i][3]) + '\n')
-                i += 1
-            f.close()
+        f = open(outputBusName, 'w')
+        i = 0
+        while (i < busCount):
+            f.write(str(i+1) + splitCharacter + str(r['bus'][i][7]) + splitCharacter + str(r['bus'][i][8]) + splitCharacter + str(busGenP[i]) + splitCharacter + str(busGenQ[i]) + splitCharacter + str(r['bus'][i][2]) + splitCharacter + str(r['bus'][i][3]) + '\n')
+            i += 1
+        f.close()
             #Print Branch Output
-            f = open(outputBranchName, 'w')
-            i = 0
-            while (i < branchCount):
+        f = open(outputBranchName, 'w')
+        i = 0
+        while (i < branchCount):
             #P, Q and S (average)
-                PAve = (r['branch'][i][15] + r['branch'][i][13])/2.0
-                QAve = (r['branch'][i][14] + r['branch'][i][16])/2.0
-                SAve = numpy.sqrt(((PAve * PAve) + (QAve * QAve)))
-                f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14]))+ splitCharacter + str(PAve) + splitCharacter + str(QAve) + splitCharacter + str(SAve) + '\n')
-                i += 1
-            f.close()
+            PAve = (r['branch'][i][15] + r['branch'][i][13])/2.0
+            QAve = (r['branch'][i][14] + r['branch'][i][16])/2.0
+            SAve = numpy.sqrt(((PAve * PAve) + (QAve * QAve)))
+            f.write(str(i+1) + splitCharacter + str(absDiff(r['branch'][i][15], r['branch'][i][13])) + splitCharacter + str(absDiff(r['branch'][i][16], r['branch'][i][14]))+ splitCharacter + str(PAve) + splitCharacter + str(QAve) + splitCharacter + str(SAve) + '\n')
+            i += 1
+        f.close()
         
-        else:
-            print("\n\n~~~~~~~~~~OPF Solution does not converge!~~~~~~~~~~\n\n")
+
 
     
 

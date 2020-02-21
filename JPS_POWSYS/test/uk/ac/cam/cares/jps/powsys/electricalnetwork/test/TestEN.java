@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.jena.ontology.DatatypeProperty;
@@ -405,13 +409,13 @@ public class TestEN extends TestCase {
 		broker.putLocal(baseUrl+"/genCost.txt", content);
 	}	
 	
-	public void xxxtestStartSimulationPFAgentCallNonBaseScenario() throws IOException  { //no more pf
+	public void testStartSimulationOPFAgentCallNonBaseScenario() throws IOException  { //no more pf
 
 		JSONObject jo = new JSONObject();
 		
 		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationPFCallAgent");
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
@@ -421,7 +425,8 @@ public class TestEN extends TestCase {
 		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
 		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationPF", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+		System.out.println(resultStart);
 	}
 	
 //	public void testStartSimulationPFDirectCallBaseScenario() throws IOException  {
@@ -441,13 +446,15 @@ public class TestEN extends TestCase {
 			
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		JSONObject x=new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		System.out.println(x.toString());
 	}
 	
 	public void testStartSimulationOPFDirectCallBaseScenario() throws IOException  {			
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		JSONObject x=new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "OPF");
+		System.out.println(x.toString());
 	}
 	
 	public void xxxtestupdatelocalgenerator() throws IOException {
@@ -528,12 +535,18 @@ public class TestEN extends TestCase {
 			String content = JenaHelper.writeToString(jenaOwlModel2);
 			broker.putLocal(filePath, content);
 		}
+			
 		
-		
-		
-		
-		
-		
+	}
+	public void testread() throws IOException {
+		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testPOWSYSENSimulationOPFDirectCall\\localhost_8080\\data\\8b7e6530-54b7-4e51-99cf-1bcc663d5658\\JPS_POWSYS_EN";
+		String fileName = baseUrl+"/outputstatus.txt";
+		Path path = Paths.get(fileName);
+		byte[] bytes = Files.readAllBytes(path);
+		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+		System.out.println(allLines.size());
+		System.out.println(allLines.get(2));
+	
 	}
 
 	public void xxxtestquerygen() {

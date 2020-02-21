@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.des;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,22 +46,37 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		logger.info("return the result from weather agent");		
 	}
 	
-	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception { 		
+	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
 		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
 		String startbatCommand =folder+"/runpyocr.bat";
 		System.out.println(startbatCommand);
-		String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
+		try {
+			String resultpy= new DistributedEnergySystem().executeSingleCommand(folder,startbatCommand);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			logger.error(e1.getMessage()+"python is not running interrupted");
+			//later need default file data.json to substitute the loss
+			new DistributedEnergySystem().copyFromPython(folder,"data.json");
+		} catch (Exception ex) {
+			logger.error(ex.getMessage()+"python is not running");
+			new DistributedEnergySystem().copyFromPython(folder,"data.json");
+		}
 		logger.info("OCR finished");
 
+		   DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+		   LocalDateTime now = LocalDateTime.now();
+		   String com=dtf.format(now);
+		   String date=com.split("/")[2].split(" ")[0];
+		   
 		String jsonres=new QueryBroker().readFileLocal(folder+"/data.json");
 		JSONObject current= new JSONObject(jsonres);
-		String year=current.getString("year");
-		String datemonth=current.getString("date")+"-"+current.getString("month");
-		String time=current.getString("time");
-		String speed=current.getString("windspeed");
-		String temperature=current.getString("temperature");
-		String irradiance=current.getString("irradiance");
+		String year=current.optString("year",com.split("/")[0]);
+		String datemonth=current.optString("date",date)+"-"+current.optString("month",com.split("/")[1]);
+		String time=current.optString("time",com.split("/")[2].split(" ")[1]);
+		String speed=current.optString("windspeed","0");
+		String temperature=current.optString("temperature","26");
+		String irradiance=current.optString("irradiance","0");
 		
 		WeatherTimeStampKB converter = new WeatherTimeStampKB();		
 		//query the data from the existing owl file

@@ -8,6 +8,10 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -36,6 +40,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
+import uk.ac.cam.cares.jps.powsys.carbontax.CarbonTaxAgent;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
@@ -72,15 +77,16 @@ public class ENAgent extends JPSHttpServlet {
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
-		startSimulation(iriofnetwork, baseUrl, modeltype);
-		
-		JSONObject resjo=new JSONObject();
-		resjo.put("folder", baseUrl);
-		AgentCaller.printToResponse(resjo, response);
+		JSONObject result =startSimulation(iriofnetwork, baseUrl, modeltype);
+
+		AgentCaller.printToResponse(result, response);
 		
 	}
 	
-	public void startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
+	public JSONObject startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
+		
+		JSONObject resjo=new JSONObject();
+		resjo.put("electricalnetwork", iriofnetwork);
 		
 		logger.info("starting simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		
@@ -90,6 +96,21 @@ public class ENAgent extends JPSHttpServlet {
 		
 		logger.info("running PyPower simulation");
 		runModel(baseUrl);
+		
+		String fileName = baseUrl+"/outputstatus.txt";
+		Path path = Paths.get(fileName);
+		byte[] bytes = Files.readAllBytes(path);
+		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+		if(allLines.get(2).contains("Converged!")) {
+			resjo.put("status", "converged");
+			
+		}else {
+			new CarbonTaxAgent().copyTemplate(baseUrl,"outputBranchOPF.txt");
+			new CarbonTaxAgent().copyTemplate(baseUrl,"outputBusOPF.txt");
+			new CarbonTaxAgent().copyTemplate(baseUrl,"outputGenOPF.txt");
+			resjo.put("status", "Not Converged");
+		}
+			
 
 		try {
 			logger.info("converting PyPower results to OWL files");
@@ -100,6 +121,7 @@ public class ENAgent extends JPSHttpServlet {
 		}
 		
 		logger.info("finished simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
+		return resjo;
 	}
 
 	public List<String[]> generateInput(OntModel model, String iriofnetwork, String baseUrl, String modeltype) throws IOException {
@@ -459,6 +481,7 @@ public class ENAgent extends JPSHttpServlet {
 		List<String[]> genlist = extractOWLinArray(model, iriofnetwork, genInfo, "generator", baseUrl);
 		content = createNewTSV(genlist, baseUrl + "/mappingforgenerator.csv", baseUrl + "/mappingforbus.csv");
 		//only add if battery is available. 
+		
 		List<String[]> batterylist = extractOWLinArray(model, iriofnetwork, batteryInfo, "battery", baseUrl);
 		if (!batterylist.isEmpty()) {
 			content += createDummyValueTSV(batterylist); 
