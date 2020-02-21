@@ -180,10 +180,25 @@ public class SemakauPV extends JPSHttpServlet {
 		System.out.println("yData PGenPV1=" + yData.get(33));
 		System.out.println("yData QGenPV1=" + yData.get(34)); //48for pv2 //62 for pv3
 		
+		String[]testarray= {""+yData.get(29),""+yData.get(30),""+yData.get(33),""+yData.get(34)};
+		int count=0;
+		for(int t=0;t<testarray.length;t++) {
+			if(!testarray[t].contains("NaN")) {
+				count++;
+			}
+		}
+		if(count==4) {
 		ans.put("theta", yData.get(29));
 		ans.put("voltage", yData.get(30));
 		ans.put("PGen", yData.get(33));
 		ans.put("QGen", yData.get(34));
+		}
+		else {
+			ans.put("theta", 0.0);
+			ans.put("voltage", 1.0);
+			ans.put("PGen", 0.0);
+			ans.put("QGen", 0.0);
+		}
 		
 		List<String[]> stringsoutput = new ArrayList<String[]>();
 		// make header of the output: CURRENTLY STILL FAILS
