@@ -56,11 +56,12 @@ public class DFTAgent extends HttpServlet{
 	String password = "Abcdl955_l7_l7_l7_aB";
 	String command = "ls";
 	Connection connection;
-	Session session;
+	Session session1;
 	boolean isAuthenticated;
 	static HashSet<String> jobPool = new HashSet<>();
 	
 	private static File taskSpace; 
+
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
@@ -115,8 +116,10 @@ public class DFTAgent extends HttpServlet{
 			Utils.classifyJobs(jobsRunning, jobsNotStarted, taskSpace);
 			System.out.println("Number of unfinished jobs:" + jobsRunning.size());
 			System.out.println("Number of not started jobs:" + jobsNotStarted.size());
-			updateRunningJobsStatus(jobsRunning);
-			runNotStartedJobs(jobsNotStarted, jobsRunning);
+			Map<String, List<String>> jobsRunningAfterUpdate = new LinkedHashMap<>();
+			jobsRunningAfterUpdate.putAll(jobsRunning);
+			updateRunningJobsStatus(jobsRunning, jobsRunningAfterUpdate);
+			runNotStartedJobs(jobsNotStarted, jobsRunningAfterUpdate);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
@@ -128,10 +131,12 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 
-	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning) throws JSchException, IOException, InterruptedException{
-		for(String runningJob:jobsRunning.keySet()){
+	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning,
+			Map<String, List<String>> jobsRunningAfterUpdate)
+			throws JSchException, SftpException, IOException, InterruptedException {
+		for (String runningJob : jobsRunning.keySet()) {
 			File statusFile = Utils.getStatusFile(jobsRunning.get(runningJob));
-			updateRunningJobsStatus(jobsRunning, runningJob, statusFile);
+			updateRunningJobsStatus(runningJob, statusFile, jobsRunningAfterUpdate);
 		}
 	}
 	
@@ -160,16 +165,37 @@ public class DFTAgent extends HttpServlet{
 	}
 		
 	private void uploadFiles(String jobFolderOnHPC, List<String> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException{
+		String replacedInputFileName = "";
+		String statusFileAbsolutePath = "";
+		String jobId = "";
 		for(String jobFile:jobFiles){
 			if(jobFile.endsWith(Jobs.EXTENSION_SLURM_FILE.getName())){
 				uploadFile(jobFile, jobFolderOnHPC);
 			}
 			if(jobFile.endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
-				String replacedJobFileName = jobFolderOnHPC.concat("/").concat(getJobFileNameReplaced(jobFile));
-				uploadFile(jobFile, replacedJobFileName);
-				replaceFileContent(jobFolderOnHPC, replacedJobFileName);
+				replacedInputFileName = getJobFileNameReplaced(jobFile);
+				String inputFileNameOnHPC = jobFolderOnHPC.concat("/").concat(replacedInputFileName);
+				uploadFile(jobFile, inputFileNameOnHPC);
+				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
+			}
+			if(jobFile.endsWith(Jobs.STATUS_FILE.getName())){
+				statusFileAbsolutePath = jobFile;
 			}
 		}
+		if(!replacedInputFileName.isEmpty()){
+			jobId = runQuantumJob(jobFolderOnHPC, replacedInputFileName);
+		}
+		if(!jobId.isEmpty()){
+			Utils.addJobId(statusFileAbsolutePath, jobId);
+		}
+	}
+
+	private String runQuantumJob(String jobFolderOnHPC, String inputFile) throws JSchException, IOException{
+		inputFile = inputFile.replace(Jobs.EXTENSION_INPUT_FILE.getName(), "");
+		String command = "cd ".concat(jobFolderOnHPC).concat(" && ")
+				.concat("sbatch --job-name=").concat(inputFile).concat(" ")
+				.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName());
+		return runQuantumJob(command);
 	}
 	
 	private String getJobFileNameReplaced(String jobFile) throws UnknownHostException{
@@ -203,10 +229,11 @@ public class DFTAgent extends HttpServlet{
 	
 	
 	
-	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning, String runningJob, File statusFile) throws JSchException, IOException, InterruptedException{
+	private void updateRunningJobsStatus(String runningJob, File statusFile, Map<String, List<String>> jobsRunningAfterUpdate) throws JSchException, SftpException, IOException, InterruptedException{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
-				jobsRunning.remove(runningJob);
+				downloadFile(Utils.getLogFilePathOnHPC(runningJob, username, taskSpace), Utils.getJobFolderPathOnAgentPC(runningJob, taskSpace));
+				jobsRunningAfterUpdate.remove(runningJob);
 			}
 		}
 	}
@@ -295,8 +322,6 @@ public class DFTAgent extends HttpServlet{
 			logger.error(e.getMessage());
 		} catch (SftpException e) {
 			logger.error(e.getMessage());
-		} catch (InterruptedException e) {
-			logger.error(e.getMessage());
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 		}
@@ -366,6 +391,16 @@ public class DFTAgent extends HttpServlet{
 		
 	}
 	
+	private String runQuantumJob(String command) throws JSchException, IOException{
+		ArrayList<String> outputs = executeCommand(command);
+		if (outputs == null) {
+			return null;
+		}
+		String jobId = getJobId(outputs);
+		System.out.println("Job id:" + jobId);
+		return jobId;
+	}
+	
 	/**
 	 * Runs a quantum job and copies the output file (log file) from CSD3
 	 * to the machine where DFT Agent is hosted.
@@ -373,37 +408,37 @@ public class DFTAgent extends HttpServlet{
 	 * @param command
 	 * @throws IOException
 	 */
-	private String runQuantumJob(String scriptName, String inputFileName) throws JSchException, IOException, InterruptedException{
-//		String command = "cd rds/hpc-work/gaussian && sbatch ".concat(scriptName);
-		String command = "cd /home/".concat(username).concat(" && sbatch ").concat(scriptName);
-
-		ArrayList<String> outputs = executeCommand(command);
-		if (outputs == null) {
-			return null;
-		}
-		String jobId = getJobId(outputs);
-		System.out.println("Job id:" + jobId);
-		jobPool.add(jobId);
-		boolean isJobRunning = isJobRunning(jobId);
-		int count = 0;
-		System.out.println("Is the job running? " + isJobRunning);
-		while (isJobRunning) {
-			count++;
-			waitBeforeStatusCheck();
-			isJobRunning = isJobRunning(jobId);
-		}
-		try {
-//			downloadFile("rds/hpc-work/gaussian/".concat(inputFileName.replace(".com", ".log")),
-//					"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
-			downloadFile("/home/msff2/".concat(inputFileName.replace(".com", ".log")),
-			"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
-		} catch (JSchException e) {
-			logger.error(e.getMessage());
-		} catch (SftpException e) {
-			logger.error(e.getMessage());
-		}
-		return jobId;
-	}
+//	private String runQuantumJob(String scriptName, String inputFileName) throws JSchException, IOException, InterruptedException{
+////		String command = "cd rds/hpc-work/gaussian && sbatch ".concat(scriptName);
+//		String command = "cd /home/".concat(username).concat(" && sbatch ").concat(scriptName);
+//
+//		ArrayList<String> outputs = executeCommand(command);
+//		if (outputs == null) {
+//			return null;
+//		}
+//		String jobId = getJobId(outputs);
+//		System.out.println("Job id:" + jobId);
+//		jobPool.add(jobId);
+//		boolean isJobRunning = isJobRunning(jobId);
+//		int count = 0;
+//		System.out.println("Is the job running? " + isJobRunning);
+//		while (isJobRunning) {
+//			count++;
+//			waitBeforeStatusCheck();
+//			isJobRunning = isJobRunning(jobId);
+//		}
+//		try {
+////			downloadFile("rds/hpc-work/gaussian/".concat(inputFileName.replace(".com", ".log")),
+////					"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
+//			downloadFile("/home/msff2/".concat(inputFileName.replace(".com", ".log")),
+//			"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
+//		} catch (JSchException e) {
+//			logger.error(e.getMessage());
+//		} catch (SftpException e) {
+//			logger.error(e.getMessage());
+//		}
+//		return jobId;
+//	}
 	
 	/**
 	 * Connects the client to the server via server IP address or name. 
@@ -446,7 +481,7 @@ public class DFTAgent extends HttpServlet{
         	throw new IOException("Not connected to the server.");
 		if (!connection.isAuthenticationComplete())
 			throw new IOException("Authentication is not complete.");
-		session = connection.openSession();
+		session1 = connection.openSession();
 	}
 	
 	/**
@@ -456,9 +491,9 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 */
 	public void executeCommand1(String command) throws IOException{
-		if(session == null)
+		if(session1 == null)
 			throw new IOException("No session is open.");
-		session.execCommand(command);
+		session1.execCommand(command);
 	}
 	
 	/**
@@ -469,9 +504,9 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 */
 	public BufferedReader getReader() throws IOException{
-        if(session == null)
+        if(session1 == null)
         	throw new IOException("No session is open.");
-        return new BufferedReader(new InputStreamReader(new StreamGobbler(session.getStdout())));
+        return new BufferedReader(new InputStreamReader(new StreamGobbler(session1.getStdout())));
 	}
 	
 	/**
@@ -498,13 +533,13 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 */
 	public void closeSessionAndConnection() throws IOException{
-        if(session == null)
+        if(session1 == null)
         	throw new IOException("No session is open.");
-		session.close();
+		session1.close();
         if(connection == null)
         	throw new IOException("No connection is open.");
 		connection.close();
-		System.out.println("Connection closed test:"+(session==null)+" session is null:"+session.getState());
+		System.out.println("Connection closed test:"+(session1==null)+" session is null:"+session1.getState());
 	}
 	
 	/**
@@ -579,13 +614,14 @@ public class DFTAgent extends HttpServlet{
 	public ArrayList<String> executeCommand(String Command) throws JSchException, IOException{
 		ArrayList<String> outputs = null;
 		JSch jsch = new JSch();
-		com.jcraft.jsch.Session session = jsch.getSession(username, server);
+		Channel channel;
+		com.jcraft.jsch.Session	session = jsch.getSession(username, server);
 		String pwd = getPassword(password);
 		session.setPassword(pwd);
 		session.setConfig("StrictHostKeyChecking", "no");
 		System.out.println("Establishing a connection to perform the following command:" + Command);
 		session.connect();
-		Channel channel = session.openChannel("exec");
+		channel = session.openChannel("exec");
 		((ChannelExec) channel).setCommand(Command);
 		channel.setInputStream(null);
 		((ChannelExec) channel).setErrStream(System.err);

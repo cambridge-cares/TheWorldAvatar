@@ -238,6 +238,26 @@ public class Utils {
 	}
 	
 	/**
+	 * Adds the job id to the status file. 
+	 * 
+	 * @param filePath the path to the status file.
+	 * @param jobId the job id generated following the sbatch submission. 
+	 * @throws IOException
+	 */
+	public static void addJobId(String filePath, String jobId) throws IOException{
+		List<String> fileContent = new ArrayList<>(Files.readAllLines(Paths.get(filePath)));
+		for (int i = 0; i < fileContent.size(); i++) {
+		    if (fileContent.get(i).startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
+		        fileContent.set(i, Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Jobs.STATUS_JOB_RUNNING.getName()));
+		    }
+		    if (fileContent.get(i).startsWith(Jobs.ATTRIBUTE_JOB_ID.getName())) {
+		        fileContent.set(i, Jobs.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId));
+		    }
+		}
+		Files.write(Paths.get(filePath), fileContent);
+	}
+	
+	/**
 	 * Modifies the status of job in the status file. 
 	 * 
 	 * @param filePath the path to the status file.
@@ -269,6 +289,20 @@ public class Utils {
 			}
 		}
 		return null;
+	}
+	
+	public static String getLogFilePathOnHPC(String runningJob, String userName, File taskSpace) throws UnknownHostException{
+		String jobFolderOnHPC = runningJob.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), getMachineAddress());
+		String logFilePath = "/home/".concat(userName).concat("/")
+				.concat(taskSpace.getName()).concat("/")
+				.concat(jobFolderOnHPC).concat("/").concat(jobFolderOnHPC)
+				.concat(Jobs.EXTENSION_LOG_FILE.getName());
+		return logFilePath;
+	}
+	
+	public static String getJobFolderPathOnAgentPC(String runningJob, File taskSpace){
+		return taskSpace.getAbsolutePath().concat(File.separator).concat(runningJob).concat(File.separator)
+				.concat(runningJob).concat(Jobs.EXTENSION_LOG_FILE.getName());
 	}
 	
 	/**
