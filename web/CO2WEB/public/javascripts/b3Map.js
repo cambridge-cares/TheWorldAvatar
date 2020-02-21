@@ -35,14 +35,15 @@ let b3dm  = [
 
 let b2dm  =[
         ["V_molarF_601001",0],
-        ["V_Temperature_601001",0]
+        ["V_Temperature_601001",0],
+        ["V_Temperature_601002",0]
 ]     
 
 var dataMaps = [
-    { url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation"
+    { url: prefix + "/JPS_BIODIESELPLANT3/DoSimulation"
         ,dataMap:   new Map(b3dm)}
 
-    ,{ url:"http://www.theworldavatar.com/Service_Node_BiodieselPlant3/DoSimulation2"
+    ,{ url: prefix + "/JPS_BIODIESELPLANT3/DoSimulation2"
         ,dataMap:  new Map(b2dm) }
 ];
 /**
