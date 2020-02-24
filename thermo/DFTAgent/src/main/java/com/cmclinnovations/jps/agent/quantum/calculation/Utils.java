@@ -293,11 +293,17 @@ public class Utils {
 	
 	public static String getLogFilePathOnHPC(String runningJob, String userName, File taskSpace) throws UnknownHostException{
 		String jobFolderOnHPC = runningJob.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), getMachineAddress());
-		String logFilePath = "/home/".concat(userName).concat("/")
-				.concat(taskSpace.getName()).concat("/")
-				.concat(jobFolderOnHPC).concat("/").concat(jobFolderOnHPC)
+		String logFilePath = getJobFolderPathOnHPC(runningJob, userName, taskSpace).concat("/").concat(jobFolderOnHPC)
 				.concat(Jobs.EXTENSION_LOG_FILE.getName());
 		return logFilePath;
+	}
+	
+	public static String getJobFolderPathOnHPC(String runningJob, String userName, File taskSpace) throws UnknownHostException{
+		String jobFolderOnHPC = runningJob.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), getMachineAddress());
+		String jobFolderPath = "/home/".concat(userName).concat("/")
+				.concat(taskSpace.getName()).concat("/")
+				.concat(jobFolderOnHPC);
+		return jobFolderPath;
 	}
 	
 	public static String getJobFolderPathOnAgentPC(String runningJob, File taskSpace){
