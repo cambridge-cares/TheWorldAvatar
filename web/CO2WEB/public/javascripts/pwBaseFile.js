@@ -748,7 +748,7 @@ function SubmitTable(e) {
         setTimeout(function() {
             console.log('timeout');
         }, 10000);
-        runSimulation(queryLine[0]);
+        runSimulation(table.getAttribute('data-url'));
 
     }
 }
@@ -759,7 +759,7 @@ function SubmitTable(e) {
  * @param successCB   callback when success
  * @param errorCB      callback when err
  */
-function  outputUpdate(input) { //called in PopupMap for b3Map, not in the simulation that doesn't run!
+function  outputUpdate(input) { 
 
     let uris = input[0]
     let updateQs = input[1]
@@ -801,6 +801,7 @@ function runSimulation(filename){
         json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
         displayCO2(json);
         console.log('DONE SIMULATION')
+
         openWindow(filename);
         document.getElementById("loader").style.display = "none";
     });
