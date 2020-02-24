@@ -3,7 +3,7 @@ Implements the Sim prototype. for Mau.
 ***/
 console.log('desplot live find')
 prefix = "http://jparksimulator.com";
-ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 const toggleDisplay = elemId =>
 {
