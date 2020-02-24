@@ -33,6 +33,7 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 public class TestEN extends TestCase {
 	
 	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+	public static String SGELECTRICAL_NETWORK = "http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	String dataPath = QueryBroker.getLocalDataPath();
 	String baseUrl=dataPath+"/JPS_POWSYS_EN";
 	
@@ -413,9 +414,12 @@ public class TestEN extends TestCase {
 
 		JSONObject jo = new JSONObject();
 		
-		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
+//		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
+//		
+//		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
+		jo.put("electricalnetwork", SGELECTRICAL_NETWORK);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
+		String scenarioUrl = BucketHelper.getScenarioUrl("testSGPOWSYSOPFCallAgent");
 		JPSHttpServlet.enableScenario(scenarioUrl);	
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
 		
