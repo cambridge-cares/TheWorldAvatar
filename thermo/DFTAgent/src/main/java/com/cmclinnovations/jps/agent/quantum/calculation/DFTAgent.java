@@ -57,7 +57,6 @@ public class DFTAgent extends HttpServlet{
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
 		dftAgent.init();
-		System.out.println("Finished the first iteration.");
 	}
 	
 	/**
@@ -361,7 +360,13 @@ public class DFTAgent extends HttpServlet{
     	if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
     		return Jobs.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName();
     	}
-		System.out.println("SpeciesGeometry:"+speciesGeometry);
+    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, speciesGeometry)==null){
+    		return null;
+    	}
+    	return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
+	}
+
+	private String createAllFileInJobFolder(Workspace ws, File workspaceFolder, File jobFolder, String jsonString, String speciesGeometry) throws IOException, DFTAgentException{
 		String inputFileMsg = ws.createInputFile(ws.getInputFilePath(jobFolder), jobFolder.getName(), speciesGeometry, jsonString);
 		if(inputFileMsg == null){
 			return Jobs.JOB_SETUP_INPUT_FILE_ERROR.getName();
@@ -370,13 +375,17 @@ public class DFTAgent extends HttpServlet{
 		if(statusFileMsg == null){
 			return null;
 		}
+		String jsonInputFileMsg = ws.createJSONInputFile(workspaceFolder, ws.getJSONInputFilePath(jobFolder), jsonString);
+		if(jsonInputFileMsg == null){
+			return null;
+		}
 		String scriptFileMsg = ws.copyScriptFile(Property.SLURM_SCRIPT_FILE_PATH.getPropertyName(), jobFolder.getAbsolutePath());
 		if(scriptFileMsg == null){
 			return null;
 		}
 		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
-
+	
 	/**
 	 * Checks if a job is still running using the job id.
 	 * 
