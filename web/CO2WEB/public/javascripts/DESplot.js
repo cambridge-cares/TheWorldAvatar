@@ -2,8 +2,8 @@
 Implements the Sim prototype. for Mau.
 ***/
 console.log('desplot live find')
-prefix = "http://localhost:8080";
-ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+prefix = "http://jparksimulator.com";
+ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 const toggleDisplay = elemId =>
 {
@@ -345,4 +345,4 @@ function configRH(idofgraph, data){
     });
   
   }
-  addWeatherData()		
+  addWeatherData()    

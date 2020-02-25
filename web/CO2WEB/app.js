@@ -105,7 +105,7 @@ app.use('/getChildrenSingle',getChildrenSingle);
 app.use("/bmsplot", bmsplot);
 
 app.use('/ppmap', ppMap);
-
+app.use("/DESplot", DESPlot);
 
 app.use('/b2map', b2Map)
  app.use("/hw", HW);

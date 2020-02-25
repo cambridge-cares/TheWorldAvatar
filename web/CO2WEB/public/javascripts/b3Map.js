@@ -5,7 +5,9 @@ var b3map = new PopupMap({useCluster:true,  editable: true});
 // var prefix = "http://www.jparksimulator.com";
 var prefix = "http://localhost:8080";
 var socket = io();
+var prefix = "http://www.jparksimulator.com";
 var scenario = "base";
+
 //subscribe to socket for data change event
 socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
     ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", withData:true}
@@ -76,7 +78,7 @@ socket.on('update', function (udata) {//when subscribed value updated
                         let mmarker = b3map.getMarker(uri);
                         console.log(mmarker +" line 75 ");
                         if(mmarker){
-
+                            console.log('blinkety blink');
                             mmarker.blinkAnimation()
                         }
 
@@ -87,8 +89,8 @@ socket.on('update', function (udata) {//when subscribed value updated
     console.log(modifs)   
    if(Object.keys(modifs).length > 0){
        Object.keys(modifs).forEach(url=>{
-		   console.log(modifs[url]); //prints dictionary pair of key (V_molarF) and value
-           SendSimulationQuery(url, Array.from(modifs[url].values()));//send an array of values
+		   console.log(modifs[url])
+           // SendSimulationQuery(url, Array.from(modifs[url].values()));
        });
    }
 
@@ -292,6 +294,7 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
         success: function (data) {//SUCESS updating
             //Update display
             console.log(cb);
+            callDoSimulation(uris);
             callDoSimulation(uris);
             cb(null, data);
         },

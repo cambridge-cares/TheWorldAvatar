@@ -654,7 +654,9 @@ getIconByType: function (type, highlight) {
                 //submit event handler for popup window**************//
                 $(document).on('click', submitId, function () {
                     if(Object.keys(modifications).length < 1){//do nothing if no modific
-                    console.log('no change')
+                    console.log('no change');
+                    infowindow.close();
+                    google.maps.event.clearInstanceListeners(infowindow);
                     
                     infowindow.close();
                     google.maps.event.clearInstanceListeners(infowindow);
@@ -670,14 +672,14 @@ getIconByType: function (type, highlight) {
                     }
                     console.log("sent updates: ");
                     outputUpdate([uris, updateQs], function (data) {//success callback
-                        
                         console.log("OUTPUT UPDATED");
-                        
                         infowindow.close();
                         google.maps.event.clearInstanceListeners(infowindow);
                     }, function () {//err callback
                         self.displayMsg(errMsgBox, "Can not update to server", "danger")
-
+                        infowindow.close();
+                        google.maps.event.clearInstanceListeners(infowindow);
+                        infowindow=null;
                     });
                     infowindow.close();
                     google.maps.event.clearInstanceListeners(infowindow);

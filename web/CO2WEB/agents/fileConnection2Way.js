@@ -460,6 +460,9 @@ owlProcessor.singleEpQ = function(loc){
                    
                     
                    //body = self.parsePseudoJson(body);
+
+                   try {
+
                    body = JSON.parse(body);
                    //todo: rewrite unwrap
                     let items = RdfParser.unwrapResult(body, 'item');
@@ -473,6 +476,10 @@ owlProcessor.singleEpQ = function(loc){
                     //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
                     //self.buffer.push(tobuffer);
                          callback(null, items)
+                   }catch(e){
+                     callback(e)
+                   }
+
                 })
                };
 

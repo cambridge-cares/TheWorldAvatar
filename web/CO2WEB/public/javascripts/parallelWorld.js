@@ -1,5 +1,5 @@
 var scenario;
-// var prefix = "http://localhost:8080";
+//var prefix = "http://localhost:8080";
 var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
@@ -339,17 +339,11 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
         + "PREFIX j9:<http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#> "
         + "PREFIX technical_system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-        + "SELECT ?entity ?V_QGen ?V_QGen_unit ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
+        + "SELECT ?entity  ?V_x ?V_x_unit ?V_y ?V_y_unit ?V_Actual_CO2_Emission ?V_Actual_CO2_Emission_unit ?V_Design_CO2_Emission ?V_Design_CO2_Emission_unit "
 
         + "WHERE {?entity  a  j1:PowerGenerator  ."
         + "?entity   technical_system:realizes ?generation ."
         + "?generation j9:hasEmission ?emission ." 
-
-        + "?model   j5:hasModelVariable ?Qg ." 
-        + "?Pg  a  j3:Qg  ." 
-        + "?Pg  j2:hasValue ?vpg ."
-        + "?vpg   j2:numericalValue ?V_QGen ." // Qg
-        + "?vpg   j2:hasUnitOfMeasure ?V_QGen_unit ." // Qg
 
         + "?emission a j9:Actual_CO2_Emission ."
         + "?emission   j2:hasValue ?valueemission ."
@@ -378,7 +372,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
 (function PPMapAlt(){
 		
     var ppMap = new PopupMap({useCluster:true});
-    // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
     // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml";
     var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalbase.kml';
     var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
@@ -453,6 +447,7 @@ var genInfo2 = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/Pow
         refreshLayer(json, kmlURL);
         displayCO2(json);
         kmlURL = null;
+        
         
     }
     function refreshLayer(iriofnetwork, kmlURL){
@@ -531,9 +526,9 @@ function drawGenerator(data, anotherURL){
     request.fail(function(jqXHR, textStatus) {
     });
 }
-function drawMarkers(data){
+function drawMarkers(){
     var agenturl=  prefix + '/JPS_POWSYS/ENVisualization/createMarkers'; 
-    var kmlurl = createUrlForAgent(scenario, agenturl, data);
+    var kmlurl = createUrlForAgent(scenario, agenturl, {"electricalnetwork":iriofnetwork});
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
@@ -637,6 +632,7 @@ function createMarker(key, value, markerdict){
     }
 function displayCO2(data){
     //read the value of CO2 and display upon calling
+    // var agenturl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator' ;
     var agenturl =  prefix + '/JPS_POWSYS/AggregationEmissionAgent/aggregateemission' ;
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
@@ -759,7 +755,7 @@ function openWindowGen(id){
 
         console.log(inputsHTML);
         var div = document.getElementById('inputsContainer');
-        div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+        div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
 
 
@@ -815,12 +811,12 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
         console.log(inputsHTML);
         if (id.includes("Bus")){
             var div = document.getElementById('inputsContainer');
-            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
             '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
             }
             
             else if (callback == null){
-                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                 infoWindow.setContent(innerHTML);
             }
@@ -830,7 +826,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
                     resolve('Success');
             });
                 newPromise.then((successMessage) => {
-                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                     console.log(innerHTML);
                     callback(innerHTML);
@@ -860,15 +856,9 @@ function SubmitTable(e) {
         var value = row.getElementsByTagName('input')[0].value;
         
         
+		value =parseFloat(value)
         if(name.includes('EBus-001')){ // This is a slack bus, the magnitude is always 1 and the angle is always 0
-            //console.log("label forbidden= "+label);
-            if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')) {
-                if (value !== 1){
-                    alert('The value of the voltage magnitude and Vm for a slack bus should always be 1 kV (in p.u format)')
-                    proceed = false;
-                }
-            }
-            
+            //console.log("label forbidden= "+label);            
             if (name.includes('VoltageAngle')|| name.includes('Va_EBus')){
                 if (value !== 0){
                     alert('The value of the voltage angle and Va for a slack bus should always be 0 degree')
@@ -1067,7 +1057,12 @@ asyncLoop({
             contentType: 'application/json; charset=utf-8'
         });
 
-        request.done(function() {
+        request.done(function(data) {
+            //check for alert
+            response = JSON.parse(data);
+            if (response.status != "converged"){
+                alert("This simulation has not converged. Use different values.");
+            }
             json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
             displayCO2(json);
             var delayInMilliseconds = 10000; //1 second
