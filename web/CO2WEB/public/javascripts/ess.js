@@ -1,3 +1,4 @@
+var infowindow;
 var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 		+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -51,16 +52,16 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
     /** once map is instantiated, run base scenario
      * 
      */
-    // var checkExist = setInterval(function() {
-    // if ($('#map').length) {
-    //     console.log("Exists!");
+    var checkExist = setInterval(function() {
+    if ($('#map').length) {
+        console.log("Exists!");
         
-    //     ppMap.clearAnimatedLines();
-    //     clearMarkers();
-    //     runKML();
-    //     clearInterval(checkExist);
-    // }
-    // }, 100); // check every 100ms
+        ppMap.clearAnimatedLines();
+        clearMarkers();
+        runKML();
+        clearInterval(checkExist);
+    }
+    }, 100); // check every 100ms
     /** runs rest of functions with newly changed scenario
      * 
      */

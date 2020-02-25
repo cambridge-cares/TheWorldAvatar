@@ -15,6 +15,7 @@ let dict = {};
 var numTypeGen = '';
 var kmlLayer;
 var markers = [];
+var batterylist = null;
 var branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -228,11 +229,11 @@ var genInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowS
     + "?Vg  j2:hasValue ?vVg ."
     + "?vVg   j2:numericalValue ?V_Vg ." // vg
 
-    + "?model   j5:hasModelVariable ?mbase ." 
-    + "?mbase  a  j3:mBase  ." 
-    + "?mbase  j2:hasValue ?vmbase ."
-    + "?vmbase   j2:numericalValue ?V_mBase ." // mbase
-    + "?vmbase   j2:hasUnitOfMeasure ?V_mBase_unit ." // mbase
+	+ "OPTIONAL{?model   j5:hasModelVariable ?mbase }" 
+	+ "OPTIONAL{?mbase  a  j3:mBase  }" 
+	+ "OPTIONAL{?mbase  j2:hasValue ?vmbase }"
+	+ "OPTIONAL{?vmbase   j2:numericalValue ?V_mBase }" // mbase
+	+ "OPTIONAL{?vmbase   j2:hasUnitOfMeasure ?V_mBase_unit }" // mbase
 
     + "?model   j5:hasModelVariable ?pmax ." 
     + "?pmax  a  j3:PMax  ." 
@@ -445,10 +446,10 @@ function displayCO2(data){
     request.done(function(data) {
         console.log(data);
         var obj0 = JSON.parse(data);
-        actualCarbon = obj0.actual;
+        actualCarbon = parseFloat(obj0.actual);
         actualCarbonYr = actualCarbon*8760/1000000;
         wildPercentage = (actualCarbonYr/emissionValueForSingapore)*100*1000000;
-        designCarbon = obj0.design;    
+        designCarbon = parseFloat(obj0.design);    
         designCarbonYr = designCarbon*8760/1000000;
         wildPercentage2 = (designCarbonYr/emissionValueForSingapore)*100*1000000;  
         document.getElementById("loader").style.display = "none";
@@ -632,7 +633,7 @@ function drawMarkers(data){
         createMarker(key, value, markerdict);
           
     }
-    if (batterylist != null){
+    if (batterylist){
         console.log(batterylist);
         searchBatteryCoord(batterylist);	
     }
@@ -709,7 +710,6 @@ function setMarkerMenu(jsonArray)
         console.log('Markers '+ markers);
         document.getElementById("loader").style.display = "none";
         document.getElementById("run-btn").disabled = false;
-        cb()
     }
     /** creates battery marker. 
      * 
