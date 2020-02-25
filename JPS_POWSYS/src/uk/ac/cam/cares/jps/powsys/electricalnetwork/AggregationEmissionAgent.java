@@ -150,8 +150,8 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
         }
         JSONObject newresult= new JSONObject();
-        newresult.put("actual",totalemissionactual/1000000*3600); //from kg/s back to ton/hr
-        newresult.put("design",totalemissiondesign);
+        newresult.put("actual",Double.toString(totalemissionactual/1000000*3600)); //from kg/s back to ton/hr
+        newresult.put("design",Double.toString(totalemissiondesign));
         
         
         return newresult;
