@@ -1,4 +1,4 @@
-var scenario;
+var scenario = "base";
 var prefix = "http://localhost:8080";
 // var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
@@ -453,6 +453,54 @@ function displayCO2(data){
         document.getElementById("loader").style.display = "none";
     });
 }
+/** creates the tiny pop up window if there are more than one element on a kml element. I.E. generator. 
+ * 
+ * @param {KML element} kmlEvent 
+ */
+function setKMLMenu(kmlEvent){
+    var data = kmlEvent.featureData;
+    var nameString = data.name.substr(1);
+    var names = nameString.split('[');
+    var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+    for(var index in names)
+    {
+        var name = names[index];
+
+        buttonsList = buttonsList + '<div><label>' + name.split('#')[1] + '</label>' +
+            '<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+    }
+
+    buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+    // set the content of the popup window.
+    kmlEvent.featureData.infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+}
+/** launches openWindow()
+ * 
+ * @param {*} event KML element, IRI of element
+ */
+function selectEBus(event) {
+    selectedId =  event.srcElement.id;
+    openWindow(selectedId);
+}
+/** selects the appropriate query. Generator is different from other functions
+ * as generator requires two queries without making the header too large. 
+ * 
+ * @param {String} selectedId iri of the element
+ */
+function openWindow(selectedId){
+    if (selectedId.includes("Bus")){
+        openWindowLineAndBus(selectedId, busInfo);
+    }else if (selectedId.includes("ine")){
+        //recreate infowindow if present. 
+        openWindowLineAndBus(selectedId, branchInfo);
+    }
+    else{
+        openWindowGen(selectedId);
+    }
+    
+}
+
 /***
  * clears existing markers on the Google Maps
  */
@@ -465,10 +513,11 @@ function clearMarkers() {
         marker=null;
     }
 }
-/** calls ENVisualization to create kml file in ROOT/ONTOEN folder, and for google to read KML from there. This works ONLY because Claudius ROOT files are open to browser
+/** calls ENVisualization to create kml file in ROOT/ONTOEN folder, and for google to read KML from there. 
+ * This works ONLY because Claudius ROOT files are open to browser
  * @param data: electricalnetwork topnode iri
  */
-function drawGenerator(data){
+function drawGenerator(data, anotherURL){
     var kmljson = {};
     var agenturl = prefix + '/JPS_POWSYS/ENVisualization/createKMLFile'; 
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
@@ -487,13 +536,20 @@ function drawGenerator(data){
 
     request.done( function(data) {
     console.log ("success create request");
-    kmlLayer = new google.maps.KmlLayer({
-        // url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',//In other cases, will eventually be read and overwritten here. NO PROBLEM!
-        url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
-        suppressInfoWindows: false,
-        map: map
+    if (anotherURL != null){
+        kmlLayer = new google.maps.KmlLayer({
+            // url: 'http://www.theworldavatar.com/OntoEN/testfinal.kml',//In other cases, will eventually be read and overwritten here. NO PROBLEM!
+            url: anotherURL+ "?r="+(new Date()).getTime(), //this is completely necessary for cache-busting. 
+            suppressInfoWindows: false,
+            map: map
+        });
+    }else{
+        kmlLayer = new google.maps.KmlLayer({
+            url: 'http://theworldavatar.com/OntoEN/testfinal'+scenario+'.kml'+ "?r="+(new Date()).getTime(),
+            suppressInfoWindows: false,
+            map: map
     });
-
+    }
 
         kmlLayer.addListener('click', function(kmlEvent) {
             setKMLMenu(kmlEvent)
@@ -576,81 +632,137 @@ function drawMarkers(data){
 	
     });
     }
-   /** opens popup window for generator (In the > button)
-    * 
-    * @param {String} id  iri of generator 
-    */ 
-    function openWindowGen(id){
-        //since geninfo too large for request header, I'll split it up
-           selectedId =  id; //this needs to be saved on a local version, and not towards here. 
-           var inputsHTML = '';
-           var kmlurl = createUrlForSparqlQuery(scenario, selectedId.split('#')[0], genInfo);
-           var kmlurl2 = createUrlForSparqlQuery(scenario, selectedId.split('#')[0], genInfo2);
-           $.when(
-               $.ajax({
-               url: kmlurl,
-               type: 'GET',
-               contentType: 'application/json; charset=utf-8',
-               success: function(data){ 
-                   var obj0 = JSON.parse(data);
-                   obj1 = obj0['results']['bindings'][0];
-               },
-               error: function(ts) {
-                   alert(ts.responseText);
-               }   
-                }),
-           
-               $.ajax({
-               url: kmlurl2,
-               type: 'GET',
-               contentType: 'application/json; charset=utf-8',
-               success: function(data){   
-                   var obj0 = JSON.parse(data);
-                   obj2 = obj0['results']['bindings'][0];
-                   console.log(obj2);
-               },
-               error: function(ts) {
-                   alert(ts.responseText);
-               }   
-           })).then( function(){
-               var obj0 = Object.assign(obj1, obj2);
-               console.log(obj0,obj1, obj2)
-               var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
-               nameSet = [];
-               console.log(selectedId);
-               var owlName = selectedId.split('#')[1].split('.')[0];
-               for(var item in result)
-               {
-                   var pair = result[item];
-                   if (pair[0] == "entity"){}
-                   else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
-                   {
-                       var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
-                       + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
-                       inputsHTML = inputsHTML + inputLine;
-                       nameSet.push(pair[0]);
-                   }else {
-                       //for units, just place below the box. 
-                       //remove the last 
-                       inputsHTML = inputsHTML.slice(0, -101)
-                       //add in the units 
-                       var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
-                       inputsHTML = inputsHTML + inputLine;
-                   }
-               }
-       
-               console.log(inputsHTML);
-               var div = document.getElementById('inputsContainer');
-               div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
-               '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
-       
-       
-           }, function (jqXHR, textStatus, errorThrown){
-               alert(textStatus);
-               console.log(errorThrown);
-           }
-           );
-       }
+/** creates a single marker and places it on the google map
+ * 
+ * @param {*} key the latitude of the marker
+ * @param {Array} value [0] longitude of the marker [1] type of icon
+ * @param {Map} markerdict dictionary of generators at that location
+ */
+function createMarker(key, value, markerdict){
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(key, value[0]),
+        map: map,
+        icon: value[1]
+      });
+    marker.addListener('click', function(){
+        _content = setMarkerMenu(markerdict.get(key));
+        infowindow.setContent(_content);
+        infowindow.open(map, this);
+    });
+    markers.push(marker);
+}
+/** clears all markers on the page
+ * 
+ */
+function clearMarkers() {
+    if(!markers){
+        return;
+    }
+    for(marker of markers){
+        marker.setMap(null);
+        marker=null;
+    }
+}
+/** creates content of marker subMenu
+ * 
+ * @param {Array} jsonArray 
+ * @return {string} content of HTML
+ */
+function setMarkerMenu(jsonArray)
+	{
+		var buttonsList = '<p>Please select the Entity you would like to modify</p>';
+		console.log(jsonArray);
+		for(var index in jsonArray)
+		{
+			var name = jsonArray[index];
+			console.log(name);
+			 buttonsList = buttonsList + '<div><label>'  + name.split('#')[1] + '</label>'+
+				'<button onclick="selectEBus(event)" style= "cursor: pointer;" id="' + name + '"> > </span></div>'
+		}
+
+		buttonsList = '<div id="buttonContainer">'+ buttonsList +'</div><hr/><div id="inputsContainer"></div>';
+		// set the content of the popup window.
+		infoWindowHtml = '<div>' + buttonsList + '</div>';
+
+		console.log(infoWindowHtml);
+		return infoWindowHtml;
+
+    }
+/** opens popup window for generator (In the > button)
+* 
+* @param {String} id  iri of generator 
+*/ 
+function openWindowGen(id){
+    //since geninfo too large for request header, I'll split it up
+        selectedId =  id; //this needs to be saved on a local version, and not towards here. 
+        var inputsHTML = '';
+        var kmlurl = createUrlForSparqlQuery(scenario, selectedId.split('#')[0], genInfo);
+        var kmlurl2 = createUrlForSparqlQuery(scenario, selectedId.split('#')[0], genInfo2);
+        $.when(
+            $.ajax({
+            url: kmlurl,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: function(data){ 
+                var obj0 = JSON.parse(data);
+                obj1 = obj0['results']['bindings'][0];
+            },
+            error: function(ts) {
+                alert(ts.responseText);
+            }   
+            }),
+        
+            $.ajax({
+            url: kmlurl2,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: function(data){   
+                var obj0 = JSON.parse(data);
+                obj2 = obj0['results']['bindings'][0];
+                console.log(obj2);
+            },
+            error: function(ts) {
+                alert(ts.responseText);
+            }   
+        })).then( function(){
+            var obj0 = Object.assign(obj1, obj2);
+            console.log(obj0,obj1, obj2)
+            var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+            nameSet = [];
+            console.log(selectedId);
+            var owlName = selectedId.split('#')[1].split('.')[0];
+            for(var item in result)
+            {
+                var pair = result[item];
+                if (pair[0] == "entity"){}
+                else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
+                {
+                    var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
+                    + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
+                    inputsHTML = inputsHTML + inputLine;
+                    nameSet.push(pair[0]);
+                }else {
+                    //for units, just place below the box. 
+                    //remove the last 
+                    inputsHTML = inputsHTML.slice(0, -101)
+                    //add in the units 
+                    var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
+                    inputsHTML = inputsHTML + inputLine;
+                }
+            }
+    
+            console.log(inputsHTML);
+            var div = document.getElementById('inputsContainer');
+            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
+    
+    
+        }, function (jqXHR, textStatus, errorThrown){
+            alert(textStatus);
+            console.log(errorThrown);
+        }
+        );
+    }
        
 /** construct update query strings for all modification
  * @param uri iri of resource
@@ -679,6 +791,7 @@ function constructSingleUpdate(uri, attrObj) {
     var spoIns = "INSERT DATA {<" + uri + "#" + attrObj.name + "> <" + attrObj.p + "> " +attrObj.value +".}";
     return [spoDel, spoIns];
 };
+
 /** runs when OPF button is clicked
  * @param {Element} e 
  */
@@ -752,8 +865,8 @@ function SubmitTable(e) {
 
     }
 }
-/***
- * Send output update queries
+
+/** Send output update queries
  * @param uris        array of uris to change, corresponding to updateQs
  * @param updateQs    array of SPARQL update strings
  * @param successCB   callback when success
@@ -810,8 +923,8 @@ function runSimulation(filename){
 /** opens infowindow for lines and ebuses. 
  * 
  * @param {String} id iri of object
- * @param {*} type sparql query of respective object
- * @param {*} callback to display content as given by innerHTML
+ * @param {String} type sparql query of respective object
+ * @param {Function} callback to display content as given by innerHTML
  */
 function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow cos it's too large. 
     var kmlurl = createUrlForSparqlQuery(scenario, id.split('#')[0], type);
