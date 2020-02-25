@@ -28,13 +28,15 @@ var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/P
 		+ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//longitude
 
         + "}";
-  
+var batterylist = []; 
+var batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
+var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectricalnetwork/PV-001.owl#PV-001"];//to be a jsonarray
 (function PPMapAlt(){
     var ppMap = new PopupMap({useCluster:true});
     //refresh value of carbon emission every 5 minutes
     setInterval(function(){
         distotalemission();
-    }, 5*60*1000);
+    }, 60*1000);
     //when user changes input, create notification
     $(document).on('input', 'input', function () {//when user makes input
         console.log("input changed");
@@ -43,54 +45,136 @@ var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/P
         if (value === "") { 
             return;
         }
-        let attrid = el.attr("id");
-        if (!validateInput(value)) {
-            self.displayMsg(errMsgBox, "Wrong datatype.", "warning");
-        }
+       
     });
-
-
-    //TODO: register for changes if want blinking effect of modification
-    function runKML(predefinedId){
-        console.log('predefinedID = ', predefinedId);
+    
+    /** once map is instantiated, run base scenario
+     * 
+     */
+    // var checkExist = setInterval(function() {
+    // if ($('#map').length) {
+    //     console.log("Exists!");
+        
+    //     ppMap.clearAnimatedLines();
+    //     clearMarkers();
+    //     runKML();
+    //     clearInterval(checkExist);
+    // }
+    // }, 100); // check every 100ms
+    /** runs rest of functions with newly changed scenario
+     * 
+     */
+    function runKML(){
         infowindow = new google.maps.InfoWindow({
             content: '<h2>Sup!</h2>'
         });
-        ppMap.clearAnimatedLines();
-        clearMarkers();
             
         json = { "electricalnetwork":iriofnetwork ,"flag": scenario }
         document.getElementById("loader").style.display = "block";
         ppMap.drawLines(json );
         drawMarkers(json);
-        refreshLayer(json, kmlURL);
+        refreshLayer(json);
         displayCO2(json);
-        kmlURL = null;
         
     }
-    function refreshLayer(iriofnetwork, kmlURL){
-        if (kmlLayer){
-            kmlLayer.setMap(null);
+    //link run button to variable
+    let runBtn = $("#run-btn"); 
+    /** launches Promise when button is clicked. Runs drawBatt
+     * @throws rejection if battery is not called. 
+     */
+    runBtn.click(function () {
+        scenario = document.getElementById("scenarioTxt").value;
+        if (scenario == ''){
+            scenario = "testBatt1"; //auto set scenario to standard to differentiate from base
+        }
+        ppMap.clearAnimatedLines();
+        clearMarkers();
+        console.log(scenario);
+        //initialize promise with function that has resolve and reject statements. 
+        drawBattery(function(){
+            console.log(batterylist);
+            runKML();
+        });
+    });
+    /** queries ESS ESS Coordination Agent
+     * @param cb callback
+     */
+    function drawBattery(cb) 	{
+		document.getElementById("run-btn").disabled = true;
+		document.getElementById("loader").style.display = "block";
+		scenario = document.getElementById("scenarioTxt").value;
+		if (scenario == ''){
+			scenario = "testBatt1"; //fixed temporarily, will be changed along with user input
+		}
+		var batteryjson= {}
+		batteryjson["electricalnetwork"] = iriofnetwork;
+		batteryjson["BatteryCatalog"] = batIRI;
+		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
+		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
+		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
+		console.log(batteryurl);
+	    var request = $.ajax({
+	        url: batteryurl,
+	        type: 'GET',
+	        data: batteryjson,
+            contentType: 'application/json; charset=utf-8',
+            timeout:240*1000,
+	        success: function(){  
+                console.log('successful execution');
+	        },
+	        error: function(ts) {
+	            alert(ts.responseText);
+	        }   
+	    });
+	    request.done( function(data) {
+	        console.log ("success create request");
+	        console.log(data);
+	        batlist = JSON.parse(data).batterylist;
+	        console.log(batlist);
+	       	batterylist = [];
+	        var size=batlist.length;
+	        for(x=0;x<size;x++){
+	        	//query each iri:
+	        		var iri=batlist[x];
+	    	        querybatlocation(iri,batteryInfo);
             }
-        drawGenerator(iriofnetwork, kmlURL);
-        console.log('Check that it should have refreshed. ')
+            cb();
+            
+		});
+
     }
-    //TODO: validate this
-    function validateInput() {
-        return true;
+    /** queries the battery location and pushes results to batterylist
+     * 
+     * @param {String} iri 
+     * @param {String} type 
+     * @description modifies batterylist
+     */
+    function querybatlocation(iri,type){//url of battery, query of info. 
+        var kmlurl = createUrlForSparqlQuery(scenario, iri.split('#')[0], type);
+        var request = $.ajax({
+            url: kmlurl,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8',
+            success: function(){  
+            },
+            error: function(ts) {
+                alert(ts.responseText);
+            }   
+        });
+        request.done( function(data) {
+            console.log(data);
+            var obj0 = JSON.parse(data);
+            obj0 = obj0['results']['bindings'][0];
+            console.log(obj0);
+            batterylist.push([obj0.entity.value,obj0.V_x.value,obj0.V_y.value]);
+            
+        
+        });
     }
+    
     /*Msg***/
     let errMsgPanel = $("");
 
-    function msgTemplate (msg, type) {
-        return "<p class='alert alert-" + type + "'>" + msg + "</p>";
-    }
-    function displayMsg(msg, type) {
-        //TODO: swithc type
-        cleanMsg();
-        errMsgPanel.append(msgTemplate(msg, type));
-
-    }
     function distotalemission(){
         $("#co2Value").text(actualCarbon.toFixed(2));
         $("#co2Value2").text(designCarbon.toFixed(2));
@@ -100,6 +184,7 @@ var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/P
         $("#wildPercentage2").text(wildPercentage2.toFixed(2));
         $("#OilGen").text(dict["oil"]);
         $("#NatGasGen").text(dict["gas"]);
+        $("#NoBat").text(batterylist.length);
     }
     //TODO: define err msg panel
     function cleanMsg() {

@@ -64,13 +64,13 @@
             
             kmlURL = anotherURL1;
             scenario = "base";
-            carbonTaxBox.value = 5
+            carbonTB.value = 5
             // appPrefix = prefix1;
         }
         else if (predefinedId == '1') {
             kmlURL = anotherURL2;
             
-            carbonTaxBox.value=170;
+            carbonTB.value=170;
             // scenario = "testCoordinateRetroFitNuclearAgentCall20";
             scenario = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10";
             // appPrefix = prefix2;
@@ -85,18 +85,7 @@
         kmlURL = null;
         
     }
-    /** loads and refreshes the kml layer if it gets changed between base and test scenario
-     * 
-     * @param {String} iriofnetwork 
-     * @param {String} kmlURL 
-     */
-    function refreshLayer(iriofnetwork, kmlURL){
-        if (kmlLayer){
-            kmlLayer.setMap(null);
-         }
-        drawGenerator(iriofnetwork, kmlURL);
-        console.log('Check that it should have refreshed. ')
-    }
+    
 
     /*Msg***/
     let errMsgPanel = $("");

@@ -4,7 +4,6 @@ var prefix = "http://localhost:8080";
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
-var markers = [];
 var actualCarbon = 0.00;
 var emissionValueForSingapore = 50908130;
 var designCarbon= 0.00;
@@ -15,6 +14,7 @@ let wildPercentage2 =0.0;
 let dict = {};
 var numTypeGen = '';
 var kmlLayer;
+var markers = [];
 var branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
@@ -443,6 +443,7 @@ function displayCO2(data){
     });     
     
     request.done(function(data) {
+        console.log(data);
         var obj0 = JSON.parse(data);
         actualCarbon = obj0.actual;
         actualCarbonYr = actualCarbon*8760/1000000;
@@ -492,26 +493,27 @@ function openWindow(selectedId){
     if (selectedId.includes("Bus")){
         openWindowLineAndBus(selectedId, busInfo);
     }else if (selectedId.includes("ine")){
-        //recreate infowindow if present. 
         openWindowLineAndBus(selectedId, branchInfo);
-    }
+    }else if (selectedId.includes('VRB')){
+		openWindowLineAndBus(selectedId, batteryInfo);
+	}
     else{
         openWindowGen(selectedId);
     }
     
 }
 
-/***
- * clears existing markers on the Google Maps
+/** loads and refreshes the kml layer if it gets changed between base and test scenario
+ * 
+ * @param {String} iriofnetwork 
+ * @param {String} kmlURL 
  */
-function clearMarkers() {
-    if(!markers){
-        return;
-    }
-    for(marker of markers){
-        marker.setMap(null);
-        marker=null;
-    }
+function refreshLayer(iriofnetwork, kmlURL){
+    if (kmlLayer){
+        kmlLayer.setMap(null);
+        }
+    drawGenerator(iriofnetwork, kmlURL);
+    console.log('Check that it should have refreshed. ')
 }
 /** calls ENVisualization to create kml file in ROOT/ONTOEN folder, and for google to read KML from there. 
  * This works ONLY because Claudius ROOT files are open to browser
@@ -567,6 +569,7 @@ function drawMarkers(data){
     var agenturl=  prefix + '/JPS_POWSYS/ENVisualization/createMarkers'; 
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
+    console.log('number of markers: '+markers.length );
     var request = $.ajax({
         url: kmlurl,
         type: 'GET',
@@ -629,6 +632,10 @@ function drawMarkers(data){
         createMarker(key, value, markerdict);
           
     }
+    if (batterylist != null){
+        console.log(batterylist);
+        searchBatteryCoord(batterylist);	
+    }
 	
     });
     }
@@ -687,6 +694,45 @@ function setMarkerMenu(jsonArray)
 		console.log(infoWindowHtml);
 		return infoWindowHtml;
 
+    }
+    /** creates individual battery objects. Need to do this because of closure principle, otherwise all the markers will end up showing the same content. 
+     * 
+     * @param {JSON} srcdata 
+     * @fires createBattery
+     */
+    function searchBatteryCoord(srcdata) {
+        var size=srcdata.length; 
+        var x;
+        for (x=0; x< size; x++){
+            createBattery(srcdata[x][0], srcdata[x][2], srcdata[x][1]);
+           }
+        console.log('Markers '+ markers);
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("run-btn").disabled = false;
+        cb()
+    }
+    /** creates battery marker. 
+     * 
+     * @param {String} iri 
+     * @param {Number} lat 
+     * @param {Number} lng 
+     */
+    function createBattery(iri, lat, lng){
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(String(lat), String(lng)),
+            map: map,
+            title: String(iri),
+            icon: "images/battery.png"
+        });
+        marker.addListener('click', function(){
+            var jsonArray = marker.title.split('/');
+            console.log(jsonArray);
+            var spec = marker.title + '#' + jsonArray[jsonArray.length-1];
+            _content = setMarkerMenu([spec]);
+            infowindow.setContent(_content);
+            infowindow.open(map, this);
+        });
+        markers.push(marker);
     }
 /** opens popup window for generator (In the > button)
 * 
@@ -753,7 +799,7 @@ function openWindowGen(id){
     
             console.log(inputsHTML);
             var div = document.getElementById('inputsContainer');
-            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
             '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
     
     
@@ -972,12 +1018,12 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
         console.log(inputsHTML);
         if (id.includes("Bus")){
             var div = document.getElementById('inputsContainer');
-            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+            div.innerHTML = '<table data-type="kml" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
             '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>'
             }
             
             else if (callback == null){
-                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                 infoWindow.setContent(innerHTML);
             }
@@ -987,7 +1033,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
                     resolve('Success');
             });
                 newPromise.then((successMessage) => {
-                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button><button onclick="SubmitTable(this)">PF</button>'+
+                    innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                     console.log(innerHTML);
                     callback(innerHTML);
