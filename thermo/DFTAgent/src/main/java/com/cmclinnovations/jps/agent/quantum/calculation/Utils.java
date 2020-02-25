@@ -306,9 +306,20 @@ public class Utils {
 		return jobFolderPath;
 	}
 	
-	public static String getJobFolderPathOnAgentPC(String runningJob, File taskSpace){
+	public static String getJobLogFilePathOnAgentPC(String runningJob, File taskSpace){
 		return taskSpace.getAbsolutePath().concat(File.separator).concat(runningJob).concat(File.separator)
 				.concat(runningJob).concat(Jobs.EXTENSION_LOG_FILE.getName());
+	}
+	
+	public static boolean isErrorTermination(String jobFolderOnAgentPC)throws IOException{
+		BufferedReader logFile = openSourceFile(jobFolderOnAgentPC);
+		String line;
+		while((line=logFile.readLine())!=null){
+			if(line.trim().toLowerCase().startsWith(Jobs.JOB_LOG_MSG_ERROR_TERMINATION.getName().toLowerCase())){
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	/**

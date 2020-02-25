@@ -27,7 +27,9 @@ public enum Jobs {
 	JOB_SETUP_INPUT_FILE_ERROR("The input file for the job could not be created."),
 	JOB_SETUP_SPECIES_GEOMETRY_ERROR("The geometry of species could not be downloaded from the IRI provided."),
 	JOB_SETUP_SPECIES_IRI_MISSING("The species IRI is not provided."),
-	JOB_SETUP_ERROR("The requested job could not be set up, therefore, resubmit the job.");
+	JOB_SETUP_ERROR("The requested job could not be set up, therefore, resubmit the job."),
+	JOB_LOG_MSG_ERROR_TERMINATION("error termination"),
+	JOB_LOG_MSG_NORMAL_TERMINATION("normal termination");
 	
 	private String property;
 	private Jobs(String property){

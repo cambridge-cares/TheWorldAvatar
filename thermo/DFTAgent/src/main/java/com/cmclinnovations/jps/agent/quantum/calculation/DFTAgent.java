@@ -49,7 +49,7 @@ public class DFTAgent extends HttpServlet{
 	String password = "Abcdl955_l7_l7_l7_aB";
 	Connection connection;
 	boolean isAuthenticated;
-	private static File jobSpace; 
+	private File jobSpace;
 
 	static com.jcraft.jsch.Session session;
 	static JSch jsch = new JSch();
@@ -87,7 +87,7 @@ public class DFTAgent extends HttpServlet{
        	// the first 60 refers to the delay (in seconds) before the job scheduler
         // starts and the second 60 refers to the interval between two consecu-
         // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 60, 60, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 10, 60, TimeUnit.SECONDS);
         logger.info("---------- Qunatum jobs are being monitored  ----------");
         System.out.println("---------- Qunatum jobs are being monitored  ----------");
        	
@@ -304,18 +304,51 @@ public class DFTAgent extends HttpServlet{
 		return "/home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
 	}
 	
-	
-	
+	/**
+	 * Updates the latest status of the running jobs. 
+	 * 
+	 * @param runningJob
+	 * @param statusFile
+	 * @param jobsRunningAfterUpdate
+	 * @throws JSchException
+	 * @throws SftpException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private void updateRunningJobsStatus(String runningJob, File statusFile, Map<String, List<String>> jobsRunningAfterUpdate) throws JSchException, SftpException, IOException, InterruptedException{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
-				downloadFile(Utils.getLogFilePathOnHPC(runningJob, username, jobSpace), Utils.getJobFolderPathOnAgentPC(runningJob, jobSpace));
+				downloadFile(Utils.getLogFilePathOnHPC(runningJob, username, jobSpace), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, username, jobSpace));
 				jobsRunningAfterUpdate.remove(runningJob);
+				updateStatusForErrorTermination(statusFile, Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 			}
 		}
 	}
 	
+	/**
+	 * Extracts from the log file if the current job terminated normally or</br>
+	 * with error. In the case of error termination, updates the status of</br>
+	 * the log file accordingly. 
+	 * 
+	 * @param statusFile
+	 * @param jobFolderPathOnAgentPC
+	 */
+	private void updateStatusForErrorTermination(File statusFile, String jobFolderPathOnAgentPC) throws IOException{
+		if(Utils.isErrorTermination(jobFolderPathOnAgentPC)){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+		}
+	}
+	
+	/**
+	 * Checks if a job is running using the job id.
+	 * 
+	 * @param statusFile
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	private boolean isJobRunning(File statusFile) throws JSchException, IOException, InterruptedException{
 		String jobId = Utils.getJobId(statusFile.getAbsolutePath());
 		if(jobId==null){
@@ -331,6 +364,19 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * Sets up a job by creating the job folder and the following files</br>
+	 * under this folder:</br>
+	 * - the Gaussian input file.</br>
+	 * - the Slurm script file.</br.
+	 * - the Status file.</br>
+	 * - the JSON input file, which comes from the user request.</br>
+	 * 
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
 	public String setUpJob(String jsonString) throws IOException, DFTAgentException{
         	return setUpJobOnAgentMachine(jsonString);
     }
