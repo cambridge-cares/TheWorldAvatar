@@ -1,0 +1,82 @@
+extends header.pug
+
+block title
+	title  Battery Placement
+
+block sheets
+	link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+	|Energy Systems Scenario
+	
+block readme
+	span#readme-button
+		| ?    
+	span#readme-text
+		|This feature is mainly the extension of the Jurong island electrical network model with the use case of additional solar generator and some batteries included.
+		br
+		br
+		|The first model inside will choose which type of battery is the most suitable for the selected solar generator added and it will run the OPF simulation with the new generator added.
+		br
+		br
+		|The final step will be locating the selected battery with specific amount and locations to cover the power losses identified by this OPF simulation.
+		br
+block description
+
+
+block content
+	#loader(style='display:none;')
+	.panel.panel-default
+		.panel-body
+			button#run-btn(type='button') Run Simulation
+			input#scenarioTxt(type='text', value='')
+			#loader(style='display:none;')
+
+						   
+	div#map
+	br
+	div#co2-sum-panel2
+		table(style=" font-size:30px; margin-left:auto; margin-right:auto; padding:2px; and border-spacing:20px;")
+			tr 
+				td  
+				td T/hour 
+				td MT/year 
+				td(title ="Taken from National Communications and Biennial Update Reports, NEA, 2014 ") % of Singapore's 2014 GHG Emissions
+			tr
+				td Actual CO
+					sub 2 
+					| Emission: 
+				td#co2Value   #{co2Value}
+				td#co2ValueYr  #{co2ValueYr} 
+				td#wildPercentage #{wildPercentage}
+			tr
+				td Design (Max) CO
+					sub 2 
+					| Emission: 
+				td#co2Value2  #{co2Value2}
+				td#co2ValueYr2  #{co2ValueYr2} 
+				td#wildPercentage2 #{wildPercentage2}
+		
+	div#co2-sum-panel2
+		table(style=" font-size:30px; margin-left:auto; margin-right:auto; padding:2px; and border-spacing:20px;")
+			tr  
+				td
+				td Batteries
+				td Oil
+				td Natural Gas
+
+			tr
+				td Number and Type of Generators 
+				td#NoBat #{NoBat}
+				td#OilGen #{OilGen} 
+				td#NatGasGen #{NatGasGen}
+
+	script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+	script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+	script(src="/javascripts/PopUpmap.js")
+	script(src="/javascripts/pwBaseFile.js")
+	script(src="/javascripts/ess.js")
+	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
+	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
+	
