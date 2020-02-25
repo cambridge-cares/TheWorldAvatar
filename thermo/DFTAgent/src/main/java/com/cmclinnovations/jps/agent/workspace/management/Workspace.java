@@ -37,7 +37,7 @@ public class Workspace {
 				}
 			}
 		}
-		return getWorkspaceName(workspaceParentPath, agentClass);
+		return createWorkspaceName(workspaceParentPath, agentClass);
 	}
 	
 	private File createWorkspaceName(String workspaceParentPath, String agentClass){
@@ -106,6 +106,16 @@ public class Workspace {
 		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
 	
+	public String createJSONInputFile(File workspaceFolder, String jsonInputFilePath, String jsonString) throws IOException{
+		BufferedWriter jsonInputFile = Utils.openBufferedWriter(jsonInputFilePath);
+		if(jsonInputFile == null){
+			return null;
+		}
+		jsonInputFile.write(jsonString);
+		jsonInputFile.close();
+		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
+	}
+	
 	public String getWorkspacePath(String workspace){
 		return Property.AGENT_WORKSPACE_DIR.getPropertyName()
 		.concat(File.separator)
@@ -141,6 +151,10 @@ public class Workspace {
 	
 	public String getStatusFilePath(File jobFolder){
 		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.STATUS_FILE_NAME.getPropertyName()).concat(Property.STATUS_FILE_EXTENSION.getPropertyName());
+	}
+	
+	public String getJSONInputFilePath(File jobFolder){
+		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.JSON_INPUT_FILE_NAME.getPropertyName()).concat(Property.JSON_FILE_EXTENSION.getPropertyName());
 	}
 	
 	public String copyScriptFile(String source, String destination) throws IOException{
