@@ -3,11 +3,9 @@ package com.cmclinnovations.jps.agent.quantum.calculation;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +34,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
 import ch.ethz.ssh2.Connection;
-import ch.ethz.ssh2.StreamGobbler;
-import ch.ethz.ssh2.Session;
-
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
  * jobs at increasing levels of theory.   
@@ -52,12 +47,9 @@ public class DFTAgent extends HttpServlet{
 	String server = "login-skylake.hpc.cam.ac.uk";
 	String username = "msff2";
 	String password = "Abcdl955_l7_l7_l7_aB";
-	String command = "ls";
 	Connection connection;
-	Session session1;
 	boolean isAuthenticated;
-	static HashSet<String> jobPool = new HashSet<>();	
-	private static File taskSpace; 
+	private static File jobSpace; 
 
 	static com.jcraft.jsch.Session session;
 	static JSch jsch = new JSch();
@@ -110,8 +102,8 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private void monitorJobs() {
 		Workspace workspace = new Workspace();
-		if (taskSpace == null) {
-			taskSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+		if (jobSpace == null) {
+			jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
 					Property.AGENT_CLASS.getPropertyName());
 		}
 		try {
@@ -125,7 +117,7 @@ public class DFTAgent extends HttpServlet{
 			}
 			Map<String, List<String>> jobsRunning = new LinkedHashMap<>();
 			Map<String, List<String>> jobsNotStarted = new LinkedHashMap<>();
-			Utils.classifyJobs(jobsRunning, jobsNotStarted, taskSpace);
+			Utils.classifyJobs(jobsRunning, jobsNotStarted, jobSpace);
 			System.out.println("Number of running jobs:" + jobsRunning.size());
 			System.out.println("Number of not started jobs:" + jobsNotStarted.size());
 			Map<String, List<String>> jobsRunningAfterUpdate = new LinkedHashMap<>();
@@ -298,19 +290,19 @@ public class DFTAgent extends HttpServlet{
 		String command = "cd ".concat(jobFolderOnHPC).concat(" && ")
 				.concat("sed -i 's/").concat(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName())
 				.concat("/").concat(Utils.getMachineAddress()).concat("/g' ").concat(replacedJobFileName);
-		executeCommandUsingJSCH(command);
+		executeCommand(command);
 	}
 	
 	private String createJobFolder(String job) throws JSchException, IOException{
 		// Creates the "mkdir" (make directory) command to create the workspace/jobspace directory.
-		command = "mkdir /home/".concat(username).concat("/").concat(taskSpace.getName());
+		String command = "mkdir /home/".concat(username).concat("/").concat(jobSpace.getName());
 		// Executes the command to create the workspace/jobspace directory.
-		executeCommandUsingJSCH(command);
+		executeCommand(command);
 		// Creates the command to create the job directory.
-		command = "mkdir /home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
+		command = "mkdir /home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
 		// Executes the command for creating the job directory.
-		executeCommandUsingJSCH(command);
-		return "/home/".concat(username).concat("/").concat(taskSpace.getName()).concat("/").concat(job);
+		executeCommand(command);
+		return "/home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
 	}
 	
 	
@@ -318,8 +310,8 @@ public class DFTAgent extends HttpServlet{
 	private void updateRunningJobsStatus(String runningJob, File statusFile, Map<String, List<String>> jobsRunningAfterUpdate) throws JSchException, SftpException, IOException, InterruptedException{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
-				downloadFile(Utils.getLogFilePathOnHPC(runningJob, username, taskSpace), Utils.getJobFolderPathOnAgentPC(runningJob, taskSpace));
-				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, username, taskSpace));
+				downloadFile(Utils.getLogFilePathOnHPC(runningJob, username, jobSpace), Utils.getJobFolderPathOnAgentPC(runningJob, jobSpace));
+				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, username, jobSpace));
 				jobsRunningAfterUpdate.remove(runningJob);
 			}
 		}
@@ -340,7 +332,7 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
-	private String setUpJob(String jsonString) throws IOException, DFTAgentException{
+	public String setUpJob(String jsonString) throws IOException, DFTAgentException{
         	return setUpJobOnAgentMachine(jsonString);
     }
 	
@@ -384,48 +376,7 @@ public class DFTAgent extends HttpServlet{
 		}
 		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
-	
-	/**
-	 * Runs a set of quantum jobs.
-	 * 
-	 * @return
-	 */
-	private String runQuantumJob(){
-		try {
-			setupJob(); // In the next iteration of development, we will include code for setting up jobs.   
-			String slurmScriptName = "G09Slurm_darwin_S1.sh";
-			String inputFileName = "water_ex.com";
-//			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(inputFileName),
-//					"rds/hpc-work/gaussian");
-//			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(slurmScriptName),
-//					"rds/hpc-work/gaussian");
-			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(inputFileName),
-			"/home/".concat(username));
-			uploadFile("C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras/".concat(slurmScriptName),
-			"/home/".concat(username));
-			
-			runQuantumJob(slurmScriptName, inputFileName);
-		} catch (JSchException e) {
-			logger.error(e.getMessage());
-		} catch (SftpException e) {
-			logger.error(e.getMessage());
-		} catch (IOException e) {
-			logger.error(e.getMessage());
-		}
-		return null;
-	}
-	
-	/**
-	 * Decides the time interval between the current and next</br>
-	 * status check operations of a quantum job.   
-	 * 
-	 * @param count
-	 * @throws InterruptedException
-	 */
-	private void waitBeforeStatusCheck() throws InterruptedException{
-		Thread.sleep(2000);
-	}
-	
+
 	/**
 	 * Checks if a job is still running using the job id.
 	 * 
@@ -436,7 +387,7 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private boolean isJobRunning(String jobId) throws JSchException, IOException, InterruptedException{
 		String command = "squeue -j " + jobId + "--start";
-		ArrayList<String> outputs = executeCommandUsingJSCH(command);
+		ArrayList<String> outputs = executeCommand(command);
 		boolean jobRunning = isJobRunning(outputs);
 		return jobRunning;
 	}
@@ -474,12 +425,8 @@ public class DFTAgent extends HttpServlet{
 		return null;
 	}
 	
-	private void setupJob(){
-		
-	}
-	
 	private String runQuantumJob(String command) throws JSchException, IOException{
-		ArrayList<String> outputs = executeCommandUsingJSCH(command);
+		ArrayList<String> outputs = executeCommand(command);
 		if (outputs == null) {
 			return null;
 		}
@@ -487,45 +434,6 @@ public class DFTAgent extends HttpServlet{
 		System.out.println("Job id:" + jobId);
 		return jobId;
 	}
-	
-	/**
-	 * Runs a quantum job and copies the output file (log file) from CSD3
-	 * to the machine where DFT Agent is hosted.
-	 * 
-	 * @param command
-	 * @throws IOException
-	 */
-//	private String runQuantumJob(String scriptName, String inputFileName) throws JSchException, IOException, InterruptedException{
-////		String command = "cd rds/hpc-work/gaussian && sbatch ".concat(scriptName);
-//		String command = "cd /home/".concat(username).concat(" && sbatch ").concat(scriptName);
-//
-//		ArrayList<String> outputs = executeCommand(command);
-//		if (outputs == null) {
-//			return null;
-//		}
-//		String jobId = getJobId(outputs);
-//		System.out.println("Job id:" + jobId);
-//		jobPool.add(jobId);
-//		boolean isJobRunning = isJobRunning(jobId);
-//		int count = 0;
-//		System.out.println("Is the job running? " + isJobRunning);
-//		while (isJobRunning) {
-//			count++;
-//			waitBeforeStatusCheck();
-//			isJobRunning = isJobRunning(jobId);
-//		}
-//		try {
-////			downloadFile("rds/hpc-work/gaussian/".concat(inputFileName.replace(".com", ".log")),
-////					"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
-//			downloadFile("/home/msff2/".concat(inputFileName.replace(".com", ".log")),
-//			"C:/Users/msff2/Documents/HPC/KnowledgeCapturedFromAngiras");
-//		} catch (JSchException e) {
-//			logger.error(e.getMessage());
-//		} catch (SftpException e) {
-//			logger.error(e.getMessage());
-//		}
-//		return jobId;
-//	}
 	
 	/**
 	 * Deletes the job folder including all files and folders belonging to it.
@@ -537,23 +445,7 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private void deleteJobOnHPC(String jobFolder) throws JSchException, IOException, InterruptedException{
 		String command = "rm -r " + jobFolder;
-		executeCommandUsingJSCH(command);
-	}
-	
-	
-	/**
-	 * Connects the client to the server via server IP address or name. 
-	 * 
-	 * @param server IP address or name
-	 * @throws IOException
-	 */
-	public void connect(String server) throws IOException{
-        if(connection == null){
-        	connection = new Connection(server);
-            connection.connect();
-    		authenticate(username, getPassword(password));
-    		openSession();
-        }
+		executeCommand(command);
 	}
 	
 	/**
@@ -573,44 +465,6 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Open a session in order to allow to execute commands.
-	 * 
-	 * @throws IOException
-	 */
-	public void openSession() throws IOException{
-		if(connection == null)
-        	throw new IOException("Not connected to the server.");
-		if (!connection.isAuthenticationComplete())
-			throw new IOException("Authentication is not complete.");
-		session1 = connection.openSession();
-	}
-	
-	/**
-	 * Executes a command within a session.
-	 * 
-	 * @param command
-	 * @throws IOException
-	 */
-	public void executeCommand1(String command) throws IOException{
-		if(session1 == null)
-			throw new IOException("No session is open.");
-		session1.execCommand(command);
-	}
-	
-	/**
-	 * Create the reader to read the outputs of the most recently executed</br>
-	 * command.
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	public BufferedReader getReader() throws IOException{
-        if(session1 == null)
-        	throw new IOException("No session is open.");
-        return new BufferedReader(new InputStreamReader(new StreamGobbler(session1.getStdout())));
-	}
-	
-	/**
 	 * Read the output of the most recently executed command.
 	 * 
 	 * @param br
@@ -627,21 +481,6 @@ public class DFTAgent extends HttpServlet{
 		}
 		br.close();
 		return outputs;
-	}
-	
-	/**
-	 * Close the currently open session and connection. 
-	 * 
-	 * @throws IOException
-	 */
-	public void closeSessionAndConnection() throws IOException{
-        if(session1 == null)
-        	throw new IOException("No session is open.");
-		session1.close();
-        if(connection == null)
-        	throw new IOException("No connection is open.");
-		connection.close();
-		System.out.println("Connection closed test:"+(session1==null)+" session is null:"+session1.getState());
 	}
 	
 	/**
@@ -692,10 +531,10 @@ public class DFTAgent extends HttpServlet{
 	 * @throws SftpException
 	 */
 	public void deleteFolderOrFile(String folderOrFileName) throws JSchException, SftpException, IOException{
-		executeCommandUsingJSCH("rm -r "+folderOrFileName);
+		executeCommand("rm -r "+folderOrFileName);
 	}
 	
-	public ArrayList<String> executeCommandUsingJSCH(String Command) throws JSchException, IOException{
+	public ArrayList<String> executeCommand(String Command) throws JSchException, IOException{
 		ArrayList<String> outputs = null;
 		System.out.println("Establishing a channel to perform the following command:" + Command);
 		Channel execChannel = session.openChannel("exec");
