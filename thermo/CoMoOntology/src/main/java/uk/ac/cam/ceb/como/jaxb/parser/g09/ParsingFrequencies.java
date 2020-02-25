@@ -86,10 +86,8 @@ public class ParsingFrequencies {
 						 *         information about frequencies.</p>
 						 */
 						Array arrayXML = new Array();
-						
 
 						String arrayXMLUnits = array.getUnits();
-
 
 						/**
 						 * @author nk510 

@@ -64,6 +64,7 @@ public class GenerateTiSpeciesProperties {
 			
 			String spinMultiplicity = cml_m.getSpinMultiplicity() +"";
 			
+			
 			pWriter.write(f.getName().replaceAll(".g09","").toString()+","+getTiSpeciesAtomNumbers(fp.extractFormulaName(f))+","+spinMultiplicity +","+"\n");
 		}
 		

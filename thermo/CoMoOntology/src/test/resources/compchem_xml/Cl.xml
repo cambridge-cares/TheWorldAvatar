@@ -1,48 +1,54 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<module xmlns:n="http://www.xml-cml.org/dictionary/nwchem/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:cc="http://www.xml-cml.org/dictionary/compchem" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:si="http://www.xml-cml.org/unit/si" xmlns="http://www.xml-cml.org/schema" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:convention="http://www.xml-cml.org/convention" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi">
-    <module dictRef="cc:jobList">
-        <module dictRef="cc:job">
-            <module dictRef="cc:initialization">
-                <molecule>
-                    <atomArray>
-                        <atom count="1.0" elementType="Cl"/>
-                    </atomArray>
-                    <formula concise="Cl 1 "/>
-                </molecule>
-                <parameterList>
-                    <parameter dictRef="cc:method">
-                        <scalar dataType="xsd:string">uB971</scalar>
-                    </parameter>
-                    <parameter dictRef="cc:basis">
-                        <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
-                    </parameter>
-                </parameterList>
-            </module>
-            <module dictRef="cc:finalization">
-                <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="2">
-                    <atomArray>
-                        <atom atomicMass="34.9688527" z3="0.0" id="a1" x3="0.0" y3="0.0" elementType="Cl"/>
-                    </atomArray>
-                </molecule>
-                <propertyList>
-                    <property dictRef="cc:geometry_type">
-                        <scalar dataType="xsd:string">atomic</scalar>
-                    </property>
-                </propertyList>
-            </module>
-            <module dictRef="cc:environment">
-                <parameterList>
-                    <parameter dictRef="cc:program">
-                        <scalar dataType="xsd:string">Gaussian</scalar>
-                    </parameter>
-                    <parameter dictRef="cc:programVersion">
-                        <scalar dataType="xsd:string">09</scalar>
-                    </parameter>
-                    <parameter dictRef="cc:runDate">
-                        <scalar dataType="xsd:string">Mon Oct 19 21:14:21 2015.</scalar>
-                    </parameter>
-                </parameterList>
-            </module>
-        </module>
-    </module>
+<?xml version="1.0" encoding="UTF-8"?>
+<module xmlns="http://www.xml-cml.org/schema" xmlns:convention="http://www.xml-cml.org/convention" xmlns:cc="http://www.xml-cml.org/dictionary/compchem" xmlns:nonSi="http://www.xml-cml.org/unit/nonSi" xmlns:si="http://www.xml-cml.org/unit/si" xmlns:x="http://www.xml-cml.org/dictionary/cmlx/" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:n="http://www.xml-cml.org/dictionary/nwchem/">
+   <module dictRef="cc:jobList">
+      <module dictRef="cc:job">
+         <module dictRef="cc:initialization">
+            <molecule>
+               <atomArray>
+                  <atom count="1.0" elementType="Cl"/>
+               </atomArray>
+               <formula concise="Cl 1 "/>
+            </molecule>
+            <parameterList>
+               <parameter dictRef="cc:method">
+                  <scalar dataType="xsd:string">uB971</scalar>
+               </parameter>
+               <parameter dictRef="cc:basis">
+                  <scalar dataType="xsd:string">6-311+G(d,p)</scalar>
+               </parameter>
+            </parameterList>
+         </module>
+         <module dictRef="cc:finalization">
+            <molecule id="mol-final-2" formalCharge="0" convention="convention:molecular" spinMultiplicity="2">
+               <atomArray>
+                  <atom atomicMass="34.9688527" z3="0.0" id="a1" x3="0.0" y3="0.0" elementType="Cl"/>
+               </atomArray>
+            </molecule>
+            <propertyList>
+               <property dictRef="cc:geometry_type">
+                  <scalar dataType="xsd:string">atomic</scalar>
+               </property>
+               <property dictRef="cc:totalEnergy">
+                  <scalar units="nonSi:j.mol-1" dataType="xsd:double">-460.101955</scalar>
+               </property>
+               <property dictRef="cc:scfenergy">
+                  <scalar units="nonSi:hartree" dataType="xsd:double">-460.101954548</scalar>
+               </property>
+            </propertyList>
+         </module>
+         <module dictRef="cc:environment">
+            <parameterList>
+               <parameter dictRef="cc:program">
+                  <scalar dataType="xsd:string">Gaussian</scalar>
+               </parameter>
+               <parameter dictRef="cc:programVersion">
+                  <scalar dataType="xsd:string">09</scalar>
+               </parameter>
+               <parameter dictRef="cc:runDate">
+                  <scalar dataType="xsd:string">Mon Oct 19 21:14:21 2015.</scalar>
+               </parameter>
+            </parameterList>
+         </module>
+      </module>
+   </module>
 </module>

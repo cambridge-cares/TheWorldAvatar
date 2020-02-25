@@ -16,7 +16,7 @@ import uk.ac.cam.cares.tools.CSVGenerator;
 public class App {
 	
 	static String localhostUrl = "http://localhost:8080/rdf4j-server/repositories/ontospecieskb";	
-	static String claudiusUrl = "http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb";	
+	static String claudiusUrl = "http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb";
 	static String csvFilePath = "C:\\Users\\NK\\Documents\\species_test_2.csv";	
 	
 	static FederatedQuery fq = new FederatedQuery();
@@ -43,5 +43,5 @@ public class App {
 csvGenerator.generateCSVFile(fq.runFederatedSPARQL(localhostUrl,claudiusUrl,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometry()), csvFilePath);
 
 }
-    
+
 }

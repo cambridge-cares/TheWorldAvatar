@@ -3,13 +3,16 @@ package uk.ac.cam.ceb.como.jaxb.xml.generation;
 import java.io.File;
 
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.PropertyList;
+import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingElectronicEnergy;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingFrequencies;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometryType;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingRotationalConstants;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingRotationalSymmetry;
 
 /**
- * The Class GenerateProperty.
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * 
+ * The Class GenerateProperty in final module.
  */
 public class GenerateProperty {
 
@@ -19,6 +22,7 @@ public class GenerateProperty {
  * @param file the Gaussian file (g09). 
  * @return the property list final module.
  * @throws Exception the exception.
+ * 
  */
 public static PropertyList getPropertyListFinalModule(File file) throws Exception {
 		
@@ -27,6 +31,8 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		
 		ParsingFrequencies pf = new ParsingFrequencies();
 		ParsingGeometryType pgt = new ParsingGeometryType();
+		
+		ParsingElectronicEnergy electronicEnergy = new ParsingElectronicEnergy();
 		
 		PropertyList pList = new PropertyList();
 		
@@ -64,9 +70,18 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		 * 
 		 */
 		pList.getPropertyOrPropertyListOrObservation()
-		.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
+		.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));		
+		
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * <p>Generates 'electronic energy'</p>
+		 * 
+		 */
+		pList.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getTotalElectronicEnergyProperty(file.getAbsoluteFile()));
+		
+		pList.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getSCFElectronicEnergyProperty(file));
 		
 		return pList;
 	}
-
 }

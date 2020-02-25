@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This is updated version of ontochem_rdf.xsl where the following URI 
-	is used: http://www.theworldavatar.com/kb/{$folder_name}.owl# -->
-<!-- Date: February 12th, 2019. -->
+<!-- This is updated version of ontochem_rdf.xsl where the following IRI 
+	is used: http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl# -->
+<!-- Last Update: February 25th, 2020. -->
 
 <!-- Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk Copyright: Department 
 	of Chemical Engineering and Biotechnology, University of Cambrdige, United 
@@ -15,7 +15,7 @@
 	type, 8. Spin multiplicity, 9. Atomic mass for each atom - Atomic mass value 
 	- Atomic mass unit 10. Basis set, 11. Level of theory, 12. Program name, 
 	13. Program version, 14. Run date, 15. Geometry - Coordinates X, Y, Z, 16. 
-	Formal charge. -->
+	Formal charge. 17. Electronic Energy  -->
 
 <xsl:transform version="2.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
