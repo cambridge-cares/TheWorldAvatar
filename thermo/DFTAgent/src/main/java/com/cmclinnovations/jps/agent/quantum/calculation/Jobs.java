@@ -20,7 +20,7 @@ public enum Jobs {
 	EXTENSION_SLURM_FILE(".sh"),
 	EXTENSION_INPUT_FILE(".com"),
 	EXTENSION_LOG_FILE(".log"),
-	JOB_SETUP_SUCCESS_MSG("The job request has been processed and submitted."),
+	JOB_SETUP_SUCCESS_MSG("The job request has been processed successfully."),
 	JOB_SETUP_JSON_ERROR("The JSON request is ill formatted."),
 	JOB_SETUP_SLURM_SCRIPT_ERROR("The Slurm script could not be downloaded."),
 	JOB_SETUP_INPUT_FILE_ERROR("The input file for the job could not be created."),

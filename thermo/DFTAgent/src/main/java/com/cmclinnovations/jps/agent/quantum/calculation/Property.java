@@ -32,7 +32,8 @@ public enum Property {
 	JOB_PRINT_DIRECTIVE("#n"),
 	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
 	RDF4J_ONTOSPECIES_REPOSITORY_ID("ontospecies"),
-	PREFIX_BINDING_ONTOSPECIES("PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n");
+	PREFIX_BINDING_ONTOSPECIES("PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n"),
+	PREFIX_BINDING_RDFS("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n");
 	
 	private String propertyName;
 	private int value;
