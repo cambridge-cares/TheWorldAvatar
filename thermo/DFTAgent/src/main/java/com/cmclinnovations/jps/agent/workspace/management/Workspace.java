@@ -159,8 +159,7 @@ public class Workspace {
 	
 	public String copyScriptFile(String source, String destination) throws IOException{
 		try{
-		copyFile(new File(source.concat(File.separator)
-						.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName())),
+		copyFile(new File(source),
 				new File(destination.concat(File.separator)
 						.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName())));
 		return Jobs.JOB_SETUP_SUCCESS_MSG.getName();

@@ -425,7 +425,7 @@ public class DFTAgent extends HttpServlet{
 		if(jsonInputFileMsg == null){
 			return null;
 		}
-		String scriptFileMsg = ws.copyScriptFile(Property.SLURM_SCRIPT_FILE_PATH.getPropertyName(), jobFolder.getAbsolutePath());
+		String scriptFileMsg = ws.copyScriptFile(getClass().getClassLoader().getResource(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName()).getPath(), jobFolder.getAbsolutePath());
 		if(scriptFileMsg == null){
 			return null;
 		}

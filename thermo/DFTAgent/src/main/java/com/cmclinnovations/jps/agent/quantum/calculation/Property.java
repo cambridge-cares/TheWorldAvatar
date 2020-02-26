@@ -1,5 +1,7 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
+import java.io.File;
+
 /**
  * This enumerated list defines the name of important properties of</br>
  * DFT Agent. Some example properties are:</br>
@@ -24,7 +26,6 @@ public enum Property {
 	JSON_FILE_EXTENSION(".json"),
 	STATUS_FILE_NAME("status"),
 	JSON_INPUT_FILE_NAME("input"),
-	SLURM_SCRIPT_FILE_PATH("C:/TOMCAT/webapps/ROOT/script"),
 	SLURM_SCRIPT_FILE_NAME("Slurm.sh"),
 	JOB_NO_OF_CORES("%nprocshared=16"),
 	JOB_MEMORY("%mem=60GB"),
