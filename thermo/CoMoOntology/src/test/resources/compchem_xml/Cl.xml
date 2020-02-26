@@ -28,8 +28,8 @@
                <property dictRef="cc:geometry_type">
                   <scalar dataType="xsd:string">atomic</scalar>
                </property>
-               <property dictRef="cc:totalEnergy">
-                  <scalar units="nonSi:j.mol-1" dataType="xsd:double">-460.101955</scalar>
+               <property dictRef="cc:zeroPointEnergy">
+                  <scalar units="nonSi:hartree" dataType="xsd:double">0.000000</scalar>
                </property>
                <property dictRef="cc:scfenergy">
                   <scalar units="nonSi:hartree" dataType="xsd:double">-460.101954548</scalar>

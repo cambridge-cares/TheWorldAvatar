@@ -75,11 +75,17 @@ public static PropertyList getPropertyListFinalModule(File file) throws Exceptio
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * <p>Generates 'electronic energy'</p>
+		 * <p>Generates 'zero point correction'</p>
 		 * 
 		 */
-		pList.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getTotalElectronicEnergyProperty(file.getAbsoluteFile()));
+		pList.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getZeroPointCorrectionProperty(file.getAbsoluteFile()));
 		
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * <p>Generates 'scf electronic energy'</p>
+		 * 
+		 */
 		pList.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getSCFElectronicEnergyProperty(file));
 		
 		return pList;

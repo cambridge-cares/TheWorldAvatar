@@ -32,8 +32,8 @@
                <property dictRef="cc:geometry_type">
                   <scalar dataType="xsd:string">linear</scalar>
                </property>
-               <property dictRef="cc:totalEnergy">
-                  <scalar units="nonSi:j.mol-1" dataType="xsd:double">-920.285863</scalar>
+               <property dictRef="cc:zeroPointEnergy">
+                  <scalar units="nonSi:hartree" dataType="xsd:double">0.001226</scalar>
                </property>
                <property dictRef="cc:scfenergy">
                   <scalar units="nonSi:hartree" dataType="xsd:double">-920.287088935</scalar>

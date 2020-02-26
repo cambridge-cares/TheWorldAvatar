@@ -200,7 +200,7 @@ public class GenerateXml {
 			/**
 			 * Adds total energy into Property list for species with one atom. 
 			 */
-			propertyListFinalModule.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getTotalElectronicEnergyProperty(file));
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getZeroPointCorrectionProperty(file));
 			
 			/**
 			 * Adds scf energy into Property list for species with one atom.

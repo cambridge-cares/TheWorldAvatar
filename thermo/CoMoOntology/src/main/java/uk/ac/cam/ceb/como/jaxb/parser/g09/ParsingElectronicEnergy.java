@@ -26,31 +26,32 @@ public class ParsingElectronicEnergy {
  * @return a String that represents is total energy
  * @throws IOException
  */
-public static String getTotalElectronicEnegry(File file) throws IOException {
+public static String getZeroPointCorrection(File file) throws IOException {
 		
-		String electronicEnergy= "";
+		String zeroPointCorrection= "";
 		
 		BufferedReader br = new BufferedReader(new FileReader(file));
 		
  		for (String line; (line = br.readLine()) != null;) {
 
-			if (line.contains("Sum of electronic and zero-point Energies=")) {
+			if (line.contains("Zero-point correction=")) {
 		
-				line = line.substring(line.lastIndexOf("=") + 1);
-				
+				line = line.substring(line.indexOf("=") + 1);
+				line =line.substring(0, line.indexOf("("));
 				line = line.replaceAll(" ", "");
 				
 				System.out.println(line);
 				
-				electronicEnergy = line;
+				zeroPointCorrection = line;
 			}
 		}
  		
 		br.close();
 		
-		System.out.println("Electronic energy: " + electronicEnergy);
+		System.out.println("Zero point correction: " + zeroPointCorrection);
 		
-		return electronicEnergy;
+		
+		return zeroPointCorrection;
 	}
 
 /**
@@ -94,16 +95,16 @@ public static String getSCFElectronicEnergy(File file) throws IOException {
  * @throws Exception
  * 
  */
-public Property getTotalElectronicEnergyProperty(File file) throws Exception {
+public Property getZeroPointCorrectionProperty(File file) throws Exception {
 	
 	Property property  = new Property();
 	
 	Scalar scalar = new Scalar();
 	
-	property.setDictRef("cc:totalEnergy");
+	property.setDictRef("cc:zeroPointEnergy");
 	
-	scalar.setValue(getTotalElectronicEnegry(file));
-	scalar.setUnits("nonSi:j.mol-1");
+	scalar.setValue(getZeroPointCorrection(file));
+	scalar.setUnits("nonSi:hartree");
 	scalar.setDataType("xsd:double");
 	
 	property.getScalarOrArrayOrMatrix().add(scalar);
