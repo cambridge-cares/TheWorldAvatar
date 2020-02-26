@@ -2,6 +2,7 @@ package uk.ac.cam.cares.des.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -14,6 +15,16 @@ import java.util.List;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.WalletUtils;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.Transfer;
+import org.web3j.utils.Convert;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -429,6 +440,28 @@ public class Test_DES extends TestCase{
 		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
 		 File baseUrl=new File(dir);
 		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory());
+	}
+	public static void testBlockchainInteraction() throws IOException {
+		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
+		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
+		String clientVersion = web3ClientVersion.getWeb3ClientVersion();
+		System.out.println("Connected to Ethereum Client Version: " + clientVersion);
+		try {
+			//Get balance
+			EthGetBalance ethGetBalance=web3.ethGetBalance("0x1eD35d5845F8162B40df26c34562cFabd4892017", DefaultBlockParameterName.LATEST).sendAsync().get();
+			java.math.BigInteger wei = ethGetBalance.getBalance();
+			System.out.println(wei);
+			Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\residential.json");
+			TransactionReceipt transactionReceipt = Transfer.sendFunds(
+			        web3, credentials, "0x9e64A50EfA603BCD127001b689635fca4669ba9d",
+			        BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
+			System.out.println(transactionReceipt);
+//			String pk = "04dab771c776d8345c8877a70f26c03a3bd7927abbc65ceff14e74ee23ab0fe8"; //private key of industrial
+//		   Credentials credentials = Credentials.create(pk);
+		}catch (Exception ex) {
+			System.out.println(ex);
+		}
+	
 	}
 	
 	
