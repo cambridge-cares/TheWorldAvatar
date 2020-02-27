@@ -22,9 +22,11 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
 /**
+ * 
  * The Class GenerateXml.
  *
- * @author nk510
+ * @author nk510 (caresssd@hermes.cam.ac.uk)
+ * 
  *         <p>
  * 		Generates CompChem XML files by parsing Gaussian (g09) files. which
  *         are stored in folder 'src/test/resources/g09/' of CoMoOntology.
@@ -32,6 +34,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  *         @author{pb556} in CoMoIOChemistry, and CoMoEnthalpyEstimation
  *         projects.
  *         </p>
+ *         
  */
 
 public class GenerateXml {

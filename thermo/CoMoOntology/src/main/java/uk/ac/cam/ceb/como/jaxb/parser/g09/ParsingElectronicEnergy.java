@@ -70,7 +70,6 @@ public static String getSCFElectronicEnergy(File file) throws IOException {
 
 		if (line.contains("SCF Done:")) {
 			
-
 			line = line.substring(line.indexOf("=") + 1);
 			line=line.substring(line.indexOf(" ")+ 2);
 			line =line.substring(0, line.indexOf(" ")); 
@@ -101,7 +100,7 @@ public Property getZeroPointCorrectionProperty(File file) throws Exception {
 	
 	Scalar scalar = new Scalar();
 	
-	property.setDictRef("cc:zeroPointEnergy");
+	property.setDictRef("cc:ZeroPointEnergy");
 	
 	scalar.setValue(getZeroPointCorrection(file));
 	scalar.setUnits("nonSi:hartree");
@@ -111,7 +110,6 @@ public Property getZeroPointCorrectionProperty(File file) throws Exception {
 
 	return property;
 }
-
 
 /**
  * @author NK510 (caresssd@hermes.cam.ac.uk)

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This is updated version of ontochem_rdf.xsl where the following IRI 
-	is used: http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl# -->
-<!-- Last Update: February 25th, 2020. -->
+<!-- This is updated version of ontochem_rdf.xsl where the following URI 
+	is used: http://www.theworldavatar.com/kb/{$folder_name}.owl# -->
+<!-- Date: February 12th, 2019. -->
 
 <!-- Author: Nenad B. Krdzavac, e-mail: nk510(at)cam.ac.uk Copyright: Department 
 	of Chemical Engineering and Biotechnology, University of Cambrdige, United 
@@ -15,7 +15,7 @@
 	type, 8. Spin multiplicity, 9. Atomic mass for each atom - Atomic mass value 
 	- Atomic mass unit 10. Basis set, 11. Level of theory, 12. Program name, 
 	13. Program version, 14. Run date, 15. Geometry - Coordinates X, Y, Z, 16. 
-	Formal charge. 17. Electronic Energy  -->
+	Formal charge. -->
 
 <xsl:transform version="2.0"
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -546,7 +546,7 @@
 
 						<!-- URI for chemical elements implemented in Periodic table ontology 
 							are not available on the web. For example: http://http://daml.org/2003/01/periodictable/PeriodicTable#Ti 
-							does not give any result if we run it in a browser. -->
+							does not give any result if we run it in a browser. These IRIs are not resolvable. -->
 
 						<gc:hasAtom
 							rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#atom_{$velementType}{$atom_count}_{generate-id()}_{$id}" />
@@ -918,6 +918,101 @@
 						</xsl:for-each>
 
 					</xsl:if>
+					
+					
+					
+					
+					
+					
+					
+					
+					<!-- Transformation scf energy property -->
+
+					<xsl:if test="@dictRef='cc:scfenergy'">
+
+						<xsl:variable name="rcdictRef_value">
+							<xsl:value-of select="@dictRef" />
+						</xsl:variable>
+
+						<xsl:variable name="rcdictRef_value_no_namespace">
+							<xsl:value-of
+								select="substring-after($rcdictRef_value,'cc:')" />
+						</xsl:variable>
+
+						<xsl:for-each select="*[local-name()='scalar']">
+
+							<xsl:variable name="scfenergy_unit"> <!-- rconst_unit -->
+								<xsl:value-of select="@units" />
+							</xsl:variable>
+
+							<xsl:variable name="scfenergy_unit_value_no_namespace"> <!-- rconst_unit_value_no_namespace -->
+								<xsl:value-of
+									select="substring-after($scfenergy_unit,':')" /> <!-- rconst_unit -->
+							</xsl:variable>
+							
+							<!--<owl:NamedIndividual rdf:about="http://como.cheng.cam.ac.uk/molhub/compchem/{$vdictRef_parent_of_parent_no_namespace}_{$vmodule}_molecular_methоdology_{$id}"> -->
+							<owl:NamedIndividual
+								rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$folder_name}">
+								
+								<!--<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09" />-->
+								
+								<xsl:if test="$program_name='Gaussian'">
+			
+			                    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G{$program_version}"/>
+			
+	 		                    </xsl:if>
+			
+								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+
+								<gc:isCalculationOn rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_{generate-id()}_{$id}" />
+
+							</owl:NamedIndividual>
+
+							<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_{generate-id()}_{$id}">
+								
+								<rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#ScfEnergy" />
+								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+
+								<!-- <ontocompchem:hasRotationalConstants><xsl:value-of select="." /></ontocompchem:hasRotationalConstants>-->
+								
+								<gc:hasElectronicEnergy rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_scfenergy_value_{generate-id()}_{$id}"/>
+								
+							</owl:NamedIndividual>
+							
+							<owl:NamedIndividual rdf:about="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_{$rcdictRef_value_no_namespace}_scfenergy_value_{generate-id()}_{$id}"> 
+								
+								<rdf:type rdf:resource="http://purl.org/gc/FloatValue" />
+								
+								<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+								
+								<gc:hasValue>
+								<xsl:value-of select="." />
+								</gc:hasValue>
+								
+								<xsl:if test="$scfenergy_unit_value_no_namespace='hartree'">
+								
+								<gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Hartree" />
+									
+								</xsl:if>
+								
+							</owl:NamedIndividual>
+							
+
+						</xsl:for-each>
+
+					</xsl:if>
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
+					
 
 				</xsl:for-each>
 
