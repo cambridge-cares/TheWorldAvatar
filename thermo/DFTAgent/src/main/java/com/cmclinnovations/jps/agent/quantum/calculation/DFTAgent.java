@@ -75,6 +75,25 @@ public class DFTAgent extends HttpServlet{
     }
 	
 	/**
+     * Shows the following statistics of Gaussian jobs processed by DFT Agent.</br>
+     * - Total number of jobs submitted
+     * - Total number of jobs currently running  
+     * - Total number of jobs successfully completed
+     * - Total number of jobs terminated with an error
+     * - Total number of jobs not started yet
+     * 
+     * @param input the JSON input to set up and run a Gaussian job.
+     * @return a message if the job was set up successfully or failed. 
+     */
+	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
+    @ResponseBody
+    public String showStatistics() throws IOException, DFTAgentException{
+		System.out.println("Received a request to show statistics.\n");
+		logger.info("Received a request to show statistics.\n");
+		return getStatistics();
+    }
+	
+	/**
 	 * Starts the scheduler to monitor Gaussian jobs.
 	 * 
 	 * @throws DFTAgentException
@@ -101,10 +120,8 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private void monitorJobs() {
 		Workspace workspace = new Workspace();
-		if (jobSpace == null) {
-			jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+		jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
 					Property.AGENT_CLASS.getPropertyName());
-		}
 		try {
 			if (session == null) {
 				System.out.println("Initialising a session.");
@@ -132,6 +149,26 @@ public class DFTAgent extends HttpServlet{
 		} catch(JSchException e){
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Produces the statistics about jobs.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	private String getStatistics() throws IOException{
+		Workspace workspace = new Workspace();
+		jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+					Property.AGENT_CLASS.getPropertyName());
+		JobStatistics jobStatistics = new JobStatistics(jobSpace);
+		String statistics =     "Number of jobs currently running       | "+jobStatistics.getJobsRunning()+"\n";
+		statistics = statistics+"Number of jobs successfully completed  | "+jobStatistics.getJobsCompleted()+"\n";
+		statistics = statistics+"Number of jobs terminated with an error| "+jobStatistics.getJobsErrorTerminated()+"\n";
+		statistics = statistics+"Number of jobs to start                | "+jobStatistics.getJobsNotStarted()+"\n";
+		statistics = statistics+"--------------------------------------------\n";
+		statistics = statistics+"Total number of jobs submitted         | "+jobStatistics.getJobsSubmitted()+"\n";
+		return statistics;
 	}
 	
 	/**
@@ -387,25 +424,21 @@ public class DFTAgent extends HttpServlet{
 		if(workspaceFolder == null){
 			return Jobs.JOB_SETUP_ERROR.getName();
 		}else{
-			File jobFolder = workspace.createJobFolder(workspaceFolder.getAbsolutePath());
-			if(jobFolder == null){
-				return Jobs.JOB_SETUP_ERROR.getName();
-			}else{
-				return setUpQuantumJob(workspace, workspaceFolder, jobFolder, jsonString);
-			}
+			return setUpQuantumJob(workspace, workspaceFolder, jsonString);
 		}
 	}
 	
-	private String setUpQuantumJob(Workspace ws, File workspaceFolder, File jobFolder, String jsonString) throws IOException, DFTAgentException{
+	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonString);
     	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
     		return Jobs.JOB_SETUP_SPECIES_IRI_MISSING.getName();
     	}
 		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
-    	if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
+		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
     		return Jobs.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName();
     	}
+		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath());
     	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, speciesGeometry)==null){
     		return null;
     	}

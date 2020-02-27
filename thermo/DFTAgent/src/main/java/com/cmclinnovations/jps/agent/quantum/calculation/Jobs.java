@@ -14,6 +14,7 @@ public enum Jobs {
 	STATUS_JOB_NOT_STARTED("not started"),
 	STATUS_JOB_RUNNING("running"),
 	STATUS_JOB_COMPLETED("completed"),
+	STATUS_JOB_ERROR_TERMINATED("error termination"),
 	ATTRIBUTE_JOB_ID("JobId:"),
 	ATTRIBUTE_AGENT_ID("AgentId:"),
 	ATTRIBUTE_HPC_ADDRESS("HPCAddress:"),
