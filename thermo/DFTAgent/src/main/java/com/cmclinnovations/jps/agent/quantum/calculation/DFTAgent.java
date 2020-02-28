@@ -106,7 +106,7 @@ public class DFTAgent extends HttpServlet{
      * 
      * @return the statistics in HTML format. 
      */
-	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
+	@RequestMapping(value="/job/show/statistics", method = RequestMethod.GET)
     @ResponseBody
     public String showStatistics() throws IOException, DFTAgentException{
 		System.out.println("Received a request to show statistics.\n");
@@ -146,7 +146,7 @@ public class DFTAgent extends HttpServlet{
 					Property.AGENT_CLASS.getPropertyName());
 		try {
 			if (session == null || scheduledIteration%10==0) {
-				if(session.isConnected()){
+				if(session!=null && session.isConnected()){
 					session.disconnect();
 				}
 				System.out.println("Initialising a session.");
@@ -478,7 +478,7 @@ public class DFTAgent extends HttpServlet{
         	String message = setUpJobOnAgentMachine(jsonString);
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
-        	return jsonString;
+        	return obj.toString();
     }
 	
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, DFTAgentException{
