@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.des;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -28,6 +29,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 public class FrontEndCoordination extends JPSHttpServlet{
 
 	private static final long serialVersionUID = 1L;
+	private String cityiri = null;
 
 	@Override
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -43,7 +45,7 @@ public class FrontEndCoordination extends JPSHttpServlet{
 	    	logger.info("latest directory= "+directorychosen);
 	    	DistributedEnergySystem a = new DistributedEnergySystem();
 	    	responseParams = a.provideJSONResult(directorychosen);
-	    	
+	    	cityiri = responseParams.optString("cityIRI", "http://dbpedia.org/page/Singapore");
  	        JSONObject jo = determineValue(responseParams);
  		    System.out.println(jo.toString());
  			String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
@@ -59,9 +61,15 @@ public class FrontEndCoordination extends JPSHttpServlet{
     /*
      * Gets the latest file created using rdf4j
      */
-    public static String getLastModifiedDirectory() {
+    public String getLastModifiedDirectory() {
     	String agentiri = "http://www.theworldavatar.com/kb/agents/Service__DESAgent.owl#Service";
-    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,null);
+		List<String> lst = null;
+    	if (cityiri != null) {
+    		lst = new ArrayList<String>();
+    		lst.add(cityiri);
+    	}
+    	System.out.println(lst);
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
 		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
