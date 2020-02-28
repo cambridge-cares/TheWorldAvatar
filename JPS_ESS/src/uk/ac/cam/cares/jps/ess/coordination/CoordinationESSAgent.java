@@ -66,12 +66,8 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		String resultStart = AgentCaller.executeGetWithJsonParameter(optimizationresult, jo.toString());
 		
 		logger.info("optimatization end result= "+resultStart);
-		String eniri = new JSONObject(resultStart).getString("electricalnetwork");
-		jo.put("electricalnetwork",eniri);
-		
-		String resultStartLocator = AgentCaller.executeGetWithJsonParameter("JPS_ESS/LocateEnergyStorage", jo.toString());
-				
-		jo.put("batterylist",new JSONObject(resultStartLocator).getJSONArray("batterylist"));
+						
+		jo.put("batterylist",new JSONObject(resultStart).getJSONArray("batterylist"));
 		
 		String finresult=AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/EnergyStrorageRetrofit", jo.toString());
 	

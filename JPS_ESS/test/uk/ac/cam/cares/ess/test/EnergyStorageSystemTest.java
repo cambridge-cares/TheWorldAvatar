@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.jena.ontology.OntModel;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -15,6 +16,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.ess.EnergyStorageSystem;
 
 
@@ -149,11 +151,37 @@ public void testCoordinationStartSimulationESSScenario() throws IOException  {
 	pvgeniris.clear();
 }
 
+public void testCreateScenarioAndCallESSAgent() throws JSONException {
+	
+	String scenarioName = "testESSTRIAL01"+usecaseID;	
+	JSONObject jo = new JSONObject();
+	pvgeniris.add(pvGenIRI);
+	jo.put("electricalnetwork", ENIRI);
+	jo.put("BatteryCatalog", batIRI);
+	jo.put("RenewableEnergyGenerator", pvgeniris);
+	String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_ESS/startsimulationCoordinationESS", jo.toString());
+	
+	System.out.println(result);
+	
+}
+public void testCallENAgentFromCreatedWorld() throws JSONException {
+	
+	String scenarioName = "testESSTRIAL01";
+	
+	JSONObject jo = new JSONObject();
+	pvgeniris.add(pvGenIRI);
+	jo.put("electricalnetwork", ENIRI);
+	String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
+	
+	System.out.println(result);
+	
+}
+
 	
 	public void testCreateCSV() throws IOException  {
 		//String batIRI="http://www.theworldavatar.com/kb/batterycatalog/BatteryCatalog.owl#BatteryCatalog";
 		EnergyStorageSystem a = new EnergyStorageSystem();
-		OntModel modelbattery=a.readBatteryGreedy(batIRI);
+		OntModel modelbattery=EnergyStorageSystem.readBatteryGreedy(batIRI);
 		pvgeniris.add(pvGenIRI);
 		String dataPath = QueryBroker.getLocalDataPath();
 		String baseUrl = dataPath + "/JPS_ESS";

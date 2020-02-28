@@ -23,7 +23,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
 @WebServlet(urlPatterns = { "/ESSAgent"})
@@ -131,6 +130,16 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(batterycatiri, batteryInfo);
+	}
+	
+	public static OntModel readModelGreedy(String iriofnetwork) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
 	}
 	
 	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
@@ -328,13 +337,12 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			JSONObject joforess = requestParams;
 			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 			System.out.println("baseURL: " + baseUrl);
-			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
 			String batIRI=joforess.getString("BatteryCatalog");
-			//String ENIRI=joforess.getString("electricalnetwork");
+			String ENIRI=joforess.getString("electricalnetwork");
 			
-			//String dirOfOPF=joforess.getString("folder");
+			List<String> pvGenIRI=filterPV(ENIRI);
 			
-			System.out.println("GENERATOR: " + pvGenIRI);
+			//System.out.println("GENERATOR: " + pvGenIRI);
 			System.out.println("parameter got= "+joforess.toString());
 						
 			JSONObject resultofbattery = null;
@@ -386,10 +394,58 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		return resultList;
 	}*/
 	
-	
+	public List<String> filterPV (String ENIRI){
+	OntModel model=readModelGreedy(ENIRI);
+		
+		String queryGenerator = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "SELECT ?entity ?valueofx ?valueofy ?BusNumbervalue "
+
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j9:realizes <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SolarGeneration> ."
+				+ "?entity   j2:isModeledBy ?model ."
+
+				+ "?model   j5:hasModelVariable ?num ." 
+				+ "?num  a  j3:BusNumber  ." 
+				+ "?num  j2:hasValue ?vnum ."
+				+ "?vnum   j2:numericalValue ?BusNumbervalue ." // number
+
+				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."
+
+				+ "}";
+		
+		ResultSet resultSet = JenaHelper.query(model, queryGenerator);
+		String resultquerypv = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(resultquerypv);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultquerypv, keys);
+
+		List<String> pvGenIRI= new ArrayList<String>();
+		for(int x=0;x<resultList.size();x++) {
+			pvGenIRI.add(resultList.get(x)[0]);
+		}
+		logger.info("PV iri selected= "+pvGenIRI.size());
+		logger.info("===================================================================================");
+		return pvGenIRI;
+		
+	}
 
 	public JSONObject optimizedBatteryMatching(String baseUrl, List<String> pvGenIRI, String batIRI) throws IOException {
 		OntModel modelbattery=readBatteryGreedy(batIRI);
+		
 		prepareCSVPahigh(pvGenIRI,baseUrl);
 		prepareCSVRemaining(batIRI,baseUrl,modelbattery);		
 		try {

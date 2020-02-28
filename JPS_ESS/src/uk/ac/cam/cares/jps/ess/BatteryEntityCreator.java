@@ -25,8 +25,8 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 
-@WebServlet(urlPatterns = { "/LocateEnergyStorage" })
-public class EnergyStorageLocator extends JPSHttpServlet {
+@WebServlet(urlPatterns = { "/CreateBattery" })
+public class BatteryEntityCreator extends JPSHttpServlet {
 	
 	
 	private OntClass coordinateclass = null;
@@ -93,7 +93,7 @@ public class EnergyStorageLocator extends JPSHttpServlet {
 		String ENIRI=joforess.getString("electricalnetwork");
 		String storagetype=joforess.getString("storage");
 		
-		Double valueboundary=0.3;
+		Double valueboundary=0.3; //later is extracted from the battery type
 		OntModel model = readModelGreedy(ENIRI);
 		
 	 JSONArray listbat=createBatteryOwlFile(model, storagetype,valueboundary);
