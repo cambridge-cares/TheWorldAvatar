@@ -65,7 +65,7 @@ public class DFTAgent extends HttpServlet{
      * Allows to perform a SPARQL query of any complexity.</br>
      * It returns the results in JSON format.
      * 
-     * @param input the JSON input to set up and run a Gaussian job.
+     * @param input the JSON input to set up and run a quantum job.
      * @return a message if the job was set up successfully or failed. 
      */
 	@RequestMapping(value="/job/request", method = RequestMethod.GET)
@@ -77,14 +77,14 @@ public class DFTAgent extends HttpServlet{
     }
 	
 	/**
-     * Shows the following statistics of Gaussian jobs processed by DFT Agent.</br>
+     * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
      * - Total number of jobs terminated with an error
      * - Total number of jobs not started yet
      * 
-     * @param input the JSON input to set up and run a Gaussian job.
+     * @param input the JSON input to set up and run a quantum job.
      * @return a message if the job was set up successfully or failed. 
      */
 	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
@@ -96,7 +96,7 @@ public class DFTAgent extends HttpServlet{
     }
 	
 	/**
-	 * Starts the scheduler to monitor Gaussian jobs.
+	 * Starts the scheduler to monitor quantum jobs.
 	 * 
 	 * @throws DFTAgentException
 	 */
@@ -115,7 +115,7 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Monitors the currently running Gaussian jobs to allow new jobs to start.</br>
+	 * Monitors the currently running quantum jobs to allow new jobs to start.</br>
 	 * In doing so, it checks if the number of running jobs is less than the</br>
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
@@ -156,7 +156,7 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Produces the statistics about jobs.
+	 * Produces the statistics about qunatum jobs.
 	 * 
 	 * @return
 	 * @throws IOException
@@ -171,7 +171,6 @@ public class DFTAgent extends HttpServlet{
 		statistics = statistics + "<center>";
 		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below:";
 		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
-		
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated()+""));
@@ -412,9 +411,9 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Sets up a job by creating the job folder and the following files</br>
+	 * Sets up a quantum job by creating the job folder and the following files</br>
 	 * under this folder:</br>
-	 * - the Gaussian input file.</br>
+	 * - the input file.</br>
 	 * - the Slurm script file.</br.
 	 * - the Status file.</br>
 	 * - the JSON input file, which comes from the user request.</br>

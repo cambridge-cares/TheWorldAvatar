@@ -136,6 +136,13 @@ public class JobStatistics {
 		return tableHeader;
 	}
 	
+	/**
+	 * Prepares the row of table showing statistics about jobs submitted to DFT Agent.
+	 * 
+	 * @param property
+	 * @param value
+	 * @return
+	 */
 	public String getStatisticsTableRow(String property, String value){
 		String tableRow = "<tr>";
 		tableRow = tableRow + "<td>"+property+"</td>";
