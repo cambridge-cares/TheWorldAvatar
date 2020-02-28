@@ -33,19 +33,7 @@ document.addEventListener("click", function (evt){
 });
   // addWeatherData();
   var hourOfDay = [];
-  function createHourlyIntervals(){
-    var d = new Date();
-    var n = d.getHours();
-    for (i = 0; i < 24; i++){
-      hourOfDay.push(n + ":00");
-      n++; 
-      if (n == 24){
-        n = 0;
-      }
-
-    }
-
-  }
+  
   function makeChart(data){
     //data is an array of objects where each object represents a datapoint
     console.log(hourOfDay);
@@ -55,7 +43,7 @@ document.addEventListener("click", function (evt){
     tempGraph = new Chart("temperature", {
       type: 'bar',
       data: {
-        labels:data.timer,
+        labels:hourOfDay,
         datasets: [
           {
           backgroundColor:'rgba(126, 158, 211, 1)',
@@ -99,7 +87,7 @@ document.addEventListener("click", function (evt){
     irradGraph = new Chart("irradiation", {
       type: 'line',
       data: {
-        labels:data.timer,
+        labels:hourOfDay,
         datasets: [
           {
             pointRadius:10,
@@ -159,7 +147,6 @@ document.addEventListener("click", function (evt){
     console.log(data);
     response = JSON.parse(data);
     console.log(response);
-    createHourlyIntervals();
     makeChart(response);
     makeOutputChart(response);
     hourOfDay = response.timer;
@@ -171,11 +158,7 @@ document.addEventListener("click", function (evt){
   });
 
   }
-  function removeData(chart) {
-    chart.data.labels.shift();
-    chart.data.datasets[0].data.shift();
-    chart.update();
-}
+  
   function displayHash(data, sandr){
     console.log(data);
     var lst = document.getElementById("txhashes");
@@ -191,17 +174,7 @@ document.addEventListener("click", function (evt){
       le.push(li);
     }
   }
-  function addData(chart, elem){
-    //get date
-    var d = new Date(); 
-    h = d.getHours();
-    stmp = h + ":" + m ;
-    chart.data.labels.push(new Date().toLocaleTimeString());
-    console.log(elem);
-    chart.data.datasets[0].data.push(elem);
-    chart.update();
-  }
-  
+
  
 function configRH(idofgraph, data){
   
@@ -271,7 +244,7 @@ function configRH(idofgraph, data){
     outputGraph = new Chart("graph4", {
       type: 'line',
       data: {
-        labels:data.timer,
+        labels:hourOfDay,
         datasets: [
           {
             label:'Home',
