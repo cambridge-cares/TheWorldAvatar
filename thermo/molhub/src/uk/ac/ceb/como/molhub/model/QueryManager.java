@@ -25,6 +25,7 @@ import aima.core.logic.propositional.kb.data.Literal;
 import aima.core.logic.propositional.parsing.ast.Sentence;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
 import uk.ac.ceb.como.molhub.bean.AtomicMass;
+import uk.ac.ceb.como.molhub.bean.ElectronicEnergy;
 import uk.ac.ceb.como.molhub.bean.FormalCharge;
 import uk.ac.ceb.como.molhub.bean.Frequency;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
@@ -810,6 +811,8 @@ public class QueryManager {
 	/**
 	 * 
 	 * Gets the all rotational constant.
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 *
 	 * @param uuid the uuid is name for unique folder.
 	 * @return the rotational constant.
@@ -881,5 +884,80 @@ public class QueryManager {
 		}
 
 		return rotationalConstantList;
+	}
+	
+	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param uuid  the uuid is name for unique folder.
+	 * @param electronicEnergyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy.
+	 * @return The List of electronic energy.
+	 */
+	public static List<ElectronicEnergy> getElectronicEnergy(String uuid, String electronicEnergyClass){
+		
+		
+		List<ElectronicEnergy> electronicEnergyList = new ArrayList<ElectronicEnergy>();
+		
+		String queryString = QueryString.getElectronicEnergy(uuid, electronicEnergyClass);
+		
+		
+		Repository repository = new HTTPRepository(serverUrl);
+
+		repository.initialize();
+
+		RepositoryConnection connection = repository.getConnection();
+
+		try {
+
+			connection.begin(IsolationLevels.SNAPSHOT_READ);
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			TupleQueryResult result = tupleQuery.evaluate();
+
+			try {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					ElectronicEnergy electronicEnergy = new ElectronicEnergy(							
+							bindingSet.getValue("energyValue").stringValue(),
+							bindingSet.getValue("energyUnit").stringValue());
+
+					electronicEnergyList.add(electronicEnergy);
+				}
+
+				connection.commit();
+
+			} catch (Exception e) {
+
+				logger.info(e.getMessage());
+
+			} finally {
+
+				result.close();
+
+			}
+
+		} catch (RepositoryException e) {
+
+			logger.info(e.getMessage());
+
+			connection.rollback();
+
+		} finally {
+
+			connection.close();
+
+			repository.shutDown();
+
+		}
+		
+		
+		return electronicEnergyList;
+		
+		
 	}
 }

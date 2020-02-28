@@ -10,6 +10,7 @@ import org.apache.struts2.ServletActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 
 import uk.ac.ceb.como.molhub.bean.AtomicMass;
+import uk.ac.ceb.como.molhub.bean.ElectronicEnergy;
 import uk.ac.ceb.como.molhub.bean.FormalCharge;
 import uk.ac.ceb.como.molhub.bean.Frequency;
 import uk.ac.ceb.como.molhub.bean.MoleculeProperty;
@@ -81,7 +82,18 @@ public class MoleculeViewAction extends ActionSupport {
 
 	/** The rotational constant list. */
 	List<RotationalConstant> rotationalConstantList = new ArrayList<RotationalConstant>();
+	
+	/**
+	 * The scf electronic energy list.
+	 */
+	List<ElectronicEnergy> scfElectronicEnergyList = new ArrayList<ElectronicEnergy>();
 
+	/**
+	 * The zero-point electronic energy list. 
+	 */
+	List<ElectronicEnergy> zeroPointElectronicEnergyList = new ArrayList<ElectronicEnergy>();
+	
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -139,6 +151,10 @@ public class MoleculeViewAction extends ActionSupport {
 
 		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
 		
+		
+		scfElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ScfEnergy");
+		
+		zeroPointElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ZeroPointEnergy");
 		
 		return SUCCESS;
 	}
@@ -359,5 +375,23 @@ public class MoleculeViewAction extends ActionSupport {
 	public void setFormalChargeList(List<FormalCharge> formalChargeList) {
 		this.formalChargeList = formalChargeList;
 	}
+
+	public List<ElectronicEnergy> getScfElectronicEnergyList() {
+		return scfElectronicEnergyList;
+	}
+
+	public void setScfElectronicEnergyList(List<ElectronicEnergy> scfElectronicEnergyList) {
+		this.scfElectronicEnergyList = scfElectronicEnergyList;
+	}
+
+	public List<ElectronicEnergy> getZeroPointElectronicEnergyList() {
+		return zeroPointElectronicEnergyList;
+	}
+
+	public void setZeroPointElectronicEnergyList(List<ElectronicEnergy> zeroPointElectronicEnergyList) {
+		this.zeroPointElectronicEnergyList = zeroPointElectronicEnergyList;
+	}
+
+	
 	
 }

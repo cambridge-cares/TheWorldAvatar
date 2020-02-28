@@ -35,7 +35,7 @@
                <property dictRef="cc:geometry_type">
                   <scalar dataType="xsd:string">nonlinear</scalar>
                </property>
-               <property dictRef="cc:zeroPointEnergy">
+               <property dictRef="cc:ZeroPointEnergy">
                   <scalar units="nonSi:hartree" dataType="xsd:double">0.135451</scalar>
                </property>
                <property dictRef="cc:scfenergy">

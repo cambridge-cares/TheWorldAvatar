@@ -376,6 +376,46 @@ Here is java script for visualization molecules.
                     <td></td>
                     <td></td>
                 </tr>
+                
+                
+                <tr align="left">
+                    <td align="left">
+                    <s:if test="%{scfElectronicEnergyList.size>0}">
+                    <b>SCF Electronic Energy</b><P/>
+                     <s:iterator value="scfElectronicEnergyList" var="resultScfElectronicEnergy">
+                     <ul>
+                     <li><b>SCF Electronic Energy Value:</b> <s:property value="#resultScfElectronicEnergy.electronicEnergyValue"/></li>
+                     <li><b>SCF Electronic Energy Unit:</b><a href="<s:property value="#resultScfElectronicEnergy.electronicEnergyUnit"/>"><s:property value="#resultScfElectronicEnergy.electronicEnergyUnit"/></a></li>
+                     </ul>
+                     </s:iterator>
+                     </s:if>                    
+                    </td>                    
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+                
+                
+                <tr align="left">
+                    <td align="left">
+                    <s:if test="%{zeroPointElectronicEnergyList.size>0}">
+                    <b>Zero-point Electronic Energy</b><P/>
+                     <s:iterator value="zeroPointElectronicEnergyList" var="resultZeroPointElectronicEnergy">
+                     <ul>
+                     <li><b>Zero-point Electronic Energy Value:</b> <s:property value="#resultZeroPointElectronicEnergy.electronicEnergyValue"/></li>
+                     <li><b>Zero-point Electronic Energy Unit:</b><a href="<s:property value="#resultZeroPointElectronicEnergy.electronicEnergyUnit"/>"><s:property value="#resultZeroPointElectronicEnergy.electronicEnergyUnit"/></a></li>
+                     </ul>
+                     </s:iterator>
+                     </s:if>                    
+                    </td>                    
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+                
+                
             </tbody>
         </table>
         
