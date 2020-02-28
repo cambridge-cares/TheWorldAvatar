@@ -84,10 +84,11 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
      * @throws rejection if battery is not called. 
      */
     runBtn.click(function () {
-        scenario = document.getElementById("scenarioTxt").value+uuidv4();
+        scenario = document.getElementById("scenarioTxt").value;
         if (scenario == ''){
-            scenario = "testBatt1"+uuidv4(); //auto set scenario to standard to differentiate from base
+            scenario = "testBatt1"; //auto set scenario to standard to differentiate from base
         }
+        scenario=scenario+uuidv4();
         ppMap.clearAnimatedLines();
         clearMarkers();
         console.log(scenario);
