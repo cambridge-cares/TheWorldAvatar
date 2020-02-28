@@ -50,9 +50,11 @@ public class DFTAgent extends HttpServlet{
 	Connection connection;
 	boolean isAuthenticated;
 	private File jobSpace;
-
+	
 	static com.jcraft.jsch.Session session;
 	static JSch jsch = new JSch();
+	
+	static int scheduledIteration = 0;
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
@@ -119,17 +121,19 @@ public class DFTAgent extends HttpServlet{
 	 * 
 	 */
 	private void monitorJobs() {
+		scheduledIteration++;
 		Workspace workspace = new Workspace();
 		jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
 					Property.AGENT_CLASS.getPropertyName());
 		try {
-			if (session == null) {
+			if (session == null || scheduledIteration%10==0) {
 				System.out.println("Initialising a session.");
 				session = jsch.getSession(username, server, 22);
 				String pwd = getPassword(password);
 				session.setPassword(pwd);
 				session.setConfig("StrictHostKeyChecking", "no");
 				session.connect();
+				scheduledIteration = 0;
 			}
 			Map<String, List<String>> jobsRunning = new LinkedHashMap<>();
 			Map<String, List<String>> jobsNotStarted = new LinkedHashMap<>();
@@ -162,12 +166,21 @@ public class DFTAgent extends HttpServlet{
 		jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
 					Property.AGENT_CLASS.getPropertyName());
 		JobStatistics jobStatistics = new JobStatistics(jobSpace);
-		String statistics =     "Number of jobs currently running       | "+jobStatistics.getJobsRunning()+"\n";
-		statistics = statistics+"Number of jobs successfully completed  | "+jobStatistics.getJobsCompleted()+"\n";
-		statistics = statistics+"Number of jobs terminated with an error| "+jobStatistics.getJobsErrorTerminated()+"\n";
-		statistics = statistics+"Number of jobs to start                | "+jobStatistics.getJobsNotStarted()+"\n";
-		statistics = statistics+"--------------------------------------------\n";
-		statistics = statistics+"Total number of jobs submitted         | "+jobStatistics.getJobsSubmitted()+"\n";
+		String statistics = jobStatistics.getHTMLHeader();
+		statistics = statistics + "<body>";
+		statistics = statistics + "<center>";
+		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below:";
+		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
+		
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs to start", jobStatistics.getJobsNotStarted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("<i>Total number of jobs submitted</i>", jobStatistics.getJobsSubmitted()+""));
+		statistics = statistics + "</table>";
+		statistics = statistics + "</center>";
+		statistics = statistics + "</body>";
+		statistics = statistics + "</html>";
 		return statistics;
 	}
 	
@@ -232,7 +245,6 @@ public class DFTAgent extends HttpServlet{
 		job = job.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), Utils.getMachineAddress());
 		String jobFolderOnHPC = createJobFolder(job);
 		if(jobFolderOnHPC!=null){
-			Thread.sleep(2000);
 			uploadFiles(jobFolderOnHPC, jobFiles);
 		}
 	}
@@ -260,7 +272,6 @@ public class DFTAgent extends HttpServlet{
 			if(jobFile.endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
 				replacedInputFileName = getInputFileNameReplaced(jobFile);
 				String inputFileNameOnHPC = jobFolderOnHPC.concat("/").concat(replacedInputFileName);
-				Thread.sleep(2000);
 				uploadFile(jobFile, inputFileNameOnHPC);
 				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
 			}
@@ -269,7 +280,6 @@ public class DFTAgent extends HttpServlet{
 			}
 		}
 		if(!replacedInputFileName.isEmpty()){
-			Thread.sleep(2000);
 			jobId = runQuantumJob(jobFolderOnHPC, replacedInputFileName);
 		}
 		if(!jobId.isEmpty()){
