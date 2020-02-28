@@ -93,4 +93,55 @@ public class JobStatistics {
 	public void setJobsNotStarted(int jobsNotStarted) {
 		this.jobsNotStarted = jobsNotStarted;
 	}
+	
+	/**
+	 * Produces the header for showing the statistics table.
+	 * 
+	 * @return mainly the header of HTML.
+	 */
+	public String getHTMLHeader(){
+		String htmlHead = "<!DOCTYPE html>";     
+		htmlHead = htmlHead.concat("<html>");
+		htmlHead = htmlHead.concat("<head>");
+		htmlHead = htmlHead.concat("<style>");
+		htmlHead = htmlHead.concat("table, th, td {");
+		htmlHead = htmlHead.concat("border: 1px solid black;");
+		htmlHead = htmlHead.concat("border-collapse: collapse;");
+		htmlHead = htmlHead.concat("}");
+		htmlHead = htmlHead.concat("th, td {");
+		htmlHead = htmlHead.concat("padding: 15px;");
+		htmlHead = htmlHead.concat("text-align: left;");
+		htmlHead = htmlHead.concat("}");
+		htmlHead = htmlHead.concat("table#t01 {");
+		htmlHead = htmlHead.concat("width: 100%;");
+		htmlHead = htmlHead.concat("background-color: #f1f1c1;");
+		htmlHead = htmlHead.concat("}");
+		htmlHead = htmlHead.concat("</style>");
+		htmlHead = htmlHead.concat("</head>");
+		return htmlHead; 
+	}
+	
+	/**
+	 * Prepares the header of table showing statistics about jobs submitted to DFT Agent.
+	 * 
+	 * @return mainly the header part of the HTML table showing job statistics.
+	 */
+	public String getStatisticsTableHeader(String headerText, String statisticsProperty, String statisticsValue, String tableWidth){
+		String tableHeader = "<h2>"+headerText+"</h2>";
+		tableHeader = tableHeader + "<table style=\"width:"+tableWidth+"\">";
+		tableHeader = tableHeader + "<tr>";
+		tableHeader = tableHeader + "<th>"+statisticsProperty+"</th>";
+		tableHeader = tableHeader + "<th>"+statisticsValue+"</th>";
+		tableHeader = tableHeader + "</tr>";
+		return tableHeader;
+	}
+	
+	public String getStatisticsTableRow(String property, String value){
+		String tableRow = "<tr>";
+		tableRow = tableRow + "<td>"+property+"</td>";
+		tableRow = tableRow + "<td>"+value+"</td>";
+		tableRow = tableRow + "</tr>";
+		tableRow = tableRow + "<tr>";
+		return tableRow;
+	}
 }
