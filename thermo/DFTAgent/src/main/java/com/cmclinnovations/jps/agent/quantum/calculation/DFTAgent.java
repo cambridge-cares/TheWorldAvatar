@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -84,8 +85,26 @@ public class DFTAgent extends HttpServlet{
      * - Total number of jobs terminated with an error
      * - Total number of jobs not started yet
      * 
-     * @param input the JSON input to set up and run a quantum job.
-     * @return a message if the job was set up successfully or failed. 
+     * @param input the JSON string specifying the return data format, e.g. JSON.
+     * @return the statistics in JSON format if requested. 
+     */
+	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
+    @ResponseBody
+    public String produceStatistics(@RequestParam String input) throws IOException, DFTAgentException{
+		System.out.println("Received a request to send statistics.\n");
+		logger.info("Received a request to send statistics.\n");
+		return getStatistics(input);
+    }
+	
+	/**
+     * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
+     * - Total number of jobs submitted
+     * - Total number of jobs currently running  
+     * - Total number of jobs successfully completed
+     * - Total number of jobs terminated with an error
+     * - Total number of jobs not started yet
+     * 
+     * @return the statistics in HTML format. 
      */
 	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
     @ResponseBody
@@ -127,6 +146,9 @@ public class DFTAgent extends HttpServlet{
 					Property.AGENT_CLASS.getPropertyName());
 		try {
 			if (session == null || scheduledIteration%10==0) {
+				if(session.isConnected()){
+					session.disconnect();
+				}
 				System.out.println("Initialising a session.");
 				session = jsch.getSession(username, server, 22);
 				String pwd = getPassword(password);
@@ -154,6 +176,35 @@ public class DFTAgent extends HttpServlet{
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Produces the statistics about quantum jobs.
+	 * 
+	 * @param input in json format containing the format in which the result</br> 
+	 * should be codified, e.g. json. An example input file will look like</br>
+	 * as follows:{"format":"json"}
+	 * @return a string containing statistics in the user requested format.
+	 * @throws IOException
+	 */
+	private String getStatistics(String input) throws IOException{
+		JSONObject obj = new JSONObject(input);  
+		String formatAccepts = obj.optString("format"); // json
+		if(formatAccepts!=null && formatAccepts.toLowerCase().contains("json")){
+			Workspace workspace = new Workspace();
+			jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+						Property.AGENT_CLASS.getPropertyName());
+			JobStatistics jobStatistics = new JobStatistics(jobSpace);
+			obj = new JSONObject();
+			obj.put("Number of jobs currently running", jobStatistics.getJobsRunning());
+			obj.put("Number of jobs successfully completed", jobStatistics.getJobsCompleted());
+			obj.put("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated());
+			obj.put("Number of jobs to start", jobStatistics.getJobsNotStarted());
+			obj.put("Total number of jobs submitted", jobStatistics.getJobsSubmitted());
+			return obj.toString(); 
+		}
+		return new JSONObject().toString();
+	}
+
 	
 	/**
 	 * Produces the statistics about qunatum jobs.
@@ -424,7 +475,10 @@ public class DFTAgent extends HttpServlet{
 	 * @throws DFTAgentException
 	 */
 	public String setUpJob(String jsonString) throws IOException, DFTAgentException{
-        	return setUpJobOnAgentMachine(jsonString);
+        	String message = setUpJobOnAgentMachine(jsonString);
+			JSONObject obj = new JSONObject();
+			obj.put("message", message);
+        	return jsonString;
     }
 	
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, DFTAgentException{
