@@ -14,6 +14,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -38,7 +39,7 @@ public class CarbonTaxAgent extends JPSHttpServlet {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
     }
-	
+	Logger logger = LoggerFactory.getLogger(CarbonTaxAgent.class);
 	 @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 

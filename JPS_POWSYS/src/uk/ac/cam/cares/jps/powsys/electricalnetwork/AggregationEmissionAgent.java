@@ -15,6 +15,7 @@ import org.apache.jena.rdf.model.Property;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -115,7 +116,7 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
     }
-
+    Logger logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {
 

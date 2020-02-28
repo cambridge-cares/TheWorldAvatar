@@ -4,6 +4,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -19,7 +20,7 @@ public class CoordinationAgent extends JPSHttpServlet implements Prefixes, Paths
     protected void setLogger() {
         logger = LoggerFactory.getLogger(CoordinationAgent.class);
     }
-
+    Logger logger = LoggerFactory.getLogger(CoordinationAgent.class);
 	 @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	

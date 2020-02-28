@@ -14,6 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -37,6 +38,7 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 	private String modelname="NESS.gms";
 	
+	   Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
     List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
     
 

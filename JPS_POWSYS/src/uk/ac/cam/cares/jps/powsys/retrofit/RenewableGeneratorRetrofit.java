@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -28,6 +29,7 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
     }
+    Logger logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
     
 	@Override
     protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {

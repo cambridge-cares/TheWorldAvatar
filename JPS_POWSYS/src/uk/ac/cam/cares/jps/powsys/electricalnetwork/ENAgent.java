@@ -24,6 +24,7 @@ import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
@@ -49,6 +50,7 @@ public class ENAgent extends JPSHttpServlet {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(ENAgent.class);
     }
+    Logger logger = LoggerFactory.getLogger(ENAgent.class);
 
 	public DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(

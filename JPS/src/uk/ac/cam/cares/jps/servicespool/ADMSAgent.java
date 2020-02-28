@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -41,6 +42,7 @@ public class ADMSAgent extends JPSHttpServlet {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(ADMSAgent.class);
     }
+    Logger logger = LoggerFactory.getLogger(ADMSAgent.class);
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {

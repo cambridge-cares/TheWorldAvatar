@@ -6,6 +6,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -20,7 +21,7 @@ public class CoordinationESSAgent extends JPSHttpServlet{
     protected void setLogger() {
         logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
     }
-	
+    Logger logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
     @Override
    	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);

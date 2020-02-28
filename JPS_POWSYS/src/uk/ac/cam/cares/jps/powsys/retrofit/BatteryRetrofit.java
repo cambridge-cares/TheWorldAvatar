@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -25,7 +26,7 @@ public class BatteryRetrofit extends GeneralRetrofitAgent {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(BatteryRetrofit.class);
     }
-	
+    Logger logger = LoggerFactory.getLogger(BatteryRetrofit.class);
 	public void retrofitEnergyStorage(String electricalNetwork, List<String> BatteryList) {
 		
 //		OntModel model = ENAgent.readModelGreedy(electricalNetwork);

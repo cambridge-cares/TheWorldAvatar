@@ -17,6 +17,7 @@ import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -46,7 +47,8 @@ public class NuclearAgent extends JPSHttpServlet {
     public static final String AGENT_TAG = "GAMS_NuclearAgent";
     //private String modelname="Parallel_wrld_location.gms";
     private String modelname="Location_5hr_solveropt.gms";
-
+    Logger logger = LoggerFactory.getLogger(NuclearAgent.class);
+    
     public void runGAMSAsync(String baseUrl) throws IOException, InterruptedException {
     	modifyTemplate(baseUrl, modelname);
         String executablelocation = "C:/GAMS/win64/26.1/gams.exe";
