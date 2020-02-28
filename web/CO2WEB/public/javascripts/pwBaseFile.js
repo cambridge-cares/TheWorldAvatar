@@ -902,7 +902,7 @@ function SubmitTable(e) {
         setTimeout(function() {
             console.log('timeout');
         }, 10000);
-        secondQuery = queryLine[1].slice(20,);
+        secondQuery = queryLine[1].slice(20);
         outputUpdate([queryLine[0], secondQuery]);
         setTimeout(function() {
             console.log('timeout');
@@ -1025,7 +1025,7 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
             else if (callback == null){
                 innerHTML = '<table data-type="line" data-url='+ selectedId +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
-                infoWindow.setContent(innerHTML);
+                infowindow.setContent(innerHTML);
             }
             
             else{
