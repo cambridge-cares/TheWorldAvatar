@@ -27,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -44,7 +43,6 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
  */
 public class DistributedEnergySystem extends JPSHttpServlet {
 	public static final String SIM_START_PATH = "/DESAgent";
-	public static String weather="Weather.csv";
 	public static String schedule="ApplianceScheduleLoad1.csv";
 	
 	public static String Pmin="Pmin.csv";
@@ -54,6 +52,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 	
 	public static String producerdata="PV_parameters.csv";
 	public static String consumerdata1="FuelCell.csv";
+	public String cityIRI;
 	
 	
     @Override
@@ -70,19 +69,21 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
-    	String path = request.getServletPath();
     	 JSONObject responseParams = requestParams;
-    	 if (SIM_START_PATH.equals(path)) {
-    	    QueryBroker broker= new QueryBroker();
-    	    JSONObject jo = AgentCaller.readJsonParameter(request);    	
+    	    QueryBroker broker= new QueryBroker();  	
  	        String iriofnetwork = requestParams.optString("electricalnetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork");
  	        String iriofdistrict = requestParams.optString("district", "http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001");
  	        String irioftemp=requestParams.optString("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
  	        String iriofirr=requestParams.optString("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
  	        String iriofwind=requestParams.optString("windspeedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
- 	        	
- 	        
+ 	        String irioftempF=requestParams.optString("temperatureforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001");
+ 	        String iriofirrF=requestParams.optString("irradiationforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001");
+ 	        String iriofwindF=requestParams.optString("windspeedforecast", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedForecast-001.owl#SGWindSpeedForecast-001");
+
+	        cityIRI = requestParams.optString("cityIRI", "http://dbpedia.org/page/Singapore");
 	        String baseUrl = requestParams.optString("baseUrl", QueryBroker.getLocalDataPath()+"/JPS_DES"); //create unique uuid
+ 	        	
+ 	        //Query latest real time results
  	        
  	       String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
  					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -90,9 +91,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
  					+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
  					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+ 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" ;
 
- 			String result = new QueryBroker().queryFile(irioftemp, sensorinfo);
+ 			String result = new QueryBroker().queryFile(irioftemp, sensorinfo+ "ORDER BY DESC(?proptimeval) LIMIT 1");
  			String[] keys = JenaResultSetFormatter.getKeys(result);
  			List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 
@@ -102,9 +103,9 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
  					+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
  					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+ 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" ;
 
- 			String result2 = new QueryBroker().queryFile(iriofirr, sensorinfo2);
+ 			String result2 = new QueryBroker().queryFile(iriofirr, sensorinfo2+ "ORDER BY DESC(?proptimeval) LIMIT 1");
  			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
  			List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
  			
@@ -114,24 +115,42 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
  					+ "WHERE { ?entity a j5:F-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
  					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+ 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}";
 
- 			String result3 = new QueryBroker().queryFile(iriofwind, sensorinfo3);
+ 			String result3 = new QueryBroker().queryFile(iriofwind, sensorinfo3 + "ORDER BY DESC(?proptimeval) LIMIT 1");
  			String[] keys3 = JenaResultSetFormatter.getKeys(result3);
  			List<String[]> resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
  			
  			List<String[]> readingFromCSV = new ArrayList<String[]>();
+ 			String timewholecsv=resultListfromquerytemp.get(0)[2];
+ 			String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
+ 			String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
+ 			String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(0)[1],"74.9",resultListfromqueryspeed.get(0)[1],"115.7",resultListfromqueryirr.get(0)[1],"0"};
+ 			readingFromCSV.add(e); 			
+ 			broker.putLocal(baseUrl + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+ 			
+ 			//grab forecast results
+ 			result = new QueryBroker().queryFile(irioftempF, sensorinfo+ "ORDER BY ASC(?proptimeval)");
+ 			keys = JenaResultSetFormatter.getKeys(result);
+ 			resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+ 			System.out.println(resultListfromquerytemp);
+ 			result2 = new QueryBroker().queryFile(iriofirrF, sensorinfo2+ "ORDER BY  ASC(?proptimeval)");
+ 			keys2 = JenaResultSetFormatter.getKeys(result2);
+ 			resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+ 			result3 = new QueryBroker().queryFile(iriofwindF, sensorinfo3 + "ORDER BY ASC(?proptimeval)");
+ 			keys3 = JenaResultSetFormatter.getKeys(result3);
+ 			resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
+ 			readingFromCSV = new ArrayList<String[]>();
  			for (int d=0;d<resultListfromqueryirr.size();d++) {
- 				String timewholecsv=resultListfromquerytemp.get(d)[2];
- 				String datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
- 				String timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
- 				String[]e= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
- 				readingFromCSV.add(e);
+ 				timewholecsv=resultListfromquerytemp.get(d)[2];
+ 				datemonthcsv=timewholecsv.split("-")[2].split("T")[0]+"-"+timewholecsv.split("-")[1];			
+ 				timecsv=timewholecsv.split("-")[2].split("T")[1].split("\\+")[0];
+ 				String[] ed= {timewholecsv.split("-")[0],datemonthcsv,timecsv,"100",resultListfromquerytemp.get(d)[1],"74.9",resultListfromqueryspeed.get(d)[1],"115.7",resultListfromqueryirr.get(d)[1],"0"};
+ 				readingFromCSV.add(ed);
  			}
- 			broker.putLocal(baseUrl + "/Weather.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
- 			List<String[]> ty = new ArrayList<String[]>();
- 			ty.add(readingFromCSV.get((readingFromCSV.size()-1))); //grab the most recent real time reading. 
- 			broker.putLocal(baseUrl + "/WeatherActual.csv", MatrixConverter.fromArraytoCsv(ty));
+ 			broker.putLocal(baseUrl + "/WeatherForecast.csv", MatrixConverter.fromArraytoCsv(readingFromCSV));
+ 			
+ 			//grab initialization for calibrating
 	        File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/resources/" + "WeatherInitialize.csv");
     		String destinationUrl = baseUrl + "/WeatherInitialize.csv";
     		broker.putLocal(destinationUrl, file);
@@ -149,23 +168,20 @@ public class DistributedEnergySystem extends JPSHttpServlet {
     		
     			try {
     				runOptimization(baseUrl);
-    			} catch (IOException e) {
+    			} catch (IOException ex) {
     				// TODO Auto-generated catch block
-    				logger.error(e.getMessage());
-    				e.printStackTrace();
-    			} catch (InterruptedException e) {
+    				logger.error(ex.getMessage());
+    				ex.printStackTrace();
+    			} catch (InterruptedException ex) {
     				// TODO Auto-generated catch block
-    				logger.error(e.getMessage());
-    				e.printStackTrace();
-    			} catch (Exception e) {
+    				logger.error(ex.getMessage());
+    				ex.printStackTrace();
+    			} catch (Exception ex) {
     				// TODO Auto-generated catch block
-    				logger.error(e.getMessage());
-    				e.printStackTrace();
+    				logger.error(ex.getMessage());
+    				ex.printStackTrace();
     			}
     			responseParams = provideJSONResult(baseUrl);
-    		 
-    	 }
-    	 
     	
     		
 		return responseParams;
@@ -537,7 +553,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
 
 	public JSONObject provideJSONResult(String baseUrl) {
 		JSONObject responseParams;
-		String weatherdir = baseUrl + "/Weather.csv";
+		String weatherdir = baseUrl + "/WeatherForecast.csv";
 		String content = new QueryBroker().readFileLocal(weatherdir);
 		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
 
