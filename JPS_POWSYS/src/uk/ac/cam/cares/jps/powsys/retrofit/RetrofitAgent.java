@@ -1,6 +1,5 @@
 package uk.ac.cam.cares.jps.powsys.retrofit;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -9,17 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -41,12 +37,13 @@ import uk.ac.cam.cares.jps.powsys.util.Util;
 public class RetrofitAgent extends GeneralRetrofitAgent {
 
 	private static final long serialVersionUID = 6859324316966357379L;
-	private Logger logger = LoggerFactory.getLogger(RetrofitAgent.class);
-
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(RetrofitAgent.class);
+    }
+    
 	@Override
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String electricalNetwork = jo.getString("electricalnetwork");
 
@@ -60,24 +57,11 @@ public class RetrofitAgent extends GeneralRetrofitAgent {
 			List<String> nuclearPowerPlants = MiscUtil.toList(ja);
 			retrofit(electricalNetwork, nuclearPowerPlants, substitutionalGenerators);
 		}
-		
-//		else if ("/retrofitGenerator".equals(path)){
-//			String scenario=jo.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];	
-//			System.out.println("current scenario directory= "+scenario);
-//			
-//			File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
-//			if (f.exists()&& f.isDirectory()) {
-//				FileUtils.deleteDirectory(f);
-//			}
-//			//above is done as the retrofit cannot be done twice for ESS esp.
-//			JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
-//			List<String> RenewableGenerators = MiscUtil.toList(ja);
-//			retrofitGenerator(electricalNetwork, RenewableGenerators);
-//		}
-		AgentCaller.printToResponse(jo, response);
-		
+		// TODO Auto-generated method stub
+		return jo;
 	}
-	
+
+
 	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
 		
 		// the hasSubsystem triples of the electrical network top node itself are not part of the model
@@ -578,4 +562,6 @@ public class RetrofitAgent extends GeneralRetrofitAgent {
 			new QueryBroker().put(current.busIri, content);
 		}	
 	}
+
+
 }

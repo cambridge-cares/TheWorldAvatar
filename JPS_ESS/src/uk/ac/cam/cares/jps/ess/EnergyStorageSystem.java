@@ -7,20 +7,16 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -34,7 +30,10 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 public class EnergyStorageSystem extends JPSHttpServlet {
 
 	private static final long serialVersionUID = -4199209974912271432L;
-	private Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
+    }
 	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 	private String modelname="NESS.gms";
 	
@@ -131,8 +130,6 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(batterycatiri, batteryInfo);
 	}
-	
-
 	
 	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
 
@@ -321,34 +318,12 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 	}
 	
-
-		
-
 	
-	public void addObjectToElectricalNetwork(String electricalNetwork, List<String> componentIRI) {
-		
-		String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + "INSERT DATA { \r\n";
-		StringBuffer b = new StringBuffer();
-		
-		for (int i=1; i<=componentIRI.size(); i++) {
-			String current = componentIRI.get(i-1);
-			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
-			if ((i % 5 == 0) || i == componentIRI.size()) {
-				String sparql = sparqlStart + b.toString() + "} \r\n";
-				logger.info("inserting " + (i % 5) + " power generators to electrical network top node\n" + sparql);
-				new QueryBroker().updateFile(electricalNetwork, sparql);
-				b = new StringBuffer();
-			}
-		}
-		
-	}
-	
-	
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	 @Override
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
 		 	System.gc();//garbage collection (reduce memory consumption)
-			JSONObject joforess = AgentCaller.readJsonParameter(request);
+			JSONObject joforess = requestParams;
 			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 			System.out.println("baseURL: " + baseUrl);
 			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
@@ -359,39 +334,20 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 			
 			System.out.println("GENERATOR: " + pvGenIRI);
 			System.out.println("parameter got= "+joforess.toString());
+						
+			JSONObject resultofbattery = null;
+			try {
+				resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
+				return resultofbattery;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+			}
 			
-			//modified the EN with the additional renewable gen added
-			
-//			logger.info("sent to the retrofit= "+joforess.toString());
-//			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
-//	
-//			
-//			//run the scenario for EN after it is retrofitted
-//			logger.info("starting the OPF");
-//			
-//			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
-//			String dirOfOPF = new JSONObject(resultStart).getString("folder");
-			
-			
-			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-			
-			//NOW IT IS TASK OF OTHER AGENT
-			//make battery owl file
-			
-			/*JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
-			List<String>battlist=new ArrayList<String>();
-			for(int d=0;d<a.length();d++) {
-				battlist.add(a.getJSONArray(d).getString(0));
-			}*/
-			
-			//task of retrofit again
-			/*addObjectToElectricalNetwork(ENIRI, battlist);*/
-
 		    System.gc();
-//			JSONObject listofbat=new JSONObject();
-//			listofbat.put("batterylist", a);
+
 	
-			AgentCaller.printToResponse(resultofbattery, response);
+			return resultofbattery;
 		}
 	
 /*	public List<String[]> getBatteryCoord(OntModel model) { must be the complete model (not needed at the moment

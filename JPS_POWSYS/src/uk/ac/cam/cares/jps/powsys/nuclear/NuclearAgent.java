@@ -8,10 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.http.client.methods.HttpPost;
@@ -135,15 +133,8 @@ public class NuclearAgent extends JPSHttpServlet {
     }
 
     @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void setLogger() {
         logger = LoggerFactory.getLogger(NuclearAgent.class);
-        super.doHttpJPS(request, response);
-    }
-    
-    @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(NuclearAgent.class);
-        super.doHttpJPS(request, response, reqBody);
     }
 
     @Override

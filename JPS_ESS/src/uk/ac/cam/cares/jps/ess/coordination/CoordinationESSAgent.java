@@ -2,13 +2,10 @@ package uk.ac.cam.cares.jps.ess.coordination;
 
 import java.io.IOException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -19,23 +16,31 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 @WebServlet(urlPatterns = { "/startsimulationCoordinationESS" })
 public class CoordinationESSAgent extends JPSHttpServlet{
 	
-	private Logger logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(CoordinationESSAgent.class);
+    }
 	
-	@Override
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-	
+    @Override
+   	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = AgentCaller.readJsonParameter(request);
 		String path = request.getServletPath();
-
+		
+		logger.info("jps request URL="+jo);
 		if ("/startsimulationCoordinationESS".equals(path)) {
 			
-			startSimulation(jo,response);
+			try {
+				return startSimulation(jo);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+			}
 			
-		} 
+		}
+		return null;
 	}
 	
-	public void startSimulation(JSONObject jo,HttpServletResponse response) throws IOException {
+	public JSONObject startSimulation(JSONObject jo) throws IOException {
 		
 		logger.info("starting the ESS ");
 		
@@ -72,7 +77,7 @@ public class CoordinationESSAgent extends JPSHttpServlet{
 		logger.info("started creating battery");
 		JSONObject finres= new JSONObject(finresult); 
 		
-		AgentCaller.writeJsonParameter(response, finres);
+		return finres;
 		
 //JSONObject finres= new JSONObject(resultStartLocator); 
 //		
