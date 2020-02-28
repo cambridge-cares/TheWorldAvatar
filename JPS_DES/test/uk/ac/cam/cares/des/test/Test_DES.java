@@ -36,6 +36,7 @@ import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
 import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
+import uk.ac.cam.cares.jps.des.WeatherTimeStampKB;
 
 public class Test_DES extends TestCase{
 	
@@ -61,6 +62,32 @@ public class Test_DES extends TestCase{
 		
 		System.out.println(jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+
+	}
+	public void testreadandwriteToFile() throws Exception { //initializing the forecast sensors. 
+			String csv=new QueryBroker().readFileLocal("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8c0e50ce-c4e4-42fa-813e-f7de27e1ea30\\JPS_DES\\WeatherForecast.csv");
+			List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
+			//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
+			WeatherTimeStampKB converter = new WeatherTimeStampKB();
+			converter.startConversionForecast(readingFromCSV,"temperature");
+			converter.startConversionForecast(readingFromCSV,"irradiation");
+			converter.startConversionForecast(readingFromCSV,"windspeed");
+		}
+	public void testStartDESAgent() throws IOException  {
+		
+
+		JSONObject jo = new JSONObject();
+	
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
+		jo.put("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+    	jo.put("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+    	jo.put("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
 		System.out.println(resultStart);
 		System.out.println("finished execute");
 
@@ -157,7 +184,7 @@ public class Test_DES extends TestCase{
 				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
 				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
 		
-		String iriirradiationsensor="http://localhost:8080/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
+		String iriirradiationsensor="http://localhost:8080/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
 		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorinfo2);
 		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
 		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
@@ -428,8 +455,8 @@ public class Test_DES extends TestCase{
 		//List<String[]> consumer = new DistributedEnergySystem().provideLoadFClist(model); // instance iri
 	}
 	
-	public void xxxtestCreateJSON() {
-		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
+	public void testCreateJSON() {
+		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\3d64a110-ce59-4f9b-97a6-e2a80eb3c7f7\\JPS_DES";
 		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
 		System.out.println(d.toString());
 	}
