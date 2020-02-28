@@ -74,51 +74,14 @@
 		<artifactId>spring-security-config</artifactId>
 		<version>${spring-version}</version>
 	</dependency>
-	<!-- jsltl -->
-	<dependency>
-		<groupId>javax.servlet</groupId>
-		<artifactId>jstl</artifactId>
-		<version>1.2</version>
-	</dependency>
-		<dependency>
-			<groupId>ch.qos.logback</groupId>
-			<artifactId>logback-classic</artifactId>
-			<version>1.1.2</version>
-		</dependency>
+
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>3.0.1</version>
 			<scope>compile</scope>
 		</dependency>
-		<!-- Use Apache HttpClient as HTTP Client -->
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>4.5.6</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.jena</groupId>
-			<artifactId>apache-jena-libs</artifactId>
-			<version>3.6.0</version>
-			<type>pom</type>
-		</dependency>
-			<dependency>
-    	<groupId>com.hp.hpl.jena</groupId>
-    	<artifactId>jena</artifactId>
-    	<version>2.6.4</version>
-	</dependency>
-			<dependency>
-    	<groupId>edu.stanford.protege</groupId>
-    	<artifactId>de-derivo-sparqldlapi</artifactId>
-    	<version>2.0.0</version>
-	</dependency>
 		
-    <dependency>
-    	<groupId>net.sourceforge.owlapi</groupId>
-        <artifactId>owlapi-distribution</artifactId>
-        <version>5.1.0</version>
-    </dependency>
 		<dependency>
 			<groupId>org.eclipse.rdf4j</groupId>
 			<artifactId>rdf4j-runtime</artifactId>
@@ -142,41 +105,12 @@
             <version>${org.slf4j-version}</version>
             <scope>runtime</scope>
         </dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-queryresultio-sparqljson -->
-		<dependency>
-    		<groupId>org.eclipse.rdf4j</groupId>
-    		<artifactId>rdf4j-queryresultio-sparqljson</artifactId>
-    		<version>2.4.2</version>
-    		<scope>runtime</scope>
-		</dependency>
-		<dependency>
-    		<groupId>org.eclipse.rdf4j</groupId>
-    		<artifactId>rdf4j-query</artifactId>
-    		<version>2.4.2</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-rio-api -->
-<dependency>
-    <groupId>org.eclipse.rdf4j</groupId>
-    <artifactId>rdf4j-rio-api</artifactId>
-    <version>2.4.2</version>
-</dependency>
 		<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-model -->
-<dependency>
-    <groupId>org.eclipse.rdf4j</groupId>
-    <artifactId>rdf4j-model</artifactId>
-    <version>2.4.2</version>
-</dependency>
-<!-- https://mvnrepository.com/artifact/ch.ethz.ganymed/ganymed-ssh2 -->
-<dependency>
-    <groupId>ch.ethz.ganymed</groupId>
-    <artifactId>ganymed-ssh2</artifactId>
-    <version>262</version>
-</dependency>
-        <dependency>
-            <groupId>JOpenBabel</groupId>
-            <artifactId>JOpenBabel</artifactId>
-            <version>2.4.1</version>
-        </dependency>
+		<dependency>
+		    <groupId>org.eclipse.rdf4j</groupId>
+		    <artifactId>rdf4j-model</artifactId>
+		    <version>2.4.2</version>
+		</dependency>
         <dependency>
     		<groupId>com.jcraft</groupId>
     		<artifactId>jsch</artifactId>

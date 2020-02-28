@@ -34,7 +34,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
 
-import ch.ethz.ssh2.Connection;
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
  * jobs at increasing levels of theory.   
@@ -48,7 +47,6 @@ public class DFTAgent extends HttpServlet{
 	String server = "login-skylake.hpc.cam.ac.uk";
 	String username = "msff2";
 	String password = "Abcdl955_l7_l7_l7_aB";
-	Connection connection;
 	boolean isAuthenticated;
 	private File jobSpace;
 	
@@ -597,22 +595,6 @@ public class DFTAgent extends HttpServlet{
 	private void deleteJobOnHPC(String jobFolder) throws JSchException, IOException, InterruptedException{
 		String command = "rm -r " + jobFolder;
 		executeCommand(command);
-	}
-	
-	/**
-	 * Authenticate the user with the password.
-	 * 
-	 * @param username the name of user
-	 * @param password the password of user
-	 * @throws IOException
-	 */
-	public void authenticate(String username, String password) throws IOException{
-        if(connection == null)
-        	throw new IOException("Not connected to the server.");
-        if (!connection.isAuthenticationComplete())
-        	isAuthenticated = connection.authenticateWithPassword(username, password);
-        if (isAuthenticated == false)
-            throw new IOException("Authentication failed.");        		
 	}
 	
 	/**
