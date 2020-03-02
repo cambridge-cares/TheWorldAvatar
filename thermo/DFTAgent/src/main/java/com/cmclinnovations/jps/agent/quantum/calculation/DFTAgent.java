@@ -479,6 +479,14 @@ public class DFTAgent extends HttpServlet{
         	return obj.toString();
     }
 	
+	/**
+	 * Sets up the quantum job for the current input.
+	 *   
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, DFTAgentException{
 		Workspace workspace = new Workspace();
 		File workspaceFolder = workspace.createAgentWorkspace(Property.AGENT_WORKSPACE_DIR.getPropertyName(), Property.AGENT_CLASS.getPropertyName());
@@ -489,6 +497,16 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * Sets up the quantum job for the current request.
+	 * 
+	 * @param ws
+	 * @param workspaceFolder
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
 	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonString);
@@ -505,7 +523,24 @@ public class DFTAgent extends HttpServlet{
     	}
     	return Jobs.JOB_SETUP_SUCCESS_MSG.getName();
 	}
-
+	
+	/**
+	 * Creates all files relevant for the current job, in particular, it</br>
+	 * creates the following files:</br>
+	 * - the input file in com (.com) format for running the job on an HPC
+	 * - the status file in text (.txt) format
+	 * - the input file in json (.json) format
+	 * - the Slurm script file in shell script (.sh) format 
+	 * 
+	 * @param ws
+	 * @param workspaceFolder
+	 * @param jobFolder
+	 * @param jsonString
+	 * @param speciesGeometry
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
 	private String createAllFileInJobFolder(Workspace ws, File workspaceFolder, File jobFolder, String jsonString, String speciesGeometry) throws IOException, DFTAgentException{
 		String inputFileMsg = ws.createInputFile(ws.getInputFilePath(jobFolder), jobFolder.getName(), speciesGeometry, jsonString);
 		if(inputFileMsg == null){
@@ -574,6 +609,14 @@ public class DFTAgent extends HttpServlet{
 		return null;
 	}
 	
+	/**
+	 * Runs a quantum job.
+	 * 
+	 * @param command
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 */
 	private String runQuantumJob(String command) throws JSchException, IOException{
 		ArrayList<String> outputs = executeCommand(command);
 		if (outputs == null) {
@@ -598,7 +641,7 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Read the output of the most recently executed command.
+	 * Reads the output of the most recently executed command.
 	 * 
 	 * @param br
 	 * @return
@@ -617,7 +660,7 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Display every item in a list of string array.
+	 * Displays every item in a list of string array.
 	 * 
 	 * @param list
 	 */
@@ -627,6 +670,15 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
+	/**
+	 * Uploads a file from the source folder belonging to any machine to</br> 
+	 * the destination folder on the same machine or any other machine.
+	 *   
+	 * @param src
+	 * @param dest
+	 * @throws JSchException
+	 * @throws SftpException
+	 */
 	public void uploadFile(String src, String dest) throws JSchException, SftpException{
         System.out.println("Establishing a channel to transfer "+src+" to "+dest);
 		ChannelSftp sftpChannel = (ChannelSftp) session.openChannel("sftp");
@@ -656,7 +708,7 @@ public class DFTAgent extends HttpServlet{
 	}
 
 	/**
-	 * Delete a folder or file name from an HPC, if the complete path is provided.</br>
+	 * Deletes a folder or file name from an HPC, if the complete path is provided.</br>
 	 * For example, to delete a folder called "test", user needs to provide "rds/.../test"
 	 * 
 	 * @param folderOrFileName 
@@ -667,6 +719,14 @@ public class DFTAgent extends HttpServlet{
 		executeCommand("rm -r "+folderOrFileName);
 	}
 	
+	/**
+	 * Executes any command that can be run on the Linux console.
+	 * 
+	 * @param Command
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 */
 	public ArrayList<String> executeCommand(String Command) throws JSchException, IOException{
 		ArrayList<String> outputs = null;
 		System.out.println("Establishing a channel to perform the following command:" + Command);
