@@ -32,6 +32,7 @@ import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 /**
@@ -50,7 +51,7 @@ public class DFTAgent extends HttpServlet{
 	boolean isAuthenticated;
 	private File jobSpace;
 	
-	static com.jcraft.jsch.Session session;
+	static Session session;
 	static JSch jsch = new JSch();
 	
 	static int scheduledIteration = 0;
@@ -144,15 +145,7 @@ public class DFTAgent extends HttpServlet{
 					Property.AGENT_CLASS.getPropertyName());
 		try {
 			if (session == null || scheduledIteration%10==0) {
-				if(session!=null && session.isConnected()){
-					session.disconnect();
-				}
-				System.out.println("Initialising a session.");
-				session = jsch.getSession(username, server, 22);
-				String pwd = getPassword(password);
-				session.setPassword(pwd);
-				session.setConfig("StrictHostKeyChecking", "no");
-				session.connect();
+				createSession(session);
 				scheduledIteration = 0;
 			}
 			Map<String, List<String>> jobsRunning = new LinkedHashMap<>();
@@ -174,7 +167,25 @@ public class DFTAgent extends HttpServlet{
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Creates a session to connect the HPC(s).
+	 * 
+	 * @param session
+	 * @throws JSchException
+	 */
+	private void createSession(Session session) throws JSchException{
+		if(session!=null && session.isConnected()){
+			session.disconnect();
+		}
+		System.out.println("Initialising a session.");
+		session = jsch.getSession(username, server, 22);
+		String pwd = getPassword(password);
+		session.setPassword(pwd);
+		session.setConfig("StrictHostKeyChecking", "no");
+		session.connect();
+	}
+	
 	/**
 	 * Produces the statistics about quantum jobs.
 	 * 
