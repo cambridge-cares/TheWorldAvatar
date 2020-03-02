@@ -173,7 +173,7 @@ Solve optim using minlp minimizing z;
 
 File output /results.csv/;
 *output.nr = 2  ;
-output.nd = 1 ;
+output.nd = 10 ;
 *output.nw = 0  ;
 put output;
 output.pc=5;

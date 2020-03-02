@@ -55,6 +55,8 @@ public class ScenarioManagementAgent extends HttpServlet {
 	
 	public static String getScenarioUrl(String scenarioName) {
 		return KeyValueManager.getServerAddress() + ScenarioHelper.getScenarioPath(scenarioName);
+
+		//return BucketHelper.getScenarioUrl(scenarioName);
 	}
 	
 	/**
@@ -186,6 +188,8 @@ public class ScenarioManagementAgent extends HttpServlet {
 	
 	public static String execute(String scenarioName, String httpUrl, JSONObject jo) {
 		addJpsContext(scenarioName, jo);
+		logger.info("HTTP URL RIGHT NOW= "+httpUrl);
+		logger.info("JSON= "+jo.toString());
 		return AgentCaller.executeGetWithURLAndJSON(httpUrl, jo.toString());
 	}
 	

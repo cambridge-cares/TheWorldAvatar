@@ -176,6 +176,7 @@ public class AgentCaller {
     public static String executeGetWithURLAndJSON(String url, String json) {
         URI uri = createURIWithURLandJSON(url, json);
         HttpGet request = new HttpGet(uri);
+        logger.info("REQUEST HERE= "+request);
         return AgentCaller.executeGet(request);
     }
 

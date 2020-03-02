@@ -1,14 +1,10 @@
 package uk.ac.cam.cares.jps.coordination;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
@@ -29,9 +25,8 @@ public class ADMSCoordinationAgentForShipWithoutComposition extends JPSHttpServl
     private static final String PARAM_KEY_SHIP = "ship";
 
     @Override
-    protected void doGetJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void setLogger() {
         logger = LoggerFactory.getLogger(ADMSCoordinationAgentForShipWithoutComposition.class);
-        super.doGetJPS(request, response);
     }
 
     @Override

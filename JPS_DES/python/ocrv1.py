@@ -102,7 +102,8 @@ except Exception as e:
         result= {}
         result["windspeed"] = "0.0"
         
-        hou = datetime.now().hour
+        now = datetime.now() # current date and time
+        hou = now.hour
         if (( hou <= 7 )or (hou > 18)):
             irrad = 0 
         else:
