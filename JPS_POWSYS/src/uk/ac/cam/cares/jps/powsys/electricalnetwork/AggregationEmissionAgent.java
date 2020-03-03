@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -18,6 +15,7 @@ import org.apache.jena.rdf.model.Property;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -115,17 +113,10 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
 
     @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void setLogger() {
         logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
-        super.doHttpJPS(request, response);
     }
-
-    @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
-        super.doHttpJPS(request, response, reqBody);
-    }
-
+    Logger logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {
 

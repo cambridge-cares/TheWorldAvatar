@@ -16,10 +16,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -32,12 +30,10 @@ import org.slf4j.LoggerFactory;
 import com.opencsv.CSVReader;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
 import uk.ac.cam.cares.jps.powsys.carbontax.CarbonTaxAgent;
@@ -47,23 +43,23 @@ import uk.ac.cam.cares.jps.powsys.util.Util;
 
 @WebServlet(urlPatterns = { "/ENAgent/startsimulationPF", "/ENAgent/startsimulationOPF" })
 public class ENAgent extends JPSHttpServlet {
+	//currently on OPF is running
 	
 	private static final long serialVersionUID = -4199209974912271432L;
-	private Logger logger = LoggerFactory.getLogger(ENAgent.class);
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(ENAgent.class);
+    }
+    Logger logger = LoggerFactory.getLogger(ENAgent.class);
 
 	public DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	}
-
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		
-		System.out.println("scenario URL = " + JPSContext.getScenarioUrl());
-		
-
-		JSONObject joforEN = AgentCaller.readJsonParameter(request);
+	
+	 @Override
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		JSONObject joforEN=requestParams;
 		String iriofnetwork = joforEN.getString("electricalnetwork");
 		String modeltype = null;
 
@@ -77,10 +73,16 @@ public class ENAgent extends JPSHttpServlet {
 
 		String baseUrl = QueryBroker.getLocalDataPath() + "/JPS_POWSYS_EN";
 		
-		JSONObject result =startSimulation(iriofnetwork, baseUrl, modeltype);
-
-		AgentCaller.printToResponse(result, response);
-		
+		JSONObject result;
+		try {
+			result = startSimulation(iriofnetwork, baseUrl, modeltype);
+			return result;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			
+		}
+		return null;
 	}
 	
 	public JSONObject startSimulation(String iriofnetwork, String baseUrl, String modeltype) throws IOException {
@@ -860,16 +862,16 @@ public class ENAgent extends JPSHttpServlet {
 			String keymapper = busoutputlist.get(a)[0];
 			int amod = Integer.valueOf(map2.getIDFromMap(originalforbus, keymapper));
 			Individual vpdbusout = jenaOwlModel.getIndividual(busoutputlist.get(a)[1]);
-			vpdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[5]));
+			vpdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[5])));
 
 			Individual vgdbusout = jenaOwlModel.getIndividual(busoutputlist.get(a)[2]);
-			vgdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[6]));
+			vgdbusout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[6])));
 
 			Individual vpdgenout = jenaOwlModel.getIndividual(busoutputlist.get(a)[3]);
-			vpdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[3]));
+			vpdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[3])));
 
 			Individual vgdgenout = jenaOwlModel.getIndividual(busoutputlist.get(a)[4]);
-			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[4]));
+			vgdgenout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[4])));
 
 			Individual vVmout = jenaOwlModel.getIndividual(busoutputlist.get(a)[5]);
 			double basekv = Double.valueOf(buslist.get(amod - 1)[9]);
@@ -878,11 +880,11 @@ public class ENAgent extends JPSHttpServlet {
 			double originalv = basekv * Double.valueOf(resultfrommodelbus.get(amod - 1)[1]);
 			
 			//vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(originalv)); //if vm is in kv
-			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[1])); //if vm is in pu
+			vVmout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[1]))); //if vm is in pu
 			
 
 			Individual vVaout = jenaOwlModel.getIndividual(busoutputlist.get(a)[6]);
-			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbus.get(amod - 1)[2]));
+			vVaout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbus.get(amod - 1)[2])));
 			
 			String content = JenaHelper.writeToString(jenaOwlModel);
 //			broker.put(currentIri, content); tempchange
@@ -912,10 +914,10 @@ public class ENAgent extends JPSHttpServlet {
 			int amod = Integer.valueOf(map3.getIDFromMap(originalforgen, keymapper));
 
 			Individual vpout = jenaOwlModel.getIndividual(genoutputlist.get(a)[1]);
-			vpout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
+			vpout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelgen.get(amod - 1)[1])));
 
 			Individual vqout = jenaOwlModel.getIndividual(genoutputlist.get(a)[2]);
-			vqout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[2]));
+			vqout.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelgen.get(amod - 1)[2])));
 			//logger.info("initial Pout= "+jenaOwlModel.createTypedLiteral(resultfrommodelgen.get(amod - 1)[1]));
 			updateGeneratorEmission(jenaOwlModel); //add new functionality for updating the emission
 
@@ -944,19 +946,19 @@ public class ENAgent extends JPSHttpServlet {
 			int amod = Integer.valueOf(map.getIDFromMap(originalforbranch, keymapper));
 
 			Individual vploss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[1]);
-			vploss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[1]));
+			vploss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[1])));
 
 			Individual vqloss = jenaOwlModel.getIndividual(branchoutputlist.get(a)[2]);
-			vqloss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[2]));
+			vqloss.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[2])));
 
 			Individual vpave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[3]);
-			vpave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[3]));
+			vpave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[3])));
 
 			Individual vqave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[4]);
-			vqave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[4]));
+			vqave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[4])));
 
 			Individual vsave = jenaOwlModel.getIndividual(branchoutputlist.get(a)[5]);
-			vsave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(resultfrommodelbranch.get(amod - 1)[5]));
+			vsave.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(resultfrommodelbranch.get(amod - 1)[5])));
 			
 			String content = JenaHelper.writeToString(jenaOwlModel);
 //			broker.put(currentIri, content); tempchange

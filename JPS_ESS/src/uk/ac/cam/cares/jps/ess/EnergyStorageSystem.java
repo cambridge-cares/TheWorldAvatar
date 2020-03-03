@@ -7,10 +7,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
@@ -20,13 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-import uk.ac.cam.cares.jps.base.util.MiscUtil;
 
 
 @WebServlet(urlPatterns = { "/ESSAgent"})
@@ -34,10 +30,14 @@ import uk.ac.cam.cares.jps.base.util.MiscUtil;
 public class EnergyStorageSystem extends JPSHttpServlet {
 
 	private static final long serialVersionUID = -4199209974912271432L;
-	private Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
+    }
 	//public static final String AGENT_TAG = "GAMS_NuclearAgent";
 	private String modelname="NESS.gms";
 	
+	   Logger logger = LoggerFactory.getLogger(EnergyStorageSystem.class);
     List<ElectricalComponentObject>batterylist=new ArrayList<ElectricalComponentObject>();
     
 
@@ -132,7 +132,15 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		return broker.readModelGreedy(batterycatiri, batteryInfo);
 	}
 	
+	public static OntModel readModelGreedy(String iriofnetwork) {
+		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "SELECT ?component "
+				+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
 
+		QueryBroker broker = new QueryBroker();
+		return broker.readModelGreedy(iriofnetwork, electricalnodeInfo);
+	}
 	
 	public void prepareCSVPahigh(List<String> pvGenIRI, String baseUrl) {
 
@@ -321,77 +329,35 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		
 	}
 	
-
-		
-
 	
-	public void addObjectToElectricalNetwork(String electricalNetwork, List<String> componentIRI) {
-		
-		String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + "INSERT DATA { \r\n";
-		StringBuffer b = new StringBuffer();
-		
-		for (int i=1; i<=componentIRI.size(); i++) {
-			String current = componentIRI.get(i-1);
-			b.append("<" + electricalNetwork + "> OCPSYST:hasSubsystem <" + current + "> . \r\n");
-			if ((i % 5 == 0) || i == componentIRI.size()) {
-				String sparql = sparqlStart + b.toString() + "} \r\n";
-				logger.info("inserting " + (i % 5) + " power generators to electrical network top node\n" + sparql);
-				new QueryBroker().updateFile(electricalNetwork, sparql);
-				b = new StringBuffer();
-			}
-		}
-		
-	}
-	
-	
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	 @Override
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 
 		 	System.gc();//garbage collection (reduce memory consumption)
-			JSONObject joforess = AgentCaller.readJsonParameter(request);
+			JSONObject joforess = requestParams;
 			String baseUrl = QueryBroker.getLocalDataPath() + "/GAMS_ESS";
 			System.out.println("baseURL: " + baseUrl);
-			List<String> pvGenIRI=MiscUtil.toList(joforess.getJSONArray("RenewableEnergyGenerator"));
 			String batIRI=joforess.getString("BatteryCatalog");
-			//String ENIRI=joforess.getString("electricalnetwork");
+			String ENIRI=joforess.getString("electricalnetwork");
 			
-			//String dirOfOPF=joforess.getString("folder");
+			List<String> pvGenIRI=filterPV(ENIRI);
 			
-			System.out.println("GENERATOR: " + pvGenIRI);
+			//System.out.println("GENERATOR: " + pvGenIRI);
 			System.out.println("parameter got= "+joforess.toString());
+						
+			JSONObject resultofbattery = null;
+			try {
+				resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
+				return resultofbattery;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				logger.error(e.getMessage());
+			}
 			
-			//modified the EN with the additional renewable gen added
-			
-//			logger.info("sent to the retrofit= "+joforess.toString());
-//			AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/retrofitGenerator", joforess.toString());
-//	
-//			
-//			//run the scenario for EN after it is retrofitted
-//			logger.info("starting the OPF");
-//			
-//			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", joforess.toString());
-//			String dirOfOPF = new JSONObject(resultStart).getString("folder");
-			
-			
-			JSONObject resultofbattery = optimizedBatteryMatching(baseUrl, pvGenIRI, batIRI);
-			
-			//NOW IT IS TASK OF OTHER AGENT
-			//make battery owl file
-			
-			/*JSONArray a= createBatteryOwlFile(ENIRI, resultofbattery, dirOfOPF);
-			List<String>battlist=new ArrayList<String>();
-			for(int d=0;d<a.length();d++) {
-				battlist.add(a.getJSONArray(d).getString(0));
-			}*/
-			
-			//task of retrofit again
-			/*addObjectToElectricalNetwork(ENIRI, battlist);*/
-
 		    System.gc();
-//			JSONObject listofbat=new JSONObject();
-//			listofbat.put("batterylist", a);
+
 	
-			AgentCaller.printToResponse(resultofbattery, response);
+			return resultofbattery;
 		}
 	
 /*	public List<String[]> getBatteryCoord(OntModel model) { must be the complete model (not needed at the moment
@@ -428,10 +394,58 @@ public class EnergyStorageSystem extends JPSHttpServlet {
 		return resultList;
 	}*/
 	
-	
+	public List<String> filterPV (String ENIRI){
+	OntModel model=readModelGreedy(ENIRI);
+		
+		String queryGenerator = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
+				+ "PREFIX j9:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
+				+ "SELECT ?entity ?valueofx ?valueofy ?BusNumbervalue "
+
+				+ "WHERE {?entity  a  j1:PowerGenerator  ."
+				+ "?entity   j9:realizes <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#SolarGeneration> ."
+				+ "?entity   j2:isModeledBy ?model ."
+
+				+ "?model   j5:hasModelVariable ?num ." 
+				+ "?num  a  j3:BusNumber  ." 
+				+ "?num  j2:hasValue ?vnum ."
+				+ "?vnum   j2:numericalValue ?BusNumbervalue ." // number
+
+				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
+				+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
+				+ "?y  j2:hasValue ?vy ." 
+				+ "?vy  j2:numericalValue ?valueofy ."
+
+				+ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+				+ "?x  j2:hasValue ?vx ." 
+				+ "?vx  j2:numericalValue ?valueofx ."
+
+				+ "}";
+		
+		ResultSet resultSet = JenaHelper.query(model, queryGenerator);
+		String resultquerypv = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(resultquerypv);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(resultquerypv, keys);
+
+		List<String> pvGenIRI= new ArrayList<String>();
+		for(int x=0;x<resultList.size();x++) {
+			pvGenIRI.add(resultList.get(x)[0]);
+		}
+		logger.info("PV iri selected= "+pvGenIRI.size());
+		logger.info("===================================================================================");
+		return pvGenIRI;
+		
+	}
 
 	public JSONObject optimizedBatteryMatching(String baseUrl, List<String> pvGenIRI, String batIRI) throws IOException {
 		OntModel modelbattery=readBatteryGreedy(batIRI);
+		
 		prepareCSVPahigh(pvGenIRI,baseUrl);
 		prepareCSVRemaining(batIRI,baseUrl,modelbattery);		
 		try {

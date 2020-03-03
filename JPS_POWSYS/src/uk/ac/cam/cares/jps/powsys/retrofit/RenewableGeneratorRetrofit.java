@@ -1,21 +1,17 @@
 package uk.ac.cam.cares.jps.powsys.retrofit;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
@@ -29,29 +25,27 @@ public class RenewableGeneratorRetrofit extends GeneralRetrofitAgent {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+    @Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
+    }
+    Logger logger = LoggerFactory.getLogger(RenewableGeneratorRetrofit.class);
+    
 	@Override
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		
-		JSONObject jo = AgentCaller.readJsonParameter(request);
+		JSONObject jo = requestParams;
 		String electricalNetwork = jo.getString("electricalnetwork");
-		String scenario=jo.getJSONObject("jpscontext").getString("scenariourl").split("/scenario/")[1];	
-		System.out.println("current scenario directory= "+scenario);
-		
-		File f = new File("C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/"+scenario);
-		if (f.exists()&& f.isDirectory()) {
-			FileUtils.deleteDirectory(f);
-		}
-		//above is done as the retrofit cannot be done twice for ESS esp.
 		JSONArray ja = jo.getJSONArray("RenewableEnergyGenerator");
 		List<String> RenewableGenerators = MiscUtil.toList(ja);
 		retrofitGenerator(electricalNetwork, RenewableGenerators);
 		
-		AgentCaller.printToResponse(jo, response);
+		return jo;
+		
 	}
 
 	public void retrofitGenerator(String electricalNetwork, List<String> RenewableGenerators) {
-		
+		logger.info("starting retrofit generator");
 		OntModel model = ENAgent.readModelGreedy(electricalNetwork);
 		List<BusInfo> buses = queryBuses(model);
 		BusInfo slackBus = findFirstSlackBus(buses);

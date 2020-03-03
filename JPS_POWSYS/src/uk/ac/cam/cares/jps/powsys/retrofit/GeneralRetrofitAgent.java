@@ -1,23 +1,17 @@
 package uk.ac.cam.cares.jps.powsys.retrofit;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.RDFNode;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -31,21 +25,12 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
-public class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
-	
-	protected Logger logger=LoggerFactory.getLogger(GeneralRetrofitAgent.class);
-	
-	@Override
-	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		
-		JSONObject jo = AgentCaller.readJsonParameter(request);
-		String electricalNetwork = jo.getString("electricalnetwork");
-		
-		
-	}
-	
-	public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
+public abstract class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
+		    
+    protected abstract JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request);
+    
+    
+    public void retrofit(String electricalNetwork, List<String> nuclearPowerPlants, List<String> substitutionalGenerators) {
 		
 		
 		

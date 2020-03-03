@@ -5,7 +5,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -29,6 +34,7 @@ import uk.ac.cam.cares.jps.powsys.electricalnetwork.ENAgent;
 public class TestEN extends TestCase {
 	
 	public static String ELECTRICAL_NETWORK = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";
+	public static String SGELECTRICAL_NETWORK = "http://localhost:8080/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	String dataPath = QueryBroker.getLocalDataPath();
 	String baseUrl=dataPath+"/JPS_POWSYS_EN";
 	
@@ -360,6 +366,7 @@ public class TestEN extends TestCase {
 			
 			+ "}";
 	
+	String usecaseID = UUID.randomUUID().toString();
 		
 	public void testextractOWLinArray() throws IOException, URISyntaxException {
 		//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of powsys";
@@ -371,6 +378,7 @@ public class TestEN extends TestCase {
 		   List<String[]>buslist=b.extractOWLinArray(b.readModelGreedy(ELECTRICAL_NETWORK),ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 //		     List<String[]>buslist=  b.extractOWLinArray(b.readModelGreedy(iriofnetwork),iriofnetwork,genInfocost,"generatorcost",baseUrl);
 	      System.out.println(buslist.size());
+	      assertEquals(208, buslist.size());
 	}
 	
 		
@@ -379,11 +387,8 @@ public class TestEN extends TestCase {
 		
 		ENAgent b= new ENAgent ();
 		
-	//String baseurl="C:/JPS_DATA/workingdir/JPS_POWSYS/scenario of Powsys";
-	//String baseurl="D:/JPS/JParkSimulator-git/JPS_POWSYS/python/model";
-
 	String busmapurl=baseUrl+"/mappingforbus.csv";
-	OntModel model = b.readModelGreedy(ELECTRICAL_NETWORK);
+	OntModel model = ENAgent.readModelGreedy(ELECTRICAL_NETWORK);
 		List<String[]>list=b.extractOWLinArray(model,ELECTRICAL_NETWORK,busInfo,"bus",baseUrl);
 	List<String[]>list2=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfo,"generator",baseUrl);
 	List<String[]>list3=b.extractOWLinArray(model,ELECTRICAL_NETWORK,genInfocost,"generatorcost",baseUrl);
@@ -409,29 +414,27 @@ public class TestEN extends TestCase {
 
 		JSONObject jo = new JSONObject();
 		
-		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
-		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
+//		jo.put("electricalnetwork", ELECTRICAL_NETWORK);
+//		
+//		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFCallAgent");
+		jo.put("electricalnetwork", SGELECTRICAL_NETWORK);
+		String scenarioname="testSGPOWSYSOPFCallAgent6"+usecaseID;
+		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioname);
 		JPSHttpServlet.enableScenario(scenarioUrl);	
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-		
+		//new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true); //optional	
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		
-		String usecaseUrl = BucketHelper.getUsecaseUrl();
-		JPSHttpServlet.enableScenario(scenarioUrl, usecaseUrl);	
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
+		System.out.println("contextusecase= "+JPSContext.getUsecaseUrl());
+		System.out.println("contextuse case from jo= "+JPSContext.getUsecaseUrl(jo));
+//		
+		String usecaseUrl = BucketHelper.getUsecaseUrl();	
+		System.out.println("usecaseurl= "+usecaseUrl);
+		//JPSContext.putUsecaseUrl(jo, usecaseUrl); //if it is used, then the data will be moved to the base
+
 		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_POWSYS/ENAgent/startsimulationOPF", jo.toString());
 		System.out.println(resultStart);
 	}
-	
-//	public void testStartSimulationPFDirectCallBaseScenario() throws IOException  {
-//
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_POWSYS_EN";
-//		new ENAgent().startSimulation(ELECTRICAL_NETWORK, baseUrl, "PF");	
-//	}
-	
+		
 	public void testStartSimulationOPFDirectCallNonBaseScenario() throws IOException  {
 
 		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSENSimulationOPFDirectCall");
@@ -534,6 +537,18 @@ public class TestEN extends TestCase {
 			
 		
 	}
+	
+	public void xxxtestread() throws IOException { //need to provide specific directory first
+		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testPOWSYSENSimulationOPFDirectCall\\localhost_8080\\data\\8b7e6530-54b7-4e51-99cf-1bcc663d5658\\JPS_POWSYS_EN";
+		String fileName = baseUrl+"/outputstatus.txt";
+		Path path = Paths.get(fileName);
+		byte[] bytes = Files.readAllBytes(path);
+		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
+		System.out.println(allLines.size());
+		System.out.println(allLines.get(2));
+	
+	}
+
 	public void xxxtestquerygen() {
 		OntModel jenaOwlModel = JenaHelper.createModel("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
 		new ENAgent().updateGeneratorEmission(jenaOwlModel);
