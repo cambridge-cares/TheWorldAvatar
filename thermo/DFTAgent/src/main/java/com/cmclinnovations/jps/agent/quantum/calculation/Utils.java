@@ -105,12 +105,16 @@ public class Utils {
 			}
 		}
 	}
+
+	public static boolean isJobCompleted(File jobFolder) throws IOException{
+		return isJobFinished(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+	}
 	
-	private static boolean isJobRunning(File jobFolder) throws IOException{
+	public static boolean isJobRunning(File jobFolder) throws IOException{
 		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
 	}
 
-	private static boolean isJobNotStarted(File jobFolder) throws IOException{
+	public static boolean isJobNotStarted(File jobFolder) throws IOException{
 		return isJobNotStarted(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
 	}
 	
@@ -162,6 +166,9 @@ public class Utils {
 		while((line=statusFile.readLine())!=null){
 			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
 				if(line.contains(Jobs.STATUS_JOB_COMPLETED.getName())){
+					return true;
+				}
+				if(line.contains(Jobs.STATUS_JOB_ERROR_TERMINATED.getName())){
 					return true;
 				}
 			}
@@ -286,6 +293,21 @@ public class Utils {
 		for(String filePath:filePaths){
 			if(filePath.toLowerCase().endsWith(Jobs.STATUS_FILE.getName().toLowerCase())){
 				return new File(filePath);
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Returns the status file if the job folder is provided. 
+	 *  
+	 * @param jobFolder path to the job folder.
+	 * @return
+	 */
+	public static File getStatusFile(File jobFolder){
+		if(jobFolder.isDirectory()){
+			if((new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName())).isFile())){
+				return new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
 			}
 		}
 		return null;

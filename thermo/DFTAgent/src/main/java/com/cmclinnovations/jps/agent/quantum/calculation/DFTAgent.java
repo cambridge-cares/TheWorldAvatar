@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,8 @@ public class DFTAgent extends HttpServlet{
 	static JSch jsch = new JSch();
 	
 	static int scheduledIteration = 0;
+	static int numberOfJobsRunning = 0;
+	static boolean locked = false;
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
@@ -140,31 +143,45 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private void monitorJobs() {
 		scheduledIteration++;
-		Workspace workspace = new Workspace();
-		jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
-					Property.AGENT_CLASS.getPropertyName());
-		try {
-			if (session == null || scheduledIteration%10==0) {
-				createSession(session);
-				scheduledIteration = 0;
+		if(!locked){
+			locked = true;
+			Workspace workspace = new Workspace();
+			jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+						Property.AGENT_CLASS.getPropertyName());
+			try {
+				if (session == null || scheduledIteration%10==0) {
+					createSession();
+					scheduledIteration = 0;
+				}
+				if(jobSpace.isDirectory()){
+					File[] jobFolders = jobSpace.listFiles();
+					for(File jobFolder: jobFolders){
+						if(!Utils.isJobCompleted(jobFolder)){
+							if(Utils.isJobRunning(jobFolder)){
+								if(updateRunningJobsStatus(jobFolder)){
+									if(numberOfJobsRunning>1){
+										numberOfJobsRunning--;
+									}
+								}
+							} else if(Utils.isJobNotStarted(jobFolder)){
+								if(numberOfJobsRunning<Property.MAX_NUMBER_OF_JOBS.getValue()){
+									runNotStartedJobs(jobFolder);
+									numberOfJobsRunning++;
+								}
+							}
+						}
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			} catch(SftpException e){
+				e.printStackTrace();
+			} catch(JSchException e){
+				e.printStackTrace();
 			}
-			Map<String, List<String>> jobsRunning = new LinkedHashMap<>();
-			Map<String, List<String>> jobsNotStarted = new LinkedHashMap<>();
-			Utils.classifyJobs(jobsRunning, jobsNotStarted, jobSpace);
-			System.out.println("Number of running jobs:" + jobsRunning.size());
-			System.out.println("Number of not started jobs:" + jobsNotStarted.size());
-			Map<String, List<String>> jobsRunningAfterUpdate = new LinkedHashMap<>();
-			jobsRunningAfterUpdate.putAll(jobsRunning);
-			updateRunningJobsStatus(jobsRunning, jobsRunningAfterUpdate);
-			runNotStartedJobs(jobsNotStarted, jobsRunningAfterUpdate);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		} catch(SftpException e){
-			e.printStackTrace();
-		} catch(JSchException e){
-			e.printStackTrace();
+			locked = false;
 		}
 	}
 	
@@ -174,7 +191,7 @@ public class DFTAgent extends HttpServlet{
 	 * @param session
 	 * @throws JSchException
 	 */
-	private void createSession(Session session) throws JSchException{
+	private void createSession() throws JSchException{
 		if(session!=null && session.isConnected()){
 			session.disconnect();
 		}
@@ -244,47 +261,33 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Updates the status of running jobs.
+	 * Updates the status of a currently running job.
 	 * 
-	 * @param jobsRunning
-	 * @param jobsRunningAfterUpdate
+	 * @param jobFolder
+	 * @return
 	 * @throws JSchException
 	 * @throws SftpException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void updateRunningJobsStatus(Map<String, List<String>> jobsRunning,
-			Map<String, List<String>> jobsRunningAfterUpdate)
+	private boolean updateRunningJobsStatus(File jobFolder)
 			throws JSchException, SftpException, IOException, InterruptedException {
-		for (String runningJob : jobsRunning.keySet()) {
-			File statusFile = Utils.getStatusFile(jobsRunning.get(runningJob));
-			updateRunningJobsStatus(runningJob, statusFile, jobsRunningAfterUpdate);
-		}
+			File statusFile = Utils.getStatusFile(jobFolder);
+			return updateRunningJobsStatus(jobFolder.getName(), statusFile);
 	}
 	
 	/**
 	 * Starts running quantum jobs which were set up before. 
 	 * 
-	 * @param jobsNotStarted
-	 * @param jobsRunning
+	 * @param jobFolder
 	 * @throws SftpException
 	 * @throws JSchException
 	 * @throws IOException
 	 * @throws UnknownHostException
 	 * @throws InterruptedException
 	 */
-	private void runNotStartedJobs(Map<String, List<String>> jobsNotStarted, Map<String, List<String>> jobsRunning)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
-		int runningJobsCount = jobsRunning.size();
-		int howManyJobCanStart = Property.MAX_NUMBER_OF_JOBS.getValue() - runningJobsCount;
-		int jobsStarted = 0;
-		for(String jobNotStarted: jobsNotStarted.keySet()){
-			if((howManyJobCanStart - jobsStarted) > 0){
-				startJob(jobNotStarted, jobsNotStarted.get(jobNotStarted));
-				jobsStarted++;
-			}else{
-				break;
-			}
-		}
+	private void runNotStartedJobs(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+		startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
 	}
 	
 	/**
@@ -298,7 +301,7 @@ public class DFTAgent extends HttpServlet{
 	 * @throws UnknownHostException
 	 * @throws InterruptedException
 	 */
-	private void startJob(String job, List<String> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+	private void startJob(String job, List<File> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
 		// On HPC, the job folder and files have the address of machine where DFT Agent runs.
 		// Therefore, the HPC address is replaced with the address of Agent machine.
 		job = job.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), Utils.getMachineAddress());
@@ -320,22 +323,22 @@ public class DFTAgent extends HttpServlet{
 	 * @throws UnknownHostException
 	 * @throws InterruptedException
 	 */
-	private void uploadFiles(String jobFolderOnHPC, List<String> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+	private void uploadFiles(String jobFolderOnHPC, List<File> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
 		String replacedInputFileName = "";
 		String statusFileAbsolutePath = "";
 		String jobId = "";
-		for(String jobFile:jobFiles){
-			if(jobFile.endsWith(Jobs.EXTENSION_SLURM_FILE.getName())){
-				uploadFile(jobFile, jobFolderOnHPC);
+		for(File jobFile:jobFiles){
+			if(jobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName())){
+				uploadFile(jobFile.getAbsolutePath(), jobFolderOnHPC);
 			}
-			if(jobFile.endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
-				replacedInputFileName = getInputFileNameReplaced(jobFile);
+			if(jobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName())){
+				replacedInputFileName = getInputFileNameReplaced(jobFile.getAbsolutePath());
 				String inputFileNameOnHPC = jobFolderOnHPC.concat("/").concat(replacedInputFileName);
-				uploadFile(jobFile, inputFileNameOnHPC);
+				uploadFile(jobFile.getAbsolutePath(), inputFileNameOnHPC);
 				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
 			}
-			if(jobFile.endsWith(Jobs.STATUS_FILE.getName())){
-				statusFileAbsolutePath = jobFile;
+			if(jobFile.getAbsolutePath().endsWith(Jobs.STATUS_FILE.getName())){
+				statusFileAbsolutePath = jobFile.getAbsolutePath();
 			}
 		}
 		if(!replacedInputFileName.isEmpty()){
@@ -415,21 +418,22 @@ public class DFTAgent extends HttpServlet{
 	 * 
 	 * @param runningJob
 	 * @param statusFile
-	 * @param jobsRunningAfterUpdate
+	 * @return
 	 * @throws JSchException
 	 * @throws SftpException
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private void updateRunningJobsStatus(String runningJob, File statusFile, Map<String, List<String>> jobsRunningAfterUpdate) throws JSchException, SftpException, IOException, InterruptedException{
+	private boolean updateRunningJobsStatus(String runningJob, File statusFile) throws JSchException, SftpException, IOException, InterruptedException{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
 				downloadFile(Utils.getLogFilePathOnHPC(runningJob, username, jobSpace), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, username, jobSpace));
-				jobsRunningAfterUpdate.remove(runningJob);
 				updateStatusForErrorTermination(statusFile, Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
+				return true;
 			}
 		}
+		return false;
 	}
 	
 	/**
