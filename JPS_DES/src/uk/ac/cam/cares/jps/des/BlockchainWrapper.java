@@ -3,12 +3,16 @@ package uk.ac.cam.cares.jps.des;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
@@ -31,19 +35,34 @@ public class BlockchainWrapper extends JPSHttpServlet{
 	private static final long serialVersionUID = 1L;
 	protected JSONObject processRequestParameters(JSONObject requestParams,HttpServletRequest request) {
 
-		System.out.println(requestParams.toString());
 		JSONObject result=new JSONObject();
+		JSONObject graData =new JSONObject();
+		DistributedEnergySystem des = new DistributedEnergySystem();
+		graData = des.provideJSONResult(requestParams.getString("directory"));
+		JSONObject jo = determineValue (graData);
 		try {
-			result = calculateTrade(requestParams);
+			result = calculateTrade(jo);
 			System.out.println(result);
+			graData.put("txHash", result.get("txHash"));
+			graData.put("sandr", result.get("sandr"));
+			
 		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result;
+		return graData;
  
 	}
+	/** creates transaction between sender and receiver. 
+	 * 
+	 * @param sender String address of Ethereum account
+	 * @param recipient String address of Ethereum account
+	 * @param moneyEth double ether to be transacted. 
+	 * @return
+	 * @throws IOException
+	 * @throws Exception
+	 */
 	public String dotransact(String sender, String recipient, double moneyEth) throws IOException, Exception {
 		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
 		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
@@ -57,6 +76,74 @@ public class BlockchainWrapper extends JPSHttpServlet{
 		return  transactionReceipt.getTransactionHash();
 		
 	}
+    
+	/**
+	 * Derive and estimate the values to be transacted over the blockchain, to the closest half an hour. 
+     *
+	 * @param basefold
+	 * @return
+	 * @throws JSONException
+	 */
+    public static JSONObject determineValue (JSONObject basefold) throws JSONException {
+
+		JSONObject jo = new JSONObject();
+    	try {
+		SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+		String date = sdf.format(new Date());
+		Date date2 = sdf.parse(date);
+		//figure out time in which 
+		String[] tim = (String[]) basefold.get("timer");
+		for (int i = 0; i< tim.length; i++) {
+			Date date1;
+				date1 = sdf.parse(tim[i]);
+				// TODO Auto-generated catch block
+			long difference = date2.getTime() - date1.getTime();
+			difference = difference/60000;
+			if (difference < 29) {
+				//need to figure out the difference gradient
+				jo = deriveValue(i, false, basefold);
+				break;
+			}
+			else if (difference < 60){
+				//get the next one. 
+				jo = deriveValue(i, true, basefold);
+				break;
+			}
+		}
+    	
+    	}catch (Exception ex) {
+    		ex.printStackTrace();
+    	}
+
+		return jo;
+    }
+	/**
+     * helper function to determineValue()s
+	 * 
+	 * @param index
+	 * @param inbetween
+	 * @param basefold
+	 * @return
+	 */
+    public static JSONObject deriveValue(int index, boolean inbetween, JSONObject basefold) {
+
+    	JSONObject jo = new JSONObject();
+    	String[] types = {"solar", "gridsupply", "industrial", "commercial", "residential"};
+    	List<String> l = Arrays.asList(types);
+    	if (inbetween) {
+    		for (String i: l ) {
+    			String[] j =  (String[]) basefold.get(i );
+    			jo.put(i,j[index +1]);
+    		}
+        }else {
+        	for (String i: l ) {
+        		String[] j  =  (String[]) basefold.get(i);
+    			double getAvg = ( Double.parseDouble(j[index]) + Double.parseDouble(j[index+1])) /2;
+    			jo.put(i,Double.toString(getAvg));
+    		}
+        }
+        return jo;
+    }
 	public JSONObject calculateTrade(JSONObject jo) {
 		double totalsolar = Double.parseDouble((String) jo.get("solar"));
 		double totalelectric =Double.parseDouble((String) jo.get("gridsupply"));
