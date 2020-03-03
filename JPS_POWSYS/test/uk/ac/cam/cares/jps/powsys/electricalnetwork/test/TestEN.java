@@ -5,10 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import org.apache.jena.ontology.DatatypeProperty;
@@ -538,17 +534,6 @@ public class TestEN extends TestCase {
 			
 		
 	}
-	public void testread() throws IOException {
-		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testPOWSYSENSimulationOPFDirectCall\\localhost_8080\\data\\8b7e6530-54b7-4e51-99cf-1bcc663d5658\\JPS_POWSYS_EN";
-		String fileName = baseUrl+"/outputstatus.txt";
-		Path path = Paths.get(fileName);
-		byte[] bytes = Files.readAllBytes(path);
-		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
-		System.out.println(allLines.size());
-		System.out.println(allLines.get(2));
-	
-	}
-
 	public void xxxtestquerygen() {
 		OntModel jenaOwlModel = JenaHelper.createModel("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EGen-008.owl");
 		new ENAgent().updateGeneratorEmission(jenaOwlModel);

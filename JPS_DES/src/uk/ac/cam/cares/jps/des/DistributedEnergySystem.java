@@ -133,13 +133,15 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  			result = new QueryBroker().queryFile(irioftempF, sensorinfo+ "ORDER BY ASC(?proptimeval)");
  			keys = JenaResultSetFormatter.getKeys(result);
  			resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
- 			System.out.println(resultListfromquerytemp);
- 			result2 = new QueryBroker().queryFile(iriofirrF, sensorinfo2+ "ORDER BY  ASC(?proptimeval)");
+ 			System.out.println("Temperature " + resultListfromquerytemp.toString());
+ 			result2 = new QueryBroker().queryFile(iriofirrF, sensorinfo2+ "ORDER BY ASC(?proptimeval)");
  			keys2 = JenaResultSetFormatter.getKeys(result2);
  			resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+ 			System.out.println("Irradiation " + resultListfromqueryirr.toString());
  			result3 = new QueryBroker().queryFile(iriofwindF, sensorinfo3 + "ORDER BY ASC(?proptimeval)");
  			keys3 = JenaResultSetFormatter.getKeys(result3);
  			resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
+ 			System.out.println("Speed " +resultListfromqueryspeed);
  			readingFromCSV = new ArrayList<String[]>();
  			for (int d=0;d<resultListfromqueryirr.size();d++) {
  				timewholecsv=resultListfromquerytemp.get(d)[2];
