@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.wte;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -8,11 +10,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaHelper;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/WastetoEnergyAgent")
 public class WastetoEnergyAgent extends JPSHttpServlet {
@@ -23,7 +29,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
 			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -31,7 +37,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?name ?xvalue ?yvalue ?wasteproductionvalue ?year " 
+			+ "SELECT ?name ?xvalue ?yvalue ?wasteproductionvalue ?year " //YEAR IS NOT INCLUDED IF JUST USING SIMPLIFIED VERSION
 			+ "WHERE {"
 			+ "?entity  a j1:FoodCourt ."
 			+ "?entity   j8:hasName ?name ." 
@@ -50,9 +56,28 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?vWP   j6:hasTime ?time ." 
 			+ "?time     j6:inDateTime ?vdatetime ."
 			+ "?vdatetime  j6:year ?year ." 
-			
 			+ "}"
 			+ "ORDER BY ASC(?year)";
+	
+	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+			+ "SELECT ?entity ?xvalue ?yvalue "
+			+ "WHERE {" 
+			+ "?entity  a j1:OffsiteWasteTreatmentFacility ."			
+			+ "?entity   j7:hasGISCoordinateSystem ?coorsys ." 
+			+ "?coorsys   j7:hasProjectedCoordinate_x ?x ."
+			+ "?x   j2:hasValue ?xval ." 
+			+ "?xval   j2:numericalValue ?xvalue ."
+			+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." 
+			+ "?y   j2:hasValue ?yval ."
+			+ "?yval   j2:numericalValue ?yvalue ."
+			+ "}";
 	
 	public String transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -145,7 +170,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?vDispfee  j2:numericalValue ?DisposalFeevalue ." 
 			
 			+ "}";
-	
 	
 
 	
@@ -244,7 +268,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			throws ServletException, IOException {
 		JSONObject joforess = AgentCaller.readJsonParameter(request);
 		String wasteIRI=joforess.getString("wastenetwork");
-		
+		OntModel model= readModelGreedy(wasteIRI);
+		String baseUrl= QueryBroker.getLocalDataPath();
+		prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
 	}
 	
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
@@ -257,6 +284,66 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, wasteinfo);
+	}
+	
+	
+	public void prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) {
+				
+		
+		ResultSet resultSet = JenaHelper.query(model, mainquery);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+        String[] keysfc = JenaResultSetFormatter.getKeys(result);
+        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysfc);
+        List<String[]> resultxy = new ArrayList<String[]>();
+		for (int d = 0; d < resultList.size(); d++) {
+			String[] comp = { resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
+			if (resultList.get(d)[4].contentEquals("1")) {
+				resultxy.add(comp);
+			}
+
+		}
+        if (filename2 != null) {
+			List<String[]> resultwaste = new ArrayList<String[]>();
+			int size = resultList.size();
+			int yearend = Integer.valueOf(resultList.get(resultList.size() - 1)[4]);
+			int amountinst = size / yearend; // assume it's from year 1
+
+			for (int n = 0; n < amountinst; n++) {
+				yearend=1;//control how many year we want to use;assume yearend =1 (only 1 year)
+				String[] consumption = new String[yearend];
+				for (int r = 0; r < yearend; r++) { 
+					consumption[r] = resultList.get(r * amountinst + n)[3];
+				}
+				resultwaste.add(consumption);
+			}
+			new QueryBroker().putLocal(baseUrl + "/" + filename2, MatrixConverter.fromArraytoCsv(resultwaste));
+		}
+        String[]header= {keysfc[1],keysfc[2]};
+       // String[]headerwaste= {"waste year1"};
+        resultxy.add(0,header);
+        //resultwaste.add(0,headerwaste);
+        new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy));
+    	
+	}
+	
+	public void prepareCSVWT(String mainquery,String filename,String baseUrl,OntModel model) {
+				
+		
+		ResultSet resultSet = JenaHelper.query(model, mainquery);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+        String[] keyswt = JenaResultSetFormatter.getKeys(result);
+        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
+        List<String[]> resultxy = new ArrayList<String[]>();
+		for (int d = 0; d < resultList.size(); d++) {
+			String[] comp = { resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
+			resultxy.add(comp);
+		}
+        String[]header= {keyswt[1],keyswt[2]};
+       // String[]headerwaste= {"waste year1"};
+        resultxy.add(0,header);
+        //resultwaste.add(0,headerwaste);
+        new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy));
+    	
 	}
 
 }

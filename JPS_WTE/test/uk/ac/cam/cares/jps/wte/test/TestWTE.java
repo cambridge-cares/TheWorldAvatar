@@ -9,13 +9,15 @@ import org.apache.jena.query.ResultSet;
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 public class TestWTE extends TestCase {
+	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 	
 	public void testQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		String query= a.FCQuery;
 		ResultSet resultSet = JenaHelper.query(model, query);
@@ -36,7 +38,6 @@ public class TestWTE extends TestCase {
 	
 	public void testQuerytopnode() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 		OntModel model=JenaHelper.createModel(iriofnetwork);
 		String query= a.wasteSystemQuery;
 		ResultSet resultSet = JenaHelper.query(model, query);
@@ -52,7 +53,6 @@ public class TestWTE extends TestCase {
 	
 	public void testQuerytransport() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
-		String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		String query= a.transportQuery;
 		ResultSet resultSet = JenaHelper.query(model, query);
@@ -82,6 +82,13 @@ public class TestWTE extends TestCase {
         System.out.println(Arrays.toString(resultList.get(1)));
         System.out.println(Arrays.toString(resultList.get(2)));
 	
+	}
+	
+	public void testQueryFC2() {
+		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+		String baseUrl= QueryBroker.getLocalDataPath();
+		new WastetoEnergyAgent().prepareCSVFC(WastetoEnergyAgent.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model);
+		new WastetoEnergyAgent().prepareCSVWT(WastetoEnergyAgent.WTquery,"Location.csv",baseUrl,model);
 	}
 
 }
