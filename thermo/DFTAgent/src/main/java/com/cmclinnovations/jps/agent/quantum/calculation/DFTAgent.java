@@ -56,8 +56,7 @@ public class DFTAgent extends HttpServlet{
 	static JSch jsch = new JSch();
 	
 	static int scheduledIteration = 0;
-	static int numberOfJobsRunning = 0;
-	static boolean locked = false;
+	static List<String> jobsRunning = new ArrayList<>();
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
@@ -130,8 +129,8 @@ public class DFTAgent extends HttpServlet{
         // starts and the second 60 refers to the interval between two consecu-
         // tive executions of the scheduler.
         executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 10, 60, TimeUnit.SECONDS);
-        logger.info("---------- Qunatum jobs are being monitored  ----------");
-        System.out.println("---------- Qunatum jobs are being monitored  ----------");
+        logger.info("---------- Quantum jobs are being monitored  ----------");
+        System.out.println("---------- Quantum jobs are being monitored  ----------");
        	
 	}
 	
@@ -143,64 +142,52 @@ public class DFTAgent extends HttpServlet{
 	 */
 	private void monitorJobs() {
 		scheduledIteration++;
-		if(!locked){
-			locked = true;
-			Workspace workspace = new Workspace();
-			jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
-						Property.AGENT_CLASS.getPropertyName());
-			try {
-				if (session == null || scheduledIteration%10==0) {
-					createSession();
-					scheduledIteration = 0;
+		Workspace workspace = new Workspace();
+		jobSpace = workspace.getWorkspaceName(Property.AGENT_WORKSPACE_DIR.getPropertyName(),
+					Property.AGENT_CLASS.getPropertyName());
+		try {
+			if (session == null || scheduledIteration%10==0) {
+				if(session!=null && session.isConnected()){
+					session.disconnect();
 				}
-				if(jobSpace.isDirectory()){
-					File[] jobFolders = jobSpace.listFiles();
-					for(File jobFolder: jobFolders){
-						if(!Utils.isJobCompleted(jobFolder)){
-							if(Utils.isJobRunning(jobFolder)){
-								if(updateRunningJobsStatus(jobFolder)){
-									if(numberOfJobsRunning>1){
-										numberOfJobsRunning--;
-									}
+				System.out.println("Initialising a session.");
+				session = jsch.getSession(username, server, 22);
+				String pwd = getPassword(password);
+				session.setPassword(pwd);
+				session.setConfig("StrictHostKeyChecking", "no");
+				session.connect();
+				scheduledIteration = 0;
+			}
+			if(jobSpace.isDirectory()){
+				File[] jobFolders = jobSpace.listFiles();
+				for(File jobFolder: jobFolders){
+					if(!Utils.isJobCompleted(jobFolder)){
+						if(Utils.isJobRunning(jobFolder)){
+							if(updateRunningJobsStatus(jobFolder)){
+								if(jobsRunning.contains(jobFolder.getName())){
+									jobsRunning.remove(jobFolder.getName());
 								}
-							} else if(Utils.isJobNotStarted(jobFolder)){
-								if(numberOfJobsRunning<Property.MAX_NUMBER_OF_JOBS.getValue()){
-									runNotStartedJobs(jobFolder);
-									numberOfJobsRunning++;
-								}
+							}
+						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
+							if(jobsRunning.size()<Property.MAX_NUMBER_OF_JOBS.getValue()){
+								runNotStartedJobs(jobFolder);
+								jobsRunning.add(jobFolder.getName());
+							}else{
+								break;
 							}
 						}
 					}
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			} catch(SftpException e){
-				e.printStackTrace();
-			} catch(JSchException e){
-				e.printStackTrace();
 			}
-			locked = false;
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch(SftpException e){
+			e.printStackTrace();
+		} catch(JSchException e){
+			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * Creates a session to connect the HPC(s).
-	 * 
-	 * @param session
-	 * @throws JSchException
-	 */
-	private void createSession() throws JSchException{
-		if(session!=null && session.isConnected()){
-			session.disconnect();
-		}
-		System.out.println("Initialising a session.");
-		session = jsch.getSession(username, server, 22);
-		String pwd = getPassword(password);
-		session.setPassword(pwd);
-		session.setConfig("StrictHostKeyChecking", "no");
-		session.connect();
 	}
 	
 	/**

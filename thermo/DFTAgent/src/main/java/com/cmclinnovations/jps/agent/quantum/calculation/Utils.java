@@ -166,9 +166,11 @@ public class Utils {
 		while((line=statusFile.readLine())!=null){
 			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
 				if(line.contains(Jobs.STATUS_JOB_COMPLETED.getName())){
+					statusFile.close();
 					return true;
 				}
 				if(line.contains(Jobs.STATUS_JOB_ERROR_TERMINATED.getName())){
+					statusFile.close();
 					return true;
 				}
 			}
@@ -252,16 +254,25 @@ public class Utils {
 	 * @throws IOException
 	 */
 	public static void addJobId(String filePath, String jobId) throws IOException{
-		List<String> fileContent = new ArrayList<>(Files.readAllLines(Paths.get(filePath)));
-		for (int i = 0; i < fileContent.size(); i++) {
-		    if (fileContent.get(i).startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
-		        fileContent.set(i, Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Jobs.STATUS_JOB_RUNNING.getName()));
+		List<String> fileContent = new ArrayList<>();
+		BufferedReader br = openSourceFile(filePath);
+		String line;
+		while((line=br.readLine())!=null){
+		    if (line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
+		        line = Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Jobs.STATUS_JOB_RUNNING.getName());
 		    }
-		    if (fileContent.get(i).startsWith(Jobs.ATTRIBUTE_JOB_ID.getName())) {
-		        fileContent.set(i, Jobs.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId));
+		    if (line.trim().startsWith(Jobs.ATTRIBUTE_JOB_ID.getName())) {
+		        line = Jobs.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId);
 		    }
+		    fileContent.add(line);
 		}
-		Files.write(Paths.get(filePath), fileContent);
+		br.close();
+		BufferedWriter bw = openBufferedWriter(filePath);
+		for(String lineContent:fileContent){
+			bw.write(lineContent.concat("\n"));
+		}
+		bw.flush();
+		bw.close();
 	}
 	
 	/**
@@ -272,15 +283,22 @@ public class Utils {
 	 * @throws IOException
 	 */
 	public static void modifyStatus(String filePath, String status) throws IOException{
-		List<String> fileContent = new ArrayList<>(Files.readAllLines(Paths.get(filePath)));
-
-		for (int i = 0; i < fileContent.size(); i++) {
-		    if (fileContent.get(i).startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
-		        fileContent.set(i, Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(status));
-		        break;
+		List<String> fileContent = new ArrayList<>();
+		BufferedReader br = openSourceFile(filePath);
+		String line;
+		while((line=br.readLine())!=null){
+		    if (line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
+		        line = Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(status);
 		    }
+		    fileContent.add(line);
 		}
-		Files.write(Paths.get(filePath), fileContent);
+		br.close();
+		BufferedWriter bw = openBufferedWriter(filePath);
+		for(String lineContent:fileContent){
+			bw.write(lineContent.concat("\n"));
+		}
+		bw.flush();
+		bw.close();
 	}
 	
 	/**
@@ -338,9 +356,11 @@ public class Utils {
 		String line;
 		while((line=logFile.readLine())!=null){
 			if(line.trim().toLowerCase().startsWith(Jobs.JOB_LOG_MSG_ERROR_TERMINATION.getName().toLowerCase())){
+				logFile.close();
 				return true;
 			}
 		}
+		logFile.close();
 		return false;
 	}
 	
