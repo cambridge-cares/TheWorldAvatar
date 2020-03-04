@@ -433,7 +433,7 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
  */
 function displayCO2(data){
     //read the value of CO2 and display upon calling
-    var agenturl =  prefix + '/JPS_POWSYS/AggregationEmissionAgent/aggregateemission' ;
+    var agenturl =  prefix + '/JPS_POWSYS//ENVisualization/readGenerator' ;
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
     var request = $.ajax({
@@ -837,11 +837,261 @@ function constructSingleUpdate(uri, attrObj) {
     var spoIns = "INSERT DATA {<" + uri + "#" + attrObj.name + "> <" + attrObj.p + "> " +attrObj.value +".}";
     return [spoDel, spoIns];
 };
-
+/** Old method still in use for submitting updates. 
+ * 
+ * @param {*} e 
+ */
 /** runs when OPF button is clicked
  * @param {Element} e 
  */
 function SubmitTable(e) {
+
+    opt = e.innerHTML;
+    var table = document.getElementById('inputsTable');
+    var rows = table.firstElementChild.childNodes;
+    var url = table.getAttribute('data-url');
+    var type = table.getAttribute('data-type');
+    console.log('type',type);
+
+    var JSONArray  = {};
+
+    var proceed = true;
+    console.log(rows.length, 'Rows length');
+    for(var i = 0; i < rows.length; i++)
+    {
+        var row = rows[i];
+        var name = row.getElementsByTagName('label')[0].innerText;
+        var value = row.getElementsByTagName('input')[0].value;
+        
+        
+		value =parseFloat(value)
+        if(name.includes('EBus-001')){ // This is a slack bus, the magnitude is always 1 and the angle is always 0
+            //console.log("label forbidden= "+label);            
+            if (name.includes('VoltageAngle')|| name.includes('Va_EBus')){
+                if (value !== 0){
+                    alert('The value of the voltage angle and Va for a slack bus should always be 0 degree')
+                    proceed = false;
+                }
+            }
+        }
+        else{ // This is a load bus 
+        //console.log("label forbidden= "+label);
+            if(name.includes('VoltageMagnitude')|| name.includes('Vm_EBus')){
+                if( value > 1.05 || value <= 0.95){
+                    alert('The value of the voltage magnitude and Vm should be between 0.95 and 1.05 kV (in p.u format)')
+                    proceed = false;
+                }
+            }           
+        }
+        
+        
+        
+        
+        
+
+        
+        var datatype = row.getElementsByTagName('input')[0].getAttribute('data-dataType');
+        console.log('value',value,'name',name,'url',url);
+        JSONArray[name] = {name: name,value:value, datatype: datatype }
+    }
+
+
+
+    if(proceed){
+        var progress = document.getElementById('myProgressBar');
+        progress.style.display = 'block';
+        updateOwlFile(url,JSONArray,type);
+    }
+
+
+}
+function updateOwlFile(filename,JSONArray,_type) {
+
+    console.log('number',Object.keys(JSONArray).length);
+    console.log('JSONArray',Object.keys(JSONArray));
+    console.log('filename=',filename);
+    console.log('type=',_type);
+
+    var allItemsArray = [];
+    var indexCounter = 0;
+    var temp = [];
+    for(var item in JSONArray){
+            if(((indexCounter!== 0) && (indexCounter % 10 === 0))||(indexCounter === parseInt(Object.keys(JSONArray).length - 1)))
+            {
+                if((indexCounter === parseInt(Object.keys(JSONArray).length - 1)))
+                {
+                    //allItemsArray.push(temp);
+                    //temp = [];
+                    console.log('yes');
+                    allItemsArray.push(temp);
+                    temp = [];
+                    temp.push(item)
+                }
+                else
+                {   console.log('nononon');
+                    allItemsArray.push(temp);
+                    temp = [];
+                    temp.push(item)
+                }
+
+
+            }
+            else
+            {   console.log('yeah');
+                temp.push(item)
+            }
+
+            console.log(indexCounter);
+            console.log(item)
+            indexCounter++;
+        }
+
+    console.log(allItemsArray);
+
+
+    var asyncLoop = function(o){
+        var i=-1,
+            length = o.length;
+            console.log(o);
+            console.log(length);
+        var loop = function(){
+            i++;
+            console.log(i);
+            if(i===length){
+                console.log("CALLBACK called? ");
+                o.callback(); 
+                return;
+            }
+            o.functionToLoop(loop, i);
+        };
+        loop();//init
+};
+
+
+asyncLoop({
+    length : Math.ceil(Object.keys(JSONArray).length / 10),
+    functionToLoop : function(loop, i){
+
+
+        var sampleUpdate = [];
+        var uri = [];
+
+        var Session = allItemsArray[i];
+        console.log(length);
+        console.log('Session',Session);
+
+        for(var j = 0; j < Session.length; j++)
+        {
+            var item = Session[j];
+            var obj = JSONArray[item];
+            var targetIRI = obj.name;
+            var dataType = obj.datatype;
+            if(dataType === 'int')
+            {
+                dataType = 'integer'
+            }
+            console.log('dataType',dataType);
+            var base = filename.split('#')[0] + '#';
+            base = base.replace('/OntoEN','');
+            base=base.replace('theworldavatar','jparksimulator'); //because in electrical it use jparksimulator instead of theworldavatar
+            var value = obj.value;
+            if(targetIRI)
+            {
+
+                if (targetIRI.includes("Costn1")){
+                    targetIRI = targetIRI.replace("Costn1","Costn-1" );
+                    
+                    console.log(targetIRI);
+                }else if (targetIRI.includes("Costn2")){
+                    targetIRI = targetIRI.replace("Costn2","Costn-2" );
+                    
+                    console.log(typeof targetIRI);
+                }
+                var deleteUpdate = "DELETE WHERE {<" + base + targetIRI + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " + "?o.}";
+                var insertUpdate = "INSERT DATA {<" + base + targetIRI + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " +value +".}";
+                    
+                    
+
+                console.log('deleteUpdate',deleteUpdate);
+                console.log('insertUpdate',insertUpdate);
+
+                sampleUpdate.push(deleteUpdate);
+                sampleUpdate.push(insertUpdate);
+                
+                uri.push(filename);
+                uri.push(filename);
+                
+            }
+        }
+        console.log(scenario);
+        console.log(sampleUpdate); 
+        var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
+        var request = $.ajax({
+            url: myUrl,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8'
+        });
+        console.log(myUrl);
+        request.done(function(data) {
+            console.log('data received', data);
+            loop();
+
+
+        });
+
+        request.fail(function(jqXHR, textStatus) {
+            // your failure code here
+        });
+
+
+    },
+    callback : function(){
+
+        //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
+
+        document.getElementById("loader").style.display = "block";
+        var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt;
+        data = { "electricalnetwork":iriofnetwork}
+        url = createUrlForAgent(scenario, agenturl, data);
+        console.log(url);
+        var delayInMilliseconds = 10000; //1 second
+
+            setTimeout(function() {
+                console.log('timeout');
+            }, delayInMilliseconds);
+        var request = $.ajax({
+            url: url,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8'
+        });
+
+        request.done(function(data) {
+            //check for alert
+            response = JSON.parse(data);
+            if (response.status != "converged"){
+                alert("This simulation has not converged. Use different values.");
+            }
+            json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
+            displayCO2(json);
+            var delayInMilliseconds = 10000; //1 second
+            setTimeout(function() {
+                console.log('timeout');
+            }, delayInMilliseconds);
+            console.log('DONE SIMULATION')
+            openWindow(filename);
+        });
+
+
+    }
+});
+
+}
+/** runs when OPF button is clicked
+ * @bug There's a problem with the query. Can't solve it right now, but it means that the numerals submitted creates an error in the OWL file. 
+ * 
+ * @param {Element} e 
+ */
+function SubmitTable2(e) {
 
     opt = e.innerHTML;
     var table = document.getElementById('inputsTable');

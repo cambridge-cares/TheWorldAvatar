@@ -103,7 +103,6 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
     function drawBattery(cb) 	{
 		document.getElementById("run-btn").disabled = true;
 		document.getElementById("loader").style.display = "block";
-		scenario = document.getElementById("scenarioTxt").value;
 		var batteryjson= {}
 		batteryjson["electricalnetwork"] = iriofnetwork;
 		batteryjson["BatteryCatalog"] = batIRI;
