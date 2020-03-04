@@ -232,8 +232,9 @@ public class DFTAgent extends HttpServlet{
 		JobStatistics jobStatistics = new JobStatistics(jobSpace);
 		String statistics = jobStatistics.getHTMLHeader();
 		statistics = statistics + "<body>";
+		statistics = statistics.concat(jobStatistics.getBodydivStart());
 		statistics = statistics + "<center>";
-		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below:";
+		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below.";
 		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));

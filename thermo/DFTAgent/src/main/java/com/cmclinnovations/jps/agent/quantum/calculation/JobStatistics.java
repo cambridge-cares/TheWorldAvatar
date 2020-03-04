@@ -117,8 +117,69 @@ public class JobStatistics {
 		htmlHead = htmlHead.concat("background-color: #f1f1c1;");
 		htmlHead = htmlHead.concat("}");
 		htmlHead = htmlHead.concat("</style>");
+		htmlHead = htmlHead.concat(getResources());
 		htmlHead = htmlHead.concat("</head>");
 		return htmlHead; 
+	}
+	
+	/**
+	 * Adds links to java script libraries and style sheets.
+	 * 
+	 * @return
+	 */
+	private String getResources(){
+		String resourcePath = pathToResource();
+		String headerResource = "<meta charset=\"UTF-8\">";
+		headerResource = headerResource.concat("<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js\"></script>");
+		headerResource = headerResource.concat(getLink("<link rel=\"stylesheet\" type=\"text/css\" href=\"", resourcePath, "css/static/group/bootstrap.min.css\">"));
+		headerResource = headerResource.concat(getLink("<link rel=\"stylesheet\" type=\"text/css\" href=\"", resourcePath, "css/index.css\">"));
+		headerResource = headerResource.concat(getLink("<link rel=\"icon\" href=\"", resourcePath, "css/static/group/favicon.ico\">"));
+		headerResource = headerResource.concat(getLink("<link rel=\"stylesheet\" type=\"text/css\" href=\"", resourcePath, "css/static/group/dftagent.css\">"));
+		headerResource = headerResource.concat("<title>J-Park Simulator</title>");
+		return headerResource;
+	}
+	
+	public String getBodydivStart(){
+		String resourcePath = pathToResource();
+		String startDiv = "<div class=\"jumbotron text-center\" id=\"topBanner\">";
+		startDiv = startDiv.concat("<a id=\"cares-banner\" href=\"http://www.cares.cam.ac.uk\">");
+		startDiv = startDiv.concat("<img id=\"care-banner-img\" src=\"");
+		startDiv = startDiv.concat(resourcePath.concat("images/cam_lang_negativ1%20NEW_0.png\">"));
+		startDiv = startDiv.concat("</a>");
+		startDiv = startDiv.concat("<h1 id=\"title\">DFT Agent</h1>");
+		startDiv = startDiv.concat("<p id=\"description\">");
+		startDiv = startDiv.concat("An agent developed for performing quantum chemistry calculations at "
+				+ "various levels of theories to create a living, continuously self-improving and growing "
+				+ "Knowledge Graph of species serving the need for thermochemical data across disciplines.");
+		startDiv = startDiv.concat("</p>");
+		startDiv = startDiv.concat("</div>");
+		return startDiv;
+	}
+	
+	/**
+	 * Converts path specific to a Windows or Linux server.
+	 * 
+	 * @param resourcePath
+	 * @return
+	 */
+	private String pathToResource(){
+		return "/DFTAgent/assets/";
+	}
+	
+	/**
+	 * Produces a link to a java script library or style sheet using the</br>
+	 * link tag and the path where the resource is located.
+	 *  
+	 * @param link
+	 * @param hrefStartPath
+	 * @param hrefEndPath
+	 * @return
+	 */
+	private String getLink(String link, String hrefStartPath, String hrefEndPath){
+		String linkResource = link;
+		linkResource = linkResource.concat(hrefStartPath);
+		linkResource = linkResource.concat(hrefEndPath);
+		return linkResource;
 	}
 	
 	/**
@@ -127,7 +188,7 @@ public class JobStatistics {
 	 * @return mainly the header part of the HTML table showing job statistics.
 	 */
 	public String getStatisticsTableHeader(String headerText, String statisticsProperty, String statisticsValue, String tableWidth){
-		String tableHeader = "<h2>"+headerText+"</h2>";
+		String tableHeader = "<h2>"+headerText+"</h2><br>";
 		tableHeader = tableHeader + "<table style=\"width:"+tableWidth+"\">";
 		tableHeader = tableHeader + "<tr>";
 		tableHeader = tableHeader + "<th>"+statisticsProperty+"</th>";
