@@ -44,6 +44,9 @@ public class OntoSpeciesKG{
 //				System.out.println("Test Result:\n"+testResult);
 //			}
 //		}
+		
+		OntoSpeciesKG ontoSpeciesKG = new OntoSpeciesKG();
+		ontoSpeciesKG.getAllSpecies();
 	}
 	
 	/**
@@ -66,6 +69,23 @@ public class OntoSpeciesKG{
 			speciesGeometry = testResult;
 		}
 		return speciesGeometry;
+	}
+
+	/**
+	 * Queries all species available in the OntoSpecies Knowledge Graph.
+	 * 
+	 * @return
+	 * @throws DFTAgentException
+	 */
+	public List<String> getAllSpecies() throws DFTAgentException{
+		String queryString = formAllSpeciesQuery(Property.PREFIX_BINDING_RDF.getPropertyName(), Property.PREFIX_BINDING_ONTOSPECIES.getPropertyName());
+		System.out.println("QueryString:"+queryString+"\n");
+		List<String> speciesIRIs = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), Property.RDF4J_ONTOSPECIES_REPOSITORY_ID.getPropertyName(), queryString);
+		int i = 0;
+		for(String speciesIRI: speciesIRIs){
+			System.out.println("Species ["+ ++i+"] IRI: "+speciesIRI);
+		}
+		return speciesIRIs;
 	}
 	
 	/**
@@ -127,6 +147,16 @@ public class OntoSpeciesKG{
 		queryString = queryString.concat("    ").concat(speciesIRI).concat(" OntoSpecies:hasGeometry ?geometry . \n");
 		queryString = queryString.concat("	}");
 		return queryString;
+	}
+	
+	public String formAllSpeciesQuery(String prefixBindingRDF, String prefixBindingOntoSpecies){
+		String queryString = prefixBindingRDF;
+		queryString = queryString.concat(prefixBindingOntoSpecies);
+		queryString = queryString.concat("SELECT ?speciesIRI \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ?speciesIRI rdf:type OntoSpecies:Species . \n");
+		queryString = queryString.concat("	}");
+		return queryString;		
 	}
 	
 	/**
