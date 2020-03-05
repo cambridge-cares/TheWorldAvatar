@@ -26,6 +26,7 @@ import net.schmizz.sshj.SSHClient;
 import net.schmizz.sshj.common.IOUtils;
 import net.schmizz.sshj.connection.channel.direct.Session;
 import net.schmizz.sshj.transport.verification.PromiscuousVerifier;
+import uk.ac.cam.cares.ebr.manager.JsonManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 /**
@@ -84,7 +85,7 @@ public class CrossValidation extends HttpServlet {
 
 		String speciesJson = parameterOne.getString("jsonfile");
 
-		JSONObject jsonFile = readsJsonFileFromUrl(speciesJson);
+		JSONObject jsonFile = JsonManager.readsJsonFileFromUrl(speciesJson);
 
 		logger.info("jsonFile- reference species: " + jsonFile.get("ReferenceSpecies"));
 
@@ -188,49 +189,7 @@ public class CrossValidation extends HttpServlet {
 
 		doGet(request, response);
 
-	}
-
-	/**
-	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * 
-	 * @param jsonUrl the URL of json file
-	 * @return Json object
-	 * @throws IOException
-	 * @throws JSONException
-	 * 
-	 *                       Reads the content of json file from URL and prints it
-	 *                       out on console.
-	 * 
-	 */
-
-	public static JSONObject readsJsonFileFromUrl(String jsonUrl) throws IOException, JSONException {
-
-		InputStream inputStream = new URL(jsonUrl).openStream();
-
-		try {
-
-			BufferedReader rd = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")));
-
-			StringBuilder stringBuilder = new StringBuilder();
-
-			int line;
-
-			while ((line = rd.read()) != -1) {
-
-				stringBuilder.append((char) line);
-
-			}
-
-			JSONObject jsonObject = new JSONObject(stringBuilder.toString());
-
-			return jsonObject;
-
-		} finally {
-
-			inputStream.close();
-		}
-	}
+	}	
 
 	/**
 	 * 

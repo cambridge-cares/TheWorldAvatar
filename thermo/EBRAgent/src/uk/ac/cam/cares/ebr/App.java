@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.ebr;
 
-import uk.ac.cam.cares.query.FederatedQuery;
-import uk.ac.cam.cares.query.QueryTemplate;
-import uk.ac.cam.cares.tools.CSVGenerator;
+import uk.ac.cam.cares.ebr.query.FederatedQuery;
+import uk.ac.cam.cares.ebr.query.QueryTemplate;
+import uk.ac.cam.cares.ebr.tools.CSVGenerator;
 
 
 

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.query;
+package uk.ac.cam.cares.ebr.query;
 /**
  * 
  * @author NK510 (caresssd@hermes.cam.ac.uk)

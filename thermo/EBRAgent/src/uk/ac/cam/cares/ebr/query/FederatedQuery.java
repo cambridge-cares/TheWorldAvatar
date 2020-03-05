@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.query;
+package uk.ac.cam.cares.ebr.query;
 
 import java.util.LinkedList;
 
