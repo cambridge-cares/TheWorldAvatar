@@ -89,6 +89,20 @@ public class TestWTE extends TestCase {
 		String baseUrl= QueryBroker.getLocalDataPath();
 		new WastetoEnergyAgent().prepareCSVFC(WastetoEnergyAgent.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model);
 		new WastetoEnergyAgent().prepareCSVWT(WastetoEnergyAgent.WTquery,"Location.csv",baseUrl,model);
+		new WastetoEnergyAgent().prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
+		new WastetoEnergyAgent().prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
+	}
+	
+	public void testCreateBat() {
+		String baseUrl= QueryBroker.getLocalDataPath();
+		try {
+			new WastetoEnergyAgent().createBat(baseUrl);
+			//new WastetoEnergyAgent().runModel(baseUrl);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 }
