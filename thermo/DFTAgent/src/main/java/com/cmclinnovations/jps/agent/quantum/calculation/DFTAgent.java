@@ -210,6 +210,12 @@ public class DFTAgent extends HttpServlet{
 			obj = new JSONObject();
 			obj.put("Number of jobs currently running", jobStatistics.getJobsRunning());
 			obj.put("Number of jobs successfully completed", jobStatistics.getJobsCompleted());
+			obj.put("Number of jobs completing", jobStatistics.getJobsCompleting());
+			obj.put("Number of jobs failed", jobStatistics.getJobsFailed());
+			obj.put("Number of jobs pending", jobStatistics.getJobsPending());
+			obj.put("Number of jobs preempted", jobStatistics.getJobsPreempted());
+			obj.put("Number of jobs suspended", jobStatistics.getJobsSuspended());
+			obj.put("Number of jobs stopped", jobStatistics.getJobsStopped());
 			obj.put("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated());
 			obj.put("Number of jobs to start", jobStatistics.getJobsNotStarted());
 			obj.put("Total number of jobs submitted", jobStatistics.getJobsSubmitted());
@@ -220,7 +226,7 @@ public class DFTAgent extends HttpServlet{
 
 	
 	/**
-	 * Produces the statistics about qunatum jobs.
+	 * Produces the statistics about quantum jobs.
 	 * 
 	 * @return
 	 * @throws IOException
@@ -238,6 +244,12 @@ public class DFTAgent extends HttpServlet{
 		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs completing", jobStatistics.getJobsCompleting()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs failed", jobStatistics.getJobsFailed()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs pending", jobStatistics.getJobsPending()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs preempted", jobStatistics.getJobsPreempted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs suspended", jobStatistics.getJobsSuspended()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs stopped", jobStatistics.getJobsStopped()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs to start", jobStatistics.getJobsNotStarted()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("<i>Total number of jobs submitted</i>", jobStatistics.getJobsSubmitted()+""));

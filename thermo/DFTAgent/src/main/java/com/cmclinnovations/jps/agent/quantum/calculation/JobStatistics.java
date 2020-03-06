@@ -6,8 +6,14 @@ import java.io.IOException;
 
 public class JobStatistics {
 	private int jobsSubmitted = 0;
-	private int jobsRunning = 0;
 	private int jobsCompleted = 0;
+	private int jobsCompleting = 0;
+	private int jobsFailed = 0;
+	private int jobsPending = 0;
+	private int jobsPreempted = 0;
+	private int jobsRunning = 0;
+	private int jobsSuspended = 0;
+	private int jobsStopped = 0;
 	private int jobsErrorTerminated = 0;
 	private int jobsNotStarted = 0;
 	
@@ -19,7 +25,9 @@ public class JobStatistics {
 		for(File job:jobs){
 			calculateAllStatistics(job);
 		}
-		setJobsSubmitted(getJobsCompleted()+getJobsErrorTerminated()+getJobsNotStarted()+getJobsRunning());
+		setJobsSubmitted(getJobsCompleted() + getJobsCompleting() + getJobsFailed() + getJobsPending()
+				+ getJobsPreempted() + getJobsRunning() + getJobsSuspended() + getJobsStopped()
+				+ getJobsErrorTerminated() + getJobsNotStarted());
 	}
 
 	private void calculateAllStatistics(File job) throws IOException{
@@ -36,22 +44,36 @@ public class JobStatistics {
 			calculateStatistics(jobFile.getAbsolutePath());
 		}
 	}
-	
+	/**
+	 * Calculates statistics about all submitted jobs.
+	 * 
+	 * @param statusFilePath
+	 * @throws IOException
+	 */
 	public void calculateStatistics(String statusFilePath) throws IOException{
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
 		while((line=statusFile.readLine())!=null){
 			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Jobs.STATUS_JOB_RUNNING.getName())){
-					setJobsRunning(getJobsRunning()+1);
-				}
 				if(line.contains(Jobs.STATUS_JOB_COMPLETED.getName())){
 					setJobsCompleted(getJobsCompleted()+1);
-				}
-				if(line.contains(Jobs.STATUS_JOB_ERROR_TERMINATED.getName())){
+				} else if(line.contains(Jobs.STATUS_JOB_COMPLETING.getName())){
+					setJobsCompleting(getJobsCompleting()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_FAILED.getName())){
+					setJobsFailed(getJobsFailed()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_PENDING.getName())){
+					setJobsPending(getJobsPending()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_PREEMPTED.getName())){
+					setJobsPreempted(getJobsPreempted()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_RUNNING.getName())){
+					setJobsRunning(getJobsRunning()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_SUSPENDED.getName())){
+					setJobsSuspended(getJobsSuspended()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_STOPPED.getName())){
+					setJobsStopped(getJobsStopped()+1);
+				} else if(line.contains(Jobs.STATUS_JOB_ERROR_TERMINATED.getName())){
 					setJobsErrorTerminated(getJobsErrorTerminated()+1);
-				}
-				if(line.contains(Jobs.STATUS_JOB_NOT_STARTED.getName())){
+				} else if(line.contains(Jobs.STATUS_JOB_NOT_STARTED.getName())){
 					setJobsNotStarted(getJobsNotStarted()+1);
 				}				
 			}
@@ -94,6 +116,54 @@ public class JobStatistics {
 		this.jobsNotStarted = jobsNotStarted;
 	}
 	
+	public int getJobsCompleting() {
+		return jobsCompleting;
+	}
+
+	public void setJobsCompleting(int jobsCompleting) {
+		this.jobsCompleting = jobsCompleting;
+	}
+
+	public int getJobsFailed() {
+		return jobsFailed;
+	}
+
+	public void setJobsFailed(int jobsFailed) {
+		this.jobsFailed = jobsFailed;
+	}
+
+	public int getJobsPending() {
+		return jobsPending;
+	}
+
+	public void setJobsPending(int jobsPending) {
+		this.jobsPending = jobsPending;
+	}
+
+	public int getJobsPreempted() {
+		return jobsPreempted;
+	}
+
+	public void setJobsPreempted(int jobsPreempted) {
+		this.jobsPreempted = jobsPreempted;
+	}
+
+	public int getJobsSuspended() {
+		return jobsSuspended;
+	}
+
+	public void setJobsSuspended(int jobsSuspended) {
+		this.jobsSuspended = jobsSuspended;
+	}
+
+	public int getJobsStopped() {
+		return jobsStopped;
+	}
+
+	public void setJobsStopped(int jobsStopped) {
+		this.jobsStopped = jobsStopped;
+	}
+
 	/**
 	 * Produces the header for showing the statistics table.
 	 * 

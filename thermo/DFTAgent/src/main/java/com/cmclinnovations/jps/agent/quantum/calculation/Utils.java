@@ -64,22 +64,7 @@ public class Utils {
 		return new BufferedReader(new InputStreamReader(new FileInputStream(
 				filePathPlusName), "UTF-8"));
 	}
-	
-	public static Map<String, List<String>> getRunningJobs(Map<String, List<String>> jobs) throws IOException{
-		Map<String, List<String>> jobsRunning = new LinkedHashMap<>();
-		for(String jobFolderPath: jobs.keySet()){
-			List<String> jobFiles = jobs.get(jobFolderPath);
-			for(String jobFile: jobFiles){
-				if(jobFile.toLowerCase().endsWith(Jobs.STATUS_FILE.getName().toLowerCase())){
-					if(isJobRunning(jobFile)){
-						jobsRunning.put(jobFolderPath, jobFiles);
-					}
-				}
-			}
-		}
-		return jobsRunning;
-	}
-	
+
 	/**
 	 * Go to the DFT Agent's job space to retrieve the status of jobs.</br>
 	 * Jobs with status running or not started yet, will be classified</br>
@@ -191,7 +176,9 @@ public class Utils {
 		String line;
 		while((line=statusFile.readLine())!=null){
 			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Jobs.STATUS_JOB_RUNNING.getName())){
+				if(line.contains(Jobs.STATUS_JOB_RUNNING.getName()) 
+						|| line.contains(Jobs.STATUS_JOB_COMPLETING.getName()) 
+						|| line.contains(Jobs.STATUS_JOB_PENDING.getName())){
 					statusFile.close();
 					return true;
 				}
