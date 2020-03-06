@@ -1,11 +1,12 @@
+
 (function PPMapAlt(){
 	//initialize the Google Map	
     var ppMap = new PopupMap({useCluster:true});
     // just in case the kml file not loading in Claudius, use google sites. 
-    // var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
-    // var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml";
-    var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalbase.kml';
-    var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
+     var anotherURL1 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinalBASE.kml";
+    var anotherURL2 = "https://sites.google.com/site/kmlfilescares/kmltest1/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml";
+    //var anotherURL1 =  'http://theworldavatar.com/OntoEN/testfinalbase.kml';
+    //var anotherURL2 = 'http://theworldavatar.com/OntoEN/testfinaltestPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10.kml';
     //display the emission every five seconds. 
     setInterval(function(){
         distotalemission();

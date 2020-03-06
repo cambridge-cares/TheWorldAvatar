@@ -715,14 +715,4 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
 //test
 //console.time('conn')
    // owlProcessor.doConnect(loc)
-
-var a = Object.create(owlProcessor)
-    a.processSingle( {topnode:"http://localhost/damecoolquestion/ontochem/query", level: 1}).then((res)=>{
-        console.log('print results')
-        console.log((res))});
-
-//b.process( {topnode:"http://www.theworldavatar.com/SemakauIsland.owl"}).then((res)=>{
-  //  console.log('print')
-    //console.log((res))});
-
 module.exports = owlProcessor;

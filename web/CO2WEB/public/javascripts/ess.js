@@ -1,3 +1,4 @@
+
 var infowindow;
 var batteryInfo ="PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
 		+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -37,7 +38,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
     //refresh value of carbon emission every 5 minutes
     setInterval(function(){
         distotalemission();
-    }, 60*1000);
+    }, 10*1000);
     //when user changes input, create notification
     $(document).on('input', 'input', function () {//when user makes input
         console.log("input changed");
@@ -116,7 +117,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 	        type: 'GET',
 	        data: batteryjson,
             contentType: 'application/json; charset=utf-8',
-            timeout:240*1000,
+            timeout:3000*1000,
 	        success: function(){  
                 console.log('successful execution');
 	        },

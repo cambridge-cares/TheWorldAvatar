@@ -123,7 +123,7 @@ app.use("/getSpecAttr", getSpecAttr);
 
 
 
-var http = require('http').Server(app);
+var http = require('http').createServer(app);
 var io = require('socket.io')(http);
 
 /*future data change will be post to this route*/
@@ -250,7 +250,7 @@ app.use(function(err, req, res, next) {
 /********************/
 
 
-app.listen(port, function () {
+http.listen(port, function () {
   console.log('Server listening on port '+port);
 });
 
