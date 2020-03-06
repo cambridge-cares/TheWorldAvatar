@@ -146,10 +146,9 @@ document.addEventListener("click", function (evt){
   request.done(function(data) {
     console.log(data);
     response = JSON.parse(data);
-    console.log(response);
+    hourOfDay = response.timer;
     makeChart(response);
     makeOutputChart(response);
-    hourOfDay = response.timer;
     configRH("rh1", response.rh1);
     configRH("rh2", response.rh2);
     configRH("rh3", response.rh3);

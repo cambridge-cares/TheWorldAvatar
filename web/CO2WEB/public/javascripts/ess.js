@@ -52,16 +52,16 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
     /** once map is instantiated, run base scenario
      * 
      */
-//    var checkExist = setInterval(function() {
-//    if ($('#map').length) {
-//        console.log("Exists!");
-//        
-//        ppMap.clearAnimatedLines();
-//        clearMarkers();
-//        runKML();
-//        clearInterval(checkExist);
-//    }
-//    }, 100); // check every 100ms
+    var checkExist = setInterval(function() {
+    if ($('#map').length) {
+        console.log("Exists!");
+        
+        ppMap.clearAnimatedLines();
+        clearMarkers();
+        runKML();
+        clearInterval(checkExist);
+    }
+    }, 100); // check every 100ms
     /** runs rest of functions with newly changed scenario
      * 
      */
@@ -141,14 +141,12 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 		});
 
     }
-    
     function uuidv4() {
-  	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-  	    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-  	    return v.toString(16);
-  	  });
-  	}
-    
+    	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    	    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+    	    return v.toString(16);
+    	  });
+    	}
     /** queries the battery location and pushes results to batterylist
      * 
      * @param {String} iri 
