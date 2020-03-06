@@ -234,7 +234,7 @@ public class DFTAgent extends HttpServlet{
 		statistics = statistics + "<body>";
 		statistics = statistics.concat(jobStatistics.getBodydivStart());
 		statistics = statistics + "<center>";
-		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below.";
+		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below.<p>";
 		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));
@@ -452,7 +452,7 @@ public class DFTAgent extends HttpServlet{
 		if(jobId==null){
 			return false;
 		} else{
-			boolean isJobRunning = isJobRunning(jobId);
+			boolean isJobRunning = isJobRunning(jobId , statusFile);
 			if(isJobRunning){
 				return true; 
 			}else{
@@ -568,14 +568,15 @@ public class DFTAgent extends HttpServlet{
 	 * Checks if a job is still running using the job id.
 	 * 
 	 * @param jobId
+	 * @param statusFile 
 	 * @return
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private boolean isJobRunning(String jobId) throws JSchException, IOException, InterruptedException{
-		String command = "squeue -j " + jobId + "--start";
+	private boolean isJobRunning(String jobId, File statusFile) throws JSchException, IOException, InterruptedException{
+		String command = "squeue -j " + jobId;
 		ArrayList<String> outputs = executeCommand(command);
-		boolean jobRunning = isJobRunning(outputs);
+		boolean jobRunning = isJobRunning(outputs, statusFile);
 		return jobRunning;
 	}
 	
@@ -587,11 +588,51 @@ public class DFTAgent extends HttpServlet{
 	 * @param outputs
 	 * @return
 	 */
-	private boolean isJobRunning(ArrayList<String> outputs){
+	private boolean isJobRunning(ArrayList<String> outputs, File statusFile) throws IOException{
 		if(outputs!=null && outputs.size()<=1){
 			return false;
 		}
+		if(outputs!=null){
+			String[] headers = outputs.get(0).split("\\s+");
+			String[] values = outputs.get(0).split("\\s+");
+			for(int i=0; i<headers.length; i++){
+				if(headers[i].toLowerCase().equals("st")){
+					if(values.length>i){
+						updateStatus(values[i], statusFile);
+					}
+				}
+			}
+		}
 		return true;
+	}
+	
+	/**
+	 * Updates the status of the current job.  
+	 * 
+	 * @param status the status received from the output of the following command.<br>
+	 * - squeue -j jobid
+	 * 
+	 * @param statusFile
+	 * @throws IOException
+	 */
+	private void updateStatus(String status, File statusFile) throws IOException{
+		if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_COMPLETED.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_COMPLETED.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_COMPLETING.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_COMPLETING.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_FAILED.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_FAILED.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_PENDING.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_PENDING.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_PREEMPTED.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_PREEMPTED.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_RUNNING.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_RUNNING.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_SUSPENDED.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_SUSPENDED.getName());
+		} else if(status.toLowerCase().equals(Jobs.JOB_SQUEUE_STATUS_STOPPED.getName().toLowerCase())){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Jobs.STATUS_JOB_STOPPED.getName());
+		}
 	}
 	
 	/**
