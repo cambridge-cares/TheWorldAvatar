@@ -80,7 +80,7 @@ public class UploadEbrAgent extends HttpServlet{
 		 */
 		PrintWriter printerWriter = response.getWriter();
 		
-		String[] inputs = request.getParameterValues("query");
+		String[] inputs = request.getParameterValues("input");
 		
 		printerWriter.println("json content (input parameter): " + inputs[0] + "<br>");
 		
@@ -88,7 +88,7 @@ public class UploadEbrAgent extends HttpServlet{
 		
 		printerWriter.println("species folder path: " + jsonObject.get("referenceSpecies") +"<br>");
 		
-		File[] fileList = utility.getFileList(jsonObject.get("referenceSpecies").toString(), ".g09", ".log");
+		File[] fileList = utility.getFileList(jsonObject.get("referenceSpecies").toString(), ".g09", ".log", ".g16");
 
 		for(File file :fileList) {
 			
