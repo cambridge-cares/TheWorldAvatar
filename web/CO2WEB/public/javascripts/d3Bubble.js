@@ -854,8 +854,8 @@ var FileLinkMap = function (options) {
                     console.log(data)
                     console.log(typeof(data.connections))
                     bubbleMap.initLinks = deepcopyObjArr(data.connections);
-                    console.log(data.connections)
-                    console.log(data.subconnections)
+                    //console.log(data.connections)
+                    //console.log(data.subconnections)
     
                     
                     bubbleMap.subconMap = data.subconnections;

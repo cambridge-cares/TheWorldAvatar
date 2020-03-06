@@ -27,12 +27,16 @@ var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
 var visualizeOntokin= require("./routes/visualizeOntokin.js");
+var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 
+var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
+
+var getAttrList =require("./routes/getAttrList");
+var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
-var getAttrList =require("./routes/getAttrList");
-var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
+
 // var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
@@ -52,11 +56,11 @@ var essMap = require('./routes/ess');
 var DESPlot = require('./routes/DESPlot');
 
 var literalData = require('./agents/GetLiteralData');
-var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var getChildrenSingle = require('./routes/GetChildrenSingle');
 
 var BMSWatcher = require('./agents/setBMSWatcher');
 var agentWatcher = require('./agents/msgFace');
+let setEpWatcher = require('./agents/setEPWatcher');
 
 var app = express();
 var port = config.port;
@@ -83,6 +87,7 @@ app.use(bodyParser.text({ type: 'application/json' }));
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
+app.use('/getChildrenSingle',getChildrenSingle);
 
 app.use('/visualizeAgent', visualizeAgent);
 
@@ -101,7 +106,8 @@ app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
 app.use('/visualizeOntokin',visualizeOntokin);
 
-app.use('/getChildrenSingle',getChildrenSingle);
+app.use('/visualizeOntokinRemote',visualizeOntokinR);
+
 
 app.use("/bmsplot", bmsplot);
 
@@ -113,6 +119,7 @@ app.use('/b2map', b2Map)
 
 app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
+
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
 // app.use("/MAU", MAU); //won't get MAU to work because of java/nodejs incompat as node latest version doesn't support node-java
@@ -148,7 +155,7 @@ var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
 agentWatcher.init(io);
 //When any change happened to the file system
-ev.on('change', function (data) {
+ev.on('update', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");
 	    //let rooms = io.sockets.adapter.rooms;
    //logger.debug(rooms[path.normalize(data.uri)].sockets);
@@ -156,6 +163,58 @@ ev.on('change', function (data) {
     io.to(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
     io.to(path.normalize(data.uri)+"_data").emit("update", data);
 })
+
+const aepWatcher = setEpWatcher();
+const epChangeEv = aepWatcher.watchEvent;
+const epInformer = aepWatcher.epChangeEmitter;
+epChangeEv.on('new', function (data) {
+    console.log('new endpoint modfication event');
+    //todo: logic of subscription
+    console.log(data)
+    io.to(path.normalize(data.endpoint)+"_endpoint").emit("new", data.data);
+    
+})
+
+let qstr = `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT distinct  ?parent ?uri
+WHERE {
+
+	{
+    ?parent rdf:type reaction_mechanism:ChemicalReaction .
+    ?parent reaction_mechanism:hasProduct ?product .
+    ?product owl:sameAs ?uri .
+	}
+	
+	UNION{
+    ?phase ontokin:containedIn ?parent .
+    ?a ontokin:belongsToPhase ?phase .
+    ?a rdf:type reaction_mechanism:ChemicalReaction .
+	}
+	UNION{
+    ?parent rdf:type reaction_mechanism:ChemicalReaction .
+    ?parent reaction_mechanism:hasReactant ?reactant .
+    ?reactant owl:sameAs  ?uri .
+	}
+
+		UNION
+	{
+	    ?species owl:sameAs  ?parent .
+		?species ontokin:hasThermoModel ?thermoModel.
+		    ?thermoModel ontokin:hasQuantumCalculation ?uri .
+
+	}
+	
+} `
+
+//let epUrl = 'http://theworldavatar.com/rdf4j-server/repositories/ontokin'
+//let resourceId= 'http://www.theworldavatar.com/kb/ontokin/diesel-surrogate-detailed.owl#ChemicalReaction_186504352510197_1097'
+//let rid2 ='http://www.theworldavatar.com/kb/ontokin/diesel-surrogate-detailed.owl#Species_186505767336106_106'
+//ep.registerSubsriber(epUrl,[resourceId, rid2],qstr,'whatever')
 
 /*socket io***/
 
@@ -165,9 +224,17 @@ io.on('connection', function(socket){
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
 
-    console.log('client join')
+    console.log('client join');
     let sl = JSON.parse(uriSubscribeList);
-    logger.debug(sl)
+    //logger.debug(sl)
+    if('endpoint' in sl){
+        console.log('join event: to end points')
+        let epUrl= sl['url']; let uriList = sl['subscribelist'];
+        socket.join(epUrl+'_endpoint');//join the room
+        epInformer.registerSubsriber( epUrl, uriList, qstr, socket.username);
+        return;
+    }
+    
     sl.forEach(function (uri2Sub) {
         let diskLoc = uri2Sub.uri.replace("http://www.theworldavatar.com", config.root)
             .replace("http://www.jparksimulator.com", config.root);
