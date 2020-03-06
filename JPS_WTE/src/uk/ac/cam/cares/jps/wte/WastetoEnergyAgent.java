@@ -49,7 +49,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?name ?xvalue ?yvalue ?wasteproductionvalue ?year " //YEAR IS NOT INCLUDED IF JUST USING SIMPLIFIED VERSION
+			+ "SELECT ?name ?xvalue ?yvalue ?wasteproductionvalue ?year ?entity " //YEAR IS NOT INCLUDED IF JUST USING SIMPLIFIED VERSION
 			+ "WHERE {"
 			+ "?entity  a j1:FoodCourt ."
 			+ "?entity   j8:hasName ?name ." 
@@ -385,7 +385,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String wasteIRI=requestParams.getString("wastenetwork");
 		OntModel model= readModelGreedy(wasteIRI);
 		String baseUrl= QueryBroker.getLocalDataPath();
-		prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
 		prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
 		prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
@@ -413,6 +413,20 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 //			String resource=economic.get(8)[0];//ok
 //			String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
 //			String netflow=economic.get(10)[0]; 
+			
+			List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
+			List<String[]>onsiteunitmapping=new ArrayList<String[]>();
+			int size3=unitofonsite.size();
+			int colamount3=unitofonsite.get(0).length;
+			for(int x=0;x<size3;x++) {
+				String[]linemapping= new String[colamount3];
+				for(int y=0;y<colamount3;y++) { //1tech only
+					linemapping[y]=unitofonsite.get(x)[y]; //representing 1 onsite wtf for each technology									
+				}
+				onsiteunitmapping.add(linemapping);	
+			}
+			
+			updateinWT(inputonsitedata,onsiteunitmapping);
 			
 			
 			
@@ -445,17 +459,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				}
 			}
 			
-			List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
-			List<String[]>onsiteunitmapping=new ArrayList<String[]>();
-			int size3=unitofonsite.size();
-			int colamount3=unitofonsite.get(0).length;
-			for(int x=0;x<size3;x++) {
-				String[]linemapping= new String[colamount3];
-				for(int y=0;y<colamount3;y++) { //1tech only
-					linemapping[y]=unitofonsite.get(x)[y]; //representing 1 onsite wtf for each technology									
-				}
-				onsiteunitmapping.add(linemapping);	
-			}
+
 			List<String[]>unitofoffsite=readResult(baseUrl,"number of units (offsite).csv");
 			List<String[]>offsiteunitmapping=new ArrayList<String[]>();
 			int size4=unitofoffsite.size();
@@ -475,6 +479,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			
 			
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
@@ -509,8 +516,24 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 	}
 	
-	public void updateinWT(OntModel model,List<String[]> outputdata, String queryupdate) {
+	public void updateinWT(List<String[]> inputdata,List<String[]> outputdata) throws Exception {
+		//assume outputdata= number of unit in onsite and offiste
+		//first focus onsite
+		WTEKBCreator converter = new WTEKBCreator();
+		converter.startConversion("onsitewtf",inputdata,outputdata);
+		//==============================================================
+		//left with the offsite
 		
+	}
+	
+	public void updateinFC(OntModel model,List<String[]> inputdata,List<String[]> outputdata, String queryupdate) throws Exception {
+		//assume outputdata= number of unit in onsite and offiste
+		//first focus onsite
+		WTEKBCreator converter = new WTEKBCreator();
+		List<String>onsiteiri=converter.onsiteiri;
+		converter.startConversion("onsitewtf",inputdata,outputdata);
+		//==============================================================
+		//left with the offsite
 		
 	}
 	 
@@ -548,7 +571,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		return broker.readModelGreedy(iriofnetwork, wasteinfo);
 	}
 	
-	public void prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) {
+	public List<String[]> prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) {
 				
 		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
@@ -556,10 +579,13 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         String[] keysfc = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysfc);
         List<String[]> resultxy = new ArrayList<String[]>();
+        List<String[]> resultfcmapper = new ArrayList<String[]>();
 		for (int d = 0; d < resultList.size(); d++) {
 			String[] comp = { resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
+			String[] mapper = {resultList.get(d)[5],resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
 			if (resultList.get(d)[4].contentEquals("1")) {
 				resultxy.add(comp);
+				resultfcmapper.add(mapper);
 			}
 
 		}
@@ -585,6 +611,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         //resultwaste.add(0,headerwaste);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy));
     	
+        return resultfcmapper;
 	}
 	
 	public void prepareCSVWT(String mainquery,String filename,String baseUrl,OntModel model) {		
@@ -672,6 +699,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		try {
 			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 			pr.waitFor();
+			Thread.sleep(90*1000);
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}

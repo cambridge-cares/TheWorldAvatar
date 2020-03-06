@@ -25,6 +25,7 @@ public class WTEKBCreator {
 	
 	String transportiri="";
 	List <String> foodcourt= new ArrayList<String>();
+	List <String> onsiteiri= new ArrayList<String>();
 	List<String> wtf= new ArrayList<String>();
 	
 	public static String baseURL2 = "C:/TOMCAT/webapps/ROOT/kb/temporary/"; // directory of output file
@@ -58,6 +59,7 @@ public class WTEKBCreator {
 	private OntClass resourceconsumptioncostclass = null;
 	private OntClass EOSclass = null;
 	private OntClass compositeclass=null;
+	private OntClass WasteTreatmentDeviceclass=null;
 	
 	private OntClass objectwtfon = null;
 	private OntClass mainobjclass1 = null;
@@ -106,7 +108,7 @@ public class WTEKBCreator {
 	private ObjectProperty useTechnology = null;
 	private ObjectProperty obtainedFrom = null;
 
-	private ObjectProperty isBenchmarkOf = null;
+	private ObjectProperty realizedByDevice = null;
 	private ObjectProperty hasBenchmark = null;
 
 	private DatatypeProperty numval = null;
@@ -119,6 +121,8 @@ public class WTEKBCreator {
 	private DatatypeProperty uppboundtech4 = null;
 	private DatatypeProperty uppboundtech5 = null;
 	private DatatypeProperty uppboundtech6 = null;
+	private DatatypeProperty usedInYear= null;
+	private DatatypeProperty amountOfUnit= null;
 
 	static Individual kWh;
 	static Individual energy;
@@ -177,7 +181,7 @@ public class WTEKBCreator {
 		disposalfeeclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ServiceFacilityCosts");
 		discountrateclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#DiscountRate");
 		compositeclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem");
-//		Cpclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#ThermodynamicStateProperty");
+		WasteTreatmentDeviceclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#WasteTreatmentDevice");
 //		matamountclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#MaterialAmount");
 //		genamountclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount");
 //		wastestreamclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#NonReusableWasteProduct");
@@ -202,7 +206,7 @@ public class WTEKBCreator {
 		hasLaborCost = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasLaborCost");
 		hasTax = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasTax");
 		hasLifeCycle = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasLifeCycle");
-		
+		realizedByDevice = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#realizedByDevice");
 
 		hasvalue = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
@@ -214,14 +218,13 @@ public class WTEKBCreator {
 		obtainedFrom = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#obtainedFrom");
 		hasDiscountRate = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasDiscountRate");
 		hasBenchmark = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasBenchmark");
-		isBenchmarkOf = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#isBenchmarkOf");
 		hasRevenue=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasRevenue");
 		hasTransferRate = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasTransferRate");
 		hasInstallationCost=jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#hasInstallationCost");
 		
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-//		upperlimit = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#upperLimit");
-//		lowerlimit = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#lowerLimit");
+		usedInYear = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#usedInYear");
+		amountOfUnit = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#amountOfUnit");
 		year=jenaOwlModel.getDatatypeProperty("http://www.w3.org/2006/time#year");
 		name = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasName");
 		uppboundincineration = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#hasOffsiteIncinerationUpperBound");
@@ -624,7 +627,7 @@ public class WTEKBCreator {
 		return Prefix+mainobjectname+".owl#"+mainobjectname;
 	}
 	
-	public String doConversionOnSite(OntModel jenaOwlModel,String Prefix, String mainobjectname) {
+	public String doConversionOnSite(OntModel jenaOwlModel,String Prefix, String mainobjectname,String[] inputdata,String[] outputdata) {
 		Individual mainobjinst = objectwtfon.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
 		
 		//coordinate
@@ -638,6 +641,8 @@ public class WTEKBCreator {
 		xcoordinate.addProperty(hasvalue,xcoordinatevalue);
 		ycoordinate.addProperty(hasvalue,ycoordinatevalue);
 		xcoordinatevalue.addProperty(hasunit, degree);
+		xcoordinatevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(inputdata[1])));
+		ycoordinatevalue.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(inputdata[2])));
 		ycoordinatevalue.addProperty(hasunit, degree);
 		mainobjinst.addProperty(hascoordinatesystem, wtfcoordinate);
 		
@@ -720,6 +725,12 @@ public class WTEKBCreator {
 					tech2.addProperty(hasCost, operationcost);
 					tech2.addProperty(hasLaborCost, manpowercost);
 					tech2.addProperty(hasTax, polltreatmenttax);
+					for(int t=1;t<=1;t++) {
+					Individual unitdevice = WasteTreatmentDeviceclass.createIndividual(Prefix + mainobjectname + ".owl#UnitDeviceOf" + mainobjectname+"_"+t);
+					tech2.addProperty(realizedByDevice, unitdevice);
+					unitdevice.setPropertyValue(usedInYear, jenaOwlModel.createTypedLiteral(new Integer(t))); //the amount of unit still not be possible to be included in owl files
+					unitdevice.setPropertyValue(amountOfUnit, jenaOwlModel.createTypedLiteral(new Integer(outputdata[0])));
+					}
 					Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(1)));
 					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(117000)));
 					Voperationcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(36)));
@@ -1017,7 +1028,7 @@ public class WTEKBCreator {
 		
 	}
 	
-	public void startConversion(String flag) throws Exception {
+	public void startConversion(String flag,List<String[]> inputdata,List<String[]> outputdata) throws Exception {
     	
     	//String filePath = baseURL2 + "wastetemplate.owl"; // the empty owl file
     	String filePath=AgentLocator.getPathToWorkingDir(this)+"/wastetemplate.owl";
@@ -1038,6 +1049,38 @@ public class WTEKBCreator {
 				String content = JenaHelper.writeToString(jenaOwlModel);
 				new QueryBroker().putOld(Prefix+mainobjectname+".owl", content);
 				System.out.println("it is processed= " + mainobjectname);
+			}
+			else if(flag.contains("onsitewtf")) {
+				for(int d=1;d<=outputdata.size();d++) {
+					if(Double.parseDouble(outputdata.get(d-1)[0])!=0.0) {
+						inFile = new FileInputStream(filePath);
+						in = new InputStreamReader(inFile, "UTF-8");
+						OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+						jenaOwlModel.read(in, null);
+						initOWLClasses(jenaOwlModel);
+						String wtfname="OnSiteWasteTreatment-"+d; 
+						String iriofwtf=doConversionOnSite(jenaOwlModel,Prefix, wtfname,inputdata.get(d-1),outputdata.get(d-1));
+						//wtf.add(iriofwtf); should the onsite attached to the waste system??
+						String content = JenaHelper.writeToString(jenaOwlModel);
+						new QueryBroker().putOld(Prefix+wtfname+".owl", content);
+						onsiteiri.add(iriofwtf);
+					}
+				}
+
+				for(int d=1;d<=4;d++) { //incinerator not to be touched again which is d=4
+					inFile = new FileInputStream(filePath);
+					in = new InputStreamReader(inFile, "UTF-8");
+					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+					jenaOwlModel.read(in, null);
+					initOWLClasses(jenaOwlModel);
+					String wtfname="WasteTreatment-"+d; 
+					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
+					wtf.add(iriofwtf);
+					String content = JenaHelper.writeToString(jenaOwlModel);
+					new QueryBroker().putOld(Prefix+wtfname+".owl", content);
+				}
+				System.out.println("it is processed= " + flag);
+			 
 			}
 			else if(flag.contains("foodcourt")) {
 				
@@ -1078,6 +1121,7 @@ public class WTEKBCreator {
 				System.out.println("it is processed= " + flag);
 			 
 			}
+
 			else if(flag.contains("system")) { //for the waste treatment system
 				inFile = new FileInputStream(filePath);
 				in = new InputStreamReader(inFile, "UTF-8");
@@ -1100,9 +1144,9 @@ public class WTEKBCreator {
 	public void executeConversion() throws Exception {
 		System.out.println("Starting Process");
 		WTEKBCreator converter = new WTEKBCreator();
-		converter.startConversion("foodcourt");
-		converter.startConversion("transport");
-		converter.startConversion("wtf");
+		converter.startConversion("foodcourt",null,null);
+		converter.startConversion("transport",null,null);
+		converter.startConversion("wtf",null,null);
 //		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
 //		for(int x=1;x<=7;x++) {
 //		foodcourt.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+x+".owl#FoodCourt-"+x);
@@ -1110,7 +1154,7 @@ public class WTEKBCreator {
 //		for(int x=1;x<=4;x++) {
 //			wtf.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/WasteTreatment-"+x+".owl#WasteTreatment-"+x);
 //		}
-		converter.startConversion("system"); //it is completed no need to be rerun again
+		converter.startConversion("system",null,null); //it is completed no need to be rerun again
 		
 	}
 	
