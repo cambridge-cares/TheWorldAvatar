@@ -52,21 +52,7 @@
 						<directory>python</directory>
 						<targetPath>python</targetPath>
 					</resource>
-					<resource>
-						<directory>WebContent/images</directory>
-						<targetPath>/images</targetPath>
-					</resource>
-					<resource>
-						<directory>WebContent/scripts</directory>
-						<targetPath>/scripts</targetPath>
-					</resource>
-
-					<resource>
-						<directory>WebContent</directory>
-						<includes>
-							<include>*.html</include>
-						</includes>
-					</resource>
+					
 				</webResources>
 
 				<warName>${project.artifactId}##${project.version}</warName>
