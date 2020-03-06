@@ -15,7 +15,7 @@ import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 public class TestWTE extends TestCase {
 	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 	
-	public void testQueryFC() {
+	public void xxxtestQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
@@ -36,7 +36,7 @@ public class TestWTE extends TestCase {
 		
 	}
 	
-	public void testQuerytopnode() {
+	public void xxxtestQuerytopnode() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		OntModel model=JenaHelper.createModel(iriofnetwork);
 		String query= a.wasteSystemQuery;
@@ -51,7 +51,7 @@ public class TestWTE extends TestCase {
 	
 	}
 	
-	public void testQuerytransport() {
+	public void xxxtestQuerytransport() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
 		String query= a.transportQuery;
@@ -66,7 +66,7 @@ public class TestWTE extends TestCase {
 	
 	}
 	
-	public void testQueryWTF() {
+	public void xxxtestQueryWTF() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork);
@@ -102,6 +102,11 @@ public class TestWTE extends TestCase {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+	}
+	
+	public void testDirectCall() {
+		new WastetoEnergyAgent().runTestInSequence(iriofnetwork);
 		
 	}
 

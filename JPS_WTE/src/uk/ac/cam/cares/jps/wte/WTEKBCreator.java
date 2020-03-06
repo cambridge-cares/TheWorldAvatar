@@ -24,8 +24,8 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 public class WTEKBCreator {
 	
 	String transportiri="";
-	List foodcourt= new ArrayList<String>();
-	List wtf= new ArrayList<String>();
+	List <String> foodcourt= new ArrayList<String>();
+	List<String> wtf= new ArrayList<String>();
 	
 	public static String baseURL2 = "C:/TOMCAT/webapps/ROOT/kb/temporary/"; // directory of output file
 	public static String ontologymainiri="http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#"; 
@@ -941,6 +941,64 @@ public class WTEKBCreator {
 		vdisposalfee.addProperty(hasunit, $perton);
 		mainobjinst.addProperty(hasUtilityCost, disposalfee);
 		
+		//==============================================newly added based on output 5 mar 2020
+		Individual installcost = installationcostclass.createIndividual(Prefix + mainobjectname + ".owl#InstallationCostOf" + mainobjectname);
+		Individual Vinstallcost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_InstallationCostOf" + mainobjectname);
+		installcost.addProperty(hasvalue, Vinstallcost);
+		
+		Vinstallcost.addProperty(hasunit, $);
+		
+		Individual operationcost = operationcostclass.createIndividual(Prefix + mainobjectname + ".owl#OperationalCostOf" + mainobjectname);
+		Individual Voperationcost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_OperationalCostOf" + mainobjectname);
+		operationcost.addProperty(hasvalue, Voperationcost);
+		
+		Voperationcost.addProperty(hasunit, $);
+		
+		Individual manpowercost = manpowercostclass.createIndividual(Prefix + mainobjectname + ".owl#ManPowerCostOf" + mainobjectname);
+		Individual Vmanpowercost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_ManPowerCostOf" + mainobjectname);
+		manpowercost.addProperty(hasvalue, Vmanpowercost);
+		Vmanpowercost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(0)));
+		Vmanpowercost.addProperty(hasunit, $);
+		
+		//unit land cost
+		Individual LandCost = landcostclass.createIndividual(Prefix + mainobjectname + ".owl#LandCostOf" + mainobjectname);
+		Individual VLandCost = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_LandCostOf" + mainobjectname);
+		LandCost.addProperty(hasvalue, VLandCost);
+		VLandCost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(300)));
+		VLandCost.addProperty(hasunit, $);
+		
+		Individual transportcost = transportcostclass.createIndividual(Prefix+mainobjectname+".owl#TransportCostOf"+mainobjectname);
+		Individual vtransportcost = scalarvalueclass.createIndividual(Prefix+mainobjectname+".owl#V_TransportCostOf"+mainobjectname);
+		transportcost.addProperty(hasvalue, vtransportcost);
+		vtransportcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(3)));
+		vtransportcost.addProperty(hasunit, $);
+		
+		Individual polltreatmenttax = treatmenttaxclass.createIndividual(Prefix + mainobjectname + ".owl#PollutionTreatmentTaxOf" + mainobjectname);
+		Individual Vpolltreatmenttax = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_PollutionTreatmentTaxOf" + mainobjectname);
+		polltreatmenttax.addProperty(hasvalue, Vpolltreatmenttax);
+		Vpolltreatmenttax.addProperty(hasunit, $);
+		
+		Individual Revenue = revenueclass.createIndividual(Prefix + mainobjectname + ".owl#TotalRevenueOf" + mainobjectname);
+		Individual vRevenue = scalarvalueclass.createIndividual(Prefix + mainobjectname + ".owl#V_TotalRevenueOf" + mainobjectname);
+		Revenue.addProperty(hasvalue, vRevenue);
+		vRevenue.addProperty(hasunit, $);
+		
+		Individual ResourceConsumptionCost = resourceconsumptioncostclass.createIndividual(Prefix+mainobjectname + ".owl#ResourceConsumptionCostOf" + mainobjectname);
+		Individual vResourceConsumptionCost = scalarvalueclass.createIndividual(Prefix + mainobjectname+ ".owl#V_ResourceConsumptionCostOf" + mainobjectname);
+		ResourceConsumptionCost.addProperty(hasvalue, vResourceConsumptionCost);
+		vResourceConsumptionCost.addProperty(hasunit, $);
+		
+		mainobjinst.addProperty(hasUtilityCost, ResourceConsumptionCost);
+		mainobjinst.addProperty(hasRevenue, Revenue);
+		mainobjinst.addProperty(hasCost, LandCost);
+		mainobjinst.addProperty(hasInstallationCost, installcost);
+		mainobjinst.addProperty(hasCost, operationcost);
+		mainobjinst.addProperty(hasTax, polltreatmenttax);
+		mainobjinst.addProperty(hasLaborCost, manpowercost);
+		mainobjinst.addProperty(hasTransportationcost, transportcost);
+		
+		//================================================================
+		
 		Resource mainobjtrans = jenaOwlModel.createResource(transportiri);
 		mainobjinst.addProperty(hasSubsystem, mainobjtrans);
 
@@ -1023,6 +1081,7 @@ public class WTEKBCreator {
 			else if(flag.contains("system")) { //for the waste treatment system
 				inFile = new FileInputStream(filePath);
 				in = new InputStreamReader(inFile, "UTF-8");
+				System.out.println("it goes to system");
 				OntModel jenaOwlModel = ModelFactory.createOntologyModel();
 				jenaOwlModel.read(in, null);
 				initOWLClasses(jenaOwlModel);
@@ -1044,6 +1103,13 @@ public class WTEKBCreator {
 		converter.startConversion("foodcourt");
 		converter.startConversion("transport");
 		converter.startConversion("wtf");
+//		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
+//		for(int x=1;x<=7;x++) {
+//		foodcourt.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+x+".owl#FoodCourt-"+x);
+//		}
+//		for(int x=1;x<=4;x++) {
+//			wtf.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/WasteTreatment-"+x+".owl#WasteTreatment-"+x);
+//		}
 		converter.startConversion("system"); //it is completed no need to be rerun again
 		
 	}
