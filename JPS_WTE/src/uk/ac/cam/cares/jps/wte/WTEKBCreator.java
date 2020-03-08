@@ -883,7 +883,6 @@ public class WTEKBCreator {
 		return Prefix+mainobjectname+".owl#"+mainobjectname;
 	}
 	
-	
 	public void doConversionWasteSystem(OntModel jenaOwlModel,String Prefix, String mainobjectname, String transportiri, List<String>foodcourt, List<String>wtf) {
 		
 		Individual mainobjinst = compositeclass.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
