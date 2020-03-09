@@ -433,14 +433,26 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
  */
 function displayCO2(data){
     //read the value of CO2 and display upon calling
-    var agenturl =  prefix + '/JPS_POWSYS//ENVisualization/readGenerator' ;
+    var agenturl =  prefix + '/JPS_POWSYS/AggregationEmissionAgent/aggregateemission' ;
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);
     var request = $.ajax({
         url: kmlurl,
         type: 'GET',
         async: true,
-        contentType: 'application/json; charset=utf-8'
+        contentType: 'application/json; charset=utf-8', 
+        success: function(data, textStatus){
+            console.log("successful execution");
+        }, 
+        fail: function (xhr, textStatus, errorThrown){
+            console.log(textStatus);
+            console.log(errorThrown);
+            setTimeout(function() {
+                console.log('timeout');
+            }, 20000);
+            document.getElementById("loader").style.display = "none";
+            displayCO2(data);
+        }
     });     
     
     request.done(function(data) {
@@ -1072,13 +1084,13 @@ asyncLoop({
                 alert("This simulation has not converged. Use different values.");
             }
             json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
-            displayCO2(json);
             var delayInMilliseconds = 10000; //1 second
             setTimeout(function() {
                 console.log('timeout');
             }, delayInMilliseconds);
             console.log('DONE SIMULATION')
             openWindow(filename);
+            displayCO2(json);
         });
 
 
