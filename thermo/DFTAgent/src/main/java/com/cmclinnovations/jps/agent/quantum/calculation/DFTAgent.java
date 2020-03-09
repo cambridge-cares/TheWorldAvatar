@@ -606,7 +606,7 @@ public class DFTAgent extends HttpServlet{
 		}
 		if(outputs!=null){
 			String[] headers = outputs.get(0).split("\\s+");
-			String[] values = outputs.get(0).split("\\s+");
+			String[] values = outputs.get(1).split("\\s+");
 			for(int i=0; i<headers.length; i++){
 				if(headers[i].toLowerCase().equals("st")){
 					if(values.length>i){
