@@ -28,7 +28,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.powsys.util.Util;
 
 public abstract class GeneralRetrofitAgent extends JPSHttpServlet implements Prefixes, Paths {
-	
+		
     @Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(GeneralRetrofitAgent.class);
