@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.base.listener;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ConcurrentHashMap;
@@ -24,9 +25,8 @@ import org.apache.jena.shared.Lock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
-import uk.ac.cam.cares.jps.base.query.JenaHelper;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
 
 public class BaseOntologyModelManager {
 
@@ -74,26 +74,26 @@ public class BaseOntologyModelManager {
     }
 
     public static void saveToOwl(OntModel jenaOwlModel, String iriOfChimney) throws IOException {
-//        String filePath2;
-//        if (!AgentLocator.isJPSRunningForTest()) {
-//            filePath2= iriOfChimney.replaceAll(IRI_KB, ABSDIR_KB).split("#")[0];
-//        } else {
-//            filePath2= iriOfChimney.replaceAll(IRI_KB_TEST, ABSDIR_KB_TEST).split("#")[0];
-//        }
-//        logger.info("the filepath created= "+filePath2);
-//
-//        try {
-//            prepareDirectory(filePath2);
-//        } catch (IOException e) {
-//            throw new JPSRuntimeException(EX_SAVE_OWL + filePath2);
-//        } finally {
-//            FileOutputStream out = new FileOutputStream(filePath2);
-//
-//            jenaOwlModel.write(out, "RDF/XML-ABBREV");
-//            out.close();
-//        }
-        String finalcontent=JenaHelper.writeToString(jenaOwlModel);
-        new QueryBroker().putOld(iriOfChimney,finalcontent);
+        String filePath2;
+        if (!AgentLocator.isJPSRunningForTest()) {
+            filePath2= iriOfChimney.replaceAll(IRI_KB, ABSDIR_KB).split("#")[0];
+        } else {
+            filePath2= iriOfChimney.replaceAll(IRI_KB_TEST, ABSDIR_KB_TEST).split("#")[0];
+        }
+        logger.info("the filepath created= "+filePath2);
+
+        try {
+            prepareDirectory(filePath2);
+        } catch (IOException e) {
+            throw new JPSRuntimeException(EX_SAVE_OWL + filePath2);
+        } finally {
+            FileOutputStream out = new FileOutputStream(filePath2);
+
+            jenaOwlModel.write(out, "RDF/XML-ABBREV");
+            out.close();
+        }
+//        String finalcontent=JenaHelper.writeToString(jenaOwlModel);
+//        new QueryBroker().putOld(iriOfChimney,finalcontent);
     }
 
     public static void prepareDirectory(String filePath2) throws IOException {
