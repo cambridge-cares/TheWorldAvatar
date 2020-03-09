@@ -21,9 +21,9 @@ var config = require('../config.js');
 let request = require('request');
 let stringtype = require('is-string')
 let Parser = require('node-xml-stream')
-const RdfParser = require('../agents/rdfParser');
 const { Readable,PassThrough } = require('stream');
-
+const csv = require('csv-parser');
+const strStream = require('string-to-stream')
 /**out a asyn function, provide data :
  [
  {source: , target: , level: }
@@ -99,7 +99,6 @@ owlProcessor.doConnect = function(address, level) {
                         label = item['label']?item['label']:'';
                         level = item['level']?item['level']:level;
                         item = item['uri'];
-
                         }
                     } else {
                         parent = address;
@@ -115,16 +114,16 @@ owlProcessor.doConnect = function(address, level) {
                     item = me.normalAddr(item);
 					}
                     item = me.equalHost(item);
-                    console.log(item)
+                   // console.log(item)
                        
 					if(!iset.has(item)){
-                        console.log('add')
+                        //console.log('add')
 						iset.add(item);
                     if(level>=2 && !(item in me.parentMap) && (parent!==item)) {
                         me.parentMap[item] = parent in me.parentMap ? me.parentMap[parent] : parent;
                     }
                     me.result.push({'source':parent, 'target':item, 'label': label ,'level':level});
-                    console.log({'source':parent, 'target':item, 'label': label ,'level':level})
+                    //console.log({'source':parent, 'target':item, 'label': label ,'level':level})
                     
                     
                     }
@@ -140,7 +139,7 @@ owlProcessor.doConnect = function(address, level) {
 					me.buffer.pause();
                 } else {//directly resolve
 				console.log('request for one layer result')
-				console.log(me.result);
+				//console.log(me.result);
                     resolve(me.result)
                 }
                 }
@@ -389,10 +388,11 @@ owlProcessor.queryPromise = function (loc, type, level) {
                 if(typeof self.queryStrC === 'string'){
                  self.queryStrC = [self.queryStrC];
                 }    
-                console.log('lenght of query'+self.queryStrC.length);
+                console.log('lenght of query '+self.queryStrC.length);
                 async.map(self.queryStrC, self.singleEpQ(loc), function(err, resultArr){
-
+                   
                    if(err){
+                       console.log(err)
                     reject(err);
                     return;
                    }
@@ -442,14 +442,14 @@ loc: endpoint url
 @callback (error, queryResult)
 ***/
 owlProcessor.singleEpQ = function(loc){
+    const self = this;
 
     let q = function(qStr, callback){
          
-                    console.log('query')
-                    console.log(qStr);
+
                    request.get(loc, {qs:{'query':qStr,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result');
-                                      //  console.log("body:"+body);
+ 
 
                     if (err||!body||body===undefined||body.toLowerCase().includes('doctype')||body.includes('<?xml version="1.0" encoding="utf-8"?>')) {
                         console.log('no result from endpoint, reject')
@@ -457,25 +457,30 @@ owlProcessor.singleEpQ = function(loc){
                         return;
                         };//don't throw
                     //unwrap query
-                   
-                    
+    
+                       //console.log("body:"+body);
                    //body = self.parsePseudoJson(body);
 
                    try {
 
-                   body = JSON.parse(body);
-                   //todo: rewrite unwrap
-                    let items = RdfParser.unwrapResult(body, 'item');
-                     if(!items){
-                        callback(new Error('empty query result'));
-                        return;
-                     }
-                     
-                   // let uri = items.map(item=>item.uri);
-                    //console.log(uri)
-                    //let tobuffer = uri.map((text)=> {return text+'@'+(level+1)}).join(';')
-                    //self.buffer.push(tobuffer);
-                         callback(null, items)
+                       if (self.checkJson(body)){
+                           body = JSON.parse(body);
+                           //todo: rewrite unwrap
+                           let items = self.unwrapResult(body, 'item');
+                           if(!items){
+                               callback(new Error('empty query result'));
+                               return;
+                           }
+                           callback(null, items)
+                       } else{//=> csv
+                           const results= [];
+                           strStream(body).pipe(csv()).on('data', (data)=>results.push(data))
+                               .on('end',()=>{
+                                   "use strict";
+                                   callback(null, results);
+                               })
+                       }
+
                    }catch(e){
                      callback(e)
                    }
@@ -486,18 +491,61 @@ owlProcessor.singleEpQ = function(loc){
 return q;
 }
 
+owlProcessor.unwrapResult = function (result, type) {
+    if(!('head' in result) || !('results' in result) || !('bindings' in result['results']) || result['results']['bindings'].length === 0){
+        console.log('wrong format')
+        return null
+    }
+    let unwrapped = {}
+    
+    let varNames = result['head']['vars'];
+    
+    if(type!=='item'){
+        
+        for(let varname of varNames){
+            console.log(result['head']['vars'])
+            console.log(varname)
+            if(!(result['head']['vars'].includes(varname))){
+                return null
+            }
+            unwrapped[varname] = []
+        }
+    } else {
+        unwrapped = [];
+    }
+    
+    //unwrap
+    console.log('upwrap')
+    console.log(unwrapped)
+    for(let line of result['results']['bindings']){
+        let item = {};
+        for(let varname of varNames){
+            let value = varname in line?  line[varname]['value']:'';
+            if(type==='item')
+            {
+                item[varname] = value;
+            }
+            else
+            {
+                
+                unwrapped[varname].push(value);
+            }
+        }
+        if(type==='item'){
+            unwrapped.push(item);
+        }
+    }
+    
+    return unwrapped;//return unwrapped result
+}
+
 owlProcessor.checkJson = function(body){
     try{
     JSON.parse(body)
-    return body
 } catch(e){
-    console.log(e)
-    if(e){
-    var re = /^(\{.*\})(.?)$/, re2=  /^(\[.*\])(.?)$/;
-let formated = body.match(re)?body.match(re):body.match(re2);
-return formated[1]
+        return false
     }
-}
+    return true
 }
 
 owlProcessor.parsePseudoJson = function(body){
@@ -715,11 +763,6 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
 //test
 //console.time('conn')
    // owlProcessor.doConnect(loc)
-
-var a = Object.create(owlProcessor)
-    a.processSingle( {topnode:"http://localhost/damecoolquestion/ontochem/query", level: 1}).then((res)=>{
-        console.log('print results')
-        console.log((res))});
 
 //b.process( {topnode:"http://www.theworldavatar.com/SemakauIsland.owl"}).then((res)=>{
   //  console.log('print')

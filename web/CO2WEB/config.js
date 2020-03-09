@@ -15,7 +15,7 @@ config.baseUri = "http://www.theworldavatar.com"
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
 config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
-// configDevelop();
+//configDevelop();
 configDeploy();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
@@ -23,6 +23,7 @@ config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
 config.jurongNode = path.join(config.root ,"kb/sgp/jurongisland/JurongIsland.owl");
 config.b3Node = path.join(config.root , "kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
 config.ontoENNode = path.join(config.root, "kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl");
+
 
 
 //config.b2Node = path.join(config.root , "BiodieselPlant2.owl");
@@ -33,6 +34,7 @@ config.semakauNode = path.join(config.root , "kb/sgp/semakauisland/SemakauIsland
 config.landLotNode=path.join(config.root , "kb/sgp/jurongisland/JParkLandLots.owl");
 config.ontochemNode= config.crebase + '/query';
 config.ontokinNode= config.ontokinbase + '/query';
+config.ontokinRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontokin"
 
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")
@@ -44,11 +46,10 @@ config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")
 
 function configDevelop() {
     // config.root = path.join(__dirname ,  "testFiles") ; // own folder for testing
+    config.port =3000
     config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
     config.registerUrl = "http://10.25.188.104";
-    config.changeUrl = "http://www.theworldavatar.com:82";
     config.ppFolder = path.join(config.root, "kb/powerplants")
-    
     //"http://www.thewordavatar.com:82/change";
 }
 
