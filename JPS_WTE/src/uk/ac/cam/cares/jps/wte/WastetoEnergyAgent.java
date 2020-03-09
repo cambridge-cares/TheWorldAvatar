@@ -224,7 +224,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?entity   j3:hasLaborCost ?LabC1 ."
 			+ "?LabC1     j2:hasValue ?vlaborcost ." 
 			
-			+ "?entity   j8:hasTransportationcost ?TC1 ."
+			+ "?entity   j8:hasTransportationCost ?TC1 ."
 			+ "?TC1     j2:hasValue ?vtransportcost ." 
 			
 			+ "}";
@@ -413,7 +413,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String baseUrl= QueryBroker.getLocalDataPath();
 		List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
-		prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
+		List<String[]> inputoffsitedata=prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
 		prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
@@ -426,6 +426,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			e.printStackTrace();
 		}
 		try {
+//===================================update in waste system========================================================
 			List<String[]>economic=readResult(baseUrl,"Economic output.csv");
 			updateKBForSystem(model, economic, wasteSystemOutputQuery); //for waste system
 //			String revenue=economic.get(0)[0]; //ok
@@ -439,7 +440,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 //			String resource=economic.get(8)[0];//ok
 //			String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
 //			String netflow=economic.get(10)[0]; 
-			
+
+//=========================================update in onsite wtf================================================== //create new owl file		
+
 			List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
 			List<String[]>onsiteunitmapping=new ArrayList<String[]>();
 			int size3=unitofonsite.size();
@@ -456,7 +459,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			
 			
 			
-			
+//=======================================update in food court======================================================			
 			//both of them have row= fc amount, col represents onsite or offsite per tech
 			List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
 			List<String[]>onsitemapping=new ArrayList<String[]>();
@@ -484,6 +487,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 					}
 				}
 			}
+			updateinFC(model,onsiteiri,inputoffsitedata,onsitemapping,offsitemapping, FCQueryoutput);
+//=============================================================================================	
 			
 
 			List<String[]>unitofoffsite=readResult(baseUrl,"number of units (offsite).csv");
@@ -518,6 +523,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keyswt = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
+		logger.info("answer number= "+resultList.size());
+		System.out.println("answer number= "+resultList.size());
 		for (int ind = 1; ind < keyswt.length; ind++) {
 			Individual inst = model.getIndividual(resultList.get(0)[ind]);
 			if (ind == 1) {
@@ -557,7 +564,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 					b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 					b.append("<" + currentwaste + "> OCPSYST:hasValue <"+valuecurrentwaste+ "> . \r\n");
 					b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
-					b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue <"+numfromres+ "> . \r\n");
+					b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue "+numfromres+ " . \r\n");
 					b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
 					wasteindex++;
 				}
@@ -568,7 +575,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 						String valuecurrentwaste = resultList.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 								+ wasteindex;
 						Double numfromres = Double.parseDouble(outputdataoffsite.get(d)[off]);
-						String currentwtf = inputdataonsite.get(d);
+						int IndexOffsiteHeader=off%3; //index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is the 3rd
+						String currentwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
 						b.append("<" + resultList.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 						b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 						b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
@@ -750,7 +758,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		try {
 			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 			pr.waitFor();
-			Thread.sleep(90*1000);
+			Thread.sleep(30*1000);
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
@@ -779,12 +787,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		logger.info("final after calling: "+result);
 	}
 	
-	public void prepareCSVCompTECHBased(String mainquery,String baseUrl,OntModel model) {		
+	public List<String[]> prepareCSVCompTECHBased(String mainquery,String baseUrl,OntModel model) {		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keyswt = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
-        List<String[]> resultxy = new ArrayList<String[]>();
+        List<String[]> resultTechOffsiteWTF = new ArrayList<String[]>();
         int technumber=3;
         String[] header = new String[resultList.size()];
 		for (int d = 0; d < technumber; d++) {
@@ -795,11 +803,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				header[dd]=resultList.get(dd)[0];
 
 			}
-			resultxy.add(comp);
+			resultTechOffsiteWTF.add(comp);
 		}
-		resultxy.add(0,header);
+		resultTechOffsiteWTF.add(0,header);
 		
-        new QueryBroker().putLocal(baseUrl + "/n_unit_max_offsite.csv",MatrixConverter.fromArraytoCsv(resultxy));
+        new QueryBroker().putLocal(baseUrl + "/n_unit_max_offsite.csv",MatrixConverter.fromArraytoCsv(resultTechOffsiteWTF));
+        return resultTechOffsiteWTF;
 	}
 
 }

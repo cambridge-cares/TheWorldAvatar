@@ -5,8 +5,10 @@ import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -93,7 +95,7 @@ public class TestWTE extends TestCase {
 		new WastetoEnergyAgent().prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
 	}
 	
-	public void testCreateBat() {
+	public void testCreateBatchFile() {
 		String baseUrl= QueryBroker.getLocalDataPath();
 		try {
 			new WastetoEnergyAgent().createBat(baseUrl);
@@ -107,6 +109,13 @@ public class TestWTE extends TestCase {
 	
 	public void testDirectCall() {
 		new WastetoEnergyAgent().runTestInSequence(iriofnetwork);
+		
+	}
+	
+	public void testAgentCall() {
+		JSONObject jo = new JSONObject();
+		jo.put("wastenetwork", iriofnetwork);
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WastetoEnergyAgent", jo.toString());
 		
 	}
 
