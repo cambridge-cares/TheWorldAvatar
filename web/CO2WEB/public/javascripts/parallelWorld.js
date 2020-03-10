@@ -80,8 +80,8 @@
         document.getElementById("loader").style.display = "block";
         ppMap.drawLines(json );
         drawMarkers(json);
-        refreshLayer(json, kmlURL);
-        displayCO2(json);
+        setTimeout(refreshLayer(json, kmlURL), 30000);
+        setTimeout(displayCO2(json), 20000);
         kmlURL = null;
         
         
