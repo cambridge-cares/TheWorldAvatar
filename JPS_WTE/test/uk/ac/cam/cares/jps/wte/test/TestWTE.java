@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.wte.test;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -117,6 +118,16 @@ public class TestWTE extends TestCase {
 		jo.put("wastenetwork", iriofnetwork);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WastetoEnergyAgent", jo.toString());
 		
+	}
+	
+	public void testquery() throws IOException {
+//		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
+//		ResultSet resultSet = JenaHelper.query(model, WastetoEnergyAgent.wasteSystemOutputQuery);
+//		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String result = new QueryBroker().queryFile(iriofnetwork,WastetoEnergyAgent.wasteSystemOutputQuery);
+		String[] keyswt = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
+		System.out.println("answer number= "+resultList.size());
 	}
 
 }

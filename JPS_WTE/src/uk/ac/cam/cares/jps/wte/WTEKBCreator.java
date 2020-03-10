@@ -1051,33 +1051,34 @@ public class WTEKBCreator {
 			}
 			else if(flag.contains("onsitewtf")) {
 				for(int d=1;d<=outputdata.size();d++) {
+					String wtfname="OnSiteWasteTreatment-"+d; 
 					if(Double.parseDouble(outputdata.get(d-1)[0])!=0.0) {
 						inFile = new FileInputStream(filePath);
 						in = new InputStreamReader(inFile, "UTF-8");
 						OntModel jenaOwlModel = ModelFactory.createOntologyModel();
 						jenaOwlModel.read(in, null);
 						initOWLClasses(jenaOwlModel);
-						String wtfname="OnSiteWasteTreatment-"+d; 
 						String iriofwtf=doConversionOnSite(jenaOwlModel,Prefix, wtfname,inputdata.get(d-1),outputdata.get(d-1));
 						//wtf.add(iriofwtf); should the onsite attached to the waste system??
 						String content = JenaHelper.writeToString(jenaOwlModel);
 						new QueryBroker().putOld(Prefix+wtfname+".owl", content);
-						onsiteiri.add(iriofwtf);
 					}
+					System.out.println(Prefix+wtfname+".owl#"+wtfname);
+					onsiteiri.add(Prefix+wtfname+".owl#"+wtfname);
 				}
 
-				for(int d=1;d<=4;d++) { //incinerator not to be touched again which is d=4
-					inFile = new FileInputStream(filePath);
-					in = new InputStreamReader(inFile, "UTF-8");
-					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
-					jenaOwlModel.read(in, null);
-					initOWLClasses(jenaOwlModel);
-					String wtfname="WasteTreatment-"+d; 
-					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
-					wtf.add(iriofwtf);
-					String content = JenaHelper.writeToString(jenaOwlModel);
-					new QueryBroker().putOld(Prefix+wtfname+".owl", content);
-				}
+//				for(int d=1;d<=4;d++) { //incinerator not to be touched again which is d=4
+//					inFile = new FileInputStream(filePath);
+//					in = new InputStreamReader(inFile, "UTF-8");
+//					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+//					jenaOwlModel.read(in, null);
+//					initOWLClasses(jenaOwlModel);
+//					String wtfname="WasteTreatment-"+d; 
+//					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
+//					wtf.add(iriofwtf);
+//					String content = JenaHelper.writeToString(jenaOwlModel);
+//					new QueryBroker().putOld(Prefix+wtfname+".owl", content);
+//				}
 				System.out.println("it is processed= " + flag);
 			 
 			}

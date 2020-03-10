@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -187,7 +188,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			
 			+ "}";
 	
-	public String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+	public static String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
 			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -203,11 +204,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?UC1     j2:hasValue ?vresourcecost ." 
 						
 			+ "?entity   j3:hasInstallationCost ?IC1 ."
-			//+ "?UC1  a j3:UtilityCosts ."
 			+ "?IC1     j2:hasValue ?vinstallationcost ."  
 			
 			+ "?entity   j3:hasRevenue ?Rev1 ."
-			//+ "?UC1  a j3:UtilityCosts ."
 			+ "?Rev1     j2:hasValue ?vrevenue ." 
 			
 			+ "?entity   j3:hasCost ?LC1 ."
@@ -386,11 +385,30 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		return WTFQuery;
 	}
 	
-	public List<String> updateinWT(List<String[]> inputdata,List<String[]> outputdata) throws Exception {
+	public List<String> updateinWT(List<String[]> inputdata,String baseUrl) throws Exception {
 		//assume outputdata= number of unit in onsite and offiste
 		//first focus onsite
+		List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
+		List<String[]>onsiteunitmapping=new ArrayList<String[]>();
+		int size3=unitofonsite.size();
+		int colamount3=unitofonsite.get(0).length;
+		for(int x=0;x<size3;x++) {
+			String[]linemapping= new String[colamount3];
+			for(int y=0;y<colamount3;y++) { //1tech only
+				//linemapping[y]=unitofonsite.get(x)[y]; //representing 1 onsite wtf for each technology		
+				BigDecimal bd = new BigDecimal(unitofonsite.get(x)[y]);
+				double newval= Double.parseDouble(bd.toPlainString());
+				linemapping[y]=bd.toPlainString();
+				if(newval<0) {
+					linemapping[y]="0";
+				}
+				
+				
+			}
+			onsiteunitmapping.add(linemapping);	
+		}
 		WTEKBCreator converter = new WTEKBCreator();
-		converter.startConversion("onsitewtf",inputdata,outputdata);
+		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping);
 		//==============================================================
 		//left with the offsite
 		List<String>mappedonsiteiri=converter.onsiteiri;
@@ -428,7 +446,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		try {
 //===================================update in waste system========================================================
 			List<String[]>economic=readResult(baseUrl,"Economic output.csv");
-			updateKBForSystem(model, economic, wasteSystemOutputQuery); //for waste system
+			updateKBForSystem(wasteIRI, economic, wasteSystemOutputQuery); //for waste system
 //			String revenue=economic.get(0)[0]; //ok
 //			String totalinflow=economic.get(1)[0]; //similar to revenue
 //			String capex=economic.get(2)[0]; //ok
@@ -443,19 +461,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 //=========================================update in onsite wtf================================================== //create new owl file		
 
-			List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
-			List<String[]>onsiteunitmapping=new ArrayList<String[]>();
-			int size3=unitofonsite.size();
-			int colamount3=unitofonsite.get(0).length;
-			for(int x=0;x<size3;x++) {
-				String[]linemapping= new String[colamount3];
-				for(int y=0;y<colamount3;y++) { //1tech only
-					linemapping[y]=unitofonsite.get(x)[y]; //representing 1 onsite wtf for each technology									
-				}
-				onsiteunitmapping.add(linemapping);	
-			}
+
 			
-			List<String> onsiteiri=updateinWT(inputonsitedata,onsiteunitmapping);
+			List<String> onsiteiri=updateinWT(inputonsitedata,baseUrl);
 			
 			
 			
@@ -487,7 +495,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 					}
 				}
 			}
-			updateinFC(model,onsiteiri,inputoffsitedata,onsitemapping,offsitemapping, FCQueryoutput);
+			updateinFC(model,onsiteiri,inputoffsitedata,onsitemapping,offsitemapping, FCQueryoutput,inputonsitedata);
 //=============================================================================================	
 			
 
@@ -515,16 +523,15 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		
 		return null;
 	}
-	 
-
-	 
-	public void updateKBForSystem(OntModel model,List<String[]> outputdata, String queryupdate) {
-		ResultSet resultSet = JenaHelper.query(model, queryupdate);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+	  
+	public void updateKBForSystem(String iriofnetwork, List<String[]> outputdata, String queryupdate) {
+		String result = new QueryBroker().queryFile(iriofnetwork, wasteSystemOutputQuery);
 		String[] keyswt = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
-		logger.info("answer number= "+resultList.size());
-		System.out.println("answer number= "+resultList.size());
+		logger.info("answer number= " + resultList.size());
+		System.out.println("answer number= " + resultList.size());
+		OntModel model = JenaHelper.createModel();
+		model.read(iriofnetwork, null);
 		for (int ind = 1; ind < keyswt.length; ind++) {
 			Individual inst = model.getIndividual(resultList.get(0)[ind]);
 			if (ind == 1) {
@@ -534,63 +541,67 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				inst.setPropertyValue(getNumericalValueProperty(model),
 						model.createTypedLiteral(new Double(outputdata.get(ind)[0])));
 			}
-
 		}
 		String content = JenaHelper.writeToString(model);
 		new QueryBroker().putOld(resultList.get(0)[0], content);
 
 	}
 	
-	public void updateinFC(OntModel model,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> outputdataonsite,List<String[]> outputdataoffsite, String queryupdate) throws Exception {
-		ResultSet resultSet = JenaHelper.query(model, queryupdate);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keyswt = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
+	public void updateinFC(OntModel model,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> outputdataonsite,List<String[]> outputdataoffsite, String queryupdate,List<String[]> foodcourtmap) throws Exception {
+//		ResultSet resultSet = JenaHelper.query(model, queryupdate);
+//		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+//		String[] keyswt = JenaResultSetFormatter.getKeys(result);
+//		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 			+ "INSERT DATA { \r\n";
-		StringBuffer b = new StringBuffer();
+		
 		//outputdata= treated waste onsite
 		//input data onsite=onsiteiri
-		for(int d=0;d<resultList.size();d++) {//each iri of foodcourt
+		for(int d=0;d<inputdataonsite.size();d++) {//each iri of foodcourt
 			int wasteindex=1;
-			for(int k=0;k<outputdataonsite.get(0).length;k++) {
-				if(Double.parseDouble(outputdataonsite.get(d)[k])>0.01) {
-					String currentwaste=resultList.get(d)[0].split("#")[0]+"#WasteDeliveredAmount-"+wasteindex;
-					String valuecurrentwaste=resultList.get(d)[0].split("#")[0]+"#V_WasteDeliveredAmount-"+wasteindex;
-					Double numfromres=Double.parseDouble(outputdataonsite.get(d)[k]);
-					String currentwtf=inputdataonsite.get(d);
-					b.append("<" + resultList.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
+			
+			StringBuffer b = new StringBuffer();
+					String currentwaste=foodcourtmap.get(d)[0].split("#")[0]+"#WasteDeliveredAmount-"+wasteindex;
+					String valuecurrentwaste=foodcourtmap.get(d)[0].split("#")[0]+"#V_WasteDeliveredAmount-"+wasteindex;
+					Double numfromres=Double.parseDouble(outputdataonsite.get(d)[2]);
+					int onsiteindex=Integer.valueOf(outputdataonsite.get(d)[1]);
+					String currentwtf=inputdataonsite.get(onsiteindex);
+					b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 					b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 					b.append("<" + currentwaste + "> OCPSYST:hasValue <"+valuecurrentwaste+ "> . \r\n");
 					b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
 					b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue "+numfromres+ " . \r\n");
+					b.append("<" + valuecurrentwaste + "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
 					b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
-					wasteindex++;
-				}
-				for (int off = 0; off < 9; off++) {//tech column in offsite
-					if (Double.parseDouble(outputdataoffsite.get(d)[off]) > 0.01) {
-						String currentwaste = resultList.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-"
-								+ wasteindex;
-						String valuecurrentwaste = resultList.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
-								+ wasteindex;
-						Double numfromres = Double.parseDouble(outputdataoffsite.get(d)[off]);
-						int IndexOffsiteHeader=off%3; //index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is the 3rd
-						String currentwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
-						b.append("<" + resultList.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
-						b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
-						b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
-						b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
-						b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue <" + numfromres + "> . \r\n");
-						b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
-						wasteindex++;
-					}
-				}
-			}
+//					wasteindex++;
+					String sparql = sparqlStart + b.toString() + "} \r\n";
+					new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+				
+				
+				
+//				for (int off = 0; off < 9; off++) {//tech column in offsite
+//					if (Double.parseDouble(outputdataoffsite.get(d)[off]) > 0.01) {
+//						String currentwaste = resultList.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-"
+//								+ wasteindex;
+//						String valuecurrentwaste = resultList.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
+//								+ wasteindex;
+//						Double numfromres = Double.parseDouble(outputdataoffsite.get(d)[off]);
+//						int IndexOffsiteHeader=off%3; //index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is the 3rd
+//						String currentwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
+//						b.append("<" + resultList.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
+//						b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
+//						b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
+//						b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
+//						b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue <" + numfromres + "> . \r\n");
+//						b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
+//						wasteindex++;
+//					}
+//				}
 			
-			String sparql = sparqlStart + b.toString() + "} \r\n";
 			
-			new QueryBroker().updateFile(resultList.get(d)[0], sparql);
+//			String sparql = sparqlStart + b.toString() + "} \r\n";
+//			new QueryBroker().updateFile(resultList.get(d)[0], sparql);
 			
 		}
 		
@@ -599,7 +610,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 public void runTestInSequence(String wasteIRI) { //only for testing direct call packet
 			OntModel model= readModelGreedy(wasteIRI);
 			String baseUrl= QueryBroker.getLocalDataPath();
-			prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+			List<String[]>onsitereference=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 			prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
 			prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
 			prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
@@ -610,7 +621,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				createBat(baseUrl);
 				runModel(baseUrl);
 				List<String[]>economic=readResult(baseUrl,"Economic output.csv");
-				updateKBForSystem(model, economic, wasteSystemOutputQuery); //for waste system
+				updateKBForSystem(wasteIRI, economic, wasteSystemOutputQuery); //for waste system
+				List<String> onsiteiri=updateinWT(onsitereference,baseUrl);
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
