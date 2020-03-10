@@ -6,13 +6,16 @@ import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONStringer;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 public class TestWTE extends TestCase {
@@ -117,6 +120,18 @@ public class TestWTE extends TestCase {
 		JSONObject jo = new JSONObject();
 		jo.put("wastenetwork", iriofnetwork);
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WastetoEnergyAgent", jo.toString());
+		
+	}
+	
+	public void testCreateScenarioAndCallWTEAgent() throws JSONException {
+		
+		String scenarioName = "testwasteTRIAL01";
+		String json = new JSONStringer().object()
+				.key("wastenetwork").value(iriofnetwork)
+				.endObject().toString();
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/WastetoEnergyAgent", json);
+		
+		System.out.println(result);
 		
 	}
 	
