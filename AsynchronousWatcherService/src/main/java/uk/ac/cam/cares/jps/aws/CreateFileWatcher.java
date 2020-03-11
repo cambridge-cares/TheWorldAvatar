@@ -70,6 +70,7 @@ public class CreateFileWatcher extends Thread implements Watcher {
                         continue;
                     } else if (kind == java.nio.file.StandardWatchEventKinds.ENTRY_CREATE
                             && filename.toString().equals(file.getName())) {
+                    	System.out.println("New file observed: " + filename.toString());
                         doOnChange();
                     }
 
