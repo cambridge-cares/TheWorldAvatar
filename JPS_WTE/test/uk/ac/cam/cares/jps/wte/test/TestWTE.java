@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.wte.test;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -20,7 +21,7 @@ import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
 public class TestWTE extends TestCase {
 	static String iriofnetwork="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
-	
+	String usecaseID = UUID.randomUUID().toString();
 	public void xxxtestQueryFC() {
 		WastetoEnergyAgent a= new WastetoEnergyAgent ();
 		
@@ -111,7 +112,7 @@ public class TestWTE extends TestCase {
 		
 	}
 	
-	public void testDirectCall() {
+	public void xxxtestDirectCall() {
 		new WastetoEnergyAgent().runTestInSequence(iriofnetwork);
 		
 	}
@@ -130,20 +131,63 @@ public class TestWTE extends TestCase {
 	
 	public void testCreateScenarioAndCallWTEAgent() throws JSONException {
 		
-		String scenarioName = "testwaste3";
+		String scenarioName = "testwaste2-"+usecaseID;
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
 				.endObject().toString();
-		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/WastetoEnergyAgent", json);
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/WastetoEnergyAgent/startsimulation", json);
 		
 		System.out.println(result);
 		
 	}
 	
-	public void testquery() throws IOException {
-//		OntModel model= WastetoEnergyAgent.readModelGreedy(iriofnetwork);
-//		ResultSet resultSet = JenaHelper.query(model, WastetoEnergyAgent.wasteSystemOutputQuery);
-//		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+	public void testQueryScenarioWTEAgent() throws JSONException {
+		 String wasteSystemQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+				+ "SELECT ?entity ?comp " 
+				+ "WHERE {"
+				+ "?entity  a j2:CompositeSystem ."
+				+ "?entity   j2:hasSubsystem ?comp ." 
+				
+				+ "}";
+		String path = "http://localhost:8080/jps/scenario/testwaste2"; //the scenario name must be existed in the first place!!!
+		System.out.println("path= "+path);
+		String result = new ScenarioClient().query(path, iriofnetwork, wasteSystemQuery);
+		
+		System.out.println(result);
+		
+	}
+	
+	public void testQueryBaseWTEAgent() throws JSONException {
+		 String wasteSystemQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+				+ "SELECT ?entity ?comp " 
+				+ "WHERE {"
+				+ "?entity  a j2:CompositeSystem ."
+				+ "?entity   j2:hasSubsystem ?comp ." 
+				
+				+ "}";
+		String path = "http://localhost:8080/jps/scenario/base"; //the scenario name must be existed in the first place!!!
+		System.out.println("path= "+path);
+		String result = new ScenarioClient().query(path, iriofnetwork, wasteSystemQuery);
+		
+		System.out.println(result);
+		
+	}
+	
+	public void testquery() throws IOException { 
 		String result = new QueryBroker().queryFile(iriofnetwork,WastetoEnergyAgent.wasteSystemOutputQuery);
 		String[] keyswt = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);

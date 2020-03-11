@@ -221,7 +221,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @return response body
      */
     protected String execute(String path, String jsonInput, String method) {
-        logger.info("execute for path=" + path + ", json=" + jsonInput);
+        System.out.println("execute for path=" + path + ", json=" + jsonInput);
         String result;
         switch (method) {
             case HttpGet.METHOD_NAME:
@@ -233,7 +233,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
             default:
                 throw new IllegalStateException("Unexpected value: " + method);
         }
-        logger.info("execution result=" + result);
+        System.out.println("execution result=" + result);
         return result;
     }
 

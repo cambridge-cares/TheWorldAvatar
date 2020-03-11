@@ -11,6 +11,7 @@ import java.util.List;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.http.client.methods.HttpPost;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -22,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -29,14 +31,16 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-@WebServlet("/WastetoEnergyAgent")
+@WebServlet(urlPatterns= {"/WastetoEnergyAgent/startsimulation","/WastetoEnergyAgent/processresult"})
+
 public class WastetoEnergyAgent extends JPSHttpServlet {
 	
     @Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
     }
-    Logger logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
+
+    protected Logger logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
 	
 	private DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(
@@ -52,7 +56,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-
+	public static final String KEY_WATCH = "watch";
+	public static final String KEY_CALLBACK_URL = "callback";
+	public static final String SIM_START_PATH = "/WastetoEnergyAgent/startsimulation";
+	  public static final String SIM_PROCESS_PATH = "/WastetoEnergyAgent/processresult";
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -303,7 +310,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				+ "}"
 				+ "ORDER BY DESC(?Tech1)";
 		
-	public String createWTFQuery(String wtfclass,String techclass) {
+	public String createWTFQuery(String wtfclass,String techclass) { //currently unused
 		//j1:OffsiteWasteTreatmentFacility =default wtf class
 		//j1:OffSiteIncineration or j1:OffSiteCoDigestion or j1:OffSiteAnaerobicDigestion or j1:OnSiteTechnology1 or j1:OnSiteDigester or j1:OnSiteTechnology3=default tech class
 		
@@ -389,22 +396,18 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 				+ "}";
 		
-		
-		
 		return WTFQuery;
 	}
 	
-	public List<String> updateinOnsiteWT(List<String[]> inputdata,String baseUrl) throws Exception {
-		//assume outputdata= number of unit in onsite and offiste
-		//first focus onsite
+	public List<String> updateinOnsiteWT(List<String[]> inputdata,String baseUrl) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
+
 		List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
 		List<String[]>onsiteunitmapping=new ArrayList<String[]>();
 		int size3=unitofonsite.size();
 		int colamount3=unitofonsite.get(0).length;
 		for(int x=0;x<size3;x++) {
 			String[]linemapping= new String[colamount3];
-			for(int y=0;y<colamount3;y++) { //1tech only
-				//linemapping[y]=unitofonsite.get(x)[y]; //representing 1 onsite wtf for each technology		
+			for(int y=0;y<colamount3;y++) { //1tech only	
 				BigDecimal bd = new BigDecimal(unitofonsite.get(x)[y]);
 				double newval= Double.parseDouble(bd.toPlainString());
 				linemapping[y]=bd.toPlainString();
@@ -418,8 +421,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		}
 		WTEKBCreator converter = new WTEKBCreator();
 		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping);
-		//==============================================================
-		//left with the offsite
 		List<String>mappedonsiteiri=converter.onsiteiri;
 		return mappedonsiteiri;
 	}
@@ -450,10 +451,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	
 	public void updateinOffsiteWT(List<String[]> inputdata,String baseUrl) throws Exception {
 		//assume inputdata= input offsite data
-		//first focus onsite
 		List<String[]>unitofoffsite=readResult(baseUrl,"number of units (offsite).csv");
 		System.out.println("it goes to the offsite update");
-		//filter the arrayfirst
+		//filter the arrayfirst to take only non zero values
 		List<String[]>filtered=new ArrayList<String[]>();
 		for(int r=0;r<unitofoffsite.size();r++) {
 			for(int i=0;i<unitofoffsite.get(0).length;i++) {
@@ -491,9 +491,13 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		}
 	}
 	
+    private void notifyWatcher(JSONObject agentArgs, String filePath, String callbackIRI) {
+        agentArgs.put(KEY_WATCH, filePath);
+        agentArgs.put(KEY_CALLBACK_URL, callbackIRI);
+        execute(KeyValueMap.getInstance().get("url.jps_aws"), agentArgs.toString(), HttpPost.METHOD_NAME);
+    }
 	
-
-	public List<String[]> readResult(String baseUrl,String filename) throws IOException {
+	private List<String[]> readResult(String baseUrl,String filename) throws IOException {
 
         String outputFile = baseUrl + "/"+filename;
         String csv = new QueryBroker().readFileLocal(outputFile);
@@ -504,60 +508,66 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	
 	 @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String wasteIRI=requestParams.getString("wastenetwork");
-		OntModel model= readModelGreedy(wasteIRI);
-		String baseUrl= QueryBroker.getLocalDataPath();
-		List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
-		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
-		List<String[]> inputoffsitedata=prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
-		prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
-		copyTemplate(baseUrl, "SphereDist.m");
-		copyTemplate(baseUrl, "Main.m");
-		copyTemplate(baseUrl, "D2R.m");
-		try {
-			createBat(baseUrl);
-			runModel(baseUrl);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		try {
-//=========================================update in onsite wtf================================================== //create new owl file		
+		 String path = request.getServletPath();
+		 String baseUrl= QueryBroker.getLocalDataPath();
+		 String wasteIRI=requestParams.getString("wastenetwork");
+			OntModel model= readModelGreedy(wasteIRI);
+			List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+			prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
+			List<String[]> inputoffsitedata=prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
+			prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
+			copyTemplate(baseUrl, "SphereDist.m");
+			copyTemplate(baseUrl, "Main.m");
+			copyTemplate(baseUrl, "D2R.m");
+		 if (SIM_START_PATH.equals(path)) {
 
-			List<String> onsiteiricomplete=updateinOnsiteWT(inputonsitedata,baseUrl);
-			
-//=======================================update in food court======================================================			
+				try {
+					createBat(baseUrl);
+					runModel(baseUrl);
+		            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
+		                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 
+		 }else if (SIM_PROCESS_PATH.equals(path)) {
+			 try {
+				
+					//=========================================update in onsite wtf================================================== //create new owl file		
 
-			List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,inputonsitedata);
-//===================================update in waste system========================================================
-			updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
-//			String revenue=economic.get(0)[0]; //ok
-//			String totalinflow=economic.get(1)[0]; //similar to revenue
-//			String capex=economic.get(2)[0]; //ok
-//			String opex=economic.get(3)[0];//ok
-//			String manpower=economic.get(4)[0]; //ok
-//			String landcost=economic.get(5)[0];//ok
-//			String pollution=economic.get(6)[0];
-//			String transport=economic.get(7)[0];//ok
-//			String resource=economic.get(8)[0];//ok
-//			String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
-//			String netflow=economic.get(10)[0]; 
+								List<String> onsiteiricomplete=updateinOnsiteWT(inputonsitedata,baseUrl);
+								
+					//=======================================update in food court======================================================			
 
-		
+								List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,inputonsitedata);
+					//===================================update in waste system========================================================
+								updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
+//								String revenue=economic.get(0)[0]; //ok
+//								String totalinflow=economic.get(1)[0]; //similar to revenue
+//								String capex=economic.get(2)[0]; //ok
+//								String opex=economic.get(3)[0];//ok
+//								String manpower=economic.get(4)[0]; //ok
+//								String landcost=economic.get(5)[0];//ok
+//								String pollution=economic.get(6)[0];
+//								String transport=economic.get(7)[0];//ok
+//								String resource=economic.get(8)[0];//ok
+//								String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
+//								String netflow=economic.get(10)[0]; 
+					//=============================================================================================	
+								
 
-//=============================================================================================	
-			
+								updateinOffsiteWT(inputoffsitedata,baseUrl);
+			 }catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+								
 
-			updateinOffsiteWT(inputoffsitedata,baseUrl);
-			
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			 
+		 }
+
+
 		
 		
 		return requestParams;
@@ -595,7 +605,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 	}
 	
-	public List<String> updateinFC(String baseUrl,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> foodcourtmap) throws Exception {
+	public List<String> updateinFC(String baseUrl,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
 		List<String>selectedOnsite=new ArrayList<String>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
@@ -697,6 +707,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			try {
 				createBat(baseUrl);
 				runModel(baseUrl);
+				Thread.sleep(30*1000);
 				List<String> onsiteiricomplete=updateinOnsiteWT(onsitereference,baseUrl);
 				List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,offsitereference,onsitereference);
 				updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
@@ -720,9 +731,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		return broker.readModelGreedy(iriofnetwork, wasteinfo);
 	}
 	
-	public List<String[]> prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) {
-				
-		
+	public List<String[]> prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) { //create csv for food court and giving the list of complete food court iri
+		//csv input file		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keysfc = JenaResultSetFormatter.getKeys(result);
@@ -736,7 +746,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				resultxy.add(comp);
 				resultfcmapper.add(mapper);
 			}
-
 		}
         if (filename2 != null) {
 			List<String[]> resultwaste = new ArrayList<String[]>();
@@ -824,11 +833,11 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         new QueryBroker().putLocal(baseUrl + "/Unit_Capacity_offsite.csv", MatrixConverter.fromArraytoCsv(capacity)); 
 	}
 	
-	public void createBat(String baseUrl) throws Exception
-	{
-		String loc=baseUrl+"\\Main.m";	
-	String bat="setlocal"+"\n"+"cd /d %~dp0"+"\n"+"matlab -nosplash -noFigureWindows -r \"try; run('"+loc+"'); catch; end; quit\"";
-	new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
+	public void createBat(String baseUrl) throws Exception {
+		String loc = baseUrl + "\\Main.m";
+		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" + "matlab -nosplash -noFigureWindows -r \"try; run('"
+				+ loc + "'); catch; end; quit\"";
+		new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
 	}
 	
 	private void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
@@ -846,8 +855,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		Process pr = null;
 		try {
 			pr = rt.exec(command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
-			pr.waitFor();
-			Thread.sleep(30*1000);
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
@@ -870,7 +877,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	}
 	
 	public void runModel(String baseUrl) throws IOException, InterruptedException {
-		//String result = CommandHelper.executeCommands(baseUrl, args);
 		String startbatCommand =baseUrl+"/runm.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
 		logger.info("final after calling: "+result);
