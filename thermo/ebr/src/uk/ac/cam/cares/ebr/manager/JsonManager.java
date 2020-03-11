@@ -10,6 +10,8 @@ import java.nio.charset.Charset;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.jayway.jsonpath.JsonPath;
+
 public class JsonManager {
 
 
@@ -54,5 +56,38 @@ public class JsonManager {
 			inputStream.close();
 		}
 	}
+	
+	/**
+	 * These two method below are recommended by Feroz Farazi (msff2@cam.ac.uk)
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 *
+	 * Parses json content on http request.
+	 */
+
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param jsonString the content of http request
+	 * @return the reference species folder path
+	 */
+		public static String getReferenceSpeciesFolderPath(String jsonString) {
+			
+			return JsonPath.read(jsonString, "$.referenceSpecies");
+					
+		}
+		
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * 
+		 * @param jsonString the content of http request.
+		 * @return unique species IRI.
+		 */
+		public static String getSpeciesIRI(String jsonString) {
+			
+			return JsonPath.read(jsonString, "$.uniqueSpeciesIRI");
+		}
+		
 	
 }

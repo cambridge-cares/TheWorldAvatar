@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import java.io.PrintWriter;
 
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -16,15 +15,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.BasicConfigurator;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.ebr.constant.Constants;
 
 import uk.ac.cam.cares.ebr.manager.FolderManager;
+import uk.ac.cam.cares.ebr.manager.JsonManager;
 import uk.ac.cam.cares.ebr.manager.RepositoryManager;
 import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 
@@ -37,7 +35,6 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
-
 
 /**
  * 
@@ -56,11 +53,13 @@ public class UploadEbrAgent extends HttpServlet{
 	public Utility utility = new FileUtility(); 
 	
 	/**
+	 * 
 	 * @author NK510 Adds ebr upload properties such as: Folder path where g09, xml and
 	 *          are stored. Folder path where generated ontology is stored.
 	 *         Xslt file path. Xsd file path.
 	 *
-	 *Comment: Works without AgentCaller that is not in the line of JPS architecture. 
+	 *Comment: Works without AgentCaller that is not in the line of JPS architecture.
+	 * 
 	 */
 	
 	@Override
@@ -74,8 +73,9 @@ public class UploadEbrAgent extends HttpServlet{
 		 * 
 		 * Code does not use AgentCaller implemented in JSP BASE LIB.
 		 * Example http request:
-		 * https://localhost:8080/ebragent/convert?query={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09"}
-		 * http://localhost:8080/ebragent/convert?query=%7B"%7B"referenceSpecies"%3A%20"C%3A%5C%5CUsers%5C%5CNK%5C%5CDocuments%5C%5Cphilipp%5C%5C180-pb556%5C%5Cg09"%7D"%7D
+		 * https://localhost:8080/ebragent/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400"}
+		 * https://localhost:8080/ebragent/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400", "uniqueSpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09"}
+		 * http://localhost:8080/ebragent/convert?input=%7B"%7B"referenceSpecies"%3A%20"C%3A%5C%5CUsers%5C%5CNK%5C%5CDocuments%5C%5Cphilipp%5C%5C180-pb556%5C%5Cg09"%7D"%7D
 		 * 
 		 */
 		PrintWriter printerWriter = response.getWriter();
@@ -84,13 +84,25 @@ public class UploadEbrAgent extends HttpServlet{
 		
 		printerWriter.println("json content (input parameter): " + inputs[0] + "<br>");
 		
-		JSONObject jsonObject = new JSONObject(inputs[0]); 
+		String referenceSpecieFolderPath = JsonManager.getReferenceSpeciesFolderPath(inputs[0]);
 		
-		printerWriter.println("species folder path: " + jsonObject.get("referenceSpecies") +"<br>");
+		String speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
 		
-		File[] fileList = utility.getFileList(jsonObject.get("referenceSpecies").toString(), ".g09", ".log", ".g16");
+		printerWriter.println("reference species folder path: " + referenceSpecieFolderPath+ "<br>");
+		printerWriter.println("unique species IRI: " + speciesIRI + "<br>");
 
-		for(File file :fileList) {
+		/**
+		 * 
+		 * @author NK510 (cresssd@hermes.cam.ac.uk)
+		 * 
+		 * Does not parse properly complex json content that contains more than one field.
+		 * 
+		 */
+//		JSONObject jsonObject = new JSONObject(inputs[0]); 
+		
+		File[] fileList = utility.getFileList(referenceSpecieFolderPath,".g09",".log");
+		
+		for(File file : fileList) {
 			
 			boolean consistency = false;
 			
@@ -120,12 +132,17 @@ public class UploadEbrAgent extends HttpServlet{
 				/**
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
 				 * 
-				 * Generates owl file. 
+				 * Generates owl file without unique species IRI. 
 				 */
-				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
-						new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
-						new StreamSource(Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()));
+//				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()));
 				
+				
+				/**
+				 * @author NK510 (caressd@hermes.cam.ac.uk)
+				 * 
+				 * Generates owl file including unique species IRI
+				 */				
+				Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()));
 				
 				consistency = InconsistencyExplanation.getConsistencyOWLFile(owlFile.getCanonicalPath());
 				
@@ -137,7 +154,7 @@ public class UploadEbrAgent extends HttpServlet{
 				 */
 				if(consistency) {
 					
-					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile, Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST.toString(), Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString());
+					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile, Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_CLAUDIUS.toString(), Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString());
 				}
 
 				
