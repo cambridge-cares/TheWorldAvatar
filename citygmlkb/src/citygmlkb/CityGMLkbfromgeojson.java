@@ -39,7 +39,15 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
-
+ /**
+  * 
+  * 
+  * minheight is ground(0m) to base building (both in geojson and citygml are the same)
+  * height is ground(0m) to the highest top of building (now only in geojson)
+  * estimated height in this owl file= relative height of the building only compared to the ground ( don't care about the elevation of ground)
+  * @author KADIT01
+  *
+  */
 
 public class CityGMLkbfromgeojson {
 	static String datacoordinate;
@@ -176,7 +184,8 @@ public class CityGMLkbfromgeojson {
 
 
 			 //String source= "D:/Users/KADIT01/Downloads/GEOJSON_MARINA_BAY.json";
-		String source= "D:/Users/KADIT01/Downloads/sample2.json";
+		//String source= "D:/Users/KADIT01/Downloads/sample2.json";
+		String source= "D:/citygmllearn/hkbuilding/hk_buildings.json";
 			 String kbname= "HongkongDistrict02.owl";
 			 //String kbname= "hkbuildjson.owl";
 //		 String source= "C:/Users/kevin/Downloads/sgbuildupdate/sgbuild.geojson";
@@ -542,8 +551,7 @@ public class CityGMLkbfromgeojson {
 				minheightofbuilding.addProperty(hasvalue, minheightval);
 				minheightval.addProperty(hasunit, m);
 				
-				//String lowerheightnumber = buildingobj.getJSONObject("properties").optString("minHeight", "0");
-				String lowerheightnumber = buildingobj.getJSONObject("properties").optString("levels", "0");
+				String lowerheightnumber = buildingobj.getJSONObject("properties").optString("minHeight", "0");
 				minheightval.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double (lowerheightnumber)));
 				
 				Individual heightofbuilding = lengthclass.createIndividual(prefix+ kbname + "#EstimatedHeight_Building_" + iriidentifier);
@@ -551,11 +559,19 @@ public class CityGMLkbfromgeojson {
 				buildingentity.addProperty(measuredHeight, heightofbuilding);
 				heightofbuilding.addProperty(hasvalue, heightval);
 				heightval.addProperty(hasunit, m);
+				String namevalue = buildingobj.getJSONObject("properties").optString("name", "unknown");
+				buildingentity.setPropertyValue(name,jenaOwlModel.createTypedLiteral(namevalue));
+				
+				Double optionalheight=10.0+Double.valueOf(lowerheightnumber);
 				
 				
-				String height = buildingobj.getJSONObject("properties").optString("height", "40");
-				heightval.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(height)));			
+				String height = buildingobj.getJSONObject("properties").optString("height", String.valueOf(optionalheight));
 				
+				Double estimatedheight=Double.valueOf(height)-Double.valueOf(lowerheightnumber);
+				heightval.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(estimatedheight)));			
+				System.out.println("height= "+height);
+				System.out.println("minheight= "+lowerheightnumber);
+				System.out.println("estimated height= "+estimatedheight);
 				System.out.println("======================================================");
 				System.out.println("1building finished");
 				System.out.println("======================================================");

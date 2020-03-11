@@ -14,7 +14,6 @@
 	<classpathentry kind="lib" path="lib/jena-rdfconnection-3.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/jena-shaded-guava-3.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/jena-tdb-3.7.0.jar"/>
-	<classpathentry kind="lib" path="lib/jena-tdb2-3.7.0.jar"/>
 	<classpathentry kind="lib" path="lib/libthrift-0.10.0.jar"/>
 	<classpathentry kind="lib" path="lib/xerces-2.7.1.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl-2.11.0.jar"/>

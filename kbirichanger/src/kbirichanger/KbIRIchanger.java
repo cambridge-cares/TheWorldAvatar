@@ -14,8 +14,8 @@ public class KbIRIchanger {
 
 	public static void irichanger() throws IOException {
 	
-		//String myDirectoryPath ="D:/JParkSimulator-git-dev-database/kbirichanger/mgdlold";
-		String myDirectoryPath ="D:/KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/sgp/BMS";
+		String myDirectoryPath ="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/sgp/singapore/singaporeelectricalnetwork";
+		//String myDirectoryPath ="D:/KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/sgp/pvsingaporenetwork";
 		//String myDirectoryPath ="D:/plant to be splitted";
 		
 		File dir = new File(myDirectoryPath);
@@ -36,7 +36,7 @@ public class KbIRIchanger {
 		    	Path path = Paths.get(child.getPath());
 		    	//Path path2 = Paths.get("D:/JParkSimulator-git-dev-database/kbirichanger/outcome/"+child.getName());
 		    	//Path path2 = Paths.get("D:/KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/powerplants/"+child.getName());
-		    	Path path2 = Paths.get("D:/tmp/BMS/"+child.getName());
+		    	Path path2 = Paths.get("D:/tmp/"+child.getName());
 		    	//System.out.println("what is path taken= "+child.getPath());
 		    	Charset charset = StandardCharsets.UTF_8;
 		    	String content = new String(Files.readAllBytes(path), charset);
@@ -56,8 +56,9 @@ public class KbIRIchanger {
 			                
 			               //content = content.replaceAll(iri[0], iri[1]);
 			                
-			                content = content.replaceAll("http://www.theworldavatar.com/RAHU", "http://www.theworldavatar.com/BMS/RAHU");
-			                
+			                content = content.replaceAll("http://www.jparksimulator.com/kb/sgp/singaporepowernetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork");
+			                content = content.replaceAll("http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork", "http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork");
+			                content = content.replaceAll("##", "#");
 			                Files.write(path2, content.getBytes(charset));	
 					    	
 			            }

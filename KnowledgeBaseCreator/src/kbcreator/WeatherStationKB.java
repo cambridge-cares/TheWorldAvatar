@@ -152,10 +152,10 @@ public class WeatherStationKB {
 					
 					ShipKbCreator newkb= new ShipKbCreator();
 		
-					//newkb.initOWLClasses(jenaOwlModel);
 					initspecOWLClasses(jenaOwlModel);
             		
             		String nameofstn=nextRecord[0].replace(" ", "_");
+            		nameofstn=nameofstn.replace("'s", "s");
             		String filePath2 = baseURL2+"weatherstations/" +nameofstn+".owl"; // the result of written owl file
             	Individual stn= weatherstationclass.createIndividual(kbmainweatherstationiri+nameofstn+".owl#"+nameofstn);
             	Individual tsensor=Tsensorclass.createIndividual(kbmainweatherstationiri+nameofstn+".owl#"+"TemperatureSensorOf"+nameofstn);
@@ -254,7 +254,6 @@ public class WeatherStationKB {
         			
         			ShipKbCreator newkb2= new ShipKbCreator();
 
-        			//newkb2.initOWLClasses(jenaOwlModel2);
         			initspecOWLClasses(jenaOwlModel2);
             		
             		String nameofstn=nextRecord[0].replace(" ", "_");

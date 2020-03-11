@@ -69,8 +69,7 @@ public class OWLRewrite {
         
         
 		   // TODO Auto-generated method stub
-for (int a=1; a<=219;a++)
-{
+for (int a=1; a<=219;a++){
 	String i=String.format("%03d", a); //function to make 1 become 001 and 54 become 054
 		   //get model from an owl file
 		   String baseURL = "D:\\johnelectricalontology/fromserver/";
