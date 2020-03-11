@@ -77,13 +77,13 @@ public class GenerateXml {
 		 *         </p>
 		 */
 
-		File[] fileList = utility.getFileList("src/test/resources/g09/", ".g09");
+		File[] fileList = utility.getFileList("src/test/resources/g09/", ".log", ".g09");
 
 		for (File gaussianFile : fileList) {
 
 			Module rootModule = new Module();
 
-			String fileName = gaussianFile.getName().replaceAll(".g09", "");
+			String fileName = gaussianFile.getName().replaceAll(".log", "");
 
 			/**
 			 * 

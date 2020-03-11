@@ -81,12 +81,25 @@
 
 	<!-- Folder name that has the same name as folder created where we store 
 		g09, xml and owl files. -->
-	<xsl:param name="xmlFolderName" />
+	<xsl:param name="xmlFolderName"/>
 
 	<xsl:variable name="folder_name">
 		<xsl:value-of select="$xmlFolderName" />
 	</xsl:variable>
 
+    <!-- 
+    Species IRI that is used in EBR web service as input parameter on http request. For example: 
+    https://localhost:8080/ebragent/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400", "speciesIRI": "http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09"}
+    --> 
+	
+	
+    <xsl:param name="speciesIRI"/>
+    
+    <xsl:variable name="species_iri">
+		<xsl:value-of select="$speciesIRI"/>
+	</xsl:variable>
+	
+	
  <xsl:variable name="program_name">
         
         <xsl:for-each select="s:module/s:module/s:module/s:module/s:parameterList/s:parameter/s:scalar">
@@ -182,6 +195,11 @@
 			</xsl:if>
 			
 			<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+			
+			<xsl:if test="($species_iri!='')">
+			<ontocompchem:hasUniqueSpecies rdf:resource="{$speciesIRI}"/>
+			</xsl:if>
+			
 
 			<ontocompchem:hasInitialization rdf:resource="http://www.theworldavatar.com/kb/ontocompchem/{$folder_name}/{$folder_name}.owl#{$vdictRef_no_namespace}_{$vmodule}_has_initilization_module_{$id}"/>
 
@@ -235,6 +253,16 @@
 			</xsl:if>
 
 		</owl:NamedIndividual>
+		
+		<xsl:if test="($species_iri!='')">
+			<owl:NamedIndividual rdf:about="{$speciesIRI}">
+				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
+				<rdf:type rdf:resource="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"/>
+				
+			</owl:NamedIndividual>
+			
+		</xsl:if>
+		
 
 		<xsl:if test="$formula_name='Ar 1 '">
 			<owl:NamedIndividual

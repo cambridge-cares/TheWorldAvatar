@@ -21,11 +21,7 @@ public class GenerateElectronicEnergy {
 		parser.set(file);		
 		parser.parse();
 		CompChem cc = (CompChem) parser.get();
-		IRCompChemWrapper irccw = new IRCompChemWrapper(cc);	
-		
-//		System.out.println(" irccw.getSCFEnergy(): " + irccw.getSCFEnergy());
-//		System.out.println("irccw.getTotalEnergy(): " + irccw.getTotalEnergy()+ " irccw.getSCFEnergy(): " + irccw.getSCFEnergy() + "  irccw.getZPE(): " + irccw.getZPE() + " irccw.getG09ThermalEnergy(): " + irccw.getG09ThermalEnergy());
-//		System.out.println("irccw.getG09ZeroPointEnergy(): " + irccw.getG09ZeroPointEnergy());
+		IRCompChemWrapper irccw = new IRCompChemWrapper(cc);
 		
 		System.out.println("Parameters: ");
 		
@@ -90,22 +86,5 @@ public class GenerateElectronicEnergy {
 		
 		scfEneergyBr.close();
 		
-//		CompChemWrapper ccw = new CompChemWrapper(cc);
-//		List<CMLProperty> prop = ccw.getProperties();		
-//		System.out.println("p.getDictRefAttribute().toXML()");		
-//		for(CMLProperty p : prop) {			
-//		System.out.println(p.getDictRefAttribute().toXML());		
-//		}		
-//		CMLModule cmclModule = ccw.getFinalization();		
-//		List<CMLElement> cmlel = cmclModule.getChildCMLElements();		
-//		for(CMLElement ce: cmlel){			
-//		System.out.println(ce.toXML());		
-//		}		
-//		for(CMLElement c : cmlel){			
-//		List<CMLElement> cmle = c.getChildCMLElements();		
-//		for(CMLElement ce : cmle){			
-//		System.out.println(ce.getValue());		
-//		}		
-//		}
 	}
 }
