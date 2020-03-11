@@ -23,10 +23,23 @@ var FileLinkMap = function (options) {
     var width = $(document).width(),
         height = $(document).height() > 2000 ? $(document).height() : 2000,
         charge = options.charge || -500,
-        distance = options.distance || 50,
+        distance = options.distance || 20,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
     
+    
+    var colorList = [ "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
+        "#FFDBE5", "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
+        "#5A0007", "#809693", "#FEFFE6", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
+        "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
+        "#DDEFFF", "#000035", "#7B4F4B", "#A1C299", "#300018", "#0AA6D8", "#013349", "#00846F",
+        "#372101", "#FFB500", "#C2FFED", "#A079BF", "#CC0744", "#C0B9B2", "#C2FF99", "#001E09",
+        "#00489C", "#6F0062", "#0CBD66", "#EEC3FF", "#456D75", "#B77B68", "#7A87A1", "#788D66",
+        "#885578", "#FAD09F", "#FF8A9A", "#D157A0", "#BEC459", "#456648", "#0086ED", "#886F4C",
+        "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
+        "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
+        "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
+        "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329"];
     var colorList2 = [
         
         
@@ -37,12 +50,6 @@ var FileLinkMap = function (options) {
     var bubbleMap = {};
     bubbleMap.nodesArr = [];
     var maxLevel = 0;
-
-    /**
-    pack connection into node objects
-    @params:
-    links: [{target, source,level},]
-    ***/
     function packNodesArr(links, coords, serviceUrls) {
         var nodes = {};
         var nodesArr = [];
@@ -127,26 +134,25 @@ var FileLinkMap = function (options) {
         // Compute the distinct nodes from the links.
         links.forEach(function (link) {
             
-          //   if (nodes[link.source] != null) {
-           //     nodes[link.source].count = nodes[link.source].count + 1;
-           //     console.log(link.source + "++");
-           // }
-           //  if (nodes[link.target] != null) {
-          //      nodes[link.target].count = nodes[link.target].count + 1;
-             //   console.log("++");
-
-           // }
+            //   if (nodes[link.source] != null) {
+            //     nodes[link.source].count = nodes[link.source].count + 1;
+            //     console.log(link.source + "++");
+            // }
+            //  if (nodes[link.target] != null) {
+            //      nodes[link.target].count = nodes[link.target].count + 1;
+            //   console.log("++");
+            
+            // }
             
             if (link.source) {
                 link.source = nodes[link.source] || (nodes[link.source] = {
                         url: link.source,
-            
                         name: getSimpleName(link.source),
                         domain: getDomain(link.source),
-                        clustersize: link.source in bubbleMap.subconMap ? bubbleMap.subconMap[link.source].connections.length : null,
+                        clustersize: 5,
                         coord: getCoord(link.source),
                         serviceUrl: getServiceUrl(link.source)
-            
+                        
                     });
             }
             
@@ -160,14 +166,15 @@ var FileLinkMap = function (options) {
             if(link.target) {
                 link.target = nodes[link.target] || (nodes[link.target] = {
                         url: link.target,
+                        label:link.label,
                         name: getSimpleName(link.target),
                         domain: getDomain(link.target),
-                        clustersize: link.target in bubbleMap.subconMap ?bubbleMap.subconMap[link.target].connections.length : null,
+                        clustersize: 5,
                         level: thisLevel
                         ,                //add to node attri: geo coordinates
                         coord: getCoord(link.target),
                         serviceUrl: getServiceUrl(link.target)
-            
+                        
                     });
             }
             
@@ -282,40 +289,34 @@ var FileLinkMap = function (options) {
     
     
     
-
-    /***
-    function to draw d3 bubble gragph
-    @params:
-    dnodes node objects
-    dlinks link objects
-    retainSim boolean if retain previous simulation
-    ***/
+    
+    
     bubbleMap.drawBubbles = function (dnodes, dlinks, retainSim) {
         //node bubbles
-    
+        
         if (!retainSim) {
             
-             console.log("not retaining previous sim")
-         
-             simulation = d3.forceSimulation()
-             .force("link", d3.forceLink().strength(setD).id(function (d) {
+            console.log("not retaining previous sim")
+            
+            simulation = d3.forceSimulation()
+                .force("link", d3.forceLink().strength(2).id(function (d) {
                     return d.id;
                 }))
-             .force("charge", d3.forceManyBody().strength(setBodyS))
-             .force("center", d3.forceCenter(width / 2, height / 2))
-             .on("tick", ticked);
-             
+                .force("charge", d3.forceManyBody().strength(setBodyS))
+                .force("center", d3.forceCenter(width / 2, height / 2))
+                .on("tick", ticked);
+            
         }
         let timer = 0;
         let sglclickPrevent = false;
-    
-        let circleUp = circle.data(dnodes)//: FILTERed
-    
-    
+        
+        let circleUp = circle.data(dnodes)//TODO: FILTERed
+        
+        
         console.log(circleUp.exit().select("circle"))
         circleUp.exit().selectAll("circle").remove();//REMOVE CHILDREN
         circleUp.exit().remove();
-    
+        
         newCircle = circle = circleUp.enter().append("a")
             .attr('class', 'cir')
             //.append("a")
@@ -327,7 +328,7 @@ var FileLinkMap = function (options) {
                 d3.event.preventDefault();
                 d3.event.stopPropagation();
                 let d3node = d3.select(this).select('circle');
-            
+                
                 if(bubbleMap.selected && bubbleMap.selected.node()!=d3node.node() || bubbleMap.selected ===null) {//not same one selected
                     d3node.attr("class", "selected")
                     if (bubbleMap.selected)
@@ -336,24 +337,25 @@ var FileLinkMap = function (options) {
                 } else{//same node selected
                     bubbleMap.selected.attr("class","nodes")
                     bubbleMap.selected = null
-                
+                    
                 }
                 console.log(bubbleMap.selected)
-            
+                
                 timer = setTimeout(function () {
                     if (!sglclickPrevent) {
                         clickAction();
                     }
-                
+                    
                     sglclickPrevent = false;
                 }, 200);
-            
+                
+                //todo:set selected
                 function clickAction() {
                     if (d.serviceUrl && d.serviceUrl !== "") {
                         //    console.log(d.serviceUrl);
                         window.open(d.serviceUrl);
                     }
-                
+                    
                     //  console.log(d3.select(this));
                     let d3node = d3.select(this)
                     unHighLightAll();
@@ -369,10 +371,10 @@ var FileLinkMap = function (options) {
                 sglclickPrevent = true;
                 d3.event.stopPropagation()
                 window.open(d.url);
-            
+                
             });
-    
-    
+        
+        
         circle.append("circle")
             .attr("id", function (d) {
                 //   console.log("!!!!!!!!!!!!!!")
@@ -380,8 +382,8 @@ var FileLinkMap = function (options) {
                 return d.name;
             })
             .attr("r", function(d){
-                console.log(d.clustersize)
-                return d.clustersize? (7+Math.log10(d.clustersize+1) * nodeR ): nodeR
+                    console.log(d.clustersize)
+                    return d.clustersize? (7+Math.log10(d.clustersize+1) * nodeR ): nodeR
                 }
             )
             .attr("class", "nodes")
@@ -393,76 +395,76 @@ var FileLinkMap = function (options) {
             })         //highlight all links when mouse over
             .on("mouseout", function (d) {
                 handleMouseOut(d3.select(this), d);
-            
+                
             })
             .call(d3.drag()                         //enable user to drag
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended)
             );
-    
-    
+        
+        
         circle = circle.merge(circleUp)
-    
+        
         circleDraw = circle.select("circle")
-    
+        
         path = path //linking lines
-            .data(dlinks
+            .data(dlinks//todo:filtered
                 //function (d) {
                 //return d.source.domain + d.source.name + d.target.domain + d.target.name;}
             );
-    
+        
         path.exit().remove();
-    
-    
+        
+        
         newPath = path.enter().append("line")
             .attr("class", function (d) {
                 // console.log("@@@@@@@@@@@@draw link : " + d.source.name + '--------' + d.target.name);
                 return "link " + "licensing";
             })
         path = newPath.merge(path);
-    
+        
         //   console.log(newPath)
-    
-    
+        
+        
         text = text //node tags
             .data(dnodes, function (d) {
-                return d.domain + d.name;
+                return ''//d.domain + d.name;//todo:disable for now
             });
         text.exit().remove();
-    
-    
+        
+        
         newText = text.enter().append("text")
             .attr("class", "nodeTag")
             .attr("x", textSize)
             .attr("y", "0.31em")
             .text(function (d) {
-                return d.name;
+                return d.label?d.label:d.name;
             })
         text = newText.merge(text)
-    
-    
+        
+        
         simulation
             .nodes(dnodes)
-    
-    
-        simulation.force("link").links(dlinks)
-    
-    
+        
+        
+        simulation.force("link").links(dlinks)//todo:filtered
+        
+        
         simulation.alphaTarget(0.3).restart();
-    
+        
         var preLengend = svg.selectAll("g.legend").remove();
-    
+        
         var legend = svg.append("g")
             .attr("class", "legend")
             .attr("transform", "translate(50,30)")
             .style("font-size", "12px")
             .call(d3.legend);
-    
-    
+        
+        
         function ticked() {
-        
-        
+            
+            
             path
                 .attr("x1", function (d, i) {
                     if (d === undefined) {
@@ -489,7 +491,7 @@ var FileLinkMap = function (options) {
                     }
                     return d.target.y;
                 });
-        
+            
             circle
                 .attr("x", function (d) {
                     if (d === undefined) {
@@ -503,7 +505,7 @@ var FileLinkMap = function (options) {
                     }
                     return d.y;
                 });
-        
+            
             circleDraw
                 .attr("cx", function (d) {
                     if (d === undefined) {
@@ -518,6 +520,7 @@ var FileLinkMap = function (options) {
                     }
                     return d.y;
                 });
+            
             text
                 .attr("x", function (d) {
                     if (d === undefined) {
@@ -531,82 +534,79 @@ var FileLinkMap = function (options) {
                     }
                     return d.y;
                 });
-        
+            
         }
-    
-    
+        
+        
         function dragstarted(d) {
             if (!d3.event.active) simulation.alphaTarget(0.3).restart();
             console.log("DRag")
             d.fx = d.x;
             d.fy = d.y;
         }
-    
+        
         function dragged(d) {
             d.fx = d3.event.x;
             d.fy = d3.event.y;
-        
-        
+            
+            
         }
-    
+        
         function dragended(d) {
             if (!d3.event.active) simulation.alphaTarget(0);
             d.fx = null;
             d.fy = null;
         }
-    
+        
         function handleMouseOver(nodeCircle, dCircle) {
             //node name : d.name
             gP.selectAll("line")
                 .style("stroke", highlightPath);
             if(nodeCircle.attr("class")!== "selected")
                 nodeCircle.attr("class", "hovered");
-        
+            
             function highlightPath(dLink) {
                 // console.log("source: "+JSON.stringify(dLink.source)+"  target: "+ JSON.stringify(dLink.target) +" node name: "+dCircle.name);
                 if ((dLink.source && dLink.source.name === dCircle.name) || ( dLink.target && dLink.target.name === dCircle.name)) {
                     //     console.log("change color");
-                
-                
+                    
+                    
                     return "#ffff00";
                 }
                 return "#666";
             }
         }
-    
+        
         function handleMouseOut(nodeCircle, dCircle) {
             //node name : d.name
             // console.log("change back");
-        
+            
             gP.selectAll("line").style("stroke", "#666");
             //    nodeCircle.style("stroke-width","4px");
             // nodeCircle.style("stroke","#666");
             if(nodeCircle.attr("class")!== "selected"){
-            
+                
                 nodeCircle.attr("class", "nodes");}
-        
-        
+            
+            
         }
-    
+        
         bubbleMap.defaultOpa();
-    
-    
+        
+        
         svg.call(d3.zoom()
             .scaleExtent([1 / 2, 8])
             .on("zoom", zoomed));
         
     }
     
-
     bubbleMap.showHidden = function (newnodes, newlinks) {
-
+        
         bubbleMap.drawBubbles(bubbleMap.nodesArr.concat(newnodes), bubbleMap.links.concat(newlinks), true)
-     // console.log(filteredNodes.concat(newnodes).length)
+        // console.log(filteredNodes.concat(newnodes).length)
     }
     
-    /***
-    update d3 directed graph with new data
-    ***/
+    //TODO: handling node removal
     bubbleMap.update = function (links, coords, serviceUrls, retainSim) {
         coords = coords || []
         serviceUrls = serviceUrls || []
@@ -650,6 +650,7 @@ var FileLinkMap = function (options) {
         function filterlevel2nodes(nodes, links) {
             let oriLink = Object.assign([], links);
             let oriNodes = Object.assign([], nodes);
+            //todo:filter out nodes level larger than 2, and all links contain these nodes
             for (let node of oriNodes) {
                 if (node.level === undefined || node.level< 2) {
                     filteredNodes.push(node)
@@ -681,7 +682,7 @@ var FileLinkMap = function (options) {
         for (let node of newNodes) {
             if (!includeobj(bubbleMap.nodesArr, node, ['url'])) {
                 bubbleMap.nodesArr.push(node)
-            } 
+            }
         }
         let idx2DelNodes = []
         for (let idx = 0; idx < bubbleMap.nodesArr.length; idx++) {
@@ -695,8 +696,8 @@ var FileLinkMap = function (options) {
         deleteFromArr(bubbleMap.nodesArr, idx2DelNodes)
         console.log(bubbleMap.nodesArr)
         //get nodes to shown
-
-            //filterlevel2nodes(bubbleMap.nodesArr, bubbleMap.links);
+        
+        //filterlevel2nodes(bubbleMap.nodesArr, bubbleMap.links);
         
         
         
@@ -724,44 +725,58 @@ var FileLinkMap = function (options) {
         
         //console.log(bubbleMap.links)
 
+//subscribe change event through sockets
+        //TODO:only difference between this and the updated version
         /*subscribe**********/
-        let subscribeList = bubbleMap.nodesArr.map(function (node) {
-            return {uri: node.url, withData: false};
-        });
-        
-        console.log(subscribeList);
-        socket.emit("join", JSON.stringify(subscribeList));
-        /******************/
-        
+        let subscribeList = bubbleMap.nodesArr;
+        //todo: modify url to bubbleMap.topNode
+        let params = {endpoint:true, url: 'http://theworldavatar.com/rdf4j-server/repositories/ontokin',subscribeList:subscribeList}
+      // TODO:uncomment this for updating
+        // socket.emit("join", JSON.stringify(params));
         
         //set force simulationf
-
         
-       bubbleMap.drawBubbles(bubbleMap.nodesArr, bubbleMap.links, retainSim)
+        bubbleMap.drawBubbles(bubbleMap.nodesArr, bubbleMap.links, retainSim)
         
     }
     
-
+    //update and expand cluster
+    bubbleMap.findLinks2Node = function (url) {
+        
+        /**
+         *         var childNodes = [], childLinks = [];
+         
+         for (let link of bubbleMap.links) {
+                //console.log(link)
+                if (link["source"].url == url) {
+                    childNodes.push(link['target']);
+                    childLinks.push(link)
+                }
+            }
+         return [childNodes, childLinks]
+         
+         **/
+        
+    }
+    
     
     bubbleMap.addnew = function (newlinks) {
         bubbleMap.update(newlinks, [], [], true)
         
     }
     
-    /**
-    zoom handler
-    ***/
     function zoomed() {
         if(bubbleMap.selected){//special case: zoom nodes
-            var url = bubbleMap.selected._groups[0][0].__data__.url
-            console.log("url:" +url)
-            var newlinks = bubbleMap.expandCluster(url)
-            console.log("expand")
-            console.log(newlinks)
-            if(!newlinks){return}
-           map.update(newlinks, null, null, true)
-         
-          // bubbleMap.showHidden(...newlinks)
+            var url = bubbleMap.selected._groups[0][0].__data__.url;
+            var level = bubbleMap.selected._groups[0][0].__data__.level;
+            console.log("url:" +url);
+            console.log("level:" +level)
+            
+            //todo: remv hard code
+            bubbleMap.expandClusterQuery( url, level+1)
+            
+            
+            // bubbleMap.showHidden(...newlinks)
             return
         }
         
@@ -770,7 +785,7 @@ var FileLinkMap = function (options) {
         
     }
     
-    //add coordinates to nodes data
+    //TODO: add coordinates to nodes data
     bubbleMap.updateByCoord = function updateByCoord(center, radius) {
         
         var resultArr = [];
@@ -795,6 +810,7 @@ var FileLinkMap = function (options) {
         });
         
         
+        //TODO: deal with path
         
         // deal with label
         gT.selectAll("text.nodeTag").attr("visibility", function (d) {
@@ -842,27 +858,22 @@ var FileLinkMap = function (options) {
         })
     };
     
-
+    
     
     bubbleMap.loadData = function (url) {
         $.ajax({ //ajax to get links again
             url: url + '/links',
             type: 'GET',
-        
+            
             statusCode: {
                 200: function (data) {
-                    console.log(data)
-                    console.log(typeof(data.connections))
-                    bubbleMap.initLinks = deepcopyObjArr(data.connections);
-                    //console.log(data.connections)
-                    //console.log(data.subconnections)
-    
-                    
-                    bubbleMap.subconMap = data.subconnections;
-                    let topurl =data.connections[0].source
-                    bubbleMap.subconMap[topurl] = {connections:data.connections}
+                    console.log(data);
+                    bubbleMap.topnode =data[0].source;
+                    bubbleMap.initLinks = data;
                     bubbleMap.update(
-                        [{source: data.connections[0].source, target:null}] , [], [], false, true);
+                        [{source:bubbleMap.topnode, target: null, level:0}] , [], [], false, true);
+                    
+                    
                 }
             },
             error: function (err) {
@@ -871,60 +882,145 @@ var FileLinkMap = function (options) {
         });
     }
     
-    /***
-    expand a clustered node
-    @params:
-    url: url of the clustered nodes
-    ***/
-        bubbleMap.expandCluster = function (url) {
-            if(!bubbleMap.subconMap[url]) return null;
-       // console.log(bubbleMap.subconMap[url].connections)
-        //console.log(bubbleMap.initLinks)
-		            bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+    bubbleMap.expandClusterSave= function () {
+        map.update(bubbleMap.initLinks, null, null, true)
+        bubbleMap.highlightNode(null, 'hydrogen-mechanism.owl#ReactionMechanism_163886748964501');
+        
+    }
+    bubbleMap.expandClusterQuery = function ( extrairi, level) {
+        //query to single
+        if(extrairi === bubbleMap.topnode){
+            bubbleMap.expandClusterSave()
+            return
+        }
+        let loc =bubbleMap.topnode
+        let customQ =
+            `
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
+PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
+PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+SELECT distinct  ?uri ?label
+WHERE {
 
+		{    ?phase ontochem:containedIn @placeholder .
+	?uri ontochem:belongsToPhase ?phase .
+	?uri ontochem:hasEquation ?label .}
+	UNION{
+		
+    @placeholder ontochem:hasReactantSpecification ?reactantSpec .
+	 ?reactantSpec ontochem:hasReactant  ?uri .
+	  ?uri rdfs:label ?label .
 
-        return bubbleMap.initLinks;
-    
+	}
+	UNION{
+		 
+     @placeholder ontochem:hasProductSpecification ?productSpec .
+	 ?productSpec ontochem:hasProduct   ?uri.
+	 ?uri rdfs:label ?label .
+	}
+	
+	UNION{
+    ?phase ontokin:containedIn @placeholder .
+    ?uri ontokin:belongsToPhase ?phase .
+    ?uri rdf:type reaction_mechanism:ChemicalReaction .
+	}
+	
+	UNION{
+	    @placeholder rdf:type reaction_mechanism:ChemicalReaction .
+    @placeholder reaction_mechanism:hasProduct ?product .
+    ?product owl:sameAs ?uri .
+     ?uri rdfs:label ?label .
+	}
+	UNION{
+    @placeholder rdf:type reaction_mechanism:ChemicalReaction .
+    @placeholder reaction_mechanism:hasReactant ?reactant .
+    ?reactant owl:sameAs  ?uri .
+     ?uri rdfs:label ?label .
+	}
+	UNION
+	{
+
+		@placeholder ontokin:hasThermoModel ?thermoModel.
+    ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
+	}
+		UNION
+	{
+	    ?species owl:sameAs  @placeholder .
+		?species ontokin:hasThermoModel ?thermoModel.
+		    ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
+
+	}
+	
+} LIMIT 200
+`
+        ;
+        //?phase ontokin:containedIn @placeholder .
+        //?species ontokin:belongsToPhase ?phase.
+        let query = customQ.replace(/@placeholder/g, "<"+extrairi+">");
+        console.log(query)
+        
+        $.ajax({
+            url: location + '/linksingle',
+            type: 'POST',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data:JSON.stringify({iri:loc, query:query}),
+            statusCode: {
+                200: function (data) {
+                    console.log('expand data')
+                    data.forEach((con)=>{con['source'] = extrairi})
+                    console.log(data)
+                    data.forEach((item)=>{item['level'] = level})
+                    
+                    bubbleMap.initLinks = bubbleMap.initLinks.concat(data)
+                    map.update(bubbleMap.initLinks, null, null, true)                    //print expand
+                }
+            },
+            error: function (err) {
+                console.log(err);
+                
+            }
+        });
     };
-
-/**
-expand all clustered nodes
-***/
+    
     bubbleMap.expandAll = function(){
-            for(let url in bubbleMap.subconMap )     {
-          bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
-            }   
-    return bubbleMap.initLinks;
+        for(let url in bubbleMap.subconMap )     {
+            bubbleMap.initLinks =  bubbleMap.initLinks.concat(bubbleMap.subconMap[url].connections)
+        }
+        return bubbleMap.initLinks;
     }
     //this is not used, but kept for reference purpose
     bubbleMap.noClusterExpand= function(){
-       // bubbleMap.update(bubbleMap.initLinks, [], [], true);
-    
+        // bubbleMap.update(bubbleMap.initLinks, [], [], true);
+        
     }
-
+    
     return bubbleMap;
     
 };
 
 function deepcopyObjArr(arr) {
-return JSON.parse(JSON.stringify(arr));
+    return JSON.parse(JSON.stringify(arr));
 }
 
 function combineArrMap(obja, objb){
-
+    
     let copya = Object.assign({}, obja);
     for (let attr in objb){
         if(attr && (objb[attr].connections instanceof Array)) {
-        if(attr in copya){
-            if(attr && copya[attr].connections instanceof Array  ) {
-                let union = new Set(copya[attr].connections.concat(objb[attr].connections));
-                copya[attr].connections = [...union];
+            if(attr in copya){
+                if(attr && copya[attr].connections instanceof Array  ) {
+                    let union = new Set(copya[attr].connections.concat(objb[attr].connections));
+                    copya[attr].connections = [...union];
+                }
+            } else {
+                copya[attr] = {connections:[]};
+                objb[attr].connections.forEach((item)=>{copya[attr].connections.push(item)})
             }
-        } else {
-            copya[attr] = {connections:[]};
-           objb[attr].connections.forEach((item)=>{copya[attr].connections.push(item)})
         }
-    }
     }
     return copya
 }
@@ -971,15 +1067,16 @@ $(window).load(function () {// when web dom ready
         if ($('#checkShowImport').prop('checked')) {
             disableThenEnableAfterTimeout();
             
+            //TODO:ajax, only change data, but with d3...how? should use angular instead?
             $.ajax({
                 url: url + '/includeImport',
                 type: 'GET',
                 
                 statusCode: {
                     200: function (data) {
-                        let links = data.connections;
-                        let coords = data.geoCoords;
-                        console.log('ajax successful!\n');
+                        let links = data;
+                        //let coords = data.geoCoords;
+                        //console.log('ajax successful!\n');
                         
                         
                         console.log(JSON.stringify(links));
@@ -992,12 +1089,10 @@ $(window).load(function () {// when web dom ready
                                 }
                                 
                             }
-                            map.update(links, coords, [],true);
-                            //concate subconnection
-                                                        console.log(data.subconnections)
-                           map.subconMap = combineArrMap(map.subconMap,data.subconnections);
-                        console.log(map.subconMap);               
-                        map.expandAll()             
+                            
+                            map.update(map.initLinks.concat(links), [], [],true);
+                            
+                            // map.expandAll()
                         }
                         
                     }
@@ -1154,7 +1249,7 @@ $(window).load(function () {// when web dom ready
     updateSelectBar();
     
     
-
+    
     
     //when choose from select, update coord to x,y input
     $('#device-select').on('change', function () {
@@ -1178,6 +1273,7 @@ $(window).load(function () {// when web dom ready
             displayMsg("Input parameters are not number", "danger");
             return;
         }
+        //Todo: or not to do. x,y,radius must be numbers .range checking also? min radius : 0.0000001
         /**
          //truncate radius to 7 digits, show warning
          if(decimalPlaces(x) > 7){
@@ -1309,6 +1405,7 @@ $(window).load(function () {// when web dom ready
     let blinkTimerList = {};
     let preTime = Date.now();
     let rerequestTimer, allowRe = true;
+    //todo: discerning update with node addition!
     socket.on('update', function (data) {
         console.log("Socket event!!!!!!!!!!!")
         console.log(data)
@@ -1355,7 +1452,7 @@ $(window).load(function () {// when web dom ready
         let url = window.location.href;     // Returns full URL
         
         console.log(data)
-        if (allowRe && data.filename == "NuclearPlants\.owl") { //
+        if (allowRe && data.filename == "NuclearPlants\.owl") { // todo: add type to change event: add and file update are different types of change
             console.log("request links again")
             $.ajax({ //ajax to get links again
                 url: url + '/links',
@@ -1388,6 +1485,11 @@ $(window).load(function () {// when web dom ready
         
         // }
     });
+    socket.on('new', function (newlinks) {
+        console.log(newlinks.length)
+        bubbleMap.addnew(newlinks)
+        
+    })
     /*END socket **********************************************************/
     
 });
@@ -1410,6 +1512,7 @@ function initMap() {
 
 
 let deviceMap = (function initDeviceMap() {
+    //TODO: add this to backend
     let deviceMap = new Map();
     $.getJSON("JSON/prototypeDevices.json", function (data) {
         for (let device of Object.keys(data)) {
@@ -1491,7 +1594,7 @@ function hightLightResult(name, d3node) {
             row.addClass("selected");
         }
         console.log("!!!!!!!!!!!!!now hightlight " + name);
-        //:hightlight bubble
+        //TODO:hightlight bubble
         
         map.highlightNode(d3node, name);
     }
