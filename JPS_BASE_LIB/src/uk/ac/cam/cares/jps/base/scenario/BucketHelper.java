@@ -15,7 +15,15 @@ public class BucketHelper {
 	private static final String SLASH_DATA = "/" + JPSConstants.SCENARIO_SUBDIR_DATA + "/";
 	
 	public static String getScenarioUrl(String scenarioName) {
-		return KeyValueManager.getServerAddress() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
+		String url = KeyValueManager.getServerAddress() + ScenarioHelper.SCENARIO_COMP_URL + "/" + scenarioName;
+		
+//		System.out.println("THE SCENARIO NAME= "+scenarioName);
+//		if (!scenarioName.contentEquals("base")) {
+//			String usecaseUrl = getUsecaseUrl(url);
+//			url = url  + '_' + usecaseUrl.replace(url + SLASH_KB, "");
+//		}
+		
+		return url;
 	}
 
 	public static String getScenarioUrl() {
@@ -44,6 +52,7 @@ public class BucketHelper {
 	public static String getUsecaseUrl() {
 
 		String usecaseUrl = JPSContext.getUsecaseUrl();	
+		System.out.println("WHAT IS USECASEUrl here? "+usecaseUrl);
 		if (usecaseUrl == null) {
 			usecaseUrl = getUsecaseUrl(getScenarioUrl());
 			JPSContext.putUsecaseUrl(usecaseUrl);
@@ -53,7 +62,14 @@ public class BucketHelper {
 	}
 	
 	public static String getUsecaseUrl(String scenarioUrl) {
-		return scenarioUrl + SLASH_KB + UUID.randomUUID().toString();
+		String usecaseUrl;
+		String usecaseID = UUID.randomUUID().toString();
+
+			usecaseUrl = scenarioUrl + SLASH_KB + usecaseID;
+
+		
+		return usecaseUrl;
+		
 	}
 	
 	public static String getUsecaseUrlForData() {
@@ -125,8 +141,12 @@ public class BucketHelper {
 		if (scenarioUrl == null) {
 			scenarioUrl = getScenarioUrl(JPSConstants.SCENARIO_NAME_BASE);
 		}
+		System.out.println("THIS IS SCENARIO URL2= "+scenarioUrl);
+		
 		String scenarioName = getScenarioName(scenarioUrl);
+		System.out.println("THIS IS SCENARIO NAME2= "+scenarioName);
 		String scenarioBucket = ScenarioHelper.getScenarioBucket(scenarioName);
+		System.out.println("THIS IS SCENARIO BUCKET2= "+scenarioBucket);
 		
 		// this method is idempotent
 		if (url.startsWith(scenarioBucket)) {
@@ -137,16 +157,20 @@ public class BucketHelper {
 		if (path.startsWith(ScenarioHelper.SCENARIO_COMP_URL)) {
 			// insert the host name between scenario name and /data/ or /kb/
 			String relativePath = path.substring(ScenarioHelper.SCENARIO_COMP_URL.length());
+			System.out.println("THIS IS RELATIVE PATH**1= "+relativePath);
 			int i = relativePath.indexOf(SLASH_DATA);
 			if (i>0) {
 				relativePath = relativePath.replace(SLASH_DATA, mapped + SLASH_DATA);
+				System.out.println("THIS IS RELATIVE PATH**2= "+relativePath);
 			} else {
 				i = relativePath.indexOf(SLASH_KB);
 				if (i>0) {
 					relativePath = relativePath.replace(SLASH_KB, mapped + SLASH_KB);
+					System.out.println("THIS IS RELATIVE PATH**3= "+relativePath);
 				} 
+				System.out.println("THIS IS RELATIVE PATH**4= "+relativePath);
 			}
-			
+			System.out.println("THIS IS RELATIVE PATH2= "+relativePath);
 			return ScenarioHelper.getScenarioWorkingDir() + relativePath;
 		}
 		
@@ -156,6 +180,7 @@ public class BucketHelper {
 			if ((url.contains(SLASH_KB) || url.contains(SLASH_DATA))) {
 				
 				// OWL files for the base scenario are stored in Tomcat's root directory
+				System.out.println("CALLING RESOURCE PATH CONVERTER "+url);
 				return ResourcePathConverter.convertToLocalPath(url);
 			} 
 			// else:
@@ -167,7 +192,7 @@ public class BucketHelper {
 		if (relativePath.startsWith("/" + JPSConstants.KNOWLEDGE_BASE_JPS + "/")) {
 			relativePath = relativePath.substring(4);
 		}
-
+		System.out.println("FINAL RESPONSE PATH = "+scenarioBucket + mapped + relativePath);
 		return scenarioBucket + mapped + relativePath;
 	}
 	

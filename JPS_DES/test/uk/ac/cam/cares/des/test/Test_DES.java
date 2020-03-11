@@ -2,64 +2,92 @@ package uk.ac.cam.cares.des.test;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.json.JSONArray;
 import org.json.JSONObject;
+import org.web3j.crypto.Credentials;
+import org.web3j.crypto.WalletUtils;
+import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.DefaultBlockParameterName;
+import org.web3j.protocol.core.methods.response.EthGetBalance;
+import org.web3j.protocol.core.methods.response.TransactionReceipt;
+import org.web3j.protocol.core.methods.response.Web3ClientVersion;
+import org.web3j.protocol.http.HttpService;
+import org.web3j.tx.Transfer;
+import org.web3j.utils.Convert;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
-import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
+import uk.ac.cam.cares.jps.des.BlockchainWrapper;
 import uk.ac.cam.cares.jps.des.DistributedEnergySystem;
+import uk.ac.cam.cares.jps.des.FrontEndCoordination;
 import uk.ac.cam.cares.jps.des.WeatherIrradiationRetriever;
-
 
 public class Test_DES extends TestCase{
 	
-	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalnetwork.owl#SingaporeElectricalnetwork";
+	private String ENIRI="http://www.theworldavatar.com/kb/sgp/singapore/singaporeelectricalnetwork/SingaporeElectricalNetwork.owl#SingaporeElectricalNetwork";
 	private String DISIRI="http://www.theworldavatar.com/kb/sgp/singapore/District-001.owl#District-001";
 	
-	public void testrunpython() throws IOException {
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-	}
-	
-	public void testrunpython2() throws IOException {
-//		DistributedEnergySystem a = new DistributedEnergySystem();
-//		String dataPath = QueryBroker.getLocalDataPath();
-//		String baseUrl = dataPath + "/JPS_DES";
-//		a.runOptimization(baseUrl);
-		Runtime rt = Runtime.getRuntime();
-		int returnValue = -1;
-		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-		Process pr = rt.exec("python D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python\\ocrv1.py", null, new File("D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\python"));
-		try {
-			pr.waitFor();
-			returnValue = pr.exitValue();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-			System.out.println(e);
-		}
-			System.out.println(returnValue);
-		}
+	/*
+	 * Periodic call to run the (Forecast+DESpython wrapper)
+	 * Every four hours, so six calls in a day this would be called
+	 * 
+	 */
 
-	public void testStartDESScenariobase() throws IOException  {
+	public void testStartCoordinationDESScenariobase() throws IOException  {
+		
+
+		JSONObject jo = new JSONObject();
+	
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
+		jo.put("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+    	jo.put("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+    	jo.put("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESCoordination", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+
+	}
+
+	public void testStartDESAgent() throws IOException  {
+		
+
+		JSONObject jo = new JSONObject();
+	
+		jo.put("electricalnetwork", ENIRI);
+		jo.put("district", DISIRI);
+		jo.put("temperaturesensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+    	jo.put("irradiationsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+    	jo.put("windspeedsensor","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		
+		System.out.println(jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+		System.out.println(resultStart);
+		System.out.println("finished execute");
+
+	}
+	/*
+	 * Calls upon the FrontEnd Coordination agent that would call the latest DES run (Forecast+DESpython wrapper)
+	 * And afterwards blockchain wrapper
+	 */
+	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
 		
 
 		JSONObject jo = new JSONObject();
@@ -68,82 +96,45 @@ public class Test_DES extends TestCase{
 		jo.put("district", DISIRI);
 		
 		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
 		System.out.println(resultStart);
 		System.out.println("finished execute");
 
 	}
-	public void testStartDESScenariotemp() throws IOException  {
-
-		DistributedEnergySystem a = new DistributedEnergySystem();
-        String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\8f039efb-f0a1-423a-afc8-d8a32021e8e7\\JPS_DES"; //successful result
-		String iriofnetwork = ENIRI;
-		String iriofdistrict = DISIRI;
-		OntModel model = readModelGreedy(iriofnetwork);
-		
-		a.extractResidentialData(iriofdistrict, baseUrl); //csv for residential
-		String weatherdir=baseUrl+"/Weather.csv";
-		String content = new QueryBroker().readFileLocal(weatherdir);
-		List<String[]> weatherResult = MatrixConverter.fromCsvToArray(content);
-		
-		String powerdir=baseUrl+"/totgen.csv";
-		String content2 = new QueryBroker().readFileLocal(powerdir);
-		List<String[]> simulationResult = MatrixConverter.fromCsvToArray(content2);
-		
-		String rhdir=baseUrl+"/rh1.csv";
-		String content3 = new QueryBroker().readFileLocal(rhdir);
-		List<String[]> rhResult = MatrixConverter.fromCsvToArray(content3);
-
-		JSONArray temperature=new JSONArray();
-		JSONArray irradiation=new JSONArray();
-		JSONObject dataresult= new JSONObject();
-
-		
-		//25-48 (last 24)
-		int sizeofweather=weatherResult.size();
-		for (int x=sizeofweather-24;x<sizeofweather;x++) {
-			temperature.put(weatherResult.get(x)[4]);
-			irradiation.put(weatherResult.get(x)[8]);
-		}
-		//log to check if it's reading the right one. x
-		
-		dataresult.put("temperature", temperature);
-		dataresult.put("irradiation", irradiation);
-		dataresult.put("fuelcell", simulationResult.get(3));
-		dataresult.put("residential", simulationResult.get(0));
-		dataresult.put("industrial", simulationResult.get(2));
-		dataresult.put("building", simulationResult.get(1));
-		dataresult.put("rh1",rhResult.subList(0, 3).toArray());
-		dataresult.put("rh2",rhResult.subList(3, 6).toArray());
-		dataresult.put("rh3",rhResult.subList(6, rhResult.size()).toArray());
-		
-		System.out.println("result: "+dataresult.toString());
-	}
-	public void xxnotneededxxtestStartDESScenario() throws IOException  {
-		
-
+	/*
+	 * Calls and runs the Blockchain transaction with test values
+	 */
+	public void testBlockchainWrapperDirectCall() throws IOException{
 		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testDES");
-		JPSContext.putScenarioUrl(jo, scenarioUrl);
-		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
-		JPSContext.putUsecaseUrl(jo, usecaseUrl);
-		JPSHttpServlet.enableScenario(scenarioUrl,usecaseUrl);
-		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/DESAgent", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+		System.out.println(new BlockchainWrapper().calculateTrade(jo));
+	}
+	/*
+	 * Calls and runs the Blockchain transaction with test values (thru TOMCAT)
+	 */
+	public void testBlockchainWrapperAgentCall() throws IOException{
+		JSONObject jo = new JSONObject();
+		jo.put("industrial", "2.311116263469459966e+01");
+		jo.put("commercial", "5.000000000000000000e+01");
+		jo.put("residential","8.826121920185781278e+00");
+		jo.put("gridsupply","4.409266691007480290e+01");
+		jo.put("solar","3.784461764480557235e+01");
+	    System.out.println(jo.toString());
+		String v = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetBlock", jo.toString());
+		System.out.println(v);
 	}
 	
-	public void testIrradiationRetreiver() throws Exception {
-		String dataPath = QueryBroker.getLocalDataPath();
-		String baseUrl = dataPath + "/JPS_DES";
+
+	/*
+	 * Calls and runs the hourly weather retriever, that uses OCR
+	 */
+	public void testIrradiationRetreiverDirectCall() throws Exception {
+//		String dataPath = QueryBroker.getLocalDataPath();
+		String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\cbf06a1c-5046-4708-a5d6-aaa696856e54\\JPS_DES";
 		
 		JSONObject jo = new JSONObject();
 		
@@ -155,32 +146,101 @@ public class Test_DES extends TestCase{
 		WeatherIrradiationRetriever a= new WeatherIrradiationRetriever();
 
 		a.readWritedatatoOWL(baseUrl,"http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001","http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
-//		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
 	}
-	
-	public void testcsvmanipulation () {
-		String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
-				+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+	/*
+	 * Calls and runs the hourly weather retriever, that uses OCR (thru TOMCAT)
+	 */
+	public void testIrradiationRetreiverAgentCall() throws Exception {
+		JSONObject jo = new JSONObject();
 		
-		String iriirradiationsensor="http://localhost:8080/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001";
-		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorinfo2);
+		jo.put("folder", QueryBroker.getLocalDataPath()+"/JPS_DES");
+		jo.put("tempsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureSensor-001.owl#SGTemperatureSensor-001");
+		jo.put("speedsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedSensor-001.owl#SGWindSpeedSensor-001");
+		jo.put("irradiationsensor", "http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationSensor-001.owl#SGSolarIrradiationSensor-001");
+		jo.put("jpscontext", "base");
+
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/GetIrradiationandWeatherData", jo.toString());
+		System.out.println(resultStart);
+	}
+
+	/*
+	 * Tests the retrieval of data from one sensor. 
+	 */
+	public void testcsvmanipulation () {
+		 String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+					+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" +"ORDER BY ASC(?proptimeval)";
+		
+		String iriirradiationsensor="http://localhost:8080/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorinfo);
 		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
 		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 		System.out.println("sizeofresult="+resultListfromqueryirr.size());
 		System.out.println("element= "+resultListfromqueryirr.get(0)[2]);
-		String content=resultListfromqueryirr.get(48)[2];
+		String content=resultListfromqueryirr.get(23)[2];
 		System.out.println("content="+content);
 		System.out.println("year= "+content.split("-")[0]);
 		System.out.println("month= "+content.split("-")[1]);
 		System.out.println("date= "+content.split("-")[2].split("T")[0]);
 		System.out.println("time= "+content.split("-")[2].split("T")[1].split("\\+")[0]);
 	}
+	/** test retrieval from a forecast
+	 * 
+	 * @param iriofnetwork
+	 * @return
+	 */
+	public void testcsvmanipulation2 () {
+		String irioftempF= "http://www.theworldavatar.com/kb/sgp/singapore/SGTemperatureForecast-001.owl#SGTemperatureForecast-001";
+	        String iriofirrF="http://www.theworldavatar.com/kb/sgp/singapore/SGSolarIrradiationForecast-001.owl#SGSolarIrradiationForecast-001";
+	        String iriofwindF="http://www.theworldavatar.com/kb/sgp/singapore/SGWindSpeedForecast-001.owl#SGWindSpeedForecast-001";
+
+	        String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+				+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" ;
+
 	
+		String sensorinfo2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+				+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" ;
+
+	
+		String sensorinfo3 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
+				+ "WHERE { ?entity a j5:F-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}";
+
+		
+		//grab forecast results
+		String result = new QueryBroker().queryFile(irioftempF, sensorinfo+ "ORDER BY ASC(?proptimeval)");
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultListfromquerytemp = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		System.out.println("Temperature " + resultListfromquerytemp.toString());
+		String result2 = new QueryBroker().queryFile(iriofirrF, sensorinfo2+ "ORDER BY ASC(?proptimeval)");
+		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+		List<String[]> resultListfromqueryirr = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+		System.out.println("Irradiation " + resultListfromqueryirr.toString());
+		String result3 = new QueryBroker().queryFile(iriofwindF, sensorinfo3 + "ORDER BY ASC(?proptimeval)");
+		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
+		List<String[]> resultListfromqueryspeed = JenaResultSetFormatter.convertToListofStringArrays(result3, keys3);
+		System.out.println("Speed " +resultListfromqueryspeed);
+		ArrayList<String[]> readingFromCSV = new ArrayList<String[]>();
+		
+	}
 	public static OntModel readModelGreedy(String iriofnetwork) {
 		String electricalnodeInfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -336,7 +396,19 @@ public class Test_DES extends TestCase{
 		List<String[]> csvofschedule= new ArrayList<String[]>();
 		List<String>header=new ArrayList<String>();
 		header.add("");
+		String[] timeschedu = {"t1","t2", "t3", "t4", "t5","t6","t7", "t8", "t9", "t10","t11","t12", "t13", "t14", "t15","t16","t17", "t18", "t19", "t20","t21","t22", "t23", "t24"};
+		//grab the current time
+		List<String> lst = Arrays.asList(timeschedu);
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		int h = calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
+		//rotate it according to the current hour to get the appropriate profile
+		Collections.rotate(lst, h);
+		header.add("");
 		for(int x=1;x<=sizeofiriuser;x++) {
+			List<String[]> subList =  new ArrayList<String[]>();
 			OntModel model2 = readModelGreedyForUser(iriofgroupuser.get(x-1));
 			ResultSet resultSetx = JenaHelper.query(model2, equipmentinfo);
 			String resultx = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetx);
@@ -354,7 +426,7 @@ public class Test_DES extends TestCase{
 			groupschedule.add(iriofgroupuser.get(x-1));
 			//Set to ensure no repeats
 			int countr = 1; 
-			groupschedule.add("t1");
+			groupschedule.add(lst.get(0));
 			for(int d=0;d<resultListx.size();d++) {
 					if(resultListx.get(d)[5].contentEquals("1")) {
 						//System.out.println("equipment= "+resultListx.get(d)[0]);
@@ -372,13 +444,14 @@ public class Test_DES extends TestCase{
 					} else {
 						groupschedule.add(resultListx.get(d)[4]);
 						String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-						csvofschedule.add(arr4);
+						subList.add(arr4);
 						//clear groupschedule
 						groupschedule=new ArrayList<String>();
 						countr = 1;
 						if (Integer.parseInt(resultListx.get(d)[5]) < 24) {
 							groupschedule.add(iriofgroupuser.get(x-1));
-							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+//							groupschedule.add("t"+Integer.toString(Integer.parseInt(resultListx.get(d)[5])+1));
+							groupschedule.add(lst.get(Integer.parseInt(resultListx.get(d)[5])));
 						}
 					}				
 			}
@@ -390,8 +463,11 @@ public class Test_DES extends TestCase{
 			csvofpmin.add(arr2);
 			String[] arr3 = groupw.toArray(new String[groupw.size()]);
 			csvofw.add(arr3);
+			System.out.println(groupschedule.toArray().toString());
 			String[] arr4 = groupschedule.toArray(new String[groupschedule.size()]);
-			csvofschedule.add(arr4);
+			subList.add(arr4);
+			Collections.rotate(subList, -h);
+			csvofschedule.addAll(subList);
 
 		}
 		String[] arr0 = header.toArray(new String[header.size()]);		
@@ -408,12 +484,14 @@ public class Test_DES extends TestCase{
 		String wcsv = MatrixConverter.fromArraytoCsv(csvofw);
 		System.out.println(wcsv);
 		
-		//csvofschedule.add(0, arr0);
+		csvofschedule.add(0, arr0);
 		String schedulecsv = MatrixConverter.fromArraytoCsv(csvofschedule);
 		System.out.println(schedulecsv);
 		
 	}
-	
+	/*
+	 * tests the call of electrical network
+	 */
 	public void testquerygen() {
 		OntModel model = readModelGreedy(ENIRI);
 		List<String[]> producer = new DistributedEnergySystem().provideGenlist(model); // instance iri
@@ -421,31 +499,41 @@ public class Test_DES extends TestCase{
 	}
 	
 	public void testCreateJSON() {
-		String baseUrl="D:\\JPS-git\\JParkSimulator-git\\JPS_DES\\workingdir";
+		String baseUrl="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\3d64a110-ce59-4f9b-97a6-e2a80eb3c7f7\\JPS_DES";
 		JSONObject d= new DistributedEnergySystem().provideJSONResult(baseUrl);
 		System.out.println(d.toString());
 	}
-	
+	/*
+	 * Finds the latest directory, as part of the coordinate agent. 
+	 */
 	public void testfindlatestdirectory() {
 		 String dir="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data";
 		 File baseUrl=new File(dir);
-		 System.out.println("date latest directory= "+ new DistributedEnergySystem().getLastModifiedDirectory(baseUrl));
+		System.out.println("date latest directory= "+ new FrontEndCoordination().getLastModifiedDirectory());
+	}
+	public static void testBlockchainInteraction() throws IOException {
+		Web3j web3 = Web3j.build(new HttpService("https://rinkeby.infura.io/v3/1f23f6038dde496ea158547e3ba1e76b"));
+		Web3ClientVersion web3ClientVersion = web3.web3ClientVersion().send();
+		String clientVersion = web3ClientVersion.getWeb3ClientVersion();
+		System.out.println("Connected to Ethereum Client Version: " + clientVersion);
+		try {
+			//Get balance
+			EthGetBalance ethGetBalance=web3.ethGetBalance("0x1eD35d5845F8162B40df26c34562cFabd4892017", DefaultBlockParameterName.LATEST).sendAsync().get();
+			java.math.BigInteger wei = ethGetBalance.getBalance();
+			System.out.println(wei);
+			Credentials credentials = WalletUtils.loadCredentials("Caesar1!", "C:\\Users\\LONG01\\TOMCAT\\webapps\\JPS_DES##1.0.0\\resources\\residential.json");
+			TransactionReceipt transactionReceipt = Transfer.sendFunds(
+			        web3, credentials, "0x9e64A50EfA603BCD127001b689635fca4669ba9d",
+			        BigDecimal.valueOf(1.0), Convert.Unit.ETHER).send();
+			System.out.println(transactionReceipt);
+//			String pk = "04dab771c776d8345c8877a70f26c03a3bd7927abbc65ceff14e74ee23ab0fe8"; //private key of industrial
+//		   Credentials credentials = Credentials.create(pk);
+		}catch (Exception ex) {
+			System.out.println(ex);
+		}
+	
 	}
 	
-	public void testStartDESScenariobaseshowingresult() throws IOException  { //must have at least 1 directory with complete running first to make it success
-		
-
-		JSONObject jo = new JSONObject();
-	
-		jo.put("electricalnetwork", ENIRI);
-		jo.put("district", DISIRI);
-		
-		System.out.println(jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DES/showDESResult", jo.toString());
-		System.out.println(resultStart);
-		System.out.println("finished execute");
-
-	}
 	
 
 	

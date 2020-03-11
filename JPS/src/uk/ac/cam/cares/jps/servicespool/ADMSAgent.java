@@ -1,18 +1,15 @@
 package uk.ac.cam.cares.jps.servicespool;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
@@ -41,21 +38,11 @@ public class ADMSAgent extends JPSHttpServlet {
     private static final String DATA_KEY_MMSI = "mmsi";
     private static final String FILENAME_ADMS_PROCESSOR = "adms_processor.py";
 
-    private void setLogger() {
+    @Override
+    protected void setLogger() {
         logger = LoggerFactory.getLogger(ADMSAgent.class);
     }
-
-    @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-    	setLogger();
-        super.doHttpJPS(request, response);
-    }
-    
-    @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-    	setLogger();
-        super.doHttpJPS(request, response, reqBody);
-    }
+    Logger logger = LoggerFactory.getLogger(ADMSAgent.class);
 
     @Override
     protected JSONObject processRequestParameters(JSONObject requestParams) {

@@ -107,11 +107,14 @@ public class KnowledgeBaseClient {
 		Object[] a = createRequestUrl(datasetUrl, targetUrl, sparqlAbility);
 		
 		if (a != null) {
+			System.out.println("a IS NOT NULL!!!");
 			String requestUrl = (String) a[0];
 			JSONObject joparams = (JSONObject) a[1];
 			if (joparams == null) {
 				joparams = new JSONObject();
 			}
+			System.out.println("joparams="+joparams.toString());
+			System.out.println("REQUESTURL="+requestUrl);
 			joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sparqlQuery);
 			return Http.execute(Http.get(requestUrl, null, joparams));
 		} 

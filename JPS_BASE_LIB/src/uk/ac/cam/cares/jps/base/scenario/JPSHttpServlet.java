@@ -12,6 +12,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -50,10 +51,14 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @param response HTTP Servlet response
      */
     private void handleRequest(HttpServletRequest request, HttpServletResponse response) {
+    	System.out.println("HANDLING REQUEST 1: ");
         JSONObject reqBody;
         try {
             reqBody = enableScenario(request);
+            System.out.println("HANDLING REQUEST 2: ");
+            System.out.println("REQ_BODY: " + reqBody.toString());
             if (request.getMethod().equals(HttpGet.METHOD_NAME)) {
+            	System.out.println("HANDLING REQUEST 3: ");
                 doGetJPS(request, response);
             } else if ((request.getMethod().equals(HttpPost.METHOD_NAME))) {
                 doPostJPS(request, response, reqBody);
@@ -71,6 +76,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
      */
     protected void doGetJPS(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	System.out.println("DO GET JPS: ");
         doHttpJPS(request, response);
     }
 
@@ -101,6 +107,9 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @throws IOException @see PrintWriter#getWriter
      */
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    	System.out.println("DO HTTP JPS: 1 ");
+    	setLogger();
+    	System.out.println("DO HTTP JPS: 2 ");
         response.getWriter().write(getResponseBody(request));
     }
 
@@ -112,8 +121,13 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @throws IOException @see PrintWriter#getWriter
      */
     protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
+    	setLogger();
         response.getWriter().write(getResponseBody(request, reqBody));
     }
+    
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(JPSHttpServlet.class);
+    } 
 
     /**
      * Extract & Transform input parameters and return response parameters
@@ -122,7 +136,10 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @return Response parameters as String
      */
     private String getResponseBody(HttpServletRequest request) {
+    	System.out.println("DO GET RESPONSE BODY: 1 ");
         JSONObject requestParams = AgentCaller.readJsonParameter(request);
+        System.out.println("DO GET RESPONSE BODY: 2 ");
+        
         JSONObject responseParams;
         responseParams = processRequestParameters(requestParams);
         if (responseParams.isEmpty()) {
@@ -239,6 +256,7 @@ public abstract class JPSHttpServlet extends HttpServlet {
      * @param request
      */
     public static JSONObject enableScenario(HttpServletRequest request) {
+    	System.out.println("ENABLING SCENARIO 1:");
         JSONObject jo = AgentCaller.readJsonParameter(request);
         if (JPSContext.getScenarioUrl(jo) != null) {
             String scenarioUrl = JPSContext.getScenarioUrl(jo);

@@ -196,7 +196,7 @@ public class TestAgentDescriptions extends TestCase {
 			.build();
 	}
 	
-	private Service createDescrForAgentEmissionTest() {
+	private Service createDescrForAgentEmissionTest() { //????
 		return new ServiceBuilder()
 			.operation(null, JPS_BASE + "/EmissionTestAgent/getemission")
 			.input("http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl", "plant")
@@ -231,8 +231,21 @@ public class TestAgentDescriptions extends TestCase {
 //			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
 			.build();
 	}
+	
+	private Service createDescrForRetrofit() {
+		return new ServiceBuilder()
+			.operation(null, JPS_POWSYS + "/retrofit")
+			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant", "plants")
+			.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", true, "substitutionalgenerators", true)
+			.output("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.operation(null, JPS_POWSYS + "/NuclearAgent/processresult")
+//			.input("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem", "electricalnetwork")
+//			.output("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#NuclearPlant",true,"plants",true)
+			.build();
+	}
 
-	private Service createDescrForAgentScenario() {
+	private Service createDescrForAgentScenario() { 
 		return new ServiceBuilder()
 			.operation(null, JPS_SCENARIO + "/mock")
 				.input("http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service", "scenarioagent")
@@ -269,7 +282,7 @@ public class TestAgentDescriptions extends TestCase {
 				.build();
 	}
 	
-	private Service createDescrForAgentADMSWithScenarioTest() {
+	private Service createDescrForAgentADMSWithScenarioTest() {//????
 		return new ServiceBuilder()
 				.operation(null, JPS + "/ADMSCoordinationAgentWithScenario")
 				.input("http://www.theworldavatar.com/ontology/ontocitygml/OntoCityGML.owl#EnvelopeType", "region")
@@ -335,7 +348,7 @@ public class TestAgentDescriptions extends TestCase {
 				.input("http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#F-Sensor", "speedsensor")
 				.build();
 	}
-		private Service createDescrForAgentEnergyStorageSystem() {
+		private Service createDescrForAgentEnergyStorageSystem() {//the coordination
 		return new ServiceBuilder()
 				.operation(null, JPS_ESS + "/ESSAgent")
 				.input("http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#PowerGenerator", "RenewableEnergyGenerator")

@@ -62,7 +62,7 @@ public class MetaDataQuery implements Prefixes {
 			}
 		}
 		
-		sparql.append("} \r\n");
+		sparql.append("} ORDER BY DESC(?creationTime) \r\n");
 		sparql.append("LIMIT 1000");	
 		
 		return sparql.toString();

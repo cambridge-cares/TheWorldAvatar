@@ -59,6 +59,8 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 
 		String scenariourl = JPSContext.getScenarioUrl(jo);
 		String usecaseurl = JPSContext.getUsecaseUrl(jo);
+		
+
 		logger.info("called for scenario name=" + scenarioName + ", operation=" + operation + ", scenariourl=" + scenariourl + ", usecaseurl=" + usecaseurl);
 		//logger.debug("with input param=" + jo);
 		//logger.debug("with query string=" + request.getQueryString());
@@ -70,7 +72,15 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
 			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
 			JPSContext.putScenarioUrl(jo, scenariourl);
+			
+//			usecaseurl = BucketHelper.getUsecaseUrl(scenariourl);
+//			JPSContext.putUsecaseUrl(jo, usecaseurl);
+//			
+//			logger.info("scenariourl now= "+scenariourl + " usecaseurl now= "+usecaseurl); 
+//			logger.info("context now= " + JPSContext.getJpsContext());
+//			logger.info("JSON now= " + jo.toString());
 		}
+
 				
 		ScenarioLog log = ScenarioManagementAgent.getScenarioLog(scenarioName);
 		boolean copyOnRead = ScenarioManagementAgent.getCopyOnRead(log);
@@ -167,7 +177,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	}
 	
 	private String call(JSONObject jo, String scenarioName, ScenarioLog log) {
-		
+		System.out.println("CALL METHOD " + "1: ");
 //		if (jo.isNull(JPSConstants.SCENARIO_AGENT_URL)) {
 //			throw new JPSRuntimeException("missing input parameter scenarioagenturl");
 //		}
@@ -178,16 +188,29 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 //			createScenarioDescription(scenarioName, agent);
 //		}
 
+
 		String result = null;
 		
 		// start the scenario by calling the operation (an operation can be called even if no agent or a different agent was given)
 		String operation = jo.getString(JPSConstants.SCENARIO_AGENT_OPERATION);
-		System.out.println("operation: "+ operation  + " scenario name "+ scenarioName + " jo: "+ jo);
+		//System.out.println("operation: "+ operation  + " scenario name "+ scenarioName + " jo: "+ jo);
+		System.out.println("CALL METHOD " + "2: ");
+		System.out.println("jo " + jo);
+		System.out.println("scenarioname " + scenarioName);
+		System.out.println("operation " + operation);
 	 	if (operation.startsWith("http")) {
+	 		
 	 		result = ScenarioManagementAgent.execute(scenarioName, operation, jo);
+			System.out.println("CALL METHOD " + "3: ");
+			System.out.println("jo " + jo);
+			System.out.println("scenarioname " + scenarioName);
+			System.out.println("operation " + operation);
+			System.out.println("result " + result);
 	 	} else {
 	 		//throw new RuntimeException("can't call operation without http, operation = " + operation);
 	 		 ScenarioManagementAgent.addJpsContext(scenarioName, jo);
+	 		System.out.println("CALL METHOD " + "4: ");
+	 		
 	 		 //test to see if it was really put into context
 	 		return AgentCaller.executeGetWithJsonParameter(operation, jo.toString());
 	 	}
@@ -202,6 +225,13 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		message.put("input", jo);
 		message.put("output", joresult);
 		log.logMessage(scenarioName, message);
+		System.out.println("CALL METHOD " + "5: ");
+		System.out.println("jo " + jo);
+		System.out.println("scenarioname " + scenarioName);
+		System.out.println("operation " + operation);
+		System.out.println("result " + result);
+		System.out.println("joresult " + joresult);
+		System.out.println("message " + message);
 		
 		return result;
 	}
@@ -222,6 +252,8 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		//String completePathWithinBucket = ScenarioHelper.getFileNameWithinBucket(resource, scenarioBucket);
 		String scenarioUrl = BucketHelper.getScenarioUrl(scenarioName);
 		String completePathWithinBucket = BucketHelper.getLocalPath(resource, scenarioUrl);
+		logger.info("scenarioURL= "+scenarioUrl);
+		logger.info("completePathWithinBucket= "+completePathWithinBucket);
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
