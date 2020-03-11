@@ -214,7 +214,7 @@ public class KnowledgeBaseClient {
 		
 		// case 1b
 		String requestUrl = ScenarioHelper.cutHash(targetUrl);
-		//requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl);
+//		requestUrl = ResourcePathConverter.convertToLocalPath(requestUrl);
 		requestUrl = ResourcePathConverter.convert(requestUrl);
 		JPSBaseLogger.info(getInstance(), "SPARQL update is performed locally for requestUrl=" + requestUrl);
 		UpdateRequest request = UpdateFactory.create(sparqlUpdate);
