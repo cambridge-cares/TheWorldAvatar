@@ -1,6 +1,6 @@
 var scenario = "base";
-var prefix = "http://localhost:8080";
-// var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
+// var prefix = "http://localhost:8080";
+var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
@@ -575,6 +575,16 @@ function drawGenerator(data, anotherURL){
     request.fail(function(jqXHR, textStatus) {
     });
 }
+
+    /** mystery of the missing kml layer. 
+     * 
+     */
+    var checkExistKML = setInterval(function() {
+        if (kmlLayer != null && kmlLayer.status != "OK") {
+            refreshLayer(json);
+            clearInterval(checkExistKML);
+        }
+        }, 10000); // check every 10s
 /*** calls ENVisualization to call POWSYS from markers
  * @param data: electricalnetwork topnode iri
  */
