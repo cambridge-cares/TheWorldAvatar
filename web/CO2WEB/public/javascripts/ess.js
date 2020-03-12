@@ -74,7 +74,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
         document.getElementById("loader").style.display = "block";
         ppMap.drawLines(json );
         drawMarkers(json);
-        setTimeout(refreshLayer(json, kmlURL), 30000);
+        setTimeout(refreshLayer(json), 30000);
         setTimeout(displayCO2(json), 20000);
         
     }
