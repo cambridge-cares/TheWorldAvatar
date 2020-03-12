@@ -514,8 +514,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			OntModel model= readModelGreedy(wasteIRI);
 			List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 			prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
-			List<String[]> inputoffsitedata=prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
-			prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
+			List<String[]> inputoffsitedata=prepareCSVCompTECHBased(compquery,baseUrl,model);
+			prepareCSVTECHBased(WTFTechQuery,baseUrl,model);
 			copyTemplate(baseUrl, "SphereDist.m");
 			copyTemplate(baseUrl, "Main.m");
 			copyTemplate(baseUrl, "D2R.m");
@@ -558,6 +558,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 								
 
 								updateinOffsiteWT(inputoffsitedata,baseUrl);
+								return requestParams;
 			 }catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -707,7 +708,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			try {
 				createBat(baseUrl);
 				runModel(baseUrl);
-				Thread.sleep(30*1000);
+				Thread.sleep(80*1000);
 				List<String> onsiteiricomplete=updateinOnsiteWT(onsitereference,baseUrl);
 				List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,offsitereference,onsitereference);
 				updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
@@ -850,7 +851,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	private String executeSingleCommand(String targetFolder , String command) throws InterruptedException 
 	{  
 	 
-		logger.info("In folder: " + targetFolder + " Excuted: " + command);
+		logger.info("In folder: " + targetFolder + " Executed: " + command);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		try {
@@ -872,7 +873,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		
 		return resultString; 
 	}
 	
