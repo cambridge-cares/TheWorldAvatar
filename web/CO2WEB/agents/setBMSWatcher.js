@@ -63,17 +63,17 @@ function setBMSWatcher() {
             
                 });
             }
-            
+           return new Promise(function (resolve, reject) {
             if(dataSwitch){//has data request,
                 let  dataPromise = getDataP();
                 dataPromise.then(function (promisedData) {
                     Object.assign(withChangeData, changedFilenames, promisedData);
-                    resolve([withChangeData, changedFilenames]);
+                    resolve([changedFilenames,withChangeData ]);
                 })
             } else{//just filenames
-                resolve([withChangeData, changedFilenames]);
+                resolve([changedFilenames,withChangeData ]);
             }
-            
+            })
         }
     }
     
@@ -107,7 +107,7 @@ function setBMSWatcher() {
         logger.debug("register all")
         owlfiles.forEach(function (file) {
             let targetPath = path.join(watchDir, file);
-            register(targetPath, observerUri, receiveData)
+            bmsWatcher.register(targetPath, observerUri, receiveData)
         })
     }
     
