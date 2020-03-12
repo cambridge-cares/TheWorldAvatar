@@ -1,0 +1,11 @@
+UniqueSpeciesIRI	CAS Registry Number
+species_8	7722-84-1
+species_4	7727-37-9
+species_1	3352-57-6
+species_10	7440-37-1
+species_9	1333-74-0
+species_5	3170-83-0
+species_2	17778-80-2
+species_6	12385-13-6
+species_7	7732-18-5
+species_3	7782-44-7

@@ -32,38 +32,13 @@ public class DownloadHTML {
 	public static void main(String[] args) throws Exception {
 
 		/**
-		 * Downloads information about all species from NIST Webbook that have CAS
-		 * number.
+		 * A map created to store the type of parsed file vs information extracted from the file. 
 		 */
-
-//		downloadHTMLFile("C:\\Users\\NK\\Downloads\\NIST\\species\\species.txt","C:\\Users\\NK\\Downloads\\NIST\\species\\");
-
-//		downloadFileredSpeciesHTMLFile("C:\\Users\\NK\\Downloads\\NIST\\TiCl_species\\species.txt","C:\\Users\\NK\\Downloads\\NIST\\TiCl_species\\");
-		
-//		downloadFileredSpeciesHTMLFile("C:\\Users\\NK\\Downloads\\NIST\\CH_species\\species.txt","C:\\Users\\NK\\Downloads\\NIST\\CH_species\\");
-
-		/**
-		 * Parsing html files that are downloaded from NIST Web Book.
-		 */
-//		parsingHTML("C:\\Users\\NK\\Downloads\\NIST\\species\\html\\");
-
-		/**
-		 * Parsing thml files fro filtered species that are downloaded from the NIST
-		 * Webbook
-		 */
-//		parsingHTML("C:\\Users\\NK\\Downloads\\NIST\\TiCl_species\\html\\");
-		
-		parsingHTML("C:\\Users\\NK\\Downloads\\NIST\\CH_species\\html\\");
-		/**
-		 * Downloads SDF and MOL files based on species list taken from NIST web site
-		 * https://webbook.nist.gov/chemistry/download/
-		 */
-
-//		downloadSdfAndMolFiles("C:\\Users\\NK\\Downloads\\NIST\\download\\species.txt","https://webbook.nist.gov/cgi/cbook.cgi?Str3File=","https://webbook.nist.gov/cgi/cbook.cgi?Str2File=","C:\\Users\\NK\\Downloads\\NIST\\download\\");
-
+		Map<String, NISTSpeciesInfo> data = new HashMap<String, NISTSpeciesInfo>();
+		parsingHTML("D:\\msff2\\Documents\\Data\\NIST\\ChemSpecies\\html\\", data);
 	}
 
-	public static void parsingHTML(String htmlFolderPath) throws Exception {
+	public static void parsingHTML(String htmlFolderPath, Map<String, NISTSpeciesInfo> data) throws Exception {
 
 		// TODO Auto-generated method stub
 
@@ -72,20 +47,19 @@ public class DownloadHTML {
 		// read the html files
 		Collection<File> htmlFiles = htmlFilter.getValidFiles(htmlFolderPath, true);
 
-		Map<String, NISTSpeciesInfo> data = new HashMap<String, NISTSpeciesInfo>();
-		
 		for (File f : htmlFiles) {
 
 			NISTInfoReader reader = new NISTInfoReader();
 			
 			reader.setPath(f.getAbsolutePath());
-			
 			reader.parse();
 
 			data.put(f.getName().replace(".html", ""), (NISTSpeciesInfo) reader.get());
-			
+			display(data);
 		}
+	}
 
+	public static void display(Map<String, NISTSpeciesInfo> data){
 		for (Map.Entry<String, NISTSpeciesInfo> speciesData : data.entrySet()) {
 			
 			NISTSpeciesInfo value = speciesData.getValue();
@@ -153,16 +127,79 @@ public class DownloadHTML {
 
 				}
 			}
-			
-			System.out.println("");
-
-//            if(!value.getUrl2DMolFile().isEmpty()) {System.out.println("getUrl2DMolFile(): " + value.getUrl2DMolFile().toString());}
-
-			System.out.println(" - - -  - - - -  - - - - - -  - - - - - - - -");
+			System.out.println("==============================================================");
 
 		}
 	}
+	
+	public static void display(NISTSpeciesInfo value){
+			
+			String formula = value.getFormula().getFormula();
 
+			Collection<String> formulaElements = value.getFormula().getElements();
+
+			System.out.print("Formula elements: ");
+
+			for (String formulaElement : formulaElements) {
+
+				System.out.print(formulaElement + "  ");
+			}
+
+			System.out.println("");
+
+			System.out.println("formula: " + formula);
+
+			System.out.println("Molecular weight: " + value.getMolecularWeight());
+
+			if (value.getInChIKey() != "") {
+				
+				System.out.println("InChIKey : " + value.getInChIKey());
+				
+			}
+
+			if (value.getInChIKey() != "") {
+				
+				System.out.println("InChI: " + value.getInChI());
+				
+			}
+
+			System.out.println("CAS Reg Number " + value.getCASRegNr());
+
+			Collection<String> otherNames = value.getOtherNames();
+			
+			// other names
+			if (!otherNames.isEmpty()) {
+
+				System.out.print("Other names: ");
+
+				for (String otherName : otherNames) {
+
+					System.out.print(otherName + ", ");
+				}
+			}
+			
+			System.out.println();
+			
+			if(!value.getPermanentLink().isEmpty()) {
+				
+				System.out.println("Permanent lik: " + value.getPermanentLink().trim());
+			}
+
+			Collection<String> isotopologuesCollection = value.getIsotopologues();
+
+			if (!isotopologuesCollection.isEmpty()) {
+
+				System.out.println("Isotopologues :");
+
+				for (String isotop : isotopologuesCollection) {
+
+					System.out.print(isotop + " ");
+
+				}
+			}
+			System.out.println("");
+	}
+	
 	public static void downloadSdfAndMolFiles(String speciesFilePath, String urlForSdfFile, String urlForMolFile,
 			String destinationFolderPath) throws FileNotFoundException, IOException {
 

@@ -5,24 +5,27 @@
 package org.cam.ceb.como.nist.webbook.thermochem;
 
 /**
- *
+ * A model defined to represent the enthapy of the current species as</br> 
+ * numerical values.
+ * 
  * @author pb556
  */
 public class NISTEnthalpy {
 
     protected double value = 0.0;
-    protected double posTol = 0.0;
-    protected double negTol = 0.0;
+    protected double posTolerance = 0.0;
+    protected double negTolerance = 0.0;
     protected String units = "";
     protected String method = "";
     protected String reference = "";
     protected String comment = "";
+    protected String reaction = "";
     
     protected EnthalpyType eType = EnthalpyType.NONE;
     protected ValueType vType = ValueType.NONE;
     
     public enum EnthalpyType {
-        FORMATION, COMBUSTION, NONE
+        FORMATION, COMBUSTION, REACTION, NONE
     }
     
     public enum ValueType {
@@ -36,8 +39,8 @@ public class NISTEnthalpy {
     }
 
     public void setTolerance(double pos, double neg) {
-        posTol = pos;
-        negTol = neg;
+    	posTolerance = pos;
+    	negTolerance = neg;
     }
 
     public void setUnits(String units) {
@@ -61,14 +64,22 @@ public class NISTEnthalpy {
     }
 
     public double getPosTolerance() {
-        return posTol;
-    }
+		return posTolerance;
+	}
 
-    public double getNegTolerance() {
-        return negTol;
-    }
+	public void setPosTolerance(double posTolerance) {
+		this.posTolerance = posTolerance;
+	}
 
-    public String getUnits() {
+	public double getNegTolerance() {
+		return negTolerance;
+	}
+
+	public void setNegTolerance(double negTolerance) {
+		this.negTolerance = negTolerance;
+	}
+
+	public String getUnits() {
         return units;
     }
 
@@ -91,4 +102,12 @@ public class NISTEnthalpy {
     public ValueType getValueType() {
         return vType;
     }
+
+	public String getReaction() {
+		return reaction;
+	}
+
+	public void setReaction(String reaction) {
+		this.reaction = reaction;
+	}
 }

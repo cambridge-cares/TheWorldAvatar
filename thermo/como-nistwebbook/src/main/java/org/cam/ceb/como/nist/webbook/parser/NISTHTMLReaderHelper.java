@@ -23,10 +23,43 @@ import org.cam.ceb.como.chem.filemgmt.gaussian.parser.util.StringList;
  */
 public class NISTHTMLReaderHelper {
 
-    public static StringList extractHTMLBody(File f) throws FileNotFoundException, IOException {
+    public static String extractHTMLTitle(File f) throws FileNotFoundException, IOException {
+        return extractHTMLTitleContent(f, "<title", "</title>");
+    }
+
+	public static StringList extractHTMLBody(File f) throws FileNotFoundException, IOException {
         return extractHTMLContent(f, "<body", "</body>");
     }
 
+    public static String extractHTMLTitleContent(File f, String startIdentifier, String endIdentifier) throws FileNotFoundException, IOException {
+        BufferedReader r = null;
+        try {
+            r = new BufferedReader(new FileReader(f));
+            String title = new String();
+            String l;
+            boolean start = false;
+            boolean end = false;
+            while ((l = r.readLine()) != null) {
+                if (l != null) {
+                    if (!start) {
+                        start = l.trim().contains(startIdentifier);
+                    }
+                    end = l.trim().contains(endIdentifier);
+                }
+                if (start) {
+                    title = l;
+                }
+                if (end || l == null) { // end of section
+                    IOUtils.closeQuietly(r);
+                    return title;
+                }
+            }
+        } finally {
+            IOUtils.closeQuietly(r);
+        }
+        return new String();
+    }
+	
     public static StringList extractHTMLContent(File f, String startIdentifier, String endIdentifier) throws FileNotFoundException, IOException {
         BufferedReader r = null;
         try {
