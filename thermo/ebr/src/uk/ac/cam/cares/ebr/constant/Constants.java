@@ -2,7 +2,6 @@ package uk.ac.cam.cares.ebr.constant;
 
 public enum Constants {
 
-
 	/**
 	 * Localhost parameters
 	 */
@@ -30,7 +29,7 @@ public enum Constants {
 	/**
 	 * rdf4j server uri
 	 */
-	ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_CLAUDIUS("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"),
+	ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_CLAUDIUS("http://localhost/rdf4j-server/repositories/ontocompchem"),// http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem
 	ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST("http://localhost:8080/rdf4j-server/repositories/ontocompchem"),
 	
 	ONTOCOMPCHEM_NS("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#");
