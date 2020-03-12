@@ -39,7 +39,7 @@ public class FederatedQuery {
     		/**
     		 * 
     		 * @author NK510 
-    		 * a Sparql endpoint on localhost
+    		 * a sparql endpoint on localhost
     		 * 
     		 */
 	    .withSparqlEndpoint(localHostSparqlEndPoint)
@@ -81,11 +81,18 @@ public class FederatedQuery {
 				/**
 				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
-				 * Stores query results into NISTSpeciesId bean: species identifier, cas reg number, atomic bond, geometry.
+				 * Stores query results into NISTSpeciesId bean: species identifier, cas reg number, atomic bond, geometry, enthalpy of formation, scf energy, zero point energy.
 				 * 
-				 */
+				 */		
 				
-				NISTSpeciesId nistSpeciesId = new NISTSpeciesId(bSet.getValue("species").stringValue(), bSet.getValue("crid").stringValue(), bSet.getValue("atomicBond").stringValue(), bSet.getValue("geometry").stringValue());
+				NISTSpeciesId nistSpeciesId = new NISTSpeciesId(
+						bSet.getValue("species").stringValue(), 
+						bSet.getValue("crid").stringValue(), 
+						bSet.getValue("atomicBond").stringValue(), 
+						bSet.getValue("geometry").stringValue(),
+						bSet.getValue("enthalpyOfFormationValue").stringValue(),
+						bSet.getValue("scfEnergyValue").stringValue(),
+						bSet.getValue("zeroEnergyValue").stringValue());
 				
 				nistSpeciesIdList.add(nistSpeciesId);
 				
@@ -111,4 +118,85 @@ public class FederatedQuery {
 
 	return nistSpeciesIdList;
 	}	
+	
+	
+	
+	
+	public static void runFederatedSPARQLTest(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
+		
+		
+			
+	    Repository repository = FedXFactory.newFederation()
+	    		
+	    		/**
+	    		 * 
+	    		 * @author NK510 
+	    		 * a sparql endpoint on localhost
+	    		 * 
+	    		 */
+		    .withSparqlEndpoint(localHostSparqlEndPoint)
+		    
+		    /**
+		     * 
+		     * @author NK510
+		     * a sparql endpoint on Caludius server .
+		     * 
+		     */
+	        .withSparqlEndpoint(claudiusServerSparqlEndPoint)
+			.create();
+	    
+	    
+	    
+	    try {
+			
+		RepositoryConnection conn = repository.getConnection();
+		
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Returns a result of federated sparql query via ontospecieskb repositories stored on local host and on Claudius server.
+		 * 
+		 */
+		
+		TupleQuery tq = conn.prepareTupleQuery(query);
+		
+		try{
+			
+		TupleQueryResult tqRes = tq.evaluate();
+		
+		
+		while (tqRes.hasNext()) {
+					
+					BindingSet bSet = tqRes.next();
+					
+					
+					/**
+					 * 
+					 * @author NK510 (caresssd@hermes.cam.ac.uk)
+					 * Stores query results into NISTSpeciesId bean: species identifier, cas reg number, atomic bond, geometry.
+					 * 
+					 */
+					
+					System.out.println(bSet.getValue("species").stringValue()+ " " + bSet.getValue("crid").stringValue() +" " + 
+							bSet.getValue("atomicBond").stringValue() + " " +
+							bSet.getValue("geometry").stringValue() + " "+bSet.getValue("enthalpyOfFormationValue").stringValue() +" "+bSet.getValue("scfEnergyValue").stringValue() +" " + bSet.getValue("zeroEnergyValue").stringValue());
+		}
+		
+		}catch(TupleQueryResultHandlerException e) {
+		
+			e.printStackTrace();
+			
+		}
+		
+		conn.close();
+		
+		}catch(RepositoryException e) {
+		
+			e.printStackTrace();
+		}
+	    
+		repository.shutDown();	
+
+		}	
+	
 }

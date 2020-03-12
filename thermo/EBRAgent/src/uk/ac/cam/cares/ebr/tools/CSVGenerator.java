@@ -61,7 +61,15 @@ public class CSVGenerator {
 			
 			speciesFrequencyMap = seg.gestSpeciesFrequencyHashMap(speciesNameList, speciesHashMap);
 			
-			String[] line = { species.getCASRegNr(), "", "", seg.generateSpeciesElements(speciesFrequencyMap).toString(),  sbg.generateBondConnectivity(species, updatedSpeciesHashMap).toString() };
+			/**
+			 * 
+			 * @author NK510 (caresssd@hermes.cam.ac.uk)
+			 * Calculates "electronic energy" as the sum of the "zero-point" and "scf energy".
+			 * 
+			 */
+			String electronicEnergy = ElectronicEnergyCalculation.getElectronicEnergy(species.getScfEnergy(), species.getZeroPointEnergy());
+			
+			String[] line = { species.getCASRegNr(), electronicEnergy, species.getStandardEnthalpyOfFormation(), seg.generateSpeciesElements(speciesFrequencyMap).toString(),  sbg.generateBondConnectivity(species, updatedSpeciesHashMap).toString() };
 			
 			writer.writeNext(line);			
 		}
