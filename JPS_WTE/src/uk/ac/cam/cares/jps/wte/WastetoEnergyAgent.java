@@ -39,27 +39,38 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
     protected void setLogger() {
         logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
     }
-
+    /**
+     *  create logger to log changes attached to WasteToEnergyAgent class. 
+     */
     protected Logger logger = LoggerFactory.getLogger(WastetoEnergyAgent.class);
-	
+	/** derive property that defines numerical values as described in the ontology
+	 * 
+	 * @param jenaOwlModel
+	 * @return
+	 */
 	private DatatypeProperty getNumericalValueProperty(OntModel jenaOwlModel) {
 		return jenaOwlModel.getDatatypeProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 	}
-	
+	/** derive property that defines subsystem relationships as described in the ontology
+	 * 
+	 * @param jenaOwlModel (OntModel)
+	 * @return
+	 */
 	private ObjectProperty getHasSubsystemRelation(OntModel jenaOwlModel) {
 		return jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
 	}
 	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
+	// first called to begin simulation. 
 	public static final String SIM_START_PATH = "/WastetoEnergyAgent/startsimulation";
-	  public static final String SIM_PROCESS_PATH = "/WastetoEnergyAgent/processresult";
+	//called to produce this result directly after start simulation is called. Waits for the first simulation to finish. 
+	public static final String SIM_PROCESS_PATH = "/WastetoEnergyAgent/processresult";
+	/**gets the food court name, xy coordinates, amount of waste, the year and the type (FoodCourt)
+	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -89,7 +100,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?vdatetime  j6:year ?year ." 
 			+ "}"
 			+ "ORDER BY ASC(?year)";
-	
+	/**gets the Offsite Waste Treatment facility, and its xy coordinates. 
+	 */
 	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -109,7 +121,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?y   j2:hasValue ?yval ."
 			+ "?yval   j2:numericalValue ?yvalue ."
 			+ "}";
-	
+	/** gets the transportation route, the tax on the route, the capacity of travel, the cost of travel, and
+	 * emission rate of travelling on that route. 
+	 */
 	public String transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -139,7 +153,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?vTemission  j2:numericalValue ?TransportEmissionvalue ." 
 			
 			+ "}";
-	
+	/** Gets the Benchmark land cost of implementing the Composite system, the operation value, managing cost, 
+	 * installation cost, life cycle of the system, energy and water consumption; 
+	 * as well as discount rate, lifecycle, and disposal fee. 
+	 */
 	public String wasteSystemQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -201,7 +218,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?vDispfee  j2:numericalValue ?DisposalFeevalue ." 
 			
 			+ "}";
-	
+	/** Gets the following output values of the composite waste system. 
+	 * the name, revenue, installation cost, operational cost, labor cost, land cost, pollution cost, transport cost
+	 * resource cost. 
+	 */
 	public static String wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -241,7 +261,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?TC1     j2:hasValue ?vtransportcost ." 
 			
 			+ "}";
-	
+	/** gets the OffsiteWasteTreatmentFacility's 
+	 * Incineration upper bound, CoDigestion upper bound, and Anerobic Digestion upper bound. 
+	 */
 	public static String compquery= "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -258,7 +280,11 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?entity   j1:hasOffsiteAnerobicDigestionUpperBound ?tech3upp ."
 
 			+ "}";
-	
+	/** Grabs the Offsite Waste treatment facility's 
+	 * pollution treatment tax value, tech capcity, installation cost, operational cost, 
+	 * transfer rate of electricity and consumption value. 
+	 * Sorted by technology. 
+	 */
 	 public static String WTFTechQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -295,7 +321,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 				+ "}"
 				+ "ORDER BY DESC(?Tech1)";
-	
+	 /** describes the entities that use a technology, sorted by their technology. 
+	  * 
+	  */
 		public static String Offsiteoutput = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -309,96 +337,80 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				+ "?entity   j1:useTechnology ?Tech1 ."  
 				+ "}"
 				+ "ORDER BY DESC(?Tech1)";
-		
-	public String createWTFQuery(String wtfclass,String techclass) { //currently unused
-		//j1:OffsiteWasteTreatmentFacility =default wtf class
-		//j1:OffSiteIncineration or j1:OffSiteCoDigestion or j1:OffSiteAnaerobicDigestion or j1:OnSiteTechnology1 or j1:OnSiteDigester or j1:OnSiteTechnology3=default tech class
-		
-		 String WTFQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-				+ "SELECT ?entity ?tech1upp ?tech2upp ?tech3upp ?xvalue ?yvalue ?landcostvalue ?watercostvalue ?energycostvalue ?revenueavalue ?revenuebvalue ?revenueelectricvalue ?Tech1Capvalue ?mancostvalue ?operationcostvalue ?pollutiontreatmenttaxvalue ?EOSvalue ?installationcostvalue ?transferrateavalue ?transferratebvalue ?transferrateelectricvalue ?waterconsumptionvalue ?energyconsumptionvalue "
-				+ "WHERE {" + "?entity  a "+wtfclass+" ." // specified class declared (off or on)
+		 @Override
+			protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+				 String path = request.getServletPath();
+				 String baseUrl= QueryBroker.getLocalDataPath();
+				 String wasteIRI=requestParams.getString("wastenetwork");
+					OntModel model= readModelGreedy(wasteIRI);
+					List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+					prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
+					List<String[]> inputoffsitedata=prepareCSVCompTECHBased(compquery,baseUrl,model);
+					prepareCSVTECHBased(WTFTechQuery,baseUrl,model);
+					copyTemplate(baseUrl, "SphereDist.m");
+					copyTemplate(baseUrl, "Main.m");
+					copyTemplate(baseUrl, "D2R.m");
+				 if (SIM_START_PATH.equals(path)) {
+
+						try {
+							createBat(baseUrl);
+							runModel(baseUrl);
+				            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
+				                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					 
+				 }else if (SIM_PROCESS_PATH.equals(path)) {
+					 try {
+						
+							//=========================================update in onsite wtf================================================== //create new owl file		
+
+										List<String> onsiteiricomplete=updateinOnsiteWT(inputonsitedata,baseUrl);
+										
+							//=======================================update in food court======================================================			
+
+										List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,inputonsitedata);
+							//===================================update in waste system========================================================
+										updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
+//										String revenue=economic.get(0)[0]; //ok
+//										String totalinflow=economic.get(1)[0]; //similar to revenue
+//										String capex=economic.get(2)[0]; //ok
+//										String opex=economic.get(3)[0];//ok
+//										String manpower=economic.get(4)[0]; //ok
+//										String landcost=economic.get(5)[0];//ok
+//										String pollution=economic.get(6)[0];
+//										String transport=economic.get(7)[0];//ok
+//										String resource=economic.get(8)[0];//ok
+//										String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
+//										String netflow=economic.get(10)[0]; 
+							//=============================================================================================	
+										
+
+										updateinOffsiteWT(inputoffsitedata,baseUrl);
+										return requestParams;
+					 }catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+										
+
+					 
+				 }
+
+
 				
-				+ "?entity   j1:hasOffsiteIncinerationUpperBound ?tech1upp ."
-				+ "?entity   j1:hasOffsiteCoDigestionUpperBound ?tech2upp ."
-				+ "?entity   j1:hasOffsiteAnerobicDigestionUpperBound ?tech3upp ."
-
-				+ "?entity   j7:hasGISCoordinateSystem ?coorsys ." + "?coorsys   j7:hasProjectedCoordinate_x ?x ."
-				+ "?x   j2:hasValue ?xval ." + "?xval   j2:numericalValue ?xvalue ."
-				+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." + "?y   j2:hasValue ?yval ."
-				+ "?yval   j2:numericalValue ?yvalue ."
-
-				+ "?entity   j3:hasCost ?LC ." + "?LC     j2:hasValue ?vLC ." + "?vLC  j2:numericalValue ?landcostvalue ."
-
-				+ "?entity   j3:hasUtilityCost ?UC1 ."
-				+ "?UC1     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#water> ."
-				+ "?UC1     j2:hasValue ?vUC1 ." + "?vUC1  j2:numericalValue ?watercostvalue ."
-
-				+ "?entity   j3:hasUtilityCost ?UC2 ."
-				+ "?UC2     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#energy> ."
-				+ "?UC2     j2:hasValue ?vUC2 ." + "?vUC2  j2:numericalValue ?energycostvalue ."
-
-				+ "?entity   j3:hasRevenue ?R1 ."
-				+ "?R1     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#recoveredwaste_a> ."
-				+ "?R1     j2:hasValue ?vR1 ." + "?vR1  j2:numericalValue ?revenueavalue ."
-
-				+ "?entity   j3:hasRevenue ?R2 ."
-				+ "?R2     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#recoveredwaste_b> ."
-				+ "?R2     j2:hasValue ?vR2 ." + "?vR2  j2:numericalValue ?revenuebvalue ."
-
-				+ "?entity   j3:hasRevenue ?R3 ."
-				+ "?R3     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#electricity> ."
-				+ "?R3     j2:hasValue ?vR3 ." + "?vR3  j2:numericalValue ?revenueelectricvalue ."
-
-				+ "?entity   j1:useTechnology ?Tech1 ." + "?Tech1 a "+techclass+" ." // specified class declared (tech 1,2,3, or 4,5,6)
-				+ "?Tech1 j1:hasTechnologyCapacity ?Tech1Cap ." + "?Tech1Cap j2:hasValue ?vTech1Cap ."
-				+ "?vTech1Cap  j2:numericalValue ?Tech1Capvalue ."
-
-				+ "?Tech1   j3:hasLaborCost ?MC ." + "?MC     j2:hasValue ?vMC ."
-				+ "?vMC  j2:numericalValue ?mancostvalue ."
-
-				+ "?Tech1   j3:hasCost ?OC ." + "?OC     j2:hasValue ?vOC ."
-				+ "?vOC  j2:numericalValue ?operationcostvalue ."
-
-				+ "?Tech1   j1:hasTax ?PTT ." + "?PTT     j2:hasValue ?vPTT ."
-				+ "?vPTT  j2:numericalValue ?pollutiontreatmenttaxvalue ."
-
-				+ "?Tech1   j2:hasProperty ?EOS ." + "?EOS     j2:hasValue ?vEOS ." + "?vEOS  j2:numericalValue ?EOSvalue ."
-
-				+ "?Tech1   j3:hasInstallationCost ?IC ." + "?IC     j2:hasValue ?vIC ."
-				+ "?vIC  j2:numericalValue ?installationcostvalue ."
-
-				+ "?Tech1   j1:hasTransferRate ?TR1 ."
-				+ "?TR1     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#recoveredwaste_a> ."
-				+ "?TR1     j2:hasValue ?vTR1 ." + "?vTR1  j2:numericalValue ?transferrateavalue ."
-
-				+ "?Tech1   j1:hasTransferRate ?TR2 ."
-				+ "?TR2     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#recoveredwaste_b> ."
-				+ "?TR2     j2:hasValue ?vTR2 ." + "?vTR2  j2:numericalValue ?transferratebvalue ."
-
-				+ "?Tech1   j1:hasTransferRate ?TR3 ."
-				+ "?TR3     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#electricity> ."
-				+ "?TR3     j2:hasValue ?vTR3 ." + "?vTR3  j2:numericalValue ?transferrateelectricvalue ."
-
-				+ "?Tech1   j1:requiredConsumption ?RC1 ."
-				+ "?RC1     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#water> ."
-				+ "?RC1     j2:hasValue ?vRC1 ." + "?vRC1  j2:numericalValue ?waterconsumptionvalue ."
-
-				+ "?Tech1   j1:requiredConsumption ?RC2 ."
-				+ "?RC2     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#energy> ."
-				+ "?RC2     j2:hasValue ?vRC2 ." + "?vRC2  j2:numericalValue ?energyconsumptionvalue ."
-
-				+ "}";
-		
-		return WTFQuery;
-	}
-	
+				
+				return requestParams;
+			}
+	/** updates the Onsite Waste Treatment Facility OWL file
+	 * 
+	 * @param inputdata {[List<String[]>]}
+	 * @param baseUrl String
+	 * @return List<String>
+	 * @throws Exception
+	 */
 	public List<String> updateinOnsiteWT(List<String[]> inputdata,String baseUrl) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
 
 		List<String[]>unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
@@ -424,7 +436,13 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		List<String>mappedonsiteiri=converter.onsiteiri;
 		return mappedonsiteiri;
 	}
-	
+	/** Creates the CSV file for the upper bound as described by compquery. 
+	 * 
+	 * @param mainquery compquery. 
+	 * @param baseUrl String
+	 * @param model Ontological Model
+	 * @return List
+	 */
 	public List<String[]> prepareCSVCompTECHBased(String mainquery,String baseUrl,OntModel model) {		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -448,7 +466,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         new QueryBroker().putLocal(baseUrl + "/n_unit_max_offsite.csv",MatrixConverter.fromArraytoCsv(resultTechOffsiteWTF));
         return resultTechOffsiteWTF;
 	}
-	
+	/** updates the OWL file for the Offsite Waste Treatment facilities. 
+	 * 
+	 * @param inputdata List<String[]>
+	 * @param baseUrl String
+	 * @throws Exception
+	 */
 	public void updateinOffsiteWT(List<String[]> inputdata,String baseUrl) throws Exception {
 		//assume inputdata= input offsite data
 		List<String[]>unitofoffsite=readResult(baseUrl,"number of units (offsite).csv");
@@ -490,13 +513,24 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			}
 		}
 	}
-	
+	/** notifies the watcher to return with the callback. 
+	 * 
+	 * @param agentArgs JSONObject
+	 * @param filePath String
+	 * @param callbackIRI String
+	 */
     private void notifyWatcher(JSONObject agentArgs, String filePath, String callbackIRI) {
         agentArgs.put(KEY_WATCH, filePath);
         agentArgs.put(KEY_CALLBACK_URL, callbackIRI);
         execute(KeyValueMap.getInstance().get("url.jps_aws"), agentArgs.toString(), HttpPost.METHOD_NAME);
     }
-	
+	/** reads the result from the csv file produced and returns as List<String[]>
+	 * 
+	 * @param baseUrl String
+	 * @param filename name of the file. 
+	 * @return
+	 * @throws IOException
+	 */
 	private List<String[]> readResult(String baseUrl,String filename) throws IOException {
 
         String outputFile = baseUrl + "/"+filename;
@@ -505,75 +539,14 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		
 		return simulationResult;
 	}
-	
-	 @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		 String path = request.getServletPath();
-		 String baseUrl= QueryBroker.getLocalDataPath();
-		 String wasteIRI=requestParams.getString("wastenetwork");
-			OntModel model= readModelGreedy(wasteIRI);
-			List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
-			prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
-			List<String[]> inputoffsitedata=prepareCSVCompTECHBased(compquery,baseUrl,model);
-			prepareCSVTECHBased(WTFTechQuery,baseUrl,model);
-			copyTemplate(baseUrl, "SphereDist.m");
-			copyTemplate(baseUrl, "Main.m");
-			copyTemplate(baseUrl, "D2R.m");
-		 if (SIM_START_PATH.equals(path)) {
-
-				try {
-					createBat(baseUrl);
-					runModel(baseUrl);
-		            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
-		                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			 
-		 }else if (SIM_PROCESS_PATH.equals(path)) {
-			 try {
-				
-					//=========================================update in onsite wtf================================================== //create new owl file		
-
-								List<String> onsiteiricomplete=updateinOnsiteWT(inputonsitedata,baseUrl);
-								
-					//=======================================update in food court======================================================			
-
-								List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,inputonsitedata);
-					//===================================update in waste system========================================================
-								updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
-//								String revenue=economic.get(0)[0]; //ok
-//								String totalinflow=economic.get(1)[0]; //similar to revenue
-//								String capex=economic.get(2)[0]; //ok
-//								String opex=economic.get(3)[0];//ok
-//								String manpower=economic.get(4)[0]; //ok
-//								String landcost=economic.get(5)[0];//ok
-//								String pollution=economic.get(6)[0];
-//								String transport=economic.get(7)[0];//ok
-//								String resource=economic.get(8)[0];//ok
-//								String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
-//								String netflow=economic.get(10)[0]; 
-					//=============================================================================================	
-								
-
-								updateinOffsiteWT(inputoffsitedata,baseUrl);
-								return requestParams;
-			 }catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-								
-
-			 
-		 }
-
-
-		
-		
-		return requestParams;
-	}
-	  
+	/** updates the Knowledge Base of the composite Waste System based on the Economic output CSV
+	 *  
+	 * @param iriofnetwork String
+	 * @param baseUrl String
+	 * @param queryupdate String
+	 * @param onsiteiri List of onsite entities. 
+	 * @throws IOException
+	 */
 	public void updateKBForSystem(String iriofnetwork, String baseUrl, String queryupdate,List<String> onsiteiri) throws IOException {
 		List<String[]>economic=readResult(baseUrl,"Economic output.csv");
 		String result = new QueryBroker().queryFile(iriofnetwork, wasteSystemOutputQuery);
@@ -605,7 +578,15 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		new QueryBroker().putOld(resultList.get(0)[0], content);
 
 	}
-	
+	/** updates the Foodcourt owl file based on the value of the treated waste (onsite) CSV and treated waste (offsite) csv
+	 * This updates the waste delivered to either facility
+	 * @param baseUrl
+	 * @param inputdataonsite
+	 * @param inputdataoffsite
+	 * @param foodcourtmap
+	 * @return
+	 * @throws Exception
+	 */
 	public List<String> updateinFC(String baseUrl,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
 		List<String>selectedOnsite=new ArrayList<String>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
@@ -692,9 +673,11 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 		}
 		
-	return selectedOnsite;
+		return selectedOnsite;
 	}
-	 
+	 /** Used for tests to create a folder for simulation, run simulation, before updating the relevant files. 
+	  * @param wasteIRI IRI of topnode of Wastenetwork. 
+	  */
 	 public void runTestInSequence(String wasteIRI) { //only for testing direct call packet
 			OntModel model= readModelGreedy(wasteIRI);
 			String baseUrl= QueryBroker.getLocalDataPath();
@@ -719,7 +702,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			} 
 			
 	 }
-	
+	/** reads the topnode into an OntModel of all its subsystems. 
+	 * @param iriofnetwork
+	 * @return
+	 */
 	public static OntModel readModelGreedy(String iriofnetwork) { //model will get all the offsite wtf, transportation and food court
 		String wasteinfo = "PREFIX j1:<http://www.jparksimulator.com/ontology/ontoland/OntoLand.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -731,7 +717,15 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		QueryBroker broker = new QueryBroker();
 		return broker.readModelGreedy(iriofnetwork, wasteinfo);
 	}
-	
+	/** Creates the CSV of the foodcourt for the Matlab code to read. 
+	 * gets the food court name, xy coordinates, amount of waste, the year and the type (FoodCourt)
+	 * @param mainquery
+	 * @param filename
+	 * @param filename2
+	 * @param baseUrl
+	 * @param model
+	 * @return
+	 */
 	public List<String[]> prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) { //create csv for food court and giving the list of complete food court iri
 		//csv input file		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
@@ -772,7 +766,13 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
     	
         return resultfcmapper;
 	}
-	
+	/** prepares the CSV file for the Waste treatment facility and it's xy coordinates. 
+	 * 
+	 * @param mainquery String
+	 * @param filename String
+	 * @param baseUrl String
+	 * @param model
+	 */
 	public void prepareCSVWT(String mainquery,String filename,String baseUrl,OntModel model) {		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -787,7 +787,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         resultxy.add(0,header);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy)); 	
 	}
-	
+	/** grabs the offsite waste treatment facility's costs, sorted by technology type. 
+	 * 
+	 * @param mainquery String
+	 * @param baseUrl String
+	 * @param model OntModel 
+	 */
 	public void prepareCSVTECHBased(String mainquery,String baseUrl,OntModel model) {		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -833,21 +838,35 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         new QueryBroker().putLocal(baseUrl + "/Unit operation cost (off site).csv", MatrixConverter.fromArraytoCsv(opcost));
         new QueryBroker().putLocal(baseUrl + "/Unit_Capacity_offsite.csv", MatrixConverter.fromArraytoCsv(capacity)); 
 	}
-	
+	/** create the batch file in the mentioned folder. 
+	 * 
+	 * @param baseUrl
+	 * @throws Exception
+	 */
 	public void createBat(String baseUrl) throws Exception {
 		String loc = baseUrl + "\\Main.m";
 		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" + "matlab -nosplash -noFigureWindows -r \"try; run('"
 				+ loc + "'); catch; end; quit\"";
 		new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
 	}
-	
+	/** copies over the files in the working directory over to scenario folder. 
+	 * 
+	 * @param newdir
+	 * @param filename
+	 */
 	private void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
 		
 		String destinationUrl = newdir + "/"+filename;
 		new QueryBroker().putLocal(destinationUrl, file);
 	}
-	
+	/** executes the process. Called by runModel. 
+	 * 
+	 * @param targetFolder
+	 * @param command
+	 * @return
+	 * @throws InterruptedException
+	 */
 	private String executeSingleCommand(String targetFolder , String command) throws InterruptedException 
 	{  
 	 
@@ -875,7 +894,12 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		}
 		return resultString; 
 	}
-	
+	/** runs the batch file. 
+	 * 
+	 * @param baseUrl
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
 	public void runModel(String baseUrl) throws IOException, InterruptedException {
 		String startbatCommand =baseUrl+"/runm.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
