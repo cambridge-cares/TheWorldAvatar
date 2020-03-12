@@ -20,13 +20,19 @@ public class NISTSpeciesId {
     /**
      * 
      * @author NK510 (caresssd@hermes.cam.ac.uk)
-     * NISTSpeciesId is extended with identifier, bond and geometry as species attributes (properties)
+     * NISTSpeciesId is extended with identifier, bond, geometry, scf energy, zero point energy as species attributes (properties)
      * 
      */
 
     private String identifier="";
     private String bond="";
     private String geometry="";
+    
+    private String scfEnergy="";
+    private String zeroPointEnergy="";
+    
+    private String standardEnthalpyOfFormation="";
+    
     
     public NISTSpeciesId(String name, String formula, String CASRegNr) {
         this.name = name;
@@ -43,11 +49,14 @@ public class NISTSpeciesId {
      * @param bond the bond
      * @param geometry the geometry
      */
-    public NISTSpeciesId(String identifier, String CASRegNr, String bond, String geometry) {
+    public NISTSpeciesId(String identifier, String CASRegNr, String bond, String geometry, String standardEnthalpyOfFormation, String scfEnergy, String zeroPointEnergy) {
         this.identifier=identifier;
         this.CASRegNr = CASRegNr;
         this.bond=bond;
         this.geometry=geometry;
+        this.scfEnergy=scfEnergy;
+        this.zeroPointEnergy=zeroPointEnergy;
+        this.standardEnthalpyOfFormation=standardEnthalpyOfFormation;
     }
     
     public String getName() {
@@ -88,5 +97,51 @@ public class NISTSpeciesId {
 	 */
 	public String getGeometry() {
 		return geometry;
+	}
+
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @return the scf energy
+	 */
+	public String getScfEnergy() {
+		return scfEnergy;
+	}
+
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @param scfEnergy
+	 */
+	public void setScfEnergy(String scfEnergy) {
+		this.scfEnergy = scfEnergy;
+	}
+
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @return zero point energy
+	 */
+	public String getZeroPointEnergy() {
+		return zeroPointEnergy;
+	}
+
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @param zeroPointEnergy
+	 */
+	public void setZeroPointEnergy(String zeroPointEnergy) {
+		this.zeroPointEnergy = zeroPointEnergy;
+	}
+
+
+	public String getStandardEnthalpyOfFormation() {
+		return standardEnthalpyOfFormation;
+	}
+
+
+	public void setStandardEnthalpyOfFormation(String standardEnthalpyOfFormation) {
+		this.standardEnthalpyOfFormation = standardEnthalpyOfFormation;
 	}
 }
