@@ -1,3 +1,4 @@
+
 /**
 
  * Configurations for the project, used both in app && test
@@ -54,8 +55,8 @@ function configDevelop() {
 }
 
 function configDeploy() {
-    // config.root = path.normalize("C:/TOMCAT/webapps/ROOT");
-    config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
+     config.root = path.normalize("C:/TOMCAT/webapps/ROOT");
+    //config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
 	//config.root2 = path.normalize("C:/TOMCAT/webapps/ROOT/kb/sgp/semakauisland");
     config.port = 82;//port for deploy
     config.registerUrl = "http://10.25.188.104";

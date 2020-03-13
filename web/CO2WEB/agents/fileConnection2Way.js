@@ -763,9 +763,4 @@ owlProcessor.uriList2DiskLoc = function (uriArr, diskroot) {
 //test
 //console.time('conn')
    // owlProcessor.doConnect(loc)
-
-//b.process( {topnode:"http://www.theworldavatar.com/SemakauIsland.owl"}).then((res)=>{
-  //  console.log('print')
-    //console.log((res))});
-
 module.exports = owlProcessor;

@@ -1,6 +1,6 @@
 var scenario = "base";
-var prefix = "http://localhost:8080";
-// var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
+//var prefix = "http://localhost:8080";
+var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
 var marker;
@@ -433,7 +433,7 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
  */
 function displayCO2(data){
     //read the value of CO2 and display upon calling
-    //var agenturl =  prefix + '/JPS_POWSYS//ENVisualization/readGenerator' ;
+   // var agenturl =  prefix + '/JPS_POWSYS/ENVisualization/readGenerator' ;
 	var agenturl =  prefix + '/JPS_POWSYS/AggregationEmissionAgent/aggregateemission' ;
     var kmlurl = createUrlForAgent(scenario, agenturl, data);
     console.log(kmlurl);

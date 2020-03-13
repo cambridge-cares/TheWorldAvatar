@@ -10,14 +10,11 @@ var router = express.Router();
 var config = require("../config");
 
 var getAllSensor = require("../agents/GetAllSensor");
+router.get('/', function (req, res, next) {
+getAllSensor(function(err,result){
+	    res.render('bmsPlot', {sensorList :result}); //render the view with this value
 
-var cacheRouter  = require("../agents/Cache");
-
-function  sendResult(result, res) {
-    res.render('bmsPlot', {sensorList :JSON.parse(result)}); //render the view with this value
-}
-
-router = cacheRouter(router).get('/', getAllSensor, { sendResult, expiredTime:36000000});
-
+})
+})
 
 module.exports = router;

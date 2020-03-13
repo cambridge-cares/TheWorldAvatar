@@ -86,7 +86,6 @@ Sim.prototype = {
                 if(this.displayInputUpdate) {//okay to fire this immedietly
                     this.displayInputUpdate(udata);
                 }
-                console.log(dataMap);
                 //TODO: however, this
                 this.sendSimulation(dataMap, this.simulationResultCB, this.errorCB);//=>great!sent the inputvalues to simulation API
             }
@@ -185,7 +184,7 @@ Sim.prototype = {
             },
             error: (err)=>{
                 //Do Something to handle error
-                this.errorCB(err);
+                errCB(err);
             }
         });
     },
