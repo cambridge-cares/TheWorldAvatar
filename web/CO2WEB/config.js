@@ -15,8 +15,8 @@ config.baseUri = "http://www.theworldavatar.com"
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
 config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
-//configDevelop();
-configDeploy();
+configDevelop();
+//configDeploy();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
