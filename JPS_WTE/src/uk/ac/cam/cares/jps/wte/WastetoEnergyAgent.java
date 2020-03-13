@@ -372,73 +372,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				+ "?entity   j1:useTechnology ?Tech1 ."  
 				+ "}"
 				+ "ORDER BY DESC(?Tech1)";
-		 @Override
-			protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-				 String path = request.getServletPath();
-				 String baseUrl= QueryBroker.getLocalDataPath();
-				 String wasteIRI=requestParams.getString("wastenetwork");
-					OntModel model= readModelGreedy(wasteIRI);
-					List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
-					prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
-					List<String[]> inputoffsitedata=prepareCSVCompTECHBased(compquery,baseUrl,model);
-					prepareCSVTECHBased(WTFTechQuery,baseUrl,model);
-					copyTemplate(baseUrl, "SphereDist.m");
-					copyTemplate(baseUrl, "Main.m");
-					copyTemplate(baseUrl, "D2R.m");
-				 if (SIM_START_PATH.equals(path)) {
 
-						try {
-							createBat(baseUrl);
-							runModel(baseUrl);
-				            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
-				                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					 
-				 }else if (SIM_PROCESS_PATH.equals(path)) {
-					 try {
-						
-							//=========================================update in onsite wtf================================================== //create new owl file		
-
-										List<String> onsiteiricomplete=updateinOnsiteWT(inputonsitedata,baseUrl);
-										
-							//=======================================update in food court======================================================			
-
-										List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,inputonsitedata);
-							//===================================update in waste system========================================================
-										updateKBForSystem(wasteIRI, baseUrl, wasteSystemOutputQuery,onsiteiriselected); //for waste system
-//										String revenue=economic.get(0)[0]; //ok
-//										String totalinflow=economic.get(1)[0]; //similar to revenue
-//										String capex=economic.get(2)[0]; //ok
-//										String opex=economic.get(3)[0];//ok
-//										String manpower=economic.get(4)[0]; //ok
-//										String landcost=economic.get(5)[0];//ok
-//										String pollution=economic.get(6)[0];
-//										String transport=economic.get(7)[0];//ok
-//										String resource=economic.get(8)[0];//ok
-//										String totaloutflow=economic.get(9)[0]; //total output excluding capital cost
-//										String netflow=economic.get(10)[0]; 
-							//=============================================================================================	
-										
-
-										updateinOffsiteWT(inputoffsitedata,baseUrl);
-										return requestParams;
-					 }catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-										
-
-					 
-				 }
-
-
-				
-				
-				return requestParams;
-			}
 	/** updates the Onsite Waste Treatment Facility OWL file
 	 * 
 	 * @param inputdata {[List<String[]>]}
