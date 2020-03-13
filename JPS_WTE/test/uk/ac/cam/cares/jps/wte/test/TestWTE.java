@@ -97,7 +97,7 @@ public class TestWTE extends TestCase {
 		new WastetoEnergyAgent().prepareCSVFC(WastetoEnergyAgent.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model);
 		new WastetoEnergyAgent().prepareCSVWT(WastetoEnergyAgent.WTquery,"Location.csv",baseUrl,model);
 		new WastetoEnergyAgent().prepareCSVCompTECHBased(WastetoEnergyAgent.compquery,baseUrl,model);
-		new WastetoEnergyAgent().prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model);
+		new WastetoEnergyAgent().prepareCSVTECHBased(WastetoEnergyAgent.WTFTechQuery,baseUrl,model,"offsite");
 	}
 	
 	public void testCreateBatchFile() {
