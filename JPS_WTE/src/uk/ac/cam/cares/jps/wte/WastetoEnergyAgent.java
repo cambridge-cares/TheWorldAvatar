@@ -886,7 +886,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         new QueryBroker().putLocal(baseUrl + "/Resource conversion ("+keyword+").csv", MatrixConverter.fromArraytoCsv(consumption)); 
         new QueryBroker().putLocal(baseUrl + "/Unit installation cost ("+keyword+").csv", MatrixConverter.fromArraytoCsv(inscost)); 
         new QueryBroker().putLocal(baseUrl + "/Unit operation cost ("+keyword+").csv", MatrixConverter.fromArraytoCsv(opcost));
-        new QueryBroker().putLocal(baseUrl + "/Unit_Capacity_"+keyword+".csv", MatrixConverter.fromArraytoCsv(capacity)); 
+        new QueryBroker().putLocal(baseUrl + "/Unit_capacity_"+keyword+".csv", MatrixConverter.fromArraytoCsv(capacity)); 
 	
         return resultList;
 	}

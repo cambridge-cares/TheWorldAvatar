@@ -12,7 +12,8 @@ pollutionTransportTax=transport(3);
 dieselConsTruck=transport(4); %gCO2/km
 %onsite
 n_unit_onsite_max=10; % Onsite only AD avaialble, maximum 10 units
-Unit_capacity_onsite=1; % Onsite only AD avaialble, maximum capacity 1kg/day
+%Unit_capacity_onsite=1; % Onsite only AD avaialble, maximum capacity 1kg/day
+Unit_capacity_onsite=readmatrix('Unit_capacity_onsite.csv');%unit capacity for each tech
 %costs
 
 %Unit_installation_cost_onsite=117000;%$/unit capacity

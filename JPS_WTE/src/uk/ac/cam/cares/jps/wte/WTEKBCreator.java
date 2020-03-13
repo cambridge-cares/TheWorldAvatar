@@ -1141,7 +1141,7 @@ public class WTEKBCreator {
 
 }
 		
-	public void executeConversion() throws Exception { //not valid anymore, need provide additional data first
+	public void executeConversion() throws Exception { //not valid for onsite wtf, need provide additional data first
 		System.out.println("Starting Process");
 		WTEKBCreator converter = new WTEKBCreator();
 		converter.startConversion("foodcourt",null,null,null);
