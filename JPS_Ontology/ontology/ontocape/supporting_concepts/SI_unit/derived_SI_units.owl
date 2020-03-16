@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl/"
-     xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl/"
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"
      xmlns:der_dim="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#"
      xmlns:SI_unit="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
@@ -104,6 +104,28 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ANGULAR_ACCELERATION -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ANGULAR_ACCELERATION">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#RADIAN"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#SECOND_SQUARED"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ANGULAR_VELOCITY -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ANGULAR_VELOCITY">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#RADIAN"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#BAR -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#BAR">
@@ -151,6 +173,9 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CENTIMETER">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#CENTI-"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
     </owl:NamedIndividual>
     
 
@@ -188,6 +213,20 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#COULOMB">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#AMPERE"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_CENTIMETER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_CENTIMETER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CENTIMETER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume"/>
+        <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</maths:rightChildNodeValue>
     </owl:NamedIndividual>
     
 
@@ -199,6 +238,17 @@ The following classes, relations, and individuals from other ontology modules ar
         <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER"/>
         <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#power"/>
         <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</maths:rightChildNodeValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_HOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_HOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
     </owl:NamedIndividual>
     
 
@@ -225,6 +275,17 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_SECOND -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_SECOND">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius">
@@ -232,6 +293,17 @@ The following classes, relations, and individuals from other ontology modules ar
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CELSIUS"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#thermodynamic_temperature"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">°C</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#DAY -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#DAY">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+        <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">24</maths:rightChildNodeValue>
     </owl:NamedIndividual>
     
 
@@ -256,10 +328,55 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Leaf"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAMCO2_PER_KILOMETER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAMCO2_PER_KILOMETER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM_PER_CUBIC_METER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM_PER_CUBIC_METER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM_PER_SECOND -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM_PER_SECOND">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HECTOPASCAL -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HECTOPASCAL">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#HECTO-"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#PASCAL"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
     </owl:NamedIndividual>
     
 
@@ -428,6 +545,17 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOGRAM_PER_SECOND -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOGRAM_PER_SECOND">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SECOND"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOJOULE -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOJOULE">
@@ -439,6 +567,17 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOJOULE_PER_KILOGRAM -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOJOULE_PER_KILOGRAM">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOJOULE"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER">
@@ -446,6 +585,17 @@ The following classes, relations, and individuals from other ontology modules ar
         <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILO-"/>
         <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
         <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER_PER_HOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER_PER_HOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
     </owl:NamedIndividual>
     
 
@@ -472,6 +622,28 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOTON -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOTON">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILO-"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOTON_PER_YEAR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOTON_PER_YEAR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOTON"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#YEAR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOVOLT -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOVOLT">
@@ -494,6 +666,39 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOWATT_HOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOWATT_HOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOWATT"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAJOULE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAJOULE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MEGA-"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#JOULE"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAJOULE_PER_KILOMOLE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAJOULE_PER_KILOMOLE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAJOULE"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMOLE"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT">
@@ -501,6 +706,17 @@ The following classes, relations, and individuals from other ontology modules ar
         <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MEGA-"/>
         <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
         <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#WATT"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT_HOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT_HOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
     </owl:NamedIndividual>
     
 
@@ -516,13 +732,57 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILIMETER -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILIMETER">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
-        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MILLI-"/>
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM"/>
         <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
-        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER"/>
+        <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1000</maths:rightChildNodeValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MICROGRAM -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MICROGRAM">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MICRO-"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MICROGRAM_PER_CUBIC_METER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MICROGRAM_PER_CUBIC_METER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MICROGRAM"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MILLI-"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#METER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER_PER_HOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER_PER_HOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
     </owl:NamedIndividual>
     
 
@@ -543,6 +803,8 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MJ_per_kmol">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MJ/kmol"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAJOULE_PER_KILOMOLE"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#heat_capacity"/>
     </owl:NamedIndividual>
     
 
@@ -561,6 +823,16 @@ The following classes, relations, and individuals from other ontology modules ar
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit"/>
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#power"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MWh -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MWh">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT_HOUR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#work"/>
     </owl:NamedIndividual>
     
 
@@ -636,6 +908,29 @@ The following classes, relations, and individuals from other ontology modules ar
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#NEWTON_PER_METER"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#surface_tension"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Newton per meter - N/m</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#VOLT"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#AMPERE"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#resistance"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM_PER_KILOMETER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM_PER_KILOMETER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER"/>
     </owl:NamedIndividual>
     
 
@@ -749,6 +1044,50 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_DAY -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_DAY">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#DAY"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_HOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_HOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_MEGAWATTHOUR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_MEGAWATTHOUR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MEGAWATT_HOUR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_YEAR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_YEAR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#YEAR"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD">
@@ -763,6 +1102,9 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_HOUR">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HOUR"/>
     </owl:NamedIndividual>
     
 
@@ -771,6 +1113,53 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KG">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#KILOGRAM"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOMETER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOMETER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOMOLE -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOMOLE">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMOLE"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOWATT -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOWATT">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOWATT"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_TON -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_TON">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
     </owl:NamedIndividual>
     
 
@@ -779,6 +1168,10 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_YEAR">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#Node"/>
+        <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/year"/>
+        <maths:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+        <maths:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#YEAR"/>
     </owl:NamedIndividual>
     
 
@@ -798,6 +1191,7 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kW">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/kW"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOWATT"/>
     </owl:NamedIndividual>
     
 
@@ -811,11 +1205,40 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_km -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_km">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOMETER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kmol -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kmol">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/kmol"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_KILOMOLE"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_ton -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_ton">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/ton"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_PER_TON"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_year -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_year">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD/year"/>
     </owl:NamedIndividual>
     
 
@@ -824,6 +1247,7 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#V">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#voltage"/>
     </owl:NamedIndividual>
     
 
@@ -883,6 +1307,17 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#WATT_PER_SQUARE_METER -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#WATT_PER_SQUARE_METER">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#WATT"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#SQUARE_METER"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#divide"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#W_per_m.K -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#W_per_m.K">
@@ -899,6 +1334,20 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#W_per_m.m">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#W/m.m"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#WATT_PER_SQUARE_METER"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#heat_flux"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#YEAR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#YEAR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#DAY"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#time"/>
+        <maths:rightChildNodeValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">365</maths:rightChildNodeValue>
     </owl:NamedIndividual>
     
 
@@ -918,6 +1367,25 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#cm">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit"/>
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CENTIMETER"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#cm.cm.cm -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#cm.cm.cm">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_CENTIMETER"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#volume"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#conductor_resistance -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#conductor_resistance">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#ElectricityAndMagnetism"/>
     </owl:NamedIndividual>
     
 
@@ -927,6 +1395,8 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#cubic_m_per_hr">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#cbm/h"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_HOUR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#volume_flowrate"/>
     </owl:NamedIndividual>
     
 
@@ -959,6 +1429,25 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#gCO2_per_km -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#gCO2_per_km">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAMCO2_PER_KILOMETER"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_m.m.m -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_m.m.m">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM_PER_CUBIC_METER"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#density"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#g_per_s">
@@ -967,6 +1456,22 @@ The following classes, relations, and individuals from other ontology modules ar
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#GRAM_PER_SECOND"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
     </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#hPa -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#hPa">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#HECTOPASCAL"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#heat_flux -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#heat_flux"/>
     
 
 
@@ -986,6 +1491,8 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kJ_per_kg">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kJ/kg"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOJOULE_PER_KILOGRAM"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#specific_energy"/>
     </owl:NamedIndividual>
     
 
@@ -1015,6 +1522,8 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kWh">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOWATT_HOUR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#work"/>
     </owl:NamedIndividual>
     
 
@@ -1064,6 +1573,8 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg_per_s">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kg/s"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOGRAM_PER_SECOND"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
     </owl:NamedIndividual>
     
 
@@ -1075,6 +1586,16 @@ The following classes, relations, and individuals from other ontology modules ar
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">kilometer</rdfs:comment>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#km_per_hr -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#km_per_hr">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOMETER_PER_HOUR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#velocity"/>
     </owl:NamedIndividual>
     
 
@@ -1105,6 +1626,7 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kton_per_yr">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kton/year"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#KILOTON_PER_YEAR"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
     </owl:NamedIndividual>
     
@@ -1148,6 +1670,8 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#m.m.m_per_s">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#m3/s"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_SECOND"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#volume_flowrate"/>
     </owl:NamedIndividual>
     
 
@@ -1168,6 +1692,7 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#metric_ton">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#METRIC_TON"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#mass"/>
     </owl:NamedIndividual>
     
@@ -1177,7 +1702,6 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#mm">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit"/>
-        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILIMETER"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
     </owl:NamedIndividual>
     
@@ -1188,6 +1712,8 @@ The following classes, relations, and individuals from other ontology modules ar
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#mm_per_hr">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#mm/h"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER_PER_HOUR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#velocity"/>
     </owl:NamedIndividual>
     
 
@@ -1196,6 +1722,7 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ohm">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#resistance"/>
     </owl:NamedIndividual>
     
@@ -1205,6 +1732,8 @@ The following classes, relations, and individuals from other ontology modules ar
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ohm_per_km">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#OHM_PER_KILOMETER"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#conductor_resistance"/>
     </owl:NamedIndividual>
     
 
@@ -1266,11 +1795,68 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#specific_energy -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#specific_energy">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#Thermodynamics"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_MWh -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_MWh">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_MEGAWATTHOUR"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_DAY"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_HOUR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_yr -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_yr">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton/year"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#TON_PER_YEAR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#mass_flowrate"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug_per_m.m.m">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug/m3"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MICROGRAM_PER_CUBIC_METER"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#density"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#volume_flowrate -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#volume_flowrate">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#DerivedDimension"/>
     </owl:NamedIndividual>
     
 
@@ -1441,28 +2027,35 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#µg_per_m.m.m -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug/m3 -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#µg_per_m.m.m">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
-        <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#µg/m3"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#µg/m3 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#µg/m3">
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ug/m3">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
     </owl:NamedIndividual>
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MWh -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_acceleration -->
 
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MWh">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#PrefixedDerivedUnit"/>
-    </owl:NamedIndividual>
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_acceleration">
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ANGULAR_ACCELERATION"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#acceleration"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_velocity -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#angular_velocity">
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ANGULAR_VELOCITY"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#velocity"/>
+    </rdf:Description>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#voltage -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#voltage"/>
     
 
 
@@ -1516,6 +2109,13 @@ The following classes, relations, and individuals from other ontology modules ar
         <owl:distinctMembers rdf:parseType="Collection">
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Pa"/>
             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#conductor_resistance"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#resistance"/>
         </owl:distinctMembers>
     </rdf:Description>
     <rdf:Description>

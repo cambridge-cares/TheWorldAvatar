@@ -52,6 +52,16 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCapacity -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCapacity">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportingCapacity"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCost -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#hasTransportationCost">
@@ -261,6 +271,14 @@
                 <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportationMeans"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportingCapacity -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#TransportingCapacity">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
     </owl:Class>
     
 

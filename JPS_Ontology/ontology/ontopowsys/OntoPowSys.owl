@@ -1,17 +1,25 @@
 <?xml version="1.0"?>
 <rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#"
      xml:base="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl"
+     xmlns:tensor_quantity="http://www.theworldavatar.com/ontology/ontocape/upper_level/tensor_quantity.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:PowSysBehavior="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#"
+     xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+     xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
+     xmlns:geometry="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#"
+     xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl"/>
     </owl:Ontology>
     
@@ -64,6 +72,14 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#isComprisedOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#isComprisedOf">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerAbsorbed -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerAbsorbed"/>
@@ -78,7 +94,9 @@
 
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerInput -->
 
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerInput"/>
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerInput">
+        <rdfs:domain rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    </owl:ObjectProperty>
     
 
 
@@ -234,6 +252,19 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem -->
+
+    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystem">
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#hasAxis"/>
+                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#CoordinateSystemAxis"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </rdf:Description>
     
 
 
@@ -468,10 +499,10 @@
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasPowerInjection"/>
                 <owl:allValuesFrom>
                     <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#ActivePowerBalance"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#ReactivePowerBalance"/>
-                        </owl:intersectionOf>
+                        </owl:unionOf>
                     </owl:Class>
                 </owl:allValuesFrom>
             </owl:Restriction>
@@ -576,8 +607,8 @@
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#EnergyMeter">
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#isConnectedTo"/>
-                <owl:someValuesFrom>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isConnectedTo"/>
+                <owl:allValuesFrom>
                     <owl:Class>
                         <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode"/>
@@ -588,26 +619,26 @@
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#VoltageRegulator"/>
                         </owl:unionOf>
                     </owl:Class>
-                </owl:someValuesFrom>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#observes"/>
-                <owl:someValuesFrom>
-                    <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
-                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CumulatedEnergy"/>
-                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EnergyPrice"/>
-                        </owl:intersectionOf>
-                    </owl:Class>
-                </owl:someValuesFrom>
+                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes"/>
                 <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#EnergyMetering"/>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#observes"/>
+                <owl:allValuesFrom>
+                    <owl:Class>
+                        <owl:intersectionOf rdf:parseType="Collection">
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CumulatedEnergy"/>
+                            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#EnergyPrice"/>
+                        </owl:intersectionOf>
+                    </owl:Class>
+                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
     </owl:Class>
@@ -626,14 +657,14 @@
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#realizes"/>
-                <owl:someValuesFrom>
+                <owl:allValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerConsumption"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerGeneration"/>
                         </owl:intersectionOf>
                     </owl:Class>
-                </owl:someValuesFrom>
+                </owl:allValuesFrom>
             </owl:Restriction>
         </rdfs:subClassOf>
         <rdfs:subClassOf>
@@ -1570,6 +1601,112 @@
                 <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#WeakIrradiationLosses"/>
             </owl:Restriction>
         </rdfs:subClassOf>
+    </rdf:Description>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#a1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#a1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#Surface"/>
+        <geometry:has_area rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v2"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v1"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v2 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v2"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v3 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v3"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v4"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#vr1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#vr1">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#VoltageRegulator"/>
+        <technical_system:realizes rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v1"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v1"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v2"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v1"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v3"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v1"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v4"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v2"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v3"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v2"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v4"/>
+        </owl:distinctMembers>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
+        <owl:distinctMembers rdf:parseType="Collection">
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v3"/>
+            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#v4"/>
+        </owl:distinctMembers>
     </rdf:Description>
 </rdf:RDF>
 
