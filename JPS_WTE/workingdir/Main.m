@@ -5,24 +5,36 @@ close all
 %_____________________Parameter (Scalar)___________________________________
 
 %transport
-Unit_transport_capacity=6; %ton/truck
+transport=readmatrix('transport.csv');
+Unit_transport_capacity=transport(1);%ton/truck
+Unit_transport_cost=transport(2);%$/km
+pollutionTransportTax=transport(3);
+dieselConsTruck=transport(4); %gCO2/km
 %onsite
 n_unit_onsite_max=10; % Onsite only AD avaialble, maximum 10 units
-Unit_capacity_onsite=1; % Onsite only AD avaialble, maximum capacity 1kg/day
+%Unit_capacity_onsite=1; % Onsite only AD avaialble, maximum capacity 1kg/day
+Unit_capacity_onsite=readmatrix('Unit_capacity_onsite.csv');%unit capacity for each tech
 %costs
+
+%Unit_installation_cost_onsite=117000;%$/unit capacity
+Unit_installation_cost_onsite=readmatrix('Unit installation cost (onsite).csv');%$/unit capacity
+%Unit_operation_cost_onsite=36;%$/unit capacity
+Unit_operation_cost_onsite=readmatrix('Unit operation cost (onsite).csv');%$/unit capacity
+%Pollution_treatment_tax_onsite=0;%$/ton
+Pollution_treatment_tax_onsite=readmatrix('Pollution treatment tax (onsite).csv');%$/ton of CO2 equivalent
+%Product_Conversion_onsite=0;% Electricity kWh/ton waste
+Product_Conversion_onsite=readmatrix('Conversion rate (onsite).csv');% Electricity kWh/ton waste Amount of recovered energy/material/ton of processed waste
+%Resource_conversion_onsite=0; % Electricity consumption for production
+Resource_conversion_onsite=readmatrix('Resource conversion (onsite).csv');% kWh/ton, Electricity consumption for production
+
 Unit_land_cost_onsite=500; %$/unit capacity
 Unit_land_cost_offsite=300;%$/unit capacity
 Unit_manpower_cost=0; % manpower cost for both onsite and offsite
 Unit_resource_cost_electricity=0.1; %electricity
-Unit_transport_cost=3; %$/km
-Unit_installation_cost_onsite=117000;%$/unit capacity
-Unit_operation_cost_onsite=36;%$/unit capacity
-Pollution_treatment_tax_onsite=0;%$/ton
-pollutionTransportTax=0.1;
-dieselConsTruck=0.4;
+
 EOS=1; % Economy of scale
-Product_Conversion_onsite=0;% Electricity kWh/ton waste
-Resource_conversion_onsite=0; % Electricity consumption for production
+
+
 daysperyear=365;
 
 %_____________________Parameter (Array)____________________________________
@@ -34,12 +46,12 @@ waste=readmatrix('Waste.csv')/1000;% waste in tons/day
 n_unit_offsite_max=readmatrix('n_unit_max_offsite.csv');%max number of unit for each site
 % cost information
 Unit_capacity_offsite=readmatrix('Unit_capacity_offsite.csv');%unit capacity for each tech
-Unit_installation_cost_offsite=readmatrix('Unit installation cost (off site).csv');%$/unit capacity
-Unit_operation_cost_offsite=readmatrix('Unit operation cost (off site).csv');%$/unit capacity
-Pollution_treatment_tax_offsite=readmatrix('Pollution treatment tax.csv');%$/ton of CO2 equivalent
+Unit_installation_cost_offsite=readmatrix('Unit installation cost (offsite).csv');%$/unit capacity
+Unit_operation_cost_offsite=readmatrix('Unit operation cost (offsite).csv');%$/unit capacity
+Pollution_treatment_tax_offsite=readmatrix('Pollution treatment tax (offsite).csv');%$/ton of CO2 equivalent
 % conversion information
-Product_Conversion_offsite=readmatrix('Conversion rate.csv');% Electricity kWh/ton waste Amount of recovered energy/material/ton of processed waste
-Resource_conversion_offsite=readmatrix('Resource conversion.csv');% kWh/ton, Electricity consumption for production
+Product_Conversion_offsite=readmatrix('Conversion rate (offsite).csv');% Electricity kWh/ton waste Amount of recovered energy/material/ton of processed waste
+Resource_conversion_offsite=readmatrix('Resource conversion (offsite).csv');% kWh/ton, Electricity consumption for production
 
 %_____________________Parameter Manipulation_______________________________
 n_foodcourt=size(site,1);
