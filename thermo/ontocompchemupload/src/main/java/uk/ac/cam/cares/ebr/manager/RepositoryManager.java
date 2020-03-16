@@ -26,7 +26,7 @@ import uk.ac.cam.cares.ebr.constant.Constants;
 public class RepositoryManager {
 
 
-	public static void uploadOwlFileOnRDF4JRepository(File owlFile, String serverUrl, String ontoCompChemUri) { 
+	public static void uploadOwlFileOnRDF4JRepository(File owlFile, String serverUrl, String ontoCompChemUri, String ontoCompChemNs) { 
 		
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 
@@ -61,7 +61,7 @@ public class RepositoryManager {
 
 					try {
 
-						Resource context =connection.getValueFactory().createIRI(Constants.ONTOCOMPCHEM_NS.toString(), owlFile.getName()) ;
+						Resource context =connection.getValueFactory().createIRI(ontoCompChemNs, owlFile.getName()) ;
 						/**
 						 * @author nk510
 						 *         <p>

@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.Properties;
 
@@ -16,11 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.BasicConfigurator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import uk.ac.cam.cares.ebr.constant.Constants;
 
 import uk.ac.cam.cares.ebr.manager.FolderManager;
 import uk.ac.cam.cares.ebr.manager.JsonManager;
@@ -49,15 +44,12 @@ public class UploadEbrAgent extends HttpServlet{
 	
 	private static final long serialVersionUID = 1L;
 	
-	Logger logger = LoggerFactory.getLogger(UploadEbrAgent.class);
-
-	public Utility utility = new FileUtility(); 
+	public Utility utility = new FileUtility();	
 	
 	/**
 	 * 
 	 * @author NK510 Adds ebr upload properties such as: Folder path where g09, xml and
-	 *          are stored. Folder path where generated ontology is stored.
-	 *         Xslt file path. Xsd file path.
+	 *          are stored. Folder path where generated ontology is stored.         
 	 *
 	 *Comment: Works without AgentCaller that is not in the line of JPS architecture.
 	 * 
@@ -69,22 +61,26 @@ public class UploadEbrAgent extends HttpServlet{
 		response.setContentType("text/html;charset=UTF-8");
 
 		BasicConfigurator.configure();
-
+		
+		InputStream input =  getServletContext().getResourceAsStream("/WEB-INF/ontocompchemupload.properties");
+		
+		
 		Properties properties = new Properties();
-		properties.load(getServletContext().getResourceAsStream("resources/ontocompchemupload.properties"));
+		
+		properties.load(input);
 		
 		/**
 		 * 
 		 * Code does not use AgentCaller implemented in JSP BASE LIB.
 		 * Example http request:
-		 * https://localhost:8080/ebragent/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400"}
 		 * https://localhost:8080/ebragent/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400", "uniqueSpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09"}
 		 * http://localhost:8080/ebragent/convert?input=%7B"%7B"referenceSpecies"%3A%20"C%3A%5C%5CUsers%5C%5CNK%5C%5CDocuments%5C%5Cphilipp%5C%5C180-pb556%5C%5Cg09"%7D"%7D
 		 * 
 		 */
 		PrintWriter printerWriter = response.getWriter();
 		
-		printerWriter.println("ontocompchem.ns:  " + properties.getProperty("ontocompchem.ns"));
+		printerWriter.println("ontocompchem.ns:  " + properties.getProperty("ontocompchem.ns")+ "<br>");
+		
 		String[] inputs = request.getParameterValues("input");
 		
 		printerWriter.println("json content (input parameter): " + inputs[0] + "<br>");
@@ -94,6 +90,7 @@ public class UploadEbrAgent extends HttpServlet{
 		String speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
 		
 		printerWriter.println("reference species folder path: " + referenceSpecieFolderPath+ "<br>");
+		
 		printerWriter.println("unique species IRI: " + speciesIRI + "<br>");
 
 		/**
@@ -115,13 +112,17 @@ public class UploadEbrAgent extends HttpServlet{
 			
 			String uuidFolderName = FolderManager.generateUniqueFolderName(file.getName());
 			
-			File outputXMLFile = new File(Constants.DATA_FOLDER_PATH_LOCAL_HOST + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml"); 
+//			Constants.DATA_FOLDER_PATH_LOCAL_HOST
+			File outputXMLFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml"); 
 			
-			File owlFile = new File(Constants.KB_FOLDER_PATH_LOCAL_HOST + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
+//			Constants.KB_FOLDER_PATH_LOCAL_HOST
+			File owlFile = new File(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
 			
-			FolderManager.createFolder(Constants.DATA_FOLDER_PATH_LOCAL_HOST + "/" + uuidFolderName);
+//			Constants.DATA_FOLDER_PATH_LOCAL_HOST
+			FolderManager.createFolder(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName);
 			
-			FolderManager.createFolder(Constants.KB_FOLDER_PATH_LOCAL_HOST + "/" + uuidFolderName);
+//			Constants.KB_FOLDER_PATH_LOCAL_HOST
+			FolderManager.createFolder(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName);
 			
 			try {
 				
@@ -135,18 +136,29 @@ public class UploadEbrAgent extends HttpServlet{
 				GenerateXml.generateRootModule(file, outputXMLFile, rootModule);
 				
 				/**
+				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
 				 * 
-				 * Generates owl file without unique species IRI. 
+				 * Generates owl file without unique species IRI.
+				 * 
 				 */
+				
 //				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()));
 				
+			
+				String xsltFilePath =getClass().getClassLoader().getResource("gxmltoowl.xsl").getPath();
+			    
+				System.out.println("xsltFilePath: " + xsltFilePath);
 				/**
+				 * 
 				 * @author NK510 (caressd@hermes.cam.ac.uk)
 				 * 
 				 * Generates owl file including unique species IRI
-				 */				
-				Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()));
+				 * 
+				 */
+//				Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()
+//				properties.getProperty("xslt.file.path.local.host"))
+				Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
 				
 				consistency = InconsistencyExplanation.getConsistencyOWLFile(owlFile.getCanonicalPath());
 				
@@ -155,24 +167,28 @@ public class UploadEbrAgent extends HttpServlet{
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
 				 * 
 				 * If owl file is consistent then it is uploaded on RDF4J server.
+				 * 
 				 */
-				if(consistency) {
-					
-					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile, Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST.toString(), Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString());
-				}
-
 				
-			} catch (Exception e) {
+				if(consistency) {
+				
+//				Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST.toString()
+//				Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString()
+				RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host"),properties.getProperty("ontocompchem.kb.tbox.uri"), properties.getProperty("ontocompchem.ns"));
+				
+				}
+				
+			}catch (Exception e){
 			
 				e.printStackTrace();
+				
 			}
 			
 			printerWriter.println("[ xml file path:" + outputXMLFile.getCanonicalPath()+ "] [owl file path: " + owlFile.getCanonicalPath() + " ]" + " [consistency:   " + consistency +" ]" + "<br>");
-			
+		
 		}
 		
 		printerWriter.close();
-
 		
 	}
 	
