@@ -73,6 +73,14 @@ public class Workspace {
 		return null;
 	}
 	
+	public String getStatusFilePath(File jobFolder, String statusFileName){
+		return jobFolder.getAbsolutePath().concat(File.separator).concat(statusFileName);
+	}
+	
+	public String getJSONInputFilePath(File jobFolder, String jsonInputFileName){
+		return jobFolder.getAbsolutePath().concat(File.separator).concat(jsonInputFileName);
+	}
+
 	private void copyFile(File from, File to) throws IOException{
 		Files.copy(from, to);
 	}
