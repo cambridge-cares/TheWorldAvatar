@@ -1,5 +1,6 @@
 package com.cmclinnovations.slurm.job;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 
@@ -73,6 +74,61 @@ public class Workspace {
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Creates the JSON formatted input file in the current job folder. 
+	 *  
+	 * @param workspaceFolder
+	 * @param jsonInputFilePath the path where the JSON formatted input<br>
+	 * file will be stored.
+	 * @param jsonString the string that contains the the whole content<br>
+	 * of the JSON formatted input.
+	 * @return success message if the file JSON file can be created, null<br>
+	 * otherwise. 
+	 * @throws IOException
+	 */
+	public String createJSONInputFile(File workspaceFolder, String jsonInputFilePath, String jsonString) throws IOException{
+		BufferedWriter jsonInputFile = Utils.openBufferedWriter(jsonInputFilePath);
+		if(jsonInputFile == null){
+			return null;
+		}
+		jsonInputFile.write(jsonString);
+		jsonInputFile.close();
+		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+	}
+	
+	/**
+	 * Returns the absolute path to an input file identified by its extension.<br>
+	 * For example, .com, .g09, .csv, .jar, etc.
+	 * 
+	 * @param jobFolder
+	 * @param hpcAddress
+	 * @param inputFileExtension
+	 * @return
+	 */
+	public String getInputFilePath(File jobFolder, String hpcAddress, String inputFileExtension){
+		return jobFolder.getAbsolutePath()
+		.concat(File.separator)
+		.concat(hpcAddress)
+		.concat("_").concat(getTimeStampPart(jobFolder.getName()))
+		.concat(inputFileExtension);
+	}
+	
+	/**
+	 * Creates the job folder on the host machine where the current agent runs.
+	 * 
+	 * @param workspacePath
+	 * @param hpcAddress
+	 * @return
+	 */
+	public File createJobFolder(String workspacePath, String hpcAddress){
+		String jobFolder = hpcAddress.concat("_").concat("" + Utils.getTimeStamp());
+		File workspace = new File(workspacePath.concat(File.separator).concat(jobFolder));
+		if(workspace.mkdir()){
+			return workspace;
+		}
+		return null;
 	}
 	
 	/**
