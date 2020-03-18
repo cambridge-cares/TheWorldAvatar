@@ -99,11 +99,11 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
             runKML();
         });
     });
-    /*** accesses parallel scenarios through these helper functions
+    /** creates new scenario through ScenarioModifier.java agent
      * @param scenarioname the name of the scenario, be it base or specific folder 
      * @param agenturl: GET request to Java Backend Servlet
      * @param sparql: JSON packets or what not that the Java backend could request. 
-     * @returns modified url for update
+     * @returns modified url for future use. 
      */
     function createNewUrlForAgent(scenarioname, agenturl, agentparams) {
 
@@ -119,6 +119,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
         return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
     }
     /** queries ESS ESS Coordination Agent
+     * This uses createNewUrlForAgent which would create a new scenario. The agent below demands agent to be scenario capable. 
      * @param cb callback
      */
     function drawBattery(cb) 	{
@@ -129,7 +130,8 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 		batteryjson["BatteryCatalog"] = batIRI;
 		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
 		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
-		var batteryurl = createNewUrlForAgent(scenario, agenturl, batteryjson); //only calls this special method when creating a new scenario. Otherwise, it calls the basic createURL
+        var batteryurl = createNewUrlForAgent(scenario, agenturl, batteryjson); 
+        //only calls this special method when creating a new scenario. Otherwise, it calls the basic createURLForAgent
 		console.log(batteryurl);
 	    var request = $.ajax({
 	        url: batteryurl,
@@ -165,12 +167,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 		});
 
     }
-    function uuidv4() {
-    	  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    	    var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
-    	    return v.toString(16);
-    	  });
-    	}
+   
     /** queries the battery location and pushes results to batterylist
      * 
      * @param {String} iri 
