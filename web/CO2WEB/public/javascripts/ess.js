@@ -89,7 +89,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
         if (scenario == ''){
             scenario = "testBatt1"; //auto set scenario to standard to differentiate from base
         }
-        scenario=scenario+uuidv4();
+        // scenario=scenario+uuidv4();
         ppMap.clearAnimatedLines();
         clearMarkers();
         console.log(scenario);
@@ -99,6 +99,25 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
             runKML();
         });
     });
+    /*** accesses parallel scenarios through these helper functions
+     * @param scenarioname the name of the scenario, be it base or specific folder 
+     * @param agenturl: GET request to Java Backend Servlet
+     * @param sparql: JSON packets or what not that the Java backend could request. 
+     * @returns modified url for update
+     */
+    function createNewUrlForAgent(scenarioname, agenturl, agentparams) {
+
+        var url;
+        if ((scenarioname == null) || scenarioname == "base") {
+            url = agenturl;
+        } else {
+            agentparams['scenarioagentoperation'] = agenturl;
+            var scenariourl = prefix + '/jps/scenariomod/' + scenarioname + '/call';
+            url = scenariourl;
+        }
+
+        return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
+    }
     /** queries ESS ESS Coordination Agent
      * @param cb callback
      */
@@ -110,7 +129,7 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 		batteryjson["BatteryCatalog"] = batIRI;
 		batteryjson["RenewableEnergyGenerator"] = pvGenIRI;
 		var agenturl = prefix + '/JPS_ESS/startsimulationCoordinationESS';  
-		var batteryurl = createUrlForAgent(scenario, agenturl, batteryjson);
+		var batteryurl = createNewUrlForAgent(scenario, agenturl, batteryjson); //only calls this special method when creating a new scenario. Otherwise, it calls the basic createURL
 		console.log(batteryurl);
 	    var request = $.ajax({
 	        url: batteryurl,
@@ -128,6 +147,10 @@ var pvGenIRI=["http://www.theworldavatar.com/kb/sgp/semakauisland/semakauelectri
 	    request.done( function(data) {
 	        console.log ("success create request");
 	        console.log(data);
+            //suck the scenariourl to figure out the current scenario
+            scenarioUR = JSON.parse(data).jpscontext.scenariourl;
+            scenariolst  = scenarioUR.split('/');
+            scenario = scenariolst[scenariolst.length-1]
 	        batlist = JSON.parse(data).batterylist;
 	        console.log(batlist);
 	       	batterylist = [];
