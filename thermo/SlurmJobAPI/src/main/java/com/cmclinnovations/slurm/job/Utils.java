@@ -65,7 +65,8 @@ public class Utils {
 	}
 
 	/**
-	 * Reads the address of the machine where an instance of DFT Agent is hosted.
+	 * Reads the address of the machine where an instance of the agent<br>
+	 * running Slurm jobs is hosted.
 	 * 
 	 * @return
 	 * @throws UnknownHostException
@@ -77,6 +78,7 @@ public class Utils {
 		   return address.toString().replace("/", "_");
 		} catch (UnknownHostException e){
 		    e.printStackTrace();
+		    logger.error("SlurmJobAPI: The host address is unknown as InetAddress.getLocalHost() threw an exception.");
 		}
 		return null;
 	}
