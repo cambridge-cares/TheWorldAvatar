@@ -1,6 +1,5 @@
 package com.cmclinnovations.slurm.job;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 
@@ -9,24 +8,37 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.google.common.io.Files;
 
+/**
+ * All functionalities for creating the workspace, job folder, status file,<br>
+ * json input file, script file and input file for Slurm jobs.
+ * 
+ * @author msff2
+ *
+ */
 public class Workspace {
 	
 	public long previousTimeStamp = System.nanoTime();
 	
-	public File createAgentWorkspace(String workspaceParentPath, String agentClass){
-		if(isWorkspaceAvailable(workspaceParentPath, agentClass)){
-			return getWorkspaceName(workspaceParentPath, agentClass);
-		}
-		return createWorkspaceName(workspaceParentPath, agentClass);
-	}
-	
-	public File getWorkspaceName(String workspaceParentPath, String agentClass){
+	/**
+	 * Receives both the agent class (e.g. DFTAgent) and folder (absolute path)<br>
+	 * where the workspace for the agent will be created, and returns the name<br>
+	 * of workspace. 
+	 *  
+	 * @param workspaceParentPath specific to the OS. For example,<br>
+	 * - on Windows an example path will be 'C:/Users/<username>', and<br>
+	 * - on Linux the path '/home/<username>'.
+	 * 
+	 * @param agentClass
+	 * @return
+	 */
+	public File getWorkspaceName(String workspaceParentPath, String agentClass) {
 		File dir = new File(workspaceParentPath);
-		for(File file:dir.listFiles()){
-			if(file.isDirectory()){
-				if(file.getName().toLowerCase().startsWith(agentClass.toLowerCase())){
+		for (File file : dir.listFiles()) {
+			if (file.isDirectory()) {
+				if (file.getName().toLowerCase().startsWith(agentClass.toLowerCase())) {
 					String[] tokens = file.getName().split("_");
-					if(tokens.length==2 && tokens[1].length() > 6 && NumberUtils.isNumber(tokens[1])){
+					if (tokens.length >= 2 && tokens[tokens.length - 1].length() > 6
+							&& NumberUtils.isNumber(tokens[tokens.length - 1])) {
 						return file;
 					}
 				}
@@ -62,7 +74,15 @@ public class Workspace {
 		}
 		return false;
 	}
-		
+	
+	/**
+	 * Extracts the time stamp part from the job folder. For example,<br>
+	 * if the job folder is named login-skylake.hpc.cam.ac.uk_428109593378500,<br>
+	 * the method will return 428109593378500.
+	 *  
+	 * @param folder
+	 * @return
+	 */
 	public String getTimeStampPart(String folder){
 		if(folder.contains("_")){
 			String[] tokens = folder.split("_");
@@ -73,14 +93,41 @@ public class Workspace {
 		return null;
 	}
 	
-	public String getStatusFilePath(File jobFolder, String statusFileName){
-		return jobFolder.getAbsolutePath().concat(File.separator).concat(statusFileName);
+	/**
+	 * Receives the jobFolder as the input and returns the absolute path to<br>
+	 * to the job status file.
+	 *  
+	 * @param jobFolder
+	 * @return
+	 */
+	public String getStatusFilePath(File jobFolder){
+		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName());
 	}
 	
-	public String getJSONInputFilePath(File jobFolder, String jsonInputFileName){
-		return jobFolder.getAbsolutePath().concat(File.separator).concat(jsonInputFileName);
+	/**
+	 * Receives the jobFolder as the input and returns the absolute path to<br>
+	 * to the JSON input file.
+	 * 
+	 * @param jobFolder
+	 * @param jsonInputFileName
+	 * @return
+	 */
+	public String getJSONInputFilePath(File jobFolder){
+		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.JSON_INPUT_FILE_NAME.getPropertyName());
 	}
-
+	
+	/**
+	 * Copy the Slurm script to the job folder to set up the current<br>
+	 * job. If the method can copy the script, it returns a job set up<br>
+	 * success message. Otherwise, it returns null.  
+	 *  
+	 *  
+	 * @param source
+	 * @param destination
+	 * @param slurmScriptFileName
+	 * @return
+	 * @throws IOException
+	 */
 	public String copyScriptFile(String source, String destination, String slurmScriptFileName) throws IOException{
 		try{
 		copyFile(new File(source),
@@ -93,6 +140,17 @@ public class Workspace {
 		}
 	}
 	
+	/**
+	 * Copy any file from the source path to the destination path.
+	 * 
+	 * @param from the absolute path to the file which will be copied.
+	 * @param to the absolute path to the folder where the file will be<br>
+	 * copied. If user provides absolute path including the file name,<br>
+	 * probably renamed or the same as the one in the from path, the method<br>
+	 * will keep the same name. 
+	 * 
+	 * @throws IOException
+	 */
 	private void copyFile(File from, File to) throws IOException{
 		Files.copy(from, to);
 	}
