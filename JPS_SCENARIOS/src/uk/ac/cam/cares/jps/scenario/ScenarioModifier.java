@@ -14,11 +14,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 @WebServlet(urlPatterns = {"/scenariomod/*"})
-public class ScenarioModifier {
+/** Used if new Scenario is created. ESS would have its own code name, it runs into here to create new scenario
+ * Otherwise it should just call ScenarioAgent
+ * @author LONG01
+ *
+ */
+public class ScenarioModifier extends JPSHttpServlet{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private static Logger logger = LoggerFactory.getLogger(ScenarioModifier.class);
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,7 +45,9 @@ public class ScenarioModifier {
 		String newscenarioName = scenarioName + UUID.randomUUID().toString();//give random uuid to distinguish
 		path.replace(scenarioName, newscenarioName);//replace string
 		path.replaceFirst("scenariomod", "scenario");//substitute string to call on path. 
-		String result = AgentCaller.executeGetWithJsonParameter("jps/scenario/"+newscenarioName, jo.toString()); //get a String result
+		logger.info("new path: " + path);
+		// Think that only time new scenario is called would be if there is a call. 
+		String result = AgentCaller.executeGetWithJsonParameter("jps/scenario/"+newscenarioName+"/call", jo.toString()); //get a String result
 		// the created scenario url / name is part of the response body
 		//such that the client can use the scenario in future
 		//F, why 
