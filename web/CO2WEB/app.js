@@ -50,7 +50,7 @@ var semakauMap = require("./routes/mapSemakau")
 var b2Map = require("./routes/mapB2");
 var ppalt = require("./routes/mapPPAlt");
 var parallelWorld = require('./routes/parallelWorld');
-var essRoute= require('./routes/eSS');
+var wteMap= require('./routes/wTEroute');
 
 var essMap = require('./routes/ess');
 var DESPlot = require('./routes/DESPlot');
@@ -100,6 +100,7 @@ app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
 app.use('/pwScenario', parallelWorld);
 app.use('/essMap', essMap);
+app.use('/wteMap', wteMap);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
