@@ -25,6 +25,8 @@ import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 public class WTEVisualization extends JPSHttpServlet{
 	/**gets the food court name, xy coordinates
 	 */
+	/**gets the food court name, xy coordinates
+	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -47,7 +49,7 @@ public class WTEVisualization extends JPSHttpServlet{
 			+ "}";
 	/**gets the OnsiteWasteTreatment name, xy coordinates
 	 */
-	public static String OnsiteQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
 			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
@@ -55,17 +57,16 @@ public class WTEVisualization extends JPSHttpServlet{
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?entity ?name ?xvalue ?yvalue " //YEAR IS NOT INCLUDED IF JUST USING SIMPLIFIED VERSION
-			+ "WHERE {"
-			+ "?entity  a j1:FoodCourt ."
-			+ "?entity   j8:hasName ?name ." 
-            + "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-            + "?coorsys   j7:hasProjectedCoordinate_x ?x ." 
-            + "?x   j2:hasValue ?xval ."
-            + "?xval   j2:numericalValue ?xvalue ."
-            + "?coorsys   j7:hasProjectedCoordinate_y ?y ."
-            + "?y   j2:hasValue ?yval ."
-            + "?yval   j2:numericalValue ?yvalue ."
+			+ "SELECT DISTINCT ?entity ?xvalue ?yvalue "
+			+ "WHERE {" 
+			+ "?entity  a j1:OffsiteWasteTreatmentFacility ."			
+			+ "?entity   j7:hasGISCoordinateSystem ?coorsys ." 
+			+ "?coorsys   j7:hasProjectedCoordinate_x ?x ."
+			+ "?x   j2:hasValue ?xval ." 
+			+ "?xval   j2:numericalValue ?xvalue ."
+			+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." 
+			+ "?y   j2:hasValue ?yval ."
+			+ "?yval   j2:numericalValue ?yvalue ."
 			+ "}";
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
 	@Override
@@ -100,10 +101,16 @@ public class WTEVisualization extends JPSHttpServlet{
 		List<String[]> foodcourts = queryCoordinate(model, FCQuery); //hard assumption that there would be foodcourts all the time
 		for (int i = 0; i < foodcourts.size(); i++) {
 			String content="{\"coors\": {\"lat\": "+foodcourts.get(i)[3]+", \"lng\": "+foodcourts.get(i)[2]
-					+ "},  \"name\": \""+foodcourts.get(i)[0]+"\"}";
+					+ "},  \"entity\": \""+foodcourts.get(i)[0]+"\",  \"name\": \""+foodcourts.get(i)[1]
+							+"\"}";
 			textcomb.add(content);
 		}
-		List<String[]> onsiteTechnologies = queryCoordinate(model, OnsiteQuery);
+		List<String[]> offsiteTechnologies = queryCoordinate(model, WTquery);
+		for (int i = 0; i < offsiteTechnologies.size(); i++) {
+			String content="{\"coors\": {\"lat\": "+offsiteTechnologies.get(i)[2]+", \"lng\": "+offsiteTechnologies.get(i)[1]
+					+ "},  \"entity\": \""+offsiteTechnologies.get(i)[0]+"\"}";
+			textcomb.add(content);
+		}
 		JSONArray jsArray = new JSONArray(textcomb);
 	    JSONObject jo = new JSONObject();
 	    jo.put("result", jsArray);

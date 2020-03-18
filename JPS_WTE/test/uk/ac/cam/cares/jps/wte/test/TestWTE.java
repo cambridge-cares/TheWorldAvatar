@@ -193,5 +193,13 @@ public class TestWTE extends TestCase {
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 		System.out.println("answer number= "+resultList.size());
 	}
+	public void testScenarioCoordination() throws IOException { 
+		String scenarioName = "testwaste2-"+usecaseID;
+		String json = new JSONStringer().object()
+				.key("wastenetwork").value(iriofnetwork)
+				.endObject().toString();
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
+		System.out.println(result);
+	}
 
 }
