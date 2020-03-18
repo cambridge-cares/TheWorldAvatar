@@ -81,6 +81,18 @@ public class Workspace {
 		return jobFolder.getAbsolutePath().concat(File.separator).concat(jsonInputFileName);
 	}
 
+	public String copyScriptFile(String source, String destination, String slurmScriptFileName) throws IOException{
+		try{
+		copyFile(new File(source),
+				new File(destination.concat(File.separator)
+						.concat(slurmScriptFileName)));
+		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+		}catch(IOException e){
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	private void copyFile(File from, File to) throws IOException{
 		Files.copy(from, to);
 	}
