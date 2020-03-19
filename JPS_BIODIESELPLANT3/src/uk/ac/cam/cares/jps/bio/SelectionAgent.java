@@ -30,15 +30,18 @@ public class SelectionAgent extends JPSHttpServlet {
     
     @Override
    	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String topnode="http://www.theworldavatar.com/kb/sgp/jurongisland/JurongIsland.owl#JurongIsland";
+		String topnode="http://www.theworldavatar.com/kb/TheWorld.owl#TheWorld";
 		
     	String compIRI=requestParams.getString("componentIRI");
     	OntModel model=readModelGreedy(topnode);
     	String plantlistInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> "
 				+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "SELECT ?plant ?model "
-				+ "WHERE {?plant  a  j2:CompositeSystem  ."
-				+ "?plant j2:isModeledBy ?model ."
+				+ "SELECT ?plant "
+				+ "WHERE {"
+				+ "?world j2:hasSubsystem ?place ."
+				+ "?place j2:hasSubsystem ?plant ."
+				+ "?plant  a  j2:CompositeSystem ."
+				//+ "?plant j2:isModeledBy ?model ."
 				+ "?plant   j2:hasSubsystem <"+compIRI+"> ." 
 				+ "}";
     	

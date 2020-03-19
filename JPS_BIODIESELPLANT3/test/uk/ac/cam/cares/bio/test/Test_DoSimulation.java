@@ -3,6 +3,8 @@ package uk.ac.cam.cares.bio.test;
 import java.io.IOException;
 import java.util.List;
 
+
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.bio.DoSimulation;
 
 public class Test_DoSimulation extends TestCase{
@@ -146,5 +149,53 @@ public class Test_DoSimulation extends TestCase{
 		   jo.put("V_ActualV_R-301",3.3821878615224006);
 		   jo.put("V_Angle_LoadPoint_R-302",-0.48014259831225964);
 		   new DoSimulation().placeinOWLFiles(jo, "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
+	   }
+	   
+		public static OntModel readModelGreedy(String iriofEIP) {
+			String plantlistInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "SELECT ?component "
+					+ "WHERE {?entity  a  j2:CompositeSystem  ." + "?entity   j2:hasSubsystem ?component ." + "}";
+
+			QueryBroker broker = new QueryBroker();
+			return broker.readModelGreedy(iriofEIP, plantlistInfo);
+		}
+		
+		
+		
+	   public void testQuery() {
+		   String compIRI="http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl#R-301";
+	    	String componentlistInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "SELECT ?plant "
+					+ "WHERE {"
+					+ "?place j2:hasSubsystem ?plant ."
+					+ "?place  a  j1:Eco-industrialPark ."
+					+ "}";
+		   String topnode="http://www.theworldavatar.com/kb/TheWorld.owl#TheWorld";
+	    	String plantInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> "
+					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "SELECT ?plant "
+					+ "WHERE {"
+					+ "?plant a  j2:CompositeSystem ."
+					//+ "?plant j2:isModeledBy ?model ."
+					+ "?plant   j2:hasSubsystem <"+compIRI+"> ." 
+					+ "}";
+		   
+		   OntModel model=readModelGreedy(topnode);
+		   ResultSet resultSet = JenaHelper.query(model, componentlistInfo);
+			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+	        String[] keysplant = JenaResultSetFormatter.getKeys(result);
+	        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysplant);
+	        System.out.println("what is resultList size= "+resultList.size());
+	        for(int d=0;d<resultList.size();d++) {
+	        	//OntModel model2=readModelGreedy(resultList.get(d)[0]);
+				String result2 = new QueryBroker().queryFile(resultList.get(d)[0], plantInfo);
+				String[] keysplant2 = JenaResultSetFormatter.getKeys(result2);
+				List<String[]> resultList2 = JenaResultSetFormatter.convertToListofStringArrays(result2, keysplant2);
+		        if(resultList2.size()>0) {
+		        System.out.println("what is the plant= "+resultList2.get(0)[0]);
+		        }
+	        }
 	   }
 }
