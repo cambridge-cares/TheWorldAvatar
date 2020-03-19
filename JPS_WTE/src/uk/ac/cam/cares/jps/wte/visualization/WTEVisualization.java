@@ -68,6 +68,7 @@ public class WTEVisualization extends JPSHttpServlet{
 			+ "?y   j2:hasValue ?yval ."
 			+ "?yval   j2:numericalValue ?yvalue ."
 			+ "}";
+	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
 	@Override
 	protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
@@ -85,6 +86,10 @@ public class WTEVisualization extends JPSHttpServlet{
 			logger.info("path called here= " + path);
 			String g=createMarkers(model);
 			
+			AgentCaller.printToResponse(g, response);
+		}else if ("/WTEVisualization/modifyValues".equals(path)) {
+			logger.info("path called here= " + path);
+			String g=modifyValues(model);
 			AgentCaller.printToResponse(g, response);
 		}
 		
@@ -123,5 +128,13 @@ public class WTEVisualization extends JPSHttpServlet{
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			return resultListfromquery;
+	}
+	/** modify the values according to the query. 
+	 * 
+	 * @param model
+	 * @return
+	 */
+	public String modifyValues(OntModel model) {
+		return "";
 	}
 }

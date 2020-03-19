@@ -165,7 +165,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT ?entity ?BLandCostvalue ?BOpexvalue ?BManCostvalue ?BInstallationCostvalue ?BLifeCyclevalue ?BEnergyconsumptionvalue ?BWaterConsumptionvalue ?DiscountRatevalue ?LifeCyclevalue ?DisposalFeevalue " 
+			+ "SELECT DISTINCT ?entity ?BLandCostvalue ?BOpexvalue ?BManCostvalue ?BInstallationCostvalue ?BLifeCyclevalue ?BEnergyconsumptionvalue ?BWaterConsumptionvalue ?DiscountRatevalue ?LifeCyclevalue ?DisposalFeevalue " 
 			+ "WHERE {"
 			+ "?entity  a j2:CompositeSystem ."
 			+ "?entity   j1:hasBenchmark ?B1 ." 
@@ -473,7 +473,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				resultfcmapper.add(mapper);
 			}
 		}
-        if (filename2 != null) {
+        if (filename2 != null) {//waste.csv
 			List<String[]> resultwaste = new ArrayList<String[]>();
 			int size = resultList.size();
 			int yearend = Integer.valueOf(resultList.get(resultList.size() - 1)[4]);
