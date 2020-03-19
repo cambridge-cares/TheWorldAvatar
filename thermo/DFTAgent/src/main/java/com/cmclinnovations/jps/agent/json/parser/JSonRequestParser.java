@@ -1,4 +1,4 @@
-package com.cmclinnovations.jps.agent.job.request.parser;
+package com.cmclinnovations.jps.agent.json.parser;
 
 import com.jayway.jsonpath.JsonPath;
 

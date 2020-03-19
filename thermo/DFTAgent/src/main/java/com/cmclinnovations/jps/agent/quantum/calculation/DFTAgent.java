@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cmclinnovations.jps.agent.job.request.parser.JSonRequestParser;
+import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.agent.workspace.management.Workspace;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.jcraft.jsch.Channel;
@@ -451,7 +451,7 @@ public class DFTAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Checks if a job is running using the job id.
+	 * Checks the status of job on the HPC where it was submitted.
 	 * 
 	 * @param statusFile
 	 * @return

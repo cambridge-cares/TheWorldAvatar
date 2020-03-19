@@ -7,10 +7,12 @@ import java.io.IOException;
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import com.cmclinnovations.jps.agent.job.request.parser.JSonRequestParser;
+import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
+import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.agent.quantum.calculation.Jobs;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
 import com.cmclinnovations.jps.agent.quantum.calculation.Utils;
+import com.cmclinnovations.jps.kg.OntoAgentKG;
 import com.cmclinnovations.jps.kg.object.model.Job;
 import com.google.common.io.Files;
 
@@ -73,8 +75,9 @@ public class Workspace {
 		if(inputFile == null){
 			return null;
 		}
-		inputFile.write(Property.JOB_NO_OF_CORES.getPropertyName().concat("\n"));
-		inputFile.write(Property.JOB_MEMORY.getPropertyName().concat("\n"));
+		inputFile.write(Property.JOB_NO_OF_CORES_PREFIX.getPropertyName().concat(AgentRequirementParser.getNumberOfCores(OntoAgentKG.getNumberOfCores()).concat("\n")));
+		inputFile.write(Property.JOB_MEMORY_PREFIX.getPropertyName().concat(AgentRequirementParser.getRAMSize(OntoAgentKG.getMemorySize()))
+				.concat(Property.JOB_MEMORY_UNITS.getPropertyName()).concat("\n"));
 		inputFile.write(Property.JOB_CHK_POINT_FILE_ADDRESS_PART.getPropertyName().concat("_")
 				.concat(getTimeStampPart(jobFolder))
 				.concat(Property.CHK_POINT_FILE_EXTENSION.getPropertyName()).concat("\n"));
