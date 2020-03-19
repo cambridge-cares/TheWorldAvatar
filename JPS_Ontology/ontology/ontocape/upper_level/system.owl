@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl/"
-     xml:base="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl/"
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"
      xmlns:owl="http://www.w3.org/2002/07/owl#"
      xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
      xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
@@ -667,6 +667,14 @@ The following classes and relations of the Meta Model are used (i.e., refined) w
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#EnvironmentalFactor -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#EnvironmentalFactor">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ExclusiveSubsystem">
@@ -732,27 +740,6 @@ The following classes and relations of the Meta Model are used (i.e., refined) w
     <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#InternalProperties -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#InternalProperties">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isPropertyOf"/>
-                        <owl:someValuesFrom>
-                            <owl:Class>
-                                <owl:intersectionOf rdf:parseType="Collection">
-                                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
-                                    <owl:Restriction>
-                                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isSubsystemOf"/>
-                                        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3"/>
-                                    </owl:Restriction>
-                                </owl:intersectionOf>
-                            </owl:Class>
-                        </owl:someValuesFrom>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The &apos;internal Properties&apos; of a System are the Properties of its constituent Subsystems. They can be specified by means of a query class and thus inferred by reasoner. Such a query class must be defined individually for each System instance. The query class InternalProperties exemplarily demonstrates this approach for a sample System S.</rdfs:comment>
     </owl:Class>
     
@@ -838,7 +825,6 @@ The following classes and relations of the Meta Model are used (i.e., refined) w
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalDimension">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/>
-        <owl:disjointWith rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A PhysicalDimension is a characteristic associated with PhysicalQuantities and UnitsOfMeasure for purposes of organization or differentiation. Mass, length, and force are exemplary instances of PhysicalDimension.</rdfs:comment>
     </owl:Class>
     
@@ -1210,49 +1196,6 @@ The following classes and relations of the Meta Model are used (i.e., refined) w
     <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#SystemEnvironment -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#SystemEnvironment">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:intersectionOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Class>
-                                <owl:oneOf rdf:parseType="Collection">
-                                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3"/>
-                                </owl:oneOf>
-                            </owl:Class>
-                        </owl:complementOf>
-                    </owl:Class>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem"/>
-                                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
-                    </owl:Class>
-                    <owl:Class>
-                        <owl:complementOf>
-                            <owl:Restriction>
-                                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isSubsystemOf"/>
-                                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3"/>
-                            </owl:Restriction>
-                        </owl:complementOf>
-                    </owl:Class>
-                    <owl:Restriction>
-                        <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectlyRelatedTo"/>
-                        <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3"/>
-                    </owl:Restriction>
-                </owl:intersectionOf>
-            </owl:Class>
-        </owl:equivalentClass>
-        <owl:disjointWith>
-            <owl:Class>
-                <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3"/>
-                </owl:oneOf>
-            </owl:Class>
-        </owl:disjointWith>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ImmediateEnvironment of a given System S consists of all Systems that are directly related to S. It can be specified by means of a query class. As the environment concept is relative, such a query class must be defined individually for each System instance. The query class SystemEnvironment exemplarily demonstrates the approach for sample System S.</rdfs:comment>
     </owl:Class>
     
@@ -1313,12 +1256,6 @@ The following classes and relations of the Meta Model are used (i.e., refined) w
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#UnitOfMeasure">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#NonExhaustiveValueSet"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalDimension"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:subClassOf>
             <owl:Restriction>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
@@ -1383,29 +1320,9 @@ The following classes and relations of the Meta Model are used (i.e., refined) w
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#FeatureSpace"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ValueEnumeration specifies a (finite) set of possible values of a QualitativeValue.</rdfs:comment>
     </owl:Class>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3 -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#BiodieselPlant_3">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Sample system; used for the construction of the query classes SystemEnvironment and InternalProperties.</rdfs:comment>
-    </owl:NamedIndividual>
 </rdf:RDF>
 
 
 
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+<!-- Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi -->
 

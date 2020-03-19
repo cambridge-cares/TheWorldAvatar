@@ -49,6 +49,7 @@
     <!-- http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ChemicalPlant -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl#ChemicalPlant">
+		<rdfs:label>chemical plant, chemical plants</rdfs:label>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#TechnicalSystem"/>
         <rdfs:subClassOf>
             <owl:Restriction>
