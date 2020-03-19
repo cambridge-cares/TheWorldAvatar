@@ -1,0 +1,380 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#"
+     xml:base="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl">
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasBowLength -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasBowLength">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfBow"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasCOG -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasCOG">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#CourseOverGround"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasDestination -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasDestination">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Destination"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasDraught -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasDraught">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Draught"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasETA -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasETA">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#EstimatedTimeOfArrival"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasHeading -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasHeading">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Heading"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasIMONumber -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasIMONumber">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasMMSI -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasMMSI">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasNavigationalStatus -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasNavigationalStatus">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#NavigationalStatus"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasPortLength -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasPortLength">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfPort"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasPositioningDeviceType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasPositioningDeviceType">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#PositioningDeviceType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasRateOfTurn -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasRateOfTurn">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#RateOfTurn"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasSOG -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasSOG">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#SpeedOverGround"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasShipType -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasShipType">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipType"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasStarboardLength -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasStarboardLength">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfStarboard"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasSternLength -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasSternLength">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfStern"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasCallSign -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasCallSign">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasPAC -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasPAC">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#integer"/>
+        <rdfs:comment>position accuracy
+ 0= low accuracy
+1 = high accuracy</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasShipName -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#hasShipName">
+        <rdfs:domain rdf:resource="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship"/>
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Classes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#CourseOverGround -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#CourseOverGround">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Destination -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Destination">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfBow -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfBow">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>A</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfPort -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfPort">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>C</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfStarboard -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfStarboard">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>D</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfStern -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#DimensionOfStern">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+        <rdfs:comment>B</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Draught -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Draught">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#EstimatedTimeOfArrival -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#EstimatedTimeOfArrival">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#TemporalCoordinate"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Heading -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Heading">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#IMOIdentificationNumber -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#IMOIdentificationNumber">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+        <rdfs:comment>ship identification number</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#MMSI -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#MMSI">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#Property"/>
+        <rdfs:comment>Maritime Mobile Service Identity</rdfs:comment>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#NavigationalStatus -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#NavigationalStatus">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#PositioningDeviceType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#PositioningDeviceType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#RateOfTurn -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#RateOfTurn">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#Ship">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipType -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#ShipType">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#SpeedOverGround -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoship/OntoShip.owl#SpeedOverGround">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
+    </owl:Class>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
