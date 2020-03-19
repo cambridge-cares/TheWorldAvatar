@@ -5,7 +5,7 @@
  */
 var express = require('express');
 var owlProcesser = require("../../agents/fileConnection2Way.js");
-
+var config  = require("../../config.js")
 var connectionsReader = Object.create(owlProcesser)
 /* GET users listing. */
 
@@ -32,12 +32,11 @@ var visualizationRouterFactory = function (opts) {
             console.log("read connections");
             
             //res.setHeader('Content-Type', 'application/json');
-            //res.json(results);//for testing
+            //res.json(results);//for testin
+            //add a second level query
             console.log(results)
             conns = results;
             results.topnode = opts.topnode;
-    
-    
             res.json(results); //render the view with this value
             
         });
@@ -45,30 +44,39 @@ var visualizationRouterFactory = function (opts) {
     });
     router.post('/linksingle', function(req, res, next) {
         console.log('body')
-        console.log(req.body)
        let body = JSON.parse(req.body)
         let supQuery = 'query' in body?body['query']:null;
         let topnode = body['iri'];
-        console.log(topnode)
-        console.log(supQuery)
+        //console.log(topnode)
+        //console.log(supQuery)
 		let useSharp = opts.useSharp
     
         connectionsReader.processSingle({supQuery, topnode, useSharp}).then((results)=>{
             
-            
-            console.log("read connections");
+            console.log("read connections for single node");
             
             //res.setHeader('Content-Type', 'application/json');
             //res.json(results);//for testing
-            console.log(results)
-            conns = results;
-            
-            
-            res.json(results); //render the view with this value
+            //console.log(results)
+            let secondQuery = {level:1,useSharp:true, topnode:config.ontocompchemNode,supQuery:opts.supQuery};
+            console.log(opts.supQuery)
+            connectionsReader.processSingle(secondQuery).then((results2)=> {
+                console.log('secondary result')
+                console.log(results2)
+                if(results2.length>0) {
+                    results = results.concat(results2);
+                    console.log(results)
+                }
+                res.json(results); //render the view with this value
+            })
+    
+
+            });
+        
+        
             
         });
         
-    });
     
     router.get('/includeImport', function(req, res, next) {
 

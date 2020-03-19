@@ -732,7 +732,7 @@ var FileLinkMap = function (options) {
         //todo: modify url to bubbleMap.topNode
         let params = {endpoint:true, url: 'http://theworldavatar.com/rdf4j-server/repositories/ontokin',subscribeList:subscribeList}
       // TODO:uncomment this for updating
-        // socket.emit("join", JSON.stringify(params));
+        socket.emit("join", JSON.stringify(params));
         
         //set force simulationf
         
@@ -902,6 +902,8 @@ PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
 PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
 PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
 PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
+
 SELECT distinct  ?uri ?label
 WHERE {
 
@@ -944,14 +946,19 @@ WHERE {
 	{
 
 		@placeholder ontokin:hasThermoModel ?thermoModel.
-    ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
+    ?thermoModel ontokin:hasQuantumCalculation ?uri .
 	}
 		UNION
 	{
 	    ?species owl:sameAs  @placeholder .
 		?species ontokin:hasThermoModel ?thermoModel.
-		    ?thermoModel ontokin:hasQuantumCalculationIRI ?uri .
+		    ?thermoModel ontokin:hasQuantumCalculation ?uri .
 
+	}
+			UNION
+	{
+	    ?uri rdf:type ontocompchem:G09 .
+?uri ontocompchem:hasUniqueSpecies @placeholder.
 	}
 	
 } LIMIT 200

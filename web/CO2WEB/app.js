@@ -30,6 +30,8 @@ var visualizeOntokin= require("./routes/visualizeOntokin.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 **/
 var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
+let visualizeOntochemR = require("./routes/visualizeOntoChemRemote.js");
+let visualizeOntospeciesR = require("./routes/visualizeOntoSpeciesRemote.js");
 
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
@@ -108,6 +110,8 @@ app.use('/visualizeOntoChem',visualizeOntoChem);
 app.use('/visualizeOntokin',visualizeOntokin);
 **/
 app.use('/visualizeOntokinRemote',visualizeOntokinR);
+app.use('/visualizeOntochemRemote',visualizeOntochemR);
+app.use('/visualizeOntospeciesRemote',visualizeOntospeciesR);
 
 /**
 app.use("/bmsplot", bmsplot);
@@ -230,7 +234,7 @@ socket.on('join', function (uriSubscribeList) {
     //logger.debug(sl)
     if('endpoint' in sl){
         console.log('join event: to end points')
-        let epUrl= sl['url']; let uriList = sl['subscribelist'];
+        let epUrl= sl['url']; let uriList = sl['subscribeList'];
         socket.join(epUrl+'_endpoint');//join the room
         epInformer.registerSubsriber( epUrl, uriList, qstr, socket.username);
         return;
