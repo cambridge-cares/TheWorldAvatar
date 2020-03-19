@@ -7,6 +7,7 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.powsys.electricalnetwork.AggregationEmissionAgent;
 
 public class TestAggregation extends TestCase{
@@ -34,8 +35,8 @@ public class TestAggregation extends TestCase{
 	public void testfullfunctionwithscenario() { //keep in mind to change the availble scenario first to check this
 		JSONObject jo = new JSONObject();
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
-		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10");
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10updatenewload2");
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10");
+		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10updatenewload2");
 		JPSContext.putScenarioUrl(jo, scenarioUrl);
 		String usecaseUrl = BucketHelper.getUsecaseUrl(scenarioUrl);
 		JPSContext.putUsecaseUrl(jo, usecaseUrl);
@@ -60,5 +61,11 @@ public class TestAggregation extends TestCase{
 //        }
 //	}
 	
-	
+	public void testcallscenario(){
+		JSONObject jo = new JSONObject();
+		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
+		String scenarioName = "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10";
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_POWSYS/AggregationEmissionAgent/aggregateemission", jo.toString());
+		System.out.println(result);
+	}
 }

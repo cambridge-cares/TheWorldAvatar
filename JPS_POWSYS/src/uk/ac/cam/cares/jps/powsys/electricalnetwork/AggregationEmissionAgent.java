@@ -141,8 +141,8 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
         }
         JSONObject newresult= new JSONObject();
-        newresult.put("actual",totalemissionactual/1000000*3600); //from kg/s back to ton/hr
-        newresult.put("design",totalemissiondesign);
+        newresult.put("actual",Double.toString(totalemissionactual/1000000*3600)); //from kg/s back to ton/hr
+        newresult.put("design",Double.toString(totalemissiondesign));
         
         
         return newresult;
@@ -233,8 +233,9 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             }
             else {
             	String plantname=plantunique.get(f).split("#")[1];
-            	iriofchimney="http://www.theworldavatar.com/kb/powerplants/"+plantname+"/Chimney-001.owl#Chimney-001";
-    			String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
+            	//iriofchimney="http://www.theworldavatar.com/kb/powerplants/"+plantname+"/Chimney-001.owl#Chimney-001";
+            	iriofchimney= QueryBroker.getIriPrefix() + "/powerplants/"+plantname+"/Chimney-001.owl#Chimney-001";
+            	String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
     					+ "INSERT DATA { \r\n";
     			StringBuffer b = new StringBuffer();
     			b.append("<" + plantunique.get(f) + "> OCPSYST:hasSubsystem <" + iriofchimney + "> . \r\n");
