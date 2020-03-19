@@ -11,59 +11,50 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "PREFIX j6:<http://www.w3.org/2006/time#> "
 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-+ "SELECT  ?entity  ?name ?xvalue ?yvalue ?wasteproductionvalue"
++ "SELECT  ?entity  ?name ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
 + "WHERE {"
 + "?entity  a j1:FoodCourt ."
 + "?entity   j8:hasName ?name ." 
 + "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-+ "?coorsys   j7:hasProjectedCoordinate_x ?x ."
-+ "?x   j2:hasValue ?xval ."
-+ "?xval   j2:numericalValue ?xvalue ."
-+ "?coorsys   j7:hasProjectedCoordinate_y ?y ."
-+ "?y   j2:hasValue ?yval ."
-+ "?yval   j2:numericalValue ?yvalue ."
+
++ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
++ "?x  j2:hasValue ?vx ." 
++ "?vx  j2:numericalValue ?V_x ."//latitude
++ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//latitude
+
++ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
++ "?y  j2:hasValue ?vy ." 
++ "?vy  j2:numericalValue ?V_y ."//longitude
++ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
 
 + "?entity   j1:produceWaste ?WP ." 
 + "?WP     j2:hasValue ?vWP ."
-+ "?vWP  j2:numericalValue ?wasteproductionvalue ."
++ "?vWP  j2:numericalValue ?Waste_Production ."
++ "?vWP  j2:hasUnitOfMeasure ?wasteproductionunit ."//longitude
  
 + "}";
-WTFTechQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-+ "PREFIX j2:<htt{{p://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-+ "SELECT DISTINCT ?pollutiontreatmenttaxvalue ?Tech1Capvalue ?installationcostvalue ?operationcostvalue ?transferrateelectricvalue ?energyconsumptionvalue "
-+ "WHERE {" + "?entity  a j1:OffsiteWasteTreatmentFacility ." // specified class declared (off or on)
+WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.w3.org/2006/time#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+    + "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit "
+    + "WHERE {" 
+    + "?entity  a j1:OffsiteWasteTreatmentFacility ."			
+    + "?entity   j7:hasGISCoordinateSystem ?coorsys ." 
+    + "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+    + "?x  j2:hasValue ?vx ." 
+    + "?vx  j2:numericalValue ?V_x ."//latitude
+    + "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//latitude
 
-+ "?entity   j1:useTechnology ?Tech1 ." 
-//+ "?Tech1 a "+techclass+" ." // specified class declared (tech 1,2,3, or 4,5,6)
-+ "?Tech1 j1:hasTechnologyCapacity ?Tech1Cap ." 
-+ "?Tech1Cap j2:hasValue ?vTech1Cap ."
-+ "?vTech1Cap  j2:numericalValue ?Tech1Capvalue ."
-
-+ "?Tech1   j1:hasTax ?PTT ." + "?PTT     j2:hasValue ?vPTT ."
-+ "?vPTT  j2:numericalValue ?pollutiontreatmenttaxvalue ."
-
-+ "?Tech1   j3:hasCost ?OC ." + "?OC     j2:hasValue ?vOC ."
-+ "?vOC  j2:numericalValue ?operationcostvalue ."
-
-+ "?Tech1   j3:hasInstallationCost ?IC ." + "?IC     j2:hasValue ?vIC ."
-+ "?vIC  j2:numericalValue ?installationcostvalue ."
-
-+ "?Tech1   j1:hasTransferRate ?TR3 ."
-+ "?TR3     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#electricity> ."
-+ "?TR3     j2:hasValue ?vTR3 ." + "?vTR3  j2:numericalValue ?transferrateelectricvalue ."
-
-+ "?Tech1   j1:requiredConsumption ?RC2 ."
-+ "?RC2     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#energy> ."
-+ "?RC2     j2:hasValue ?vRC2 ." + "?vRC2  j2:numericalValue ?energyconsumptionvalue ."
-
-+ "}"
-+ "ORDER BY DESC(?Tech1)";
+    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+    + "?y  j2:hasValue ?vy ." 
+    + "?vy  j2:numericalValue ?V_y ."//longitude
+    + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
+    + "}";
 (function PPMap(){
     var ppMap = new PopupMap({useCluster:true});
 })();
@@ -149,7 +140,9 @@ function createMarker(lst){
             function (_content) {
             console.log('content',_content);
             infowindow.setContent(_content);
-            infowindow.open(map, this);
+            console.log(this);
+            infowindow.setPosition( new google.maps.LatLng(lst[1], lst[2]))
+            infowindow.open(map);
         });
     });
     markers.push(marker);
@@ -163,14 +156,14 @@ function setMarkerMen(id, callback){
     if (id.includes("FoodCourt")){
         typeInfo = FCQuery;
     }else{
-        typeInfo = WTFTechQuery;
+        typeInfo = WTQuery;
     }
     var promise1 = new Promise(function (resolve, reject){
         resolve(openWindow(id, typeInfo, callback));
     }); 
     promise1.catch(alert);
 }
-/** opens infowindow for lines and ebuses. 
+/** opens infowindow. 
  * 
  * @param {String} id iri of object
  * @param {String} typeInfo sparql query of respective object
@@ -221,8 +214,7 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
 
         console.log(inputsHTML);
         if (callback == null){
-                innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
-                        '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+                innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/>';
                 infowindow.setContent(innerHTML);
             }
             
@@ -231,8 +223,7 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
                     resolve('Success');
             });
                 newPromise.then((successMessage) => {
-                    innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
-                        '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
+                    innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/>';
                     console.log(innerHTML);
                     callback(innerHTML); //returning back to the infowindow to change. 
                 });
