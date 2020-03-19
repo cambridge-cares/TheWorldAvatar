@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 
@@ -17,7 +19,7 @@ import com.google.common.io.Files;
  *
  */
 public class Workspace {
-	
+	private Logger logger = LoggerFactory.getLogger(Workspace.class); 
 	public long previousTimeStamp = System.nanoTime();
 	
 	/**
@@ -115,6 +117,15 @@ public class Workspace {
 		.concat(inputFileExtension);
 	}
 	
+	public String getInputFileExtension(File input) throws SlurmJobException{
+		if(input.isFile()){
+			return input.getAbsolutePath().substring(input.getAbsolutePath().lastIndexOf("."));
+		}else{
+			logger.error("SlurmJobAPI: The provided input file is not a file.");
+			throw new SlurmJobException("SlurmJobAPI: The provided input file is not a file.");
+		}
+	}
+	
 	/**
 	 * Creates the job folder on the host machine where the current agent runs.
 	 * 
@@ -129,6 +140,39 @@ public class Workspace {
 			return workspace;
 		}
 		return null;
+	}
+	
+	public String createInputFile(String inputFileDestinationPath, File input) throws IOException{
+		copyFile(input, new File(inputFileDestinationPath));
+		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+	}
+	
+	public String createStatusFile(File workspaceFolder, String statusFilePath, String hpcAddress) throws IOException{
+		BufferedWriter statusFile = Utils.openBufferedWriter(statusFilePath);
+		if(statusFile == null){
+			return null;
+		}
+		statusFile.write(Status.ATTRIBUTE_JOB_STATUS.getName().concat(" "));
+		statusFile.write(Status.STATUS_JOB_NOT_STARTED.getName().concat("\n"));
+		statusFile.write(Status.ATTRIBUTE_JOB_ID.getName().concat("\n"));
+		statusFile.write(Status.ATTRIBUTE_AGENT_ID.getName().concat(" "));
+		statusFile.write(workspaceFolder.getName().concat("\n"));
+		statusFile.write(Status.ATTRIBUTE_HPC_ADDRESS.getName().concat(" "));
+		statusFile.write(hpcAddress.concat("\n"));
+		statusFile.close();
+		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+	}
+	
+	public String copyScriptFile(String source, String destination) throws IOException{
+		try{
+		copyFile(new File(source),
+				new File(destination.concat(File.separator)
+						.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName())));
+		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+		}catch(IOException e){
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	/**
