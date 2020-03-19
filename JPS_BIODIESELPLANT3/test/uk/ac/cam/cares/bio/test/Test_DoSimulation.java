@@ -175,10 +175,11 @@ public class Test_DoSimulation extends TestCase{
 		   String topnode="http://www.theworldavatar.com/kb/TheWorld.owl#TheWorld";
 	    	String plantInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#> "
 					+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "SELECT ?plant "
+					+ "SELECT ?plant ?path "
 					+ "WHERE {"
 					+ "?plant a  j2:CompositeSystem ."
-					//+ "?plant j2:isModeledBy ?model ."
+					+ "?plant j2:isModeledBy ?model ."
+					+ "?model j2:hasURLPath ?path ."
 					+ "?plant   j2:hasSubsystem <"+compIRI+"> ." 
 					+ "}";
 		   
@@ -195,6 +196,7 @@ public class Test_DoSimulation extends TestCase{
 				List<String[]> resultList2 = JenaResultSetFormatter.convertToListofStringArrays(result2, keysplant2);
 		        if(resultList2.size()>0) {
 		        System.out.println("what is the plant= "+resultList2.get(0)[0]);
+		        System.out.println("what is the path= "+resultList2.get(0)[1]);
 		        }
 	        }
 	   }
