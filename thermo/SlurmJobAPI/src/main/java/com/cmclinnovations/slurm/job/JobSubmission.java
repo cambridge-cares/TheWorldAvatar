@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +30,13 @@ import com.jcraft.jsch.SftpException;
  */
 public class JobSubmission{
 	private Logger logger = LoggerFactory.getLogger(JobSubmission.class);	
-	private String server;
-	private String username;
-	private String password;
-	private int delayBeforeStart;
-	private int interval;
+	private String hpcAddress;
+	private String username = "msff2";
+	private String password = getPassword("Abcdl955_l7_l7_l7_aB");
+	private int delayBeforeStart = 10;
+	private int interval = 60;
+	private String agentClass;
+	private File agentWorkspaceDirectory;
 	boolean isAuthenticated;
 	private File jobSpace;
 	
@@ -43,11 +46,12 @@ public class JobSubmission{
 	static int scheduledIteration = 0;
 	static List<String> jobsRunning = new ArrayList<String>();
 	
-	public String getServer() {
-		return server;
+	public String getHpcAddress() {
+		return hpcAddress;
 	}
-	public void setServer(String server) {
-		this.server = server;
+
+	public void setHpcAddress(String hpcAddress) {
+		this.hpcAddress = hpcAddress;
 	}
 
 	public String getUsername() {
@@ -66,8 +70,24 @@ public class JobSubmission{
 		this.password = password;
 	}
 	
+	public String getAgentClass() {
+		return agentClass;
+	}
+	
+	public void setAgentClass(String agentClass) {
+		this.agentClass = agentClass;
+	}
+	
+	public File getAgentWorkspaceDirectory() {
+		return agentWorkspaceDirectory;
+	}
+	
+	public void setAgentWorkspaceDirectory(File agentWorkspaceDirectory) {
+		this.agentWorkspaceDirectory = agentWorkspaceDirectory;
+	}
+	
 	public static void main(String[] args) throws SlurmJobException{
-		JobSubmission jobSubmission = new JobSubmission();
+		JobSubmission jobSubmission = new JobSubmission("DFTAgent", new File(System.getProperty("user.home")), "login-skylake.hpc.cam.ac.uk");
 		jobSubmission.init();
 	}
 
@@ -86,18 +106,134 @@ public class JobSubmission{
 	public void setInterval(int interval) {
 		this.interval = interval;
 	}
-
+	
 	/**
-     * Allows to submit a job request and it returns the results in JSON format.</br>
+	 * Constructor for this class.
+	 * 
+	 * @param agentClass the name of the agent class (e.g. DFTAgent and EBRAgent).
+	 * @param agentWorkspaceDirectory the directory where the workspace<br>
+	 * will be created, e.g. user home directory read by System.getProperty("user.home");
+	 * @param hpcAddress the address of HPC, e.g. login-skylake.hpc.cam.ac.uk for CSD3.
+	 */
+	public JobSubmission(String agentClass, File agentWorkspaceDirectory, String hpcAddress){
+		this.agentClass = agentClass;
+		this.agentWorkspaceDirectory = agentWorkspaceDirectory;
+		this.hpcAddress = hpcAddress;
+		init();
+	}
+	
+    /**
+     * Allows to submit a job request and it returns success or failure<br> 
+     * message in JSON format.</br>
      * 
-     * @param input the JSON input to set up and run a Slurm job.
-     * @return a message if the job was set up successfully or failed. 
+     * @param jsonInput the request from user in JSON format to perform a<br> 
+     * Slurm job.
+     * @param slurmScript the Slurm script developed for a specific HPC facility.
+     * @param input the input.zip file containing all necessary inputs including<br>
+     * folders, subfolders and files.
+     * 
+     * @return
+     * @throws IOException
+     * @throws SlurmJobException
      */
-    public String jobRequest(String input) throws IOException, SlurmJobException{
+	public String jobRequest(String jsonInput, File slurmScript, File input) throws IOException, SlurmJobException{
 		System.out.println("received query:\n"+input);
 		logger.info("received query:\n"+input);
-		return "";
+		return setUpJob(jsonInput, slurmScript, input);
     }
+	
+	/**
+	 * Sets up a quantum job by creating the job folder and the following files</br>
+	 * under this folder:</br>
+	 * - the input file.</br>
+	 * - the Slurm script file.</br.
+	 * - the Status file.</br>
+	 * - the JSON input file, which comes from the user request.</br>
+	 * 
+	 * @param jsonInput
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
+	public String setUpJob(String jsonInput, File slurmScript, File input) throws IOException, SlurmJobException{
+        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input);
+			JSONObject obj = new JSONObject();
+			obj.put("message", message);
+        	return obj.toString();
+    }
+	
+	/**
+	 * Sets up the quantum job for the current input.
+	 *   
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
+	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
+		Workspace workspace = new Workspace();
+		File workspaceFolder = workspace.getWorkspaceName(getAgentWorkspaceDirectory().getAbsolutePath(), getAgentClass());
+		if(workspaceFolder == null){
+			return Status.JOB_SETUP_ERROR.getName();
+		}else{
+			return setUpQuantumJob(workspace, workspaceFolder, jsonString, slurmScript, input);
+		}
+	}
+	
+	/**
+	 * Sets up the quantum job for the current request.
+	 * 
+	 * @param ws
+	 * @param workspaceFolder
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
+	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
+		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress());
+    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, input)==null){
+    		return null;
+    	}
+    	return Status.JOB_SETUP_SUCCESS_MSG.getName();
+	}
+	
+	/**
+	 * Creates all files relevant for the current job, in particular, it</br>
+	 * creates the following files:</br>
+	 * - the input file in com (.com) format for running the job on an HPC
+	 * - the status file in text (.txt) format
+	 * - the input file in json (.json) format
+	 * - the Slurm script file in shell script (.sh) format 
+	 * 
+	 * @param ws
+	 * @param workspaceFolder
+	 * @param jobFolder
+	 * @param jsonString
+	 * @param speciesGeometry
+	 * @return
+	 * @throws IOException
+	 * @throws DFTAgentException
+	 */
+	private String createAllFileInJobFolder(Workspace ws, File workspaceFolder, File jobFolder, String jsonString, File input) throws IOException, SlurmJobException{
+		String inputFileMsg = ws.createInputFile(ws.getInputFilePath(jobFolder, getHpcAddress(), ws.getInputFileExtension(input)), input);
+		if(inputFileMsg == null){
+			return Status.JOB_SETUP_INPUT_FILE_ERROR.getName();
+		}
+		String statusFileMsg = ws.createStatusFile(workspaceFolder, ws.getStatusFilePath(jobFolder), getHpcAddress());
+		if(statusFileMsg == null){
+			return null;
+		}
+		String jsonInputFileMsg = ws.createJSONInputFile(workspaceFolder, ws.getJSONInputFilePath(jobFolder), jsonString);
+		if(jsonInputFileMsg == null){
+			return null;
+		}
+		String scriptFileMsg = ws.copyScriptFile(getClass().getClassLoader().getResource(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName()).getPath(), jobFolder.getAbsolutePath());
+		if(scriptFileMsg == null){
+			return null;
+		}
+		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+	}
 	
 	/**
      * Shows the following statistics of Slurm jobs.</br>
@@ -141,7 +277,7 @@ public class JobSubmission{
         logger.info("----------Slurm Job Submission Component has started----------");
         System.out.println("----------Slurm Job Submission Component has started----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        JobSubmission jobs = new JobSubmission();
+        JobSubmission jobs = new JobSubmission(getAgentClass(), getAgentWorkspaceDirectory(), getHpcAddress());
        	// 10 refers to the delay (in seconds) before the job scheduler
         // starts and 60 refers to the interval between two consecutive
         // executions of the scheduler.
@@ -163,7 +299,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Checks if a job is still running using the job id.
+	 * Checks the status of job on the HPC where it was submitted.
 	 * 
 	 * @param jobId
 	 * @param statusFile 
