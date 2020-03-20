@@ -353,3 +353,20 @@ function callDoSimulation(uris){
         console.log("Completed Simulation");
     });
 }
+
+function callDoSimulationNew(uris){
+    var agentUrl = prefix + '/JPS_BIODIESELPLANT3/DoModelSelection'; 
+    //check if it is biodiesel plant 2 or 3: 
+    var data = {};
+    data = {"componentiri":uris[0]}
+    var simUrl = createUrlForAgent(scenario, agentUrl, data );
+    var request = $.ajax({
+        url: simUrl,
+        method: "GET",
+        timeout:3600000,
+        contentType: "application/json; charset=utf-8",
+    })
+    request.done(function() {
+        console.log("Completed Simulation");
+    });
+}
