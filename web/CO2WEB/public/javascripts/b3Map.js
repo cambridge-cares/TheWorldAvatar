@@ -3,7 +3,7 @@ map logic for b3 powerplant
 ***/
 var b3map = new PopupMap({useCluster:true,  editable: true});
 // var prefix = "http://www.jparksimulator.com";
-var prefix = "http://localhost:8080";
+// var prefix = "http://localhost:8080";
 var socket = io();
 var prefix = "http://www.jparksimulator.com";
 var scenario = "base";
@@ -294,8 +294,8 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
         success: function (data) {//SUCESS updating
             //Update display
             console.log(cb);
-            callDoSimulation(uris);
-            callDoSimulation(uris);
+            callDoSimulationNew(uris);
+            callDoSimulationNew(uris);
             cb(null, data);
         },
         error: function (err) {
@@ -355,10 +355,11 @@ function callDoSimulation(uris){
 }
 
 function callDoSimulationNew(uris){
-    var agentUrl = prefix + '/JPS_BIODIESELPLANT3/DoModelSelection'; 
+    var agentUrl = 'http://localhost:8080/JPS_BIODIESELPLANT3/DoModelSelection'; 
     //check if it is biodiesel plant 2 or 3: 
     var data = {};
-    data = {"componentiri":uris[0]}
+    console.log(uris);
+    data = {"componentIRI":uris[0]}
     var simUrl = createUrlForAgent(scenario, agentUrl, data );
     var request = $.ajax({
         url: simUrl,
@@ -368,5 +369,6 @@ function callDoSimulationNew(uris){
     })
     request.done(function() {
         console.log("Completed Simulation");
+
     });
 }
