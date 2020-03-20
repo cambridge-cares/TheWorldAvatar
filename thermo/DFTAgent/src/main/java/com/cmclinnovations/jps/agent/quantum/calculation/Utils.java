@@ -21,6 +21,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.slurm.job.Status;
+
 public class Utils {
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);	
 	public static long previousTimeStamp;
@@ -92,24 +94,28 @@ public class Utils {
 	}
 
 	public static boolean isJobCompleted(File jobFolder) throws IOException{
-		return isJobFinished(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+		return isJobFinished(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 	}
 	
 	public static boolean isJobRunning(File jobFolder) throws IOException{
-		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+	}
+	
+	public static boolean isJobOutputProcessed(File jobFolder) throws IOException{
+		return isJobOutputProcessed(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 	}
 
 	public static boolean isJobNotStarted(File jobFolder) throws IOException{
-		return isJobNotStarted(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+		return isJobNotStarted(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 	}
 	
 	public static void retrieveRunningJobs(Map<String, List<String>> jobsRunning, File jobFolder) throws IOException{
 			File[] individualJobFiles = jobFolder.listFiles();
 			List<String> runningJobsDetails = new ArrayList<>();
 			for(File individualJobFile:individualJobFiles){
-				if(individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
-						|| individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName())
-						|| individualJobFile.getAbsolutePath().endsWith(Jobs.STATUS_FILE.getName())){
+				if(individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_SLURM_FILE.getName()) 
+						|| individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_INPUT_FILE.getName())
+						|| individualJobFile.getAbsolutePath().endsWith(Status.STATUS_FILE.getName())){
 					runningJobsDetails.add(individualJobFile.getAbsolutePath());
 				}
 			}
@@ -125,9 +131,9 @@ public class Utils {
 		File[] individualJobFiles = jobFolder.listFiles();
 		List<String> notStartedJobsDetails = new ArrayList<>();
 		for(File individualJobFile:individualJobFiles){
-			if(individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_SLURM_FILE.getName()) 
-					|| individualJobFile.getAbsolutePath().endsWith(Jobs.EXTENSION_INPUT_FILE.getName())
-					|| individualJobFile.getAbsolutePath().endsWith(Jobs.STATUS_FILE.getName())){
+			if(individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_SLURM_FILE.getName()) 
+					|| individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_INPUT_FILE.getName())
+					|| individualJobFile.getAbsolutePath().endsWith(Status.STATUS_FILE.getName())){
 				notStartedJobsDetails.add(individualJobFile.getAbsolutePath());
 			}
 		}
@@ -149,12 +155,12 @@ public class Utils {
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
 		while((line=statusFile.readLine())!=null){
-			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Jobs.STATUS_JOB_COMPLETED.getName())){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Status.STATUS_JOB_COMPLETED.getName())){
 					statusFile.close();
 					return true;
 				}
-				if(line.contains(Jobs.STATUS_JOB_ERROR_TERMINATED.getName())){
+				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
 					statusFile.close();
 					return true;
 				}
@@ -175,10 +181,32 @@ public class Utils {
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
 		while((line=statusFile.readLine())!=null){
-			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Jobs.STATUS_JOB_RUNNING.getName()) 
-						|| line.contains(Jobs.STATUS_JOB_COMPLETING.getName()) 
-						|| line.contains(Jobs.STATUS_JOB_PENDING.getName())){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Status.STATUS_JOB_RUNNING.getName()) 
+						|| line.contains(Status.STATUS_JOB_COMPLETING.getName()) 
+						|| line.contains(Status.STATUS_JOB_PENDING.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Check the status if a job is currently running.
+	 * 
+	 * @param statusFilePath the absolute path to the status file.
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobOutputProcessed(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_OUTPUT.getName())){
+				if(line.contains(Status.OUTPUT_PROCESSED.getName())){
 					statusFile.close();
 					return true;
 				}
@@ -199,8 +227,8 @@ public class Utils {
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
 		while((line=statusFile.readLine())!=null){
-			if(line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Jobs.STATUS_JOB_NOT_STARTED.getName())){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Status.STATUS_JOB_NOT_STARTED.getName())){
 					statusFile.close();
 					return true;
 				}
@@ -221,7 +249,7 @@ public class Utils {
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
 		while((line=statusFile.readLine())!=null){
-			if(line.trim().toLowerCase().startsWith(Jobs.ATTRIBUTE_JOB_ID.getName().toLowerCase())){
+			if(line.trim().toLowerCase().startsWith(Status.ATTRIBUTE_JOB_ID.getName().toLowerCase())){
 				String tokens[] = line.trim().split(":");
 				if(tokens.length>=2 && tokens[1].trim().length()>0){
 					statusFile.close();
@@ -245,11 +273,11 @@ public class Utils {
 		BufferedReader br = openSourceFile(filePath);
 		String line;
 		while((line=br.readLine())!=null){
-		    if (line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
-		        line = Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Jobs.STATUS_JOB_RUNNING.getName());
+		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())) {
+		        line = Status.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Status.STATUS_JOB_RUNNING.getName());
 		    }
-		    if (line.trim().startsWith(Jobs.ATTRIBUTE_JOB_ID.getName())) {
-		        line = Jobs.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId);
+		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_ID.getName())) {
+		        line = Status.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId);
 		    }
 		    fileContent.add(line);
 		}
@@ -274,8 +302,34 @@ public class Utils {
 		BufferedReader br = openSourceFile(filePath);
 		String line;
 		while((line=br.readLine())!=null){
-		    if (line.trim().startsWith(Jobs.ATTRIBUTE_JOB_STATUS.getName())) {
-		        line = Jobs.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(status);
+		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())) {
+		        line = Status.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(status);
+		    }
+		    fileContent.add(line);
+		}
+		br.close();
+		BufferedWriter bw = openBufferedWriter(filePath);
+		for(String lineContent:fileContent){
+			bw.write(lineContent.concat("\n"));
+		}
+		bw.flush();
+		bw.close();
+	}
+	
+	/**
+	 * Modifies the output to processed in the status file. 
+	 * 
+	 * @param filePath the path to the status file.
+	 * @param status can be empty ("") or "processed".
+	 * @throws IOException
+	 */
+	public static void modifyOutputStatus(String filePath, String status) throws IOException{
+		List<String> fileContent = new ArrayList<>();
+		BufferedReader br = openSourceFile(filePath);
+		String line;
+		while((line=br.readLine())!=null){
+		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_OUTPUT.getName())) {
+		        line = Status.ATTRIBUTE_JOB_OUTPUT.getName().concat(" ").concat(status);
 		    }
 		    fileContent.add(line);
 		}
@@ -296,7 +350,7 @@ public class Utils {
 	 */
 	public static File getStatusFile(List<String> filePaths){
 		for(String filePath:filePaths){
-			if(filePath.toLowerCase().endsWith(Jobs.STATUS_FILE.getName().toLowerCase())){
+			if(filePath.toLowerCase().endsWith(Status.STATUS_FILE.getName().toLowerCase())){
 				return new File(filePath);
 			}
 		}
@@ -311,8 +365,8 @@ public class Utils {
 	 */
 	public static File getStatusFile(File jobFolder){
 		if(jobFolder.isDirectory()){
-			if((new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName())).isFile())){
-				return new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Jobs.STATUS_FILE.getName()));
+			if((new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName())).isFile())){
+				return new File(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 			}
 		}
 		return null;
@@ -321,7 +375,7 @@ public class Utils {
 	public static String getLogFilePathOnHPC(String runningJob, String userName, File taskSpace) throws UnknownHostException{
 		String jobFolderOnHPC = runningJob.replace(Property.HPC_CAMBRIDGE_ADDRESS.getPropertyName(), getMachineAddress());
 		String logFilePath = getJobFolderPathOnHPC(runningJob, userName, taskSpace).concat("/").concat(jobFolderOnHPC)
-				.concat(Jobs.EXTENSION_LOG_FILE.getName());
+				.concat(Status.EXTENSION_LOG_FILE.getName());
 		return logFilePath;
 	}
 	
@@ -335,14 +389,14 @@ public class Utils {
 	
 	public static String getJobLogFilePathOnAgentPC(String runningJob, File taskSpace){
 		return taskSpace.getAbsolutePath().concat(File.separator).concat(runningJob).concat(File.separator)
-				.concat(runningJob).concat(Jobs.EXTENSION_LOG_FILE.getName());
+				.concat(runningJob).concat(Status.EXTENSION_LOG_FILE.getName());
 	}
 	
 	public static boolean isErrorTermination(String jobFolderOnAgentPC)throws IOException{
 		BufferedReader logFile = openSourceFile(jobFolderOnAgentPC);
 		String line;
 		while((line=logFile.readLine())!=null){
-			if(line.trim().toLowerCase().startsWith(Jobs.JOB_LOG_MSG_ERROR_TERMINATION.getName().toLowerCase())){
+			if(line.trim().toLowerCase().startsWith(Status.JOB_LOG_MSG_ERROR_TERMINATION.getName().toLowerCase())){
 				logFile.close();
 				return true;
 			}

@@ -19,6 +19,7 @@ public enum Property {
 	AGENT_WORKSPACE_DIR(System.getProperty("user.home")),
 	HPC_CAMBRIDGE_ADDRESS("login-skylake.hpc.cam.ac.uk"),
 	HOST_VIENNA_ADDRESS("vienna.cheng.cam.ac.uk"),
+	INPUT_FILE_NAME("input"),
 	INPUT_FILE_EXTENSION(".com"),
 	MAX_NUMBER_OF_JOBS(10),
 	CHK_POINT_FILE_EXTENSION(".chk"),
