@@ -6,6 +6,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 
 public class ResourcePathConverter {
 	
@@ -22,12 +23,18 @@ public class ResourcePathConverter {
 		
 		//TODO-AE SC URGENT 20191021 CHANGE BACK this will work on claudius but not anymore locally --> configurable solution?
 		// maybe change back not necessary any more, because of the solution below
-		
-
-		if (!AgentLocator.isJPSRunningForTest()) {
-						JPSBaseLogger.info(getInstance(),path);
-				return path;
+		if ((!AgentLocator.isJPSRunningForTest())) {
+			JPSBaseLogger.info(getInstance(),path);
+			return path;
 		}
+		String scenarioUrl =JPSContext.getScenarioUrl();
+//		if (!AgentLocator.isJPSRunningForTest()) {
+//		if (scenarioUrl != null)  {
+//
+//			JPSBaseLogger.info(getInstance(), ("scenarioURL = " + scenarioUrl + path));
+//			return path;
+//		}
+		
 	
 		// i.e. the code is not running on claudius 
 		String address = KeyValueManager.getServerAddress();

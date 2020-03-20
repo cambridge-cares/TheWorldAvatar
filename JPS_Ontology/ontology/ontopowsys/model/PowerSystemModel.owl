@@ -122,6 +122,12 @@ The following relation from the Meta Model is refined within &apos;process_model
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode"/>
@@ -558,15 +564,6 @@ Same as format in the variable itself</rdfs:comment>
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple">
-        <owl:equivalentClass>
-            <owl:Class>
-                <owl:oneOf rdf:parseType="Collection">
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles"/>
-                    <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hybrid"/>
-                </owl:oneOf>
-            </owl:Class>
-        </owl:equivalentClass>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#FixedValueSet"/>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ModelingPrinciple represents the principle following which the ProcessModel is developed.</rdfs:comment>
     </owl:Class>
@@ -738,7 +735,7 @@ Same as format in the variable itself</rdfs:comment>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
                 <owl:someValuesFrom>
                     <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastLoad"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastPrices"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ForecastSolarGeneration"/>
@@ -754,7 +751,7 @@ Same as format in the variable itself</rdfs:comment>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCFinal"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMax"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SoCMin"/>
-                        </owl:intersectionOf>
+                        </owl:unionOf>
                     </owl:Class>
                 </owl:someValuesFrom>
             </owl:Restriction>
@@ -780,7 +777,7 @@ Same as format in the variable itself</rdfs:comment>
                 <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#hasModelVariable"/>
                 <owl:someValuesFrom>
                     <owl:Class>
-                        <owl:intersectionOf rdf:parseType="Collection">
+                        <owl:unionOf rdf:parseType="Collection">
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchInputVariable"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchParameter"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BranchStateVariable"/>
@@ -790,7 +787,7 @@ Same as format in the variable itself</rdfs:comment>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorInputVariable"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
                             <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorStateVariable"/>
-                        </owl:intersectionOf>
+                        </owl:unionOf>
                     </owl:Class>
                 </owl:someValuesFrom>
             </owl:Restriction>
@@ -1355,86 +1352,6 @@ Same as format in the variable itself</rdfs:comment>
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#GeneratorParameter"/>
         <rdfs:comment>same as baseMVA</rdfs:comment>
     </owl:Class>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Individuals
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PQBus -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PQBus">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PVBus -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PVBus">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SlackBus -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SlackBus">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusType"/>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Following the data_driven ModelingPrinciple, a ProcessModel is derived from the Values of the Properties of a ModeledObject. Examples of this type of models are neural network models.</rdfs:comment>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Following the first-principles ModelingPrinciple, the ProcessModel is based on established physical laws and mechanisms..</rdfs:comment>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hybrid -->
-
-    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#hybrid">
-        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#ModelingPrinciple"/>
-        <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A hybrid ModelingPrinciple applies both the first-principles and the data_driven approach</rdfs:comment>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // General axioms
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    <rdf:Description>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AllDifferent"/>
-        <owl:distinctMembers rdf:parseType="Collection">
-            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#data_driven"/>
-            <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#first-principles"/>
-        </owl:distinctMembers>
-    </rdf:Description>
 </rdf:RDF>
 
 

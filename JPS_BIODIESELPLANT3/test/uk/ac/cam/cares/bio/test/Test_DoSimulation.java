@@ -3,6 +3,8 @@ package uk.ac.cam.cares.bio.test;
 import java.io.IOException;
 import java.util.List;
 
+
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.bio.DoSimulation;
 
 public class Test_DoSimulation extends TestCase{
@@ -147,4 +150,6 @@ public class Test_DoSimulation extends TestCase{
 		   jo.put("V_Angle_LoadPoint_R-302",-0.48014259831225964);
 		   new DoSimulation().placeinOWLFiles(jo, "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
 	   }
+	   
+
 }

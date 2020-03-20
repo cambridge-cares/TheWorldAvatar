@@ -37,7 +37,7 @@ public class BaseOntologyModelManager {
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
     //protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
    protected static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
- // protected static final String ABSDIR_ROOT_TEST =  "C://Users/LONG01/TOMCAT/webapps/ROOT";
+  //protected static final String ABSDIR_ROOT_TEST =  "C://Users/LONG01/TOMCAT/webapps/ROOT";
     private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
     private static final String IRI_BASE_TEST = "http://localhost:8080";
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
@@ -92,7 +92,8 @@ public class BaseOntologyModelManager {
             jenaOwlModel.write(out, "RDF/XML-ABBREV");
             out.close();
         }
-
+//        String finalcontent=JenaHelper.writeToString(jenaOwlModel);
+//        new QueryBroker().putOld(iriOfChimney,finalcontent);
     }
 
     public static void prepareDirectory(String filePath2) throws IOException {

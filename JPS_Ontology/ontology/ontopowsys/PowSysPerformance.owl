@@ -23,6 +23,11 @@
      xmlns:economic_performance="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_performance/economic_performance.owl#">
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl"/>
+        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.</terms:license>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module &apos;economic_performance&apos; evaluates certain chemical process systems with respect to economics perspectives.
 The following classes and relations from other ontology modules are used within &apos;economic_performance&apos;:
 
@@ -42,11 +47,6 @@ The following classes and relations from the Meta Model are refined within &apos
 
 &lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart&quot;/&gt;
 &lt;owl:ObjectProperty rdf:about=&quot;http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation&quot;/&gt;</rdfs:comment>
-        <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
-        <terms:license rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Copyright (C) [2009] [Andreas Wiesner]
-                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
-                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
-                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.</terms:license>
     </owl:Ontology>
     
 
@@ -79,18 +79,6 @@ The following classes and relations from the Meta Model are refined within &apos
     
 
 
-    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
-    
-
-
     <!-- http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
@@ -100,6 +88,18 @@ The following classes and relations from the Meta Model are refined within &apos
     <!-- http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#hasDirectPart"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasProperty"/>
     
 
 
@@ -438,12 +438,6 @@ The following classes and relations from the Meta Model are refined within &apos
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#ElectricalNetworkCosts">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarQuantity"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasDimension"/>
-                <owl:hasValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#amount_of_money"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
         <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cost describes all kinds of costs that may arise with respect to the ElectricalNetworkSystem economic evaluation.</rdfs:comment>
     </owl:Class>
     

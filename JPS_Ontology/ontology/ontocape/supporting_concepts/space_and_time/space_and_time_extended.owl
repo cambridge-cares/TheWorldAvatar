@@ -103,9 +103,9 @@
     
 
 
-    <!-- http://www.theworldavatar.com/R-301load.owl#nearSea -->
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#nearSea -->
 
-    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/R-301load.owl#nearSea">
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#nearSea">
         <rdfs:subPropertyOf rdf:resource="http://www.w3.org/2002/07/owl#topDataProperty"/>
     </owl:DatatypeProperty>
     

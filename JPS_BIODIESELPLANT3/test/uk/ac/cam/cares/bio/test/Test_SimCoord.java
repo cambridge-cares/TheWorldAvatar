@@ -20,7 +20,7 @@ public class Test_SimCoord extends TestCase{
 	   
 	   }
 	public void testSimulationSelection() {
-		JSONObject jo = new JSONObject().put("componentIRI", "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/R-601004.owl#R-601004");
+		JSONObject jo = new JSONObject().put("componentIRI", "http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/R-601004.owl");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_BIODIESELPLANT3/DoModelSelection", jo.toString());
 		   System.out.println(resultStart);
 	}
