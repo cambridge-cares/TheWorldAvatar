@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -44,6 +45,8 @@ public class SelectionAgent extends JPSHttpServlet {
 
 		   
 		   JSONObject response = extractedJSONOutput(topnode, componentlistInfo, compIRI);
+		   String pathiri=response.getString("path");
+		   AgentCaller.executeGetWithJsonParameter(pathiri, response.toString());
     	return response;	
     }
 
