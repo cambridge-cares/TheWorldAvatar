@@ -295,7 +295,6 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
             //Update display
             console.log(cb);
             callDoSimulationNew(uris);
-            callDoSimulationNew(uris);
             cb(null, data);
         },
         error: function (err) {
@@ -359,7 +358,9 @@ function callDoSimulationNew(uris){
     //check if it is biodiesel plant 2 or 3: 
     var data = {};
     console.log(uris);
-    data = {"componentIRI":uris[0]}
+    var arr = uris[0].split('/');
+    var splittag = "#" + arr[arr.length-1]
+    data = {"componentIRI":uris[0]+splittag}
     var simUrl = createUrlForAgent(scenario, agentUrl, data );
     var request = $.ajax({
         url: simUrl,
