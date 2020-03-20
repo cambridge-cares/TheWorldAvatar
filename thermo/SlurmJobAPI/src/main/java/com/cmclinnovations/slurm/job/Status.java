@@ -24,6 +24,8 @@ public enum Status {
 	ATTRIBUTE_JOB_ID("JobId:"),
 	ATTRIBUTE_AGENT_ID("AgentId:"),
 	ATTRIBUTE_HPC_ADDRESS("HPCAddress:"),
+	ATTRIBUTE_JOB_OUTPUT("JobOutput:"),
+	OUTPUT_PROCESSED("processed"),
 	EXTENSION_SLURM_FILE(".sh"),
 	EXTENSION_INPUT_FILE(".com"),
 	EXTENSION_LOG_FILE(".log"),
