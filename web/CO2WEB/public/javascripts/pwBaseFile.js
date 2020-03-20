@@ -441,7 +441,19 @@ function displayCO2(data){
         url: kmlurl,
         type: 'GET',
         async: true,
-        contentType: 'application/json; charset=utf-8'
+        contentType: 'application/json; charset=utf-8', 
+        success: function(data, textStatus){
+            console.log("successful execution");
+        }, 
+        fail: function (xhr, textStatus, errorThrown){
+            console.log(textStatus);
+            console.log(errorThrown);
+            setTimeout(function() {
+                console.log('timeout');
+            }, 20000);
+            document.getElementById("loader").style.display = "none";
+            displayCO2(data);
+        }
     });     
     
     request.done(function(data) {
@@ -564,6 +576,16 @@ function drawGenerator(data, anotherURL){
     request.fail(function(jqXHR, textStatus) {
     });
 }
+
+/** mystery of the missing kml layer. 
+ * 
+ */
+var checkExistKML = setInterval(function() {
+    if (kmlLayer != null && kmlLayer.status != "OK") {
+        refreshLayer(json);
+        clearInterval(checkExistKML);
+    }
+    }, 10000); // check every 10s
 /*** calls ENVisualization to call POWSYS from markers
  * @param data: electricalnetwork topnode iri
  */
