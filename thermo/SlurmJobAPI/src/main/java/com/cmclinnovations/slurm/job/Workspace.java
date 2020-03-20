@@ -21,7 +21,7 @@ import com.google.common.io.Files;
 public class Workspace {
 	private Logger logger = LoggerFactory.getLogger(Workspace.class); 
 	public long previousTimeStamp = System.nanoTime();
-	
+
 	/**
 	 * Receives both the agent class (e.g. DFTAgent) and folder (absolute path)<br>
 	 * where the workspace for the agent will be created, and returns the name<br>
@@ -34,7 +34,7 @@ public class Workspace {
 	 * @param agentClass
 	 * @return
 	 */
-	public File getWorkspaceName(String workspaceParentPath, String agentClass) {
+	public static File getWorkspace(String workspaceParentPath, String agentClass) {
 		File dir = new File(workspaceParentPath);
 		for (File file : dir.listFiles()) {
 			if (file.isDirectory()) {
@@ -50,7 +50,7 @@ public class Workspace {
 		return createWorkspaceName(workspaceParentPath, agentClass);
 	}
 	
-	private File createWorkspaceName(String workspaceParentPath, String agentClass){
+	private static File createWorkspaceName(String workspaceParentPath, String agentClass){
 		String workspaceName = agentClass.concat("_").concat("" + System.nanoTime());
 		File workspace = new File(workspaceParentPath.concat(File.separator).concat(workspaceName));
 		if(workspace.mkdir()){
@@ -159,6 +159,7 @@ public class Workspace {
 		statusFile.write(workspaceFolder.getName().concat("\n"));
 		statusFile.write(Status.ATTRIBUTE_HPC_ADDRESS.getName().concat(" "));
 		statusFile.write(hpcAddress.concat("\n"));
+		statusFile.write(Status.ATTRIBUTE_JOB_OUTPUT.getName().concat("\n"));
 		statusFile.close();
 		return Status.JOB_SETUP_SUCCESS_MSG.getName();
 	}
@@ -215,6 +216,8 @@ public class Workspace {
 	public String getJSONInputFilePath(File jobFolder){
 		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.JSON_INPUT_FILE_NAME.getPropertyName());
 	}
+	
+
 	
 	/**
 	 * Copy the Slurm script to the job folder to set up the current<br>

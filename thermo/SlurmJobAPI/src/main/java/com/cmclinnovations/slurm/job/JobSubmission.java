@@ -14,6 +14,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.io.Files;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
 import com.jcraft.jsch.ChannelSftp;
@@ -36,7 +37,9 @@ public class JobSubmission{
 	private int delayBeforeStart = 10;
 	private int interval = 60;
 	private String agentClass;
-	private File agentWorkspaceDirectory;
+	private File workspaceDirectory;
+	private String workspaceName;
+	private String workspaceParentPath;
 	boolean isAuthenticated;
 	private File jobSpace;
 	
@@ -78,17 +81,25 @@ public class JobSubmission{
 		this.agentClass = agentClass;
 	}
 	
-	public File getAgentWorkspaceDirectory() {
-		return agentWorkspaceDirectory;
+	public File getWorkspaceDirectory() {
+		return workspaceDirectory;
 	}
-	
-	public void setAgentWorkspaceDirectory(File agentWorkspaceDirectory) {
-		this.agentWorkspaceDirectory = agentWorkspaceDirectory;
+
+	public void setWorkspaceDirectory(File workspaceDirectory) {
+		this.workspaceDirectory = workspaceDirectory;
 	}
-	
+
+	public String getWorkspaceName() {
+		return workspaceName;
+	}
+
+	public void setWorkspaceName(String workspaceName) {
+		this.workspaceName = workspaceName;
+	}
+
 	public static void main(String[] args) throws SlurmJobException{
-		JobSubmission jobSubmission = new JobSubmission("DFTAgent", new File(System.getProperty("user.home")), "login-skylake.hpc.cam.ac.uk");
-		jobSubmission.init();
+//		JobSubmission jobSubmission = new JobSubmission("DFTAgent", new File(System.getProperty("user.home")), "login-skylake.hpc.cam.ac.uk");
+//		jobSubmission.init();
 	}
 
 	public int getDelayBeforeStart() {
@@ -107,40 +118,33 @@ public class JobSubmission{
 		this.interval = interval;
 	}
 	
+	public String getWorkspaceParentPath() {
+		return workspaceParentPath;
+	}
+
+	public void setWorkspaceParentPath(String workspaceParentPath) {
+		this.workspaceParentPath = workspaceParentPath;
+	}
+
 	/**
 	 * Constructor for this class.
 	 * 
 	 * @param agentClass the name of the agent class (e.g. DFTAgent and EBRAgent).
-	 * @param agentWorkspaceDirectory the directory where the workspace<br>
+	 * @param workspaceName the name of workspace<br>
 	 * will be created, e.g. user home directory read by System.getProperty("user.home");
 	 * @param hpcAddress the address of HPC, e.g. login-skylake.hpc.cam.ac.uk for CSD3.
 	 */
-	public JobSubmission(String agentClass, File agentWorkspaceDirectory, String hpcAddress){
+	public JobSubmission(String agentClass, String hpcAddress){
 		this.agentClass = agentClass;
-		this.agentWorkspaceDirectory = agentWorkspaceDirectory;
+		this.workspaceName = workspaceName;
 		this.hpcAddress = hpcAddress;
+		this.workspaceDirectory = Workspace.getWorkspace(System.getProperty("user.home"), agentClass);
+		this.workspaceParentPath = System.getProperty("user.home");
 		init();
 	}
 	
-    /**
-     * Allows to submit a job request and it returns success or failure<br> 
-     * message in JSON format.</br>
-     * 
-     * @param jsonInput the request from user in JSON format to perform a<br> 
-     * Slurm job.
-     * @param slurmScript the Slurm script developed for a specific HPC facility.
-     * @param input the input.zip file containing all necessary inputs including<br>
-     * folders, subfolders and files.
-     * 
-     * @return
-     * @throws IOException
-     * @throws SlurmJobException
-     */
-	public String jobRequest(String jsonInput, File slurmScript, File input) throws IOException, SlurmJobException{
-		System.out.println("received query:\n"+input);
-		logger.info("received query:\n"+input);
-		return setUpJob(jsonInput, slurmScript, input);
-    }
+	private JobSubmission(){
+	}
 	
 	/**
 	 * Sets up a quantum job by creating the job folder and the following files</br>
@@ -172,7 +176,7 @@ public class JobSubmission{
 	 */
 	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
-		File workspaceFolder = workspace.getWorkspaceName(getAgentWorkspaceDirectory().getAbsolutePath(), getAgentClass());
+		File workspaceFolder = Workspace.getWorkspace(getWorkspaceDirectory().getAbsolutePath(), getAgentClass());
 		if(workspaceFolder == null){
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
@@ -192,7 +196,7 @@ public class JobSubmission{
 	 */
 	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
 		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress());
-    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, input)==null){
+    	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input)==null){
     		return null;
     	}
     	return Status.JOB_SETUP_SUCCESS_MSG.getName();
@@ -215,7 +219,7 @@ public class JobSubmission{
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private String createAllFileInJobFolder(Workspace ws, File workspaceFolder, File jobFolder, String jsonString, File input) throws IOException, SlurmJobException{
+	private String createAllFileInJobFolder(Workspace ws, File workspaceFolder, File jobFolder, String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
 		String inputFileMsg = ws.createInputFile(ws.getInputFilePath(jobFolder, getHpcAddress(), ws.getInputFileExtension(input)), input);
 		if(inputFileMsg == null){
 			return Status.JOB_SETUP_INPUT_FILE_ERROR.getName();
@@ -228,7 +232,7 @@ public class JobSubmission{
 		if(jsonInputFileMsg == null){
 			return null;
 		}
-		String scriptFileMsg = ws.copyScriptFile(getClass().getClassLoader().getResource(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName()).getPath(), jobFolder.getAbsolutePath());
+		String scriptFileMsg = ws.copyScriptFile(slurmScript.getAbsolutePath(), jobFolder.getAbsolutePath());
 		if(scriptFileMsg == null){
 			return null;
 		}
@@ -269,6 +273,77 @@ public class JobSubmission{
     }
 	
 	/**
+	 * Produces the statistics about quantum jobs.
+	 * 
+	 * @param input in json format containing the format in which the result</br> 
+	 * should be codified, e.g. json. An example input file will look like</br>
+	 * as follows:{"format":"json"}
+	 * @return a string containing statistics in the user requested format.
+	 * @throws IOException
+	 */
+	public String getStatistics(String input) throws IOException{
+		JSONObject obj = new JSONObject(input);  
+		String formatAccepts = obj.optString("format"); // json
+		if(formatAccepts!=null && formatAccepts.toLowerCase().contains("json")){
+			Workspace workspace = new Workspace();
+			jobSpace = workspace.getWorkspace(getWorkspaceParentPath(),
+						getAgentClass());
+			JobStatistics jobStatistics = new JobStatistics(jobSpace);
+			obj = new JSONObject();
+			obj.put("Number of jobs currently running", jobStatistics.getJobsRunning());
+			obj.put("Number of jobs successfully completed", jobStatistics.getJobsCompleted());
+			obj.put("Number of jobs completing", jobStatistics.getJobsCompleting());
+			obj.put("Number of jobs failed", jobStatistics.getJobsFailed());
+			obj.put("Number of jobs pending", jobStatistics.getJobsPending());
+			obj.put("Number of jobs preempted", jobStatistics.getJobsPreempted());
+			obj.put("Number of jobs suspended", jobStatistics.getJobsSuspended());
+			obj.put("Number of jobs stopped", jobStatistics.getJobsStopped());
+			obj.put("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated());
+			obj.put("Number of jobs to start", jobStatistics.getJobsNotStarted());
+			obj.put("Total number of jobs submitted", jobStatistics.getJobsSubmitted());
+			return obj.toString(); 
+		}
+		return new JSONObject().toString();
+	}
+
+	
+	/**
+	 * Produces the statistics about quantum jobs.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public String getStatistics() throws IOException{
+		Workspace workspace = new Workspace();
+		jobSpace = workspace.getWorkspace(getWorkspaceParentPath(),
+					getAgentClass());
+		JobStatistics jobStatistics = new JobStatistics(jobSpace);
+		String statistics = jobStatistics.getHTMLHeader();
+		statistics = statistics + "<body>";
+		statistics = statistics.concat(jobStatistics.getBodydivStart());
+		statistics = statistics + "<center>";
+		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below.<p>";
+		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs completing", jobStatistics.getJobsCompleting()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs failed", jobStatistics.getJobsFailed()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs pending", jobStatistics.getJobsPending()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs preempted", jobStatistics.getJobsPreempted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs suspended", jobStatistics.getJobsSuspended()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs stopped", jobStatistics.getJobsStopped()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs to start", jobStatistics.getJobsNotStarted()+""));
+		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("<i>Total number of jobs submitted</i>", jobStatistics.getJobsSubmitted()+""));
+		statistics = statistics + "</table>";
+		statistics = statistics + "</center>";
+		statistics = statistics + "</body>";
+		statistics = statistics + "</html>";
+		return statistics;
+	}
+
+    
+	/**
 	 * Starts the scheduler to monitor Slurm jobs.
 	 * 
 	 * @throws SlurmJobException
@@ -277,11 +352,11 @@ public class JobSubmission{
         logger.info("----------Slurm Job Submission Component has started----------");
         System.out.println("----------Slurm Job Submission Component has started----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        JobSubmission jobs = new JobSubmission(getAgentClass(), getAgentWorkspaceDirectory(), getHpcAddress());
+        JobSubmission jobSubmission = new JobSubmission();
        	// 10 refers to the delay (in seconds) before the job scheduler
         // starts and 60 refers to the interval between two consecutive
         // executions of the scheduler.
-        executorService.scheduleAtFixedRate(jobs::monitorJobs, getDelayBeforeStart(), getInterval(), TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(jobSubmission::monitorJobs, getDelayBeforeStart(), getInterval(), TimeUnit.SECONDS);
         logger.info("----------Slurm Jobs are being monitored  ----------");
         System.out.println("---------- Slurm Jobs are being monitored  ----------");
        	
