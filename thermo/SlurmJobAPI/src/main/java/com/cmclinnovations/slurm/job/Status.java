@@ -27,7 +27,6 @@ public enum Status {
 	ATTRIBUTE_JOB_OUTPUT("JobOutput:"),
 	OUTPUT_PROCESSED("processed"),
 	EXTENSION_SLURM_FILE(".sh"),
-	EXTENSION_INPUT_FILE(".com"),
 	EXTENSION_LOG_FILE(".log"),
 	EXTENSION_JSON_FILE(".json"),
 	JOB_SETUP_SUCCESS_MSG("The job request has been processed successfully."),

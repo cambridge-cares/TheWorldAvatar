@@ -4,7 +4,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,7 +15,11 @@ import java.util.concurrent.TimeUnit;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
+import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
 import com.google.common.io.Files;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -33,7 +39,7 @@ public class JobSubmission{
 	private Logger logger = LoggerFactory.getLogger(JobSubmission.class);	
 	private String hpcAddress;
 	private String username = "msff2";
-	private String password = getPassword("Abcdl955_l7_l7_l7_aB");
+	private String password = getDecipheredPassword("Abcdl955_l7_l7_l7_aB");
 	private int delayBeforeStart = 10;
 	private int interval = 60;
 	private String agentClass;
@@ -42,6 +48,9 @@ public class JobSubmission{
 	private String workspaceParentPath;
 	boolean isAuthenticated;
 	private File jobSpace;
+	
+	public static ApplicationContext applicationContext;
+	public static SlurmJobProperty slurmJobProperty;
 	
 	static Session session;
 	static JSch jsch = new JSch();
@@ -363,14 +372,298 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Monitors the currently running jobs to allow new jobs to start.</br>
+	 * Monitors the currently running quantum jobs to allow new jobs to start.</br>
 	 * In doing so, it checks if the number of running jobs is less than the</br>
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
 	 */
 	private void monitorJobs() {
+		// initialising classes to read properties from the dft-agent.properites file
+        if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+		}
 		scheduledIteration++;
 		Workspace workspace = new Workspace();
+		jobSpace = workspace.getWorkspace(getWorkspaceDirectory().getAbsolutePath(),
+					getAgentClass());
+		try {
+			if (session == null || scheduledIteration%10==0) {
+				if(session!=null && session.isConnected()){
+					session.disconnect();
+				}
+				System.out.println("Initialising a session.");
+				session = jsch.getSession(getUsername(), getHpcAddress(), 22);
+				String pwd = getPassword();
+				session.setPassword(pwd);
+				session.setConfig("StrictHostKeyChecking", "no");
+				session.connect();
+				scheduledIteration = 0;
+			}
+			if(jobSpace.isDirectory()){
+				File[] jobFolders = jobSpace.listFiles();
+				for(File jobFolder: jobFolders){
+					if(!Utils.isJobCompleted(jobFolder)){
+						if(Utils.isJobRunning(jobFolder)){
+							if(updateRunningJobsStatus(jobFolder)){
+								if(jobsRunning.contains(jobFolder.getName())){
+									jobsRunning.remove(jobFolder.getName());
+								}
+							}
+						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
+							if(jobsRunning.size()<Property.MAX_NUMBER_OF_JOBS.getValue()){
+								runNotStartedJobs(jobFolder);
+								jobsRunning.add(jobFolder.getName());
+							}else{
+								break;
+							}
+						}
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch(SftpException e){
+			e.printStackTrace();
+		} catch(JSchException e){
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Starts running quantum jobs which were set up before. 
+	 * 
+	 * @param jobFolder
+	 * @throws SftpException
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws InterruptedException
+	 */
+	private void runNotStartedJobs(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+		startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
+	}
+	
+	/**
+	 * Starts a quantum job.
+	 * 
+	 * @param job
+	 * @param jobFiles
+	 * @throws SftpException
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws InterruptedException
+	 */
+	private void startJob(String job, List<File> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+		// On HPC, the job folder and files have the address of machine where DFT Agent runs.
+		// Therefore, the HPC address is replaced with the address of Agent machine.
+		job = job.replace(getHpcAddress(), Utils.getMachineAddress());
+		String jobFolderOnHPC = createJobFolder(job);
+		if(jobFolderOnHPC!=null){
+			uploadFiles(jobFolderOnHPC, jobFiles);
+		}
+	}
+	
+	/**
+	 * For running the current job, it uploads both the input file and</br>
+	 * Slurm script to an HPC.
+	 * 
+	 * @param jobFolderOnHPC
+	 * @param jobFiles
+	 * @throws SftpException
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 * @throws InterruptedException
+	 */
+	private void uploadFiles(String jobFolderOnHPC, List<File> jobFiles) throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+		String replacedInputFileName = "";
+		String statusFileAbsolutePath = "";
+		String jobId = "";
+		for(File jobFile:jobFiles){
+			if(jobFile.getAbsolutePath().endsWith(Status.EXTENSION_SLURM_FILE.getName())){
+				uploadFile(jobFile.getAbsolutePath(), jobFolderOnHPC);
+			}
+			if(jobFile.getAbsolutePath().endsWith(slurmJobProperty.getInputFileExtension())){
+				replacedInputFileName = getInputFileNameReplaced(jobFile.getAbsolutePath());
+				String inputFileNameOnHPC = jobFolderOnHPC.concat("/").concat(replacedInputFileName);
+				uploadFile(jobFile.getAbsolutePath(), inputFileNameOnHPC);
+				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
+			}
+			if(jobFile.getAbsolutePath().endsWith(slurmJobProperty.getStatusFileName().concat(slurmJobProperty.getStatusFileExtension()))){
+				statusFileAbsolutePath = jobFile.getAbsolutePath();
+			}
+		}
+		if(!replacedInputFileName.isEmpty()){
+			jobId = runQuantumJob(jobFolderOnHPC, replacedInputFileName);
+		}
+		if(!jobId.isEmpty()){
+			Utils.addJobId(statusFileAbsolutePath, jobId);
+		}
+	}
+
+	/**
+	 * Produces the command to go to the current job directory and to run</br>
+	 * the job.
+	 * 
+	 * @param jobFolderOnHPC
+	 * @param inputFile
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 */
+	private String runQuantumJob(String jobFolderOnHPC, String inputFile) throws JSchException, IOException{
+		inputFile = inputFile.replace(slurmJobProperty.getInputFileExtension(), "");
+		String command = "cd ".concat(jobFolderOnHPC).concat(" && ")
+				.concat("sbatch --job-name=").concat(inputFile).concat(" ")
+				.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName());
+		return runQuantumJob(command);
+	}
+	
+	/**
+	 * Runs a quantum job.
+	 * 
+	 * @param command
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 */
+	private String runQuantumJob(String command) throws JSchException, IOException{
+		ArrayList<String> outputs = executeCommand(command);
+		if (outputs == null) {
+			return null;
+		}
+		String jobId = getJobId(outputs);
+		System.out.println("Job id:" + jobId);
+		return jobId;
+	}
+	
+	/**
+	 * Modifies the names of the check point file and log file provided in</br>
+	 * the input file after copying this into the HPC cluster. 
+	 * 
+	 * @param jobFolderOnHPC
+	 * @param replacedJobFileName
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws UnknownHostException
+	 */
+	private void replaceFileContent(String jobFolderOnHPC, String replacedJobFileName) throws JSchException, IOException, UnknownHostException{
+		String command = "cd ".concat(jobFolderOnHPC).concat(" && ")
+				.concat("sed -i 's/").concat(getHpcAddress())
+				.concat("/").concat(Utils.getMachineAddress()).concat("/g' ").concat(replacedJobFileName);
+		executeCommand(command);
+	}
+	
+	/**
+	 * Modifies the name of the input file while copying this into the HPC cluster.
+	 * 
+	 * @param inputFile
+	 * @return
+	 * @throws UnknownHostException
+	 */
+	private String getInputFileNameReplaced(String inputFile) throws UnknownHostException{
+		String tokens[];
+		if(inputFile.contains("/")){
+			tokens = inputFile.split("/");
+		}else{
+			tokens = inputFile.split("\\\\");
+		}
+		return tokens[tokens.length-1].replace(getHpcAddress(), Utils.getMachineAddress());
+	}
+	
+	private String createJobFolder(String job) throws JSchException, IOException{
+		// Creates the "mkdir" (make directory) command to create the workspace/jobspace directory.
+		String command = "mkdir /home/".concat(username).concat("/").concat(jobSpace.getName());
+		// Executes the command to create the workspace/jobspace directory.
+		executeCommand(command);
+		// Creates the command to create the job directory.
+		command = "mkdir /home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
+		// Executes the command for creating the job directory.
+		executeCommand(command);
+		return "/home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
+	}
+	
+	/**
+	 * Updates the status of a currently running job.
+	 * 
+	 * @param jobFolder
+	 * @return
+	 * @throws JSchException
+	 * @throws SftpException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private boolean updateRunningJobsStatus(File jobFolder)
+			throws JSchException, SftpException, IOException, InterruptedException {
+			File statusFile = Utils.getStatusFile(jobFolder);
+			return updateRunningJobsStatus(jobFolder.getName(), statusFile);
+	}
+	
+	/**
+	 * Updates the latest status of the running jobs. 
+	 * 
+	 * @param runningJob
+	 * @param statusFile
+	 * @return
+	 * @throws JSchException
+	 * @throws SftpException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private boolean updateRunningJobsStatus(String runningJob, File statusFile) throws JSchException, SftpException, IOException, InterruptedException{
+		if(statusFile!=null){
+			if(!isJobRunning(statusFile)){
+				downloadFile(Utils.getLogFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
+				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()));
+				updateStatusForErrorTermination(statusFile, Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Extracts from the log file if the current job terminated normally or</br>
+	 * with error. In the case of error termination, updates the status of</br>
+	 * the log file accordingly. 
+	 * 
+	 * @param statusFile
+	 * @param jobFolderPathOnAgentPC
+	 */
+	private void updateStatusForErrorTermination(File statusFile, String jobFolderPathOnAgentPC) throws IOException{
+		if(Utils.isErrorTermination(jobFolderPathOnAgentPC)){
+			Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+		}
+	}
+	
+	/**
+	 * Checks if a job is running using the job id.
+	 * 
+	 * @param statusFile
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 * @throws InterruptedException
+	 */
+	private boolean isJobRunning(File statusFile) throws JSchException, IOException, InterruptedException{
+		String jobId = Utils.getJobId(statusFile.getAbsolutePath());
+		if(jobId==null){
+			return false;
+		} else{
+			boolean isJobRunning = isJobRunning(jobId , statusFile);
+			if(isJobRunning){
+				return true; 
+			}else{
+				Utils.modifyStatus(statusFile.getAbsolutePath(), Status.STATUS_JOB_COMPLETED.getName());
+				return false;
+			}
+		}
 	}
 	
 	/**
@@ -572,7 +865,7 @@ public class JobSubmission{
 	 * @param password encrypted password.
 	 * @return
 	 */
-	private String getPassword(String password){
+	private String getDecipheredPassword(String password){
 		return password.replace("l", "1").replace("_", "").replace("7", "3").replace("3", "4");
 	}
 }
