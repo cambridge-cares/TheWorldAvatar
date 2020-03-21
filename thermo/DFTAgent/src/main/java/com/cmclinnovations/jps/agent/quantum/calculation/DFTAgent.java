@@ -293,6 +293,16 @@ public class DFTAgent extends HttpServlet{
     	return new File(inputFilePath);
 	}
 	
+	/**
+	 * Creates the input file for a Slurm job.
+	 * 
+	 * @param inputFilePath
+	 * @param jobFolder
+	 * @param geometry
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 */
 	public String createInputFile(String inputFilePath, String jobFolder, String geometry, String jsonString) throws IOException{
 		BufferedWriter inputFile = Utils.openBufferedWriter(inputFilePath);
 		if(inputFile == null){
@@ -315,7 +325,18 @@ public class DFTAgent extends HttpServlet{
 		inputFile.close();
 		return Status.JOB_SETUP_SUCCESS_MSG.getName();
 	}
-
+	
+	/**
+	 * Retrieves the timestamp part from the name of a job folder.<br>
+	 * A job folder consists of hpcAddress_timestamp, for example,<br>
+	 * from the job folder name login-skylake.hpc.cam.ac.uk_1086309217579500,<br>
+	 * this method returns 1086309217579500. This timestamp is appended to<br>
+	 * the name of the slurm input file. The corresponding Slurm script file<br>
+	 * name can be login-skylake.hpc.cam.ac.uk_1086309217579500.com.  
+	 * 
+	 * @param folder
+	 * @return
+	 */
 	public String getTimeStampPart(String folder){
 		if(folder.contains("_")){
 			String[] tokens = folder.split("_");
@@ -326,12 +347,24 @@ public class DFTAgent extends HttpServlet{
 		return null;
 	}
 	
+	/**
+	 * Produces a job folder name by following the schema hpcAddress_timestamp.
+	 * 
+	 * @param hpcAddress
+	 * @return
+	 */
 	public String getNewJobFolderName(String hpcAddress){
 		return hpcAddress.concat("_").concat("" + Utils.getTimeStamp());
 	}
 	
+	/**
+	 * Based on the agent workspace directory, input file name and<br>
+	 * extension, it can generate the input file path.  
+	 * 
+	 * @return
+	 */
 	public String getInputFilePath(){
-		return System.getProperty("user.home").concat(File.separator).concat(dftAgentProperty.getInputFileName())
+		return Property.AGENT_WORKSPACE_DIR.getPropertyName().concat(File.separator).concat(dftAgentProperty.getInputFileName())
 		.concat(File.separator)
 		.concat(dftAgentProperty.getInputFileExtension());
 	}

@@ -67,83 +67,14 @@ public class Utils {
 				filePathPlusName), "UTF-8"));
 	}
 
-	/**
-	 * Go to the DFT Agent's job space to retrieve the status of jobs.</br>
-	 * Jobs with status running or not started yet, will be classified</br>
-	 * accordingly.
-	 * 
-	 * @return
-	 */
-	public static void classifyJobs(Map<String, List<String>> jobsRunning, Map<String, List<String>> jobsNotStarted, File tasksFolder) throws IOException{
-		if(tasksFolder!=null && tasksFolder.exists() && tasksFolder.isDirectory()){
-			File[] jobFolders = tasksFolder.listFiles();
-			for(File jobFolder:jobFolders){
-				classifyJob(jobsRunning, jobsNotStarted, jobFolder);
-			}
-		}
-	}
-	
-	private static void classifyJob(Map<String, List<String>> jobsRunning, Map<String, List<String>> jobsNotStarted, File jobFolder) throws IOException{
-		if(jobFolder.isDirectory()){
-			if(isJobRunning(jobFolder)){
-				retrieveRunningJobs(jobsRunning, jobFolder);
-			} else if(isJobNotStarted(jobFolder)){
-				retrieveNotStartedJobs(jobsNotStarted, jobFolder);
-			}
-		}
-	}
-
 	public static boolean isJobCompleted(File jobFolder) throws IOException{
 		return isJobFinished(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
-	}
-	
-	public static boolean isJobRunning(File jobFolder) throws IOException{
-		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 	}
 	
 	public static boolean isJobOutputProcessed(File jobFolder) throws IOException{
 		return isJobOutputProcessed(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 	}
 
-	public static boolean isJobNotStarted(File jobFolder) throws IOException{
-		return isJobNotStarted(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
-	}
-	
-	public static void retrieveRunningJobs(Map<String, List<String>> jobsRunning, File jobFolder) throws IOException{
-			File[] individualJobFiles = jobFolder.listFiles();
-			List<String> runningJobsDetails = new ArrayList<>();
-			for(File individualJobFile:individualJobFiles){
-				if(individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_SLURM_FILE.getName()) 
-						|| individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_INPUT_FILE.getName())
-						|| individualJobFile.getAbsolutePath().endsWith(Status.STATUS_FILE.getName())){
-					runningJobsDetails.add(individualJobFile.getAbsolutePath());
-				}
-			}
-			if(runningJobsDetails.size()>=2){
-				jobsRunning.put(jobFolder.getName(), runningJobsDetails);
-			}else{
-				logger.error("All files for submitting a job are not available for the following job:"+jobFolder.getAbsolutePath());
-			}
-	}
-	
-
-	public static void retrieveNotStartedJobs(Map<String, List<String>> jobsNotStarted, File jobFolder) throws IOException{
-		File[] individualJobFiles = jobFolder.listFiles();
-		List<String> notStartedJobsDetails = new ArrayList<>();
-		for(File individualJobFile:individualJobFiles){
-			if(individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_SLURM_FILE.getName()) 
-					|| individualJobFile.getAbsolutePath().endsWith(Status.EXTENSION_INPUT_FILE.getName())
-					|| individualJobFile.getAbsolutePath().endsWith(Status.STATUS_FILE.getName())){
-				notStartedJobsDetails.add(individualJobFile.getAbsolutePath());
-			}
-		}
-		if(notStartedJobsDetails.size()>=2){
-			jobsNotStarted.put(jobFolder.getName(), notStartedJobsDetails);
-		}else{
-			logger.error("All files for submitting a job are not available for the following job:"+jobFolder.getAbsolutePath());
-		}
-	}
-	
 	/**
 	 * Check the status if a job finished.
 	 * 
@@ -177,30 +108,6 @@ public class Utils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean isJobRunning(String statusFilePath) throws IOException{
-		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
-		String line;
-		while((line=statusFile.readLine())!=null){
-			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Status.STATUS_JOB_RUNNING.getName()) 
-						|| line.contains(Status.STATUS_JOB_COMPLETING.getName()) 
-						|| line.contains(Status.STATUS_JOB_PENDING.getName())){
-					statusFile.close();
-					return true;
-				}
-			}
-		}
-		statusFile.close();
-		return false;
-	}
-	
-	/**
-	 * Check the status if a job is currently running.
-	 * 
-	 * @param statusFilePath the absolute path to the status file.
-	 * @return
-	 * @throws IOException
-	 */
 	public static boolean isJobOutputProcessed(String statusFilePath) throws IOException{
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
@@ -215,81 +122,7 @@ public class Utils {
 		statusFile.close();
 		return false;
 	}
-	
-	/**
-	 * Check the status if a job is not started yet.
-	 * 
-	 * @param statusFilePath the absolute path to the status file.
-	 * @return
-	 * @throws IOException
-	 */
-	public static boolean isJobNotStarted(String statusFilePath) throws IOException{
-		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
-		String line;
-		while((line=statusFile.readLine())!=null){
-			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
-				if(line.contains(Status.STATUS_JOB_NOT_STARTED.getName())){
-					statusFile.close();
-					return true;
-				}
-			}
-		}
-		statusFile.close();
-		return false;
-	}
-	
-	/**
-	 * Reads the job id from the status file.
-	 * 
-	 * @param statusFilePath the absolute path to the status file.
-	 * @return
-	 * @throws IOException
-	 */
-	public static String getJobId(String statusFilePath) throws IOException{
-		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
-		String line;
-		while((line=statusFile.readLine())!=null){
-			if(line.trim().toLowerCase().startsWith(Status.ATTRIBUTE_JOB_ID.getName().toLowerCase())){
-				String tokens[] = line.trim().split(":");
-				if(tokens.length>=2 && tokens[1].trim().length()>0){
-					statusFile.close();
-					return tokens[1].trim();
-				}
-			}
-		}
-		statusFile.close();
-		return null;
-	}
-	
-	/**
-	 * Adds the job id to the status file. 
-	 * 
-	 * @param filePath the path to the status file.
-	 * @param jobId the job id generated following the sbatch submission. 
-	 * @throws IOException
-	 */
-	public static void addJobId(String filePath, String jobId) throws IOException{
-		List<String> fileContent = new ArrayList<>();
-		BufferedReader br = openSourceFile(filePath);
-		String line;
-		while((line=br.readLine())!=null){
-		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())) {
-		        line = Status.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Status.STATUS_JOB_RUNNING.getName());
-		    }
-		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_ID.getName())) {
-		        line = Status.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId);
-		    }
-		    fileContent.add(line);
-		}
-		br.close();
-		BufferedWriter bw = openBufferedWriter(filePath);
-		for(String lineContent:fileContent){
-			bw.write(lineContent.concat("\n"));
-		}
-		bw.flush();
-		bw.close();
-	}
-	
+		
 	/**
 	 * Modifies the status of job in the status file. 
 	 * 
