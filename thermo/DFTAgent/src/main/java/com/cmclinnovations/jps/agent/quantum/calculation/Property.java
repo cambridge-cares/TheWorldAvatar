@@ -15,7 +15,6 @@ import java.io.File;
 public enum Property {
 
 	AGENT_WORKSPACE_DIR(System.getProperty("user.home")),
-	MAX_NUMBER_OF_JOBS(10),
 	JOB_NO_OF_CORES_PREFIX("%nprocshared="),
 	JOB_MEMORY_PREFIX("%mem="),
 	JOB_MEMORY_UNITS("GB"),
