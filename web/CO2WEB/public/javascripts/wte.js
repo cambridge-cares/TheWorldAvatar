@@ -11,62 +11,143 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "PREFIX j6:<http://www.w3.org/2006/time#> "
 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-+ "SELECT  ?entity  ?name ?xvalue ?yvalue ?wasteproductionvalue"
++ "SELECT  ?entity  ?name ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
 + "WHERE {"
 + "?entity  a j1:FoodCourt ."
 + "?entity   j8:hasName ?name ." 
 + "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-+ "?coorsys   j7:hasProjectedCoordinate_x ?x ."
-+ "?x   j2:hasValue ?xval ."
-+ "?xval   j2:numericalValue ?xvalue ."
-+ "?coorsys   j7:hasProjectedCoordinate_y ?y ."
-+ "?y   j2:hasValue ?yval ."
-+ "?yval   j2:numericalValue ?yvalue ."
+
++ "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
++ "?x  j2:hasValue ?vx ." 
++ "?vx  j2:numericalValue ?V_x ."//latitude
++ "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//latitude
+
++ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
++ "?y  j2:hasValue ?vy ." 
++ "?vy  j2:numericalValue ?V_y ."//longitude
++ "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
 
 + "?entity   j1:produceWaste ?WP ." 
 + "?WP     j2:hasValue ?vWP ."
-+ "?vWP  j2:numericalValue ?wasteproductionvalue ."
++ "?vWP  j2:numericalValue ?Waste_Production ."
++ "?vWP  j2:hasUnitOfMeasure ?wasteproductionunit ."//longitude
  
 + "}";
-WTFTechQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-+ "PREFIX j2:<htt{{p://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
-+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
-+ "PREFIX j6:<http://www.w3.org/2006/time#> "
-+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-+ "SELECT DISTINCT ?pollutiontreatmenttaxvalue ?Tech1Capvalue ?installationcostvalue ?operationcostvalue ?transferrateelectricvalue ?energyconsumptionvalue "
-+ "WHERE {" + "?entity  a j1:OffsiteWasteTreatmentFacility ." // specified class declared (off or on)
+WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.w3.org/2006/time#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+    + "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit "
+    + "WHERE {" 
+    + "?entity  a j1:OffsiteWasteTreatmentFacility ."			
+    + "?entity   j7:hasGISCoordinateSystem ?coorsys ." 
+    + "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+    + "?x  j2:hasValue ?vx ." 
+    + "?vx  j2:numericalValue ?V_x ."//latitude
+    + "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//latitude
 
-+ "?entity   j1:useTechnology ?Tech1 ." 
-//+ "?Tech1 a "+techclass+" ." // specified class declared (tech 1,2,3, or 4,5,6)
-+ "?Tech1 j1:hasTechnologyCapacity ?Tech1Cap ." 
-+ "?Tech1Cap j2:hasValue ?vTech1Cap ."
-+ "?vTech1Cap  j2:numericalValue ?Tech1Capvalue ."
+    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+    + "?y  j2:hasValue ?vy ." 
+    + "?vy  j2:numericalValue ?V_y ."//longitude
+    + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
+    + "}";
 
-+ "?Tech1   j1:hasTax ?PTT ." + "?PTT     j2:hasValue ?vPTT ."
-+ "?vPTT  j2:numericalValue ?pollutiontreatmenttaxvalue ."
+//
+transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.w3.org/2006/time#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+    + "SELECT ?Unit_transport_capacity ?Unit_transport_cost ?pollutionTransportTax ?dieselConsTruck " 
+    + "WHERE {"
+    + "?entity  a j8:TransportationRoute ."
+    + "?entity   j8:suitFor ?truck ." 
+    + "?truck   j1:hasTax ?PTT ." 
+    + "?PTT     j2:hasValue ?vPTT ."
+    + "?vPTT  j2:numericalValue ?pollutionTransportTax ."
 
-+ "?Tech1   j3:hasCost ?OC ." + "?OC     j2:hasValue ?vOC ."
-+ "?vOC  j2:numericalValue ?operationcostvalue ."
+    + "?truck   j8:hasTransportationCapacity ?TC ." 
+    + "?TC     j2:hasValue ?vTC ."
+    + "?vTC  j2:numericalValue ?Unit_transport_capacity ."
 
-+ "?Tech1   j3:hasInstallationCost ?IC ." + "?IC     j2:hasValue ?vIC ."
-+ "?vIC  j2:numericalValue ?installationcostvalue ."
+    + "?truck   j8:hasTransportationCost ?TCost ." 
+    + "?TCost     j2:hasValue ?vTCost ."
+    + "?vTCost  j2:numericalValue ?Unit_transport_cost ." 
 
-+ "?Tech1   j1:hasTransferRate ?TR3 ."
-+ "?TR3     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#electricity> ."
-+ "?TR3     j2:hasValue ?vTR3 ." + "?vTR3  j2:numericalValue ?transferrateelectricvalue ."
+    + "?truck   j8:hasEmission ?Temission ." 
+    + "?Temission     j2:hasValue ?vTemission ."
+    + "?vTemission  j2:numericalValue ?dieselConsTruck ." 
 
-+ "?Tech1   j1:requiredConsumption ?RC2 ."
-+ "?RC2     j1:inContextOf <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#energy> ."
-+ "?RC2     j2:hasValue ?vRC2 ." + "?vRC2  j2:numericalValue ?energyconsumptionvalue ."
+    + "}";
 
-+ "}"
-+ "ORDER BY DESC(?Tech1)";
+
 (function PPMap(){
     var ppMap = new PopupMap({useCluster:true});
 })();
+
+  //when button clicked, run simulation
+$(document).ready(function () {
+    InitialInputs();
+    $("#run-btn").click(function () {
+        console.log("Start sim")
+        transportUpd = getInputs();
+        console.log(transportUpd);
+
+    });
+});
+const textPanel = $("#text-panel")
+const rePanel = $("#result-panel")
+const drawPanel = $("#draw-panel")
+/** creates Transportation Table to enter values
+ * 
+ */
+function InitialInputs(){
+    var iri= "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
+    var transporturl = createUrlForSparqlQuery(scenario, iri, transportQuery);
+    $.ajax({
+        url: transporturl,
+        method: "GET",
+        //  contentType: "application/json; charset=utf-8",
+        success: function (data) {
+            var obj0 = JSON.parse(data);
+            obj0 = obj0['results']['bindings'][0];
+            console.log(obj0);
+            var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+            addInitialInputsDisplay(result, iri);
+        },
+        error: function () {
+            console.log("Can not get location")
+        }
+    });
+
+}
+/** create table for uri pairs. Store uripairs and change when there is???
+ * @param {[key, [type, datatype, value]]} uripair
+ */
+function addInitialInputsDisplay(uripair, iri){
+    var inputsHTML = "";
+    uripair.forEach((data)=>{
+        console.log(data);
+        var inputLine = '<tr><td><label>' + data[0]
+        +'</label></td><td><input class="input_class" data-dataType="' 
+        + data[1]['datatype'] + '" value="' + data[1]['value'] 
+        + '" style="float: right;"></td></tr>';
+        inputsHTML += inputLine;
+    });
+    var table = '<table data-url='+ iri
+    +' id="transportQ">' + inputsHTML 
+    + '</table>';
+    textPanel.append(table);
+    return;
+}
+
 /** once map is instantiated, run base scenario
  * 
  */
@@ -164,7 +245,7 @@ function setMarkerMen(id, callback){
     if (id.includes("FoodCourt")){
         typeInfo = FCQuery;
     }else{
-        typeInfo = WTFTechQuery;
+        typeInfo = WTQuery;
     }
     var promise1 = new Promise(function (resolve, reject){
         resolve(openWindow(id, typeInfo, callback));
@@ -222,7 +303,7 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
 
         console.log(inputsHTML);
         if (callback == null){
-                innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
+                innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                 infowindow.setContent(innerHTML);
             }
@@ -241,6 +322,25 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
 
     });
 
+}
+function getInputs() {
+
+
+    let sourceQuan = [];
+    $("table#transportQ tr").each(function () {
+        var row = $(this);
+        let cols = row.find("input");
+        console.log(cols)
+        if(cols.length<1){
+            return;
+        }
+        sourceQuan.push($(cols[0]).val())
+
+    })
+
+    
+
+    return sourceQuan;
 }
 /*** accesses parallel scenarios through these helper functions
  * @param scenarioname the name of the scenario, be it base or specific folder 

@@ -27,11 +27,17 @@ block description
 
 block content
 	#loader(style='display:none;')
-	.panel.panel-default
-		.panel-body
-			button#run-btn(type='button') Run Simulation
-			input#scenarioTxt(type='text', value='')
-			#loader(style='display:none;')
+	div#wrapper
+		div.overlay-panel-wrapper
+			div#overlay-setting-panel.panel.panel-default
+				div.panel-heading Run
+				div.panel-body.container-fluid
+					div#setting-panel-body
+						div#text-panel
+						br
+						button#run-btn.btn.btn-primary Run Simulation
+						div#result-panel
+						div#draw-panel
 
 						   
 	div#map
