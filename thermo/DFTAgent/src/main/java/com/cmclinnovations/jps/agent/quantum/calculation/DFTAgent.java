@@ -62,7 +62,7 @@ public class DFTAgent extends HttpServlet{
 	static List<String> jobsRunning = new ArrayList<>();
 	
 	SlurmJob slurmJob = new SlurmJob();
-	JobSubmission jobSubmission;
+	static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
 	
@@ -144,7 +144,7 @@ public class DFTAgent extends HttpServlet{
        	// the first 60 refers to the delay (in seconds) before the job scheduler
         // starts and the second 60 refers to the interval between two consecu-
         // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(dftAgent::processOutputs, 30, 60, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the dft-agent.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -155,6 +155,14 @@ public class DFTAgent extends HttpServlet{
         logger.info("---------- Quantum jobs are being monitored  ----------");
         System.out.println("---------- Quantum jobs are being monitored  ----------");
        	
+	}
+	
+	private void monitorJobs(){
+		if(jobSubmission==null){
+			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+		}
+		jobSubmission.monitorJobs();
+		processOutputs();
 	}
 	
 	/**
@@ -365,8 +373,7 @@ public class DFTAgent extends HttpServlet{
 	 * @return
 	 */
 	public String getInputFilePath(){
-		return Property.AGENT_WORKSPACE_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
-		.concat(File.separator)
+		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
 		.concat(slurmJobProperty.getInputFileExtension());
 	}
 }
