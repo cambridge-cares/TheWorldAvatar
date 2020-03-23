@@ -149,7 +149,8 @@ function createMarker(lst){
             function (_content) {
             console.log('content',_content);
             infowindow.setContent(_content);
-            infowindow.open(map, this);
+            infowindow.setPosition(new google.maps.LatLng(lst[1], lst[2]));
+            infowindow.open(map);
         });
     });
     markers.push(marker);
