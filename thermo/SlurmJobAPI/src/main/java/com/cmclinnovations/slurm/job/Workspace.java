@@ -202,7 +202,7 @@ public class Workspace {
 	 * @return
 	 */
 	public String getStatusFilePath(File jobFolder){
-		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName());
+		return jobFolder.getAbsolutePath().concat(File.separator).concat(Property.STATUS_FILE_NAME.getPropertyName());
 	}
 	
 	/**

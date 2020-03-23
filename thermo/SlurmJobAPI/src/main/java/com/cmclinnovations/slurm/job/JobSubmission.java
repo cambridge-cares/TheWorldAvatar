@@ -40,7 +40,7 @@ public class JobSubmission{
 	private String hpcAddress;
 	private String username = "msff2";
 	private String password = getDecipheredPassword("Abcdl955_l7_l7_l7_aB");
-	private int delayBeforeStart = 10;
+	private int delayBeforeStart = 50;
 	private int interval = 60;
 	private String agentClass;
 	private File workspaceDirectory;
@@ -147,12 +147,8 @@ public class JobSubmission{
 		this.agentClass = agentClass;
 		this.workspaceName = workspaceName;
 		this.hpcAddress = hpcAddress;
-		this.workspaceDirectory = Workspace.getWorkspace(System.getProperty("user.home"), agentClass);
-		this.workspaceParentPath = System.getProperty("user.home");
-		init();
-	}
-	
-	private JobSubmission(){
+		this.workspaceDirectory = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), agentClass);
+		this.workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
 	}
 	
 	/**
@@ -185,7 +181,7 @@ public class JobSubmission{
 	 */
 	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
-		File workspaceFolder = Workspace.getWorkspace(getWorkspaceDirectory().getAbsolutePath(), getAgentClass());
+		File workspaceFolder = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), getAgentClass());
 		if(workspaceFolder == null){
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
@@ -350,26 +346,6 @@ public class JobSubmission{
 		statistics = statistics + "</html>";
 		return statistics;
 	}
-
-    
-	/**
-	 * Starts the scheduler to monitor Slurm jobs.
-	 * 
-	 * @throws SlurmJobException
-	 */
-	public void init(){
-        logger.info("----------Slurm Job Submission Component has started----------");
-        System.out.println("----------Slurm Job Submission Component has started----------");
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        JobSubmission jobSubmission = new JobSubmission();
-       	// 10 refers to the delay (in seconds) before the job scheduler
-        // starts and 60 refers to the interval between two consecutive
-        // executions of the scheduler.
-        executorService.scheduleAtFixedRate(jobSubmission::monitorJobs, getDelayBeforeStart(), getInterval(), TimeUnit.SECONDS);
-        logger.info("----------Slurm Jobs are being monitored  ----------");
-        System.out.println("---------- Slurm Jobs are being monitored  ----------");
-       	
-	}
 	
 	/**
 	 * Monitors the currently running quantum jobs to allow new jobs to start.</br>
@@ -377,7 +353,7 @@ public class JobSubmission{
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
 	 */
-	private void monitorJobs() {
+	public void monitorJobs() {
 		// initialising classes to read properties from the dft-agent.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -387,7 +363,7 @@ public class JobSubmission{
 		}
 		scheduledIteration++;
 		Workspace workspace = new Workspace();
-		jobSpace = workspace.getWorkspace(getWorkspaceDirectory().getAbsolutePath(),
+		jobSpace = workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
 					getAgentClass());
 		try {
 			if (session == null || scheduledIteration%10==0) {
@@ -495,7 +471,7 @@ public class JobSubmission{
 				uploadFile(jobFile.getAbsolutePath(), inputFileNameOnHPC);
 				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
 			}
-			if(jobFile.getAbsolutePath().endsWith(slurmJobProperty.getStatusFileName().concat(slurmJobProperty.getStatusFileExtension()))){
+			if(jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
 				statusFileAbsolutePath = jobFile.getAbsolutePath();
 			}
 		}

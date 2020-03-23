@@ -38,14 +38,8 @@ public class SlurmJobProperty {
 	@Value("${chk.point.file.extension}")
 	private String checkPointFileExtension;
 
-	@Value("${status.file.extension}")
-	private String statusFileExtension;
-
 	@Value("${json.file.extension}")
 	private String jsonFileExtension;
-
-	@Value("${status.file.name}")
-	private String statusFileName;
 
 	@Value("${json.input.file.name}")
 	private String jsonInputFileName;
@@ -84,16 +78,8 @@ public class SlurmJobProperty {
 		return checkPointFileExtension;
 	}
 
-	public String getStatusFileExtension() {
-		return statusFileExtension;
-	}
-
 	public String getJsonFileExtension() {
 		return jsonFileExtension;
-	}
-
-	public String getStatusFileName() {
-		return statusFileName;
 	}
 
 	public String getJsonInputFileName() {
