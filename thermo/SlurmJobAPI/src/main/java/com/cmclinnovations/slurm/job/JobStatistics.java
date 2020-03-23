@@ -4,6 +4,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * This class implemented methods for the calculation and visualisation of<br>
+ * statistics of jobs submitted to an HPC.  
+ * 
+ * @author msff2
+ *
+ */
 public class JobStatistics {
 	private int jobsSubmitted = 0;
 	private int jobsCompleted = 0;
@@ -19,6 +26,13 @@ public class JobStatistics {
 	
 	private File jobSpace;
 	
+	/**
+	 * Construct that takes the job workspace folder as the parameter and<br>
+	 * calculates the statistics of jobs submitted to an HPC. 
+	 * 
+	 * @param jobSpace
+	 * @throws IOException
+	 */
 	public JobStatistics(File jobSpace) throws IOException{
 		this.jobSpace = jobSpace;
 		File[] jobs = jobSpace.listFiles();
@@ -30,6 +44,13 @@ public class JobStatistics {
 				+ getJobsErrorTerminated() + getJobsNotStarted());
 	}
 
+	/**
+	 * Calculates statistics of jobs grouped into multiple categories based<br>
+	 * upon their status.
+	 * 
+	 * @param job
+	 * @throws IOException
+	 */
 	private void calculateAllStatistics(File job) throws IOException{
 		if(job!=null && job.isDirectory()){
 			File[] jobFiles = job.listFiles();
@@ -39,6 +60,12 @@ public class JobStatistics {
 		}
 	}
 	
+	/**
+	 * Reads the status of single job to calculate the statistics. 
+	 * 
+	 * @param jobFile
+	 * @throws IOException
+	 */
 	private void calculateStatistics(File jobFile) throws IOException{
 		if(!jobFile.isDirectory() && jobFile.getAbsolutePath().endsWith(Status.STATUS_FILE.getName())){
 			calculateStatistics(jobFile.getAbsolutePath());
