@@ -313,7 +313,7 @@ function displayMessageModal(msg) {
 }
 function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
 
-    var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
+    var url2 = "http://localhost:8080"+ '/jps/scenario/' + scenarioname + '/update?query=';
     urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
     url2 += encodeURIComponent(JSON.stringify(urljson)); 
     //url2 += JSON.stringify(urljson); 
