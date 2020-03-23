@@ -359,7 +359,7 @@ function callDoSimulationNew(uris){
     var data = {};
     console.log(uris);
     var arr = uris[0].split('/');
-    var splittag = "#" + arr[arr.length-1]
+    var splittag = "#" + arr[arr.length-1].split('.')[0]
     data = {"componentIRI":uris[0]+splittag}
     var simUrl = createUrlForAgent(scenario, agentUrl, data );
     var request = $.ajax({
