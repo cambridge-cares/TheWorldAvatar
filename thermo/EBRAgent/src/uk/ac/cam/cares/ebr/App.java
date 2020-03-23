@@ -5,7 +5,9 @@ import java.util.LinkedList;
 
 import uk.ac.cam.cares.ebr.query.FederatedQuery;
 import uk.ac.cam.cares.ebr.query.QueryTemplate;
+import uk.ac.cam.cares.ebr.repository.FolderManager;
 import uk.ac.cam.cares.ebr.repository.RepositoryManager;
+
 import uk.ac.cam.cares.ebr.tools.CSVGenerator;
 import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
@@ -45,10 +47,11 @@ public class App {
       * 
       */
 
-   csvGenerator.generateCSVFile(fq.runFederatedSPARQL(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy()), csvFilePath);
+//   csvGenerator.generateCSVFile(fq.runFederatedSPARQL(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy()), csvFilePath);
     
-// FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());
+ //FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());     	
     	
-    
-}
+    	FolderManager.zipFile("C:/Users/NK/Documents/Cross-validation-test-1-ti-isg-1");
+    	
+    }	
 }
