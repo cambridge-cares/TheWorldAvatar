@@ -237,10 +237,10 @@ public class DoSimulation extends JPSHttpServlet {
  		
  		JSONObject simResult=new JSONObject();
  			simResult.put("ValueOfHeatDutyOfR-301",yData.get(25)); //R-301
- 			simResult.put("V_Angle_LoadPoint_R-301",yData.get(112));//R-301 load
+ 			simResult.put("V_theta_R-301load",yData.get(112));//R-301 load
  			simResult.put("V_ActualV_R-301",yData.get(113));//R-301 load
  			simResult.put("ValueOfHeatDutyOfR-302",yData.get(23));//R-302
- 			simResult.put("V_Angle_LoadPoint_R-302",yData.get(102));//R-302 load
+ 			simResult.put("V_theta_R-302load",yData.get(102));//R-302 load
  			simResult.put("V_ActualV_R-302",yData.get(103));//R-302 load
  			
  			
@@ -265,14 +265,15 @@ public class DoSimulation extends JPSHttpServlet {
 			DatatypeProperty numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 			Individual vH = jenaOwlModel.getIndividual(i.split("#")[0]+ "#ValueOfHeatDutyOf"+reactor);
 			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("ValueOfHeatDutyOf" + reactor).toString()) );
-			Individual vAngle = jenaOwlModel.getIndividual(i.split("#")[0]+  "#V_Angle_LoadPoint_"+reactor);
-			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_Angle_LoadPoint_" + reactor).toString()) );
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			broker.putOld(i, content);
 			
 			//store in loadfile rather than load
 			String newM = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/" +reactor + "load.owl";
 			jenaOwlModel = JenaHelper.createModel(newM +"#"+reactor+"load");//OBJECT 
+			Individual vAngle = jenaOwlModel.getIndividual(i.split("#")[0]+  "#V_theta_"+reactor+"load");
+			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_theta_" + reactor).toString()) );
+			
 			Individual vVolt = jenaOwlModel.getIndividual(newM+ "#V_ActualV_"+reactor+"load");
 			vVolt.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_ActualV_" + reactor).toString()) );
 			content = JenaHelper.writeToString(jenaOwlModel);
