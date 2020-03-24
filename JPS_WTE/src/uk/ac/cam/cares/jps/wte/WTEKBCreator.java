@@ -729,7 +729,7 @@ public class WTEKBCreator {
 					Individual unitdevice = WasteTreatmentDeviceclass.createIndividual(Prefix + mainobjectname + ".owl#UnitDeviceOf" + mainobjectname+"_"+t);
 					tech2.addProperty(realizedByDevice, unitdevice);
 					unitdevice.setPropertyValue(usedInYear, jenaOwlModel.createTypedLiteral(new Integer(t))); //the amount of unit still not be possible to be included in owl files
-					unitdevice.setPropertyValue(amountOfUnit, jenaOwlModel.createTypedLiteral(new Integer(outputdata[0])));
+					unitdevice.setPropertyValue(amountOfUnit, jenaOwlModel.createTypedLiteral(Math.round(new Double(outputdata[0]))));
 					}
 					Vtechcap.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(propertydata.get(0)[1])));
 					Vinstallcost.setPropertyValue(numval, jenaOwlModel.createTypedLiteral(new Double(propertydata.get(0)[2])));
