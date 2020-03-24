@@ -257,7 +257,7 @@
 		<xsl:if test="($species_iri!='')">
 			<owl:NamedIndividual rdf:about="{$speciesIRI}">
 				<rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing" />
-				<rdf:type rdf:resource="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#"/>
+				<rdf:type rdf:resource="http://theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species"/>
 				
 			</owl:NamedIndividual>
 			

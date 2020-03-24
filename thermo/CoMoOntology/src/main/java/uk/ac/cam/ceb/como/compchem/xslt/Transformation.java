@@ -36,7 +36,7 @@ public class Transformation {
 	 * 
 	 */
 
-	static String xmlFolderPath = "src/test/resources/compchem_xml/test/";
+	static String xmlFolderPath = "src/test/resources/compchem_xml/";
 
 	/**
 	 * The xslt path.
@@ -107,14 +107,15 @@ public class Transformation {
 			 *         list. XSLT transformation without species IRI.</p> 
 			 */
 			
-			trasnformation(randomString,xmlSource, outputStream, xsltSource);
+//			trasnformation(randomString,xmlSource, outputStream, xsltSource);
 			
-			String speciesIRI = "http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09";
+			String speciesIRI = "http://www.theworldavatar.com/kb/ontospecies/12f1a2f0-a3bd-3cb4-9967-93775d0897cd.owl#12f1a2f0-a3bd-3cb4-9967-93775d0897cd";
 			
 			/**
 			 * XSLT transformation including species IRI.
 			 */
-//			transfromation(randomString,speciesIRI, xmlSource, outputStream, xsltSource ); 
+		    transfromation(randomString,speciesIRI, xmlSource, outputStream, xsltSource );
+		
 		}
 	}
 
