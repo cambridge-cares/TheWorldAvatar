@@ -26,19 +26,33 @@ public class FileUtility implements Utility {
 	
 	public File[] getFileList(String folderPath, final String ...format) {
 
+
 		File dir = new File(folderPath);
 		
 		File[] fileList = dir.listFiles(new FilenameFilter(){
 			
 			public boolean accept(File dir, String name) {
 				
+				if(format.length==1) {
+					
+					return (name.endsWith(format[0]));
+					
+				}else if(format.length==2) {
+					
+					return (name.endsWith(format[0]) || name.endsWith(format[1]));
+					
+				}else if(format.length==3) {
+					
 				return (name.endsWith(format[0]) || name.endsWith(format[1]) || name.endsWith(format[2]));
+				}
+				
+			return false;	
+			
 			}
 		});
 
 		return fileList;
 	}	
-
 	
 	/**
 	 * Gets the array file list.

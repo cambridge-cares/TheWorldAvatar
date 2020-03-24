@@ -345,4 +345,33 @@ public class QueryString {
 		return query;
 	}
 
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param uuid the uuid as a parameter for SPARQL query.
+	 * @param energyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy
+	 * @return A SPARQL query as a String. Result of this query should be scf energy value and scf energy unit.
+	 * 
+	 */
+	public static String getElectronicEnergy(String uuid, String energyClass) {
+		
+
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" 
+				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+				+ "SELECT DISTINCT ?energyValue  ?energyUnit "
+				+ "WHERE {" 
+                + "<"+ontoCompChemAboxBaseUri+ uuid+"/"+uuid+".owl#"+ uuid +"> gc:isCalculationOn ?cal1 ."
+				+ "?cal1 rdf:type "+ontoCompChemNS+":"+energyClass+" ."
+				+ "?cal1 gc:hasElectronicEnergy ?elecEn . " 
+				+ "?elecEn gc:hasValue  ?energyValue . "
+				+ "?elecEn gc:hasUnit ?energyUnit . "
+				+ "}";
+		
+		return query;
+	}
+	
+	
+	
 }

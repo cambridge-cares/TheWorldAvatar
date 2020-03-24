@@ -14,6 +14,7 @@ import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.PropertyList;
 import uk.ac.cam.ceb.como.io.chem.file.parser.formula.EmpiricalFormulaParser;
+import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingElectronicEnergy;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometry;
 import uk.ac.cam.ceb.como.jaxb.parser.g09.ParsingGeometryType;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
@@ -21,9 +22,11 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.FormulaUtility;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
 
 /**
+ * 
  * The Class GenerateXml.
  *
- * @author nk510
+ * @author nk510 (caresssd@hermes.cam.ac.uk)
+ * 
  *         <p>
  * 		Generates CompChem XML files by parsing Gaussian (g09) files. which
  *         are stored in folder 'src/test/resources/g09/' of CoMoOntology.
@@ -31,6 +34,7 @@ import uk.ac.cam.ceb.como.jaxb.parsing.utils.Utility;
  *         @author{pb556} in CoMoIOChemistry, and CoMoEnthalpyEstimation
  *         projects.
  *         </p>
+ *         
  */
 
 public class GenerateXml {
@@ -58,7 +62,7 @@ public class GenerateXml {
 	public static void main(String[] args)
 
 			throws Exception, javax.xml.bind.JAXBException, IOException, XMLStreamException, FactoryConfigurationError {
-
+		
 		Utility utility = new FileUtility();
 
 		/**
@@ -73,13 +77,13 @@ public class GenerateXml {
 		 *         </p>
 		 */
 
-		File[] fileList = utility.getFileList("src/test/resources/g09/", ".g09");
+		File[] fileList = utility.getFileList("src/test/resources/g09/", ".log", ".g09");
 
 		for (File gaussianFile : fileList) {
 
 			Module rootModule = new Module();
 
-			String fileName = gaussianFile.getName().replaceAll(".g09", "");
+			String fileName = gaussianFile.getName().replaceAll(".log", "");
 
 			/**
 			 * 
@@ -116,7 +120,7 @@ public class GenerateXml {
 	public static Molecule getEmpiricalParser(String formulaName) {
 
 		EmpiricalFormulaParser empParser = new EmpiricalFormulaParser();
-
+		
 		return empParser.parseModule(formulaName);
 	}
 
@@ -154,6 +158,8 @@ public class GenerateXml {
 		FormulaUtility fp = new FormulaUtility();
 
 		ParsingGeometry pg = new ParsingGeometry();
+		
+		ParsingElectronicEnergy electronicEnergy = new ParsingElectronicEnergy();
 
 		ParsingGeometryType pgt = new ParsingGeometryType();
 
@@ -195,6 +201,16 @@ public class GenerateXml {
 					.add(pgt.getGeometryTypeFromG09(file.getAbsoluteFile()));
 
 			/**
+			 * Adds total energy into Property list for species with one atom. 
+			 */
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getZeroPointCorrectionProperty(file));
+			
+			/**
+			 * Adds scf energy into Property list for species with one atom.
+			 */
+			propertyListFinalModule.getPropertyOrPropertyListOrObservation().add(electronicEnergy.getSCFElectronicEnergyProperty(file));
+			
+			/**
 			 * 
 			 * @author nk510 <p>Returns an instance of
 			 *         {@link uk.ac.cam.ceb.como.io.chem.file.jaxb.Molecule} class that
@@ -214,6 +230,7 @@ public class GenerateXml {
 			GenerateCompChemModule.getRootModule(initialModule, finalModule, environmentModule, rootModule);
 
 		}
+		
 		try {
 
 			JAXBContext context = JAXBContext.newInstance(Module.class);

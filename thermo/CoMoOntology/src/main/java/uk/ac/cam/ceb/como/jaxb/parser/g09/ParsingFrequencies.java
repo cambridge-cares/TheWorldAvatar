@@ -29,11 +29,15 @@ import uk.ac.cam.ceb.como.io.chem.file.parser.g09.FrequencyParser;
 public class ParsingFrequencies {
 
 	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
 	 * Generate frequencies from G 09.
 	 *
 	 * @param file the file
 	 * @return the property
 	 * @throws Exception the exception
+	 * 
 	 */
 	public Property generateFrequenciesFromG09(File file) throws Exception {
 
@@ -86,10 +90,8 @@ public class ParsingFrequencies {
 						 *         information about frequencies.</p>
 						 */
 						Array arrayXML = new Array();
-						
 
 						String arrayXMLUnits = array.getUnits();
-
 
 						/**
 						 * @author nk510 
