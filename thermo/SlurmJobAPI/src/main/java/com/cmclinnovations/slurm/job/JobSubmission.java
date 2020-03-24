@@ -152,7 +152,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Sets up a quantum job by creating the job folder and the following files</br>
+	 * Sets up a Slurm job by creating the job folder and the following files</br>
 	 * under this folder:</br>
 	 * - the input file.</br>
 	 * - the Slurm script file.</br.
@@ -174,7 +174,7 @@ public class JobSubmission{
     }
 
 	/**
-	 * Sets up a quantum job by creating the job folder and the following files</br>
+	 * Sets up a Slurm job by creating the job folder and the following files</br>
 	 * under this folder:</br>
 	 * - the input file.</br>
 	 * - the Slurm script file.</br.
@@ -198,7 +198,7 @@ public class JobSubmission{
 
 	
 	/**
-	 * Sets up the quantum job for the current input.
+	 * Sets up the Slurm job for the current input.
 	 *   
 	 * @param jsonString
 	 * @param slurmScript
@@ -218,7 +218,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Sets up the quantum job for the current input.
+	 * Sets up the Slurm job for the current input.
 	 *   
 	 * @param jsonString
 	 * @param slurmScript
@@ -239,7 +239,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Sets up the quantum job for the current request.
+	 * Sets up the Slurm job for the current request.
 	 * 
 	 * @param ws
 	 * @param workspaceFolder
@@ -259,7 +259,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Sets up the quantum job for the current request.
+	 * Sets up the Slurm job for the current request.
 	 * 
 	 * @param ws
 	 * @param workspaceFolder
@@ -395,7 +395,7 @@ public class JobSubmission{
     }
 	
 	/**
-	 * Produces the statistics about quantum jobs.
+	 * Produces the statistics about Slurm jobs.
 	 * 
 	 * @param input in json format containing the format in which the result</br> 
 	 * should be codified, e.g. json. An example input file will look like</br>
@@ -430,7 +430,7 @@ public class JobSubmission{
 
 	
 	/**
-	 * Produces the statistics about quantum jobs.
+	 * Produces the statistics about Slurm jobs.
 	 * 
 	 * @return
 	 * @throws IOException
@@ -465,7 +465,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Monitors the currently running quantum jobs to allow new jobs to start.</br>
+	 * Monitors the currently running Slurm jobs to allow new jobs to start.</br>
 	 * In doing so, it checks if the number of running jobs is less than the</br>
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
@@ -528,7 +528,7 @@ public class JobSubmission{
 	}
 
 	/**
-	 * Starts running quantum jobs which were set up before. 
+	 * Starts running Slurm jobs which were set up before. 
 	 * 
 	 * @param jobFolder
 	 * @throws SftpException
@@ -542,7 +542,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Starts a quantum job.
+	 * Starts a Slurm job.
 	 * 
 	 * @param job
 	 * @param jobFiles
@@ -619,7 +619,7 @@ public class JobSubmission{
 	}
 	
 	/**
-	 * Runs a quantum job.
+	 * Runs a Slurm job.
 	 * 
 	 * @param command
 	 * @return
