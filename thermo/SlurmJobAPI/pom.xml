@@ -86,7 +86,7 @@
 	</dependency>
   </dependencies>
       <build>
-        <finalName>DFTAgent</finalName>
+        <finalName>SlurmJobAPI</finalName>
         <plugins>
 		    <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
