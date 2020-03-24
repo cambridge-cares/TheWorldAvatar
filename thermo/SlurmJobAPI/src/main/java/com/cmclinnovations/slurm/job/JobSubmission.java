@@ -579,14 +579,13 @@ public class JobSubmission{
 		String statusFileAbsolutePath = "";
 		String jobId = "";
 		for(File jobFile:jobFiles){
-			if(jobFile.getAbsolutePath().endsWith(Status.EXTENSION_SLURM_FILE.getName())){
-				uploadFile(jobFile.getAbsolutePath(), jobFolderOnHPC);
-			}
 			if(jobFile.getAbsolutePath().endsWith(slurmJobProperty.getInputFileExtension())){
 				replacedInputFileName = getInputFileNameReplaced(jobFile.getAbsolutePath());
 				String inputFileNameOnHPC = jobFolderOnHPC.concat("/").concat(replacedInputFileName);
 				uploadFile(jobFile.getAbsolutePath(), inputFileNameOnHPC);
 				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
+			}else if(!jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
+				uploadFile(jobFile.getAbsolutePath(), jobFolderOnHPC);				
 			}
 			if(jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
 				statusFileAbsolutePath = jobFile.getAbsolutePath();
