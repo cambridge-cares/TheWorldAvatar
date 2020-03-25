@@ -94,11 +94,16 @@ transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/On
 
   //when button clicked, run simulation
 $(document).ready(function () {
-    InitialInputs();
+    InitialTransportInputs();
+    InitialUnitInputs();
     $("#run-btn").click(function () {
         console.log("Start sim")
-        transportUpd = getInputs();
-        console.log(transportUpd);
+        var transportUpd = getInputs("table#transportQ tr");
+        var offSiteIUpd = getInputs("table#Incineration tr");
+        var offSiteCUpd = getInputs("table#CoDigestion tr");
+        var offSiteAUpd = getInputs("table#AnaerobicDigestion tr");
+        var onSite = getInputs("table#onsite tr");
+        console.log(transportUpd, offSiteIUpd)
 
     });
 });
@@ -108,7 +113,7 @@ const drawPanel = $("#draw-panel")
 /** creates Transportation Table to enter values
  * 
  */
-function InitialInputs(){
+function InitialTransportInputs(){
     var iri= "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
     var transporturl = createUrlForSparqlQuery(scenario, iri, transportQuery);
     $.ajax({
@@ -121,6 +126,30 @@ function InitialInputs(){
             console.log(obj0);
             var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
             addInitialInputsDisplay(result, iri);
+        },
+        error: function () {
+            console.log("Can not get location")
+        }
+    });
+
+}
+/** grabs Unit costs for technology, for both onsite and offsite
+ * 
+ */
+function InitialUnitInputs(){
+    var agenturl = prefix + '/JPS_WTE/WTEVisualization/readInputs'; 
+    var data = {"wastenetwork": wastenetwork};
+    var tableUrl = createUrlForAgent(scenario, agenturl, data);
+    $.ajax({
+        url: tableUrl,
+        method: "GET",
+        //  contentType: "application/json; charset=utf-8",
+        success: function (data) {
+            var obj0 = JSON.parse(data).offsite;
+            var obj1 = JSON.parse(data).onsite;
+            textPanel.add("<h1>Types of Digestion</h1>")
+            addUnitInputsDisplay(obj0, "offsite");
+            addUnitInputsDisplay(obj1, "onsite");
         },
         error: function () {
             console.log("Can not get location")
@@ -143,8 +172,47 @@ function addInitialInputsDisplay(uripair, iri){
     });
     var table = '<table data-url='+ iri
     +' id="transportQ">' + inputsHTML 
-    + '</table>';
+    + '</table><br>';
     textPanel.append(table);
+    return;
+}
+/** create table for json. 
+ * @param {JSON} data
+ */
+function addUnitInputsDisplay(data, type){
+    var inputsHTML = "";
+    var ndex = 0;
+    var type1 = "";
+    var type2 = "";
+    var typesOfDigestion = ["Incineration","CoDigestion", "AnaerobicDigestion"]
+    var typesOfDigestion2 = ["Incineration","Co-Digestion", "Anaerobic Digestion"]
+    data.forEach((i)=>{
+        console.log(i);
+        var v = JSON.parse(i);
+        console.log(v);
+        var result = Object.keys(v).map(function(key) {return [key, v[key]];});
+        result.forEach((j)=>{
+            console.log(j);
+            var inputLine = '<tr><td><label>' + j[0]
+            +'</label></td><td><input class="input_class" value="' + j[1]
+            + '" style="float: right;"></td></tr>';
+            inputsHTML += inputLine;
+        }
+        )
+        if (type=="offsite"){
+            type1 = type +" "+typesOfDigestion2[ndex]; 
+            type2 =  typesOfDigestion[ndex]; 
+            ndex += 1;
+        }else{
+            type2 = type;
+        }
+        var table = '<h2>'+type1+'</h2><table data-url='+ wastenetwork
+        +' id="' + type2 +'">' + inputsHTML 
+        + '</table><br>';
+        inputsHTML = "";
+        textPanel.append(table);
+    });
+    
     return;
 }
 
@@ -153,7 +221,6 @@ function addInitialInputsDisplay(uripair, iri){
  */
 var checkExist = setInterval(function() {
     if ($('#map').length) {
-        
         position = new google.maps.LatLng(1.367165198,103.801163462);
         map.setCenter(position);
         map.setZoom(12);
@@ -323,14 +390,13 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
     });
 
 }
-function getInputs() {
+function getInputs(nameOfTable) {
 
 
     let sourceQuan = [];
-    $("table#transportQ tr").each(function () {
+    $(nameOfTable).each(function () {
         var row = $(this);
         let cols = row.find("input");
-        console.log(cols)
         if(cols.length<1){
             return;
         }
