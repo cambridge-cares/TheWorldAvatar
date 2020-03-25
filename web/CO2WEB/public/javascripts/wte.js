@@ -2,6 +2,7 @@ scenario = "base";
 prefix = "http://localhost:8080";
 markers = []
 var infowindow;
+transportIRI = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001"; 
 wastenetwork = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -65,25 +66,30 @@ transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/On
     + "PREFIX j6:<http://www.w3.org/2006/time#> "
     + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
     + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-    + "SELECT ?Unit_transport_capacity ?Unit_transport_cost ?pollutionTransportTax ?dieselConsTruck " 
+    + "SELECT ?Unit_transport_capacity ?Unit_transport_capacity_unit ?Unit_transport_cost ?Unit_transport_cost_unit "
+    + " ?pollutionTransportTax ?pollutionTransportTax_unit ?dieselConsTruck ?dieselConsTruck_unit " 
     + "WHERE {"
     + "?entity  a j8:TransportationRoute ."
     + "?entity   j8:suitFor ?truck ." 
     + "?truck   j1:hasTax ?PTT ." 
     + "?PTT     j2:hasValue ?vPTT ."
     + "?vPTT  j2:numericalValue ?pollutionTransportTax ."
+    + "OPTIONAL{?vPTT  j2:hasUnitOfMeasure ?pollutionTransportTax_unit }"
 
     + "?truck   j8:hasTransportationCapacity ?TC ." 
     + "?TC     j2:hasValue ?vTC ."
     + "?vTC  j2:numericalValue ?Unit_transport_capacity ."
+    + "OPTIONAL{?vTC  j2:hasUnitOfMeasure ?Unit_transport_capacity_unit }"
 
     + "?truck   j8:hasTransportationCost ?TCost ." 
     + "?TCost     j2:hasValue ?vTCost ."
     + "?vTCost  j2:numericalValue ?Unit_transport_cost ." 
+    + "OPTIONAL{?vTCost  j2:hasUnitOfMeasure ?Unit_transport_cost_unit }" 
 
     + "?truck   j8:hasEmission ?Temission ." 
     + "?Temission     j2:hasValue ?vTemission ."
     + "?vTemission  j2:numericalValue ?dieselConsTruck ." 
+    + "OPTIONAL{?vTemission  j2:hasUnitOfMeasure ?dieselConsTruck_unit }" 
 
     + "}";
 
@@ -96,14 +102,27 @@ transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/On
 $(document).ready(function () {
     InitialTransportInputs();
     InitialUnitInputs();
+     inittransportUpd = getInputs("table#transportQ tr");
+    var initoffSiteIUpd = getInputs("table#Incineration tr");
+    var initoffSiteCUpd = getInputs("table#CoDigestion tr");
+    var initoffSiteAUpd = getInputs("table#AnaerobicDigestion tr");
+    var initonSite = getInputs("table#onsite tr");
+    initArray = [initoffSiteIUpd,initoffSiteCUpd,initoffSiteAUpd,initonSite]
     $("#run-btn").click(function () {
         console.log("Start sim")
-        var transportUpd = getInputs("table#transportQ tr");
+        transportUpd = getInputs("table#transportQ tr");
         var offSiteIUpd = getInputs("table#Incineration tr");
         var offSiteCUpd = getInputs("table#CoDigestion tr");
         var offSiteAUpd = getInputs("table#AnaerobicDigestion tr");
         var onSite = getInputs("table#onsite tr");
-        console.log(transportUpd, offSiteIUpd)
+        finalArray = [offSiteIUpd,offSiteCUpd,offSiteAUpd,onSite]
+        if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
+            dumpTransport(transportUpd);}
+        for (i = 0; i<initArray.length; i++){
+            if (JSON.stringify(initArray[i]!= JSON.stringify(finalArray[i]))){
+                updateSite(finalArray[i]);
+            }
+        }
 
     });
 });
@@ -114,7 +133,7 @@ const drawPanel = $("#draw-panel")
  * 
  */
 function InitialTransportInputs(){
-    var iri= "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
+    var iri= transportIRI;
     var transporturl = createUrlForSparqlQuery(scenario, iri, transportQuery);
     $.ajax({
         url: transporturl,
@@ -164,10 +183,15 @@ function addInitialInputsDisplay(uripair, iri){
     var inputsHTML = "";
     uripair.forEach((data)=>{
         console.log(data);
-        var inputLine = '<tr><td><label>' + data[0]
-        +'</label></td><td><input class="input_class" data-dataType="' 
-        + data[1]['datatype'] + '" value="' + data[1]['value'] 
-        + '" style="float: right;"></td></tr>';
+        if (data[0].includes("unit")){
+            var inputLine = '</td><td><input class="input_class" value="' + data[1]['value'].split('#')[1] 
+            + '" style="float: right;" disabled="disabled"> </td></tr>';
+        }else{
+            var inputLine = '<tr><td><label>' + data[0]
+            +'</label></td><td><input class="input_class" data-dataType="' 
+            + data[1]['datatype'] + '" value="' + data[1]['value'] 
+            + '" style="float: right;">';
+        }
         inputsHTML += inputLine;
     });
     var table = '<table data-url='+ iri
@@ -175,6 +199,22 @@ function addInitialInputsDisplay(uripair, iri){
     + '</table><br>';
     textPanel.append(table);
     return;
+}
+/**
+ * 
+ * @param {Array} transportArray 
+ */
+function dumpTransport(transportArray){
+    base = transportIRI.split('#')[0];
+    lstOfTargetIRI = ["#V_TransportationCapacityOfUnitTruckinTransportSystem-001",
+     "#V_TransportCostOfUnitTruckinTransportSystem-001",
+      "#V_PollutionTransportTaxOfUnitTruckinTransportSystem-001",
+    "#V_EmissionOfUnitTruckinTransportSystem-001"]
+    for (i = 0; i<lstOfTargetIRI.length; i++){
+
+        var deleteUpdate = "DELETE WHERE {<" + base + lstOfTargetIRI[i] + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " + "?o.}";
+        var insertUpdate = "INSERT DATA {<" + base + lstOfTargetIRI[i]+ "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " +transportArray[i] +".}";
+    }
 }
 /** create table for json. 
  * @param {JSON} data
