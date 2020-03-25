@@ -256,8 +256,8 @@ public class Utils {
 	}
 	
 	/**
-	 * Returns the log file path (absolute path) on a HPC where the<br> 
-	 * Gaussian job is running.
+	 * Returns the log file path (absolute path) on a HPC server where the<br> 
+	 * Slurm job is running.
 	 * 
 	 * @param runningJob
 	 * @param userName
@@ -273,6 +273,23 @@ public class Utils {
 		return logFilePath;
 	}
 
+	/**
+	 * Returns the output file path (absolute path) on a HPC server where the<br> 
+	 * Slurm job is running.
+	 * 
+	 * @param runningJob
+	 * @param userName
+	 * @param taskSpace
+	 * @param hpcAddress
+	 * @param outputFileNameWithExtension
+	 * @return
+	 * @throws UnknownHostException
+	 */
+	public static String getOutputFilePathOnHPC(String runningJob, String userName, File taskSpace, String hpcAddress, String outputFileNameWithExtension) throws UnknownHostException{
+		String outputFilePath = getJobFolderPathOnHPC(runningJob, userName, taskSpace, hpcAddress).concat("/").concat(outputFileNameWithExtension);
+		return outputFilePath;
+	}
+	
 	/**
 	 * Returns the job folder path (absolute path) on a HPC where the job is running. 
 	 * 

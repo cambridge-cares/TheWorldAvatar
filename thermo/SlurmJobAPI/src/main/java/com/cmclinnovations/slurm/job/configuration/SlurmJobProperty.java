@@ -50,6 +50,12 @@ public class SlurmJobProperty {
 	@Value("${job.preprint.directive}")
 	private String jobPreprintDirective;
 
+	@Value("${output.file.name}")
+	private String outputFileName;
+
+	@Value("${output.file.extension}")
+	private String outputFileExtension;
+	
 	public String getAgentClass() {
 		return agentClass;
 	}
@@ -92,5 +98,13 @@ public class SlurmJobProperty {
 
 	public String getJobPreprintDirective() {
 		return jobPreprintDirective;
+	}
+
+	public String getOutputFileName() {
+		return outputFileName;
+	}
+
+	public String getOutputFileExtension() {
+		return outputFileExtension;
 	}
 }
