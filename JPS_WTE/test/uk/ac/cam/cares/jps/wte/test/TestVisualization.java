@@ -36,4 +36,23 @@ public class TestVisualization  extends TestCase {
 			e.printStackTrace();
 		}
 	}
+	public void testreadInputsDirect(){
+		WTEVisualization a = new WTEVisualization();
+		OntModel model = WastetoEnergyAgent.readModelGreedy(WasteTopNode);
+		String g = a.readInputs(model);
+		JSONObject jo = new JSONObject(g);
+		System.out.println(g);
+	}
+	public void testreadInputsAgent(){
+		JSONObject jo = new JSONObject().put("wastenetwork",
+				"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		try {
+			String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_WTE/WTEVisualization/readInputs", jo.toString());
+			System.out.println(resultStart);
+			
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

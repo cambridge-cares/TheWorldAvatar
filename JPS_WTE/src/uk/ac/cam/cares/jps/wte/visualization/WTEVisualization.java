@@ -2,6 +2,8 @@ package uk.ac.cam.cares.jps.wte.visualization;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -21,7 +23,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
-@WebServlet(urlPatterns = { "/WTEVisualization/createLine", "/WTEVisualization/createMarkers/*"})
+@WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/readInputs/*"})
 public class WTEVisualization extends JPSHttpServlet{
 	/**gets the food court name, xy coordinates
 	 */
@@ -78,7 +80,6 @@ public class WTEVisualization extends JPSHttpServlet{
 		JSONObject joforEN = AgentCaller.readJsonParameter(request);
 		String iriofnetwork = joforEN.optString("wastenetwork",
 				"http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
-		new 	WastetoEnergyAgent();
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
 		logger.info("path called= "+path);
 		 if ("/WTEVisualization/createMarkers".equals(path)) {
@@ -87,9 +88,9 @@ public class WTEVisualization extends JPSHttpServlet{
 			String g=createMarkers(model);
 			
 			AgentCaller.printToResponse(g, response);
-		}else if ("/WTEVisualization/modifyValues".equals(path)) {
+		}else if ("/WTEVisualization/readInputs".equals(path)) {
 			logger.info("path called here= " + path);
-			String g=modifyValues(model);
+			String g=readInputs(model);
 			AgentCaller.printToResponse(g, response);
 		}
 		
@@ -134,7 +135,36 @@ public class WTEVisualization extends JPSHttpServlet{
 	 * @param model
 	 * @return
 	 */
-	public String modifyValues(OntModel model) {
-		return "";
+	public String readInputs(OntModel model) {
+		ResultSet resultSet = JenaHelper.query(model, new WastetoEnergyAgent().WTFTechQuery);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+        String[] keys = JenaResultSetFormatter.getKeys(result);
+        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+        
+        ResultSet resultSet2 = JenaHelper.query(model, new WastetoEnergyAgent().WTFTechOnsiteQuery);
+		String result2 = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet2);
+        String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+        List<String[]> resultList2 = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+        List<String> res1 = modifyOutputs(resultList);
+        List<String> res2 = modifyOutputs(resultList2);
+        
+        JSONArray jsArray1 = new JSONArray(res1);
+        JSONArray jsArray2 = new JSONArray(res2);
+	    JSONObject jo = new JSONObject();
+	    jo.put("offsite", jsArray1);
+	    jo.put("onsite", jsArray2);
+		return jo.toString();
+	}
+	public List<String> modifyOutputs(List<String[]> newList) {
+		List<String> res = new ArrayList<String>();
+		for (int i = 0; i < newList.size(); i++) {
+        	JSONObject jo = new JSONObject();
+        	jo.put("tax", newList.get(i)[0]);
+        	jo.put("installationcost", newList.get(i)[2]);
+        	jo.put("operationcost", newList.get(i)[3]);
+        	jo.put("transfer_rate", newList.get(i)[4]);
+			res.add(jo.toString());
+		}
+		return res;
 	}
 }
