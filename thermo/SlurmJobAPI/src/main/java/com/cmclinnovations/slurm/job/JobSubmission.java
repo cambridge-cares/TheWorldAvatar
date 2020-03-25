@@ -591,9 +591,7 @@ public class JobSubmission{
 				statusFileAbsolutePath = jobFile.getAbsolutePath();
 			}
 		}
-		if(!replacedInputFileName.isEmpty()){
-			jobId = runQuantumJob(jobFolderOnHPC, replacedInputFileName);
-		}
+		jobId = runQuantumJob(jobFolderOnHPC, replacedInputFileName);
 		if(!jobId.isEmpty()){
 			Utils.addJobId(statusFileAbsolutePath, jobId);
 		}
