@@ -55,6 +55,9 @@ public class SlurmJobProperty {
 
 	@Value("${output.file.extension}")
 	private String outputFileExtension;
+
+	@Value("${agent.hosting.server.operating.system}")
+	private String agentHostingServerOperatingSystem;
 	
 	public String getAgentClass() {
 		return agentClass;
