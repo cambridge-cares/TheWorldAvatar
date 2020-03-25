@@ -711,11 +711,11 @@ public class JobSubmission{
 			if(!isJobRunning(statusFile)){
 				if(slurmJobProperty.getOutputFileExtension().trim().toLowerCase().equals(".log")){
 					downloadFile(Utils.getLogFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
+					updateStatusForErrorTermination(statusFile, Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 				}else{
 					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 				}
 				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()));
-				updateStatusForErrorTermination(statusFile, Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 				return true;
 			}
 		}
