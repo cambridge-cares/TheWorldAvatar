@@ -130,7 +130,7 @@ public class WTEVisualization extends JPSHttpServlet{
 			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 			return resultListfromquery;
 	}
-	/** modify the values according to the query. 
+	/** read the values of the inputs according to the query 
 	 * 
 	 * @param model
 	 * @return
@@ -162,7 +162,6 @@ public class WTEVisualization extends JPSHttpServlet{
         	jo.put("tax", newList.get(i)[0]);
         	jo.put("installationcost", newList.get(i)[2]);
         	jo.put("operationcost", newList.get(i)[3]);
-        	jo.put("transfer_rate", newList.get(i)[4]);
 			res.add(jo.toString());
 		}
 		return res;
