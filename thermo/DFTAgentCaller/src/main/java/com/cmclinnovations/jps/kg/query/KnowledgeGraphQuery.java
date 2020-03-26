@@ -33,7 +33,7 @@ public class KnowledgeGraphQuery {
 	public static DFTAgentCallerProperty dftAgentCallerProperty;
 	
 	/**
-	 * 
+	 * Construct of this class to initialise and call methods.
 	 * 
 	 * @param endpoints the list of SPARQL endpoints.
 	 * @param query the current query.
