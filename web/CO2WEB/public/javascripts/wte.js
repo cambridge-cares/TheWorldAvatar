@@ -113,13 +113,13 @@ $(document).ready(function () {
         finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
         if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
             dumpTransport(transportUpd);}
-        // for (i = 1; i<initArray.length; i++){
-        //     console.log("Initial Array",initArray[i]);
-        //     console.log("Final Array",finalArray[i]);
-        //     if (JSON.stringify(initArray[i]!= JSON.stringify(finalArray[i]))){
-        //         updateSite(finalArray[i], i);
-        //     }
-        // }
+        for (i = 3; i<initArray.length; i++){
+            console.log("Initial Array",initArray[i]);
+            console.log("Final Array",finalArray[i]);
+            if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
+                updateSite(finalArray[i], i);
+            }
+        }
 
     });
 });
@@ -220,6 +220,8 @@ function outputUpdate(lstOfTargetIRI, base, UpdateArray){
         sampleUpdate.push(insertUpdate);
     }
         var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
+        console.log(sampleUpdate);
+        console.log(myUrl);
         var request = $.ajax({
             url: myUrl,
             type: 'GET',
@@ -232,7 +234,6 @@ function outputUpdate(lstOfTargetIRI, base, UpdateArray){
                 console.log("can not update to server");
             }
         });
-        console.log(myUrl);
         request.done(function(data) {
         });
 }
@@ -259,11 +260,14 @@ function updateSite(inpParameters, index){
     listOfIRIs.forEach((iri)=>{ //listOfIRIs are the list of networks in the top node. 
         //strip and add the name of the WasteTreatment plant to each TargetIRI
         newLst = [] 
+        var base = iri.split('#')[0];
         for (i = 0; i < 3; i++){
-            newLst.push(lstOfTargetIRI[i] + index + "Of"+iri.split("#")[1]);
+            var var_name = lstOfTargetIRI[i] + index + "Of"+iri.split("#")[1];
+            console.log(var_name);
+            newLst.push(var_name);
         }
-        console.log(iri);
-        outputUpdate(newLst, iri, inpParameters);
+        console.log(base);
+        outputUpdate(newLst, base, inpParameters);
     })
 
 }
