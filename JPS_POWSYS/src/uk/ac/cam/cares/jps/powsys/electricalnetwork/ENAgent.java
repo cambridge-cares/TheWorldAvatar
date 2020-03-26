@@ -117,6 +117,9 @@ public class ENAgent extends JPSHttpServlet {
 		try {
 			logger.info("converting PyPower results to OWL files");
 			doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
+			if(resjo.getString("status").contentEquals("Not Converged")) {
+				return null;
+			}
 		} catch (URISyntaxException e) {
 			logger.error(e.getMessage(), e);
 			throw new JPSRuntimeException(e.getMessage(), e);
