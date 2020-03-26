@@ -2,6 +2,7 @@ scenario = "base";
 prefix = "http://localhost:8080";
 markers = []
 var infowindow;
+var listOfIRIs = [];
 transportIRI = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001"; 
 wastenetwork = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -206,15 +207,49 @@ function addInitialInputsDisplay(uripair, iri){
  */
 function dumpTransport(transportArray){
     base = transportIRI.split('#')[0];
+    var sampleUpdate = []
     lstOfTargetIRI = ["#V_TransportationCapacityOfUnitTruckinTransportSystem-001",
      "#V_TransportCostOfUnitTruckinTransportSystem-001",
       "#V_PollutionTransportTaxOfUnitTruckinTransportSystem-001",
     "#V_EmissionOfUnitTruckinTransportSystem-001"]
     for (i = 0; i<lstOfTargetIRI.length; i++){
-
         var deleteUpdate = "DELETE WHERE {<" + base + lstOfTargetIRI[i] + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " + "?o.}";
         var insertUpdate = "INSERT DATA {<" + base + lstOfTargetIRI[i]+ "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " +transportArray[i] +".}";
+        sampleUpdate.push(deleteUpdate);
+        sampleUpdate.push(insertUpdate);
     }
+    console.log(scenario);
+        console.log(sampleUpdate); 
+        var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
+        var request = $.ajax({
+            url: myUrl,
+            type: 'GET',
+            contentType: 'application/json; charset=utf-8', 
+            success: function (data) {//SUCESS updating
+                //Update display
+                console.log("Success");
+            },
+            error: function (err) {
+                console.log("can not update to server");
+            }
+        });
+        console.log(myUrl);
+        request.done(function(data) {
+            console.log('data received', data);
+        });
+}
+/** input parameters are updated
+ * 
+ * @param {[List]} inpParameters 
+ */
+function updateSites(inpParameters){
+    listOfIRIs.forEach((i)=>{
+        if (i.includes("Waste")){
+            console.log(i);
+
+        }
+    })
+
 }
 /** create table for json. 
  * @param {JSON} data
@@ -296,8 +331,11 @@ function queryForFCMarkers(){
     //We currently know of a few cases:
     var x;
     // scan some duplicates
-    var markerdict = []
+    var markerdict = []; 
+
     for (x=0; x< size; x++){
+        
+        listOfIRIs.push(name);
         var obj = JSON.parse(obj0[x]);  
         var name = obj.entity;
         console.log(name);
