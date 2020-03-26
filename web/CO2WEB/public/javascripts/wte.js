@@ -103,27 +103,23 @@ transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/On
 $(document).ready(function () {
     InitialTransportInputs();
     InitialUnitInputs();
-     inittransportUpd = getInputs("table#transportQ tr");
-    var initoffSiteIUpd = getInputs("table#Incineration tr");
-    var initoffSiteCUpd = getInputs("table#CoDigestion tr");
-    var initoffSiteAUpd = getInputs("table#AnaerobicDigestion tr");
-    var initonSite = getInputs("table#onsite tr");
-    initArray = [initoffSiteIUpd,initoffSiteCUpd,initoffSiteAUpd,initonSite]
     $("#run-btn").click(function () {
         console.log("Start sim")
         transportUpd = getInputs("table#transportQ tr");
         var offSiteIUpd = getInputs("table#Incineration tr");
         var offSiteCUpd = getInputs("table#CoDigestion tr");
         var offSiteAUpd = getInputs("table#AnaerobicDigestion tr");
-        var onSite = getInputs("table#onsite tr");
-        finalArray = [offSiteIUpd,offSiteCUpd,offSiteAUpd,onSite]
+        var onSite = getInputs("table#Onsite tr");
+        finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
         if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
             dumpTransport(transportUpd);}
-        for (i = 0; i<initArray.length; i++){
-            if (JSON.stringify(initArray[i]!= JSON.stringify(finalArray[i]))){
-                updateSite(finalArray[i]);
-            }
-        }
+        // for (i = 1; i<initArray.length; i++){
+        //     console.log("Initial Array",initArray[i]);
+        //     console.log("Final Array",finalArray[i]);
+        //     if (JSON.stringify(initArray[i]!= JSON.stringify(finalArray[i]))){
+        //         updateSite(finalArray[i], i);
+        //     }
+        // }
 
     });
 });
@@ -146,6 +142,7 @@ function InitialTransportInputs(){
             console.log(obj0);
             var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
             addInitialInputsDisplay(result, iri);
+            inittransportUpd = getInputs("table#transportQ tr");
         },
         error: function () {
             console.log("Can not get location")
@@ -168,8 +165,14 @@ function InitialUnitInputs(){
             var obj0 = JSON.parse(data).offsite;
             var obj1 = JSON.parse(data).onsite;
             textPanel.add("<h1>Types of Digestion</h1>")
-            addUnitInputsDisplay(obj0, "offsite");
-            addUnitInputsDisplay(obj1, "onsite");
+            addUnitInputsDisplay(obj0, "Offsite");
+            addUnitInputsDisplay(obj1, "Onsite");
+            
+            initoffSiteIUpd = getInputs("table#Incineration tr");
+            initoffSiteCUpd = getInputs("table#CoDigestion tr");
+            initoffSiteAUpd = getInputs("table#AnaerobicDigestion tr");
+            initonSite = getInputs("table#Onsite tr");
+            initArray = [initonSite,initoffSiteIUpd,initoffSiteCUpd,initoffSiteAUpd];
         },
         error: function () {
             console.log("Can not get location")
@@ -201,25 +204,21 @@ function addInitialInputsDisplay(uripair, iri){
     textPanel.append(table);
     return;
 }
-/**
+/** outputUpdate: Only to be used for short values! Otherwise you have to get an asynchronous loop as seeen in pwBaseFile.js
  * 
- * @param {Array} transportArray 
+ * @param {Array} lstOfTargetIRI IRI of variable parameters
+ * @param {String} base iri of OWL file
+ * @param {Array} UpdateArray List of values to be updated
  */
-function dumpTransport(transportArray){
-    base = transportIRI.split('#')[0];
+function outputUpdate(lstOfTargetIRI, base, UpdateArray){
+
     var sampleUpdate = []
-    lstOfTargetIRI = ["#V_TransportationCapacityOfUnitTruckinTransportSystem-001",
-     "#V_TransportCostOfUnitTruckinTransportSystem-001",
-      "#V_PollutionTransportTaxOfUnitTruckinTransportSystem-001",
-    "#V_EmissionOfUnitTruckinTransportSystem-001"]
     for (i = 0; i<lstOfTargetIRI.length; i++){
         var deleteUpdate = "DELETE WHERE {<" + base + lstOfTargetIRI[i] + "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " + "?o.}";
-        var insertUpdate = "INSERT DATA {<" + base + lstOfTargetIRI[i]+ "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " +transportArray[i] +".}";
+        var insertUpdate = "INSERT DATA {<" + base + lstOfTargetIRI[i]+ "> <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue> " +UpdateArray[i] +".}";
         sampleUpdate.push(deleteUpdate);
         sampleUpdate.push(insertUpdate);
     }
-    console.log(scenario);
-        console.log(sampleUpdate); 
         var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
         var request = $.ajax({
             url: myUrl,
@@ -235,19 +234,36 @@ function dumpTransport(transportArray){
         });
         console.log(myUrl);
         request.done(function(data) {
-            console.log('data received', data);
         });
+}
+/** dumps transport values into OWL file
+ * 
+ * @param {Array} transportArray List of values to be transferred. 
+ */
+function dumpTransport(transportArray){
+    base = transportIRI.split('#')[0];
+    lstOfTargetIRI = ["#V_TransportationCapacityOfUnitTruckinTransportSystem-001",
+     "#V_TransportCostOfUnitTruckinTransportSystem-001",
+      "#V_PollutionTransportTaxOfUnitTruckinTransportSystem-001",
+    "#V_EmissionOfUnitTruckinTransportSystem-001"]
+    outputUpdate(lstOfTargetIRI, base, transportArray);
+    
 }
 /** input parameters are updated
  * 
- * @param {[List]} inpParameters 
+ * @param {Array} inpParameters input Parameters from respective digester
+ * @param {Integer} index Incineration = 1, Co = 2, Ana = 3
  */
-function updateSites(inpParameters){
-    listOfIRIs.forEach((i)=>{
-        if (i.includes("Waste")){
-            console.log(i);
-
+function updateSite(inpParameters, index){
+    lstOfTargetIRI = ["#V_OperationalCost", "#V_InstallationCost", "#V_PollutionTreatmentTax"];
+    listOfIRIs.forEach((iri)=>{ //listOfIRIs are the list of networks in the top node. 
+        //strip and add the name of the WasteTreatment plant to each TargetIRI
+        newLst = [] 
+        for (i = 0; i < 3; i++){
+            newLst.push(lstOfTargetIRI[i] + index + "Of"+iri.split("#")[1]);
         }
+        console.log(iri);
+        outputUpdate(newLst, iri, inpParameters);
     })
 
 }
@@ -259,6 +275,7 @@ function addUnitInputsDisplay(data, type){
     var ndex = 0;
     var type1 = "";
     var type2 = "";
+    var unitsForWT = [""]
     var typesOfDigestion = ["Incineration","CoDigestion", "AnaerobicDigestion"]
     var typesOfDigestion2 = ["Incineration","Co-Digestion", "Anaerobic Digestion"]
     data.forEach((i)=>{
@@ -270,16 +287,19 @@ function addUnitInputsDisplay(data, type){
             console.log(j);
             var inputLine = '<tr><td><label>' + j[0]
             +'</label></td><td><input class="input_class" value="' + j[1]
+            + '" style="float: right;"><td><input class="input_class" disabled="disabled" value="' +"USD"
             + '" style="float: right;"></td></tr>';
+            
             inputsHTML += inputLine;
         }
         )
-        if (type=="offsite"){
+        if (type=="Offsite"){
             type1 = type +" "+typesOfDigestion2[ndex]; 
             type2 =  typesOfDigestion[ndex]; 
             ndex += 1;
         }else{
             type2 = type;
+            type1 = "Onsite";
         }
         var table = '<h2>'+type1+'</h2><table data-url='+ wastenetwork
         +' id="' + type2 +'">' + inputsHTML 
@@ -335,7 +355,6 @@ function queryForFCMarkers(){
 
     for (x=0; x< size; x++){
         
-        listOfIRIs.push(name);
         var obj = JSON.parse(obj0[x]);  
         var name = obj.entity;
         console.log(name);
@@ -349,6 +368,7 @@ function queryForFCMarkers(){
                 url: 'images/solar.png', 
                 scaledSize : new google.maps.Size(30, 30),
             };
+            listOfIRIs.push(name);  
         }
         markerdict.push([name, obj.coors.lat,obj.coors.lng, icon]);
     }
