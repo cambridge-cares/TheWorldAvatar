@@ -27,7 +27,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>ebragent</finalName>
+		<finalName>FederatedQuery</finalName>
 	</build>
 
   <properties>

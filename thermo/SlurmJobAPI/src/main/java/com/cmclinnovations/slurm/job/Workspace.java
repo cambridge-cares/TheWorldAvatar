@@ -164,11 +164,10 @@ public class Workspace {
 		return Status.JOB_SETUP_SUCCESS_MSG.getName();
 	}
 	
-	public String copyScriptFile(String source, String destination) throws IOException{
+	public String copyFile(String source, String destination) throws IOException{
 		try{
 		copyFile(new File(source),
-				new File(destination.concat(File.separator)
-						.concat(Property.SLURM_SCRIPT_FILE_NAME.getPropertyName())));
+				new File(destination));
 		return Status.JOB_SETUP_SUCCESS_MSG.getName();
 		}catch(IOException e){
 			e.printStackTrace();
