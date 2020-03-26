@@ -1,6 +1,12 @@
 package com.cmclinnovations.jps.kg.query;
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.cmclinnovations.jps.agent.caller.configuration.AgentCallerConfiguration;
+import com.cmclinnovations.jps.agent.caller.configuration.DFTAgentCallerProperty;
+
 /**
  * Any specific facet of the JPS knowledge graph can be resided in multiple<br>
  * knowledge bases. This class provides the feature to send the current<br>
@@ -23,6 +29,9 @@ public class KnowledgeGraphQuery {
 	 */
 	private String query;
 	
+	public static ApplicationContext applicationContext;
+	public static DFTAgentCallerProperty dftAgentCallerProperty;
+	
 	/**
 	 * 
 	 * 
@@ -32,6 +41,12 @@ public class KnowledgeGraphQuery {
 	public KnowledgeGraphQuery(List<String> endpoints, String query){
 		this.endpoints = endpoints;
 		this.query = query;
+        if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(AgentCallerConfiguration.class);
+		}
+		if (dftAgentCallerProperty == null) {
+			dftAgentCallerProperty = applicationContext.getBean(DFTAgentCallerProperty.class);
+		}
 	}
 
 	public List<String> getEndpoints() {
