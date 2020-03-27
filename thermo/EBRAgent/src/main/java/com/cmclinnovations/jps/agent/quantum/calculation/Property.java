@@ -4,10 +4,10 @@ import java.io.File;
 
 /**
  * This enumerated list defines the name of important properties of</br>
- * DFT Agent. Some example properties are:</br>
+ * EBR Agent. Some example properties are:</br>
  * - the name of the agent class</br>
  * - the name of the workspace folder on the machine where the agent runs</br>
- * - the name of the workspace folder on HPC where DFT calculations run</br>
+ * - the name of the workspace folder on HPC where EBR calculations run</br>
  *  
  * @author Feroz Farazi(msff2@cam.ac.uk)
  *
@@ -31,7 +31,7 @@ public enum Property {
 	PREFIX_BINDING_RAM("PREFIX ram: <http://cookingbigdata.com/linkeddata/ccinstances#>"),
 	PREFIX_MSM("msm"),
 	PREFIX_RAM("ram"),
-	DFT_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>");
+	EBR_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__EBR.owl#Service>");
 	
 	private String propertyName;
 	private int value;

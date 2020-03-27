@@ -29,7 +29,7 @@ public class Utils {
 	
 	/**
 	 * Generate unique time stamp to be used in naming quantum jobs and</br>
-	 * the instance of DFT Agent.
+	 * the instance of EBR Agent.
 	 * 
 	 * @return
 	 */

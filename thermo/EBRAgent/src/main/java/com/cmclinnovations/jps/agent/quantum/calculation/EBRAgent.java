@@ -89,7 +89,7 @@ public class EBRAgent extends HttpServlet{
 	
 	
 	/**
-     * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
+     * Shows the following statistics of quantum jobs processed by EBR Agent.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -111,7 +111,7 @@ public class EBRAgent extends HttpServlet{
     }
 	
 	/**
-     * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
+     * Shows the following statistics of quantum jobs processed by EBR Agent.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -140,12 +140,12 @@ public class EBRAgent extends HttpServlet{
         logger.info("---------- Quantum Calculation Agent has started ----------");
         System.out.println("---------- Quantum Calculation Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        EBRAgent dftAgent = new EBRAgent();
+        EBRAgent ebrAgent = new EBRAgent();
        	// the first 60 refers to the delay (in seconds) before the job scheduler
         // starts and the second 60 refers to the interval between two consecu-
         // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
-		// initialising classes to read properties from the dft-agent.properites file
+        executorService.scheduleAtFixedRate(ebrAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
+		// initialising classes to read properties from the ebr-agent.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}

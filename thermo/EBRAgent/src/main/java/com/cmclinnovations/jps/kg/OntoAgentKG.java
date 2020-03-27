@@ -23,7 +23,7 @@ public class OntoAgentKG {
 	 */
 	public static String getNumberOfCores() throws IOException{
 		String query = formNumberOfCoreQuery(Property.PREFIX_BINDING_MSM.getPropertyName(),
-				Property.PREFIX_MSM.getPropertyName(), Property.DFT_AGENT_IRI.getPropertyName());
+				Property.PREFIX_MSM.getPropertyName(), Property.EBR_AGENT_IRI.getPropertyName());
 		System.out.println("Query:"+query);
 		String httpURL = Property.FUSAKI_URL_FOR_WORLD_AVATAR.getPropertyName().concat(URLEncoder.encode(query, "UTF-8"));
 		return Request.get(httpURL);
@@ -38,7 +38,7 @@ public class OntoAgentKG {
 	public static String getMemorySize() throws IOException{
 		String query = OntoAgentKG.formRAMSizeQuery(Property.PREFIX_BINDING_MSM.getPropertyName(),
 				Property.PREFIX_MSM.getPropertyName(), Property.PREFIX_BINDING_RAM.getPropertyName(),
-				Property.PREFIX_RAM.getPropertyName(), Property.DFT_AGENT_IRI.getPropertyName());
+				Property.PREFIX_RAM.getPropertyName(), Property.EBR_AGENT_IRI.getPropertyName());
 		System.out.println("Query:"+query);
 		String httpURL = Property.FUSAKI_URL_FOR_WORLD_AVATAR.getPropertyName().concat(URLEncoder.encode(query, "UTF-8"));
 		return Request.get(httpURL);
