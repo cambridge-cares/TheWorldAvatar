@@ -1,5 +1,5 @@
 var scenario = "base";
-//var prefix = "http://localhost:8080";
+// var prefix = "http://localhost:8080";
 var prefix = "http://www.jparksimulator.com"; //wouldn't work without the www apparently>
 iriofnetwork = 'http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork';
 var infoWindow; 
@@ -15,6 +15,7 @@ let dict = {};
 var numTypeGen = '';
 var kmlLayer;
 var markers = [];
+var nameSet = [];
 var batterylist = null;
 var branchInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -504,6 +505,7 @@ function selectEBus(event) {
  * @param {String} selectedId iri of the element
  */
 function openWindow(selectedId){
+    nameSet = [];
     if (selectedId.includes("Bus")){
         openWindowLineAndBus(selectedId, busInfo);
     }else if (selectedId.includes("ine")){
@@ -797,7 +799,6 @@ function openWindowGen(id){
             var obj0 = Object.assign(obj1, obj2);
             console.log(obj0,obj1, obj2)
             var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
-            nameSet = [];
             console.log(selectedId);
             var owlName = selectedId.split('#')[1].split('.')[0];
             for(var item in result)
@@ -809,7 +810,8 @@ function openWindowGen(id){
                     var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
                     + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                     inputsHTML = inputsHTML + inputLine;
-                    nameSet.push(pair[0]);
+                    pair[1]['name'] = pair[0]+"_" +owlName;
+                    nameSet.push(pair);
                 }else {
                     //for units, just place below the box. 
                     //remove the last 
@@ -923,12 +925,12 @@ function SubmitTable(e) {
     if(proceed){
         var progress = document.getElementById('myProgressBar');
         progress.style.display = 'block';
-        updateOwlFile(url,JSONArray,type);
+        updateOwlFile(url,JSONArray,type, true);
     }
 
 
 }
-function updateOwlFile(filename,JSONArray,_type) {
+function updateOwlFile(filename,JSONArray,_type, flag) {
 
     console.log('number',Object.keys(JSONArray).length);
     console.log('JSONArray',Object.keys(JSONArray));
@@ -945,13 +947,12 @@ function updateOwlFile(filename,JSONArray,_type) {
                 {
                     //allItemsArray.push(temp);
                     //temp = [];
-                    console.log('yes');
                     allItemsArray.push(temp);
                     temp = [];
                     temp.push(item)
                 }
                 else
-                {   console.log('nononon');
+                {  
                     allItemsArray.push(temp);
                     temp = [];
                     temp.push(item)
@@ -960,28 +961,19 @@ function updateOwlFile(filename,JSONArray,_type) {
 
             }
             else
-            {   console.log('yeah');
+            {   
                 temp.push(item)
             }
-
-            console.log(indexCounter);
-            console.log(item)
             indexCounter++;
         }
-
-    console.log(allItemsArray);
 
 
     var asyncLoop = function(o){
         var i=-1,
             length = o.length;
-            console.log(o);
-            console.log(length);
         var loop = function(){
             i++;
-            console.log(i);
             if(i===length){
-                console.log("CALLBACK called? ");
                 o.callback(); 
                 return;
             }
@@ -1013,7 +1005,6 @@ asyncLoop({
             {
                 dataType = 'integer'
             }
-            console.log('dataType',dataType);
             var base = filename.split('#')[0] + '#';
             base = base.replace('/OntoEN','');
             base=base.replace('theworldavatar','jparksimulator'); //because in electrical it use jparksimulator instead of theworldavatar
@@ -1046,8 +1037,6 @@ asyncLoop({
                 
             }
         }
-        console.log(scenario);
-        console.log(sampleUpdate); 
         var myUrl = createUrlForSparqlUpdate(scenario,base.split('#')[0], sampleUpdate.join(';'));
         var request = $.ajax({
             url: myUrl,
@@ -1071,7 +1060,10 @@ asyncLoop({
     callback : function(){
 
         //var path = "C:@TOMCAT@webapps@ROOT@OntoEN@startSimulation.bat>" + filename.split('.com/')[1].split('.owl')[0] + '>' + opt;
-
+        if (flag == false){
+            openWindow(filename);
+            return;
+        }
         document.getElementById("loader").style.display = "block";
         var agenturl = prefix + '/JPS_POWSYS/ENAgent/startsimulation'+opt;
         data = { "electricalnetwork":iriofnetwork}
@@ -1093,15 +1085,27 @@ asyncLoop({
             response = JSON.parse(data);
             if (response.status != "converged"){
                 alert("This simulation has not converged. Use different values.");
+                var arr = Object.keys(JSONArray);
+                var newJSONArr = {}
+                arr.forEach(function(inde, i){
+                    newJSONArr[inde] = nameSet[i][1];
+                });
+                nameSet = [];
+                console.log(newJSONArr);
+                updateOwlFile(filename,newJSONArr,_type, false);
+            
+                document.getElementById("loader").style.display = "none";  
             }
-            json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
-            displayCO2(json);
-            var delayInMilliseconds = 10000; //1 second
-            setTimeout(function() {
-                console.log('timeout');
-            }, delayInMilliseconds);
-            console.log('DONE SIMULATION')
-            openWindow(filename);
+            else {
+                json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
+                displayCO2(json);
+                var delayInMilliseconds = 10000; //1 second
+                setTimeout(function() {
+                    console.log('timeout');
+                }, delayInMilliseconds);
+                console.log('DONE SIMULATION')
+                openWindow(filename);
+            }
         });
 
 
@@ -1155,14 +1159,6 @@ function SubmitTable2(e) {
         }
 
         var datatype = row.getElementsByTagName('input')[0].getAttribute('data-dataType');
-        // if (datatype=="undefined" || datatype == null){
-        //     //check if Integer
-        //     if (Number.isInteger(value)){
-        //         datatype = "https://www.w3.org/2001/XMLSchema#integer";
-        //     }else{
-        //         datatype = "https://www.w3.org/2001/XMLSchema#decimal"
-        //     }
-        // }
         console.log('value',value,'name',name,'url',url);
         JSONArray[name] = {name: name,value:value, datatype: datatype, p:"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue"}
     }if(proceed){
@@ -1180,7 +1176,6 @@ function SubmitTable2(e) {
         setTimeout(function() {
             console.log('timeout');
         }, 10000);
-        runSimulation(table.getAttribute('data-url'));
 
     }
 }
@@ -1232,7 +1227,7 @@ function runSimulation(filename){
     request.done(function() {
         json = { "electricalnetwork":iriofnetwork ,"flag": scenario };
         displayCO2(json);
-        console.log('DONE SIMULATION')
+        console.log('DONE SIMULATION'); 
 
         openWindow(filename);
         document.getElementById("loader").style.display = "none";
@@ -1266,7 +1261,6 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
 
 
         var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
-        nameSet = [];
         var owlName = id.split('#')[1];
         for(var item in result)
         {
@@ -1277,7 +1271,8 @@ function openWindowLineAndBus(id, type, callback){ //gen has its own openWindow 
                 var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
                 + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
-                nameSet.push(pair[0]);
+                pair[1]['name'] = pair[0]+"_" +owlName;
+                nameSet.push(pair);
             }else {
                 //for units, just place below the box. 
                 //remove the last 
