@@ -5,7 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -19,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -117,10 +121,12 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
     }
     Logger logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
-    @Override
-    protected JSONObject processRequestParameters(JSONObject requestParams) {
-
-        String iriofnetwork = requestParams.getString("electricalnetwork");
+    
+    protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		//need to use doGetJPS to return string instead of json so that base case still run completely
+		JSONObject joforess = AgentCaller.readJsonParameter(request);
+		String iriofnetwork=joforess.getString("electricalnetwork");
         JSONObject result=updateEmission(iriofnetwork);
         List<Object> chimneylist = result.getJSONArray("chimney").toList();
         List<Object> desco2list = result.getJSONArray("designemission").toList();
@@ -143,10 +149,11 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         JSONObject newresult= new JSONObject();
         newresult.put("actual",Double.toString(totalemissionactual/1000000*3600)); //from kg/s back to ton/hr
         newresult.put("design",Double.toString(totalemissiondesign));
-        
-        
-        return newresult;
-    }
+		AgentCaller.printToResponse(newresult.toString(), response);
+			
+	}
+    
+    
 
     public static List<String[]> provideGenlist(String iriofnetwork) {
         String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
