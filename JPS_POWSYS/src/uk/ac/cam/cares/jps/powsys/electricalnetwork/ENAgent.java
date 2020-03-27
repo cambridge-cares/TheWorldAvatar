@@ -36,7 +36,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-import uk.ac.cam.cares.jps.powsys.carbontax.CarbonTaxAgent;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper;
 import uk.ac.cam.cares.jps.powsys.nuclear.IriMapper.IriMapping;
 import uk.ac.cam.cares.jps.powsys.util.Util;
@@ -115,6 +114,7 @@ public class ENAgent extends JPSHttpServlet {
 			
 		}else {
 			resjo.put("status", "Not Converged");
+			//return null;
 		}
 			
 
