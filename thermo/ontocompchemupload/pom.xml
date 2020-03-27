@@ -24,7 +24,7 @@
         </configuration>
       </plugin>
     </plugins>
-  <finalName>ebragent</finalName>    
+  <finalName>ontocompchemupload</finalName>    
   </build>
   
 <dependencies>

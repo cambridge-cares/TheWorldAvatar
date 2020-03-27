@@ -84,9 +84,11 @@ public class JsonManager {
 		 * @param jsonString the content of http request.
 		 * @return unique species IRI.
 		 */
-		public static String getSpeciesIRI(String jsonString) {
+		public static String getSpeciesIRI(String jsonString) {					
 			
-			return JsonPath.read(jsonString, "$.uniqueSpeciesIRI");
+		return JsonPath.read(jsonString, "$.uniqueSpeciesIRI");
+			 
+			
 		}
 		
 	
