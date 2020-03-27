@@ -48,7 +48,7 @@ public class OntoCompChemUpload extends HttpServlet{
 	
 	public Utility utility = new FileUtility();	
 	
-	public String	speciesIRI ="";
+	
 	/**
 	 * 
 	 * @author NK510 Adds ebr upload properties such as: Folder path where g09, xml and
@@ -98,15 +98,17 @@ public class OntoCompChemUpload extends HttpServlet{
 		 * if 'uniqueSpeciesIRI' exists that store it as instance of speciesIRI String object.
 		 *  
 		 */
+		String	speciesIRI="";
+		
 		if(inputJson.has("uniqueSpeciesIRI")) {
 		
-				speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
+			speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
 				
 				printerWriter.println("unique species IRI: " + speciesIRI + "<br>");
 				
 		}else {
 			
-			printerWriter.println("unique species IRI is empty " + "<br>");
+			printerWriter.println("unique species IRI is empty  : " + speciesIRI + "<br>");
 			
 		}
 		
@@ -169,6 +171,10 @@ public class OntoCompChemUpload extends HttpServlet{
 					
 				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
 					
+				}else {
+					
+					Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
+					
 				}
 				
 				System.out.println("xsltFilePath: " + xsltFilePath);
@@ -181,9 +187,11 @@ public class OntoCompChemUpload extends HttpServlet{
 				 */
 //				Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()
 //				properties.getProperty("xslt.file.path.local.host"))
-				if((speciesIRI.length()!=0) && (speciesIRI != null)) {
-				Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
-				}
+				
+					
+				
+				
+				
 				consistency = InconsistencyExplanation.getConsistencyOWLFile(owlFile.getCanonicalPath());
 				
 				/**
