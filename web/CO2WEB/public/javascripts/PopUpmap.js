@@ -657,9 +657,6 @@ getIconByType: function (type, highlight) {
                     console.log('no change');
                     infowindow.close();
                     google.maps.event.clearInstanceListeners(infowindow);
-                    
-                    infowindow.close();
-                    google.maps.event.clearInstanceListeners(infowindow);
                     return;
                     }
                     console.log(modifications);

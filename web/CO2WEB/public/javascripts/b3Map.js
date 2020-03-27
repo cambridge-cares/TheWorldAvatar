@@ -295,7 +295,6 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
             //Update display
             console.log(cb);
             callDoSimulation(uris);
-            callDoSimulation(uris);
             cb(null, data);
         },
         error: function (err) {
