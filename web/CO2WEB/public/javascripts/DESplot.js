@@ -120,7 +120,7 @@ document.addEventListener("click", function (evt){
         },
         title:{
           fontSize:48, 
-          text:"Solar Radiation",
+          text:"Solar Irradiance",
           display: true
         },
         responsive: true,

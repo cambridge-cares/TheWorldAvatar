@@ -16,8 +16,7 @@ config.baseUri = "http://www.theworldavatar.com"
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
 config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
-configDevelop();
-//configDeploy();
+configDeploy();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
 config.ppNode = path.join(config.root , "kb/powerplants/WorldPowerPlants.owl");
@@ -35,7 +34,8 @@ config.semakauNode = path.join(config.root , "kb/sgp/semakauisland/SemakauIsland
 config.landLotNode=path.join(config.root , "kb/sgp/jurongisland/JParkLandLots.owl");
 config.ontochemNode= config.crebase + '/query';
 config.ontokinNode= config.ontokinbase + '/query';
-config.ontokinRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontokin"
+config.ontokinRemoteNode = "http://localhost/rdf4j-server/repositories/ontokin"
+config.ontocompchemNode = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
 
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")

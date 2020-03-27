@@ -47,8 +47,8 @@ function changeInformer(thingWillChange, informIndi){
             const self = this;
             dataPromise = this.resources.sendData(this.hasDataRequestObserver())
             dataPromise.then(function (promisedData) {
-                console.log(promisedData)
-                console.log('informer get promised data, '+promisedData[1].length)
+               // console.log(promisedData)
+                //console.log('informer get promised data, '+promisedData[1].length)
                 loopInform(promisedData);
             }).catch(e=>{
                 "use strict";
@@ -67,10 +67,10 @@ function changeInformer(thingWillChange, informIndi){
                         if(observer[1].receiveData){
                             data = withChangeData;
                         }
-                        console.log('data in informAll:'+data.length);
+                       // console.log('data in informAll:'+data.length);
                         informIndi(data, mobserver, callback);
                     }
-                    console.log(self.observers)
+                    //console.log(self.observers)
                     /*call inform on all observer*****/
                     if(self.observers.size > 0){
                       //  logger.debug("Call concat")
@@ -80,7 +80,7 @@ function changeInformer(thingWillChange, informIndi){
                                     logger.debug("Can not read changed data:" + err);
                                     return;
                                 }
-                                console.log('finish informing')
+                                //console.log('finish informing')
                                 logger.debug("finish informing")
                                 if(results){
                                     //logger.debug(JSON.stringify(results));

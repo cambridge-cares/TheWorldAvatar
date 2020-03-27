@@ -18,7 +18,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
 
-/**
+
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
@@ -28,14 +28,12 @@ var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
 var visualizeOntokin= require("./routes/visualizeOntokin.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
-**/
+
 var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
-let visualizeOntochemR = require("./routes/visualizeOntoChemRemote.js");
-let visualizeOntospeciesR = require("./routes/visualizeOntoSpeciesRemote.js");
 
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
-/**
+
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 
@@ -56,7 +54,7 @@ var essRoute= require('./routes/eSS');
 
 var essMap = require('./routes/ess');
 var DESPlot = require('./routes/DESPlot');
-***/
+
 var literalData = require('./agents/GetLiteralData');
 var getChildrenSingle = require('./routes/GetChildrenSingle');
 
@@ -91,7 +89,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 app.use('/getChildrenSingle',getChildrenSingle);
 
-/**
+
 app.use('/visualizeAgent', visualizeAgent);
 
 app.use('/visualizeWorld', visualizeWorld);
@@ -108,12 +106,11 @@ app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
 app.use('/visualizeOntokin',visualizeOntokin);
-**/
-app.use('/visualizeOntokinRemote',visualizeOntokinR);
-app.use('/visualizeOntochemRemote',visualizeOntochemR);
-app.use('/visualizeOntospeciesRemote',visualizeOntospeciesR);
 
-/**
+app.use('/visualizeOntokinRemote',visualizeOntokinR);
+
+
+
 app.use("/bmsplot", bmsplot);
 
 app.use('/ppmap', ppMap);
@@ -129,7 +126,7 @@ app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
 app.use("/MAU", MAU); //won't get MAU to work because of java/nodejs incompat as node latest version doesn't support node-java
 
-**/
+
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 
