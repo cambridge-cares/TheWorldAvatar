@@ -9,7 +9,8 @@ import com.cmclinnovations.jps.agent.caller.configuration.DFTAgentCallerProperty
 
 /**
  * Any specific facet of the JPS knowledge graph can be resided in multiple<br>
- * knowledge bases. This class provides the feature to send the current<br>
+ * knowledge bases. For example, species, quantum calculations and kinetic<br>
+ * mechanisms are facets. This class provides the feature to send the current<br>
  * query to be performed on all the knowledge bases requested by the<br>
  * caller method or agent. 
  * 
