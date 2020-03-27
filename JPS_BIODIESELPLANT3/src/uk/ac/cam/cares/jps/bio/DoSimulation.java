@@ -272,7 +272,7 @@ public class DoSimulation extends JPSHttpServlet {
 			String newM = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/" +reactor + "load.owl";
 			jenaOwlModel = JenaHelper.createModel(newM +"#"+reactor+"load");//OBJECT 
 			Individual vAngle = jenaOwlModel.getIndividual(i.split("#")[0]+  "#V_theta_"+reactor+"load");
-			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_theta_" + reactor).toString()) );
+			vH.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_theta_" + reactor+"load").toString()) );
 			
 			Individual vVolt = jenaOwlModel.getIndividual(newM+ "#V_ActualV_"+reactor+"load");
 			vVolt.setPropertyValue(numval,jenaOwlModel.createTypedLiteral(simResult.get("V_ActualV_" + reactor).toString()) );
