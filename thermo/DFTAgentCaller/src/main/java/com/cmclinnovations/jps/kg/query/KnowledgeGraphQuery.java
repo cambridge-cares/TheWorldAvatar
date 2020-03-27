@@ -1,11 +1,14 @@
 package com.cmclinnovations.jps.kg.query;
+import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-
-import com.cmclinnovations.jps.agent.caller.configuration.AgentCallerConfiguration;
-import com.cmclinnovations.jps.agent.caller.configuration.DFTAgentCallerProperty;
+import org.eclipse.rdf4j.federated.FedXFactory;
+import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryLanguage;
+import org.eclipse.rdf4j.query.TupleQuery;
+import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.repository.Repository;
+import org.eclipse.rdf4j.repository.RepositoryConnection;
 
 /**
  * Any specific facet of the JPS knowledge graph can be resided in multiple<br>
@@ -39,6 +42,29 @@ public class KnowledgeGraphQuery {
 	public KnowledgeGraphQuery(List<String> endpoints, String query){
 		this.endpoints = endpoints;
 		this.query = query;
+	}
+	
+	/**
+	 * Performs the current query.
+	 *  
+	 * @throws Exception
+	 */
+	public void performQuery() throws Exception{
+		Repository repo = FedXFactory.createSparqlFederation(getEndpoints());
+	repo.init();
+
+	try (RepositoryConnection conn = repo.getConnection()) {
+		TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, getQuery());
+		try (TupleQueryResult res = query.evaluate()) {
+
+			while (res.hasNext()) {
+				System.out.println(res.next());
+			}
+		}
+	}
+
+	repo.shutDown();
+	System.out.println("Done.");
 	}
 
 	public List<String> getEndpoints() {

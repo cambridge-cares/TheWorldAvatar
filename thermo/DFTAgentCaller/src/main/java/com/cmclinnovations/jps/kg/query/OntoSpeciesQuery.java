@@ -32,11 +32,31 @@ public class OntoSpeciesQuery extends AgentCaller{
 		}
 	}
 	
-	public HashSet<String> queryOntoSpciesKG() throws DFTAgentCallerException{
+	public HashSet<String> queryOntoSpciesKG() throws DFTAgentCallerException, Exception{
 		List<String> endpoints = Utils.getEndpoints(dftAgentCallerProperty.getEndpointOntoSpecies());
 		if(endpoints == null){
 			throw new DFTAgentCallerException("DFTAgentCaller: endpoints are not correctly formatted.");
 		}
+		KnowledgeGraphQuery kgQuery = new KnowledgeGraphQuery(endpoints, formSpeciesQuery());
+		kgQuery.performQuery();
 		return null;
+	}
+	
+	/**
+	 * Forms the query that can retrieve all species IRIs from the Onto-<br>
+	 * Species knowledge graph across multiple repositories.
+	 * 
+	 * @return
+	 */
+	private String formSpeciesQuery(){
+		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+				+ "PREFIX ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\n"
+				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>\n"
+				+ "SELECT ?species "
+				+ "WHERE { "
+				+ "?species owl:type ontospecies:Species . "
+				+ "}";		
+		return query;
+
 	}
 }

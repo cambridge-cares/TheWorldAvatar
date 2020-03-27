@@ -9,6 +9,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 
 import com.cmclinnovations.jps.agent.caller.configuration.AgentCallerConfiguration;
 import com.cmclinnovations.jps.agent.caller.configuration.DFTAgentCallerProperty;
+import com.cmclinnovations.jps.kg.query.OntoSpeciesQuery;
 
 /**
  * This works in combination with a script developed for calling DFT Agent<br>
@@ -37,12 +38,12 @@ public class AgentCaller {
 		}
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception{
 		AgentCaller agentCaller = new AgentCaller();
 		HashSet<String> speciesToRunDFTCalculation = agentCaller.getSpeciesToRunDFTCalculation();
 	} 
 	
-	public HashSet<String> getSpeciesToRunDFTCalculation(){
+	public HashSet<String> getSpeciesToRunDFTCalculation() throws Exception{
 		HashSet<String> speciesToRunDFTCalculation = getAllSpecies();
 		speciesToRunDFTCalculation.removeAll(getAlreadyCalculatedSpecies());
 		return speciesToRunDFTCalculation;
@@ -52,7 +53,10 @@ public class AgentCaller {
 		return null;
 	}
 	
-	public HashSet<String> getAllSpecies(){
+	public HashSet<String> getAllSpecies() throws Exception{
+		OntoSpeciesQuery ontoSpeciesQuery = new OntoSpeciesQuery();
+		ontoSpeciesQuery.queryOntoSpciesKG();
+		ontoSpeciesQuery.getAllSpecies();
 		return null;
 	}
 
