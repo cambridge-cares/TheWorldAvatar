@@ -30,9 +30,6 @@ public class KnowledgeGraphQuery {
 	 */
 	private String query;
 	
-	public static ApplicationContext applicationContext;
-	public static DFTAgentCallerProperty dftAgentCallerProperty;
-	
 	/**
 	 * Construct of this class to initialise and call methods.
 	 * 
@@ -42,12 +39,6 @@ public class KnowledgeGraphQuery {
 	public KnowledgeGraphQuery(List<String> endpoints, String query){
 		this.endpoints = endpoints;
 		this.query = query;
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(AgentCallerConfiguration.class);
-		}
-		if (dftAgentCallerProperty == null) {
-			dftAgentCallerProperty = applicationContext.getBean(DFTAgentCallerProperty.class);
-		}
 	}
 
 	public List<String> getEndpoints() {
