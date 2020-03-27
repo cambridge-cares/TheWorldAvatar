@@ -145,6 +145,8 @@ public class Test_DoSimulation extends TestCase{
 		   jo.put("ValueOfHeatDutyOfR-301",1.1612685888155425);
 		   jo.put("V_ActualV_R-301",3.3821878615224006);
 		   jo.put("V_Angle_LoadPoint_R-302",-0.48014259831225964);
-		   new DoSimulation().placeinOWLFiles(jo, "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl");
+		   new DoSimulation().placeinOWLFiles(jo, "http://theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl#BiodieselPlant3");
 	   }
+	   
+
 }

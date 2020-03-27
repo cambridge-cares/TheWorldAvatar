@@ -52,8 +52,7 @@ public class ForecastAgent extends JPSHttpServlet{
 			e.printStackTrace();
 		}
 		AgentCaller.printToResponse(jo, res);
- 
-		logger.info("return the result from forecast agent");		
+ 	
 	}
 	/** Runs python script and reads to JSON file. Rewriting in Java afterwards
 	 * 

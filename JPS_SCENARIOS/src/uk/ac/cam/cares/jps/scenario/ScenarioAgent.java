@@ -52,7 +52,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		logger.debug("called for path=" + path);
 		
 		String[] parts = ScenarioHelper.dividePath(path);
-		String scenarioName = parts[0];
+		String scenarioName = parts[0]; //name of scenario: base, testNuclear
 		String operation = parts[1];
 		
 		// TODO-AE SC the created scenario url / name  might be part of the response body such that the client can use the scenario in future
@@ -70,7 +70,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		// calling the scenario agent. However, it is needed as soon
 		// as the scenario agent calls other agents.
 		if ((scenariourl == null) || scenariourl.isEmpty()) {
-			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName);
+			scenariourl = ScenarioManagementAgent.getScenarioUrl(scenarioName); //keyaddress/jps/scenario/scenarioName
 			JPSContext.putScenarioUrl(jo, scenariourl);
 			
 //			usecaseurl = BucketHelper.getUsecaseUrl(scenariourl);

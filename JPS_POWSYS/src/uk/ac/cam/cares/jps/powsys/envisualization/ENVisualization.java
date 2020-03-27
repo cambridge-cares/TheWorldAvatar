@@ -656,15 +656,6 @@ public class ENVisualization extends JPSHttpServlet {
 					+ "WHERE {?entity  a  j1:PowerGenerator ."
 					+ "?entity   j3:realizes ?generation ."
 					
-//					+ "OPTIONAL {?generation j5:hasEmission ?emission }" 
-//					+ "OPTIONAL {?emission a j5:Actual_CO2_Emission }"
-//					+ "OPTIONAL {?emission   j2:hasValue ?valueemission }"
-//					+ "OPTIONAL {?valueemission   j2:numericalValue ?actual_carbon }" 
-//					
-//					+ "OPTIONAL {?v_emission a j5:CO2_emission }"
-//					+ "OPTIONAL {?v_emission   j2:hasValue ?valueemission_d }"
-//					+ "OPTIONAL {?valueemission_d   j2:numericalValue ?design_carbon }" 
-					
 					+ "?entity   j7:hasGISCoordinateSystem ?coorsys ."
 					+ "?coorsys  j7:hasProjectedCoordinate_y  ?y  ."
 					+ "?y  j2:hasValue ?vy ." 
