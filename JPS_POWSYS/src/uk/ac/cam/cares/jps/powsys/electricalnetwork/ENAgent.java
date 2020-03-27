@@ -105,22 +105,20 @@ public class ENAgent extends JPSHttpServlet {
 		List<String> allLines = Files.readAllLines(path, StandardCharsets.UTF_8);
 		if(allLines.get(2).contains("Converged!")) {
 			resjo.put("status", "converged");
+			try {
+				logger.info("converting PyPower results to OWL files");
+				doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
+			} catch (URISyntaxException e) {
+				logger.error(e.getMessage(), e);
+				throw new JPSRuntimeException(e.getMessage(), e);
+			}
 			
 		}else {
-			new CarbonTaxAgent().copyTemplate(baseUrl,"outputBranchOPF.txt");
-			new CarbonTaxAgent().copyTemplate(baseUrl,"outputBusOPF.txt");
-			new CarbonTaxAgent().copyTemplate(baseUrl,"outputGenOPF.txt");
 			resjo.put("status", "Not Converged");
 		}
 			
 
-		try {
-			logger.info("converting PyPower results to OWL files");
-			doConversion(model, iriofnetwork, baseUrl, modeltype, buslist);
-		} catch (URISyntaxException e) {
-			logger.error(e.getMessage(), e);
-			throw new JPSRuntimeException(e.getMessage(), e);
-		}
+		
 		
 		logger.info("finished simulation for electrical network = " + iriofnetwork + ", modeltype = " + modeltype + ", local data path=" + baseUrl);
 		return resjo;
