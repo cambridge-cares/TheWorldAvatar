@@ -1,4 +1,4 @@
-scenario = "base";
+scenario = "testFW";
 prefix = "http://localhost:8080";
 markers = []
 var infowindow;
@@ -94,15 +94,82 @@ transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/On
 
     + "}";
 
+/** Gets the following output values of the composite waste system. 
+	 * the name, revenue, installation cost, operational cost, labor cost, land cost, pollution cost, transport cost
+	 * resource cost. 
+	 */
+var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.w3.org/2006/time#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+    + "SELECT ?entity ?V_ResourceConsumptionCost ?V_TransportCost ?V_PollutionTreatmentTax "
+    + " ?V_LandCost ?V_ManPowerCost ?V_OperationalCost ?V_InstallationCost "
+    + " ?V_TotalRevenue " 
+    + "WHERE {"
+    + "?entity  a j2:CompositeSystem ."
+    + "?entity   j3:hasUtilityCost ?UC1 ."
+    + "?UC1  a j3:UtilityCosts ."
+    + "?UC1     j2:hasValue ?vresourcecost ." 
+    + "?vresourcecost  j2:numericalValue ?V_ResourceConsumptionCost ." 
+    
+    + "?entity   j8:hasTransportationCost ?TC1 ."
+    + "?TC1     j2:hasValue ?vtransportcost ." 
+    + "?vtransportcost     j2:numericalValue ?V_TransportCost ." 
+    
+    + "?entity   j1:hasTax ?PC1 ."
+    + "?PC1     j2:hasValue ?vpollutioncost ."  
+    + "?vpollutioncost     j2:numericalValue  ?V_PollutionTreatmentTax ." 
 
+    + "?entity   j3:hasCost ?LC1 ."
+    + "?LC1  a j3:CostsForLand ."
+    + "?LC1     j2:hasValue ?vlandcost ."
+    + "?vlandcost     j2:numericalValue  ?V_LandCost ."
+
+    + "?entity   j3:hasLaborCost ?LabC1 ."
+    + "?LabC1     j2:hasValue ?vlaborcost ." 
+    + "?vlaborcost    j2:numericalValue ?V_ManPowerCost ." 
+    
+    + "?entity   j3:hasCost ?OC1 ."
+    + "?OC1  a j3:OperationalExpenditureCosts ."
+    + "?OC1     j2:hasValue ?voperationalcost ."
+    + "?voperationalcost     j2:numericalValue ?V_OperationalCost ."
+                
+    + "?entity   j3:hasInstallationCost ?IC1 ."
+    + "?IC1     j2:hasValue ?vinstallationcost ."  
+    + "?vinstallationcost    j2:numericalValue ?V_InstallationCost ."  
+    
+    + "?entity   j3:hasRevenue ?Rev1 ."
+    + "?Rev1     j2:hasValue ?vrevenue ." 
+    + "?vrevenue     j2:numericalValue  ?V_TotalRevenue ." 
+
+    + "}";
 (function PPMap(){
     var ppMap = new PopupMap({useCluster:true});
 })();
 
+/** once map is instantiated, run base scenario
+ * 
+ */
+var checkExist = setInterval(function() {
+    if ($('#map').length) {
+        position = new google.maps.LatLng(1.367165198,103.801163462);
+        map.setCenter(position);
+        map.setZoom(12);
+        queryForFCMarkers(function(){
+            InitialTransportInputs();
+            InitialUnitInputs();
+        });
+        
+        clearInterval(checkExist);
+    }
+}, 100); // check every 100ms
+
   //when button clicked, run simulation
 $(document).ready(function () {
-    InitialTransportInputs();
-    InitialUnitInputs();
     $("#run-btn").click(function () {
         console.log("Start sim")
         transportUpd = getInputs("table#transportQ tr");
@@ -113,16 +180,72 @@ $(document).ready(function () {
         finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
         if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
             dumpTransport(transportUpd);}
-        for (i = 3; i<initArray.length; i++){
+        for (i = 0; i<initArray.length; i++){
             console.log("Initial Array",initArray[i]);
             console.log("Final Array",finalArray[i]);
             if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
                 updateSite(finalArray[i], i);
             }
         }
+        runWTESimulation(function(){
+            var dt = Date();
+            console.log("Check callback" +dt );
+            queryForOnsiteWT();
+        });
+
 
     });
 });
+/** run simulation for waste to energy. 
+ * @param callback run query for Onsite afterwards
+ */
+function runWTESimulation(callback){
+var para = {"wastenetwork":wastenetwork};
+
+var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
+var simulationurl = createUrlForAgent(scenario, agenturl, para); 
+var request = $.ajax({
+    url: simulationurl ,
+    type: 'GET',
+    contentType: 'application/json; charset=utf-8',
+    success: function(){  
+        console.log('successful execution of simulation');
+    },
+    error: function(ts) {
+        alert(ts.responseText);
+    }
+    
+    });  
+    //Because simulation takes some time to run, then asynchronous watcher object is triggered next. 
+    request.done(function(data) { 
+        console.log(data);
+        setInterval(function(){
+            console.log("Wait for simulation to finish"); //want to fix this. 
+        }, 300*1000);
+        var dt = Date();
+        console.log("Check inferency: "+dt); 
+        callback();
+
+    });
+}
+
+function queryForOnsiteWT(){
+    var wasteurl = createUrlForSparqlQuery(scenario, wastenetwork,wasteSystemOutputQuery);
+    $.ajax({
+        url: wasteurl,
+        method: "GET",
+        success: function (data) {
+            var obj0 = JSON.parse(data);
+            obj0 = obj0['results']['bindings'][0];
+            console.log(obj0);
+            var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
+            console.log(result);
+        },
+        error: function () {
+            console.log("Failed query for compositeQuery")
+        }
+    });
+}
 const textPanel = $("#text-panel")
 const rePanel = $("#result-panel")
 const drawPanel = $("#draw-panel")
@@ -315,28 +438,17 @@ function addUnitInputsDisplay(data, type){
     return;
 }
 
-/** once map is instantiated, run base scenario
- * 
- */
-var checkExist = setInterval(function() {
-    if ($('#map').length) {
-        position = new google.maps.LatLng(1.367165198,103.801163462);
-        map.setCenter(position);
-        map.setZoom(12);
-        queryForFCMarkers();
-        clearInterval(checkExist);
-    }
-}, 100); // check every 100ms
-/** query backend using greedy method for FC and Offsite as they are already instantiated. 
+
+/** query backend using greedy method for FC and Offsite. Does Callback to read input from scenario. 
  *  runs during init
  */
-function queryForFCMarkers(){
+function queryForFCMarkers(callback){
     infowindow = new google.maps.InfoWindow({
         content: '<h2>Sup!</h2>'
     });
     var agenturl = prefix + '/JPS_WTE/WTEVisualization/createMarkers'; 
     var data = {"wastenetwork": wastenetwork};
-    var markerURL = createUrlForAgent(scenario, agenturl, data);
+    var markerURL = createNewUrlForAgent(scenario, agenturl, data);
     var request = $.ajax({
         url: markerURL,
         type: 'GET',
@@ -380,7 +492,11 @@ function queryForFCMarkers(){
     for (x=0; x< size; x++){
         createMarker(markerdict[x]);
     }
-  
+    //run callback function of other initiations. 
+    scenarioUR = JSON.parse(data).jpscontext.scenariourl;
+    scenariolst  = scenarioUR.split('/');
+    scenario = scenariolst[scenariolst.length-1];
+    callback();
     });
 
 }
@@ -510,7 +626,26 @@ function getInputs(nameOfTable) {
 
     return sourceQuan;
 }
-/*** accesses parallel scenarios through these helper functions
+/** creates new scenario through ScenarioModifier.java agent
+     * @param scenarioname the name of the scenario, be it base or specific folder 
+     * @param agenturl: GET request to Java Backend Servlet
+     * @param sparql: JSON packets or what not that the Java backend could request. 
+     * @returns modified url for future use. 
+     */
+    function createNewUrlForAgent(scenarioname, agenturl, agentparams) {
+
+        var url;
+        if ((scenarioname == null) || scenarioname == "base") {
+            url = agenturl;
+        } else {
+            agentparams['scenarioagentoperation'] = agenturl;
+            var scenariourl = prefix + '/jps/scenariomod/' + scenarioname + '/call';
+            url = scenariourl;
+        }
+
+        return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
+    }
+/** accesses parallel scenarios through these helper functions
  * @param scenarioname the name of the scenario, be it base or specific folder 
  * @param iri: iri of resource to be queried. 
  * @param sparql: the sparql update to be fired
