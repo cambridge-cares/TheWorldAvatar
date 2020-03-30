@@ -219,16 +219,24 @@ var request = $.ajax({
     });  
     //Because simulation takes some time to run, then asynchronous watcher object is triggered next. 
     request.done(function(data) { 
-        console.log(data);
-        setInterval(function(){
-            console.log("Wait for simulation to finish"); //want to fix this. 
-        }, 300*1000);
         var dt = Date();
         console.log("Check inferency: "+dt); 
-        callback();
-
+        delayedCallback(callback());
     });
 }
+/** sleep function for javascript
+ * 
+ * @param {*} ms time in miliseconds 
+ */
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+async function delayedCallback(callback) {
+    console.log("Wait for simulation to finish");
+    await sleep(300*1000);//five minutes?
+    callback();
+  }
 /** read output of economic costs in cumulative for landcost
  * 
  */
@@ -252,15 +260,15 @@ function queryForEconomicComp(){
  * @param data key value pairs of costs
  */
 function dumpEconomic(data){
-    console.log(data.V_TotalRevenue);
-    $("#RCC").text(data.V_ResourceConsumptionCost.value.toFixed(2));
-    $("#TC").text(data.V_TransportCost.value.toFixed(2));
-    $("#PTT").text(data.V_PollutionTreatmentTax.value.toFixed(2));
-    $("#LC").text(data.V_LandCost.value.toFixed(2));
-    $("#MC").text(data.V_ManPowerCost.value.toFixed(2));
-    $("#OC").text(data.V_OperationalCost.value.toFixed(2));
-    $("#IC").text(data.V_InstallationCost.value.toFixed(2));
-    $("#TR").text(data.V_TotalRevenue.value.toFixed(2));
+    console.log(data.V_TotalRevenue.value);
+    $("#RCC").text(parseFloat(data.V_ResourceConsumptionCost.value).toFixed(2));
+    $("#TC").text(parseFloat(data.V_TransportCost.value).toFixed(2));
+    $("#PTT").text(parseFloat(data.V_PollutionTreatmentTax.value).toFixed(2));
+    $("#LC").text(parseFloat(data.V_LandCost.value).toFixed(2));
+    $("#MC").text(parseFloat(data.V_ManPowerCost.value).toFixed(2));
+    $("#OC").text(parseFloat(data.V_OperationalCost.value).toFixed(2));
+    $("#IC").text(parseFloat(data.V_InstallationCost.value).toFixed(2));
+    $("#TR").text(parseFloat(data.V_TotalRevenue.value).toFixed(2));
 }
 function queryForOnsiteWT(){
 
