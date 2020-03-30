@@ -14,10 +14,10 @@ public class TestVisualization  extends TestCase {
 	public String WasteTopNode = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
 	public void testFCQueryDirect(){
 		WTEVisualization a = new WTEVisualization();
+		JSONObject jo = new JSONObject();
 		OntModel model = WastetoEnergyAgent.readModelGreedy(WasteTopNode);
 		try {
-			String g = a.createMarkers(model);
-			JSONObject jo = new JSONObject(g);
+			String g = a.createMarkers(model, jo);
 			System.out.println(g);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -83,14 +83,16 @@ public class WTEVisualization extends JPSHttpServlet{
 		OntModel model = WastetoEnergyAgent.readModelGreedy(iriofnetwork); //because this is a static method
 		logger.info("path called= "+path);
 		 if ("/WTEVisualization/createMarkers".equals(path)) {
-
 			logger.info("path called here= " + path);
-			String g=createMarkers(model);
-			
+			String g=createMarkers(model, joforEN);
 			AgentCaller.printToResponse(g, response);
 		}else if ("/WTEVisualization/readInputs".equals(path)) {
 			logger.info("path called here= " + path);
 			String g=readInputs(model);
+			AgentCaller.printToResponse(g, response);
+		}else if ("/WTEVisualization/readComp".equals(path)) {
+			logger.info("path called here= " + path);
+			String g=readComp(model);
 			AgentCaller.printToResponse(g, response);
 		}
 		
@@ -102,7 +104,7 @@ public class WTEVisualization extends JPSHttpServlet{
 	 * @return
 	 * @throws IOException
 	 */
-	public String createMarkers(OntModel model) throws IOException {
+	public String createMarkers(OntModel model, JSONObject jo) throws IOException {
 		ArrayList<String>textcomb=new ArrayList<String>();
 		List<String[]> foodcourts = queryCoordinate(model, FCQuery); //hard assumption that there would be foodcourts all the time
 		for (int i = 0; i < foodcourts.size(); i++) {
@@ -118,7 +120,6 @@ public class WTEVisualization extends JPSHttpServlet{
 			textcomb.add(content);
 		}
 		JSONArray jsArray = new JSONArray(textcomb);
-	    JSONObject jo = new JSONObject();
 	    jo.put("result", jsArray);
 		return jo.toString();
 	}
@@ -155,6 +156,11 @@ public class WTEVisualization extends JPSHttpServlet{
 	    jo.put("onsite", jsArray2);
 		return jo.toString();
 	}
+	/** helper function for readInputs
+	 * stores tax, installation and operation costs per off site or onsite
+	 * @param newList list<String[]>
+	 * @return res List<String> {"tax":,"installationcost":,"operationcost":}
+	 */
 	public List<String> modifyOutputs(List<String[]> newList) {
 		List<String> res = new ArrayList<String>();
 		for (int i = 0; i < newList.size(); i++) {
@@ -165,5 +171,13 @@ public class WTEVisualization extends JPSHttpServlet{
 			res.add(jo.toString());
 		}
 		return res;
+	}
+	public String readComp(OntModel model) {
+		ResultSet resultSet = JenaHelper.query(model, new WastetoEnergyAgent().wasteSystemOutputQuery);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+        String[] keys = JenaResultSetFormatter.getKeys(result);
+        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		return null;
+		
 	}
 }
