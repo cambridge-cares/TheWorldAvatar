@@ -11,6 +11,8 @@
     <owl:Ontology rdf:about="http://www.semanticweb.org/kadit01/ontologies/2019/11/untitled-ontology-172">
         <owl:imports rdf:resource="http://www.w3.org/2006/time#2016"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl"/>
+		<owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+		
     </owl:Ontology>
 </rdf:RDF>
 

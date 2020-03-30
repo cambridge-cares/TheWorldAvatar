@@ -103,6 +103,28 @@ public class WeatherTimeStampKB {
 		
 		Individual outsidetemp = tempclass.createIndividual(Prefix+mainobjectname+".owl#MeasuredTemperatureOf"+mainobjectname);
 		mainobjinst.addProperty(observes, outsidetemp);
+		
+		Individual fccoordinate = coordinatesystemclass.createIndividual(Prefix+mainobjectname+".owl#CoordinateSystemOf"+mainobjectname);
+		Individual xcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#xCoordinateOf"+mainobjectname);
+		Individual ycoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#yCoordinateOf"+mainobjectname);
+		Individual zcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#zCoordinateOf"+mainobjectname);
+		Individual zcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname+".owl#V_zCoordinateOf"+mainobjectname);
+		Individual xcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname+".owl#V_xCoordinateOf"+mainobjectname);
+		Individual ycoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname+".owl#V_yCoordinateOf"+mainobjectname);
+		fccoordinate.addProperty(hasx,xcoordinate);
+		fccoordinate.addProperty(hasy,ycoordinate);
+		fccoordinate.addProperty(hasz,zcoordinate);
+		xcoordinate.addProperty(hasvalue,xcoordinatevalue);
+		ycoordinate.addProperty(hasvalue,ycoordinatevalue);
+		zcoordinate.addProperty(hasvalue,zcoordinatevalue);
+		xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		zcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		xcoordinatevalue.addProperty(hasunit, degree);
+		ycoordinatevalue.addProperty(hasunit, degree);
+		zcoordinatevalue.addProperty(hasunit, m);
+		mainobjinst.addProperty(hascoordinatesystem, fccoordinate);
+		
 		for(int x=1;x<=49;x++) {
 			String tempvalue=readingFromCSV.get(x-1)[4];
 			String year=readingFromCSV.get(x-1)[0];
@@ -131,6 +153,26 @@ public class WeatherTimeStampKB {
 		
 		Individual outsideirradiation = outsidepropclass.createIndividual(Prefix+mainobjectname2+".owl#MeasuredIrradiationOf"+mainobjectname2);
 		mainobjinst.addProperty(observes, outsideirradiation);
+		Individual fccoordinate = coordinatesystemclass.createIndividual(Prefix+mainobjectname2+".owl#CoordinateSystemOf"+mainobjectname2);
+		Individual xcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname2+".owl#xCoordinateOf"+mainobjectname2);
+		Individual ycoordinate = coordinateclass.createIndividual(Prefix+mainobjectname2+".owl#yCoordinateOf"+mainobjectname2);
+		Individual zcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname2+".owl#zCoordinateOf"+mainobjectname2);
+		Individual zcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_zCoordinateOf"+mainobjectname2);
+		Individual xcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_xCoordinateOf"+mainobjectname2);
+		Individual ycoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname2+".owl#V_yCoordinateOf"+mainobjectname2);
+		fccoordinate.addProperty(hasx,xcoordinate);
+		fccoordinate.addProperty(hasy,ycoordinate);
+		fccoordinate.addProperty(hasz,zcoordinate);
+		xcoordinate.addProperty(hasvalue,xcoordinatevalue);
+		ycoordinate.addProperty(hasvalue,ycoordinatevalue);
+		zcoordinate.addProperty(hasvalue,zcoordinatevalue);
+		xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		zcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		xcoordinatevalue.addProperty(hasunit, degree);
+		ycoordinatevalue.addProperty(hasunit, degree);
+		zcoordinatevalue.addProperty(hasunit, m);
+		mainobjinst.addProperty(hascoordinatesystem, fccoordinate);
 		for(int x=1;x<=49;x++) {
 			String irradiationvalue=readingFromCSV.get(x-1)[8];
 			//System.out.println("irradvalue= "+irradiationvalue);
@@ -160,6 +202,26 @@ public class WeatherTimeStampKB {
 		
 		Individual outsidewindspeed = outsidewindspeedclass.createIndividual(Prefix+mainobjectname3+".owl#MeasuredWindSpeedOf"+mainobjectname3);
 		mainobjinst.addProperty(observes, outsidewindspeed);
+		Individual fccoordinate = coordinatesystemclass.createIndividual(Prefix+mainobjectname3+".owl#CoordinateSystemOf"+mainobjectname3);
+		Individual xcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname3+".owl#xCoordinateOf"+mainobjectname3);
+		Individual ycoordinate = coordinateclass.createIndividual(Prefix+mainobjectname3+".owl#yCoordinateOf"+mainobjectname3);
+		Individual zcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname3+".owl#zCoordinateOf"+mainobjectname3);
+		Individual zcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname3+".owl#V_zCoordinateOf"+mainobjectname3);
+		Individual xcoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname3+".owl#V_xCoordinateOf"+mainobjectname3);
+		Individual ycoordinatevalue = coordinatevalueclass.createIndividual(Prefix+mainobjectname3+".owl#V_yCoordinateOf"+mainobjectname3);
+		fccoordinate.addProperty(hasx,xcoordinate);
+		fccoordinate.addProperty(hasy,ycoordinate);
+		fccoordinate.addProperty(hasz,zcoordinate);
+		xcoordinate.addProperty(hasvalue,xcoordinatevalue);
+		ycoordinate.addProperty(hasvalue,ycoordinatevalue);
+		zcoordinate.addProperty(hasvalue,zcoordinatevalue);
+		xcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		ycoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		zcoordinatevalue.setPropertyValue(numval,jenaOwlModel.createTypedLiteral("0"));
+		xcoordinatevalue.addProperty(hasunit, degree);
+		ycoordinatevalue.addProperty(hasunit, degree);
+		zcoordinatevalue.addProperty(hasunit, m);
+		mainobjinst.addProperty(hascoordinatesystem, fccoordinate);
 		for(int x=1;x<=49;x++) {
 			String winspeedvalue=readingFromCSV.get(x-1)[6];
 			String year=readingFromCSV.get(x-1)[0];
@@ -184,7 +246,7 @@ public class WeatherTimeStampKB {
 		System.out.println("it is processed= " + mainobjectname);
 		//String mainobjectname= SGTemperatureSensor-001 (sample)
 
-		Individual mainobjinst = mainobjclass.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
+		Individual mainobjinst = mainobj2class.createIndividual(Prefix+mainobjectname+".owl#"+mainobjectname);
 		
 		Individual measuredproperty = propclass.createIndividual(Prefix+mainobjectname+".owl#Measured"+propertyname+"Of"+mainobjectname);
 		mainobjinst.addProperty(observes, measuredproperty);
@@ -256,10 +318,20 @@ public class WeatherTimeStampKB {
 		String mainobjectname = "SGTemperatureSensor-001"; // still hard-coded for the sample
 		String mainobject2name = "SGSolarIrradiationSensor-001"; // still hard-coded for the sample
 		String mainobject3name = "SGWindSpeedSensor-001"; // still hard-coded for the sample
+		String mainobject4name = "SGWindDirectionSensor-001"; // still hard-coded for the sample
+		String mainobject5name = "SGRelativeHumiditySensor-001"; // still hard-coded for the sample
+		String mainobject6name = "SGPrecipitationSensor-001"; // still hard-coded for the sample
+		String mainobject7name = "SGCloudCoverSensor-001"; // still hard-coded for the sample
+		String mainobject8name = "SGPressureSensor-001"; // still hard-coded for the sample
 		String Prefix="http://www.theworldavatar.com/kb/sgp/singapore/";
 		String filePath1 = Prefix + mainobjectname + ".owl#"+ mainobjectname; // the result of written owl file
 		String filePath2 = Prefix + mainobject2name + ".owl#"+ mainobject2name; // the result of written owl file
 		String filePath3 = Prefix + mainobject3name + ".owl#"+ mainobject3name; // the result of written owl file
+		String filePath4 = Prefix + mainobject4name + ".owl#"+ mainobject4name; // the result of written owl file
+		String filePath5 = Prefix + mainobject5name + ".owl#"+ mainobject5name; // the result of written owl file
+		String filePath6 = Prefix + mainobject6name + ".owl#"+ mainobject6name; // the result of written owl file
+		String filePath7 = Prefix + mainobject7name + ".owl#"+ mainobject7name; // the result of written owl file
+		String filePath8 = Prefix + mainobject8name + ".owl#"+ mainobject8name; // the result of written owl file
 		
 		if (flag.toLowerCase().contains("temperature")) {
 			System.out.println("creating temperature");
@@ -284,38 +356,38 @@ public class WeatherTimeStampKB {
 		}
 		else if (flag.toLowerCase().contains("winddirection")) {
 			System.out.println("creating "+flag);
-			doConversionWeathersensor(jenaOwlModel, mainobject2name,Prefix,readingFromCSV,flag,outsidewinddirectionclass);
+			doConversionWeathersensor(jenaOwlModel, mainobject4name,Prefix,readingFromCSV,flag,outsidewinddirectionclass);
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+mainobject2name+".owl", content);
-			return filePath2;
+			new QueryBroker().putOld(Prefix+mainobject4name+".owl", content);
+			return filePath4;
 		}
 		else if (flag.toLowerCase().contains("relativehumidity")) {
 			System.out.println("creating "+flag);
-			doConversionWeathersensor(jenaOwlModel, mainobject2name,Prefix,readingFromCSV,flag,outsiderelativehumidityclass);
+			doConversionWeathersensor(jenaOwlModel, mainobject5name,Prefix,readingFromCSV,flag,outsiderelativehumidityclass);
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+mainobject2name+".owl", content);
-			return filePath2;
+			new QueryBroker().putOld(Prefix+mainobject5name+".owl", content);
+			return filePath5;
 		}
 		else if (flag.toLowerCase().contains("precipitation")) {
 			System.out.println("creating "+flag);
-			doConversionWeathersensor(jenaOwlModel, mainobject2name,Prefix,readingFromCSV,flag,outsideprecipitationclass);
+			doConversionWeathersensor(jenaOwlModel, mainobject6name,Prefix,readingFromCSV,flag,outsideprecipitationclass);
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+mainobject2name+".owl", content);
-			return filePath2;
+			new QueryBroker().putOld(Prefix+mainobject6name+".owl", content);
+			return filePath6;
 		}
 		else if (flag.toLowerCase().contains("cloudcover")) {
 			System.out.println("creating "+flag);
-			doConversionWeathersensor(jenaOwlModel, mainobject2name,Prefix,readingFromCSV,flag,outsidecloudcoverclass);
+			doConversionWeathersensor(jenaOwlModel, mainobject7name,Prefix,readingFromCSV,flag,outsidecloudcoverclass);
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+mainobject2name+".owl", content);
-			return filePath2;
+			new QueryBroker().putOld(Prefix+mainobject7name+".owl", content);
+			return filePath7;
 		}
 		else if (flag.toLowerCase().contains("pressure")) {
 			System.out.println("creating "+flag);
-			doConversionWeathersensor(jenaOwlModel, mainobject2name,Prefix,readingFromCSV,flag,outsidepressureclass);
+			doConversionWeathersensor(jenaOwlModel, mainobject8name,Prefix,readingFromCSV,flag,outsidepressureclass);
 			String content = JenaHelper.writeToString(jenaOwlModel);
-			new QueryBroker().putOld(Prefix+mainobject2name+".owl", content);
-			return filePath2;
+			new QueryBroker().putOld(Prefix+mainobject8name+".owl", content);
+			return filePath8;
 		}
 		return filePath;
 	}
@@ -326,14 +398,14 @@ public class WeatherTimeStampKB {
 		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Weather.csv");
 		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-//		converter.startConversion(readingFromCSV,"temperature");
-//		converter.startConversion(readingFromCSV,"irradiation");
-//		converter.startConversion(readingFromCSV,"windspeed");
-		converter.startConversion(readingFromCSV,"winddirection");
-		converter.startConversion(readingFromCSV,"precipitation");
-		converter.startConversion(readingFromCSV,"pressure");
-		converter.startConversion(readingFromCSV,"relativehumidity");
-		converter.startConversion(readingFromCSV,"cloudcover");
+		converter.startConversion(readingFromCSV,"temperature");
+		converter.startConversion(readingFromCSV,"irradiation");
+		converter.startConversion(readingFromCSV,"windspeed");
+//		converter.startConversion(readingFromCSV,"winddirection");
+//		converter.startConversion(readingFromCSV,"precipitation");
+//		converter.startConversion(readingFromCSV,"pressure");
+//		converter.startConversion(readingFromCSV,"relativehumidity");
+//		converter.startConversion(readingFromCSV,"cloudcover");
 	}
 	
 	public String startConversionForecast(List<String[]> readingFromCSV,String flag, Integer position) throws Exception {
