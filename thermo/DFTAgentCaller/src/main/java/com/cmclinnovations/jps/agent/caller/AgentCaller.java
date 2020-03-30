@@ -11,6 +11,8 @@ import java.net.URLEncoder;
 import java.util.Set;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -30,8 +32,16 @@ import com.cmclinnovations.jps.kg.query.OntoSpeciesQuery;
  *
  */
 public class AgentCaller {
-
+	private static Logger logger = LoggerFactory.getLogger(AgentCaller.class);
+	/**
+	 * An instance of the base class that supports the annotation based<br>
+	 * reading of attributes from a property file.  
+	 */
 	public static ApplicationContext applicationContext;
+	/**
+	 * An instance of the class that reads attributes from the dft-agent-<br>
+	 * caller.properties file using annotations.
+	 */
 	public static DFTAgentCallerProperty dftAgentCallerProperty;
 	
 	/**
@@ -46,6 +56,16 @@ public class AgentCaller {
 		}
 	}
 	
+	/**
+	 * The main method of this class created to initiate the call from a<br>
+	 * bash script or batch file to run DFT calculations for those species<br>
+	 * that are not connected to any calculations. The species belong to<br>
+	 * the OntoSpecies knowledge graph and the calculations belong to the<br>
+	 * OntoCompChem knowledge graph.
+	 * 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void main(String[] args) throws Exception{
 		AgentCaller agentCaller = new AgentCaller();
 		Set<String> speciesToRunDFTCalculations = agentCaller.getSpeciesToRunDFTCalculation();
@@ -54,23 +74,59 @@ public class AgentCaller {
 			String httpRequest = agentCaller.produceHTTPRequest(speciesToRunDFTCalculation);
 			System.out.println(httpRequest);
 			agentCaller. performHTTPRequest(httpRequest);
-			System.out.println("Job Submitted.");
-			
+			logger.info("DFTAgentCaller: a job has been submitted.");
+			System.out.println("DFTAgentCaller: a job has been submitted.");
 		}
 	} 
 	
+	/**
+	 * Produces the complete HTTP request that consists of two parts for<br>
+	 * submitting a DFT job for the current species.<br>
+	 * 
+	 * 1. The first part containing the HTTP protocol, server address, service<br>
+	 * address and input variable, i.e. i.e. http://localhost:8080/DFTAgent/job/request?input=
+	 * 
+	 * 2. The last part containing the JSON input, e.g. 
+	 * {"job":{"levelOfTheory":"B3LYP/6-31G(d)","keyword":"Opt","algorithmChoice":"Freq"},
+	 * "speciesIRI":"http://www.theworldavatar.com/kb/ontospecies/00f46355-
+	 * 2ea4-3ef1-b61a-e3d87e91a8db.owl#00f46355-2ea4-3ef1-b61a-e3d87e91a8db"}
+	 * 
+	 * @param speciesIRI
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
 	private String produceHTTPRequest(String speciesIRI) throws UnsupportedEncodingException{
 		return getHTTPRequestFirstPart().concat(URLEncoder.encode(getJSONInputPart(speciesIRI), "UTF-8"));
 	}
 	
+	/**
+	 * The protocol, address, service address and input variable part of<br>
+	 * the complete HTTP request.
+	 * 
+	 * @return
+	 */
 	private String getHTTPRequestFirstPart(){
 		return dftAgentCallerProperty.getHttpRequestFirstPart();
 	}
-
+	
+	/**
+	 * The JSON input part of the complete HTTP request.
+	 * 
+	 * @param speciesIRI
+	 * @return
+	 */
 	private String getJSONInputPart(String speciesIRI){
 		return generateJSONInput(speciesIRI).toString();
 	}
 	
+	/**
+	 * Generates the JSON input for creating a DFT job request for the<br>
+	 * current species. It reads the properties related to the DFT job<br>
+	 * from the dft-agent-caller.properties file. 
+	 * 
+	 * @param speciesIRIInput
+	 * @return
+	 */
 	private JSONObject generateJSONInput(String speciesIRIInput){
 		JSONObject job = new JSONObject();
 		job.put(dftAgentCallerProperty.getJobLevelOfTheoryPropertyLabel(), dftAgentCallerProperty.getJobLevelOfTheory());
@@ -82,17 +138,39 @@ public class AgentCaller {
 		return json;
 	}
 	
+	/**
+	 * Extracts those species from the OntoSpcies knowledge graph that are<br>
+	 * not connected to any calculations in the OntoCompChem knowledge graph.
+	 * 
+	 * @return
+	 * @throws DFTAgentCallerException
+	 * @throws Exception
+	 */
 	public Set<String> getSpeciesToRunDFTCalculation() throws DFTAgentCallerException, Exception{
 		Set<String> speciesToRunDFTCalculation = getAllSpecies();
 		speciesToRunDFTCalculation.removeAll(getAlreadyCalculatedSpecies());
 		return speciesToRunDFTCalculation;
 	}
 	
+	/**
+	 * Extracts the species, from the OntoCompChem knowledge graph, for<br> 
+	 * which a calculations was performed.
+	 * 
+	 * @return
+	 * @throws DFTAgentCallerException
+	 * @throws Exception
+	 */
 	public Set<String> getAlreadyCalculatedSpecies() throws DFTAgentCallerException, Exception{
 		OntoCompChemQuery ontoCompChemQuery = new OntoCompChemQuery();
 		return ontoCompChemQuery.queryOntoCompChemKG();
 	}
 	
+	/**
+	 * Extracts all species from the OntoSpcies knowledge graph.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
 	public Set<String> getAllSpecies() throws Exception{
 		OntoSpeciesQuery ontoSpeciesQuery = new OntoSpeciesQuery();
 		return ontoSpeciesQuery.queryOntoSpciesKG();
