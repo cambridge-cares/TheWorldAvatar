@@ -41,7 +41,28 @@ block content
 
 						   
 	div#map
+	div#co2-sum-panel2
+		table(style=" font-size:30px; margin-left:auto; margin-right:auto; padding:2px; and border-spacing:20px;")
+			tr 
+				td Resource Consumption Cost (USD)
+				td Transport Cost (USD)
+				td Pollution Treatment Tax (USD)
+				td Land Cost (USD)
+				td Manpower Cost (USD)
+				td Operation Cost (USD)
+				td Installation Cost (USD)
+				td Total Revenue (USD)
 
+
+			tr
+				td#RCC  #{RCC}
+				td#TC  #{TC}
+				td#PTT  #{PTT}
+				td#LC  #{LC}
+				td#MC  #{MC}
+				td#OC  #{OC}
+				td#IC  #{IC}
+				td#TR  #{TR}
 	script(src="https://code.jquery.com/jquery-2.2.0.min.js")
 	script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
 	script(src="/javascripts/PopUpmap.js")
