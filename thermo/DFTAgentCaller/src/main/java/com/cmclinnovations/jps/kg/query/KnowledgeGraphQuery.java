@@ -1,9 +1,10 @@
 package com.cmclinnovations.jps.kg.query;
-import java.util.Arrays;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.eclipse.rdf4j.federated.FedXFactory;
-import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -48,25 +49,39 @@ public class KnowledgeGraphQuery {
 	 * Performs the current query.
 	 *  
 	 * @throws Exception
+	 * @return
 	 */
-	public void performQuery() throws Exception{
+	public Set<String> performQuery() throws Exception {
+		Set<String> results = new HashSet<>();
 		Repository repo = FedXFactory.createSparqlFederation(getEndpoints());
-	repo.init();
-
-	try (RepositoryConnection conn = repo.getConnection()) {
-		TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, getQuery());
-		try (TupleQueryResult res = query.evaluate()) {
-
-			while (res.hasNext()) {
-				System.out.println(res.next());
+		repo.init();
+		try (RepositoryConnection conn = repo.getConnection()) {
+			TupleQuery query = conn.prepareTupleQuery(QueryLanguage.SPARQL, getQuery());
+			try (TupleQueryResult res = query.evaluate()) {
+				while (res.hasNext()) {
+					String result = res.next().toString();
+					result = refineResult(result);
+					results.add(result);
+					System.out.println(result);
+				}
 			}
 		}
+		repo.shutDown();
+		System.out.println("Done.");
+		return results;
 	}
 
-	repo.shutDown();
-	System.out.println("Done.");
+	private String refineResult(String result){
+		if(result.contains("=")){
+			String[] tokens = result.split("=");
+			result = tokens[tokens.length-1];
+		}
+		if(result.contains("]")){
+			result = result.replace("]", "");
+		}
+		return result;
 	}
-
+	
 	public List<String> getEndpoints() {
 		return endpoints;
 	}
