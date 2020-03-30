@@ -106,7 +106,7 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
     + "PREFIX j6:<http://www.w3.org/2006/time#> "
     + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
     + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-    + "SELECT ?entity ?V_ResourceConsumptionCost ?V_TransportCost ?V_PollutionTreatmentTax "
+    + "SELECT ?V_ResourceConsumptionCost ?V_TransportCost ?V_PollutionTreatmentTax "
     + " ?V_LandCost ?V_ManPowerCost ?V_OperationalCost ?V_InstallationCost "
     + " ?V_TotalRevenue " 
     + "WHERE {"
@@ -190,6 +190,7 @@ $(document).ready(function () {
         runWTESimulation(function(){
             var dt = Date();
             console.log("Check callback" +dt );
+            queryForEconomicComp();
             queryForOnsiteWT();
         });
 
@@ -228,8 +229,10 @@ var request = $.ajax({
 
     });
 }
-
-function queryForOnsiteWT(){
+/** read output of economic costs in cumulative for landcost
+ * 
+ */
+function queryForEconomicComp(){
     var wasteurl = createUrlForSparqlQuery(scenario, wastenetwork,wasteSystemOutputQuery);
     $.ajax({
         url: wasteurl,
@@ -238,13 +241,29 @@ function queryForOnsiteWT(){
             var obj0 = JSON.parse(data);
             obj0 = obj0['results']['bindings'][0];
             console.log(obj0);
-            var result = Object.keys(obj0).map(function(key) {return [key, obj0[key]];});
-            console.log(result);
+            dumpEconomic(obj0);
         },
         error: function () {
             console.log("Failed query for compositeQuery")
         }
     });
+}
+/**  insert economic output data (I think I'm supposed to put it here?)
+ * @param data key value pairs of costs
+ */
+function dumpEconomic(data){
+    console.log(data.V_TotalRevenue);
+    $("#RCC").text(data.V_ResourceConsumptionCost.value.toFixed(2));
+    $("#TC").text(data.V_TransportCost.value.toFixed(2));
+    $("#PTT").text(data.V_PollutionTreatmentTax.value.toFixed(2));
+    $("#LC").text(data.V_LandCost.value.toFixed(2));
+    $("#MC").text(data.V_ManPowerCost.value.toFixed(2));
+    $("#OC").text(data.V_OperationalCost.value.toFixed(2));
+    $("#IC").text(data.V_InstallationCost.value.toFixed(2));
+    $("#TR").text(data.V_TotalRevenue.value.toFixed(2));
+}
+function queryForOnsiteWT(){
+
 }
 const textPanel = $("#text-panel")
 const rePanel = $("#result-panel")
