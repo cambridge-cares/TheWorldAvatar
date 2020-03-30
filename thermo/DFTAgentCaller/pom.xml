@@ -37,46 +37,6 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
-    <dependency>
-    	<groupId>com.jcraft</groupId>
-    	<artifactId>jsch</artifactId>
-    	<version>0.1.55</version>
-	</dependency>
-	<dependency> 
-	  <groupId>org.slf4j</groupId>
-	  <artifactId>slf4j-log4j12</artifactId>
-	  <version>1.7.28</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
-	<dependency>
-	    <groupId>org.apache.commons</groupId>
-	    <artifactId>commons-lang3</artifactId>
-	    <version>3.9</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/commons-lang/commons-lang -->
-	<dependency>
-	    <groupId>commons-lang</groupId>
-	    <artifactId>commons-lang</artifactId>
-	    <version>2.6</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/com.google.guava/guava -->
-	<dependency>
-	    <groupId>com.google.guava</groupId>
-	    <artifactId>guava</artifactId>
-	    <version>r05</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/commons-net/commons-net -->
-	<dependency>
-	    <groupId>commons-net</groupId>
-	    <artifactId>commons-net</artifactId>
-	    <version>3.6</version>
-	</dependency>
-	<!-- https://mvnrepository.com/artifact/org.json/json -->
-	<dependency>
-		<groupId>org.json</groupId>
-		<artifactId>json</artifactId>
-		<version>20190722</version>
-	</dependency>
 	<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
 	<dependency>
 	    <groupId>org.eclipse.rdf4j</groupId>
@@ -133,6 +93,17 @@
 	    <artifactId>rdf4j-tools-federation</artifactId>
 	    <version>3.1.0</version>
 	</dependency>
+			<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-arq</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.jena</groupId>
+			<artifactId>jena-shaded-guava</artifactId>
+			<version>3.7.0</version>
+		</dependency>
   </dependencies>
     <build>
         <finalName>SlurmJobAPI</finalName>
@@ -140,8 +111,8 @@
 		    <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
         </plugins>
