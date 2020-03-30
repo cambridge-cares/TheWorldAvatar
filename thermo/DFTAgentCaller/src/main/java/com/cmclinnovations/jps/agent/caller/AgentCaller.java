@@ -3,11 +3,14 @@ package com.cmclinnovations.jps.agent.caller;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.Set;
 
+import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -48,8 +51,36 @@ public class AgentCaller {
 		Set<String> speciesToRunDFTCalculations = agentCaller.getSpeciesToRunDFTCalculation();
 		for(String speciesToRunDFTCalculation: speciesToRunDFTCalculations){
 			System.out.println(speciesToRunDFTCalculation);
+			String httpRequest = agentCaller.produceHTTPRequest(speciesToRunDFTCalculation);
+			System.out.println(httpRequest);
+			agentCaller. performHTTPRequest(httpRequest);
+			System.out.println("Job Submitted.");
+			
 		}
 	} 
+	
+	private String produceHTTPRequest(String speciesIRI) throws UnsupportedEncodingException{
+		return getHTTPRequestFirstPart().concat(URLEncoder.encode(getJSONInputPart(speciesIRI), "UTF-8"));
+	}
+	
+	private String getHTTPRequestFirstPart(){
+		return dftAgentCallerProperty.getHttpRequestFirstPart();
+	}
+
+	private String getJSONInputPart(String speciesIRI){
+		return generateJSONInput(speciesIRI).toString();
+	}
+	
+	private JSONObject generateJSONInput(String speciesIRIInput){
+		JSONObject job = new JSONObject();
+		job.put(dftAgentCallerProperty.getJobLevelOfTheoryPropertyLabel(), dftAgentCallerProperty.getJobLevelOfTheory());
+		job.put(dftAgentCallerProperty.getJobKeywordPropertyLabel(), dftAgentCallerProperty.getJobKeyword());
+		job.put(dftAgentCallerProperty.getJobAlgorithmChoicePropertyLabel(), dftAgentCallerProperty.getJobAlgorithmChoice());
+		JSONObject json = new JSONObject();
+		json.put(dftAgentCallerProperty.getJobPropertyLabel(), job);
+		json.put(dftAgentCallerProperty.getJobSpeciesIRIPropertyLabel(), speciesIRIInput);
+		return json;
+	}
 	
 	public Set<String> getSpeciesToRunDFTCalculation() throws DFTAgentCallerException, Exception{
 		Set<String> speciesToRunDFTCalculation = getAllSpecies();
@@ -75,7 +106,7 @@ public class AgentCaller {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public static String get(String query) throws MalformedURLException, IOException{
+	public static String performHTTPRequest(String query) throws MalformedURLException, IOException{
         URL httpURL = new URL(query);
         URLConnection httpURLConnection = httpURL.openConnection();
         BufferedReader in = new BufferedReader(
