@@ -36,6 +36,9 @@ public class DFTAgentCallerProperty {
 
 	@Value("${job.speciesIRI.property.label}")
 	private String jobSpeciesIRIPropertyLabel;
+
+	@Value("${http.request.first.part}")
+	private String httpRequestFirstPart;
 	
 	public String getEndpointOntoSpecies() {
 		return endpointOntoSpecies;
@@ -75,5 +78,9 @@ public class DFTAgentCallerProperty {
 
 	public String getJobSpeciesIRIPropertyLabel() {
 		return jobSpeciesIRIPropertyLabel;
+	}
+
+	public String getHttpRequestFirstPart() {
+		return httpRequestFirstPart;
 	}
 }
