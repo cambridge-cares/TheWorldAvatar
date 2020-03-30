@@ -260,12 +260,25 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 	    if (fileWithinBucket.exists()) { 	
 	    	return completePathWithinBucket;
 	    } else if (copyToBucket) {
-
-	    	String content = new QueryBroker().readFileLocal(resource);
-	    	FileUtil.writeFileLocally(completePathWithinBucket, content);
-	    	return completePathWithinBucket;
+	    	// insert function to convert scenarioURL to base
+	    	try {
+		    	String content = new QueryBroker().readFileLocal(resource);
+		    	FileUtil.writeFileLocally(completePathWithinBucket, content);
+		    	return completePathWithinBucket;
+	    	}catch(JPSRuntimeException ex) {
+	    		//catch if resource doesn't exist. destinationUrl is a URL
+	    		String content = new QueryBroker().readFile(resource);
+	    		//Unlike readFileLocal which takes in a path (aka C://...)
+	    		//readFile takes in a url and executes a GET using KnowledgeBaseClient
+	    		// to the iri. 
+		    	FileUtil.writeFileLocally(completePathWithinBucket, content);
+		    	return completePathWithinBucket;
+	    		
+	    	}catch (Exception ex) {
+	    		ex.printStackTrace();
+	    	}
 	    }  
-
+	    //copyToBucket is false: i.e. return the IRI directly. 
 	    return resource;
 	}
 	
