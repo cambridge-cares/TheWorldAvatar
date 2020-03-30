@@ -32,6 +32,13 @@ public class OntoSpeciesQuery extends AgentCaller{
 		}
 	}
 	
+	/**
+	 * Queries the OntoSpcies knowledge graph.
+	 * 
+	 * @return
+	 * @throws DFTAgentCallerException
+	 * @throws Exception
+	 */
 	public Set<String> queryOntoSpciesKG() throws DFTAgentCallerException, Exception{
 		List<String> endpoints = Utils.getEndpoints(dftAgentCallerProperty.getEndpointOntoSpecies());
 		if(endpoints == null){
