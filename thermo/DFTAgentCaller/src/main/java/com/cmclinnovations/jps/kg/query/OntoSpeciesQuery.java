@@ -32,14 +32,13 @@ public class OntoSpeciesQuery extends AgentCaller{
 		}
 	}
 	
-	public HashSet<String> queryOntoSpciesKG() throws DFTAgentCallerException, Exception{
+	public Set<String> queryOntoSpciesKG() throws DFTAgentCallerException, Exception{
 		List<String> endpoints = Utils.getEndpoints(dftAgentCallerProperty.getEndpointOntoSpecies());
 		if(endpoints == null){
-			throw new DFTAgentCallerException("DFTAgentCaller: endpoints are not correctly formatted.");
+			throw new DFTAgentCallerException("DFTAgentCaller: ontospecies endpoints are not correctly formatted.");
 		}
 		KnowledgeGraphQuery kgQuery = new KnowledgeGraphQuery(endpoints, formSpeciesQuery());
-		kgQuery.performQuery();
-		return null;
+		return kgQuery.performQuery();
 	}
 	
 	/**
@@ -49,12 +48,12 @@ public class OntoSpeciesQuery extends AgentCaller{
 	 * @return
 	 */
 	private String formSpeciesQuery(){
-		String query = "PREFIX owl: <http://www.w3.org/2002/07/owl#>\n"
+		String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n"
 				+ "PREFIX ontospecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#>\n"
 				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>\n"
 				+ "SELECT ?species "
 				+ "WHERE { "
-				+ "?species owl:type ontospecies:Species . "
+				+ "?species rdf:type ontospecies:Species . "
 				+ "}";		
 		return query;
 
