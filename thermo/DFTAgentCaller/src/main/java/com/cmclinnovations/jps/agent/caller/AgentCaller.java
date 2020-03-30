@@ -1,14 +1,13 @@
 package com.cmclinnovations.jps.agent.caller;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.cmclinnovations.jps.agent.caller.configuration.AgentCallerConfiguration;
 import com.cmclinnovations.jps.agent.caller.configuration.DFTAgentCallerProperty;
+import com.cmclinnovations.jps.kg.query.OntoCompChemQuery;
 import com.cmclinnovations.jps.kg.query.OntoSpeciesQuery;
 
 /**
@@ -40,24 +39,26 @@ public class AgentCaller {
 	
 	public static void main(String[] args) throws Exception{
 		AgentCaller agentCaller = new AgentCaller();
-		HashSet<String> speciesToRunDFTCalculation = agentCaller.getSpeciesToRunDFTCalculation();
+		Set<String> speciesToRunDFTCalculations = agentCaller.getSpeciesToRunDFTCalculation();
+		for(String speciesToRunDFTCalculation: speciesToRunDFTCalculations){
+			System.out.println(speciesToRunDFTCalculation);
+		}
 	} 
 	
-	public HashSet<String> getSpeciesToRunDFTCalculation() throws Exception{
-		HashSet<String> speciesToRunDFTCalculation = getAllSpecies();
+	public Set<String> getSpeciesToRunDFTCalculation() throws DFTAgentCallerException, Exception{
+		Set<String> speciesToRunDFTCalculation = getAllSpecies();
 		speciesToRunDFTCalculation.removeAll(getAlreadyCalculatedSpecies());
 		return speciesToRunDFTCalculation;
 	}
 	
-	public HashSet<String> getAlreadyCalculatedSpecies(){
-		return null;
+	public Set<String> getAlreadyCalculatedSpecies() throws DFTAgentCallerException, Exception{
+		OntoCompChemQuery ontoCompChemQuery = new OntoCompChemQuery();
+		return ontoCompChemQuery.queryOntoCompChemKG();
 	}
 	
-	public HashSet<String> getAllSpecies() throws Exception{
+	public Set<String> getAllSpecies() throws Exception{
 		OntoSpeciesQuery ontoSpeciesQuery = new OntoSpeciesQuery();
-		ontoSpeciesQuery.queryOntoSpciesKG();
-		ontoSpeciesQuery.getAllSpecies();
-		return null;
+		return ontoSpeciesQuery.queryOntoSpciesKG();
 	}
 
 }
