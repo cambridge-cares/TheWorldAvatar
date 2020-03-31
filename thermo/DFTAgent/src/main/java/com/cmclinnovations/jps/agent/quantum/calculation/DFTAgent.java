@@ -177,21 +177,21 @@ public class DFTAgent extends HttpServlet{
 	 * 
 	 */
 	private void processOutputs() {
-		if(jobSubmission==null){
+		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
 		jobSpace = jobSubmission.getWorkspaceDirectory();
 		try {
-			if(jobSpace.isDirectory()){
+			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
-				for(File jobFolder: jobFolders){
-					if(Utils.isJobCompleted(jobFolder)){
-						if(!Utils.isJobOutputProcessed(jobFolder)){
+				for (File jobFolder : jobFolders) {
+					if (Utils.isJobCompleted(jobFolder)) {
+						if (!Utils.isJobOutputProcessed(jobFolder)) {
 							// Calls Upload Service
 							boolean uploaded = isLogFileUploaded(jobFolder);
 							// The successful completion of the log file upload
 							// triggers the job status update.
-							if(uploaded){
+							if (uploaded) {
 								updateJobOutputStatus(jobFolder);
 							}
 						}
@@ -199,12 +199,16 @@ public class DFTAgent extends HttpServlet{
 				}
 			}
 		} catch (IOException e) {
+			logger.error("DFTAgent: IOException.".concat(e.getMessage()));
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			logger.error("DFTAgent: InterruptedException.".concat(e.getMessage()));
 			e.printStackTrace();
-		} catch(SftpException e){
+		} catch (SftpException e) {
+			logger.error("DFTAgent: SftpException.".concat(e.getMessage()));
 			e.printStackTrace();
-		} catch(JSchException e){
+		} catch (JSchException e) {
+			logger.error("DFTAgent: JSchException.".concat(e.getMessage()));
 			e.printStackTrace();
 		}
 	}
