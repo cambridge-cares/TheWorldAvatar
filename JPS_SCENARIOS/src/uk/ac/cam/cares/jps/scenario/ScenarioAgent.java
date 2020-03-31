@@ -277,6 +277,7 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 			} catch (Exception ex) {
 				throw new JPSRuntimeException(ex);
 			}
+		}
 
 	    //copyToBucket is false: i.e. return the IRI directly. 
 	    return resource;
