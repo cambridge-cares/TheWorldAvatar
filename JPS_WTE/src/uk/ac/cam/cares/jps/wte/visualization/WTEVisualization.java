@@ -20,13 +20,12 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
-@WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/readInputs/*"})
+@WebServlet(urlPatterns = { "/WTEVisualization/createMarkers/*", "/WTEVisualization/queryOnsite/*","/WTEVisualization/readInputs/*"})
 public class WTEVisualization extends JPSHttpServlet{
-	/**gets the food court name, xy coordinates
-	 */
 	/**gets the food court name, xy coordinates
 	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -49,7 +48,7 @@ public class WTEVisualization extends JPSHttpServlet{
             + "?y   j2:hasValue ?yval ."
             + "?yval   j2:numericalValue ?yvalue ."
 			+ "}";
-	/**gets the OnsiteWasteTreatment name, xy coordinates
+	/**gets the OffsiteWasteTreatment entity, xy coordinates
 	 */
 	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -69,6 +68,27 @@ public class WTEVisualization extends JPSHttpServlet{
 			+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." 
 			+ "?y   j2:hasValue ?yval ."
 			+ "?yval   j2:numericalValue ?yvalue ."
+			+ "}";
+	/**gets the OffsiteWasteTreatment entity, xy coordinates
+	 */
+	public static String OnWTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+			+ "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+			+ "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+			+ "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+			+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+			+ "SELECT DISTINCT ?entity ?xvalue ?yvalue "
+			+ "WHERE {" 
+			+ "?entity  a j1:OnsiteWasteTreatmentFacility ."
+			+ "?entity   j7:hasGISCoordinateSystem ?coorsys ." 
+			+ "?coorsys   j7:hasProjectedCoordinate_x ?x ."
+			+ "?x   j2:hasValue ?xval ." 
+			+ "OPTIONAL{?xval   j2:numericalValue ?xvalue }"
+			+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." 
+			+ "?y   j2:hasValue ?yval ."
+			+ "OPTIONAL{?yval   j2:numericalValue ?yvalue }."
 			+ "}";
 	
 	private Logger logger = LoggerFactory.getLogger(WTEVisualization.class);
@@ -94,9 +114,33 @@ public class WTEVisualization extends JPSHttpServlet{
 			logger.info("path called here= " + path);
 			String g=readComp(model);
 			AgentCaller.printToResponse(g, response);
+		}else if ("/WTEVisualization/queryOnsite".equals(path)) {
+			logger.info("path called here= " + path);
+			String g=searchOnsite(model, joforEN);
+			AgentCaller.printToResponse(g, response);
 		}
 		
 		System.gc();
+	}
+
+	/** create the onsite markers. 
+	 * 
+	 * @param model
+	 * @return
+	 * @throws IOException
+	 */
+	public String searchOnsite(OntModel model, JSONObject jo) throws IOException {
+		ArrayList<String>textcomb=new ArrayList<String>();
+		
+		List<String[]> offsiteTechnologies = queryCoordinate(model, OnWTquery);
+		for (int i = 0; i < offsiteTechnologies.size(); i++) {
+			String content="{\"coors\": {\"lat\": "+offsiteTechnologies.get(i)[2]+", \"lng\": "+offsiteTechnologies.get(i)[1]
+					+ "},  \"entity\": \""+offsiteTechnologies.get(i)[0]+"\"}";
+			textcomb.add(content);
+		}
+		JSONArray jsArray = new JSONArray(textcomb);
+	    jo.put("result", jsArray);
+		return jo.toString();
 	}
 	/** create the food court markers and onsite/offsite markers. 
 	 * 
