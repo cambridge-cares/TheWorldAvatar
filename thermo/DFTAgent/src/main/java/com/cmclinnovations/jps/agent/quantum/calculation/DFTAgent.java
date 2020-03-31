@@ -5,9 +5,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -231,7 +233,7 @@ public class DFTAgent extends HttpServlet{
 			String jsonInput = generateJSONInput(jobFolder, uniqueSpeciesIRI).toString();
 			// Performs a HTTP request to upload the log file (output) to<br>
 			// the OntoCompChem knowledge graph.   
-			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(jsonInput));
+			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
 			return true;
 		}else{
 			return false;
@@ -428,6 +430,17 @@ public class DFTAgent extends HttpServlet{
 		input.put(Property.JSON_INPUT_REF_SPECIES.getPropertyName(), jobFolder.getAbsolutePath());
 		input.put(Property.JSON_INPUT_UNIQUE_SPECIES_IRI.getPropertyName(), speciesIRIInput);
 		return input;
+	}
+	
+	/**
+	 * Converts a JSON input into the URL formatted string.
+	 * 
+	 * @param jsonInput
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	private String encodeIntoURLFormat(String jsonInput) throws UnsupportedEncodingException{
+		return URLEncoder.encode(jsonInput, "UTF-8");
 	}
 	
 	/**
