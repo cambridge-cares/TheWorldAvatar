@@ -313,7 +313,7 @@ function displayMessageModal(msg) {
 }
 function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
 
-    var url2 = "http://localhost:8080"+ '/jps/scenario/' + scenarioname + '/update?query=';
+    var url2 = prefix+ '/jps/scenario/' + scenarioname + '/update?query=';
     urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
     url2 += encodeURIComponent(JSON.stringify(urljson)); 
     //url2 += JSON.stringify(urljson); 
@@ -332,30 +332,8 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
 
     return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
 }
-function callDoSimulation(uris){
-    var agentUrl = prefix + '/JPS_BIODIESELPLANT3/SimCoord'; 
-    //check if it is biodiesel plant 2 or 3: 
-    var data = {};
-    if (uris[0].includes('biodieselplant2')){
-        data = {"PLANTIRI":"http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant2/BiodieselPlant2.owl" }
-    }else{
-        data = {"PLANTIRI": "http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl"}
-    }
-    var simUrl = createUrlForAgent(scenario, agentUrl, data );
-    var request = $.ajax({
-        url: simUrl,
-        method: "GET",
-        timeout:3600000,
-        contentType: "application/json; charset=utf-8",
-    })
-    request.done(function() {
-        console.log("Completed Simulation");
-    });
-}
 
 function callDoSimulationNew(uris){
-    var agentUrl = 'http://localhost:8080/JPS_BIODIESELPLANT3/DoModelSelection'; 
-    //check if it is biodiesel plant 2 or 3: 
     var data = {};
     console.log(uris);
     var arr = uris[0].split('/');
