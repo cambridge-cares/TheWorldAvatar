@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -257,27 +258,26 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-	    if (fileWithinBucket.exists()) { 	
-	    	return completePathWithinBucket;
-	    } else if (copyToBucket) {
-	    	// insert function to convert scenarioURL to base
-	    	try {
-		    	String content = new QueryBroker().readFileLocal(resource);
-		    	FileUtil.writeFileLocally(completePathWithinBucket, content);
-		    	return completePathWithinBucket;
-	    	}catch(JPSRuntimeException ex) {
-	    		//catch if resource doesn't exist. destinationUrl is a URL
-	    		String content = new QueryBroker().readFile(resource);
-	    		//Unlike readFileLocal which takes in a path (aka C://...)
-	    		//readFile takes in a url and executes a GET using KnowledgeBaseClient
-	    		// to the iri. 
-		    	FileUtil.writeFileLocally(completePathWithinBucket, content);
-		    	return completePathWithinBucket;
-	    		
-	    	}catch (Exception ex) {
-	    		ex.printStackTrace();
-	    	}
-	    }  
+
+		if (copyToBucket && !fileWithinBucket.exists()) {
+			String content;
+			UrlValidator urlValidator = new UrlValidator();
+
+			try {
+				if (urlValidator.isValid(resource)) {
+					content = new QueryBroker().readFile(resource);
+				} else {
+					//assuming regular file
+					content = new QueryBroker().readFileLocal(resource);
+				}
+				if (!content.isEmpty()) {
+					FileUtil.writeFileLocally(completePathWithinBucket, content);
+					resource = completePathWithinBucket;
+				}
+			} catch (Exception ex) {
+				throw new JPSRuntimeException(ex);
+			}
+
 	    //copyToBucket is false: i.e. return the IRI directly. 
 	    return resource;
 	}
