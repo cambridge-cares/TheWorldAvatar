@@ -1,8 +1,13 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -182,7 +187,10 @@ public class DFTAgent extends HttpServlet{
 				for(File jobFolder: jobFolders){
 					if(Utils.isJobCompleted(jobFolder)){
 						if(!Utils.isJobOutputProcessed(jobFolder)){
-							// Call Upload Service
+							// Calls Upload Service
+							
+							// The successful completion of the log file upload
+							// triggers the job status update.
 							updateJobOutputStatus(jobFolder);
 						}
 					}
@@ -376,4 +384,28 @@ public class DFTAgent extends HttpServlet{
 		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
 		.concat(slurmJobProperty.getInputFileExtension());
 	}
+	
+	/**
+	 * Enables to perform an HTTP get request.
+	 * 
+	 * @param query
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public static String performHTTPRequest(String query) throws MalformedURLException, IOException{
+        URL httpURL = new URL(query);
+        URLConnection httpURLConnection = httpURL.openConnection();
+        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(
+                                		httpURLConnection.getInputStream()));
+        String inputLine;
+        String fileContent = "";
+        while ((inputLine = in.readLine()) != null){ 
+            fileContent = fileContent.concat(inputLine);
+        }
+        in.close();
+        System.out.println("fileContent:\n"+fileContent);
+        return fileContent;
+    }
 }
