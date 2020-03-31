@@ -57,6 +57,28 @@ WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.o
     + "?vy  j2:numericalValue ?V_y ."//longitude
     + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
     + "}";
+OnWQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+    + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
+    + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
+    + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#> "
+    + "PREFIX j6:<http://www.w3.org/2006/time#> "
+    + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+    + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+    + "SELECT ?entity ?V_x ?V_x_unit ?V_y ?V_y_unit "
+    + "WHERE {" 
+    + "?entity  a j1:OnsiteWasteTreatmentFacility ."			
+    + "?entity   j7:hasGISCoordinateSystem ?coorsys ." 
+    + "?coorsys  j7:hasProjectedCoordinate_x  ?x  ."
+    + "?x  j2:hasValue ?vx ." 
+    + "?vx  j2:numericalValue ?V_x ."//latitude
+    + "?vx  j2:hasUnitOfMeasure ?V_x_unit ."//latitude
+
+    + "?coorsys  j7:hasProjectedCoordinate_y  ?y  ." 
+    + "?y  j2:hasValue ?vy ." 
+    + "?vy  j2:numericalValue ?V_y ."//longitude
+    + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
+    + "}";
 
 //
 transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -159,7 +181,8 @@ var checkExist = setInterval(function() {
         position = new google.maps.LatLng(1.367165198,103.801163462);
         map.setCenter(position);
         map.setZoom(12);
-        queryForFCMarkers(function(){
+        var agenturl = prefix + '/JPS_WTE/WTEVisualization/createMarkers'; 
+        queryForMarkers(agenturl,createNewUrlForAgent, function(){
             InitialTransportInputs();
             InitialUnitInputs();
         });
@@ -187,12 +210,7 @@ $(document).ready(function () {
                 updateSite(finalArray[i], i);
             }
         }
-        runWTESimulation(function(){
-            var dt = Date();
-            console.log("Check callback" +dt );
-            queryForEconomicComp();
-            queryForOnsiteWT();
-        });
+        runWTESimulation();
 
 
     });
@@ -200,7 +218,7 @@ $(document).ready(function () {
 /** run simulation for waste to energy. 
  * @param callback run query for Onsite afterwards
  */
-function runWTESimulation(callback){
+function runWTESimulation(){
 var para = {"wastenetwork":wastenetwork};
 
 var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
@@ -209,19 +227,17 @@ var request = $.ajax({
     url: simulationurl ,
     type: 'GET',
     contentType: 'application/json; charset=utf-8',
-    success: function(){  
-        console.log('successful execution of simulation');
-    },
     error: function(ts) {
         alert(ts.responseText);
     }
     
     });  
     //Because simulation takes some time to run, then asynchronous watcher object is triggered next. 
-    request.done(function(data) { 
-        var dt = Date();
-        console.log("Check inferency: "+dt); 
-        delayedCallback(callback());
+    request.done(function() { 
+        delayedCallback(function(){
+            queryForEconomicComp();
+            queryForOnsiteWT();
+        });
     });
 }
 /** sleep function for javascript
@@ -232,9 +248,13 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function delayedCallback(callback) {
-    console.log("Wait for simulation to finish");
+async function delayedCallback(callback) 
+    {
+    var dt = Date();
+    console.log("Wait for simulation to finish: "+dt);
     await sleep(300*1000);//five minutes?
+    dt = Date();
+    console.log("Check callback "+dt);
     callback();
   }
 /** read output of economic costs in cumulative for landcost
@@ -271,7 +291,9 @@ function dumpEconomic(data){
     $("#TR").text(parseFloat(data.V_TotalRevenue.value).toFixed(2));
 }
 function queryForOnsiteWT(){
-
+    var agenturl = prefix + "/JPS_WTE/WTEVisualization/queryOnsite"
+    queryForMarkers(agenturl,createUrlForAgent, function(){
+    });
 }
 const textPanel = $("#text-panel")
 const rePanel = $("#result-panel")
@@ -378,7 +400,7 @@ function outputUpdate(lstOfTargetIRI, base, UpdateArray){
             contentType: 'application/json; charset=utf-8', 
             success: function (data) {//SUCESS updating
                 //Update display
-                console.log("Success");
+                console.log("Successful update to server");
             },
             error: function (err) {
                 console.log("can not update to server");
@@ -468,14 +490,17 @@ function addUnitInputsDisplay(data, type){
 
 /** query backend using greedy method for FC and Offsite. Does Callback to read input from scenario. 
  *  runs during init
+ * @param {String} agenturl 
+ * @param {Function} fnCreate 
+ * @param {Function} callback 
  */
-function queryForFCMarkers(callback){
+function queryForMarkers(agenturl,fnCreate,  callback){
     infowindow = new google.maps.InfoWindow({
         content: '<h2>Sup!</h2>'
     });
-    var agenturl = prefix + '/JPS_WTE/WTEVisualization/createMarkers'; 
+    
     var data = {"wastenetwork": wastenetwork};
-    var markerURL = createNewUrlForAgent(scenario, agenturl, data);
+    var markerURL = fnCreate(scenario, agenturl, data);
     var request = $.ajax({
         url: markerURL,
         type: 'GET',
@@ -506,6 +531,12 @@ function queryForFCMarkers(callback){
                 url: 'images/naturalgas.png',
                 scaledSize : new google.maps.Size(30, 30),
             };
+        }else if (name.includes("Onsite")){
+            var icon = {
+                url: 'images/onsite.png', 
+                scaledSize : new google.maps.Size(50, 50),
+            };
+            listOfIRIs.push(name);  
         }else{
             var icon = {
                 url: 'images/solar.png', 
@@ -556,6 +587,8 @@ function createMarker(lst){
 function setMarkerMen(id, callback){
     if (id.includes("FoodCourt")){
         typeInfo = FCQuery;
+    }else if (id.includes("Onsite")){
+        typeInfo = OnWQuery;   
     }else{
         typeInfo = WTQuery;
     }
