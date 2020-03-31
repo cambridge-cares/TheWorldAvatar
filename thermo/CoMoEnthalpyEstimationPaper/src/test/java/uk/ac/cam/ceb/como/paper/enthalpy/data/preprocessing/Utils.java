@@ -31,6 +31,7 @@ public class Utils {
 	 */
 
 	static int[] ctrRuns = new int[] { 1 };
+	static int[] ctrRuns_1 = new int[] { 1 };
 
 	/**
 	 * 
@@ -40,6 +41,7 @@ public class Utils {
 	 */
 
 	static int[] ctrRes = new int[] { 1 }; // 1, 5, 15, 25 //25,50 // 1,2,3,4,5,6,7,8,9,10 //5
+	static int[] ctrRes_1 = new int[] { 1 };
 
 	/**
 	 * 
