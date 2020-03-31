@@ -188,10 +188,12 @@ public class DFTAgent extends HttpServlet{
 					if(Utils.isJobCompleted(jobFolder)){
 						if(!Utils.isJobOutputProcessed(jobFolder)){
 							// Calls Upload Service
-							
+							boolean uploaded = isLogFileUploaded(jobFolder);
 							// The successful completion of the log file upload
 							// triggers the job status update.
-							updateJobOutputStatus(jobFolder);
+							if(uploaded){
+								updateJobOutputStatus(jobFolder);
+							}
 						}
 					}
 				}
@@ -204,6 +206,31 @@ public class DFTAgent extends HttpServlet{
 			e.printStackTrace();
 		} catch(JSchException e){
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Uploads the log file to the OntoCompChem knowledge graph. If the<br>
+	 * upload is successful, it returns true. If the upload fails, it<br>
+	 * throws an exception. If the log file does not exist, for any<br>
+	 * reason, it returns false.
+	 * 
+	 * 
+	 * @param jobFolder
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean isLogFileUploaded(File jobFolder) throws IOException{
+		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
+		if(logFile.exists()){
+			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
+			String jsonInput = generateJSONInput(jobFolder, uniqueSpeciesIRI).toString();
+			// Performs a HTTP request to upload the log file (output) to<br>
+			// the OntoCompChem knowledge graph.   
+			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(jsonInput));
+			return true;
+		}else{
+			return false;
 		}
 	}
 	
@@ -383,6 +410,20 @@ public class DFTAgent extends HttpServlet{
 	public String getInputFilePath(){
 		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
 		.concat(slurmJobProperty.getInputFileExtension());
+	}
+	
+	/**
+	 * Generates the JSON input for uploading the log file of a DFT job<br>
+	 * by calling the ontocompchemupload service. 
+	 * 
+	 * @param speciesIRIInput
+	 * @return
+	 */
+	private JSONObject generateJSONInput(File jobFolder, String speciesIRIInput){
+		JSONObject input = new JSONObject();
+		input.put(Property.JSON_INPUT_REF_SPECIES.getPropertyName(), jobFolder.getAbsolutePath());
+		input.put(Property.JSON_INPUT_UNIQUE_SPECIES_IRI.getPropertyName(), speciesIRIInput);
+		return input;
 	}
 	
 	/**
