@@ -24,7 +24,7 @@
         </configuration>
       </plugin>
     </plugins>
-  <finalName>ebragent</finalName>    
+  <finalName>ontocompchemupload</finalName>    
   </build>
   
 <dependencies>
@@ -52,7 +52,7 @@
 <version>0.9.0</version>
 </dependency>
     
- 
+  
 <dependency>
 <groupId>uk.ac.cam.cares.jps</groupId>
 <artifactId>jps-base</artifactId>
@@ -163,7 +163,13 @@
     <version>2.13.1</version>
 </dependency>
 		
-		
+<!-- https://mvnrepository.com/artifact/org.json/json -->
+<dependency>
+    <groupId>org.json</groupId>
+    <artifactId>json</artifactId>
+    <version>20190722</version>
+</dependency>
+
 		
 </dependencies>
 </project>

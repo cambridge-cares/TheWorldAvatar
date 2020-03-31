@@ -15,7 +15,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.http.util.TextUtils;
 import org.apache.log4j.BasicConfigurator;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.ebr.manager.FolderManager;
 import uk.ac.cam.cares.ebr.manager.JsonManager;
@@ -40,11 +42,12 @@ import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
  *
  */
 @WebServlet("/convert")
-public class UploadEbrAgent extends HttpServlet{
+public class OntoCompChemUpload extends HttpServlet{
 	
 	private static final long serialVersionUID = 1L;
 	
 	public Utility utility = new FileUtility();	
+	
 	
 	/**
 	 * 
@@ -73,7 +76,7 @@ public class UploadEbrAgent extends HttpServlet{
 		 * 
 		 * Code does not use AgentCaller implemented in JSP BASE LIB.
 		 * Example http request:
-		 * https://localhost:8080/ebragent/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400", "uniqueSpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09"}
+		 * https://localhost:8080/ontocompchemupload/convert?input={"referenceSpecies": "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\g09\login-skylake.hpc.cam.ac.uk_2207410956489400", "uniqueSpeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09"}
 		 * http://localhost:8080/ebragent/convert?input=%7B"%7B"referenceSpecies"%3A%20"C%3A%5C%5CUsers%5C%5CNK%5C%5CDocuments%5C%5Cphilipp%5C%5C180-pb556%5C%5Cg09"%7D"%7D
 		 * 
 		 */
@@ -85,13 +88,33 @@ public class UploadEbrAgent extends HttpServlet{
 		
 		printerWriter.println("json content (input parameter): " + inputs[0] + "<br>");
 		
+		JSONObject inputJson = new JSONObject(inputs[0]);
+		
 		String referenceSpecieFolderPath = JsonManager.getReferenceSpeciesFolderPath(inputs[0]);
 		
-		String speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * if 'uniqueSpeciesIRI' exists that store it as instance of speciesIRI String object.
+		 *  
+		 */
+		String	speciesIRI="";
+		
+		if(inputJson.has("uniqueSpeciesIRI")) {
+		
+			speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
+				
+				printerWriter.println("unique species IRI: " + speciesIRI + "<br>");
+				
+		}else {
+			
+			printerWriter.println("unique species IRI is empty  : " + speciesIRI + "<br>");
+			
+		}
 		
 		printerWriter.println("reference species folder path: " + referenceSpecieFolderPath+ "<br>");
 		
-		printerWriter.println("unique species IRI: " + speciesIRI + "<br>");
+		
 
 		/**
 		 * 
@@ -134,20 +157,26 @@ public class UploadEbrAgent extends HttpServlet{
 				 * 
 				 */
 				GenerateXml.generateRootModule(file, outputXMLFile, rootModule);
-				
+			
+				String xsltFilePath =getClass().getClassLoader().getResource("gxmltoowl.xsl").getPath();
+			    
 				/**
 				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
 				 * 
 				 * Generates owl file without unique species IRI.
 				 * 
-				 */
+				 */				
+				if((speciesIRI == null) || (speciesIRI.length() == 0)) {
+					
+				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
+					
+				}else {
+					
+					Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
+					
+				}
 				
-//				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()));
-				
-			
-				String xsltFilePath =getClass().getClassLoader().getResource("gxmltoowl.xsl").getPath();
-			    
 				System.out.println("xsltFilePath: " + xsltFilePath);
 				/**
 				 * 
@@ -158,7 +187,10 @@ public class UploadEbrAgent extends HttpServlet{
 				 */
 //				Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()
 //				properties.getProperty("xslt.file.path.local.host"))
-				Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), speciesIRI, new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile), new StreamSource(xsltFilePath));
+				
+					
+				
+				
 				
 				consistency = InconsistencyExplanation.getConsistencyOWLFile(owlFile.getCanonicalPath());
 				

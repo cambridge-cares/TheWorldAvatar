@@ -7,6 +7,12 @@ package uk.ac.cam.ceb.como.paper.enthalpy.utils;
 
 import com.cmclinnovations.data.collections.ObjectPool;
 import java.util.Collection;
+
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.HHDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 
 /**
@@ -34,5 +40,88 @@ public class EvaluationUtils {
         }
         newPool.validateAll();
         return newPool;
+    }
+    
+    /**
+     * @author NK510 (caresssd@hermes.cam.ac.uk)
+     * @param inputJsonKey
+     * @return reactuib type depends on input json key value.
+     */
+    public static ReactionType getReactionType(String inputJsonKey) {    	
+    	
+    	ReactionType reactionType = null;
+    	
+    	if(inputJsonKey.equalsIgnoreCase("ISG")) {
+    		
+    		ISGReactionType isgReactionType = new ISGReactionType(true);
+    		
+    		return isgReactionType;
+    		
+    	} else {
+    		
+    		if (inputJsonKey.equalsIgnoreCase("ISD")){
+    			
+    			ISDReactionType isdReactionType = new ISDReactionType();
+    			
+    			return isdReactionType;
+    			
+    		}
+    	} if(inputJsonKey.equalsIgnoreCase("HD")) {
+    		
+    		HDReactionType hdReactionType = new HDReactionType();
+    		
+    		return hdReactionType;
+    	
+    	}else {
+    		
+    		if(inputJsonKey.equalsIgnoreCase("HHD")) {
+    			
+    			HHDReactionType hhdReactionType = new HHDReactionType();
+    			
+    			return hhdReactionType;
+    		}
+    	}
+    	
+    	return reactionType;
+    }
+    /**
+     * @author NK510 (caresssd@hermes.cam.ac.uk)
+     * @param inputJsonKey
+     * @return the number of runs used in global cross validation algorithm
+     */
+    public static int[] getCtrRuns(String inputJsonKey) {
+    	
+    	int i = Integer.parseInt(inputJsonKey);   	
+
+    	int[] ctrRuns = new int[] {i};
+    	
+    	return ctrRuns;
+    }
+    /**
+     * @author NK510 (caresssd@hermes.cam.ac.uk)
+     * @param inputJsonKey
+     * @return the number of reactions to be generated in global cross validation algorithm.
+     */
+    public static int[] getCtrRes(String inputJsonKey) {
+    	
+    	int i = Integer.parseInt(inputJsonKey);
+    	
+    	int[] ctrRes = new int[] {i};
+    	
+    	return ctrRes;
+    }
+    
+    /**
+     * @author NK510 (caresssd@hermes.cam.ac.uk)
+     * @param inputJsonKey
+     * @return the number of radicals used in global cross validation algorithm.
+     */
+    public static int[] getCtrRadicals(String inputJsonKey) {
+    	
+    	int i = Integer.parseInt(inputJsonKey);
+    	
+    	int[] ctrRadicals = new int[] {i};
+    	
+    	return ctrRadicals;
     }
 }
