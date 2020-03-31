@@ -1,0 +1,45 @@
+extends header.pug
+
+block title
+	title  Waste To Energy Scenario
+
+block sheets
+	link(rel="stylesheet" href='/stylesheets/mpage.css')
+
+block subtitle
+
+	| Waste To Energy Management Systems Design
+	
+block readme
+	span#readme-button
+		| ?    
+	span#readme-text
+		|This shows a map of Singapore's foodcourts. 
+		br
+		br
+		|The proposed decision support methodology (DSM) would address the rising energy consumption through waste-to-energy (WTE) technologies capable of generating electricity, heat and biogas. 
+		br
+		br
+		| This is to show a more decentralized system with smaller capacity waste treatment facilities that are integrated at different levels of the urban environment. 
+		br
+block description
+
+
+block content
+	#loader(style='display:none;')
+	.panel.panel-default
+		.panel-body
+			button#run-btn(type='button') Run Simulation
+			input#scenarioTxt(type='text', value='')
+			#loader(style='display:none;')
+
+						   
+	div#map
+
+	script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+	script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
+	script(src="/javascripts/PopUpmap.js")
+	script(src="/javascripts/wte.js")
+	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
+	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
+	

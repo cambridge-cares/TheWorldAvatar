@@ -47,9 +47,10 @@ config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")
 
 function configDevelop() {
     // config.root = path.join(__dirname ,  "testFiles") ; // own folder for testing
-    config.port =3000
-    config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
-    config.registerUrl = "http://10.25.188.104";
+    config.port =82
+//    config.root = path.normalize("C:/Users/LONG01/TOMCAT/webapps/ROOT");
+    config.root = path.normalize("C:/Users/KADIT01/TOMCAT/webapps/ROOT");
+    config.registerUrl = "http://localhost:";
     config.ppFolder = path.join(config.root, "kb/powerplants")
     //"http://www.thewordavatar.com:82/change";
 }
@@ -65,17 +66,5 @@ function configDeploy() {
 	//config.ppFolder = path.normalize("C:/TOMCAT/webapps/ROOT/kb/powerplants");
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = config;
