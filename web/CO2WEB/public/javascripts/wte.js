@@ -501,6 +501,7 @@ function queryForMarkers(agenturl,fnCreate,  callback){
     
     var data = {"wastenetwork": wastenetwork};
     var markerURL = fnCreate(scenario, agenturl, data);
+    console.log(markerURL);
     var request = $.ajax({
         url: markerURL,
         type: 'GET',
@@ -531,10 +532,10 @@ function queryForMarkers(agenturl,fnCreate,  callback){
                 url: 'images/naturalgas.png',
                 scaledSize : new google.maps.Size(30, 30),
             };
-        }else if (name.includes("Onsite")){
+        }else if (name.includes("OnSite")){
             var icon = {
                 url: 'images/onsite.png', 
-                scaledSize : new google.maps.Size(50, 50),
+                scaledSize : new google.maps.Size(10, 10),
             };
             listOfIRIs.push(name);  
         }else{
@@ -587,7 +588,7 @@ function createMarker(lst){
 function setMarkerMen(id, callback){
     if (id.includes("FoodCourt")){
         typeInfo = FCQuery;
-    }else if (id.includes("Onsite")){
+    }else if (id.includes("OnSite")){
         typeInfo = OnWQuery;   
     }else{
         typeInfo = WTQuery;
