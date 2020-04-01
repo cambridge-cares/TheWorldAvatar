@@ -50,8 +50,5 @@ public class App {
 //   csvGenerator.generateCSVFile(fq.runFederatedSPARQL(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy()), csvFilePath);
     
  //FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());     	
-    	
-    	FolderManager.getZipFile("C:/Users/NK/Documents/Cross-validation-test-1-ti-isg-1");
-    	
     }	
 }

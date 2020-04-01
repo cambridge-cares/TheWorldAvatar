@@ -27,7 +27,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
-		<finalName>FederatedQuery</finalName>
+		<finalName>federatedquery</finalName>
 	</build>
 
   <properties>
