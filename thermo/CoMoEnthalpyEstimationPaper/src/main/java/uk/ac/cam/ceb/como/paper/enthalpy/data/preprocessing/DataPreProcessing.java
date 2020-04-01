@@ -541,7 +541,7 @@ public class DataPreProcessing {
                   SpeciesPoolWriter spWriter;
                	  spWriter = new SpeciesPoolWriter(new File(destRList + "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".csv"));
                   BufferedWriter printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis;
-               	  printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis = new BufferedWriter(new FileWriter(destRList+ "\\" +"data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_species-pool_median_"+ctr+".json", true));	   
+               	  printedJsonFileMedianEnthalpySpeciesPreProcessingAnalysis = new BufferedWriter(new FileWriter(destRList+ "/" +"data-pre-processing" + "/"+ target.getRef() + "/" + config + "_species-pool_median_"+ctr+".json", true));	   
                   JSONArray medianEnthalpyReactionJsonList = new JSONArray();
                   
                   if (!completeRList.isEmpty()) {

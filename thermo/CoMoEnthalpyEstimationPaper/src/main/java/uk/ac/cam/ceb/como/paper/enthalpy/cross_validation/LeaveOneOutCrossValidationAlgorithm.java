@@ -33,6 +33,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.data.preprocessing.DataPreProcessing;
 import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSolver;
 import uk.ac.cam.ceb.como.paper.enthalpy.io.LoadSpecies;
 import uk.ac.cam.ceb.como.paper.enthalpy.reduction.list_calculator.ErrorBarCalculation;
+import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 import uk.ac.cam.ceb.paper.sort.Sort;
 
 /**
@@ -92,6 +93,19 @@ public class LeaveOneOutCrossValidationAlgorithm {
     	runInitialDataAnalysis(srcCompoundsRef, srcRefPool, destRList, ctrRuns, ctrRes, ctrRadicals, reactionType, tempFolder);
     	printedResultsTxtFile.close();
     	System.out.println("Results file has been closed.");
+    	
+    	/**
+         * @author NK510 (caresssd@hermes.cam.ac.uk)
+         * Zipping folder which contains generated results (data) after running global cross validation algorithm. 
+         */
+        
+        FolderUtils.getZipFile(destRList);
+        
+    	/**
+    	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+    	 * Terminates the java process 'comoenthalpyestimationpaper.jar'
+    	 */
+    	System.exit(0);
     }
     
 	/**
