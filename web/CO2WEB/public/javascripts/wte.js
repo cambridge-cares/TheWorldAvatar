@@ -13,7 +13,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "PREFIX j6:<http://www.w3.org/2006/time#> "
 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-+ "SELECT  ?entity  ?name ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
++ "SELECT  DISTINCT ?entity  ?name ?year ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
 + "?V_WasteDeliveredAmount ?V_WasteDeliveredAmount_unit ?Site_of_delivery "
 + "WHERE {"
 + "?entity  a j1:FoodCourt ."
@@ -35,13 +35,13 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "?vWP  j2:numericalValue ?Waste_Production ."
 + "?vWP  j2:hasUnitOfMeasure ?wasteproductionunit ."
 
-// + "OPTIONAL{ ?entity  j1:deliverWaste ?DW }"
-// + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
-// + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
-// + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
-// + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }"
- 
-+ "}";
++ "?vWP   j6:hasTime ?time ." 
++ "?time     j6:inDateTime ?vdatetime ."
++ "?vdatetime  j6:year ?year ." 
+
+
++ "}"
++ "ORDER BY ASC(?year)";
 WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -210,7 +210,10 @@ $(document).ready(function () {
         finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
         if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
             dumpTransport(transportUpd);}
-        for (i = 0; i<initArray.length; i++){
+        if (JSON.stringify(initArray[0]) != JSON.stringify(finalArray[0])){
+            updateSite(finalArray[0], 0);
+        }
+        for (i = 1; i<initArray.length; i++){
             console.log("Initial Array",initArray[i]);
             console.log("Final Array",finalArray[i]);
             if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
@@ -312,7 +315,14 @@ function clearMarkers() {
 function queryForOnsiteWT(){
     clearMarkers();
     console.log(markers);
-    var agenturl = prefix + "/JPS_WTE/WTEVisualization/createMarkers"
+    var agenturl = prefix + "/JPS_WTE/WTEVisualization/createMarkers";
+    var QurStr =   "OPTIONAL{ ?entity  j1:deliverWaste ?DW }"
+    + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
+    + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
+    + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
+    + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }" +"}";
+     
+    FCQuery = FCQuery.replace("}", QurStr )
     queryForMarkers(agenturl,createUrlForAgent, function(){
         var agenturl = prefix + "/JPS_WTE/WTEVisualization/queryOnsite"
         queryForMarkers(agenturl,createUrlForAgent, function(){
@@ -457,6 +467,20 @@ function dumpTransport(transportArray){
  */
 function updateSite(inpParameters, index){
     lstOfTargetIRI = ["#V_OperationalCost", "#V_InstallationCost", "#V_PollutionTreatmentTax"];
+    
+    if (index==0){//proviso for onsite and ONLY if initial condition
+        newLst = [] 
+        var iri = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-0.owl#OnSiteWasteTreatment-0";
+        var base = iri.split('#')[0];
+        for (i = 0; i < 3; i++){
+            var var_name = lstOfTargetIRI[i] + index + "Of"+iri.split("#")[1];
+            console.log(var_name);
+            newLst.push(var_name);
+        }
+        console.log(base);
+        outputUpdate(newLst, base, inpParameters);
+
+    }
     listOfIRIs.forEach((iri)=>{ //listOfIRIs are the list of networks in the top node. 
         //strip and add the name of the WasteTreatment plant to each TargetIRI
         newLst = [] 
