@@ -162,12 +162,13 @@ public class JobSubmission{
 	 * @param jsonInput
 	 * @param slurmScript
 	 * @param input
+	 * @param timeStamp
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	public String setUpJob(String jsonInput, File slurmScript, File input) throws IOException, SlurmJobException{
-        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input);
+	public String setUpJob(String jsonInput, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
+        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, timeStamp);
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
         	return obj.toString();
@@ -185,12 +186,13 @@ public class JobSubmission{
 	 * @param slurmScript
 	 * @param input
 	 * @param executable
+	 * @param timeStamp
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	public String setUpJob(String jsonInput, File slurmScript, File input, File executable) throws IOException, SlurmJobException{
-        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, executable);
+	public String setUpJob(String jsonInput, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
+        	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, executable, timeStamp);
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
         	return obj.toString();
@@ -203,17 +205,18 @@ public class JobSubmission{
 	 * @param jsonString
 	 * @param slurmScript
 	 * @param input
+	 * @param timeStamp
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
+	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
 		File workspaceFolder = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), getAgentClass());
 		if(workspaceFolder == null){
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
-			return setUpQuantumJob(workspace, workspaceFolder, jsonString, slurmScript, input);
+			return setUpQuantumJob(workspace, workspaceFolder, jsonString, slurmScript, input, timeStamp);
 		}
 	}
 	
@@ -224,17 +227,18 @@ public class JobSubmission{
 	 * @param slurmScript
 	 * @param input
 	 * @param executable
+	 * @param timeStamp
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, File executable) throws IOException, SlurmJobException{
+	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
 		File workspaceFolder = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), getAgentClass());
 		if(workspaceFolder == null){
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
-			return setUpQuantumJob(workspace, workspaceFolder, jsonString, slurmScript, input, executable);
+			return setUpQuantumJob(workspace, workspaceFolder, jsonString, slurmScript, input, executable, timeStamp);
 		}
 	}
 	
@@ -246,12 +250,13 @@ public class JobSubmission{
 	 * @param jsonString
 	 * @param slurmScript
 	 * @param input
+	 * @param timeStamp
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input) throws IOException, SlurmJobException{
-		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress());
+	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
+		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress(), timeStamp);
     	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input)==null){
     		return null;
     	}
@@ -266,13 +271,14 @@ public class JobSubmission{
 	 * @param jsonString
 	 * @param slurmScript
 	 * @param input
-	 * @param executable 
+	 * @param executable
+	 * @param timeStamp
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input, File executable) throws IOException, SlurmJobException{
-		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress());
+	private String setUpQuantumJob(Workspace ws, File workspaceFolder, String jsonString, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
+		File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), getHpcAddress(), timeStamp);
     	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input, executable)==null){
     		return null;
     	}
