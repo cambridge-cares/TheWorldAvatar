@@ -14,6 +14,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 + "SELECT  ?entity  ?name ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
++ "?V_WasteDeliveredAmount ?V_WasteDeliveredAmount_unit ?Site_of_delivery "
 + "WHERE {"
 + "?entity  a j1:FoodCourt ."
 + "?entity   j8:hasName ?name ." 
@@ -32,7 +33,13 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "?entity   j1:produceWaste ?WP ." 
 + "?WP     j2:hasValue ?vWP ."
 + "?vWP  j2:numericalValue ?Waste_Production ."
-+ "?vWP  j2:hasUnitOfMeasure ?wasteproductionunit ."//longitude
++ "?vWP  j2:hasUnitOfMeasure ?wasteproductionunit ."
+
+// + "OPTIONAL{ ?entity  j1:deliverWaste ?DW }"
+// + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
+// + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
+// + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
+// + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }"
  
 + "}";
 WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -290,10 +297,31 @@ function dumpEconomic(data){
     $("#IC").text(parseFloat(data.V_InstallationCost.value).toFixed(2));
     $("#TR").text(parseFloat(data.V_TotalRevenue.value).toFixed(2));
 }
+/** clears all markers on the page
+ * 
+ */
+function clearMarkers() {
+    if(!markers){
+        return;
+    }
+    for(marker of markers){
+        marker.setMap(null);
+        marker=null;
+    }
+}
 function queryForOnsiteWT(){
-    var agenturl = prefix + "/JPS_WTE/WTEVisualization/queryOnsite"
+    clearMarkers();
+    console.log(markers);
+    var agenturl = prefix + "/JPS_WTE/WTEVisualization/createMarkers"
     queryForMarkers(agenturl,createUrlForAgent, function(){
+        var agenturl = prefix + "/JPS_WTE/WTEVisualization/queryOnsite"
+        queryForMarkers(agenturl,createUrlForAgent, function(){
+    
+        });
     });
+    
+    
+
 }
 const textPanel = $("#text-panel")
 const rePanel = $("#result-panel")
@@ -659,7 +687,7 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
                     resolve('Success');
             });
                 newPromise.then((successMessage) => {
-                    innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/><button onclick="SubmitTable(this)">OPF</button>'+
+                    innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
                     console.log(innerHTML);
                     callback(innerHTML); //returning back to the infowindow to change. 
