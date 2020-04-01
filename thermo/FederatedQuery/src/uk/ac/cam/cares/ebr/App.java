@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import uk.ac.cam.cares.ebr.query.FederatedQuery;
 import uk.ac.cam.cares.ebr.query.QueryTemplate;
-import uk.ac.cam.cares.ebr.repository.FolderManager;
 import uk.ac.cam.cares.ebr.repository.RepositoryManager;
 
 import uk.ac.cam.cares.ebr.tools.CSVGenerator;
