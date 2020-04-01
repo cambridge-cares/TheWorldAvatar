@@ -27,7 +27,7 @@ import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 
 public class Utils {
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);	
-	public static long previousTimeStamp;
+	private static long previousTimeStamp;
 	
 	/**
 	 * Generate unique time stamp to be used in naming quantum jobs and</br>

@@ -298,7 +298,7 @@ public class DFTAgent extends HttpServlet{
 	/**
 	 * Sets up the quantum job for the current input.
 	 *   
-	 * @param jsonString
+	 * @param jsonInput
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
@@ -308,23 +308,24 @@ public class DFTAgent extends HttpServlet{
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}
+		long timeStamp = Utils.getTimeStamp();
+		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
 						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
-				getInputFile(jsonInput));
+				getInputFile(jsonInput, jobFolderName), timeStamp);
 	}
 	
 	/**
 	 * Sets up the quantum job for the current request.
 	 * 
-	 * @param ws
-	 * @param workspaceFolder
 	 * @param jsonInput
+	 * @param jobFolderName
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private File getInputFile(String jsonInput) throws IOException, DFTAgentException{
+	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
     	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
@@ -334,7 +335,6 @@ public class DFTAgent extends HttpServlet{
 		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
 			throw new DFTAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
     	}
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress());
 		String inputFilePath = getInputFilePath();
 		String inputFileMsg = createInputFile(inputFilePath, jobFolderName, speciesGeometry, jsonInput);
 		if(inputFileMsg == null){
@@ -401,10 +401,11 @@ public class DFTAgent extends HttpServlet{
 	 * Produces a job folder name by following the schema hpcAddress_timestamp.
 	 * 
 	 * @param hpcAddress
+	 * @param timeStamp
 	 * @return
 	 */
-	public String getNewJobFolderName(String hpcAddress){
-		return hpcAddress.concat("_").concat("" + Utils.getTimeStamp());
+	public String getNewJobFolderName(String hpcAddress, long timeStamp){
+		return hpcAddress.concat("_").concat("" + timeStamp);
 	}
 	
 	/**
