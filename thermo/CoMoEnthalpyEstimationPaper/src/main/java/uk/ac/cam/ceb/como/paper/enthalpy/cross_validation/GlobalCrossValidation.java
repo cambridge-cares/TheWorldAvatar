@@ -31,7 +31,7 @@ public class GlobalCrossValidation {
       LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
       leaveOneOutCrossValidationAlgorithm.runGlobalCrossValidation(jObject.get("srcCompoundsRef").toString()+"/", jObject.get("srcRefPool").toString(), jObject.get("destRList").toString(), EvaluationUtils.getCtrRuns(jObject.get("ctrRuns").toString()), EvaluationUtils.getCtrRuns(jObject.get("ctrRes").toString()), EvaluationUtils.getCtrRuns(jObject.get("ctrRadicals").toString()),EvaluationUtils.getReactionType(jObject.get("reactionType").toString()), jObject.get("tempFolder").toString()+"/");
 
-//		FileUtils.getUnzipFolder("C:/Users/NK/Documents/philipp/180-pb556/input.zip");
+
 
 	}
 }

@@ -85,7 +85,17 @@ public class LeaveOneOutCrossValidationAlgorithm {
      * @throws Exception
      */
     public void runGlobalCrossValidation(String srcCompoundsRef, String srcRefPool, String destRList, int[] ctrRuns, int[] ctrRes, int[] ctrRadicals, ReactionType reactionType, String tempFolder) throws Exception{
-		System.out.println(destRList+"/" + "printed_results" + ".txt");	
+    	
+    	/**
+    	 * @author msff2@cam.ac.uk
+    	 * Creates destination folder if it does not exist.
+    	 */
+    	if(!(new File(destRList).exists())){
+    		
+    		new File(destRList).mkdir();
+    	}
+		
+    		System.out.println(destRList+"/" + "printed_results" + ".txt");	
 		printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
 		startTime = System.currentTimeMillis();
 		ls = new LoadSpecies();
