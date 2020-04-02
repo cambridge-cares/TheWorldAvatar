@@ -317,8 +317,8 @@ public class WeatherTimeStampKB {
 		
 		String mainobjectname = "SGTemperatureSensor-001"; // still hard-coded for the sample
 		String mainobject2name = "SGSolarIrradiationSensor-001"; // still hard-coded for the sample
-		String mainobject3name = "SGWindSpeedSensor-001"; // still hard-coded for the sample
-		String mainobject4name = "SGWindDirectionSensor-001"; // still hard-coded for the sample
+		String mainobject3name = "SGWindSpeedSensor-002"; // still hard-coded for the sample
+		String mainobject4name = "SGWindDirectionSensor-002"; // still hard-coded for the sample
 		String mainobject5name = "SGRelativeHumiditySensor-001"; // still hard-coded for the sample
 		String mainobject6name = "SGPrecipitationSensor-001"; // still hard-coded for the sample
 		String mainobject7name = "SGCloudCoverSensor-001"; // still hard-coded for the sample
@@ -398,10 +398,10 @@ public class WeatherTimeStampKB {
 		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Weather.csv");
 		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		converter.startConversion(readingFromCSV,"temperature");
-		converter.startConversion(readingFromCSV,"irradiation");
+//		converter.startConversion(readingFromCSV,"temperature");
+//		converter.startConversion(readingFromCSV,"irradiation");
 		converter.startConversion(readingFromCSV,"windspeed");
-//		converter.startConversion(readingFromCSV,"winddirection");
+		converter.startConversion(readingFromCSV,"winddirection");
 //		converter.startConversion(readingFromCSV,"precipitation");
 //		converter.startConversion(readingFromCSV,"pressure");
 //		converter.startConversion(readingFromCSV,"relativehumidity");
