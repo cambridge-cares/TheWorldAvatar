@@ -42,6 +42,13 @@ public class EnthalpyOfFormation {
 	}
 
 	/**
+	 * The default constructor of the class.
+	 */
+	public EnthalpyOfFormation(){
+		
+	}
+	
+	/**
 	 * Uploads the enthalpies of formation of those target species that are<br>
 	 * valid and available in the output directory provided in the<br>
 	 * constructor.
