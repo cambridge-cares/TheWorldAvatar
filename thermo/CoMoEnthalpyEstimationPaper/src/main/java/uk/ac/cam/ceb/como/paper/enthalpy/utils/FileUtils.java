@@ -1,6 +1,21 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.utils;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Enumeration;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 /**
  * 
@@ -10,7 +25,9 @@ import java.io.File;
  */
 
 public class FileUtils {
-
+	
+	
+	
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -68,4 +85,64 @@ public class FileUtils {
 			
 		}
 	}
+   /**
+    * 
+    * @author NK510 (caresssd@hermes.cam.ac.uk)
+    * @param zipFilePath the file path of zip file
+    * 
+    */
+   public static void getUnzipFolder(String zipFilePath) {
+	   
+	   try {
+		   
+		   ZipFile zipFile = new ZipFile(zipFilePath);
+		   
+		   Enumeration<?> enumeration = zipFile.entries();
+		   
+		   while(enumeration.hasMoreElements()) {
+			   
+			   ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();
+			   
+			   
+			   String zipEntryName = zipEntry.getName();
+			   
+			//   System.out.println("zipEntry.getName(): " + zipEntry.getName());
+			   
+			   File fileName = new File(zipEntryName);
+			   
+			   System.out.println(fileName);
+			   
+			   if(zipEntryName.endsWith("/")) {
+				   
+				   fileName.mkdirs();
+				   continue;
+			   }
+			   
+			   File parentFile = fileName.getParentFile();
+			   if(parentFile!=null) {
+				   parentFile.mkdirs();
+			   }
+			   
+			   InputStream inputStream = zipFile.getInputStream(zipEntry);
+			   FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+			   
+			   
+			   byte[] bytes = new byte[2048];
+               int length;
+               
+               while ((length = inputStream.read(bytes)) >= 0) {
+                   fileOutputStream.write(bytes, 0, length);
+               }
+               inputStream.close();
+               fileOutputStream.close();
+		   }
+		   
+           zipFile.close();
+           
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+   
+   }
+   
 }

@@ -2,6 +2,8 @@ package uk.ac.cam.ceb.como.paper.enthalpy.utils;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,13 +15,17 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
 
 public class FolderUtils {
+
+	
 
 	/**
 	 * 
@@ -164,5 +170,4 @@ public class FolderUtils {
 		}
 		
 	}
-	
 }
