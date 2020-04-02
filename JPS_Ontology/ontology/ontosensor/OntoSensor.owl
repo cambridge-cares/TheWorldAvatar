@@ -364,6 +364,14 @@ The conditions specified here are those that affect the measurement properties, 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#RoomProperties">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#MeasuredObjectProperties"/>
     </owl:Class>
+	
+	
+	
+	<!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideWindSpeed -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideWindSpeed">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirProperties"/>
+    </owl:Class>
     
 
 
