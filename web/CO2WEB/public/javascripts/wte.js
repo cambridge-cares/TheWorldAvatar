@@ -214,8 +214,6 @@ $(document).ready(function () {
             updateSite(finalArray[0], 0);
         }
         for (i = 1; i<initArray.length; i++){
-            console.log("Initial Array",initArray[i]);
-            console.log("Final Array",finalArray[i]);
             if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
                 updateSite(finalArray[i], i);
             }
@@ -317,9 +315,9 @@ function queryForOnsiteWT(){
     console.log(markers);
     var agenturl = prefix + "/JPS_WTE/WTEVisualization/createMarkers";
     var QurStr =   "OPTIONAL{ ?entity  j1:deliverWaste ?DW }"
-    + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
-    + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
-    + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
+    // + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
+    // + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
+    // + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
     + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }" +"}";
      
     FCQuery = FCQuery.replace("}", QurStr )
@@ -479,9 +477,9 @@ function updateSite(inpParameters, index){
         }
         console.log(base);
         outputUpdate(newLst, base, inpParameters);
-
+        
     }
-    listOfIRIs.forEach((iri)=>{ //listOfIRIs are the list of networks in the top node. 
+    else{listOfIRIs.forEach((iri)=>{ //listOfIRIs are the list of networks in the top node. 
         //strip and add the name of the WasteTreatment plant to each TargetIRI
         newLst = [] 
         var base = iri.split('#')[0];
@@ -493,7 +491,7 @@ function updateSite(inpParameters, index){
         console.log(base);
         outputUpdate(newLst, base, inpParameters);
     })
-
+    }
 }
 /** create table for json. 
  * @param {JSON} data
@@ -671,6 +669,7 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
         }   
     });
     request.done( function(data) {
+        console.log(data);
         var obj0 = JSON.parse(data);
         obj0 = obj0['results']['bindings'][0];
         console.log(obj0)
