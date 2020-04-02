@@ -1,4 +1,4 @@
-package uk.cam.cares.jps.episode;
+package uk.ac.cam.cares.jps.episode;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,7 +9,6 @@ import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
@@ -26,6 +25,12 @@ public class WeatherAgent {
 	static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
 	static String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/sgp/singapore/";
 	static String iriprefix="http://www.theworldavatar.com/kb/sgp/singapore/";
+	
+	//which data should be taken from?
+	//make the data to servlet
+	//should use top node or just context is enough?
+	
+	
 	public void addFiletoRepo(RepositoryConnection con,String filename,String contextiri) {
 		File file =new File(fileprefix+filename);
 		String baseURI=iriprefix+filename;
@@ -50,22 +55,6 @@ public class WeatherAgent {
 		catch (java.io.IOException e) {
 			System.out.println("fail 2");
 		}
-	}
-	public void addinstancetoRepo(RepositoryConnection con) {
-		ValueFactory f=repo.getValueFactory();
-		IRI stn1=f.createIRI("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
-		IRI composite=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#CompositeSystem");
-		IRI hassubsystem=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
-		IRI sensor1=f.createIRI("http://www.theworldavatar.com/kb/sgp/singapore/SGCloudCoverSensor-001.owl#SGCloudCoverSensor-001");
-
-		con.add(stn1, RDF.TYPE,composite);
-		con.add(stn1, hassubsystem,sensor1);
-	}
-
-	public void deleteValuetoRepo(RepositoryConnection con) {
-		ValueFactory f=repo.getValueFactory();
-		IRI stn1=f.createIRI("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
-		con.remove(stn1,null,null); //remove all triples realted to stn1
 	}
 	
 	public void queryValueLatestfromRepo(RepositoryConnection con, String context) { //should we use top node concept or the name graph to categorize some triples??
