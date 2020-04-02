@@ -10,10 +10,12 @@ import java.io.File;
  * @author msff2
  *
  */
-public class EoFUpload {
+public class EnthalpyOfFormation {
 
 	private File outputDirPath;
 	private File jsonInputFile;
+	private String endPointURL;
+	private String repositoryName;
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -29,12 +31,26 @@ public class EoFUpload {
 	 * 
 	 * @param outputDirPath
 	 * @param jsonInputFile
+	 * @param endPointURL
+	 * @param repositoryName
 	 */
-	public EoFUpload(File outputDirPath, File jsonInputFile){
+	public EnthalpyOfFormation(File outputDirPath, File jsonInputFile, String endPointURL, String repositoryName){
 		this.outputDirPath = outputDirPath;
 		this.jsonInputFile = jsonInputFile;
+		this.endPointURL = endPointURL;
+		this.repositoryName = repositoryName;
 	}
 
+	/**
+	 * Uploads the enthalpies of formation of those target species that are<br>
+	 * valid and available in the output directory provided in the<br>
+	 * constructor.
+	 * 
+	 */
+	public void upload(){
+		
+	}
+	
 	public File getOutputDirPath() {
 		return outputDirPath;
 	}
@@ -49,5 +65,21 @@ public class EoFUpload {
 
 	public void setJsonInputFile(File jsonInputFile) {
 		this.jsonInputFile = jsonInputFile;
+	}
+
+	public String getEndPointURL() {
+		return endPointURL;
+	}
+
+	public void setEndPointURL(String endPointURL) {
+		this.endPointURL = endPointURL;
+	}
+
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
 	}
 }
