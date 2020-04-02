@@ -95,6 +95,11 @@ public class LeaveOneOutCrossValidationAlgorithm {
     		new File(destRList).mkdir();
     	}
 		
+        if(!(new File(tempFolder).exists())){
+    		
+    		new File(tempFolder).mkdir();
+    	}
+
     		System.out.println(destRList+"/" + "printed_results" + ".txt");	
 		printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
 		startTime = System.currentTimeMillis();
