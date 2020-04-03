@@ -18,7 +18,7 @@ import org.apache.log4j.Logger;
  */
 public abstract class LPSolver {
 
-    protected File dir = SystemUtils.getUserHome();
+	protected File dir = SystemUtils.getUserHome();    
     protected long timeout = 60000;
     protected boolean delInput = true;
     protected boolean delOutput = true;
@@ -123,14 +123,21 @@ public abstract class LPSolver {
     public abstract Map<String, Number> solve() throws LpSolverException;
 
     protected File getTempFile() {
-        File tempDir = new File(dir, ".temp/");
+    	
+        File tempDir = new File(dir,".temp/");
+        
         if (!tempDir.exists()) {
+        	
             if (!tempDir.mkdir()) {
+            	
                 logger.error("The directory " + tempDir + " could not be created!",
+                		
                         new IOException("The directory " + tempDir + " could not be created!"));
             }
         }
+        
         File tempFile = new File(dir, ".temp/" + UUID.randomUUID());
+        
         return tempFile;
     }
 }

@@ -22,6 +22,7 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.Executor;
 import org.apache.commons.exec.PumpStreamHandler;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.log4j.Logger;
 
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.LPSolver;
@@ -80,7 +81,14 @@ public class TerminalGLPKSolver extends LPSolver {
          * Settings to run the code (LP solver) on HPC. The GLPK solver should be installed (copied) on user's profile on Unix (Linux) HPC machine. The documentation of how use the GLPK is given on https://www.gnu.org/software/glpk/
          *  
          */
-        map.put("glpsol", System.getProperty("user.dir") + "/glpk-4.65/examples/glpsol");
+        /**
+         * Added 'ebragent' beause comoenthalpyestimationpaper.jar file is stored in folder ebragent on users home directory.
+         */
+//        System.out.println("System.getProperty(user.dir): " + System.getProperty("user.dir")); - includes 'ebragent' folder: /home/nkrd01/ebragent
+//        System.out.println("SystemUtils.getUserHome(): "+ SystemUtils.getUserHome());
+        
+        //System.getProperty("user.dir")  -in previous verion of the code this was used. Now we use SystemUtils.getUserHome()
+        map.put("glpsol",  SystemUtils.getUserHome() + "/glpk-4.65/examples/glpsol");
         
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
