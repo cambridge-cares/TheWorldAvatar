@@ -258,7 +258,9 @@ public class ScenarioAgent extends KnowledgeBaseAgent {
 		logger.debug("get resource path for resource=" + resource + ", in bucket=" + completePathWithinBucket + ", copyToBucket=" + copyToBucket);
 		
 		File fileWithinBucket = new File(completePathWithinBucket);
-
+		if (fileWithinBucket.exists()) {
+			return completePathWithinBucket;
+		}
 		if (copyToBucket && !fileWithinBucket.exists()) {
 			String content;
 			UrlValidator urlValidator = new UrlValidator();

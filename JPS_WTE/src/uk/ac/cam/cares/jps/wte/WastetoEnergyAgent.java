@@ -386,6 +386,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String path = request.getServletPath();
 		String baseUrl= requestParams.getString("baseUrl");
 		String wasteIRI=requestParams.getString("wastenetwork");
+		
 		OntModel model= readModelGreedy(wasteIRI);
 		List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
