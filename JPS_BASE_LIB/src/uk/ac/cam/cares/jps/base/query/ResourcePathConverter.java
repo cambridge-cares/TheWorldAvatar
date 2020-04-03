@@ -29,16 +29,17 @@ public class ResourcePathConverter {
 		}
 		String scenarioUrl =JPSContext.getScenarioUrl();
 //		if (!AgentLocator.isJPSRunningForTest()) {
-//		if (scenarioUrl != null)  {
-//
-//			JPSBaseLogger.info(getInstance(), ("scenarioURL = " + scenarioUrl + path));
-//			return path;
-//		}
+		if (scenarioUrl != null)  {
+
+			JPSBaseLogger.info(getInstance(), ("scenarioURL = " + scenarioUrl + path));
+			return path;
+		}
 		
 	
 		// i.e. the code is not running on claudius 
 		String address = KeyValueManager.getServerAddress();
 		String converted = path;
+		JPSBaseLogger.info(getInstance(), "IT GOES HERE IN RPC,CONVERTED= " +converted);
 		if (path.contains("http://www.theworldavatar.com/ontology")) {
 			// don't convert
 		} else if (path.contains("http://www.theworldavatar.com")) {

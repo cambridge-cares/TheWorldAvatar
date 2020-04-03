@@ -148,6 +148,7 @@ public class QueryBroker {
 				JPSBaseLogger.info(this, "reading file number=" + count + ", name=" + current);
 			}
 			current = ResourcePathConverter.convert(current);
+			JPSBaseLogger.info(this,"what is the current now?: "+current);
 			model.read(current, null); 
 		}
 		
