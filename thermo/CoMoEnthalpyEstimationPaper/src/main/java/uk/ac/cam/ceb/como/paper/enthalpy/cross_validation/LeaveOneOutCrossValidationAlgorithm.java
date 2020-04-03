@@ -97,6 +97,10 @@ public class LeaveOneOutCrossValidationAlgorithm {
     	
     	}
 		
+    	/**
+    	 * @author msff2@cam.ac.uk
+    	 * Creates temp folder if it does not exist.
+    	 */
         if(!(new File(tempFolder).exists())){   		
   		new File(tempFolder).mkdir();
     	}
