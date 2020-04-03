@@ -85,7 +85,7 @@ public class TerminalGLPKSolver extends LPSolver {
          * Added 'ebragent' beause comoenthalpyestimationpaper.jar file is stored in folder ebragent on users home directory.
          */
 //        System.out.println("System.getProperty(user.dir): " + System.getProperty("user.dir")); - includes 'ebragent' folder: /home/nkrd01/ebragent
-//        System.out.println("SystemUtils.getUserHome(): "+ SystemUtils.getUserHome());
+        System.out.println("SystemUtils.getUserHome(): "+ SystemUtils.getUserHome());
         
         //System.getProperty("user.dir")  -in previous verion of the code this was used. Now we use SystemUtils.getUserHome()
         map.put("glpsol",  SystemUtils.getUserHome() + "/glpk-4.65/examples/glpsol");
@@ -95,8 +95,13 @@ public class TerminalGLPKSolver extends LPSolver {
         
         map.put("input_par", "--freemps");
         map.put("input", lpInputFile.getAbsolutePath());
+        
+        System.out.println("lpInputFile.getAbsolutePath(): " + lpInputFile.getAbsolutePath());
+        
         map.put("output_par", "-o");
         map.put("output", tmp.getAbsolutePath());
+        
+        System.out.println("tmp.getAbsolutePath():" +tmp.getAbsolutePath());
 
         CommandLine commandLine = CommandLine.parse("${glpsol} ${input_par} ${input} ${output_par} ${output}", map);
         
