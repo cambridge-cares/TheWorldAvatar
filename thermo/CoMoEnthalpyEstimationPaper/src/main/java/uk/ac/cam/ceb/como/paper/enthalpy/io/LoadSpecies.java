@@ -116,7 +116,7 @@ public class LoadSpecies {
 	
 	/**
 	 * 
-	 * @author mk510 (caresssd@hermes.cam.ac.uk)
+	 * @author nk510 (caresssd@hermes.cam.ac.uk)
 	 * @author am2145 ( am2145@cam.ac.uk )
 	 * 
 	 * @param srcCompoundsRef_ti The path to Gaussian files

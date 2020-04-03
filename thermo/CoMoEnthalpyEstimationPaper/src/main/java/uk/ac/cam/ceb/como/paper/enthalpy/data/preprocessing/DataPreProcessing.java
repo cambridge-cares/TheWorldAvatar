@@ -135,7 +135,6 @@ public class DataPreProcessing {
           	   * @author nk510 ( caresssd@hermes.cam.ac.uk )
            	   * Folder path settings on PC machine
           	   */
-
           	
 //System.out.println("Skipping " + destRList+"\\"  + "data-pre-processing" + "\\" + config);
              /**
@@ -146,7 +145,7 @@ public class DataPreProcessing {
   		
   		printedResultsFile.write("Skipping " + destRList  + "/" +"data-pre-processing" + "/" + config);
         
-//  		printedResultsFile.write("Skipping " + destRList+"\\"  + "\\" +"data-pre-processing" + "\\" + config);
+//  	printedResultsFile.write("Skipping " + destRList+"\\"  + "\\" +"data-pre-processing" + "\\" + config);
   		
           
   		printedResultsFile.write("\n");
@@ -170,18 +169,20 @@ public class DataPreProcessing {
                 printedResultsFile.write("\n");
                 
                 for(Species target : refSpecies) {
+                	
                 	/**
                 	 * @author nk510 ( caresssd@hermes.cam.ac.uk )
                 	 * Added new HashMap<>() -> new HashMap<Species, Collection<ReactionList>>()
                 	 */
                     Map<Species, Collection<ReactionList>> results = new HashMap<Species, Collection<ReactionList>>();
                     
-                      System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
+                    System.out.println("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                         
-                      printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
-                  printedResultsFile.write("\n");
+                    printedResultsFile.write("Estimating dHf(298.15K) for species " + target.getRef() + " (" + ctr + " / " + refSpecies.size() + ")");
                     
-                  ctr++;
+                    printedResultsFile.write("\n");
+                    
+                    ctr++;
                     
                     /**
                      * @author nk510 ( caresssd@hermes.cam.ac.uk )
@@ -190,8 +191,8 @@ public class DataPreProcessing {
                      */
                   
 //                      if (new File(destRList+"\\"  + "data-pre-processing" + "\\"+ target.getRef() + "\\" + config + "_reaction-list.rct").exists()) {
-                          /**
-                           * @author nk510 ( caresssd@hermes.cam.ac.uk )
+                        /**
+                         * @author nk510 ( caresssd@hermes.cam.ac.uk )
                       	 * Folder path settings on HPC machine
                       	 * 
                       	 */

@@ -92,15 +92,16 @@ public class LeaveOneOutCrossValidationAlgorithm {
     	 */
     	if(!(new File(destRList).exists())){
     		
-    		new File(destRList).mkdir();
+    	new File(destRList).mkdir();
+    	new File(destRList + File.separator + "initial-analysis").mkdir();
+    	
     	}
 		
-        if(!(new File(tempFolder).exists())){
-    		
-    		new File(tempFolder).mkdir();
+        if(!(new File(tempFolder).exists())){   		
+  		new File(tempFolder).mkdir();
     	}
 
-    		System.out.println(destRList+"/" + "printed_results" + ".txt");	
+        System.out.println(destRList+"/" + "printed_results" + ".txt");	
 		printedResultsTxtFile = new BufferedWriter(new FileWriter(destRList+"/" + "printed_results" + ".txt", true));
 		startTime = System.currentTimeMillis();
 		ls = new LoadSpecies();
@@ -147,6 +148,7 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	    System.out.println("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
 		printedResultsTxtFile.write("- - - - - - - - - - - - - - - - Pre-processing step - - - - - - - - - - - - - - - -");
 		printedResultsTxtFile.write("\n");
+		
 		/**
 		 * 
 		 * Data pre-processing step in cross validation algorithm. Determine the error
@@ -492,12 +494,19 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	JSONArray validSpeciesJsonList = new JSONArray();
 	
 //	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_valid_species_loop_"+loop +".json", true));
+	
+	/**
+	 * Line below is added by msff2@cam.ac.uk
+	 */
+	new File(destRList+File.separator + "initial-analysis"+ File.separator + "loop_" + loop).mkdir();
+	
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * Line below is settings that works on PC (Windows) machine
 	 *  
 	 */
+	
 	BufferedWriter printedJsonFileValidSpecies = new BufferedWriter(new FileWriter(destRList + "/"+"initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_valid_species_loop_"+loop +".json", true));
 
 	for(Species s: validSpecies) {
@@ -562,12 +571,17 @@ public class LeaveOneOutCrossValidationAlgorithm {
 	 * 
 	 */
 //	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList+"/" + "initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_invalid_species_loop_"+loop +".json", true));
+	
+	
+	
+	
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * Line below is settings that works on PC (Windows) machine
 	 *  
 	 */
+	
 	BufferedWriter printedJsonFileInvalidSpeciesInitialAnalysis = new BufferedWriter(new FileWriter(destRList + "/"+"initial-analysis" + "/" + "loop_" + loop +"/"+ "printed_invalid_species_loop_"+loop +".json", true));
 	
 	errorBarCalculation.generateInvalidSpeciesFileAfterInitialAnalysis(loop, invalidSpeciesFileAfterInitialAnalysis, printedJsonFileInvalidSpeciesInitialAnalysis, tempInvalidSetOfSpecies, sortedInvalidSpeciesErrorBar,invalidSpecies, validSpecies,printedResultsTxtFile);
