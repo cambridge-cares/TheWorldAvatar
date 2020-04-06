@@ -38,6 +38,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "?vWP   j6:hasTime ?time ." 
 + "?time     j6:inDateTime ?vdatetime ."
 + "?vdatetime  j6:year ?year ." 
++ "FILTER( ?year <= 1)" 
 
 
 + "}"
@@ -211,7 +212,7 @@ $(document).ready(function () {
         if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
             dumpTransport(transportUpd);}
         if (JSON.stringify(initArray[0]) != JSON.stringify(finalArray[0])){
-            updateSite(finalArray[0], 0);
+            updateSite(finalArray[0], 2);
         }
         for (i = 1; i<initArray.length; i++){
             if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
@@ -315,9 +316,9 @@ function queryForOnsiteWT(){
     console.log(markers);
     var agenturl = prefix + "/JPS_WTE/WTEVisualization/createMarkers";
     var QurStr =   "OPTIONAL{ ?entity  j1:deliverWaste ?DW }"
-    // + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
-    // + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
-    // + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
+    + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
+    + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
+    + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
     + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }" +"}";
      
     FCQuery = FCQuery.replace("}", QurStr )
