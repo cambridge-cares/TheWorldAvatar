@@ -682,24 +682,27 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
         for(var item in result)
         {
             var pair = result[item];
-            if (pair[0] == "entity"){}
-            else if(!pair[1]['value'].includes('.owl')) //this is for values only. 
+            if(!pair[1]['value'].includes('.owl')) //this is for values only. 
             {
                 var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
                 + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
                 nameSet.push(pair[0]);
-            }else {
+            }else if(pair[0].includes('unit')){
                 //for units, just place below the box. 
                 //remove the last 
                 inputsHTML = inputsHTML.slice(0, -101)
                 //add in the units 
                 var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
                 inputsHTML = inputsHTML + inputLine;
+            }else{
+                var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" value="' + pair[1]['value'].split('#')[1] 
+                + '" style="float: right;"></td></tr>';
+                inputsHTML = inputsHTML + inputLine;
+                nameSet.push(pair[0]);
             }
         }
 
-        console.log(inputsHTML);
         if (callback == null){
                 innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
@@ -713,7 +716,7 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
                 newPromise.then((successMessage) => {
                     innerHTML = '<table data-type="line" data-url='+ id +' id="inputsTable">' + inputsHTML + '</table><br/>'+
                         '<img id="myProgressBar" style="width:100px;height:100px;display:none" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/><br/>';
-                    console.log(innerHTML);
+                    
                     callback(innerHTML); //returning back to the infowindow to change. 
                 });
             }
