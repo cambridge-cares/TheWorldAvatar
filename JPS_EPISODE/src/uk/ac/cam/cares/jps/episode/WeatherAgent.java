@@ -1,9 +1,15 @@
 package uk.ac.cam.cares.jps.episode;
+
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
@@ -21,22 +27,56 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-public class WeatherAgent {
+@WebServlet(urlPatterns ="/SensorWeatherAgent")
+public class WeatherAgent extends JPSHttpServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static String rdf4jServer = "http://localhost:8080/rdf4j-server"; //this is only the local repo, changed if it's inside claudius
 	static String repositoryID = "weatherstation";
-	static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
+	public static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
 	static String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/sgp/singapore/";
 	static String iriprefix="http://www.theworldavatar.com/kb/sgp/singapore/";
+	public static final String weatherRequest = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=%s&appid=329f65c3f7166977f6751cff95bfcb0a";
+
 	
 	//which data should be taken from?
-	//make the data to servlet
 	//should use top node or just context is enough?
-	
+
+	 protected void setLogger() {
+	        logger = LoggerFactory.getLogger(WeatherAgent.class);
+	    }
+	    Logger logger = LoggerFactory.getLogger(WeatherAgent.class);
+	    
+	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+			
+			return requestParams;
+			
+		}
+	    
+		public static String provideCurrentTime() {			//timing format should be year, month, date, hour, minute,second
+
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+			   LocalDateTime now = LocalDateTime.now();
+			   String com=dtf.format(now);
+			   String date=com.split("/")[2].split(" ")[0];
+			   
+			   String year=com.split("/")[0];
+				String monthdate=com.split("/")[1]+"-"+date;
+				String time=com.split("/")[2].split(" ")[1];
+				String completeformat=year+"-"+monthdate+"T"+time+"+08:00";
+				return completeformat;
+		}
+		
 	
 	public void addFiletoRepo(RepositoryConnection con,String filename,String contextiri) {
 		File file =new File(fileprefix+filename);
@@ -158,7 +198,7 @@ public class WeatherAgent {
 		
 	}
 	
-    private static String getWeatherDataFromAPI(String path, String json) {
+    private static String getWeatherDataFromGovAPI(String path, String json) {
         URIBuilder builder = new URIBuilder().setScheme("https").setHost("api.data.gov.sg")
                 .setPath(path);
         builder.setParameter("query", json);
@@ -174,18 +214,64 @@ public class WeatherAgent {
         }
     }
     
-    public JSONObject provideJSONDataFromAPI() {
-    	String temperature=getWeatherDataFromAPI("/v1/environment/air-temperature",null);
-    	JSONObject joT= new JSONObject(temperature);
+    private static String getWeatherDataFromAccuweatherAPI(String cityName) throws URISyntaxException {
+    	String requestURL = String.format(weatherRequest, cityName);
+    	URI obj = new URI(requestURL);
+
+        try {
+            HttpGet request = new HttpGet(obj);
+            request.setHeader("Accept", "application/json");
+            request.setHeader("Content-type", "application/json");
+
+            return AgentCaller.executeGet(request);
+        } catch (Exception e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
+        }
+    }
+    
+    public JSONObject extractedSingleDataFromAccuweather(String property, String cityName) throws URISyntaxException {
+    	String result= getWeatherDataFromAccuweatherAPI(cityName);
+    	JSONObject joPr= new JSONObject(result);
     	
-    	JSONObject jo1 = extractedSingleData("/v1/environment/rainfall","clementi");//in mm
-    	JSONObject jo2 = extractedSingleData("/v1/environment/air-temperature","clementi");//in celcius
-    	JSONObject jo3 = extractedSingleData("/v1/environment/relative-humidity","clementi"); //in percent
-    	JSONObject jo4 = extractedSingleData("/v1/environment/wind-speed","clementi"); //knots
-    	JSONObject jo5 = extractedSingleData("/v1/environment/wind-direction","clementi"); //degree
-    	JSONObject jo6 = extractedSingleData("/v1/environment/wind-speed","ubin"); //knots
-    	JSONObject jo7 = extractedSingleData("/v1/environment/wind-direction","ubin"); //degree
-    	//missing cloud cover, pressure, solar irradiation
+    	String pressure=joPr.getJSONObject("main").get("pressure").toString(); //in hPa
+    	String cloudcover=joPr.getJSONObject("clouds").get("all").toString(); //in %
+    	String long1= joPr.getJSONObject("coord").get("lon").toString();
+    	String lat1= joPr.getJSONObject("coord").get("lat").toString();
+    	String time = joPr.get("dt").toString();
+    	System.out.println("time= "+time);
+
+    	//TODO: the time conversion still wrong
+    	/*
+    	  ZonedDateTime dateTime = Instant.ofEpochMilli(Long.parseLong(time))
+    	            .atZone(ZoneId.of("UTC+08:00"));
+    	  String timestamp = dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+ */
+    	//temporarily just use current time
+    	String timestamp=provideCurrentTime();
+    	JSONObject returnresult= new JSONObject();
+    	returnresult.put("long",long1);
+    	returnresult.put("lat",lat1);
+    	returnresult.put("timestamp", timestamp);
+    	if(property.contains("cloud")) {
+    		returnresult.put("value",cloudcover);
+    	}else if(property.contains("pressure")) {
+    		returnresult.put("value",pressure);
+    	}
+    	return returnresult;
+    }
+    
+    public JSONObject provideJSONDataFromAPI() throws URISyntaxException {
+    	
+    	JSONObject jo1 = extractedSingleDataFromGov("/v1/environment/rainfall","clementi");//in mm
+    	JSONObject jo2 = extractedSingleDataFromGov("/v1/environment/air-temperature","clementi");//in celcius
+    	JSONObject jo3 = extractedSingleDataFromGov("/v1/environment/relative-humidity","clementi"); //in percent
+    	JSONObject jo4 = extractedSingleDataFromGov("/v1/environment/wind-speed","clementi"); //knots
+    	JSONObject jo5 = extractedSingleDataFromGov("/v1/environment/wind-direction","clementi"); //degree
+    	JSONObject jo6 = extractedSingleDataFromGov("/v1/environment/wind-speed","ubin"); //knots
+    	JSONObject jo7 = extractedSingleDataFromGov("/v1/environment/wind-direction","ubin"); //degree
+    	JSONObject jo8=extractedSingleDataFromAccuweather("cloud", "singapore");//in percent
+    	JSONObject jo9=extractedSingleDataFromAccuweather("pressure", "singapore");//in hPa exactly the same as millibar
+    	//missing solar irradiation
     	
     	JSONObject finaljo= new JSONObject();
     	finaljo.put("precipitation", jo1);
@@ -195,43 +281,45 @@ public class WeatherAgent {
     	finaljo.put("winddirection1", jo5);
     	finaljo.put("windspeed2", jo6);
     	finaljo.put("winddirection2", jo7);
+    	finaljo.put("cloudcover", jo8);
+    	finaljo.put("pressure", jo9);
     	return finaljo;
     }
 
-	private JSONObject extractedSingleData(String path,String stnname) {
-		String precipitation=getWeatherDataFromAPI(path,null);
-    	JSONObject joPr= new JSONObject(precipitation);
-    	
-    	//input stn name:
-    	//output sequence index
-    	JSONArray stn=joPr.getJSONObject("metadata").getJSONArray("stations");
-    	int size=stn.length();
-    	String stnid;
-    	int index=-1;
-    	for(int r=0;r<size;r++) {
-    		String name=stn.getJSONObject(r).get("name").toString();
-    		if(name.toLowerCase().contains(stnname)){
-    			stnid=stn.getJSONObject(r).get("id").toString();
-    			index=r;
-    		}
-    	}
-    	
-    	
-    	//index 7 for the clementi road
-    	String lat1=joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index).getJSONObject("location").get("latitude").toString();
-    	String long1=joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index).getJSONObject("location").get("longitude").toString();
-    	String timestamp=joPr.getJSONArray("items").getJSONObject(0).get("timestamp").toString();
-    	String propertyValue=joPr.getJSONArray("items").getJSONObject(0).getJSONArray("readings").getJSONObject(index).get("value").toString(); //in mm
-    	JSONObject jo1=new JSONObject();
-    	jo1.put("long",long1);
-    	jo1.put("lat", lat1);
-    	jo1.put("timestamp", timestamp);
-    	jo1.put("value",propertyValue);
+	private JSONObject extractedSingleDataFromGov(String path, String stnname) {
+		String precipitation = getWeatherDataFromGovAPI(path, null);
+		JSONObject joPr = new JSONObject(precipitation);
+
+		// input stn name:
+		// output sequence index
+		JSONArray stn = joPr.getJSONObject("metadata").getJSONArray("stations");
+		int size = stn.length();
+		String stnid;
+		int index = -1;
+		for (int r = 0; r < size; r++) {
+			String name = stn.getJSONObject(r).get("name").toString();
+			if (name.toLowerCase().contains(stnname)) {
+				stnid = stn.getJSONObject(r).get("id").toString();
+				index = r;
+			}
+		}
+
+		// index 7 for the clementi road
+		String lat1 = joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index)
+				.getJSONObject("location").get("latitude").toString();
+		String long1 = joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index)
+				.getJSONObject("location").get("longitude").toString();
+		String timestamp = joPr.getJSONArray("items").getJSONObject(0).get("timestamp").toString();
+		String propertyValue = joPr.getJSONArray("items").getJSONObject(0).getJSONArray("readings").getJSONObject(index)
+				.get("value").toString(); // in mm
+		JSONObject jo1 = new JSONObject();
+		jo1.put("long", long1);
+		jo1.put("lat", lat1);
+		jo1.put("timestamp", timestamp);
+		jo1.put("value", propertyValue);
 		return jo1;
 	}
     
-   
-
 	public void removeDataRepoRoutine(RepositoryConnection con,List<String[]>oldcontent) {
 				
 			int d=oldcontent.size();
@@ -286,8 +374,30 @@ public class WeatherAgent {
 		List<String[]>currentdatarepo= provideDataRepoRoutine(con,context,propnameclass);
 		removeDataRepoRoutine(con,currentdatarepo);
 		insertDataRepo(con, currentdatarepo,newpropvalue, newtimestamp,context);
-		System.out.println("update is done");
+		System.out.println("update for "+propnameclass+" in context "+context+" is done");
 	}
+	
+	public void executeFunctionPeriodically(RepositoryConnection con,String context,String context2) throws URISyntaxException {
+		String completeformat=WeatherAgent.provideCurrentTime();
+		JSONObject result=new WeatherAgent().provideJSONDataFromAPI();	
+		Double convertedspeed1=Double.valueOf(result.getJSONObject("windspeed1").get("value").toString())*0.514444;
+		Double convertedspeed2=Double.valueOf(result.getJSONObject("windspeed2").get("value").toString())*0.514444;
+		Double convertedcloud=Double.valueOf(result.getJSONObject("cloudcover").get("value").toString())/100;
+		Double convertedRH=Double.valueOf(result.getJSONObject("relativehumidity").get("value").toString())/100;
+		new WeatherAgent().updateRepo(con,context,"OutsideAirTemperature",result.getJSONObject("temperature").get("value").toString(),completeformat);//stored in Celcius
+		new WeatherAgent().updateRepo(con,context,"OutsideWindSpeed",""+convertedspeed1,completeformat); //stored in m/s instead of knot
+		new WeatherAgent().updateRepo(con,context,"OutsideWindDirection",result.getJSONObject("winddirection1").get("value").toString(),completeformat);//stored in degree
+		new WeatherAgent().updateRepo(con,context,"OutsideAirCloudCover",""+convertedcloud,completeformat);//stored in decimal instead of %
+		new WeatherAgent().updateRepo(con,context,"OutsideAirPressure",result.getJSONObject("pressure").get("value").toString(),completeformat);//stored in mBar, no need conversion from hPa
+		new WeatherAgent().updateRepo(con,context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
+		new WeatherAgent().updateRepo(con,context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
+		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
+		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
+		
+	}
+	
+
 	
 	public static void main(String[]args) {
 
@@ -296,33 +406,20 @@ public class WeatherAgent {
 		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
 //		new WeatherAgent().resetRepoTrial(con,context);
 //		new WeatherAgent().queryValuefromRepo(con,context); only for query testing
+		String completeformat=WeatherAgent.provideCurrentTime();
 
-		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-		   LocalDateTime now = LocalDateTime.now();
-		   String com=dtf.format(now);
-		   String date=com.split("/")[2].split(" ")[0];
-		   
-		   String year=com.split("/")[0];
-			String monthdate=com.split("/")[1]+"-"+date;
-			String time=com.split("/")[2].split(" ")[1];
-			String completeformat=year+"-"+monthdate+"T"+time+"+08:00";
-			System.out.println("currenttime= "+completeformat);
-			//timing format should be year, month, date, hour, minute,second
-		//these things should be done every hour
+			System.out.println("currenttime= "+ completeformat);
+
+			JSONObject apidata = null;
+			try {
+				apidata = new WeatherAgent().extractedSingleDataFromAccuweather("pressure", "singapore");
+			} catch (URISyntaxException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println("result from singapore= "+apidata.toString());
 			
-//		JSONObject result=new WeatherAgent().provideJSONDataFromAPI();
-//				
-//		new WeatherAgent().updateRepo(con,context,"OutsideAirTemperature",result.getJSONObject("temperature").get("value").toString(),completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideWindSpeed",result.getJSONObject("windspeed1").get("value").toString(),completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideWindDirection",result.getJSONObject("winddirection1").get("value").toString(),completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideAirCloudCover","25.4",completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideAirPressure","25.4",completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideAirRelativeHumidity",result.getJSONObject("relativehumidity").get("value").toString(),completeformat);
-//		new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
-//		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",result.getJSONObject("windspeed2").get("value").toString(),completeformat);
-//		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat);
-		
+
 //		new WeatherAgent().addinstancetoRepo(con);
 		//new WeatherAgent().deleteValuetoRepo(con);
 		

@@ -1,16 +1,23 @@
 package uk.ac.cam.cares.jps.episode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 public class EpisodeAgent extends DispersionModellingAgent {
 
-	@overide
-	public void createWeatherInput() {		
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
+	public void createWeatherInput() {	
+		String dataPath = QueryBroker.getLocalDataPath();
+		String filename="mcwind_input_singapore_20191118.txt";
 		
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -34,23 +41,30 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, sensorinfo);
 		 String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
+		 
+		 List<String[]> resultquery = new ArrayList<String[]>();
 			String separator="\t";
 			StringBuilder sb= new StringBuilder();
 			
+			
 	        String[]header= {"*","yyyy","mm","dd","hh","FF1","DD1","T25m","DT","RH%","PP_mm","Cloud","Press","FF2","DD2"};
-	        String []content= {"",};
-	        int length=header.length;
-	        for (int c=0;c<length;c++) {
-	        	sb.append(header[c]);
-	        	if(length-c!=1) {
-	        		sb.append(separator);
-	        	}
-	        	else {
-	        		sb.append("\n");
-	        	}
-	        }
+	        resultquery.add(0,header);
 	        
-	        resultxy.add(0,header);
-	        new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy)); 	
+	        
+	        String []content= {"",};
+	        
+	        for(int v=0;v<resultquery.size();v++) {
+		        for (int c=0;c<resultquery.get(0).length;c++) {
+		        	sb.append(resultquery.get(v)[c]);
+		        	if(resultquery.get(0).length-c!=1) {
+		        		sb.append(separator);
+		        	}
+		        	else {
+		        		sb.append("\n");
+		        	}
+		        }
+	        	
+	        }
+	        new QueryBroker().putLocal(dataPath + "/"+filename, sb.toString()); 	
 	}
 }
