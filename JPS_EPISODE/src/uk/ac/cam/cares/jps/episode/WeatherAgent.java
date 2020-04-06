@@ -41,8 +41,8 @@ public class WeatherAgent extends JPSHttpServlet {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	static String rdf4jServer = "http://localhost:8080/rdf4j-server"; //this is only the local repo, changed if it's inside claudius
-	static String repositoryID = "weatherstation";
+	public static String rdf4jServer = "http://localhost:8080/rdf4j-server"; //this is only the local repo, changed if it's inside claudius
+	public static String repositoryID = "weatherstation";
 	public static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
 	static String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/sgp/singapore/";
 	static String iriprefix="http://www.theworldavatar.com/kb/sgp/singapore/";
@@ -58,10 +58,73 @@ public class WeatherAgent extends JPSHttpServlet {
 	    Logger logger = LoggerFactory.getLogger(WeatherAgent.class);
 	    
 	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-			
-			return requestParams;
+	    	String cityiri=requestParams.get("city").toString();
+	    	if(!cityiri.toLowerCase().contains("singapore")) {
+	    		//TODO:
+	    		//repo = new HTTPRepository(rdf4jServer, repositoryID);
+	    		//later should be implemented that the repository ID is different if not singapore
+	    	}
+	    	RepositoryConnection con = repo.getConnection();	
+		List<String[]> listmap = extractAvailableContext(con);
+		 String context=listmap.get(0)[0];
+		 String context2=listmap.get(1)[0];
+		 
+		 
+
+//	    	String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
+//			String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
+		 	
+		 try {
+			new WeatherAgent().executeFunctionPeriodically(con,context,context2);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	    	JSONObject response= new JSONObject();
+	    	JSONArray station= new JSONArray();
+	    	station.put(context);
+	    	station.put(context2);
+	    	response.put("stationiri",station);
+	    	
+			return response;
 			
 		}
+
+	public List<String[]> extractAvailableContext(RepositoryConnection con) {
+		String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT DISTINCT ?graph " + "{ graph ?graph " + "{ "
+				+ "?entity j4:observes ?prop ." + "}" + "}";
+//		String dataseturl = rdf4jServer + "/repositories/" + repositoryID;// which is the weather stn dataset
+//		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
+//		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
+//		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
+
+		List<String[]> listmap = new ArrayList<String[]>();
+		TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, querycontext);
+		TupleQueryResult result = query.evaluate();
+		int d = 0;
+		try {
+//			String[] header = { "graph" };
+//			listmap.add(header);
+			while (result.hasNext()) {
+				BindingSet bindingSet = result.next();
+				String iri = bindingSet.getValue("graph").stringValue();
+				String[] content = { iri };
+				listmap.add(content);
+
+				d++;
+			}
+			System.out.println("total data=" + d);
+
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return listmap;
+	}
 	    
 		public static String provideCurrentTime() {			//timing format should be year, month, date, hour, minute,second
 

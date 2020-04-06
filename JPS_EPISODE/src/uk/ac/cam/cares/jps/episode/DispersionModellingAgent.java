@@ -13,7 +13,12 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 public class DispersionModellingAgent extends JPSHttpServlet {
 	
-    @Override
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(DispersionModellingAgent.class);
     }
