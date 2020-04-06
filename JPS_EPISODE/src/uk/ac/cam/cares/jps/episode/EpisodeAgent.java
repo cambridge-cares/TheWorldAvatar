@@ -8,6 +8,7 @@ import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 
@@ -114,7 +115,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		        	}
 	        	}
 	        }
-	        content[8]="0.022";
+	        content[8]="0.022"; //currently hardcoded but can be substituted by model
 	        resultquery.add(content);
 	       
 	       //convert to tsv
@@ -131,5 +132,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	        	
 	        }
 	        new QueryBroker().putLocal(dataPath + "/"+filename, sb.toString());  	
+	}
+
+
+	public void createControlTopologyFile(List<String>srtmlist,JSONObject region,String dataPath, String Filename) {
+		
+		
+		
 	}
 }

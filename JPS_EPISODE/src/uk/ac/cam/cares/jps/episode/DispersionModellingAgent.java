@@ -39,7 +39,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		return requestParams;
 	}
 		
-	public void createEmisisonInput() {
+	public void createEmissionInput() {
 		
 	}
 	
