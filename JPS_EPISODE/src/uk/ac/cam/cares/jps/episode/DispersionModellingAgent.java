@@ -1,5 +1,7 @@
 package uk.ac.cam.cares.jps.episode;
 
+import java.util.List;
+
 import javax.servlet.annotation.WebServlet;
 
 import org.json.JSONObject;
@@ -36,16 +38,18 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 
 		return requestParams;
 	}
-	
-	public void createWeatherInput() {
 		
-	}
-	
 	public void createEmisisonInput() {
 		
 	}
 	
 	public void executeModel() {
+		
+	}
+
+
+	public void createWeatherInput(String dataPath, String filename, List<String> stniri) {
+		// TODO Auto-generated method stub
 		
 	}
 

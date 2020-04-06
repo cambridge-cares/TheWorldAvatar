@@ -19,9 +19,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public void createWeatherInput() {	
-		String dataPath = QueryBroker.getLocalDataPath();
-		String filename="mcwind_input_singapore_20191118.txt";
+	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
 		
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
@@ -88,14 +86,14 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	        for(int r=0;r<listmap.size();r++) {
 //	        	System.out.println(listmap.get(r)[0]);
 //	        	System.out.println(listmap.get(r)[3]);
-	        	if(listmap.get(r)[3].toLowerCase().contains("-002")) {
+	        	if(listmap.get(r)[3].toLowerCase().contains(stniri.get(1))) {
 	        		System.out.println("it goes number 2");
 	        		if(listmap.get(r)[0].toLowerCase().contains("speed"))
 	        		content[13]=listmap.get(r)[1];
 	        		else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
 	        			content[14]=listmap.get(r)[1];
 	        		}
-	        	}else if(listmap.get(r)[3].toLowerCase().contains("-001")) {
+	        	}else if(listmap.get(r)[3].toLowerCase().contains(stniri.get(0))) {
 	        		System.out.println("it goes number 1");
 	        		if(listmap.get(r)[0].toLowerCase().contains("speed")) {
 		        		content[5]=listmap.get(r)[1];
