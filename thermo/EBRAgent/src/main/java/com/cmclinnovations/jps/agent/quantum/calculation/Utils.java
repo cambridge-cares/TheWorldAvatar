@@ -4,19 +4,26 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -203,5 +210,61 @@ public class Utils {
 			}
 		}
 		return null;
+	}
+	
+public static File getZipFile(String folderName) throws IOException {
+		
+		
+		Path sourceDirectory = Paths.get(folderName);		
+		
+		String zipFileName = folderName.concat(".zip");
+
+		try {
+			
+		ZipOutputStream zipOutputStream = new ZipOutputStream (new FileOutputStream(zipFileName));
+		
+		Files.walkFileTree(sourceDirectory, new SimpleFileVisitor<Path>() {
+
+			@Override
+			public FileVisitResult visitFile(Path arg0, BasicFileAttributes arg1) throws IOException {
+				
+				try {
+					
+				Path destinationFile = sourceDirectory.relativize(arg0);
+				
+				zipOutputStream.putNextEntry(new ZipEntry(destinationFile.toString()));
+				
+				byte[] bytes = Files.readAllBytes(arg0);
+				
+				zipOutputStream.write(bytes, 0, bytes.length);
+				
+				zipOutputStream.closeEntry();
+				
+				}catch(IOException e) {
+					
+					e.printStackTrace();
+				}
+				
+				// TODO Auto-generated method stub
+				//return super.visitFile(arg0, arg1);
+				
+				return FileVisitResult.CONTINUE;
+				
+			}
+		});
+		
+		zipOutputStream.flush();
+		
+		zipOutputStream.close();
+		
+		}catch(IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		File zipFile = new File(zipFileName);
+		
+		return zipFile;
+		
 	}
 }

@@ -48,6 +48,7 @@ import com.jcraft.jsch.SftpException;
  */
 @Controller
 public class EBRAgent extends HttpServlet{
+	
 	private Logger logger = LoggerFactory.getLogger(EBRAgent.class);	
 	String server = "login-skylake.hpc.cam.ac.uk";
 	String username = "msff2";
@@ -81,9 +82,16 @@ public class EBRAgent extends HttpServlet{
      */
 	@RequestMapping(value="/job/request", method = RequestMethod.GET)
     @ResponseBody
-    public String query(@RequestParam String input) throws IOException, EBRAgentException, SlurmJobException{
+    public String query(@RequestParam String input) throws IOException, EBRAgentException, SlurmJobException{		
+		/**
+		 * 1. Federated query based on json content
+		 * 2. Global cross validation based on json content inlcuding zipping results
+		 * 3. 
+		 */
 		System.out.println("received query:\n"+input);
+		
 		logger.info("received query:\n"+input);
+		
 		return setUpJob(input);
     }
 	
@@ -267,10 +275,21 @@ public class EBRAgent extends HttpServlet{
 	 * @throws EBRAgentException
 	 */
 	private String setUpJobOnAgentMachine(String jsonInput) throws IOException, EBRAgentException, SlurmJobException {
+		
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}
+		
+		
+		//jobSubmission.setUpJob(jsonInput, slurmScript, input, executable)
+		/**
+		 * executable = jar file of comoenthalpyestimatiopaper.jar
+		 * input = zip file containting g09 files, generated csv file (target species)
+		 * slurmScript
+		 * jsonInput = input
+		 */
+		
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
 						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
@@ -288,21 +307,30 @@ public class EBRAgent extends HttpServlet{
 	 * @throws EBRAgentException
 	 */
 	private File getInputFile(String jsonInput) throws IOException, EBRAgentException{
+		
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
+    	
     	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
     		throw new EBRAgentException(Status.JOB_SETUP_SPECIES_IRI_MISSING.getName());
     	}
-		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
+		
+    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
+		
 		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
 			throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
     	}
+		
 		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress());
+		
 		String inputFilePath = getInputFilePath();
+		
 		String inputFileMsg = createInputFile(inputFilePath, jobFolderName, speciesGeometry, jsonInput);
+		
 		if(inputFileMsg == null){
 			throw new EBRAgentException(Status.JOB_SETUP_INPUT_FILE_ERROR.getName());
 		}
+		
     	return new File(inputFilePath);
 	}
 	

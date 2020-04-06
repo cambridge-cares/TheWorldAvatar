@@ -6,7 +6,7 @@
     <artifactId>EBRAgent</artifactId>
     <packaging>war</packaging>
     <version>0.0.1-SNAPSHOT</version>
-    <name>ebragent</name>
+    <name>EBRAgent</name>
     <url>http://www.springframework.org/spring-ws</url>
 
     <properties>
@@ -144,10 +144,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>SlurmJobAPI</artifactId>
             <version>${project.version}</version>
-        </dependency>		
+        </dependency>
+        
 	</dependencies>
     <build>
-        <finalName>ebragent</finalName>
+        <finalName>EBRAgent</finalName>
         <plugins>
 		    <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>

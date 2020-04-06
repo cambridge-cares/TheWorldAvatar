@@ -12,9 +12,11 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
-import com.cmclinnovations.jps.agent.quantum.calculation.EBRAgent;
+
 import com.cmclinnovations.jps.agent.quantum.calculation.EBRAgentException;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
+
+
 
 
 /**
@@ -101,7 +103,9 @@ public class OntoSpeciesKG{
 		List<String> processedResult = new ArrayList<>();
 		try {
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
+			
 			repo.initialize();
+						
 			RepositoryConnection con = repo.getConnection();
 			try {
 				System.out.println("Query String:\n" + queryString);
@@ -148,6 +152,27 @@ public class OntoSpeciesKG{
 		queryString = queryString.concat("	}");
 		return queryString;
 	}
+	
+	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @param prefixBindingOntoSpecies
+	 * @param uniqueSpeciesIRI
+	 * @return String query  
+	 */
+	public String getCASRegistryID (String prefixBindingOntoSpecies, String uniqueSpeciesIRI){
+		
+		
+		String queryString = prefixBindingOntoSpecies;
+		
+		queryString = queryString.concat("SELECT ?speciesIRI ?casRegID");
+		queryString = queryString.concat("WHERE { \n ");
+		queryString = queryString.concat("  ").concat(uniqueSpeciesIRI).concat(" OntoSpecies:casRegistryID ?casRegID . \n");
+		
+		return queryString; 
+	}
+	
+	
 	
 	public String formAllSpeciesQuery(String prefixBindingRDF, String prefixBindingOntoSpecies){
 		String queryString = prefixBindingRDF;
