@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-
   <groupId>uk.ac.ceb.como.ontokin</groupId>
   <artifactId>ontokin</artifactId>
   <version>0.0.1-SNAPSHOT</version>
@@ -146,11 +145,11 @@
 </dependency>
 
   
-<dependency>
+<!-- <dependency>
             <groupId>uk.ac.cam.ceb.como</groupId>
             <artifactId>CoMoOntology</artifactId>
             <version>0.0.0</version>
-</dependency>
+</dependency> -->
 <dependency>
     <groupId>xml-apis</groupId>
     <artifactId>xml-apis</artifactId>
@@ -242,18 +241,21 @@
     <artifactId>jmol</artifactId>
     <version>14.29.17</version>
 </dependency>
-		<dependency>
+<dependency>
 			<groupId>org.json</groupId>
 			<artifactId>json</artifactId>
 			<version>20180813</version>
 		</dependency>
-<dependency>  
-    <groupId>javax</groupId>    
-    <artifactId>javaee-web-api</artifactId>    
-    <version>7.0</version> <!-- Put here the version of your Java EE app, in my case 7.0 -->
-    <scope>provided</scope>
-</dependency>
-
-
-  </dependencies>
+		<dependency>  
+		    <groupId>javax</groupId>    
+		    <artifactId>javaee-web-api</artifactId>    
+		    <version>7.0</version> <!-- Put here the version of your Java EE app, in my case 7.0 -->
+		    <scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.cmclinnovations</groupId>
+			<artifactId>CMCLOntoKin</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+	</dependencies>
 </project>

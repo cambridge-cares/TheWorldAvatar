@@ -1,8 +1,15 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -172,30 +179,64 @@ public class DFTAgent extends HttpServlet{
 	 * 
 	 */
 	private void processOutputs() {
-		if(jobSubmission==null){
+		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
 		jobSpace = jobSubmission.getWorkspaceDirectory();
 		try {
-			if(jobSpace.isDirectory()){
+			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
-				for(File jobFolder: jobFolders){
-					if(Utils.isJobCompleted(jobFolder)){
-						if(!Utils.isJobOutputProcessed(jobFolder)){
-							// Call Upload Service
-							updateJobOutputStatus(jobFolder);
+				for (File jobFolder : jobFolders) {
+					if (Utils.isJobCompleted(jobFolder)) {
+						if (!Utils.isJobOutputProcessed(jobFolder)) {
+							// Calls Upload Service
+							boolean uploaded = isLogFileUploaded(jobFolder);
+							// The successful completion of the log file upload
+							// triggers the job status update.
+							if (uploaded) {
+								updateJobOutputStatus(jobFolder);
+							}
 						}
 					}
 				}
 			}
 		} catch (IOException e) {
+			logger.error("DFTAgent: IOException.".concat(e.getMessage()));
 			e.printStackTrace();
 		} catch (InterruptedException e) {
+			logger.error("DFTAgent: InterruptedException.".concat(e.getMessage()));
 			e.printStackTrace();
-		} catch(SftpException e){
+		} catch (SftpException e) {
+			logger.error("DFTAgent: SftpException.".concat(e.getMessage()));
 			e.printStackTrace();
-		} catch(JSchException e){
+		} catch (JSchException e) {
+			logger.error("DFTAgent: JSchException.".concat(e.getMessage()));
 			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Uploads the log file to the OntoCompChem knowledge graph. If the<br>
+	 * upload is successful, it returns true. If the upload fails, it<br>
+	 * throws an exception. If the log file does not exist, for any<br>
+	 * reason, it returns false.
+	 * 
+	 * 
+	 * @param jobFolder
+	 * @return
+	 * @throws IOException
+	 */
+	private boolean isLogFileUploaded(File jobFolder) throws IOException{
+		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
+		if(logFile.exists()){
+			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
+			String jsonInput = generateJSONInput(jobFolder, uniqueSpeciesIRI).toString();
+			// Performs a HTTP request to upload the log file (output) to<br>
+			// the OntoCompChem knowledge graph.   
+			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
+			return true;
+		}else{
+			return false;
 		}
 	}
 	
@@ -257,7 +298,7 @@ public class DFTAgent extends HttpServlet{
 	/**
 	 * Sets up the quantum job for the current input.
 	 *   
-	 * @param jsonString
+	 * @param jsonInput
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
@@ -267,23 +308,24 @@ public class DFTAgent extends HttpServlet{
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}
+		long timeStamp = Utils.getTimeStamp();
+		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
 						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
-				getInputFile(jsonInput));
+				getInputFile(jsonInput, jobFolderName), timeStamp);
 	}
 	
 	/**
 	 * Sets up the quantum job for the current request.
 	 * 
-	 * @param ws
-	 * @param workspaceFolder
 	 * @param jsonInput
+	 * @param jobFolderName
 	 * @return
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	private File getInputFile(String jsonInput) throws IOException, DFTAgentException{
+	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
     	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
@@ -293,7 +335,6 @@ public class DFTAgent extends HttpServlet{
 		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
 			throw new DFTAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
     	}
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress());
 		String inputFilePath = getInputFilePath();
 		String inputFileMsg = createInputFile(inputFilePath, jobFolderName, speciesGeometry, jsonInput);
 		if(inputFileMsg == null){
@@ -360,10 +401,11 @@ public class DFTAgent extends HttpServlet{
 	 * Produces a job folder name by following the schema hpcAddress_timestamp.
 	 * 
 	 * @param hpcAddress
+	 * @param timeStamp
 	 * @return
 	 */
-	public String getNewJobFolderName(String hpcAddress){
-		return hpcAddress.concat("_").concat("" + Utils.getTimeStamp());
+	public String getNewJobFolderName(String hpcAddress, long timeStamp){
+		return hpcAddress.concat("_").concat("" + timeStamp);
 	}
 	
 	/**
@@ -376,4 +418,53 @@ public class DFTAgent extends HttpServlet{
 		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
 		.concat(slurmJobProperty.getInputFileExtension());
 	}
+	
+	/**
+	 * Generates the JSON input for uploading the log file of a DFT job<br>
+	 * by calling the ontocompchemupload service. 
+	 * 
+	 * @param speciesIRIInput
+	 * @return
+	 */
+	private JSONObject generateJSONInput(File jobFolder, String speciesIRIInput){
+		JSONObject input = new JSONObject();
+		input.put(Property.JSON_INPUT_REF_SPECIES.getPropertyName(), jobFolder.getAbsolutePath());
+		input.put(Property.JSON_INPUT_UNIQUE_SPECIES_IRI.getPropertyName(), speciesIRIInput);
+		return input;
+	}
+	
+	/**
+	 * Converts a JSON input into the URL formatted string.
+	 * 
+	 * @param jsonInput
+	 * @return
+	 * @throws UnsupportedEncodingException
+	 */
+	private String encodeIntoURLFormat(String jsonInput) throws UnsupportedEncodingException{
+		return URLEncoder.encode(jsonInput, "UTF-8");
+	}
+	
+	/**
+	 * Enables to perform an HTTP get request.
+	 * 
+	 * @param query
+	 * @return
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
+	public static String performHTTPRequest(String query) throws MalformedURLException, IOException{
+        URL httpURL = new URL(query);
+        URLConnection httpURLConnection = httpURL.openConnection();
+        BufferedReader in = new BufferedReader(
+                                new InputStreamReader(
+                                		httpURLConnection.getInputStream()));
+        String inputLine;
+        String fileContent = "";
+        while ((inputLine = in.readLine()) != null){ 
+            fileContent = fileContent.concat(inputLine);
+        }
+        in.close();
+        System.out.println("fileContent:\n"+fileContent);
+        return fileContent;
+    }
 }

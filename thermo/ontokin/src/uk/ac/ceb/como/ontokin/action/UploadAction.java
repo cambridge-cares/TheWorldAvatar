@@ -17,11 +17,14 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
+import com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter;
+import com.cmclinnovations.ontochem.model.exception.OntoException;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
 
-import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
+//import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 import uk.ac.ceb.como.ontokin.bean.ChemkinUploadReport;
 import uk.ac.ceb.como.ontokin.model.FolderManager;
 import uk.ac.ceb.como.ontokin.model.PropertiesManager;
@@ -70,15 +73,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	
 	private String kbMechanismFolderPath = ontokinPropreties.getProperty("kb.mechanism.folder.path").toString();
 	
-	private String ontokinJarFilePath = ontokinPropreties.getProperty("ontokin.jar.file.path").toString();
-
-	private String jmolDataJarFilePath = ontokinPropreties.getProperty("jmol.data.jar.file.path").toString();
-	
 	private String kineticsConverterFilePath = ontokinPropreties.getProperty("kinetics.converter.file.path").toString();
 
-	private String xmlFilePath = dataFolderPath + "mechanism.xml";
+	private final String XML_FILENAME = "mechanism.xml";
 	
-	private String logFilePath = dataFolderPath + "mechanism.log";
+	private final String LOG_FILE_NAME = "mech_dat.log";
 	
 	/**
 	 * 
@@ -87,11 +86,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 */
 	Properties kbProperties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("kb.ontokin.management.properties"));
 
-	private String ontoCompChemUri = kbProperties.getProperty("ontokin.kb.tbox.uri").toString();
-	
 	private final String ONTOKIN_KB_URL = kbProperties.getProperty("ontokin.kb.uri").toString();
 
 	private String serverURL = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url").toString();
+	
+	private String dataURL = kbProperties.getProperty("ontokin.data.folder.url").toString();
 	
 	private final String REPOSITORY_ID = kbProperties.getProperty("ontokin.repository.id").toString();
 
@@ -130,18 +129,12 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	
 	private String myMechanismName;
 	
-	private String mechanismName;
-	
 	private boolean myChemkinValidationReport;
+	
+	private String myChemkinValidationReportFile;
 	
 	private boolean myOWLConsistencyReport;
 	
-	/** The start time. */
-	final long startTime = System.currentTimeMillis();
-
-	/** The running time. */
-	private String runningTime = null;
-
 	private List<String> column = new ArrayList<String>();
 	private String column1 = new String();
 	private String column2 = new String();
@@ -186,25 +179,29 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 				|| getMyThermoFile() == null  || getMyThermoFile().getName() == null || getMyThermoFile().getName().isEmpty()
 				|| getMyMechanismName() == null  || getMyMechanismName().isEmpty())) {
 
-		File folder = new File(kbFolderPath);
-		File[] listOfFiles = folder.listFiles();
-		// Defined to produce the list of OWL files 
-		Set<String> fileNames = new HashSet<String>(); 
+		File folder = new File(dataFolderPath);
+		File[] listOfDirectories = folder.listFiles();
+		// Defined to produce the list of directory names under the folder of data. 
+		Set<String> directoryNames = new HashSet<String>(); 
 		// Adding the name of each OWL file to the list
-		for (int i = 0; i < listOfFiles.length; i++) {
-			if (listOfFiles[i].isFile()) {
-				fileNames.add(listOfFiles[i].getName());
+		FileWriter fw = new FileWriter("D:/directorynames.txt");
+		for (int i = 0; i < listOfDirectories.length; i++) {
+			fw.write("number of dirs:"+listOfDirectories.length+"\n");
+			if (listOfDirectories[i].isDirectory()) {
+				fw.write("dir name:"+listOfDirectories[i].getName()+"\n");
+				directoryNames.add(listOfDirectories[i].getName());
 			}
 		}
+		fw.close();
 		// If user proposed mechanism name already exists in the repository, 
 		// this part will generate and propose a new name
-		for(int i = 0; i < listOfFiles.length; i++){
+		for(int i = 0; i < listOfDirectories.length; i++){
 			if(i==0){
-				if(!fileNames.contains(getMyMechanismName()+".owl")){
+				if(!directoryNames.contains(getMyMechanismName())){
 					break;
 				}
 			}else{
-				if(!fileNames.contains(getMyMechanismName()+"_"+i+".owl")){
+				if(!directoryNames.contains(getMyMechanismName()+"_"+i)){
 					setMyMechanismName(getMyMechanismName()+"_"+i);
 					break;
 				}
@@ -239,16 +236,23 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 				inputThermoFile.getAbsolutePath(), inputSurfaceFile.getAbsolutePath(),
 				inputTransportFile.getAbsolutePath());
 		setMyChemkinValidationReport(chemKinValidation);
+		setMyChemkinValidationReportFile(dataURL+ uuidFolderName + "/" + LOG_FILE_NAME);
 		// Calls the method to convert from the intermediate XML format to OWL
-		boolean owlConversionDone = convertXMLToOWL(ontokinJarFilePath, kbFolderPath,
+		boolean owlConversionDone = convertXMLToOWL(kbFolderPath,
 				dataFolderPath + uuidFolderName + "\\" + generatedXMLFileName);
+		if(!owlConversionDone){
+			return ERROR;
+		}
 		String outputOwlFile = kbFolderPath + "\\" + uuidFolderName + ".owl";
+//		boolean owlConversionDone = convertXMLToOWL(ontokinBatchFilePath, ontokinJarFilePath, kbFolderPath,
+//		dataFolderPath + uuidFolderName + "\\" + generatedXMLFileName);
+//		String outputOwlFile = kbFolderPath + "\\" + uuidFolderName + ".owl";
 
-		boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlFile);
+		boolean consistency = true; //InconsistencyExplanation.getConsistencyOWLFile(outputOwlFile);
 		setMyOWLConsistencyReport(consistency);
 		gaussianUploadReport = new ChemkinUploadReport(getMyMechanismName(), getMyMechFileFileName(),
 				getMyThermoFileFileName(), getMySurfaceFileFileName(), getMyTransportFileFileName(), chemKinValidation,
-				consistency);
+				dataFolderPath + uuidFolderName + "\\" + LOG_FILE_NAME, consistency);
 
 		uploadReportList.add(gaussianUploadReport);
 
@@ -424,24 +428,6 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	}
 
 	/**
-	 * Gets the running time.
-	 *
-	 * @return the running time
-	 */
-	public String getRunningTime() {
-		return runningTime;
-	}
-
-	/**
-	 * Sets the running time.
-	 *
-	 * @param runningTime the new running time
-	 */
-	public void setRunningTime(String runningTime) {
-		this.runningTime = runningTime;
-	}
-
-	/**
 	 * Gets the files.
 	 *
 	 * @return the files
@@ -588,6 +574,14 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	public void setMyChemkinValidationReport(boolean myChemkinValidationReport) {
 		this.myChemkinValidationReport = myChemkinValidationReport;
 	}
+	
+	public String getMyChemkinValidationReportFile() {
+		return myChemkinValidationReportFile;
+	}
+
+	public void setMyChemkinValidationReportFile(String myChemkinValidationReportFile) {
+		this.myChemkinValidationReportFile = myChemkinValidationReportFile;
+	}
 
 	public boolean isMyOWLConsistencyReport() {
 		return myOWLConsistencyReport;
@@ -620,9 +614,6 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		try {
 			String command = converter + " -c -i=c -o=x -p=" + dataFolderPath + " " + mechFile + " " + thermoFile + " "
 					+ surfaceFile + " " + transportFile;
-			FileWriter fw = new FileWriter("D:/command.txt");
-			fw.write("command:" + command);
-			fw.close();
 			if (converter != null && new File(mechFile).exists() && new File(thermoFile).exists()) {
 				mechFile = addDoubleQuoteToFileName(mechFile);
 				thermoFile = addDoubleQuoteToFileName(thermoFile);
@@ -636,6 +627,9 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 						+ surfaceFile + " " + transportFile;
 				Process p = Runtime.getRuntime().exec(command);
 				p.waitFor();
+				if(!new File(dataFolderPath+XML_FILENAME).exists()){
+					return false;
+				}
 			} else {
 				if (converter == null) {
 					logger.error("The Chemkin to XML converter does not exist");
@@ -663,31 +657,25 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/**
 	 * Converts the intermidate XML format to OWL.
 	 * 
-	 */
-	private boolean convertXMLToOWL(String ontoKinJarFilePath, String owlFolderPath, String xmlFilePath) {
+	 */	
+	private boolean convertXMLToOWL(String owlFolderPath, String xmlFilePath) {
 		try {
-			if (new File(ontoKinJarFilePath).exists() && new File(xmlFilePath).exists()) {
-				String command = "java -cp " + ontoKinJarFilePath + " com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter " +xmlFilePath + " " + owlFolderPath;
-				FileWriter fw = new FileWriter("D:/ontokinjavacommand.txt");
-				fw.write("command:"+command);
-				fw.close();
-				Process p = Runtime.getRuntime().exec(command);
-				p.waitFor();
+			if (new File(xmlFilePath).exists()) {
+				ArrayList<String> ctmlFiles = new ArrayList<String>();
+				ctmlFiles.add(xmlFilePath);
+				new CtmlConverter().convert(ctmlFiles, owlFolderPath);
 			} else {
-				if (!(new File(ontoKinJarFilePath).exists())) {
-					logger.error("The following OntoKin jar file does not exist: " + ontoKinJarFilePath);
-				}
 				if (!(new File(xmlFilePath).exists())) {
 					logger.error("The following XML file does not exist: " + xmlFilePath);
 				}
 				logger.info("Therefore, the tool could not finish the conversion.");
 				return false;
 			}
-		} catch (IOException e) {
-			logger.error("Failed to convert to the OntoKin OWL format.");
+		} catch (OWLOntologyCreationException e) {
+			logger.error("Failed to create the corresponding OntoKin OWL ontology.");
 			e.printStackTrace();
 			return false;
-		} catch (InterruptedException e) {
+		} catch (OntoException e) {
 			logger.error("Failed to convert to the OntoKin OWL format.");
 			e.printStackTrace();
 			return false;
@@ -695,6 +683,75 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		return true;
 	}
 
+	
+	/**
+	 * Converts the intermidate XML format to OWL.
+	 * 
+	 */
+//	private boolean convertXMLToOWL(String ontoKinJarFilePath, String owlFolderPath, String xmlFilePath) {
+//		try {
+//			if (new File(ontoKinJarFilePath).exists() && new File(xmlFilePath).exists()) {
+//				String command = "java -cp " + ontoKinJarFilePath + " com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter " +xmlFilePath + " " + owlFolderPath;
+//				Process p = Runtime.getRuntime().exec(command);
+//				p.waitFor();
+//			} else {
+//				if (!(new File(ontoKinJarFilePath).exists())) {
+//					logger.error("The following OntoKin jar file does not exist: " + ontoKinJarFilePath);
+//				}
+//				if (!(new File(xmlFilePath).exists())) {
+//					logger.error("The following XML file does not exist: " + xmlFilePath);
+//				}
+//				logger.info("Therefore, the tool could not finish the conversion.");
+//				return false;
+//			}
+//		} catch (IOException e) {
+//			logger.error("Failed to convert to the OntoKin OWL format.");
+//			e.printStackTrace();
+//			return false;
+//		} catch (InterruptedException e) {
+//			logger.error("Failed to convert to the OntoKin OWL format.");
+//			e.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+
+	/**
+	 * Converts the intermidate XML format to OWL.
+	 * 
+	 */
+//	private boolean convertXMLToOWL(String ontoKinBatchFilePath, String ontoKinJarFilePath, String owlFolderPath, String xmlFilePath) {
+//		try {
+//			if (new File(ontoKinBatchFilePath).exists() && new File(ontoKinJarFilePath).exists() && new File(xmlFilePath).exists()) {
+//				String command = ontoKinBatchFilePath + " " + ontoKinJarFilePath + " " +xmlFilePath + " " + owlFolderPath;
+//				Process p = Runtime.getRuntime().exec(command);
+//				p.waitFor();
+//			} else {
+//				if (!(new File(ontoKinBatchFilePath).exists())) {
+//					logger.error("The following OntoKin Batch file does not exist: " + ontoKinBatchFilePath);
+//				}
+//				if (!(new File(ontoKinJarFilePath).exists())) {
+//					logger.error("The following OntoKin jar file does not exist: " + ontoKinJarFilePath);
+//				}
+//				if (!(new File(xmlFilePath).exists())) {
+//					logger.error("The following XML file does not exist: " + xmlFilePath);
+//				}
+//				logger.info("Therefore, the tool could not finish the conversion.");
+//				return false;
+//			}
+//		} catch (IOException e) {
+//			logger.error("Failed to convert to the OntoKin OWL format.");
+//			e.printStackTrace();
+//			return false;
+//		} catch (InterruptedException e) {
+//			logger.error("Failed to convert to the OntoKin OWL format.");
+//			e.printStackTrace();
+//			return false;
+//		}
+//		return true;
+//	}
+
+	
 	/**
 	 * Loads an ontology to the Ontokin KB repository. It also creates</br>
 	 * a context, which is a necessary feature to delete the mechanism</br>

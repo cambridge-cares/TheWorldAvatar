@@ -31,7 +31,9 @@ public enum Property {
 	PREFIX_BINDING_RAM("PREFIX ram: <http://cookingbigdata.com/linkeddata/ccinstances#>"),
 	PREFIX_MSM("msm"),
 	PREFIX_RAM("ram"),
-	DFT_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>");
+	DFT_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>"),
+	JSON_INPUT_REF_SPECIES("referenceSpecies"),
+	JSON_INPUT_UNIQUE_SPECIES_IRI("uniqueSpeciesIRI");
 	
 	private String propertyName;
 	private int value;

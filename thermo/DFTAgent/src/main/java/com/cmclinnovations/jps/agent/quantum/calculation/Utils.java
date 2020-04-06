@@ -21,11 +21,13 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.slurm.job.Status;
+import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 
 public class Utils {
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);	
-	public static long previousTimeStamp;
+	private static long previousTimeStamp;
 	
 	/**
 	 * Generate unique time stamp to be used in naming quantum jobs and</br>
@@ -203,5 +205,38 @@ public class Utils {
 			}
 		}
 		return null;
+	}
+	
+	/**
+	 * Extracts the unique species IRI, from the input.json file, for which<br>
+	 * a DFT calculation was performed. 
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getUniqueSpeciesIRI(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getJsonInputFileName()).concat(slurmJobProperty.getJsonFileExtension()));
+		String fileContent = getFileContent(br);
+		return JSonRequestParser.getSpeciesIRI(fileContent);
+	}
+	
+	/**
+	 * Returns the content of a text formatted file (e.g. .txt and .json)<br>
+	 * if the file is open using BufferedReader class.
+	 * 
+	 * @param br
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getFileContent(BufferedReader br) throws IOException{
+		String fileContent = "";
+		String line; 
+		while((line=br.readLine())!=null){
+			fileContent = fileContent.concat(line);
+		}
+		br.close();
+		return fileContent;
 	}
 }

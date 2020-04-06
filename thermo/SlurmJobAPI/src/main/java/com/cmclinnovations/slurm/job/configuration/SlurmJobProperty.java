@@ -58,6 +58,9 @@ public class SlurmJobProperty {
 
 	@Value("${agent.hosting.server.operating.system}")
 	private String agentHostingServerOperatingSystem;
+
+	@Value("${kg.url.to.upload.result.via.json.input}")
+	private String kgURLToUploadResultViaJsonInput;
 	
 	public String getAgentClass() {
 		return agentClass;
@@ -109,5 +112,13 @@ public class SlurmJobProperty {
 
 	public String getOutputFileExtension() {
 		return outputFileExtension;
+	}
+
+	public String getAgentHostingServerOperatingSystem() {
+		return agentHostingServerOperatingSystem;
+	}
+
+	public String getKgURLToUploadResultViaJsonInput() {
+		return kgURLToUploadResultViaJsonInput;
 	}
 }

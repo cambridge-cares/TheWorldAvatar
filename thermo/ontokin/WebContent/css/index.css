@@ -45,6 +45,10 @@ div#inputFields {
     margin: 0px 100px 0px 0px;
 }
 
+h1#title, p#description {
+    color: white;
+}
+
 #readme-text {
     display: none;
     box-sizing: border-box;
@@ -72,7 +76,6 @@ div#inputFields {
 
 .Container
 {
-    width: 729px;
     overflow-y: auto;
 }
 .Content

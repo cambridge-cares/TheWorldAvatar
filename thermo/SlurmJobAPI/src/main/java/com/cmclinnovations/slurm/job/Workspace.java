@@ -131,10 +131,11 @@ public class Workspace {
 	 * 
 	 * @param workspacePath
 	 * @param hpcAddress
+	 * @param timeStamp
 	 * @return
 	 */
-	public File createJobFolder(String workspacePath, String hpcAddress){
-		String jobFolder = hpcAddress.concat("_").concat("" + Utils.getTimeStamp());
+	public File createJobFolder(String workspacePath, String hpcAddress, long timeStamp){
+		String jobFolder = hpcAddress.concat("_").concat("" + timeStamp);
 		File workspace = new File(workspacePath.concat(File.separator).concat(jobFolder));
 		if(workspace.mkdir()){
 			return workspace;
