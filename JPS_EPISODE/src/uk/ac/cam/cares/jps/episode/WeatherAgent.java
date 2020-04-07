@@ -220,12 +220,21 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-				+ "SELECT ?vprop ?propval ?proptime ?proptimeval "
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "SELECT ?vprop ?propval ?proptime ?proptimeval ?vxent ?vyent "
 //				+ "WHERE " //it's replaced when named graph is used
 				+ "{graph "+"<"+context+">"
 				+ "{ "
 				//+ " ?entity a j5:T-Sensor ." 
 				+ "  ?entity j4:observes ?prop ."
+                + "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+                + "?xent j2:hasValue ?vxent ."
+                + "?vxent   j2:numericalValue ?xval ." // xvalue
+                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+                + "?yent j2:hasValue ?vyent ."
+                + "?vyent   j2:numericalValue ?yval ." // yvalue
+				
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." 
@@ -382,6 +391,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		jo1.put("value", propertyValue);
 		return jo1;
 	}
+	
     
 	public void removeDataRepoRoutine(RepositoryConnection con,List<String[]>oldcontent) {
 				
@@ -417,8 +427,11 @@ public class WeatherAgent extends JPSHttpServlet {
 		for(int x=0; x<oldcontent.size();x++) {
 			IRI prop1=f.createIRI(oldcontent.get(x)[0]);
 			IRI prop2=f.createIRI(oldcontent.get(x)[2]);
+
+			
 			con.add(prop1, numval, f.createLiteral(new Double(valuemapold.get(x)[0])), contextiri);
 			con.add(prop2,timeval,f.createLiteral(valuemapold.get(x)[1]),contextiri);
+
 			
 		}
 	}
@@ -427,14 +440,24 @@ public class WeatherAgent extends JPSHttpServlet {
 
 		String[] filenames= {"SGCloudCoverSensor-001.owl","SGTemperatureSensor-001.owl","SGWindSpeedSensor-001.owl","SGSolarIrradiationSensor-001.owl","SGPrecipitationSensor-001.owl","SGPressureSensor-001.owl","SGRelativeHumiditySensor-001.owl","SGWindDirectionSensor-001.owl"};
 		String[] filenames2= {"SGWindSpeedSensor-002.owl","SGWindDirectionSensor-002.owl"};
-		for(String el:filenames) {
-			new WeatherAgent().addFiletoRepo(con,el,context);
-			
+		if (context.contains("-001")) {
+			System.out.println("upload files for graph 1");
+			for (String el : filenames) {
+				new WeatherAgent().addFiletoRepo(con, el, context);
+
+			}
+		}else {
+			System.out.println("upload files for graph 2");
+			for (String el : filenames2) {
+				new WeatherAgent().addFiletoRepo(con, el, context);
+
+			}
 		}
 	}
 	
 	public void updateRepo(RepositoryConnection con,String context,String propnameclass, String newpropvalue, String newtimestamp) {
 		List<String[]>currentdatarepo= provideDataRepoRoutine(con,context,propnameclass);
+		System.out.println("current size= "+currentdatarepo.size());
 		removeDataRepoRoutine(con,currentdatarepo);
 		insertDataRepo(con, currentdatarepo,newpropvalue, newtimestamp,context);
 		System.out.println("update for "+propnameclass+" in context "+context+" is done");
@@ -455,8 +478,8 @@ public class WeatherAgent extends JPSHttpServlet {
 		new WeatherAgent().updateRepo(con,context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
 		new WeatherAgent().updateRepo(con,context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
 		//new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
-		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
-		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
+//		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
+//		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
 		
 	}
 	
@@ -467,20 +490,15 @@ public class WeatherAgent extends JPSHttpServlet {
 		RepositoryConnection con = repo.getConnection();
 		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
 		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
-//		new WeatherAgent().resetRepoTrial(con,context);
+		WeatherAgent a=new WeatherAgent();
+		a.resetRepoTrial(con,context);
+		a.resetRepoTrial(con,context2);
 //		new WeatherAgent().queryValuefromRepo(con,context); only for query testing
 		String completeformat=WeatherAgent.provideCurrentTime();
 
 			System.out.println("currenttime= "+ completeformat);
 
 			JSONObject apidata = null;
-			try {
-				apidata = new WeatherAgent().extractedSingleDataFromAccuweather("pressure", "singapore");
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			System.out.println("result from singapore= "+apidata.toString());
 			
 
 //		new WeatherAgent().addinstancetoRepo(con);

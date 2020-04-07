@@ -333,17 +333,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for( int r=42;r<73;r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(name1+separator+lineoffile.get(73).split("!")[1]);
-			newcontent.add(loc1x+separator+locy+separator+lineoffile.get(74).split("!")[1]);
+//			newcontent.add(name1+separator+lineoffile.get(73).split("!")[1]);
+//			newcontent.add(loc1x+separator+locy+separator+lineoffile.get(74).split("!")[1]);
 			newcontent.add(lineoffile.get(75));
-			newcontent.add(heighttemp+separator+lineoffile.get(76).split("!")[1]);
+//			newcontent.add(heighttemp+separator+lineoffile.get(76).split("!")[1]);
 			newcontent.add(upperheight+separator+lineoffile.get(77).split("!")[1]);
 			newcontent.add(lowerheight+separator+lineoffile.get(78).split("!")[1]);
 			for( int r=79;r<82;r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(name2+separator+lineoffile.get(82).split("!")[1];)
-			newcontent.add(loc2x+separator+loc2y+separator+lineoffile.get(83).split("!")[1]);
+//			newcontent.add(name2+separator+lineoffile.get(82).split("!")[1];)
+//			newcontent.add(loc2x+separator+loc2y+separator+lineoffile.get(83).split("!")[1]);
 			for( int r=84;r<89;r++) {
 				newcontent.add(lineoffile.get(r));
 			}
