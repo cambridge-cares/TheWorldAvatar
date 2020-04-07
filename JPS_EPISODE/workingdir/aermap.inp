@@ -31,7 +31,7 @@ CO FINISHED
 **                        xinit xnum  dx    yinit  ynum  dy
 RE STARTING
    GRIDCART CART1 STA
-                  XYINC  -35000.0 35 2000.0  -35000.0 35 2000.0
+                  XYINC  -35000.0a 35b 2000.0c  -35000.0d 35e 2000.0f
    GRIDCART CART1 END
 RE FINISHED
 
