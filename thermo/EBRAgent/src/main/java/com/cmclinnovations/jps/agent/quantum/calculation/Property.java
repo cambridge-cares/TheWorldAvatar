@@ -21,11 +21,23 @@ public enum Property {
 	JOB_CHK_POINT_FILE_PREFIX("%Chk="),
 	SPECIES_CHARGE_ZERO("0"),
 	SPECIES_MULTIPLICITY("1"),
-//	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * ontospecieskb and ontocompchem end points
+	 */
+	RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontospecieskb"),
+	RDF4J_SERVER_URL_FOR_CLAUDIUS_ONTOCOMPCHEM_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontocompchem"),
 	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 */
+	RDF4J_SERVER_URL_FOR_CLAUDIUS("http://theworldavatar.com/rdf4j-server/"),
 	FUSAKI_URL_FOR_WORLD_AVATAR("http://www.theworldavatar.com/damecoolquestion/agents/query?query="),
-//	RDF4J_ONTOSPECIES_REPOSITORY_ID("ontospecies"),
 	RDF4J_ONTOSPECIES_REPOSITORY_ID("ontospecieskb"),
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 */
+	RDF4J_ONTOCOMPCHEM_REPOSITORY_ID("ontocompchem"),
 	PREFIX_BINDING_ONTOSPECIES("PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n"),
 	PREFIX_BINDING_RDFS("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"),
 	PREFIX_BINDING_RDF("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"),

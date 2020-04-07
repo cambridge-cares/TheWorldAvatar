@@ -4,7 +4,10 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
+
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -22,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 
 import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
@@ -34,10 +37,13 @@ import com.cmclinnovations.slurm.job.SlurmJobException;
 import com.cmclinnovations.slurm.job.Status;
 import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
+
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+
+import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
@@ -82,12 +88,8 @@ public class EBRAgent extends HttpServlet{
      */
 	@RequestMapping(value="/job/request", method = RequestMethod.GET)
     @ResponseBody
-    public String query(@RequestParam String input) throws IOException, EBRAgentException, SlurmJobException{		
-		/**
-		 * 1. Federated query based on json content
-		 * 2. Global cross validation based on json content inlcuding zipping results
-		 * 3. 
-		 */
+    public String query(@RequestParam String input) throws IOException, EBRAgentException, SlurmJobException{	
+		
 		System.out.println("received query:\n"+input);
 		
 		logger.info("received query:\n"+input);
@@ -267,6 +269,17 @@ public class EBRAgent extends HttpServlet{
     }
 	
 	/**
+	 * Produces a job folder name by following the schema hpcAddress_timestamp.
+	 * 
+	 * @param hpcAddress
+	 * @param timeStamp
+	 * @return
+	 */
+	public String getNewJobFolderName(String hpcAddress, long timeStamp){
+		return hpcAddress.concat("_").concat("" + timeStamp);
+	}
+	
+	/**
 	 * Sets up the quantum job for the current input.
 	 *   
 	 * @param jsonString
@@ -290,11 +303,13 @@ public class EBRAgent extends HttpServlet{
 		 * jsonInput = input
 		 */
 		
+		long timeStamp = Utils.getTimeStamp();		
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
 						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
-				getInputFile(jsonInput));
+				getInputFile(jsonInput), timeStamp);
 	}
+	
 	
 	/**
 	 * Sets up the quantum job for the current request.
@@ -305,31 +320,73 @@ public class EBRAgent extends HttpServlet{
 	 * @return
 	 * @throws IOException
 	 * @throws EBRAgentException
+	 * 
 	 */
 	private File getInputFile(String jsonInput) throws IOException, EBRAgentException{
 		
-		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
-    	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
-    	
-    	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
-    		throw new EBRAgentException(Status.JOB_SETUP_SPECIES_IRI_MISSING.getName());
-    	}
+		List<NISTSpeciesId> nistSpeciesIdList = new ArrayList<NISTSpeciesId>();
 		
-    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
+		OntoSpeciesKG oskg = new OntoSpeciesKG();
 		
-		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
-			throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
-    	}
+		/**
+		 * Feroz's line
+		 */
+//    	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
 		
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress());
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 */	
 		
-		String inputFilePath = getInputFilePath();
+		List<Map<String, Object>> species =  JSonRequestParser.getAllSpeciesIRI(jsonInput);
 		
-		String inputFileMsg = createInputFile(inputFilePath, jobFolderName, speciesGeometry, jsonInput);
+		for (Map<String, Object> speciesMap : species) {
 		
-		if(inputFileMsg == null){
-			throw new EBRAgentException(Status.JOB_SETUP_INPUT_FILE_ERROR.getName());
+			LinkedList<String> speciesIRIList = new LinkedList<String>();
+			
+		for(Map.Entry<String, Object> entry : speciesMap.entrySet()) {
+				
+		System.out.println("key: " + entry.getKey() + " , value: " + entry.getValue().toString());
+		
+		speciesIRIList.add(entry.getValue().toString());
+			
 		}
+		
+		
+		try {
+			
+			String queryString =oskg.formSpeciesQueryFromJsonInput(speciesIRIList.getFirst(),speciesIRIList.getLast());
+			
+			nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories(Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(), Property.RDF4J_SERVER_URL_FOR_CLAUDIUS_ONTOCOMPCHEM_END_POINT.getPropertyName(),queryString));
+			
+		} catch (Exception e) {
+			
+			e.printStackTrace();
+		}
+		
+		
+		}		
+		
+		/**
+		 * 
+		 * Commented lines is Feroz's code.
+		 * 
+		 */
+//    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);    	
+//    	System.out.println("speciesGeometry:  " + speciesGeometry);    
+//		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
+//			throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
+//    	}
+		
+		/**
+		 * 
+		 * Comment: "input" foder in users profile is crated before running ebr service. inside that folder we are storing automatically csv file. g09 are copied manually.
+		 * DO TO: 
+		 * 1. Do federated query (csv)
+		 * 2. To create all the content of zip input file.
+		 * 
+		 */
+		
+		String inputFilePath = getInputFilePath();	
 		
     	return new File(inputFilePath);
 	}

@@ -1,20 +1,26 @@
 package com.cmclinnovations.jps.kg;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.RDF4JException;
+import org.eclipse.rdf4j.federated.FedXFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
+import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
+import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import com.cmclinnovations.jps.agent.quantum.calculation.EBRAgentException;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
+
+import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
 
 
@@ -64,15 +70,42 @@ public class OntoSpeciesKG{
 			speciesIRI = "<".concat(speciesIRI).concat(">");
 		}
 		String queryString = formGeometryQuery(Property.PREFIX_BINDING_ONTOSPECIES.getPropertyName(), speciesIRI);
+		
 		System.out.println("QueryString:"+queryString+"\n");
+		
 		List<String> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), Property.RDF4J_ONTOSPECIES_REPOSITORY_ID.getPropertyName(), queryString);
+		
 		for(String testResult: testResults){
-//			System.out.println("Test Result:\n"+testResult);
+			System.out.println("Test Result:\n"+testResult);
+		
 			speciesGeometry = testResult;
 		}
+		
 		return speciesGeometry;
+		
 	}
 
+	public List<String> querySpeciesBondGeometry(String speciesIRI) throws EBRAgentException{
+		String speciesGeometry = null;
+		if(!speciesIRI.trim().startsWith("<") && !speciesIRI.trim().endsWith(">")){
+			speciesIRI = "<".concat(speciesIRI).concat(">");
+		}
+		String queryString = formGeometryQuery(Property.PREFIX_BINDING_ONTOSPECIES.getPropertyName(), speciesIRI);
+		
+		System.out.println("QueryString:"+queryString+"\n");
+		
+		List<String> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), Property.RDF4J_ONTOSPECIES_REPOSITORY_ID.getPropertyName(), queryString);
+		
+		for(String testResult: testResults){
+			System.out.println("Test Result:\n"+testResult);
+		
+//			speciesGeometry = testResult;
+		}
+		
+		return testResults;
+		
+	}
+	
 	/**
 	 * Queries all species available in the OntoSpecies Knowledge Graph.
 	 * 
@@ -138,6 +171,108 @@ public class OntoSpeciesKG{
 		return processedResult;
 	}
 	
+	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param localHostSparqlEndPoint the localhost sparql endpoint.
+	 * @param claudiusServerSparqlEndPoint the remote repository sparql.
+	 * @param query the query string.
+	 * @return the set of sparql results.
+	 * @throws Exception 
+	 */
+	public LinkedList<NISTSpeciesId> runFederatedQueryRepositories(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
+		
+	LinkedList<NISTSpeciesId> nistSpeciesIdList = new LinkedList<NISTSpeciesId>();
+		
+    Repository repository = FedXFactory.newFederation()
+    		
+    		/**
+    		 * 
+    		 * @author NK510 
+    		 * a sparql endpoint on localhost
+    		 * 
+    		 */
+	    .withSparqlEndpoint(localHostSparqlEndPoint)
+	    
+	    /**
+	     * 
+	     * @author NK510
+	     * a sparql endpoint on Caludius server .
+	     * 
+	     */
+        .withSparqlEndpoint(claudiusServerSparqlEndPoint)
+		.create();
+    
+    
+    
+    try {
+		
+	RepositoryConnection conn = repository.getConnection();
+	
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * Returns a result of federated sparql query via ontospecieskb repositories stored on local host and on Claudius server.
+	 * 
+	 */
+	
+	TupleQuery tq = conn.prepareTupleQuery(query);
+	
+	try{
+		
+	TupleQueryResult tqRes = tq.evaluate();
+	
+	
+	while (tqRes.hasNext()) {
+				
+				BindingSet bSet = tqRes.next();
+				
+				
+				/**
+				 * 
+				 * @author NK510 (caresssd@hermes.cam.ac.uk)
+				 * Stores query results into NISTSpeciesId bean: species identifier, cas reg number, atomic bond, geometry, enthalpy of formation, scf energy, zero point energy.
+				 * 
+				 */		
+				
+				NISTSpeciesId nistSpeciesId = new NISTSpeciesId(
+						bSet.getValue("species").stringValue(), 
+						bSet.getValue("crid").stringValue(), 
+						bSet.getValue("atomicBond").stringValue(), 
+						bSet.getValue("geometry").stringValue(),
+						bSet.getValue("enthalpyOfFormationValue").stringValue(),
+						bSet.getValue("scfEnergyValue").stringValue(),
+						bSet.getValue("zeroEnergyValue").stringValue());
+				
+				nistSpeciesIdList.add(nistSpeciesId);
+	}
+	
+	}catch(TupleQueryResultHandlerException e) {
+	
+		e.printStackTrace();
+		throw new EBRAgentException("Exception occurred.");
+		
+	}finally {
+		
+		logger.info("Executed the command to close the connection to the repository");
+		conn.close();
+	}
+	
+	}catch(RepositoryException e) {
+	
+		logger.error("RDF4JException occurred.");
+		e.printStackTrace();
+		throw new EBRAgentException("RDF4JException occurred.");
+		
+	}
+    
+	repository.shutDown();	
+
+	return nistSpeciesIdList;
+	}	
+	
+	
 	/**
 	 * Builds a query to retrieve the geometry of species.</br> 
 	 * 
@@ -146,13 +281,45 @@ public class OntoSpeciesKG{
 	 */
 	public String formGeometryQuery(String prefixBindingOntoSpecies, String speciesIRI){
 		String queryString = prefixBindingOntoSpecies;
-		queryString = queryString.concat("SELECT ?geometry \n");
+		queryString = queryString.concat("SELECT ?geometry ?atomicBond \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(speciesIRI).concat(" OntoSpecies:hasGeometry ?geometry . \n");
+		queryString = queryString.concat("  ").concat(speciesIRI).concat(" OntoSpecies:hasAtomicBond ?atomicBond . \n");
 		queryString = queryString.concat("	}");
 		return queryString;
 	}
 	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @param species onto species iri given is jos input file
+	 * @param ontoComChemIRI ontocompchem iri given in json input file
+	 * @return sparql query string.
+	 * 
+	 */
+	public String formSpeciesQueryFromJsonInput(String species, String ontoComChemIRI) {
+		
+			String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
+					+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
+					+ "PREFIX gc: <http://purl.org/gc/> "
+					+ "SELECT "+ species +" ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue "
+					+ "WHERE { "
+					+ "<"+species+"> OntoSpecies:casRegistryID ?crid . "
+					+ "<"+species+"> OntoSpecies:hasAtomicBond ?atomicBond . "
+					+ "<"+species+"> OntoSpecies:hasGeometry ?geometry . "
+					+ "<"+species+"> OntoSpecies:hasStandardEnthalpyOfFormation ?enthalpy . "
+					+ "<"+species+"> OntoSpecies:value ?enthalpyOfFormationValue ."
+					+ "<"+ontoComChemIRI+"> ontocompchem:hasUniqueSpecies <"+species+"> . "
+					+ "<"+ontoComChemIRI+"> gc:isCalculationOn ?scfEnergy . "
+					+ "?scfEnergy a ontocompchem:ScfEnergy . "
+					+ "?scfEnergy gc:hasElectronicEnergy ?scfElectronicEnergy . "
+					+ "?scfElectronicEnergy gc:hasValue ?scfEnergyValue . "
+					+ "<"+ontoComChemIRI+"> gc:isCalculationOn ?zeroEnergy . "
+					+ "?zeroEnergy a ontocompchem:ZeroPointEnergy . "
+					+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
+					+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "
+					+ "}";
+			return query;
+	}
 	
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
