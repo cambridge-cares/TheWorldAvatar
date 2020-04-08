@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import org.json.JSONObject;
@@ -29,11 +30,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
+import com.cmclinnovations.jps.csv.species.CSVGenerator;
 import com.cmclinnovations.jps.kg.OntoAgentKG;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
+import com.cmclinnovations.jps.model.species.SpeciesBean;
 import com.cmclinnovations.slurm.job.JobSubmission;
 import com.cmclinnovations.slurm.job.SlurmJob;
-import com.cmclinnovations.slurm.job.SlurmJobException;
+
 import com.cmclinnovations.slurm.job.Status;
 import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
@@ -43,7 +46,7 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
+
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
@@ -85,10 +88,11 @@ public class EBRAgent extends HttpServlet{
      * 
      * @param input the JSON input to set up and run a quantum job.
      * @return a message if the job was set up successfully or failed. 
+	 * @throws Exception 
      */
 	@RequestMapping(value="/job/request", method = RequestMethod.GET)
     @ResponseBody
-    public String query(@RequestParam String input) throws IOException, EBRAgentException, SlurmJobException{	
+    public String query(@RequestParam String input) throws Exception{	
 		
 		System.out.println("received query:\n"+input);
 		
@@ -254,10 +258,9 @@ public class EBRAgent extends HttpServlet{
 	 * 
 	 * @param jsonString
 	 * @return
-	 * @throws IOException
-	 * @throws EBRAgentException
+	 * @throws Exception 
 	 */
-	public String setUpJob(String jsonString) throws IOException, EBRAgentException, SlurmJobException{
+	public String setUpJob(String jsonString) throws Exception{
 		
         	String message = setUpJobOnAgentMachine(jsonString);
 			JSONObject obj = new JSONObject();
@@ -284,10 +287,9 @@ public class EBRAgent extends HttpServlet{
 	 *   
 	 * @param jsonString
 	 * @return
-	 * @throws IOException
-	 * @throws EBRAgentException
+	 * @throws Exception 
 	 */
-	private String setUpJobOnAgentMachine(String jsonInput) throws IOException, EBRAgentException, SlurmJobException {
+	private String setUpJobOnAgentMachine(String jsonInput) throws Exception {
 		
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
@@ -308,8 +310,7 @@ public class EBRAgent extends HttpServlet{
 				jsonInput, new File(getClass().getClassLoader()
 						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
 				getInputFile(jsonInput), timeStamp);
-	}
-	
+	}	
 	
 	/**
 	 * Sets up the quantum job for the current request.
@@ -318,13 +319,14 @@ public class EBRAgent extends HttpServlet{
 	 * @param workspaceFolder
 	 * @param jsonInput
 	 * @return
-	 * @throws IOException
-	 * @throws EBRAgentException
+	 * @throws Exception 
 	 * 
 	 */
-	private File getInputFile(String jsonInput) throws IOException, EBRAgentException{
+	
+	private File getInputFile(String jsonInput) throws Exception{
 		
-		List<NISTSpeciesId> nistSpeciesIdList = new ArrayList<NISTSpeciesId>();
+		List<SpeciesBean> nistSpeciesIdList = new ArrayList<SpeciesBean>();
+		CSVGenerator csvGenerator  = new CSVGenerator();
 		
 		OntoSpeciesKG oskg = new OntoSpeciesKG();
 		
@@ -338,10 +340,11 @@ public class EBRAgent extends HttpServlet{
 		 */	
 		
 		List<Map<String, Object>> species =  JSonRequestParser.getAllSpeciesIRI(jsonInput);
+
 		
 		for (Map<String, Object> speciesMap : species) {
 		
-			LinkedList<String> speciesIRIList = new LinkedList<String>();
+		LinkedList<String> speciesIRIList = new LinkedList<String>();
 			
 		for(Map.Entry<String, Object> entry : speciesMap.entrySet()) {
 				
@@ -351,20 +354,15 @@ public class EBRAgent extends HttpServlet{
 			
 		}
 		
+        String queryString =oskg.formSpeciesQueryFromJsonInput(speciesIRIList.getFirst(),speciesIRIList.getLast());
+        
+		System.out.println("");
+        System.out.println("queryString: " + queryString);		
+        
+//      http://theworldavatar.com/rdf4j-server/ - Claudius server 		
+		nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories("http://localhost:8080/rdf4j-server/repositories/ontospecieskb", "http://localhost:8080/rdf4j-server/repositories/ontocompchem",queryString));
 		
-		try {
-			
-			String queryString =oskg.formSpeciesQueryFromJsonInput(speciesIRIList.getFirst(),speciesIRIList.getLast());
-			
-			nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories(Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(), Property.RDF4J_SERVER_URL_FOR_CLAUDIUS_ONTOCOMPCHEM_END_POINT.getPropertyName(),queryString));
-			
-		} catch (Exception e) {
-			
-			e.printStackTrace();
 		}
-		
-		
-		}		
 		
 		/**
 		 * 

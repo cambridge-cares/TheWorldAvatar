@@ -26,12 +26,12 @@ public enum Property {
 	 * ontospecieskb and ontocompchem end points
 	 */
 	RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontospecieskb"),
-	RDF4J_SERVER_URL_FOR_CLAUDIUS_ONTOCOMPCHEM_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontocompchem"),
+	RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontocompchem"),
 	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 */
-	RDF4J_SERVER_URL_FOR_CLAUDIUS("http://theworldavatar.com/rdf4j-server/"),
+	RDF4J_SERVER_URL_FOR_CLAUDIUS_ONTOCOMPCHEM_END_POINT("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"),
 	FUSAKI_URL_FOR_WORLD_AVATAR("http://www.theworldavatar.com/damecoolquestion/agents/query?query="),
 	RDF4J_ONTOSPECIES_REPOSITORY_ID("ontospecieskb"),
 	/**

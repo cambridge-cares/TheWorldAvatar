@@ -33,4 +33,10 @@ public class JSonRequestParser {
 		
 		return JsonPath.parse(jsonString).read("$.job[*]");
 	}
+	
+	public static String getSrcRefPool(String jsonString){
+		
+		return JsonPath.read(jsonString, "$.srcRefPool");
+	}	
+	
 }

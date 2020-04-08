@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.federated.FedXFactory;
+
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -19,11 +20,7 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import com.cmclinnovations.jps.agent.quantum.calculation.EBRAgentException;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
-
-import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
-
-
-
+import com.cmclinnovations.jps.model.species.SpeciesBean;
 
 /**
  * This class manages the download of species from the OntoSpecies repository</br>
@@ -181,12 +178,14 @@ public class OntoSpeciesKG{
 	 * @return the set of sparql results.
 	 * @throws Exception 
 	 */
-	public LinkedList<NISTSpeciesId> runFederatedQueryRepositories(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
+	
+	public LinkedList<SpeciesBean> runFederatedQueryRepositories(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
 		
-	LinkedList<NISTSpeciesId> nistSpeciesIdList = new LinkedList<NISTSpeciesId>();
+	LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
 		
     Repository repository = FedXFactory.newFederation()
-    		
+    
+    
     		/**
     		 * 
     		 * @author NK510 
@@ -204,11 +203,12 @@ public class OntoSpeciesKG{
         .withSparqlEndpoint(claudiusServerSparqlEndPoint)
 		.create();
     
-    
-    
     try {
 		
+
+    	
 	RepositoryConnection conn = repository.getConnection();
+	
 	
 	/**
 	 * 
@@ -223,11 +223,9 @@ public class OntoSpeciesKG{
 		
 	TupleQueryResult tqRes = tq.evaluate();
 	
-	
 	while (tqRes.hasNext()) {
 				
 				BindingSet bSet = tqRes.next();
-				
 				
 				/**
 				 * 
@@ -235,11 +233,11 @@ public class OntoSpeciesKG{
 				 * Stores query results into NISTSpeciesId bean: species identifier, cas reg number, atomic bond, geometry, enthalpy of formation, scf energy, zero point energy.
 				 * 
 				 */		
+//				SpeciesBean nistSpeciesId= new SpeciesBean(bSet.getValue("crid").stringValue());
 				
-				NISTSpeciesId nistSpeciesId = new NISTSpeciesId(
-						bSet.getValue("species").stringValue(), 
+				SpeciesBean nistSpeciesId = new SpeciesBean(
 						bSet.getValue("crid").stringValue(), 
-						bSet.getValue("atomicBond").stringValue(), 
+						bSet.getValue("atomicBond").stringValue(),
 						bSet.getValue("geometry").stringValue(),
 						bSet.getValue("enthalpyOfFormationValue").stringValue(),
 						bSet.getValue("scfEnergyValue").stringValue(),
@@ -251,25 +249,19 @@ public class OntoSpeciesKG{
 	}catch(TupleQueryResultHandlerException e) {
 	
 		e.printStackTrace();
-		throw new EBRAgentException("Exception occurred.");
 		
-	}finally {
-		
-		logger.info("Executed the command to close the connection to the repository");
-		conn.close();
 	}
-	
-	}catch(RepositoryException e) {
-	
-		logger.error("RDF4JException occurred.");
-		e.printStackTrace();
-		throw new EBRAgentException("RDF4JException occurred.");
+		conn.close();
 		
+	}catch(RepositoryException e) {
+		
+		e.printStackTrace();
 	}
     
 	repository.shutDown();	
 
 	return nistSpeciesIdList;
+	
 	}	
 	
 	
@@ -296,18 +288,18 @@ public class OntoSpeciesKG{
 	 * @return sparql query string.
 	 * 
 	 */
-	public String formSpeciesQueryFromJsonInput(String species, String ontoComChemIRI) {
+	public String formSpeciesQueryFromJsonInput(String species, String ontoComChemIRI){
 		
 			String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
 					+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
 					+ "PREFIX gc: <http://purl.org/gc/> "
-					+ "SELECT "+ species +" ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue "
+					+ "SELECT DISTINCT ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue  ?scfEnergyValue ?zeroEnergyValue "
 					+ "WHERE { "
 					+ "<"+species+"> OntoSpecies:casRegistryID ?crid . "
 					+ "<"+species+"> OntoSpecies:hasAtomicBond ?atomicBond . "
 					+ "<"+species+"> OntoSpecies:hasGeometry ?geometry . "
 					+ "<"+species+"> OntoSpecies:hasStandardEnthalpyOfFormation ?enthalpy . "
-					+ "<"+species+"> OntoSpecies:value ?enthalpyOfFormationValue ."
+					+ "?enthalpy OntoSpecies:value ?enthalpyOfFormationValue ."
 					+ "<"+ontoComChemIRI+"> ontocompchem:hasUniqueSpecies <"+species+"> . "
 					+ "<"+ontoComChemIRI+"> gc:isCalculationOn ?scfEnergy . "
 					+ "?scfEnergy a ontocompchem:ScfEnergy . "
@@ -318,6 +310,7 @@ public class OntoSpeciesKG{
 					+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
 					+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "
 					+ "}";
+			
 			return query;
 	}
 	
