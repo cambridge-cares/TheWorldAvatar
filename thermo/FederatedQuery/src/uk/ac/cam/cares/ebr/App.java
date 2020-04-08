@@ -22,7 +22,7 @@ public class App {
 	
 	static String localhostUrlOntoSpecies = "http://localhost:8080/rdf4j-server/repositories/ontospecieskb";
 	static String claudiusUrlOntoCompChem = "http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"; //http://localhost:8080/rdf4j-server/repositories/ontocompchem http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb
-	static String csvFilePath = "C:\\Users\\NK\\Documents\\species_test_5.csv";
+	static String csvFilePath = "C:\\Users\\NK\\Documents\\species_test_8.csv";
 	
 	static FederatedQuery fq = new FederatedQuery();
 	static CSVGenerator csvGenerator = new CSVGenerator();
@@ -48,6 +48,6 @@ public class App {
 
 //  csvGenerator.generateCSVFile(fq.runFederatedSPARQL(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy()), csvFilePath);
     
-//FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());     	
+FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());     	
     }	
 }

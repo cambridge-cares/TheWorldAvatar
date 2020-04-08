@@ -124,8 +124,8 @@
 		
 		<dependency>
 		<groupId>uk.ac.cam.ceb.como</groupId>
-    <artifactId>CoMoNISTWebbook</artifactId>
-    <version>0.0.0</version>
+        <artifactId>CoMoNISTWebbook</artifactId>
+        <version>0.0.0</version>
 		</dependency>
 
 <dependency>

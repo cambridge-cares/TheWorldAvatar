@@ -35,7 +35,7 @@ public class QueryTemplate {
 		String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
 				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
 				+ "PREFIX gc: <http://purl.org/gc/> "
-				+ "SELECT ?species ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue "
+				+ "SELECT DISTINCT ?species ?compchemspecies ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue ?scfEnergyValue ?zeroEnergyValue "
 				+ "WHERE { "
 				+ "?species OntoSpecies:casRegistryID ?crid . "
 				+ "?species OntoSpecies:hasAtomicBond ?atomicBond . "

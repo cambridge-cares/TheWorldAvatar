@@ -13,6 +13,8 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 
 import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
+
+
 /**
  * 
  * @author NK510
@@ -72,11 +74,9 @@ public class FederatedQuery {
 		
 	TupleQueryResult tqRes = tq.evaluate();
 	
-	
 	while (tqRes.hasNext()) {
 				
-				BindingSet bSet = tqRes.next();
-				
+	BindingSet bSet = tqRes.next();				
 				
 				/**
 				 * 
@@ -95,16 +95,11 @@ public class FederatedQuery {
 						bSet.getValue("zeroEnergyValue").stringValue());
 				
 				nistSpeciesIdList.add(nistSpeciesId);
-				
-
 	}
-	
-
 	
 	}catch(TupleQueryResultHandlerException e) {
 	
-		e.printStackTrace();
-		
+		e.printStackTrace();		
 	}
 	
 	conn.close();
@@ -118,9 +113,6 @@ public class FederatedQuery {
 
 	return nistSpeciesIdList;
 	}	
-	
-	
-	
 	
 	public static void runFederatedSPARQLTest(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
 		
@@ -180,6 +172,9 @@ public class FederatedQuery {
 					System.out.println(bSet.getValue("species").stringValue()+ " " + bSet.getValue("crid").stringValue() +" " + 
 							bSet.getValue("atomicBond").stringValue() + " " +
 							bSet.getValue("geometry").stringValue() + " "+bSet.getValue("enthalpyOfFormationValue").stringValue() +" "+bSet.getValue("scfEnergyValue").stringValue() +" " + bSet.getValue("zeroEnergyValue").stringValue());
+					
+					System.out.println("onto species iri: "+ bSet.getValue("species").stringValue() + " ontocompchem iri: " + bSet.getValue("compchemspecies").stringValue());
+					
 		}
 		
 		}catch(TupleQueryResultHandlerException e) {
