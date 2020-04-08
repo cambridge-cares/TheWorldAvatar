@@ -28,6 +28,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
@@ -384,9 +386,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		String baseUrl= requestParams.getString("baseUrl");
-		String wasteIRI=requestParams.getString("wastenetwork");
-		
+		String baseUrl= requestParams.optString("baseUrl", "testFood");
+		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		String sourceUrl = JPSContext.getScenarioUrl(requestParams);
+		String sourceName = BucketHelper.getScenarioName(sourceUrl);
 		OntModel model= readModelGreedy(wasteIRI);
 		List<String[]> inputonsitedata=prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
@@ -397,6 +400,15 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
 		copyTemplate(baseUrl, "D2R.m");
+		try
+		{
+			logger.info("Scenario Url" + sourceUrl);
+		    Thread.sleep(30000);
+		}
+		catch(InterruptedException ex)
+		{
+		    Thread.currentThread().interrupt();
+		}
 		if (SIM_START_PATH.equals(path)) {
 			try {
 				createBat(baseUrl);
