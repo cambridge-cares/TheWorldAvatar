@@ -437,22 +437,25 @@ public class WeatherAgent extends JPSHttpServlet {
 	}
 	
 	public void resetRepoTrial(RepositoryConnection con,String context) {
-
-		String[] filenames= {"SGCloudCoverSensor-001.owl","SGTemperatureSensor-001.owl","SGWindSpeedSensor-001.owl","SGSolarIrradiationSensor-001.owl","SGPrecipitationSensor-001.owl","SGPressureSensor-001.owl","SGRelativeHumiditySensor-001.owl","SGWindDirectionSensor-001.owl"};
-		String[] filenames2= {"SGWindSpeedSensor-002.owl","SGWindDirectionSensor-002.owl"};
-		if (context.contains("-001")) {
-			System.out.println("upload files for graph 1");
-			for (String el : filenames) {
-				new WeatherAgent().addFiletoRepo(con, el, context);
-
+		for(int d=1;d<=12;d++) {
+			String number="00"+d;
+			if(d>9) {
+				number="0"+d;
 			}
-		}else {
-			System.out.println("upload files for graph 2");
-			for (String el : filenames2) {
-				new WeatherAgent().addFiletoRepo(con, el, context);
+			String[] filenames= {"SGCloudCoverSensor-"+number+".owl","SGTemperatureSensor-"+number+".owl","SGWindSpeedSensor-"+number+".owl",
+					"SGPrecipitationSensor-"+number+".owl","SGPressureSensor-"+number+".owl","SGRelativeHumiditySensor-"+number+".owl","SGWindDirectionSensor-"+number+".owl"};
+			context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+number+".owl#WeatherStation-"+number;
+				System.out.println("upload files for graph 1");
+				for (String el : filenames) {
+					new WeatherAgent().addFiletoRepo(con, el, context);
 
-			}
+				}
+			
 		}
+//		String[] filenames= {"SGCloudCoverSensor-001.owl","SGTemperatureSensor-001.owl","SGWindSpeedSensor-001.owl","SGSolarIrradiationSensor-001.owl","SGPrecipitationSensor-001.owl","SGPressureSensor-001.owl","SGRelativeHumiditySensor-001.owl","SGWindDirectionSensor-001.owl"};
+		
+//		String[] filenames2= {"SGWindSpeedSensor-002.owl","SGWindDirectionSensor-002.owl"};
+
 	}
 	
 	public void updateRepo(RepositoryConnection con,String context,String propnameclass, String newpropvalue, String newtimestamp) {
@@ -478,8 +481,8 @@ public class WeatherAgent extends JPSHttpServlet {
 		new WeatherAgent().updateRepo(con,context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
 		new WeatherAgent().updateRepo(con,context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
 		//new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
-//		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
-//		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
+		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
+		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
 		
 	}
 	
@@ -491,8 +494,8 @@ public class WeatherAgent extends JPSHttpServlet {
 		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
 		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
 		WeatherAgent a=new WeatherAgent();
-		a.resetRepoTrial(con,context);
-		a.resetRepoTrial(con,context2);
+		a.resetRepoTrial(con,context); //currently the context is not used
+		
 //		new WeatherAgent().queryValuefromRepo(con,context); only for query testing
 		String completeformat=WeatherAgent.provideCurrentTime();
 
