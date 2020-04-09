@@ -2,9 +2,11 @@ package com.cmclinnovations.jps.agent.quantum.calculation;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -46,8 +48,6 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-
-
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
  * jobs at increasing levels of theory.   
@@ -57,6 +57,11 @@ import com.jcraft.jsch.SftpException;
  */
 @Controller
 public class EBRAgent extends HttpServlet{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	
 	private Logger logger = LoggerFactory.getLogger(EBRAgent.class);	
 	String server = "login-skylake.hpc.cam.ac.uk";
@@ -325,8 +330,9 @@ public class EBRAgent extends HttpServlet{
 	
 	private File getInputFile(String jsonInput) throws Exception{
 		
-		List<SpeciesBean> nistSpeciesIdList = new ArrayList<SpeciesBean>();
-		CSVGenerator csvGenerator  = new CSVGenerator();
+		LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
+		
+		CSVGenerator csvGenerator = new CSVGenerator();
 		
 		OntoSpeciesKG oskg = new OntoSpeciesKG();
 		
@@ -340,7 +346,6 @@ public class EBRAgent extends HttpServlet{
 		 */	
 		
 		List<Map<String, Object>> species =  JSonRequestParser.getAllSpeciesIRI(jsonInput);
-
 		
 		for (Map<String, Object> speciesMap : species) {
 		
@@ -359,10 +364,12 @@ public class EBRAgent extends HttpServlet{
 		System.out.println("");
         System.out.println("queryString: " + queryString);		
         
-//      http://theworldavatar.com/rdf4j-server/ - Claudius server 		
+//      http://theworldavatar.com/rdf4j-server/ - Claudius server 
 		nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories("http://localhost:8080/rdf4j-server/repositories/ontospecieskb", "http://localhost:8080/rdf4j-server/repositories/ontocompchem",queryString));
 		
 		}
+		
+		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/input/input.csv");
 		
 		/**
 		 * 
@@ -463,4 +470,7 @@ public class EBRAgent extends HttpServlet{
 		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
 		.concat(slurmJobProperty.getInputFileExtension());
 	}
+	
+	
+	
 }

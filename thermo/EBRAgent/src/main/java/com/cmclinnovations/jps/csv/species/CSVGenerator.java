@@ -23,6 +23,7 @@ public class CSVGenerator {
 	
 	private SpeciesElementGenerator seg = new SpeciesElementGenerator();
 	private SpeciesBondGenerator sbg = new SpeciesBondGenerator();
+	
 	/**
 	 * @author NK520 (caresssd@hermes.cam.ac.uk)
 	 * 
@@ -30,7 +31,7 @@ public class CSVGenerator {
 	 * @param csvFilePath the csv file path that stores CAS reg id, species elements, and bond connectivities.
 	 * 
 	 */
-	public void generateCSVFile(LinkedList<SpeciesBean> nistSpeciesLinkedList, String csvFilePath)  {
+	public void generateCSVFile(LinkedList<SpeciesBean> nistSpeciesLinkedList, String csvFilePath){
 		
 		File file = new File(csvFilePath);
 		
