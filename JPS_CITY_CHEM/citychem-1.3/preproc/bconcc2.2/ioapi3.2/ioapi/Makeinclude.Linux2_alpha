@@ -1,0 +1,27 @@
+# VERSION "$Id: Makeinclude.Linux2_alpha 1 2017-06-10 18:05:20Z coats $"
+#
+#       Linux for Alpha using the Digital/Cq/HP compiler suite
+#
+AR   = ar
+CC   = cc
+CXX  = CC
+FC   = fort
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+OMPFLAGS  = 
+OMPLIBS   = -lcxml
+COPTFLAGS = -O2
+FOPTFLAGS = -O2 -automatic -assume no2underscores
+FPPFLAGS  = -DF90=1 
+FSFLAGS   = -static
+ARCHFLAGS = -DFLDMN=1 -DAUTO_ARRAYS=1  -DF90=1
+LIBDIR = $(SRCDIR)/../lib
+BINDIR = $(SRCDIR)/../bin
+ARCHLIB   = 
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3

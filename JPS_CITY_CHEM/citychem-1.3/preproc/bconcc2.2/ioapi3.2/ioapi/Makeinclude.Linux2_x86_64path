@@ -1,0 +1,35 @@
+# VERSION "$Id: Makeinclude.Linux2_x86_64path 1 2017-06-10 18:05:20Z coats $"
+#
+#       Linux for X86_64 using the PathScale EKO compiler suite
+#       Flags set up compatibility with "gcc/g77" built packages and
+#       libraries, e.g., vendor-supplied "libnetcdf.a" and "libpvm3.a"
+#
+AR   = ar
+CC   = pathcc  -m64
+CXX  = pathCC  -m64
+FC   = pathf90 -m64 -fsecond-underscore
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+E132 = -extend-source
+
+MFLAGS    = -march=auto -mcpu=auto -OPT:Olimit=0
+
+OMPFLAGS  = -mp -openmp
+OMPLIBS   = -lopenmp -lpthread
+COPTFLAGS = -O2 ${MFLAGS}
+FOPTFLAGS = -O2 ${MFLAGS}
+FPPFLAGS  = -cpp -macro_expand -DF90=1
+FSFLAGS   = -static-data
+ARCHFLAGS = -static -DFLDMN -DAUTO_ARRAYS=1 -DF90=1 -DSECOND_UNDERSCORE=1 -DBIT32=1
+PARFLAGS  =
+ARCHLIB   = 
+
+PVM_ARCH  = LINUXX86_64
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -L$(PVM_ROOT)/lib/$(PVM_ARCH) -lpvm3
+
