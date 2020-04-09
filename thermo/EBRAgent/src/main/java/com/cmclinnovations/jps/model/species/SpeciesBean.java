@@ -158,6 +158,17 @@ public class SpeciesBean {
 	}
 
 	public String getStandardEnthalpyOfFormation() {
+		
+		if(standardEnthalpyOfFormation.contains("±")) {
+			
+			String[] tokens = standardEnthalpyOfFormation.split("±");
+			
+			if(tokens.length > 1) {
+				
+				standardEnthalpyOfFormation = tokens[0].trim();
+			}
+		}
+		
 		return standardEnthalpyOfFormation;
 	}
 

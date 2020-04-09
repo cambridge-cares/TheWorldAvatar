@@ -310,11 +310,20 @@ public class EBRAgent extends HttpServlet{
 		 * jsonInput = input
 		 */
 		
-		long timeStamp = Utils.getTimeStamp();		
-		return jobSubmission.setUpJob(
-				jsonInput, new File(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
-				getInputFile(jsonInput), timeStamp);
+		long timeStamp = Utils.getTimeStamp();	
+		
+		/**
+		 * Feroz's code
+		 */
+//		return jobSubmission.setUpJob(
+//				jsonInput, new File(getClass().getClassLoader()
+//						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
+//				getInputFile(jsonInput), timeStamp);
+		
+		
+		return jobSubmission.setUpJob(jsonInput, new File(getClass().getClassLoader()
+				.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), getInputFile(jsonInput), new File(getClass().getClassLoader()
+						.getResource(Property.EBR_EXECUTABLE.getPropertyName()).getPath()),timeStamp);
 	}	
 	
 	/**
@@ -360,38 +369,38 @@ public class EBRAgent extends HttpServlet{
         String queryString =oskg.formSpeciesQueryFromJsonInput(speciesIRIList.getFirst(),speciesIRIList.getLast());
         
 		System.out.println("");
-        System.out.println("queryString: " + queryString);		
+        System.out.println("queryString: " + queryString);
         
-//      http://theworldavatar.com/rdf4j-server/ - Claudius server "http://localhost:8080/rdf4j-server/repositories/ontospecieskb"  "http://localhost:8080/rdf4j-server/repositories/ontocompchem"
 		nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories( Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(),Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(),queryString));
 		
-		}	
+		}
 		
 		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getSrcRefPool(jsonInput));
 		
+		/**
+		 * 1. Zip the input folder and 
+		 * 2. Return the path of the input.zip 
+		 * 
+		 */
 		/**
 		 * 
 		 * Commented lines is Feroz's code.
 		 * 
 		 */
+		
 //    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);    	
 //    	System.out.println("speciesGeometry:  " + speciesGeometry);    
 //		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
-//			throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
+//		throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
 //    	}
 		
-		/**
-		 * 
-		 * Comment: "input" foder in users profile is crated before running ebr service. inside that folder we are storing automatically csv file. g09 are copied manually.
-		 * DO TO: 
-		 * 1. Do federated query (csv)
-		 * 2. To create all the content of zip input file.
-		 * 
-		 */
 		
-		String inputFilePath = getInputFilePath();	
+	/**
+	 * Feroz line	
+	 */
+//		String inputFilePath = getInputFilePath();	
 		
-    	return new File(inputFilePath);
+    	return new File(SystemUtils.getUserHome()+"/"+JSonRequestParser.getInputZipFile(jsonInput)); //here should be absolute file path of the zip file. 
 	}
 	
 	/**

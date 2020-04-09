@@ -45,7 +45,9 @@ public enum Property {
 	PREFIX_BINDING_RAM("PREFIX ram: <http://cookingbigdata.com/linkeddata/ccinstances#>"),
 	PREFIX_MSM("msm"),
 	PREFIX_RAM("ram"),
-	EBR_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__EBR.owl#Service>");
+	EBR_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__EBR.owl#Service>"),
+	
+	EBR_EXECUTABLE("comoenthalpyestimationpaper.jar");
 	
 	private String propertyName;
 	private int value;

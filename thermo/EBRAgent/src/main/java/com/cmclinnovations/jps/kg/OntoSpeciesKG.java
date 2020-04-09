@@ -209,7 +209,6 @@ public class OntoSpeciesKG{
     	
 	RepositoryConnection conn = repository.getConnection();
 	
-	
 	/**
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -230,7 +229,7 @@ public class OntoSpeciesKG{
 				/**
 				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
-				 * Stores query results into NISTSpeciesId bean: species identifier, cas reg number, atomic bond, geometry, enthalpy of formation, scf energy, zero point energy.
+				 * Stores query results into NISTSpeciesId bean: cas reg number, atomic bond, geometry, enthalpy of formation, scf energy, zero point energy.
 				 * 
 				 */		
 //				SpeciesBean nistSpeciesId= new SpeciesBean(bSet.getValue("crid").stringValue());

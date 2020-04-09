@@ -39,4 +39,10 @@ public class JSonRequestParser {
 		return JsonPath.read(jsonString, "$.srcRefPool");
 	}	
 	
+public static String getInputZipFile(String jsonString){
+		
+		return JsonPath.read(jsonString, "$.inputZipFile");
+	}
+	
+	
 }
