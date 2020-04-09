@@ -7,7 +7,6 @@ import uk.ac.cam.cares.ebr.query.FederatedQuery;
 import uk.ac.cam.cares.ebr.query.QueryTemplate;
 import uk.ac.cam.cares.ebr.repository.RepositoryManager;
 
-import uk.ac.cam.cares.ebr.tools.CSVGenerator;
 import uk.ac.cam.ceb.como.nist.info.NISTSpeciesId;
 
 /**
@@ -25,7 +24,7 @@ public class App {
 	static String csvFilePath = "C:\\Users\\NK\\Documents\\species_test_8.csv";
 	
 	static FederatedQuery fq = new FederatedQuery();
-	static CSVGenerator csvGenerator = new CSVGenerator();
+	
     static RepositoryManager repositoryManager = new RepositoryManager();
 	
     public static void main( String[] args ) throws Exception {
@@ -44,10 +43,8 @@ public class App {
       * @author NK510 (caresssd@hermes.cam.ac.uk)
       * Federated query via given sparql endpoints. Generates csv file.
       * 
-      */
+      */    
+FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());    
 
-//  csvGenerator.generateCSVFile(fq.runFederatedSPARQL(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy()), csvFilePath);
-    
-FederatedQuery.runFederatedSPARQLTest(localhostUrlOntoSpecies,claudiusUrlOntoCompChem,QueryTemplate.getSpeciesRegistryIDAtomicBondAndGeometryScfZeroEnergy());     	
     }	
 }
