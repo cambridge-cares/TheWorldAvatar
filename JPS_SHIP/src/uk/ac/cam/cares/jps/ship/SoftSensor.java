@@ -166,11 +166,17 @@ public class SoftSensor extends HttpServlet {
 		JSONArray coordinatelist =result.getJSONArray("coordinates");
 		String timefrom=result.getJSONObject("timeinterval").optString("from", "none");
 		String timeto=result.getJSONObject("timeinterval").optString("to", "none");
-		String agentiri = result.optString("agent",null);			
+		String agentiri = result.optString("agent",null);
+		String city= result.optString("cityname",null);
 
 			//String resultfromfuseki = MetaDataQuery.queryResources(agentiri, timefrom, timeto);
 		List<String> topics= new ArrayList<String>();
-		topics.add("http://dbpedia.org/resource/Hong_Kong");
+		if(city.toLowerCase().contains("singapore")) {
+			topics.add("http://dbpedia.org/resource/Singapore");
+		}
+		else if(city.toLowerCase().contains("kong")){
+			topics.add("http://dbpedia.org/resource/Hong_Kong");
+		}
 		String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, timefrom, timeto,null,topics);
 			//System.out.println("resultfuseki= "+resultfromfuseki);
 			//List<String[]> listmap = MatrixConverter.fromCsvToArray(resultfromfuseki);

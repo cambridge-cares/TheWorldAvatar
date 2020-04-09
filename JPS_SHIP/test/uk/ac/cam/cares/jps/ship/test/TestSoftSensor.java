@@ -9,6 +9,9 @@ import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Resource;
+import org.apache.jena.update.UpdateExecutionFactory;
+import org.apache.jena.update.UpdateFactory;
+import org.apache.jena.update.UpdateProcessor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -178,20 +181,32 @@ public class TestSoftSensor extends TestCase {
 		return results;
 	}
 	
-	public void xxxtestquery() {
+	public void testquery() {
+//		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
+//				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
+//				
+//				+ "SELECT ?s ?q "
+//				+ "WHERE "
+//				+ "{?s  time:hasTime  ?o  ." 
+//				+ "?o   times:inXSDDateTime ?q ."
+//				+ "FILTER (REGEX(str(?s), \"C://JPS_DATA/workingdir/JPS_SCENARIO\"))" 
+//				
+//				+ "}";
+		
 		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
 				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
+				+"PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 				
-				+ "SELECT ?s ?q "
+				+ "SELECT ?s ?name "
 				+ "WHERE "
-				+ "{?s  time:hasTime  ?o  ." 
-				+ "?o   times:inXSDDateTime ?q ."
-				+ "FILTER (REGEX(str(?s), \"C://JPS_DATA/workingdir/JPS_SCENARIO\"))" 
+				+ "{?s  a j1:FoodCourt ."
+				+ "?s j8:hasName ?name ."
 				
-				+ "}";
+				+ "}Limit 5";
 		
 		
-		ResultSet rs_plant = queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/jpsmetadata/query",plantInfo); 
+		ResultSet rs_plant = queryFromFusekiServer("http://localhost:8080/fuseki/jpsmetadata/query",plantInfo); 
 		int x=0;
 		for (; rs_plant.hasNext();) {		
 			int c=0;
@@ -199,13 +214,31 @@ public class TestSoftSensor extends TestCase {
 
 			Resource cpiri = qs_p.getResource("s");
 			String value1 = cpiri.toString();
-			Literal cap = qs_p.getLiteral("q"); // extract the name of the source
+			Literal cap = qs_p.getLiteral("name"); // extract the name of the source
 			String capacity = cap.getString();
+			System.out.println(value1);
+			System.out.println(capacity);
 	
 		}
+		
+		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
+				+"PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+
+
+				+ "INSERT { ?s dcterms:subject " +"<http://dbpedia.org/resource/Singapore>" + " .} "
+				+ "WHERE "
+				+ "{?s  a j1:FoodCourt ."
+				+ "?s j8:hasName ?name ."
+				+ "}";
+		
+		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
+				"http://localhost:8080/fuseki/jpsmetadata/update");
+			upp.execute();
 	}
 	
-	public void testCallingSoftsensorlocal() {
+	public void testCallingSoftsensorlocal() { //1 point co2 at 1 location represents 1 time data
 		JSONArray ja = new JSONArray();
 		JSONObject location1 = new JSONObject();
 		location1.put("x",833776.38);
@@ -224,13 +257,15 @@ public class TestSoftSensor extends TestCase {
 //		ja.put(location3);
 		
 		JSONObject time = new JSONObject();
-		time.put("from", "2019-12-10T01:00:00");
-		time.put("to", "2019-12-11T01:00:00");
-//		time.put("to", "2020-04-09T12:00:00");
+		//time.put("from", "2019-12-10T01:00:00"); //oldest range
+		time.put("from", "2020-03-10T01:00:00");
+		time.put("to", "2020-04-09T12:00:00");
+//		time.put("to", "2020-04-09T12:00:00"); //latest range
 		JSONObject jo = new JSONObject();
 		jo.put("timeinterval", time);
 		jo.put("coordinates", ja);
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("cityname", "hong kong");
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SoftSensor",jo.toString());
 		//System.out.println("result= "+result);
 		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
@@ -245,5 +280,7 @@ public class TestSoftSensor extends TestCase {
 		//assertEquals(81, number); //2time x 1point x 9pollutant  
 		
 	}
+	
+
 	
 }
