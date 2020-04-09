@@ -166,7 +166,7 @@ public class SoftSensor extends HttpServlet {
         String metadataResult;
         List<String[]> listmap;
         try {
-            DateFormat formatter = SimpleDateFormat.getInstance();
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             Date fromRdf4J = formatter.parse(METADATA_START_RDF4J);
             Date from = formatter.parse(fromSimulationTime);
             Date to = formatter.getInstance().parse(toSimulationTime);
