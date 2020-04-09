@@ -182,15 +182,13 @@ public class TestSoftSensor extends TestCase {
 	}
 	
 	public void testquery() {
-//		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
-//				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
-//				
-//				+ "SELECT ?s ?q "
+
+//		String plantupdate = "PREFIX dcterms:<http://purl.org/dc/terms/> "
+//				+ "INSERT { ?s dcterms:subject " +"<http://dbpedia.org/resource/Hong_Kong>" + " .} "
 //				+ "WHERE "
 //				+ "{?s  time:hasTime  ?o  ." 
 //				+ "?o   times:inXSDDateTime ?q ."
 //				+ "FILTER (REGEX(str(?s), \"C://JPS_DATA/workingdir/JPS_SCENARIO\"))" 
-//				
 //				+ "}";
 		
 		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
@@ -238,7 +236,7 @@ public class TestSoftSensor extends TestCase {
 			upp.execute();
 	}
 	
-	public void testCallingSoftsensorlocal() { //1 point co2 at 1 location represents 1 time data
+	public void testCallingSoftsensorlocalRDF4J() { //1 point co2 at 1 location represents 1 time data
 		JSONArray ja = new JSONArray();
 		JSONObject location1 = new JSONObject();
 		location1.put("x",833776.38);
@@ -261,6 +259,49 @@ public class TestSoftSensor extends TestCase {
 		time.put("from", "2020-03-10T01:00:00");
 		time.put("to", "2020-04-09T12:00:00");
 //		time.put("to", "2020-04-09T12:00:00"); //latest range
+		JSONObject jo = new JSONObject();
+		jo.put("timeinterval", time);
+		jo.put("coordinates", ja);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("cityname", "hong kong");
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SoftSensor",jo.toString());
+		//System.out.println("result= "+result);
+		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
+		int number=JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").length();
+		int co2=0;
+		for(int d=0;d<number;d++) {
+			if(JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").getJSONObject(d).get("pollutant").toString().contentEquals("CO2")){
+				co2++;
+			}
+		}
+		System.out.println("number of file data= "+co2);
+		//assertEquals(81, number); //2time x 1point x 9pollutant   
+		
+	}
+	
+	public void testCallingSoftsensorlocalFUSEKI() { //1 point co2 at 1 location represents 1 time data
+		JSONArray ja = new JSONArray();
+		JSONObject location1 = new JSONObject();
+		location1.put("x",833776.38);
+		location1.put("y",816731.54);
+		location1.put("z",4.5);
+		ja.put(location1);
+		JSONObject location2 = new JSONObject();
+		location2.put("x",833776.38);
+		location2.put("y",816731.54);
+		location2.put("z",23.2);
+//		ja.put(location2);
+		JSONObject location3 = new JSONObject();
+		location3.put("x",124);
+		location3.put("y",33.4);
+		location3.put("z",23.2);
+//		ja.put(location3);
+		
+		JSONObject time = new JSONObject();
+		
+		time.put("from", "2019-06-20T05:00:00");//oldest
+		time.put("to", "2019-04-08T05:00:00");
+//		time.put("to", "2019-12-09T07:30:00"); //latest range
 		JSONObject jo = new JSONObject();
 		jo.put("timeinterval", time);
 		jo.put("coordinates", ja);
