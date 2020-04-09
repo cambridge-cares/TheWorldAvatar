@@ -3,6 +3,12 @@ package uk.ac.cam.cares.jps.ship.test;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.QuerySolution;
+import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Literal;
+import org.apache.jena.rdf.model.Resource;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -163,6 +169,81 @@ public class TestSoftSensor extends TestCase {
 		assertEquals("CO", a.findtheconcentration(simulationResult,realx,realy,realz).get(2).split("\\|")[2]);
 		assertEquals(58.4218, Double.valueOf(a.findtheconcentration(simulationResult,realx,realy,realz).get(3)), 0.01);
 		
-
 	}
+	public static synchronized ResultSet queryFromFusekiServer(String serviceURI, String query) {
+		
+		QueryExecution q = QueryExecutionFactory.sparqlService(serviceURI,query);
+		ResultSet results = q.execSelect();	
+
+		return results;
+	}
+	
+	public void xxxtestquery() {
+		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
+				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
+				
+				+ "SELECT ?s ?q "
+				+ "WHERE "
+				+ "{?s  time:hasTime  ?o  ." 
+				+ "?o   times:inXSDDateTime ?q ."
+				+ "FILTER (REGEX(str(?s), \"C://JPS_DATA/workingdir/JPS_SCENARIO\"))" 
+				
+				+ "}";
+		
+		
+		ResultSet rs_plant = queryFromFusekiServer("http://www.theworldavatar.com:80/damecoolquestion/jpsmetadata/query",plantInfo); 
+		int x=0;
+		for (; rs_plant.hasNext();) {		
+			int c=0;
+			QuerySolution qs_p = rs_plant.nextSolution();
+
+			Resource cpiri = qs_p.getResource("s");
+			String value1 = cpiri.toString();
+			Literal cap = qs_p.getLiteral("q"); // extract the name of the source
+			String capacity = cap.getString();
+	
+		}
+	}
+	
+	public void testCallingSoftsensorlocal() {
+		JSONArray ja = new JSONArray();
+		JSONObject location1 = new JSONObject();
+		location1.put("x",833776.38);
+		location1.put("y",816731.54);
+		location1.put("z",4.5);
+		ja.put(location1);
+		JSONObject location2 = new JSONObject();
+		location2.put("x",833776.38);
+		location2.put("y",816731.54);
+		location2.put("z",23.2);
+//		ja.put(location2);
+		JSONObject location3 = new JSONObject();
+		location3.put("x",124);
+		location3.put("y",33.4);
+		location3.put("z",23.2);
+//		ja.put(location3);
+		
+		JSONObject time = new JSONObject();
+		time.put("from", "2019-12-10T01:00:00");
+		time.put("to", "2019-12-11T01:00:00");
+//		time.put("to", "2020-04-09T12:00:00");
+		JSONObject jo = new JSONObject();
+		jo.put("timeinterval", time);
+		jo.put("coordinates", ja);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SoftSensor",jo.toString());
+		//System.out.println("result= "+result);
+		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
+		int number=JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").length();
+		int co2=0;
+		for(int d=0;d<number;d++) {
+			if(JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").getJSONObject(d).get("pollutant").toString().contentEquals("CO2")){
+				co2++;
+			}
+		}
+		System.out.println("number of file data= "+co2);
+		//assertEquals(81, number); //2time x 1point x 9pollutant  
+		
+	}
+	
 }
