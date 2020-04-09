@@ -352,8 +352,6 @@ public class EBRAgent extends HttpServlet{
 		LinkedList<String> speciesIRIList = new LinkedList<String>();
 			
 		for(Map.Entry<String, Object> entry : speciesMap.entrySet()) {
-				
-		System.out.println("key: " + entry.getKey() + " , value: " + entry.getValue().toString());
 		
 		speciesIRIList.add(entry.getValue().toString());
 			
@@ -364,12 +362,12 @@ public class EBRAgent extends HttpServlet{
 		System.out.println("");
         System.out.println("queryString: " + queryString);		
         
-//      http://theworldavatar.com/rdf4j-server/ - Claudius server 
-		nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories("http://localhost:8080/rdf4j-server/repositories/ontospecieskb", "http://localhost:8080/rdf4j-server/repositories/ontocompchem",queryString));
+//      http://theworldavatar.com/rdf4j-server/ - Claudius server "http://localhost:8080/rdf4j-server/repositories/ontospecieskb"  "http://localhost:8080/rdf4j-server/repositories/ontocompchem"
+		nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories( Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(),Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(),queryString));
 		
-		}
+		}	
 		
-		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/input/input.csv");
+		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getSrcRefPool(jsonInput));
 		
 		/**
 		 * 
