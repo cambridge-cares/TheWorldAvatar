@@ -188,10 +188,6 @@ public class OntoCompChemUpload extends HttpServlet{
 //				Constants.XSLT_FILE_PATH_LOCAL_HOST.toString()
 //				properties.getProperty("xslt.file.path.local.host"))
 				
-					
-				
-				
-				
 				consistency = InconsistencyExplanation.getConsistencyOWLFile(owlFile.getCanonicalPath());
 				
 				/**

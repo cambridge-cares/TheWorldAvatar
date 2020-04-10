@@ -9,17 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
-
+import java.util.LinkedList;
 import java.util.UUID;
 
-
 /**
- * @author nk510
- * The Class FolderManager.
+ * @author nk510 The Class FolderManager.
  */
 public class FolderManager {
 
-	
 	/**
 	 * Generate unique folder name.
 	 *
@@ -29,9 +26,8 @@ public class FolderManager {
 	 * @return uuid the unique identifier used to name folder and files.
 	 * 
 	 */
-	public static String generateUniqueFolderName(String fileName)
-			throws UnsupportedEncodingException {
-		
+	public static String generateUniqueFolderName(String fileName) throws UnsupportedEncodingException {
+
 		long milliseconds = System.currentTimeMillis();
 
 		String datetime = new Date().toString();
@@ -51,7 +47,7 @@ public class FolderManager {
 		byte[] bytes = source.getBytes("UTF-8");
 
 		UUID uuid = UUID.nameUUIDFromBytes(bytes);
-		
+
 		return uuid.toString();
 
 	}
@@ -60,7 +56,10 @@ public class FolderManager {
 	 * Creates the folder.
 	 *
 	 * @author nk510
-	 * @param folderName <p>A folder's name to be created based on using uuid.</p>
+	 * @param folderName
+	 *                   <p>
+	 *                   A folder's name to be created based on using uuid.
+	 *                   </p>
 	 */
 	public static void createFolder(String folderName) {
 
@@ -69,9 +68,9 @@ public class FolderManager {
 		if (!Files.exists(folderPath)) {
 
 			try {
-				
+
 				Files.createDirectories(folderPath);
-				
+
 			} catch (IOException e) {
 
 				e.printStackTrace();
@@ -84,7 +83,7 @@ public class FolderManager {
 	 * Save file in folder.
 	 *
 	 * @author nk510
-	 * @param inputFile Input file to be saved in created folder.
+	 * @param inputFile        Input file to be saved in created folder.
 	 * @param absoluteFilePath a path to a folder where input file will be saved.
 	 * @throws IOException Signals that an I/O exception has occurred.
 	 */
@@ -101,51 +100,81 @@ public class FolderManager {
 		stream.close();
 
 	}
-	
+
 	/**
 	 * Gets the file name.
 	 * 
 	 * @author nk510
-	 * @param uuid the unique identifier
-	 * @param kbFolderPath folder where owl files are stored.
+	 * @param uuid           the unique identifier
+	 * @param kbFolderPath   folder where owl files are stored.
 	 * @param dataFolderPath folder where Gaussian, xml, and png files are stored.
-	 * @param format the format of file.
+	 * @param format         the format of file.
 	 * @return the file name
 	 */
 
-	public String getFileName(String uuid,  String kbFolderPath, String dataFolderPath, String format) {
-		
-		String fileName=null;
-		
+	public String getFileName(String uuid, String kbFolderPath, String dataFolderPath, String format) {
+
+		String fileName = null;
+
 		String folderName = null;
-		
-		if(format.endsWith(".owl")) {
-		
 
-			folderName =kbFolderPath + uuid.toString();
-		
-		}
-		else {
-			
+		if (format.endsWith(".owl")) {
 
-			folderName= dataFolderPath + uuid.toString();
-			
+			folderName = kbFolderPath + uuid.toString();
+
+		} else {
+
+			folderName = dataFolderPath + uuid.toString();
+
 		}
-		
 
 		File file = new File(folderName);
 
-		for(File f : file.listFiles()) {
-			
-			if(f.getName().endsWith(format)){
-				
+		for (File f : file.listFiles()) {
+
+			if (f.getName().endsWith(format)) {
+
 				fileName = f.getName();
-				
+
 				break;
 			}
 		}
-		
-        return fileName;
+
+		return fileName;
+
+	}
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param folderPath the folder path for 923 hco species
+	 * @return the linkedlist of 923 cas registry ids of hco species. Gaussian file
+	 *         names should be given by using their cas registry id. 
+	 * 
+	 */
+	public static LinkedList<String> getHCOSpeciesCasRegID(String folderPath) {
+
+		LinkedList<String> hcoSpeciesList = new LinkedList<String>();
+
+		File speciesFile = new File(folderPath);
+
+		File[] hcoSpeciesFolder = speciesFile.listFiles();
+
+		for (int i = 0; i < hcoSpeciesFolder.length; i++) {
+
+			if (hcoSpeciesFolder[i].isFile()) {
 	
-	}	
+			/**
+			 * Adds in LinkedList species names that are given as CAS registry IDs.
+			 */
+			hcoSpeciesList.add(hcoSpeciesFolder[i].getName().split("\\.")[0]);
+
+			}
+			
+			
+		}
+
+	return hcoSpeciesList;
+
+	}
 }
