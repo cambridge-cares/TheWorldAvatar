@@ -204,7 +204,8 @@ $(document).ready(function () {
     $("#run-btn").click(function () {
         console.log("Start update");
         completeUpdate(function(){
-            console.log("Start Simulation");
+            var dt = Date();
+            console.log("Start Simulation: "+dt);
             runWTESimulation();
         });
         
@@ -222,7 +223,7 @@ function completeUpdate(callback){
     if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
         dumpTransport(transportUpd);}
     if (JSON.stringify(initArray[0]) != JSON.stringify(finalArray[0])){
-        updateSite(finalArray[0], 2);
+        updateSite(finalArray[0], 0);
     }
     for (i = 1; i<initArray.length; i++){
         if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
@@ -239,6 +240,7 @@ var para = {"wastenetwork":wastenetwork};
 
 var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
 var simulationurl = createUrlForAgent(scenario, agenturl, para); 
+console.log(simulationurl);
 var request = $.ajax({
     url: simulationurl ,
     type: 'GET',
@@ -444,10 +446,11 @@ function outputUpdate(lstOfTargetIRI, base, UpdateArray){
             contentType: 'application/json; charset=utf-8', 
             success: function (data) {//SUCESS updating
                 //Update display
-                console.log("Successful update to server");
+                var dt = Date();
+                console.log("Successful update to server: " + dt);
             },
-            error: function (err) {
-                console.log("can not update to server");
+            error: function (err) {var dt = Date();
+                console.log("can not update to server: "+dt);
             }
         });
         request.done(function(data) {
@@ -479,7 +482,7 @@ function updateSite(inpParameters, index){
         var iri = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-0.owl#OnSiteWasteTreatment-0";
         var base = iri.split('#')[0];
         for (i = 0; i < 3; i++){
-            var var_name = lstOfTargetIRI[i] + index + "Of"+iri.split("#")[1];
+            var var_name = lstOfTargetIRI[i] + "2" + "Of"+iri.split("#")[1];
             console.log(var_name);
             newLst.push(var_name);
         }
@@ -499,6 +502,7 @@ function updateSite(inpParameters, index){
         console.log(base);
         outputUpdate(newLst, base, inpParameters);
     })
+    console.log("finished update" );
     }
 }
 /** create table for json. 
