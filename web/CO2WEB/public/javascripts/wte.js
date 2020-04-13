@@ -202,28 +202,35 @@ var checkExist = setInterval(function() {
   //when button clicked, run simulation
 $(document).ready(function () {
     $("#run-btn").click(function () {
-        console.log("Start sim")
-        transportUpd = getInputs("table#transportQ tr");
-        var offSiteIUpd = getInputs("table#Incineration tr");
-        var offSiteCUpd = getInputs("table#CoDigestion tr");
-        var offSiteAUpd = getInputs("table#AnaerobicDigestion tr");
-        var onSite = getInputs("table#Onsite tr");
-        finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
-        if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
-            dumpTransport(transportUpd);}
-        if (JSON.stringify(initArray[0]) != JSON.stringify(finalArray[0])){
-            updateSite(finalArray[0], 2);
-        }
-        for (i = 1; i<initArray.length; i++){
-            if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
-                updateSite(finalArray[i], i);
-            }
-        }
-        runWTESimulation();
+        console.log("Start update");
+        completeUpdate(function(){
+            console.log("Start Simulation");
+            runWTESimulation();
+        });
+        
 
 
     });
 });
+function completeUpdate(callback){
+    transportUpd = getInputs("table#transportQ tr");
+    var offSiteIUpd = getInputs("table#Incineration tr");
+    var offSiteCUpd = getInputs("table#CoDigestion tr");
+    var offSiteAUpd = getInputs("table#AnaerobicDigestion tr");
+    var onSite = getInputs("table#Onsite tr");
+    finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
+    if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
+        dumpTransport(transportUpd);}
+    if (JSON.stringify(initArray[0]) != JSON.stringify(finalArray[0])){
+        updateSite(finalArray[0], 2);
+    }
+    for (i = 1; i<initArray.length; i++){
+        if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
+            updateSite(finalArray[i], i);
+        }
+    }
+    callback();
+}
 /** run simulation for waste to energy. 
  * @param callback run query for Onsite afterwards
  */
