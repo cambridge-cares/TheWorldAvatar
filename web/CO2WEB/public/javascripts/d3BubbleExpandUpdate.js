@@ -300,7 +300,7 @@ var FileLinkMap = function (options) {
             console.log("not retaining previous sim")
             
             simulation = d3.forceSimulation()
-                .force("link", d3.forceLink().strength(2).id(function (d) {
+                .force("link", d3.forceLink().distance(100).id(function (d) {
                     return d.id;
                 }))
                 .force("charge", d3.forceManyBody().strength(setBodyS))
@@ -465,7 +465,7 @@ var FileLinkMap = function (options) {
             .attr("transform", "translate(50,30)")
             .style("font-size", "12px")
             .call(d3.legend);
-                let simulationDurationInMs = 1000; // 20 seconds
+                let simulationDurationInMs = 500; // 20 seconds
 
         setInterval(()=>{simulation.stop()},simulationDurationInMs );
         if (Date.now() > startTime+simulationDurationInMs) {

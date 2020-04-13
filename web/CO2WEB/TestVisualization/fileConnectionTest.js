@@ -29,8 +29,13 @@ PREFIX foaf: <http://xmlns.com/foaf/0.1/>
      }
 `};
         this.timeout(30000);
-        connections.processSingle(opts).then((result)=> {
-                console.log(result)
+        connections.processSingle(opts).then((conn)=> {
+                console.log(conn);
+                let sampleConn = {source:'http://example.org/#green-goblin',target:'test',label:'',level:1}
+                expect(conn).to.be.an('array');
+                    expect(conn).to.have.lengthOf(1);
+            expect(conn[0]).to.deep.equal(sampleConn);
+
             done()
             }
         )

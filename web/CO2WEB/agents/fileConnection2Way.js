@@ -269,7 +269,7 @@ owlProcessor.urlPromise = function (loc, type) {
         });
         if (type !== 'xml'){ resolve(res)};
 
-             owlProcessor.checkXMLFile(loc).then((result)=>{
+             owlProcessor.checkXMLFile(res).then((result)=>{
                  "use strict";
                  if(!result){
                      //return as endpoint
@@ -363,7 +363,6 @@ let ext = strArr[strArr.length - 1];
 switch(ext){
 case 'ttl':
 return 'text/turtle';
-default:
 default:
 return 'xml';
 }

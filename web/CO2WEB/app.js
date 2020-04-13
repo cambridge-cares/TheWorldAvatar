@@ -27,16 +27,16 @@ var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
 var visualizeOntokin= require("./routes/visualizeOntokin.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+
 var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
-// let visualizeOntochemR = require("./routes/visualizeOntoChemRemote.js");
-// let visualizeOntospeciesR = require("./routes/visualizeOntoSpeciesRemote.js");
 
 var getAttrList =require("./routes/getAttrList");
 var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
+
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 
-//  var MAU = require("./routes/runMAU")
+  var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
@@ -45,7 +45,6 @@ var PPCO2 = require("./routes/powerplantCO2");
 var ppMap = require('./routes/mapPowerPlant');
 
 var semakauMap = require("./routes/mapSemakau")
-//var b3Map = require("./routes/mapB3")
 var b2Map = require("./routes/mapB2");
 var ppalt = require("./routes/mapPPAlt");
 var parallelWorld = require('./routes/parallelWorld');
@@ -85,15 +84,14 @@ app.use(bodyParser.text({ type: 'application/json' }));
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
+
 app.use('/getChildrenSingle',getChildrenSingle);
+ app.use('/visualizeAgent', visualizeAgent);
+ app.use('/visualizeWorld', visualizeWorld);
+ app.use('/visualizeBMS', visualizeBMS);
+ app.use('/visualizeSemakau', visualizeSemakau);
+ app.use('/visualizeJurong', visualizeJurong);
 
-
-// app.use('/visualizeAgent', visualizeAgent);
-
-// app.use('/visualizeWorld', visualizeWorld);
-// app.use('/visualizeBMS', visualizeBMS);
-// app.use('/visualizeSemakau', visualizeSemakau);
-// app.use('/visualizeJurong', visualizeJurong);
 app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
 app.use('/ppalt', ppalt);
@@ -105,10 +103,6 @@ app.use('/JurongIsland.owl/showCO2', showCO2);
 app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
 app.use('/visualizeOntokin',visualizeOntokin);
-
-// app.use('/visualizeOntokinRemote',visualizeOntokinR);
-// app.use('/visualizeOntochemRemote',visualizeOntochemR);
-// app.use('/visualizeOntospeciesRemote',visualizeOntospeciesR);
 
 app.use("/bmsplot", bmsplot);
 
@@ -125,6 +119,7 @@ app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
  app.use("/MAU", MAU); //won't get MAU to work because of java/nodejs incompat as node latest version doesn't support node-java
 
+app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 
