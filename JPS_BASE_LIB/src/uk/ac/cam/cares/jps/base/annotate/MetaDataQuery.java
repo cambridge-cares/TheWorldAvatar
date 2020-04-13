@@ -92,10 +92,65 @@ public class MetaDataQuery implements Prefixes {
 		return query(sparql);
 	}
 
-	public static String queryOldResources(String iriCreatingAgent, String fromSimulationTime, String toSimulationTime) {
-		String sparql = getSparqlMetaDataResources(fromSimulationTime, toSimulationTime, iriCreatingAgent);
-
+	public static String queryOldResources(String iriCreatingAgent, String fromSimulationTime, String toSimulationTime,List<String> topics) {
+		//String sparql = getSparqlMetaDataResources(fromSimulationTime, toSimulationTime, iriCreatingAgent);
+		String sparql = getSparqlQueryResourcesOldRepository(null, null, null, iriCreatingAgent, fromSimulationTime, toSimulationTime, null, topics);
 		return query(sparql, KeyValueManager.get(IKeys.URL_RDF_METADATA));
+	}
+	
+	public static String getSparqlQueryResourcesOldRepository(MediaType mediaType, String fromCreationTime, String toCreationTime, 
+			String iriCreatingAgent, String fromSimulationTime, String toSimulationTime, String iriScenario, List<String> topics) {
+		
+		StringBuffer sparql = new StringBuffer();
+		sparql.append(PrefixToUrlMap.getPrefixForSPARQL(DCTERMS));
+		sparql.append(PrefixToUrlMap.getPrefixForSPARQL(XSD));
+		sparql.append("PREFIX j1:<https://www.w3.org/2006/time#> \r\n");
+		
+		sparql.append("SELECT ?resource ?mediatype ?creationTime ?agent ?simulationTime ?scenario \r\n");
+		sparql.append("WHERE { \r\n");
+		
+		sparql.append("OPTIONAL {?resource dcterms:format ?mediatype .}. \r\n");
+		if (mediaType != null) {
+			sparql.append("?resource dcterms:format \"" + mediaType.type + "\" . \r\n");
+		}
+		
+		sparql.append("OPTIONAL {?resource dcterms:created ?creationTime .}. \r\n");
+		if (fromCreationTime != null) {
+			sparql.append("FILTER ( ?creationTime >= \"" + fromCreationTime + "\"^^xsd:dateTime ) \r\n");
+		}
+		if (toCreationTime != null) {
+			sparql.append("FILTER ( ?creationTime <= \"" + toCreationTime + "\"^^xsd:dateTime ) \r\n");
+		}
+		
+		sparql.append("OPTIONAL {?resource dcterms:creator ?agent .}. \r\n");
+		if (iriCreatingAgent != null) {
+			sparql.append("?resource dcterms:creator <" + iriCreatingAgent + "> . \r\n");
+		}
+		
+		sparql.append("OPTIONAL {?resource j1:hasTime ?inst .}. \r\n");
+		sparql.append("OPTIONAL {?inst j1:inXSDDateTime ?simulationTime .}. \r\n");
+		if (fromSimulationTime != null) {
+			sparql.append("FILTER ( ?simulationTime >= \"" + fromSimulationTime + "\"^^xsd:dateTime ) \r\n");
+		}
+		if (toSimulationTime != null) {
+			sparql.append("FILTER ( ?simulationTime <= \"" + toSimulationTime + "\"^^xsd:dateTime ) \r\n");
+		}
+		
+		sparql.append("OPTIONAL {?resource dcterms:isPartOf ?scenario .}. \r\n");
+		if (iriScenario != null) {
+			sparql.append("?resource dcterms:isPartOf <" + iriScenario + "> . \r\n");
+		}
+		
+		if (topics != null) {
+			for (String current : topics) {
+				sparql.append("?resource dcterms:subject <" + current + "> .");
+			}
+		}
+		
+		sparql.append("} ORDER BY DESC(?creationTime) \r\n");
+		sparql.append("LIMIT 1000");	
+		
+		return sparql.toString();
 	}
 	
 	// TODO-AE SC URGENT 20190919 discuss with Kevin, delete is not required any more
