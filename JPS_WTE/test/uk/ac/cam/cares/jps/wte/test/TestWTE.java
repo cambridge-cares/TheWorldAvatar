@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.wte.test;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -179,10 +181,14 @@ public class TestWTE extends TestCase {
 	}
 	public void testScenarioNamed() throws IOException { 
 		String scenarioName = "testFWee2093d5-96f0-4132-ae96-33ff1f918fc3";
+		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");  
+		LocalDateTime now = LocalDateTime.now();  
+		System.out.println(dtf.format(now)); 
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
 				.endObject().toString();
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
+		
 		System.out.println(result);
 	}
 
