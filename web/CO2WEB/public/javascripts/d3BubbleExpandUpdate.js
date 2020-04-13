@@ -22,7 +22,7 @@ function getIdFromNameInResults(name) {
 var FileLinkMap = function (options) {
     var width = $(document).width(),
         height = $(document).height() > 2000 ? $(document).height() : 2000,
-        charge = options.charge || -500,
+        charge = options.charge || -100,
         distance = options.distance || 20,
         nodeR = options.nodeR || 15,
         textSize = options.textSize || 5;
@@ -286,11 +286,12 @@ var FileLinkMap = function (options) {
     bubbleMap.links = []
     bubbleMap.selected = null;
     var filteredNodes = [], filteredLinks = []
-    
-    
-    
-    
-    
+    let startTime = Date.now();
+    let   tip = d3.tip()
+        .attr('class', 'd3-tip')
+        .offset([-10, 0]);
+    svg.call(tip);
+
     bubbleMap.drawBubbles = function (dnodes, dlinks, retainSim) {
         //node bubbles
         
@@ -391,9 +392,13 @@ var FileLinkMap = function (options) {
             .attr("data-legend-pos", sortOrder)
             .attr("data-legend", defineLegend)
             .on("mouseover", function (d) {
+                 //TODO:add tool tip here if you want
+                //tip.html(d.name);
+                //tip.show(d);
                 handleMouseOver(d3.select(this), d);
             })         //highlight all links when mouse over
             .on("mouseout", function (d) {
+            //tip.hide(d);
                 handleMouseOut(d3.select(this), d);
                 
             })
@@ -460,7 +465,12 @@ var FileLinkMap = function (options) {
             .attr("transform", "translate(50,30)")
             .style("font-size", "12px")
             .call(d3.legend);
-        
+                let simulationDurationInMs = 1000; // 20 seconds
+
+        setInterval(()=>{simulation.stop()},simulationDurationInMs );
+        if (Date.now() > startTime+simulationDurationInMs) {
+            simulation.stop();
+        }
         
         function ticked() {
             
@@ -773,6 +783,11 @@ var FileLinkMap = function (options) {
             console.log("level:" +level)
             
             //todo: remv hard code
+                        startTime = Date.now()
+            simulationDurationInMs = 1000;
+            simulation.restart();
+            setInterval( ()=>{simulation.stop()},simulationDurationInMs)
+            console.log('simulation restart')
             bubbleMap.expandClusterQuery( url, level+1)
             
             
@@ -871,7 +886,7 @@ var FileLinkMap = function (options) {
                     bubbleMap.topnode =data[0].source;
                     bubbleMap.initLinks = data;
                     bubbleMap.update(
-                        [{source:bubbleMap.topnode, target: null, level:0}] , [], [], false, true);
+                        data , [], false, false);
                     
                     
                 }
@@ -893,77 +908,14 @@ var FileLinkMap = function (options) {
             bubbleMap.expandClusterSave()
             return
         }
-        let loc =bubbleMap.topnode
+                let loc ='http://theworldavatar.com/rdf4j-workbench/repositories/ontocompchem';
         let customQ =
             `
-PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ontochem: <https://como.cheng.cam.ac.uk/kb/ontochem.owl#>
-PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-PREFIX owl: <http://www.w3.org/2002/07/owl#>
 PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>
-
-SELECT distinct  ?uri ?label
+SELECT distinct  ?uri
 WHERE {
-
-		{    ?phase ontochem:containedIn @placeholder .
-	?uri ontochem:belongsToPhase ?phase .
-	?uri ontochem:hasEquation ?label .}
-	UNION{
-		
-    @placeholder ontochem:hasReactantSpecification ?reactantSpec .
-	 ?reactantSpec ontochem:hasReactant  ?uri .
-	  ?uri rdfs:label ?label .
-
-	}
-	UNION{
-		 
-     @placeholder ontochem:hasProductSpecification ?productSpec .
-	 ?productSpec ontochem:hasProduct   ?uri.
-	 ?uri rdfs:label ?label .
-	}
-	
-	UNION{
-    ?phase ontokin:containedIn @placeholder .
-    ?uri ontokin:belongsToPhase ?phase .
-    ?uri rdf:type reaction_mechanism:ChemicalReaction .
-	}
-	
-	UNION{
-	    @placeholder rdf:type reaction_mechanism:ChemicalReaction .
-    @placeholder reaction_mechanism:hasProduct ?product .
-    ?product owl:sameAs ?uri .
-     ?uri rdfs:label ?label .
-	}
-	UNION{
-    @placeholder rdf:type reaction_mechanism:ChemicalReaction .
-    @placeholder reaction_mechanism:hasReactant ?reactant .
-    ?reactant owl:sameAs  ?uri .
-     ?uri rdfs:label ?label .
-	}
-	UNION
-	{
-
-		@placeholder ontokin:hasThermoModel ?thermoModel.
-    ?thermoModel ontokin:hasQuantumCalculation ?uri .
-	}
-		UNION
-	{
-	    ?species owl:sameAs  @placeholder .
-		?species ontokin:hasThermoModel ?thermoModel.
-		    ?thermoModel ontokin:hasQuantumCalculation ?uri .
-
-	}
-			UNION
-	{
-	    ?uri rdf:type ontocompchem:G09 .
-?uri ontocompchem:hasUniqueSpecies @placeholder.
-	}
-	
-} LIMIT 200
-`
-        ;
+	?uri ontocompchem:hasUniqueSpecies  @placeholder
+	}` ;
         //?phase ontokin:containedIn @placeholder .
         //?species ontokin:belongsToPhase ?phase.
         let query = customQ.replace(/@placeholder/g, "<"+extrairi+">");
