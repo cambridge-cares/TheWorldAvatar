@@ -5,10 +5,7 @@ import java.util.List;
 
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
-import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Literal;
-import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateProcessor;
@@ -191,49 +188,78 @@ public class TestSoftSensor extends TestCase {
 //				+ "FILTER (REGEX(str(?s), \"C://JPS_DATA/workingdir/JPS_SCENARIO\"))" 
 //				+ "}";
 		
-		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
-				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
-				+"PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-				
-				+ "SELECT ?s ?name "
-				+ "WHERE "
-				+ "{?s  a j1:FoodCourt ."
-				+ "?s j8:hasName ?name ."
-				
-				+ "}Limit 5";
+//		String plantInfo = "PREFIX time:<https://www.w3.org/2006/time#>"
+//				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
+//				+"PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+//				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+//				
+//				+ "SELECT ?s ?name "
+//				+ "WHERE "
+//				+ "{?s  a j1:FoodCourt ."
+//				+ "?s j8:hasName ?name ."
+//				
+//				+ "}Limit 5";
+		
+		String plantinfo=	 "PREFIX dcterms:<http://purl.org/dc/terms/> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
+				+ "PREFIX j1:<https://www.w3.org/2006/time#> "
+					+ "SELECT ?resource ?simulationTime "
+					+ "WHERE { "				
+					+ "?resource dcterms:creator  <http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service> . "
+					+ "?resource j1:hasTime ?inst ."
+					+ "?inst j1:inXSDDateTime ?simulationTime ." 
+					+ "FILTER ( ?simulationTime >= \"2019-06-20T05:00:00.000\"^^xsd:dateTime ) "
+					+ "FILTER ( ?simulationTime <= \"2019-12-09T08:00:00.000\"^^xsd:dateTime ) "
+					+ " FILTER (     regex(str(?resource), \"C://JPS_DATA/workingdir/JPS_SCENARIO\")) "
+					+"}";
+		
+		String plantupdate=	 "PREFIX dcterms:<http://purl.org/dc/terms/> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
+				+ "PREFIX j1:<https://www.w3.org/2006/time#> "
+					+ "INSERT { ?resource dcterms:subject " +"<http://dbpedia.org/resource/Hong_Kong>" + " .} "
+					+ "WHERE { "				
+					+ "?resource dcterms:creator  <http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service> . "
+					+ "?resource j1:hasTime ?inst ."
+					+ "?inst j1:inXSDDateTime ?simulationTime ." 
+					+ "FILTER ( ?simulationTime >= \"2019-06-20T05:00:00.000\"^^xsd:dateTime ) "
+					+ "FILTER ( ?simulationTime <= \"2019-12-09T08:00:00.000\"^^xsd:dateTime ) "
+					+ " FILTER (     regex(str(?resource), \"C://JPS_DATA/workingdir/JPS_SCENARIO\")) "
+					+"}";
 		
 		
-		ResultSet rs_plant = queryFromFusekiServer("http://localhost:8080/fuseki/jpsmetadata/query",plantInfo); 
-		int x=0;
-		for (; rs_plant.hasNext();) {		
-			int c=0;
-			QuerySolution qs_p = rs_plant.nextSolution();
-
-			Resource cpiri = qs_p.getResource("s");
-			String value1 = cpiri.toString();
-			Literal cap = qs_p.getLiteral("name"); // extract the name of the source
-			String capacity = cap.getString();
-			System.out.println(value1);
-			System.out.println(capacity);
-	
-		}
+//		ResultSet rs_plant = queryFromFusekiServer("http://localhost:8080/fuseki/jpsmetadata/query",plantinfo); 
+//		int x=0;
+//		for (; rs_plant.hasNext();) {		
+//			int c=0;
+//			QuerySolution qs_p = rs_plant.nextSolution();
+//
+//			Resource cpiri = qs_p.getResource("resource");
+//			String value1 = cpiri.toString();
+//			Literal cap = qs_p.getLiteral("simulationTime"); // extract the name of the source
+//			String capacity = cap.getString();
+//			//String capacity = qs_p.getResource("simulationTime").toString(); // extract the name of the source
+//			
+//			System.out.println(value1);
+//			System.out.println(capacity);
+//	
+//		}
 		
-		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
-				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
-				+"PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
-				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-
-
-				+ "INSERT { ?s dcterms:subject " +"<http://dbpedia.org/resource/Singapore>" + " .} "
-				+ "WHERE "
-				+ "{?s  a j1:FoodCourt ."
-				+ "?s j8:hasName ?name ."
-				+ "}";
+//		String plantupdate = "PREFIX cp:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#> "
+//				+ "PREFIX dcterms:<http://purl.org/dc/terms/> "
+//				+"PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
+//				+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
+//
+//
+//				+ "INSERT { ?s dcterms:subject " +"<http://dbpedia.org/resource/Singapore>" + " .} "
+//				+ "WHERE "
+//				+ "{?s  a j1:FoodCourt ."
+//				+ "?s j8:hasName ?name ."
+//				+ "}";
 		
 		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
-				"http://localhost:8080/fuseki/jpsmetadata/update");
+				"http://www.theworldavatar.com:80/damecoolquestion/metadatatesting/update");
 			upp.execute();
+			System.out.println("update finished");
 	}
 	
 	public void testCallingSoftsensorlocalRDF4J() { //1 point co2 at 1 location represents 1 time data
