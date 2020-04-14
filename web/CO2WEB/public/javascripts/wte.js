@@ -177,6 +177,8 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
     + "?vrevenue     j2:numericalValue  ?V_TotalRevenue ." 
 
     + "}";
+
+var redflag = {"success":true};    
 (function PPMap(){
     var ppMap = new PopupMap({useCluster:true});
 })();
@@ -202,11 +204,22 @@ var checkExist = setInterval(function() {
   //when button clicked, run simulation
 $(document).ready(function () {
     $("#run-btn").click(function () {
-        console.log("Start update");
+        console.log("Start update: "+ Date.now());
+        started = Date.now();
         completeUpdate(function(){
-            var dt = Date();
-            console.log("Start Simulation: "+dt);
-            runWTESimulation();
+            var interval = setInterval(function(){
+                if (Date.now() - started > 35000) {
+                    alert("Update issue. Check if it's working? ");
+                    clearInterval(interval);
+                } else {
+                    //check if redflag has been set
+                    if (redflag.sucess == true){}
+                        var dt = Date();
+                        console.log("Start Simulation: "+dt);
+                        runWTESimulation();
+                        clearInterval(interval);
+                    }
+              }, 10000); // every 100 milliseconds
         });
         
 
@@ -221,12 +234,16 @@ function completeUpdate(callback){
     var onSite = getInputs("table#Onsite tr");
     finalArray = [onSite,offSiteIUpd,offSiteCUpd,offSiteAUpd]
     if (JSON.stringify(transportUpd) != JSON.stringify(inittransportUpd)){
-        dumpTransport(transportUpd);}
+        redflag.success = false;
+        dumpTransport(transportUpd);
+    }
     if (JSON.stringify(initArray[0]) != JSON.stringify(finalArray[0])){
+        redflag.sucess = false;
         updateSite(finalArray[0], 0);
     }
     for (i = 1; i<initArray.length; i++){
         if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
+            redflag.sucess = false;
             updateSite(finalArray[i], i);
         }
     }
@@ -447,6 +464,7 @@ function outputUpdate(lstOfTargetIRI, base, UpdateArray){
             success: function (data) {//SUCESS updating
                 //Update display
                 var dt = Date();
+                redflag.sucess = true;
                 console.log("Successful update to server: " + dt);
             },
             error: function (err) {var dt = Date();
