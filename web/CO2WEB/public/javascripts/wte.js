@@ -177,7 +177,9 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
     + "?vrevenue     j2:numericalValue  ?V_TotalRevenue ." 
 
     + "}";
-
+/** boolean that would signal start of simulation
+ * 
+ */
 var redflag = {"success":true};    
 (function PPMap(){
     var ppMap = new PopupMap({useCluster:true});
@@ -219,13 +221,17 @@ $(document).ready(function () {
                         runWTESimulation();
                         clearInterval(interval);
                     }
-              }, 10000); // every 100 milliseconds
+              }, 5000); // every 5 seconds
         });
         
 
 
     });
 });
+/** helper function for completing the update. sets redflag as a boolean variable to signal simulation to start
+ * 
+ * @param {Function } callback 
+ */
 function completeUpdate(callback){
     transportUpd = getInputs("table#transportQ tr");
     var offSiteIUpd = getInputs("table#Incineration tr");
@@ -277,12 +283,14 @@ var request = $.ajax({
 }
 /** sleep function for javascript
  * 
- * @param {*} ms time in miliseconds 
+ * @param {Integer} ms time in miliseconds 
  */
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-
+/**async function that would provide five minutes to complete simulation and then run callback function
+ * @param {Function} callback
+ */
 async function delayedCallback(callback) 
     {
     var dt = Date();
@@ -337,6 +345,9 @@ function clearMarkers() {
         marker=null;
     }
 }
+/** calls the creation of markers (with extra parameters) before creating the onsite WTF technology
+ * 
+ */
 function queryForOnsiteWT(){
     clearMarkers();
     console.log(markers);
@@ -753,6 +764,10 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
     });
 
 }
+/** gathers inputs (values) of each parameter 
+ * 
+ * @param {String} nameOfTable the name of the table i.e. transportQ
+ */
 function getInputs(nameOfTable) {
 
 
