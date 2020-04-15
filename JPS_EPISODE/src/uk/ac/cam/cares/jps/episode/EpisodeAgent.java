@@ -43,6 +43,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	double nz=13;
 	double upperheight=75.0;
 	double lowerheight=2.0;
+	String epsgInUTM="48";//48N
+	String epsgActive="EPSG:32648";
 	
     private static final String DATA_KEY_COLLECTION = "collection";
     private static final String DATA_KEY_ITEMS = "items";
@@ -320,7 +322,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			content[0] = "8";
 			double shipx = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LON);
 			double shipy = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LAT);
-			double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", "EPSG:32648",
+			double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { shipx, shipy });
 			content[1] = "" + locationshipconverted[0];
 			content[2] = "" + locationshipconverted[1];
@@ -532,6 +534,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		String upy = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner")
 				.get("uppery").toString();
 
+
 		// it is assumed to be already in utm 48 or this calculation?
 		double proclowx = Double.valueOf(lowx);
 		double procupx = Double.valueOf(upx);
@@ -541,6 +544,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
 		double[] ncell = calculatenumberCellDetails(procupx, procupy, proclowx, proclowy, dx, dy);
 
+
+		
 		if (filename.contentEquals("aermap.inp")) { // assume srtm=1
 			String srtmin = inputparameter.getJSONArray("srtminput").get(0).toString();
 			String tif = "N01E103.tif";
@@ -550,7 +555,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String tif2 = "   DATAFILE  \"./srtm3/N01E104.tif\"   tiffdebug";
 			fileContext = fileContext.replaceAll(tif1, tif1aft); // replace with the new tif
 			fileContext = fileContext.replaceAll(tif2, ""); // replace with the new tif
-			// fileContext = fileContext.replaceAll("48",""); //replace with the new value
+			fileContext = fileContext.replaceAll("48",epsgInUTM); //replace with the new value
 			// of UTM coordinate system if needed
 			fileContext = fileContext.replaceAll("330600.0", "" + (proclowx - 1000)); // replace with the new value
 																						// xmin-1000
@@ -609,7 +614,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(dx + line20b);
 			String line21b = separator + "!" + separator + lineoffile.get(20).split("!")[1];
 			newcontent.add(proclowx + "," + proclowy + line21b);// corner left
-			newcontent.add(lineoffile.get(21));// make the UTM the same
+			String line22b = separator + "!" + separator + lineoffile.get(21).split("!")[1];
+			newcontent.add("'"+epsgInUTM+"N'"+ line22b);// UTM
+//			newcontent.add(lineoffile.get(21));// if want to make the UTM the same
 			String line23b = separator + "!" + separator + lineoffile.get(22).split("!")[1];
 			newcontent.add(size+line23b);// number of point source?
 			for (int r = 23; r < lineoffile.size(); r++) {
@@ -630,9 +637,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String loc2x = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
 			String loc2y = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
 
-			double[] p1convert = CRSTransformer.transform("EPSG:4326", "EPSG:32648",
+			double[] p1convert = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { Double.valueOf(loc1x), Double.valueOf(loc1y) });
-			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:32648",
+			double[] p2convert = CRSTransformer.transform("EPSG:4326", epsgActive,
 					new double[] { Double.valueOf(loc2x), Double.valueOf(loc2y) });
 			double dx1 = p1convert[0] - proclowx;
 			double dy1 = p1convert[1] - proclowy;
@@ -647,7 +654,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				newcontent.add(lineoffile.get(r));
 			}
 
-			double[] pmidconvert = CRSTransformer.transform("EPSG:32648", "EPSG:4326",
+			double[] pmidconvert = CRSTransformer.transform(epsgActive, "EPSG:4326",
 					new double[] { center[0], center[1] });
 			DecimalFormat df = new DecimalFormat("#.#");
 			String xmid = df.format(pmidconvert[0]);
