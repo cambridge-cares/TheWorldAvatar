@@ -171,7 +171,7 @@ public class SoftSensor extends HttpServlet {
             Date to = formatter.parse(toSimulationTime);
 
             if (from.before(fromRdf4J) || to.before(fromRdf4J)) {
-                metadataResult = MetaDataQuery.queryOldResources(fromSimulationTime, toSimulationTime, iriCreatingAgent,topics);
+                metadataResult = MetaDataQuery.queryOldResources(iriCreatingAgent,fromSimulationTime, toSimulationTime,topics);
             } else {
                 metadataResult = MetaDataQuery.queryResources(null, null, null, iriCreatingAgent,  fromSimulationTime, toSimulationTime, null, topics);
             }
