@@ -95,6 +95,53 @@ public class EpisodeAgentTest extends TestCase {
 		   new EpisodeAgent().createEmissionInput(dataPath,"points_singapore_2019.csv",shipdata);
 	}
 	
+	public void testEpisodeControlEmissionInput() throws IOException {
+		//for the ship region is in epsg 3857
+		double xmin=11560879/*.832*/;
+		double ymin=140107/*.739*/;
+		double xmax=11563323/*.926*/;
+		double ymax=143305/*.896*/;
+		
+		//hk
+//		 xmin=12693826.33/*.832*/;
+//		 ymin=2535141.08 /*.739*/;
+//		 xmax=12720831.57/*.926*/;
+//		 ymax=2562311.02 /*.896*/;
+		   JSONObject jo = new JSONObject();
+		   
+		   JSONObject scope = new JSONObject();
+		   JSONObject low = new JSONObject();
+		   JSONObject up = new JSONObject();
+		   up.put("upperx", xmax);
+		   up.put("uppery", ymax);
+		   low.put("lowerx", xmin);
+		   low.put("lowery", ymin);
+		   scope.put("lowercorner", low);
+		   scope.put("uppercorner", up);
+		   jo.put("region",scope);
+		   
+		   System.out.println("json="+jo.toString());
+		   String dataPath = QueryBroker.getLocalDataPath();
+		   
+		   String result = AgentCaller.executeGetWithURLAndJSON("http://www.theworldavatar.com:80/JPS_POSTGRESQL/getEntitiesWithinRegion", jo.toString());
+		   System.out.println("result of the ship= "+result);
+		   JSONObject shipdata = new JSONObject(result);
+			JSONWriter jsonInput = new JSONStringer().object().
+					key("region").object()
+						.key("srsname").value("EPSG:32648") //in utm 48N
+						.key("lowercorner").object()
+							.key("lowerx").value("331600.0")
+							.key("lowery").value("119000.0").endObject()
+						.key("uppercorner").object()
+							.key("upperx").value("401600.0")
+							.key("uppery").value("189000.0").endObject()
+					.endObject()
+					.endObject(); 
+			JSONObject region= new JSONObject(jsonInput.toString());
+		   new EpisodeAgent().createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta.inp");
+	}
+	
+	
 	public void testEpisodeReceptorInput() {
 		String dataPath = QueryBroker.getLocalDataPath();
 		String filename="receptor_input.txt";
@@ -118,7 +165,6 @@ public class EpisodeAgentTest extends TestCase {
 	}
 	
 	public void testControlWeather() throws IOException {
-		JSONObject jo = new JSONObject();
 		String dataPath = QueryBroker.getLocalDataPath();
 		List<String>stniri=new ArrayList<String>();
 		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
@@ -135,7 +181,6 @@ public class EpisodeAgentTest extends TestCase {
 				.endObject()
 				.endObject(); 
 		JSONObject region= new JSONObject(jsonInput.toString());
-		jo.put("regioninput",region);
 		new EpisodeAgent().createControlWeatherFile(region, dataPath, "run_file.asc",stniri) ;
 	}
 	

@@ -437,6 +437,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		 new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
 	}
 	
+	public void createControlEmissionFile(JSONObject region,JSONObject shipdata,String dataPath,String Filename) throws IOException {
+		JSONObject in= new JSONObject();
+		in.put("regioninput",region);
+		in.put("sourceinput",shipdata);
+		String  modifiedcontent=modifyTemplate(Filename,in);
+		new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
+	}
 	public void createReceptorFile(JSONObject inputparameter,String dataPath, String Filename) {
 		String lowx=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner").get("lowerx").toString();
 		String lowy=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner").get("lowery").toString();
@@ -464,8 +471,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		content[8]=lowy;	
 		content[9]="-9900";
 		resultquery.add(content);
-		
-		
 		
 		//convert to tsv
 		 StringBuilder sb= new StringBuilder();
@@ -513,134 +518,192 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		return ncell;
 	}
 	
-	public String modifyTemplate(String filename,JSONObject inputparameter) throws IOException { 
-		
-		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+	public String modifyTemplate(String filename, JSONObject inputparameter) throws IOException {
+
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 		String fileContext = FileUtils.readFileToString(file);
-		String epsg=inputparameter.getJSONObject("regioninput").getJSONObject("region").get("srsname").toString();
-		String lowx=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner").get("lowerx").toString();
-		String lowy=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner").get("lowery").toString();
-		String upx=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner").get("upperx").toString();
-		String upy=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner").get("uppery").toString();
+		String epsg = inputparameter.getJSONObject("regioninput").getJSONObject("region").get("srsname").toString();
+		String lowx = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner")
+				.get("lowerx").toString();
+		String lowy = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner")
+				.get("lowery").toString();
+		String upx = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner")
+				.get("upperx").toString();
+		String upy = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner")
+				.get("uppery").toString();
 
+		// it is assumed to be already in utm 48 or this calculation?
+		double proclowx = Double.valueOf(lowx);
+		double procupx = Double.valueOf(upx);
+		double proclowy = Double.valueOf(lowy);
+		double procupy = Double.valueOf(upy);
+		double[] center = calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
+		double[] ncell = calculatenumberCellDetails(procupx, procupy, proclowx, proclowy, dx, dy);
 
+		if (filename.contentEquals("aermap.inp")) { // assume srtm=1
+			String srtmin = inputparameter.getJSONArray("srtminput").get(0).toString();
+			String tif = "N01E103.tif";
+			// String tif1="DATAFILE "+"./srtm3/"+srtmin+" tiffdebug";
+			String tif1 = "   DATAFILE  \"./srtm3/" + tif + "\"   tiffdebug";
+			String tif1aft = "DATAFILE  " + "./srtm3/" + srtmin + "   tiffdebug";
+			String tif2 = "   DATAFILE  \"./srtm3/N01E104.tif\"   tiffdebug";
+			fileContext = fileContext.replaceAll(tif1, tif1aft); // replace with the new tif
+			fileContext = fileContext.replaceAll(tif2, ""); // replace with the new tif
+			// fileContext = fileContext.replaceAll("48",""); //replace with the new value
+			// of UTM coordinate system if needed
+			fileContext = fileContext.replaceAll("330600.0", "" + (proclowx - 1000)); // replace with the new value
+																						// xmin-1000
+			fileContext = fileContext.replaceAll("118000.0", "" + (proclowy - 1000)); // replace with the new value
+																						// ymin-1000
+			fileContext = fileContext.replaceAll("402600.0", "" + (procupx + 1000)); // replace with the new value
+																						// xmax+1000
+			fileContext = fileContext.replaceAll("190000.0", "" + (procupy + 1000)); // replace with the new value
+																						// ymax+1000
+			fileContext = fileContext.replaceAll("366600.0", "" + center[0]); // replace with the new value x center
+																				// point
+			fileContext = fileContext.replaceAll("154000.0", "" + center[1]); // replace with the new value y center
+																				// point
+			fileContext = fileContext.replaceAll("-35000.0a", "" + leftcorner[0]);
+			fileContext = fileContext.replaceAll("35b", "" + ncell[0]);
+			fileContext = fileContext.replaceAll("2000.0c", "" + dx);
+			fileContext = fileContext.replaceAll("-35000.0d", "" + leftcorner[1]);
+			fileContext = fileContext.replaceAll("35e", "" + ncell[1]);
+			fileContext = fileContext.replaceAll("2000.0f", "" + dy);
 
-		//it is assumed to be in utm 48 or this calculation?
-		double proclowx=Double.valueOf(lowx);
-		double procupx=Double.valueOf(upx);
-		double proclowy=Double.valueOf(lowy);
-		double procupy=Double.valueOf(upy);
-		double[] center=calculateCenterPoint(procupx,procupy,proclowx,proclowy);
-		double[] leftcorner=calculateLowerLeftInit(procupx,procupy,proclowx,proclowy);
-		double[] ncell=calculatenumberCellDetails(procupx,procupy,proclowx,proclowy,dx,dy);
-		
-		if(filename.contentEquals("aermap.inp")) { //assume srtm=1
-			String srtmin=inputparameter.getJSONArray("srtminput").get(0).toString();
-			String tif="N01E103.tif";
-			//String tif1="DATAFILE  "+"./srtm3/"+srtmin+"   tiffdebug";
-			String tif1="   DATAFILE  \"./srtm3/"+tif+"\"   tiffdebug";
-			String tif1aft="DATAFILE  "+"./srtm3/"+srtmin+"   tiffdebug";
-			String tif2="   DATAFILE  \"./srtm3/N01E104.tif\"   tiffdebug";
-			fileContext = fileContext.replaceAll(tif1,tif1aft); //replace with the new tif
-			fileContext = fileContext.replaceAll(tif2,""); //replace with the new tif
-			//fileContext = fileContext.replaceAll("48",""); //replace with the new value of UTM coordinate system if needed
-			fileContext = fileContext.replaceAll("330600.0",""+(proclowx-1000)); //replace with the new value xmin-1000
-			fileContext = fileContext.replaceAll("118000.0",""+(proclowy-1000)); //replace with the new value ymin-1000
-			fileContext = fileContext.replaceAll("402600.0",""+(procupx+1000)); //replace with the new value xmax+1000
-			fileContext = fileContext.replaceAll("190000.0",""+(procupy+1000)); //replace with the new value ymax+1000
-			fileContext = fileContext.replaceAll("366600.0",""+center[0]); //replace with the new value x center point
-			fileContext = fileContext.replaceAll("154000.0",""+center[1]); //replace with the new value y center point
-			fileContext = fileContext.replaceAll("-35000.0a",""+leftcorner[0]);
-			fileContext = fileContext.replaceAll("35b",""+ncell[0]);
-			fileContext = fileContext.replaceAll("2000.0c",""+dx);
-			fileContext = fileContext.replaceAll("-35000.0d",""+leftcorner[1]);
-			fileContext = fileContext.replaceAll("35e",""+ncell[1]);
-			fileContext = fileContext.replaceAll("2000.0f",""+dy);
-			
 			return fileContext;
 
-		}else if(filename.contentEquals("run_file.asc")) {
-			String name1=inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString();
-			String loc1x=inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
-			String loc1y=inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
-			String heighttemp=inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("z").toString();
-			String name2=inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("name").toString();
-			String loc2x=inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
-			String loc2y=inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
-			
-			double[] p1convert = CRSTransformer.transform("EPSG:4326", "EPSG:32648", new double[] {Double.valueOf(loc1x),Double.valueOf(loc1y)});
-			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:32648", new double[] {Double.valueOf(loc2x),Double.valueOf(loc2y)});
-			double dx1=p1convert[0]-proclowx;
-			double dy1=p1convert[1]-proclowy;
-			double dx2=p2convert[0]-proclowx;
-			double dy2=p2convert[1]-proclowy;
-			
-			
-			//System.out.println("line 0= "+filename);
-			String[]line=fileContext.split("\n");
-			List<String> lineoffile=Arrays.asList(line);
-			List<String> newcontent= new ArrayList<String>();
-			for( int r=0;r<23;r++) {
+		} else if (filename.contentEquals("cctapm_meta.inp")) {
+			int size = inputparameter.getJSONObject("sourceinput").getJSONObject(DATA_KEY_COLLECTION).getJSONArray(DATA_KEY_ITEMS).length();
+                
+                
+			String[] line = fileContext.split("\n");
+			List<String> lineoffile = Arrays.asList(line);
+			List<String> newcontent = new ArrayList<String>();
+			for (int r = 0; r < 12; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			
-			double[] pmidconvert = CRSTransformer.transform("EPSG:32648", "EPSG:4326", new double[] {center[0], center[1]});
-			 DecimalFormat df= new DecimalFormat("#.#") ;
-			 String xmid=df.format(pmidconvert[0]);
-			 System.out.println("xmid="+xmid);
-			 String ymid=df.format(pmidconvert[1]);
-			 System.out.println("ymid="+ymid);
-			 String line23=lineoffile.get(23);
-			 line23=line23.replace("1.4", ymid);
-			 line23=line23.replace("103.8", xmid);
-			 newcontent.add(line23);
-			 
-			 String line24=lineoffile.get(24);
-			 line24=line24.replace("-8","-8");//change if timezone is different
-			 newcontent.add(line24);
-			 newcontent.add(lineoffile.get(25));
-			 String line26b=lineoffile.get(26).split("!")[1]+"!"+lineoffile.get(26).split("!")[2]+"!"+lineoffile.get(26).split("!")[3];
-			 String line26=ncell[0]+separator+ncell[1]+separator+nz+separator+"!"+line26b;
-			 newcontent.add(line26);
-			 System.out.println("line26= "+line26);
-			 
-			 String line27b=lineoffile.get(27).split("!")[1];
-			 String line27=dx+separator+dy+separator+"!"+line27b;
-			 newcontent.add(line27);
-			 System.out.println("line27= "+line27);
-			 newcontent.add(lineoffile.get(28));//base with stretch factor
-			 newcontent.add(lineoffile.get(29));//base
-			 for(int r=1;r<nz;r++) {
-				 newcontent.add(dz+separator+"!"+"\n");
-			 }
-			for( int r=42;r<73;r++) {
+			String time = WeatherAgent.provideCurrentTime();
+//			for(int r=12;r<22;r++) {
+//				String suffix=separator+"!"+separator+lineoffile.get(r).split("!")[1];
+//			}
+			String line13b = separator + "!" + separator + lineoffile.get(12).split("!")[1];
+			newcontent.add(
+					"'" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line13b);
+			String line14b = separator + "!" + separator + lineoffile.get(13).split("!")[1];
+			newcontent.add(
+					"'" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line14b);
+			String line15b = separator + "!" + separator + lineoffile.get(14).split("!")[1];
+			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
+					+ time.split("T")[1].split(":")[0] + line15b);
+			String line16b = separator + "!" + separator + lineoffile.get(15).split("!")[1];
+			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
+					+ time.split("T")[1].split(":")[0] + line16b);
+			String line17b = separator + "!" + separator + lineoffile.get(16).split("!")[1];
+			newcontent.add(ncell[0] + line17b);
+			String line18b = separator + "!" + separator + lineoffile.get(17).split("!")[1];
+			newcontent.add(ncell[1] + line18b);
+			String line19b = separator + "!" + separator + lineoffile.get(18).split("!")[1];
+			newcontent.add(dx_rec + line19b);
+			String line20b = separator + "!" + separator + lineoffile.get(19).split("!")[1];
+			newcontent.add(dx + line20b);
+			String line21b = separator + "!" + separator + lineoffile.get(20).split("!")[1];
+			newcontent.add(proclowx + "," + proclowy + line21b);// corner left
+			newcontent.add(lineoffile.get(21));// make the UTM the same
+			String line23b = separator + "!" + separator + lineoffile.get(22).split("!")[1];
+			newcontent.add(size+line23b);// number of point source?
+			for (int r = 23; r < lineoffile.size(); r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(name1+separator+"!"+lineoffile.get(73).split("!")[1]);
-			newcontent.add(dx1+separator+dy1+separator+"!"+lineoffile.get(74).split("!")[1]);
+			String contentupdate = ""; // process from arraylist to string
+			for (int x = 0; x < newcontent.size(); x++) {
+				contentupdate += newcontent.get(x);
+			}
+			return contentupdate;
+
+		} else if (filename.contentEquals("run_file.asc")) {
+			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString();
+			String loc1x = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
+			String loc1y = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
+			String heighttemp = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("z").toString();
+			String name2 = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("name").toString();
+			String loc2x = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
+			String loc2y = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
+
+			double[] p1convert = CRSTransformer.transform("EPSG:4326", "EPSG:32648",
+					new double[] { Double.valueOf(loc1x), Double.valueOf(loc1y) });
+			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:32648",
+					new double[] { Double.valueOf(loc2x), Double.valueOf(loc2y) });
+			double dx1 = p1convert[0] - proclowx;
+			double dy1 = p1convert[1] - proclowy;
+			double dx2 = p2convert[0] - proclowx;
+			double dy2 = p2convert[1] - proclowy;
+
+			// System.out.println("line 0= "+filename);
+			String[] line = fileContext.split("\n");
+			List<String> lineoffile = Arrays.asList(line);
+			List<String> newcontent = new ArrayList<String>();
+			for (int r = 0; r < 23; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+
+			double[] pmidconvert = CRSTransformer.transform("EPSG:32648", "EPSG:4326",
+					new double[] { center[0], center[1] });
+			DecimalFormat df = new DecimalFormat("#.#");
+			String xmid = df.format(pmidconvert[0]);
+			System.out.println("xmid=" + xmid);
+			String ymid = df.format(pmidconvert[1]);
+			System.out.println("ymid=" + ymid);
+			String line23 = lineoffile.get(23);
+			line23 = line23.replace("1.4", ymid);
+			line23 = line23.replace("103.8", xmid);
+			newcontent.add(line23);
+
+			String line24 = lineoffile.get(24);
+			line24 = line24.replace("-8", "-8");// change if timezone is different
+			newcontent.add(line24);
+			newcontent.add(lineoffile.get(25));
+			String line26b = lineoffile.get(26).split("!")[1] + "!" + lineoffile.get(26).split("!")[2] + "!"
+					+ lineoffile.get(26).split("!")[3];
+			String line26 = ncell[0] + separator + ncell[1] + separator + nz + separator + "!" + line26b;
+			newcontent.add(line26);
+			System.out.println("line26= " + line26);
+
+			String line27b = lineoffile.get(27).split("!")[1];
+			String line27 = dx + separator + dy + separator + "!" + line27b;
+			newcontent.add(line27);
+			System.out.println("line27= " + line27);
+			newcontent.add(lineoffile.get(28));// base with stretch factor
+			newcontent.add(lineoffile.get(29));// base
+			for (int r = 1; r < nz; r++) {
+				newcontent.add(dz + separator + "!" + "\n");
+			}
+			for (int r = 42; r < 73; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(name1 + separator + "!" + lineoffile.get(73).split("!")[1]);
+			newcontent.add(dx1 + separator + dy1 + separator + "!" + lineoffile.get(74).split("!")[1]);
 			newcontent.add(lineoffile.get(75));
-			newcontent.add(heighttemp+separator+"!"+lineoffile.get(76).split("!")[1]);
-			newcontent.add(upperheight+separator+"!"+lineoffile.get(77).split("!")[1]);
-			newcontent.add(lowerheight+separator+"!"+lineoffile.get(78).split("!")[1]);
-			for( int r=79;r<82;r++) {
+			newcontent.add(heighttemp + separator + "!" + lineoffile.get(76).split("!")[1]);
+			newcontent.add(upperheight + separator + "!" + lineoffile.get(77).split("!")[1]);
+			newcontent.add(lowerheight + separator + "!" + lineoffile.get(78).split("!")[1]);
+			for (int r = 79; r < 82; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(name2+separator+"!"+lineoffile.get(82).split("!")[1]);
-			newcontent.add(dx2+separator+dy2+separator+"!"+lineoffile.get(83).split("!")[1]);
-			for( int r=84;r<89;r++) {
+			newcontent.add(name2 + separator + "!" + lineoffile.get(82).split("!")[1]);
+			newcontent.add(dx2 + separator + dy2 + separator + "!" + lineoffile.get(83).split("!")[1]);
+			for (int r = 84; r < 89; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			 //assume wind measurement height=const for both
-				
-					
-			 String contentupdate="";
-			 for (int x=0;x<newcontent.size();x++) {
-				 contentupdate+=newcontent.get(x);
-			 }
+			// assume wind measurement height=const for both
+
+			String contentupdate = ""; // process from arraylist to string
+			for (int x = 0; x < newcontent.size(); x++) {
+				contentupdate += newcontent.get(x);
+			}
 			return contentupdate;
 		}
-		
-		
+
 		return fileContext;
 	}
 }
