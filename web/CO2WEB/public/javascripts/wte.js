@@ -210,7 +210,7 @@ $(document).ready(function () {
         started = Date.now();
         completeUpdate(function(){
             var interval = setInterval(function(){
-                if (Date.now() - started > 35000) {
+                if (Date.now() - started > 180000) {
                     alert("Update issue. Check if it's working? ");
                     clearInterval(interval);
                 } else {
@@ -221,7 +221,7 @@ $(document).ready(function () {
                         runWTESimulation();
                         clearInterval(interval);
                     }
-              }, 5000); // every 5 seconds
+              }, 20000); // every 5 seconds
         });
         
 
@@ -232,7 +232,7 @@ $(document).ready(function () {
  * 
  * @param {Function } callback 
  */
-function completeUpdate(callback){
+async function completeUpdate(callback){
     transportUpd = getInputs("table#transportQ tr");
     var offSiteIUpd = getInputs("table#Incineration tr");
     var offSiteCUpd = getInputs("table#CoDigestion tr");
@@ -247,10 +247,12 @@ function completeUpdate(callback){
         redflag.sucess = false;
         updateSite(finalArray[0], 0);
     }
-    for (i = 1; i<initArray.length; i++){
+    for (var i = 1; i<initArray.length; i++){
         if (JSON.stringify(initArray[i])!= JSON.stringify(finalArray[i])){
+            console.log(i, finalArray[i]);
             redflag.sucess = false;
             updateSite(finalArray[i], i);
+            await sleep(3*1000);//3 seconds each gap. 
         }
     }
     callback();
@@ -276,8 +278,8 @@ var request = $.ajax({
     //Because simulation takes some time to run, then asynchronous watcher object is triggered next. 
     request.done(function() { 
         delayedCallback(function(){
-            queryForEconomicComp();
-            queryForOnsiteWT();
+            // queryForEconomicComp();
+            // queryForOnsiteWT();
         });
     });
 }
@@ -523,7 +525,7 @@ function updateSite(inpParameters, index){
         //strip and add the name of the WasteTreatment plant to each TargetIRI
         newLst = [] 
         var base = iri.split('#')[0];
-        for (i = 0; i < 3; i++){
+        for (var i = 0; i < 3; i++){
             var var_name = lstOfTargetIRI[i] + index + "Of"+iri.split("#")[1];
             console.log(var_name);
             newLst.push(var_name);
@@ -624,6 +626,9 @@ function queryForMarkers(agenturl,fnCreate,  callback){
                 scaledSize : new google.maps.Size(30, 30),
             };
         }else if (name.includes("OnSite")){
+            if (name.includes("-0")){
+                continue;
+            }
             var icon = {
                 url: 'images/onsite.png', 
                 scaledSize : new google.maps.Size(10, 10),
@@ -639,7 +644,7 @@ function queryForMarkers(agenturl,fnCreate,  callback){
         markerdict.push([name, obj.coors.lat,obj.coors.lng, icon]);
     }
 
-    for (x=0; x< size; x++){
+    for (x=0; x< markerdict.length; x++){
         createMarker(markerdict[x]);
     }
     //run callback function of other initiations. 
