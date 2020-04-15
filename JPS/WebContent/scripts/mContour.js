@@ -8,6 +8,12 @@ const THRESHOULD_NUM = 8
 const HEIGHT_INTERVAL = 5
 const LEGEND_DIV = 'legendwrapper'
 
+let canvas = $('#drawcanvas')[0]
+        let context = canvas.getContext('2d')
+
+        context.translate(canvas.width, 0)
+        context.scale(-1, 1)
+
 function getContourMaps (address) {
 
   return new Promise((resolve, reject) => {
@@ -77,11 +83,6 @@ function getContourMaps (address) {
 
         //=========set up canvas for image conversion=========================//
 
-        let canvas = $('#drawcanvas')[0]
-        let context = canvas.getContext('2d')
-
-        context.translate(canvas.width, 0)
-        context.scale(-1, 1)
 
         //========convert all svg strs to png images=============//
 
