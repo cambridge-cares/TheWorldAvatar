@@ -39,7 +39,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		return requestParams;
 	}
 		
-	public void createEmissionInput() {
+	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {
 		
 	}
 	

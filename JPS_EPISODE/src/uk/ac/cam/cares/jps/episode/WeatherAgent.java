@@ -436,6 +436,23 @@ public class WeatherAgent extends JPSHttpServlet {
 		}
 	}
 	
+	public void insertDataRepoContext(RepositoryConnection con,List<String>info,String context) {
+
+		ValueFactory f=repo.getValueFactory();
+		IRI contextiri= f.createIRI(context);
+		
+		IRI address=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasAddress");
+		IRI name=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#enumerationValue");
+		
+
+			IRI prop1=f.createIRI(info.get(0)); //cityiri
+			String prop2=info.get(1);// stnname
+
+			con.add(contextiri, address, prop1, contextiri);
+			con.add(contextiri, name, f.createLiteral(prop2), contextiri);
+
+	}
+	
 	public void resetRepoTrial(RepositoryConnection con,String context) {
 		for(int d=1;d<=12;d++) {
 			String number="00"+d;
