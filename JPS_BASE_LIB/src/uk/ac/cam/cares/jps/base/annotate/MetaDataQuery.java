@@ -2,12 +2,15 @@ package uk.ac.cam.cares.jps.base.annotate;
 
 import java.util.List;
 
+import org.apache.jena.query.QueryExecution;
+import org.apache.jena.query.QueryExecutionFactory;
+import org.apache.jena.query.ResultSet;
+
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService;
-import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
 import uk.ac.cam.cares.jps.base.query.sparql.PrefixToUrlMap;
 import uk.ac.cam.cares.jps.base.query.sparql.Prefixes;
 
@@ -20,8 +23,9 @@ public class MetaDataQuery implements Prefixes {
 		}
 		//return KnowledgeBaseClient.query(metadataSetUrl, null, sparql);
 		String datasetUrl = KeyValueManager.get(IKeys.URL_RDF_METADATA);
-		SparqlOverHttpService sparqlService = new SparqlOverHttpService(RDFStoreType.FUSEKI, datasetUrl);
-		return sparqlService.executeGet(sparql);
+		QueryExecution q = QueryExecutionFactory.sparqlService(datasetUrl,sparql);
+		ResultSet rs_metadata = q.execSelect();			
+		return JenaResultSetFormatter.convertToJSONW3CStandard(rs_metadata);
 	}
 
 	public static String query(String sparql) {
@@ -149,11 +153,11 @@ public class MetaDataQuery implements Prefixes {
 		
 		if (topics != null) {
 			for (String current : topics) {
-				sparql.append("?resource dcterms:subject <" + current + "> .");
+				sparql.append("OPTIONAL {?resource dcterms:subject <" + current + "> .}. \r\n");
 			}
 		}
 		
-		sparql.append("} ORDER BY DESC(?creationTime) \r\n");
+		sparql.append("} ORDER BY DESC(?simulationTime) \r\n");
 		sparql.append("LIMIT 1000");	
 		
 		return sparql.toString();

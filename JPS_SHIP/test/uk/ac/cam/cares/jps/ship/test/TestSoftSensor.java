@@ -325,9 +325,9 @@ public class TestSoftSensor extends TestCase {
 		
 		JSONObject time = new JSONObject();
 		
-		time.put("from", "2019-06-20T05:00:00");//oldest
-		time.put("to", "2019-04-08T05:00:00");
-//		time.put("to", "2019-12-09T07:30:00"); //latest range
+		time.put("from", "2019-06-17T05:00:00");//oldest
+		//time.put("to", "2019-08-20T05:00:00");
+		time.put("to", "2019-12-09T07:30:00"); //latest range
 		JSONObject jo = new JSONObject();
 		jo.put("timeinterval", time);
 		jo.put("coordinates", ja);
