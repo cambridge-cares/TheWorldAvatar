@@ -840,14 +840,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
 			try {
-			      File myObj = new File("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
-			      if (myObj.createNewFile()) {
-			    	  FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
-			          myWriter.write(sparql);
-			          myWriter.close();
-			      } else {
-			        System.out.println("File already exists.");
-			      }
+			      FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
+			      myWriter.write(sparql);
+			      myWriter.close();
+			      
 			    } catch (IOException e) {
 			      System.out.println("An error occurred.");
 			      e.printStackTrace();
@@ -914,7 +910,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		for(int r=0;r<unitofoffsite.size();r++) {
 			for(int i=0;i<unitofoffsite.get(0).length;i++) {
 				String element=unitofoffsite.get(r)[i];
-				if(Integer.valueOf(element)>0) {
+				if(Double.parseDouble(element)>0.01) {
 					String[]component= {""+r,inputdata.get(0)[i],element};
 					filtered.add(component);
 				}
