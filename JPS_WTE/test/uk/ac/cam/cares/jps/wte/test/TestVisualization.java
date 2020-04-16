@@ -82,8 +82,12 @@ public class TestVisualization  extends TestCase {
 			e.printStackTrace();
 		}
 	}
-	public void testScenarioCoordination() throws IOException { 
-		String scenarioName = "testFW53228637-70fd-4332-a811-b3575b5272f9";
+	/** because if onsite is changed (and added to scenario folder)
+	 * error occurs whereby onsite0 is being read (and no other!)
+	 * @throws IOException
+	 */
+	public void testTopNodeRecall() throws IOException { 
+		String scenarioName = "testFW80e073b5-acdc-41c9-a855-1dd804344fca";
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(WasteTopNode)
 				.endObject().toString();

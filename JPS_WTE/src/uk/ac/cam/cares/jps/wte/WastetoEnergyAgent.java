@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.wte;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -792,7 +793,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		
 		//outputdata= treated waste onsite
 		//input data onsite=onsiteiri
-		for (int d = 0; d < inputdataonsite.size(); d++) {// each iri of foodcourt
+		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
 			int wasteindex = 1;
 
 			StringBuffer b = new StringBuffer();
@@ -824,11 +825,13 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 				int IndexOffsiteHeader = offsiteindex % 3; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
 															// the 3rd
 				String currentoffwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
+				logger.info("Input Data " + inputdataoffsite.toString());
+				logger.info(currentoffwtf);
 				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 				b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
 				b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
-				b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue <" + numfromres + "> . \r\n");
+				b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue " + numfromres + " . \r\n");
 				b.append("<" + valuecurrentwaste
 						+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
 				b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentoffwtf + "> . \r\n");
@@ -836,6 +839,19 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			}
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
+			try {
+			      File myObj = new File("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
+			      if (myObj.createNewFile()) {
+			    	  FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
+			          myWriter.write(sparql);
+			          myWriter.close();
+			      } else {
+			        System.out.println("File already exists.");
+			      }
+			    } catch (IOException e) {
+			      System.out.println("An error occurred.");
+			      e.printStackTrace();
+			    }
 			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
