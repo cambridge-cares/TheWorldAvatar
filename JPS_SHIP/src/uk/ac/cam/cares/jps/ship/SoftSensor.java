@@ -227,6 +227,20 @@ public class SoftSensor extends HttpServlet {
                     logger.info("realx= " + realx);
                     logger.info("realy= " + realy);
                     logger.info("realz= " + realz);
+//                    if( realx!=-999.0&&realy!=-999.0&&realz!=-999.0) {
+//                        logger.info("directory selected by query= " + listmap.get(v)[0]);
+//                        System.out.println("directory selected by query= " + listmap.get(v)[0]);
+//						String plantupdate2 = "PREFIX dcterms:<http://purl.org/dc/terms/> "
+//								+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
+//								+ "PREFIX j1:<https://www.w3.org/2006/time#> " 
+//								+ "INSERT {<" + listmap.get(v)[0]
+//								+ "> dcterms:subject <http://dbpedia.org/resource/Hong_Kong>" + " .} "
+//								+ "WHERE { " + "}";
+//                		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate2),
+//                				"http://www.theworldavatar.com:80/damecoolquestion/jpsmetadata/update");
+//                			upp.execute();
+//                        
+//                    }
 
                     List<String> concentration = findtheconcentration(simulationResult, realx, realy, realz);
 

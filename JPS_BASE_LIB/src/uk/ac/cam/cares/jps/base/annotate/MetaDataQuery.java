@@ -145,7 +145,7 @@ public class MetaDataQuery implements Prefixes {
 		if (toSimulationTime != null) {
 			sparql.append("FILTER ( ?simulationTime <= \"" + toSimulationTime + "\"^^xsd:dateTime ) \r\n");
 		}
-		
+		sparql.append("FILTER ( regex(str(?resource), \"C://JPS_DATA/workingdir/JPS_SCENARIO\") ) \r\n");
 		sparql.append("OPTIONAL {?resource dcterms:isPartOf ?scenario .}. \r\n");
 		if (iriScenario != null) {
 			sparql.append("?resource dcterms:isPartOf <" + iriScenario + "> . \r\n");

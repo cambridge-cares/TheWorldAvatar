@@ -178,7 +178,7 @@ public class TestSoftSensor extends TestCase {
 		return results;
 	}
 	
-	public void testquery() {
+	public void xxxtestqueryandupdate() {
 
 //		String plantupdate = "PREFIX dcterms:<http://purl.org/dc/terms/> "
 //				+ "INSERT { ?s dcterms:subject " +"<http://dbpedia.org/resource/Hong_Kong>" + " .} "
@@ -213,17 +213,25 @@ public class TestSoftSensor extends TestCase {
 					+ " FILTER (     regex(str(?resource), \"C://JPS_DATA/workingdir/JPS_SCENARIO\")) "
 					+"}";
 		
-		String plantupdate=	 "PREFIX dcterms:<http://purl.org/dc/terms/> "
-				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
-				+ "PREFIX j1:<https://www.w3.org/2006/time#> "
-					+ "INSERT { ?resource dcterms:subject " +"<http://dbpedia.org/resource/Hong_Kong>" + " .} "
+//		String plantupdate=	 "PREFIX dcterms:<http://purl.org/dc/terms/> "
+//				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
+//				+ "PREFIX j1:<https://www.w3.org/2006/time#> "
+//					+ "INSERT { ?resource dcterms:subject " +"<http://dbpedia.org/resource/Hong_Kong>" + " .} "
+//					+ "WHERE { "				
+//					+ "?resource dcterms:creator  <http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service> . "
+//					+ "?resource j1:hasTime ?inst ."
+//					+ "?inst j1:inXSDDateTime ?simulationTime ." 
+//					+ "FILTER ( ?simulationTime >= \"2019-06-20T05:00:00.000\"^^xsd:dateTime ) "
+//					+ "FILTER ( ?simulationTime <= \"2019-12-09T08:00:00.000\"^^xsd:dateTime ) "
+//					+ " FILTER (     regex(str(?resource), \"C://JPS_DATA/workingdir/JPS_SCENARIO\")) "
+//					+"}";
+		
+		String plantupdate2 = "PREFIX dcterms:<http://purl.org/dc/terms/> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " + "PREFIX j1:<https://www.w3.org/2006/time#> "
+				+ "INSERT {<C://JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/ff4bf1f1-08ae-4778-81dd-5e7a5c8fba59/JPS_ADMS/test.levels.gst> dcterms:subject <http://dbpedia.org/resource/Hong_Kong>"
+				+ " .} "
+
 					+ "WHERE { "				
-					+ "?resource dcterms:creator  <http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service> . "
-					+ "?resource j1:hasTime ?inst ."
-					+ "?inst j1:inXSDDateTime ?simulationTime ." 
-					+ "FILTER ( ?simulationTime >= \"2019-06-20T05:00:00.000\"^^xsd:dateTime ) "
-					+ "FILTER ( ?simulationTime <= \"2019-12-09T08:00:00.000\"^^xsd:dateTime ) "
-					+ " FILTER (     regex(str(?resource), \"C://JPS_DATA/workingdir/JPS_SCENARIO\")) "
 					+"}";
 		
 		
@@ -256,8 +264,10 @@ public class TestSoftSensor extends TestCase {
 //				+ "?s j8:hasName ?name ."
 //				+ "}";
 		
-		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate),
-				"http://www.theworldavatar.com:80/damecoolquestion/metadatatesting/update");
+//		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate2),
+//				"http://www.theworldavatar.com:80/damecoolquestion/metadatatesting/update");
+		UpdateProcessor upp = UpdateExecutionFactory.createRemote(UpdateFactory.create(plantupdate2),
+				"http://localhost:8080/fuseki/jpsmetadata/update");
 			upp.execute();
 			System.out.println("update finished");
 	}
