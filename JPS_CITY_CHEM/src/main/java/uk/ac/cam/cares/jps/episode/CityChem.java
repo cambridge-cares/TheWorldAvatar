@@ -12,14 +12,5 @@ public class CityChem {
 	public CityChem(){
 		
 	}
-	
-	public void install(){
-		
-	}
-	
-	private void installZlib(){
-		
-	}
-	
 
 }
