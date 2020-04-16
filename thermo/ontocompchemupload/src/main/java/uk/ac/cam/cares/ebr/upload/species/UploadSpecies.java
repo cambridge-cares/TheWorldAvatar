@@ -11,7 +11,7 @@ public class UploadSpecies {
 
 	public static void main(String[] args) throws IOException {
 		
-	HttpRequest.uploadSpecies(FolderManager.getOntoSpeciesCasRegIDAndIRI(csvFilePath), speciesFolderPath);
+	HttpRequest.uploadSpecies(FolderManager.getOntoSpeciesCasRegIDAndIRI(csvFilePath), speciesFolderPath, ".g09");
 	
 	}
 }

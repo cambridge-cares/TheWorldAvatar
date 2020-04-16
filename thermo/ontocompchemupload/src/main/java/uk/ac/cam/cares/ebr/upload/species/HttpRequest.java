@@ -72,21 +72,21 @@ public class HttpRequest {
 	 * @throws IOException
 	 * 
 	 */
-	private static boolean isGaussianFileUploaded(String referenceSpeciesCASRegID, String uniqueSpeciesIRI, String speciesFolderPath) throws IOException{
+	private static boolean isGaussianFileUploaded(String referenceSpeciesCASRegID, String uniqueSpeciesIRI, String speciesFolderPath, String fileExtension) throws IOException{
 		
 //		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
 		
-		String gaussianFilePath = speciesFolderPath+ "\\" + referenceSpeciesCASRegID + ".g09";
+		String gaussianFilePath = speciesFolderPath+ "\\" + referenceSpeciesCASRegID + fileExtension;
 		
-		File gaussianFile = new File(gaussianFilePath);
 		
-		System.out.println(" file exists: " + gaussianFile.exists() + "  gaussianFile: " + gaussianFile.getAbsolutePath() + "   speciesIRI: " + uniqueSpeciesIRI);
 		
-		if(gaussianFile.exists()){
+//		System.out.println(" file exists: " + gaussianFile.exists() + "  gaussianFile: " + gaussianFile.getAbsolutePath() + "   speciesIRI: " + uniqueSpeciesIRI);
+		
+//		if(gaussianFile.exists()){
 			
 //			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
 			
-			String jsonInput = generateJSONInput(speciesFolderPath, uniqueSpeciesIRI).toString();
+			String jsonInput = generateJSONInput(gaussianFilePath, uniqueSpeciesIRI).toString();
 			
 			System.out.println("jsonInput: " + jsonInput);
 			
@@ -95,14 +95,14 @@ public class HttpRequest {
 			
 //			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
 			
-			performHTTPRequest("http://localhost:8080/ontocompchemupload/convert?input=".concat(encodeIntoURLFormat(jsonInput)));
+			performHTTPRequest("http://localhost:8080/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
 			
 			return true;
 			
-		}else{
+//		}else{
 			
-			return false;
-		}
+//			return false;
+//		}
 	}
 	
 	/**
@@ -116,18 +116,17 @@ public class HttpRequest {
 		return URLEncoder.encode(jsonInput, "UTF-8");
 	}
 	
-	
 	/**
 	 * Generates the JSON input for uploading the log file of a DFT job<br>
 	 * by calling the ontocompchemupload service. 
 	 * 
 	 */
 	
-	private static JSONObject generateJSONInput(String gaussianFolderPath, String uniqueSpeciesIRI){
+	private static JSONObject generateJSONInput(String gaussianFilePath, String uniqueSpeciesIRI){
 		
 		JSONObject input = new JSONObject();
 		
-		input.put("referenceSpecies", gaussianFolderPath);
+		input.put("referenceSpecies", gaussianFilePath);
 		input.put("uniqueSpeciesIRI", uniqueSpeciesIRI);
 	
 //		input.put(Property.JSON_INPUT_REF_SPECIES.getPropertyName(), jobFolder.getAbsolutePath());
@@ -143,26 +142,20 @@ public class HttpRequest {
 	 * @throws IOException 
 	 * 
 	 */
-	public static void uploadSpecies(LinkedHashMap<String,String> speciesMap, String speciesFolderPath) throws IOException {
+	public static void uploadSpecies(LinkedHashMap<String,String> speciesMap, String speciesFolderPath, String fileExtension) throws IOException {
 
 		
 		for(Entry<String, String> map :speciesMap.entrySet()) {
 			
 			if(new File (speciesFolderPath + "//" + map.getKey()+ ".g09").exists()){
 				
-			boolean uploadedGaussianFile = isGaussianFileUploaded(map.getKey(),map.getValue(),speciesFolderPath);
+			boolean uploadedGaussianFile = isGaussianFileUploaded(map.getKey(),map.getValue(),speciesFolderPath, fileExtension);
 			
 			logger.info("Log file " + speciesFolderPath + map.getKey()+ ".g09 is upladed: " + uploadedGaussianFile);
 			
 			}else {
 				continue;
 			}
-						
-		
-			
-		}
-
-		
+		}		
 	}
-	
 }
