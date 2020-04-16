@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 
-@WebServlet(urlPatterns= "/DispersionModellingAgent")
+@WebServlet("/DispersionModellingAgent")
 
 public class DispersionModellingAgent extends JPSHttpServlet {
 	

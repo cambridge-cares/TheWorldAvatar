@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.servlet.annotation.WebServlet;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -28,6 +30,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
+@WebServlet("/EpisodeAgent")
 public class EpisodeAgent extends DispersionModellingAgent {
 
 	/**
@@ -45,8 +48,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	double nz=13;
 	double upperheight=75.0;
 	double lowerheight=2.0;
+	
 	String epsgInUTM="48";//48N
-	String epsgActive="EPSG:32648";
+	String epsgActive="32648";
+	String gmttimedifference="-8"; //should it be dependent on the location it simulates, or the where the user execute the simulation??
 	
     private static final String DATA_KEY_COLLECTION = "collection";
     private static final String DATA_KEY_ITEMS = "items";
@@ -154,6 +159,32 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	double result=numberInGramPerS*0.001*365*24*3600;
     	return result;
     }
+    
+	private List<String[]> queryIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
+		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
+		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		return resultList;
+	}
+
+	private JSONObject getNewRegionData(double upperx, double uppery, double lowerx, double lowery,
+			String targetCRSName, String sourceCRSName) {
+		double[] p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] { lowerx, lowery });
+		String lx = String.valueOf(p[0]);
+		String ly = String.valueOf(p[1]);
+		p = CRSTransformer.transform(sourceCRSName, targetCRSName, new double[] { upperx, uppery });
+		String ux = String.valueOf(p[0]);
+		String uy = String.valueOf(p[1]);
+
+		String regionTemplate = "{\r\n" + "	\"uppercorner\":\r\n" + "    	{\r\n"
+				+ "        	\"upperx\" : \"%s\",\r\n" + "            \"uppery\" : \"%s\"      	\r\n" + "        },\r\n"
+				+ "          \r\n" + "     \"lowercorner\":\r\n" + "     {\r\n" + "       \"lowerx\" : \"%s\",\r\n"
+				+ "       \"lowery\" : \"%s\"\r\n" + "     }\r\n" + "}";
+
+		JSONObject newRegion = new JSONObject(String.format(regionTemplate, ux, uy, lx, ly));
+		return newRegion;
+	}
 	
 	@Override
     protected void setLogger() {
@@ -163,15 +194,56 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	 
 	    @Override
 		protected JSONObject processRequestParameters(JSONObject requestParams) {
-			String baseUrl= requestParams.getString("baseUrl");
-			String stnIRI=requestParams.get("stniri").toString();
+			JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
+			JSONObject region = requestParams.getJSONObject("region");
+			JSONObject shipdata=requestParams.getJSONObject("ship");
 			String dataPath = QueryBroker.getLocalDataPath();
+			String cityIRI = requestParams.getString("city"); //later to be used for annotation??
 			
+			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
+		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+		    	sourceCRSName = CRSTransformer.EPSG_4326; 
+		    }
+		    List<String>srtm=new ArrayList<String>();
+			if(cityIRI.toLowerCase().contains("singapore")) {
+				epsgInUTM="48";
+				epsgActive="32648";
+				gmttimedifference="-8";
+				srtm.add("N01E103.tif");
+				srtm.add("N01E104.tif");
+			}
+			else if(cityIRI.toLowerCase().contains("kong")) {
+				epsgInUTM="50";
+				epsgActive="32650";
+				gmttimedifference="-8";
+				srtm.add("N01E105.tif");
+			}
 			
-			String filename="mcwind_input_singapore_20191118.txt";
-			List<String>stniri= new ArrayList<String>();
-			createWeatherInput(dataPath,filename,stniri);
-
+			List<String>stniri=new ArrayList<String>();
+//			stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
+//			stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+			stniri.add(stnIRI.getString(0));
+			stniri.add(stnIRI.getString(1));
+			
+			double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
+			double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
+			double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
+			double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
+			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
+			
+			try { //for control file
+				createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
+				createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
+				createControlWeatherORCityChemFile(region, dataPath, "citychem_singapore_2019_1pointline_restart.txt",stniri);
+				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta.inp");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			createReceptorFile(region,dataPath,"receptor_input.txt");
+			createWeatherInput(dataPath,"mcwind_input_singapore_20191118.txt",stniri);
+			createEmissionInput(dataPath, "cctapm_meta.inp",shipdata);
+			
 			return requestParams;
 		}
     
@@ -271,7 +343,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		        	}
 	        	}
 	        }
-	        content[8]="0.022"; //currently hardcoded but can be substituted by model
+	        content[8]="0.022"; //currently hardcoded about the delta T but can be substituted by model
 	        resultquery.add(content);
 	        StringBuilder sb= new StringBuilder();
 	       //convert to tsv
@@ -323,7 +395,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < resultListParticlePollutant.size(); x++) {
 				if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.0000025) {
 					fractionpm25 = fractionpm25 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
-				} else if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.00001) {
+				}
+				if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.00001) {
 					fractionpm10 = fractionpm10 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
 				}
 			}
@@ -345,7 +418,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			content[0] = "8";
 			double shipx = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LON);
 			double shipy = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LAT);
-			double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", epsgActive,
+			double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
 					new double[] { shipx, shipy });
 			content[1] = "" + locationshipconverted[0];
 			content[2] = "" + locationshipconverted[1];
@@ -375,14 +448,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		 new QueryBroker().putLocal(dataPath + "/"+filename, MatrixConverter.fromArraytoCsv(resultquery)); 
 	}
 
-	private List<String[]> queryIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
-		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
-		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		return resultList;
-	}
-
 	public void createControlTopologyFile(List<String>srtmlist,JSONObject region,String dataPath, String Filename) throws IOException {
 		JSONObject in= new JSONObject();
 		JSONArray srtm= new JSONArray();
@@ -395,7 +460,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		 new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
 	}
 	
-	public void createControlWeatherFile(JSONObject region,String dataPath, String Filename,List<String>stniri) throws IOException {
+	public void createControlWeatherORCityChemFile(JSONObject region,String dataPath, String Filename,List<String>stniri) throws IOException {
 		JSONArray weather=new JSONArray();
 		for(int t=0; t<stniri.size();t++) {
 			JSONObject stn= new JSONObject();
@@ -469,16 +534,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		String  modifiedcontent=modifyTemplate(Filename,in);
 		new QueryBroker().putLocal(dataPath + "/"+Filename, modifiedcontent); 
 	}
-	public void createReceptorFile(JSONObject inputparameter,String dataPath, String Filename) {
-		String lowx=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner").get("lowerx").toString();
-		String lowy=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner").get("lowery").toString();
-		String upx=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner").get("upperx").toString();
-		String upy=inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner").get("uppery").toString();
-	       
+	
+	public void createReceptorFile(JSONObject region,String dataPath, String Filename) {
+		double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
+		double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
+		double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
+		double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
+   
 
 		double z_rec=9.5;//TODO hardcoded?
-		double nx_rec =(Double.valueOf(upx)-Double.valueOf(lowx))/dx_rec;
-		double ny_rec =(Double.valueOf(upy)-Double.valueOf(lowy))/dy_rec;
+		double nx_rec =(upx-lowx)/dx_rec;
+		double ny_rec =(upy-lowy)/dy_rec;
 		
 		//assume no monitor station is needed
 		List<String[]>resultquery= new ArrayList<String[]>();
@@ -492,8 +558,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		content[4]=""+dx_rec;
 		content[5]=""+dy_rec;
 		content[6]=""+z_rec;
-		content[7]=lowx;
-		content[8]=lowy;	
+		content[7]=""+lowx;
+		content[8]=""+lowy;	
 		content[9]="-9900";
 		resultquery.add(content);
 		
@@ -516,6 +582,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
         
 	}
 	
+
 	private double[] calculateCenterPoint(double xup, double yup,double xdown, double ydown) {
 		double xcenter=(xup+xdown)/2;
 		double ycenter=(yup+ydown)/2;
@@ -547,14 +614,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		String time = WeatherAgent.provideCurrentTime();
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 		String fileContext = FileUtils.readFileToString(file);
-		String epsg = inputparameter.getJSONObject("regioninput").getJSONObject("region").get("srsname").toString();
-		String lowx = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner")
+		String lowx = inputparameter.getJSONObject("regioninput").getJSONObject("lowercorner")
 				.get("lowerx").toString();
-		String lowy = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("lowercorner")
+		String lowy = inputparameter.getJSONObject("regioninput").getJSONObject("lowercorner")
 				.get("lowery").toString();
-		String upx = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner")
+		String upx = inputparameter.getJSONObject("regioninput").getJSONObject("uppercorner")
 				.get("upperx").toString();
-		String upy = inputparameter.getJSONObject("regioninput").getJSONObject("region").getJSONObject("uppercorner")
+		String upy = inputparameter.getJSONObject("regioninput").getJSONObject("uppercorner")
 				.get("uppery").toString();
 
 
@@ -570,14 +636,19 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 		
 		if (filename.contentEquals("aermap.inp")) { // assume srtm=1
-			String srtmin = inputparameter.getJSONArray("srtminput").get(0).toString();
-			String tif = "N01E103.tif";
-			// String tif1="DATAFILE "+"./srtm3/"+srtmin+" tiffdebug";
-			String tif1 = "   DATAFILE  \"./srtm3/" + tif + "\"   tiffdebug";
-			String tif1aft = "DATAFILE  " + "./srtm3/" + srtmin + "   tiffdebug";
+			int sizeofsrtm=inputparameter.getJSONArray("srtminput").length();
+			String srtmin1 = inputparameter.getJSONArray("srtminput").get(0).toString();
+			String tif1 = "   DATAFILE  \"./srtm3/N01E103.tif\"   tiffdebug";
+			String tif1aft = "DATAFILE  " + "./srtm3/" + srtmin1 + "   tiffdebug";
 			String tif2 = "   DATAFILE  \"./srtm3/N01E104.tif\"   tiffdebug";
+			String tif2aft="";
+			if(sizeofsrtm>1) {
+				String srtmin2 = inputparameter.getJSONArray("srtminput").get(1).toString();
+				tif2aft = "DATAFILE  " + "./srtm3/" + srtmin2 + "   tiffdebug";
+			}
+
 			fileContext = fileContext.replaceAll(tif1, tif1aft); // replace with the new tif
-			fileContext = fileContext.replaceAll(tif2, ""); // replace with the new tif
+			fileContext = fileContext.replaceAll(tif2, tif2aft); // replace with the new tif
 			fileContext = fileContext.replaceAll("48",epsgInUTM); //replace with the new value
 			// of UTM coordinate system if needed
 			fileContext = fileContext.replaceAll("330600.0", "" + (proclowx - 1000)); // replace with the new value
@@ -636,7 +707,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(proclowx + "," + proclowy + line21b);// corner left
 			String line22b = separator + "!" + separator + lineoffile.get(21).split("!")[1];
 			newcontent.add("'"+epsgInUTM+"N'"+ line22b);// UTM
-//			newcontent.add(lineoffile.get(21));// if want to make the UTM the same
 			String line23b = separator + "!" + separator + lineoffile.get(22).split("!")[1];
 			newcontent.add(size+line23b);// number of point source?
 			for (int r = 23; r < lineoffile.size(); r++) {
@@ -649,13 +719,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			return contentupdate;
 
 		} else if (filename.contentEquals("citychem_singapore_2019_1pointline_restart.txt")) {
-			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString();
+			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString(); //main
 			String loc1x = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
 			String loc1y = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
-			String heighttemp = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("z").toString();
-			String name2 = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("name").toString();
-			String loc2x = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
-			String loc2y = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
 			
 			String[] line = fileContext.split("\n");
 			List<String> lineoffile = Arrays.asList(line);
@@ -664,36 +730,82 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				newcontent.add(lineoffile.get(r));
 			}
 			
-			
-			newcontent.add("\"" +name1+"\"");
-			
-			String line14b = separator + "!" + separator + lineoffile.get(13).split("!")[1];
-			newcontent.add(
-					"'" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line14b);
-			String line15b = separator + "!" + separator + lineoffile.get(14).split("!")[1];
-			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
-					+ time.split("T")[1].split(":")[0] + line15b);
-			String line16b = separator + "!" + separator + lineoffile.get(15).split("!")[1];
-			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
-					+ time.split("T")[1].split(":")[0] + line16b);
-			String line17b = separator + "!" + separator + lineoffile.get(16).split("!")[1];
-			newcontent.add(ncell[0] + line17b);
-			String line18b = separator + "!" + separator + lineoffile.get(17).split("!")[1];
-			newcontent.add(ncell[1] + line18b);
-			String line19b = separator + "!" + separator + lineoffile.get(18).split("!")[1];
-			newcontent.add(dx_rec + line19b);
-			String line20b = separator + "!" + separator + lineoffile.get(19).split("!")[1];
-			newcontent.add(dx + line20b);
-			String line21b = separator + "!" + separator + lineoffile.get(20).split("!")[1];
-			newcontent.add(proclowx + "," + proclowy + line21b);// corner left
-			String line22b = separator + "!" + separator + lineoffile.get(21).split("!")[1];
-			newcontent.add("'"+epsgInUTM+"N'"+ line22b);// UTM
-//			newcontent.add(lineoffile.get(21));// if want to make the UTM the same
-			String line23b = separator + "!" + separator + lineoffile.get(22).split("!")[1];
-			//newcontent.add(size+line23b);// number of point source?
-			for (int r = 23; r < lineoffile.size(); r++) {
+			newcontent.add("\"" +name1+"\"\n");//line 37
+			for (int r = 37; r < 39; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
+			newcontent.add(loc1y+" "+loc1x+"\n");//line 40
+			for (int r = 40; r < 45; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(proclowx+","+proclowy+"\n"); //line 46
+			for (int r = 46; r < 48; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add("\""+epsgInUTM+"N"+"\"\n"); //line 49
+			for (int r = 49; r < 51; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add("\""+epsgActive+"\"\n"); //line 52
+			for (int r = 52; r < 55; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(ncell[0]+","+ncell[1]+","+nz+","+"1,1,1\n"); //line 56
+			for (int r = 56; r < 61; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			String line62=dx+","+dy;
+			String line62b="";
+			for(int x=0;x<Math.round(nz);x++) {
+				line62b=line62b+","+dz;
+			}
+			newcontent.add(line62+line62b+"\n"); //line 62
+			for (int r = 62; r < 93; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(gmttimedifference+"\n");//line 94 (if location=8)
+			for (int r = 94; r < 96; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
+			+ time.split("T")[1].split(":")[0]+"\n"); //line 97
+			for (int r = 97; r < 99; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
+					+ time.split("T")[1].split(":")[0]+"\n"); //line 100
+			for (int r = 100; r < 125; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(lowerheight+" "+upperheight+"\n");//line 126 of zt low and zt high
+			for (int r = 126; r < 465; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			//TODO initially assume the background concentration in control is zero for each concentration in line 466-487 ??
+			for (int r = 465; r < 487; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			for (int r = 487; r < 496; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add("0"+"\n"); //TODO initially should be zero in line 497 ;but for next simulation should be 1
+			for (int r = 497; r < 501; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add(""+"\n"); //TODO initially shouldn't see any previous result in line 502, next run should be changed
+			for (int r = 502; r < 649; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			String segmentfraction="0.25";
+			String line650=segmentfraction;
+			for(int x=0;x<Math.round(nz);x++) {
+				line650=line650+","+segmentfraction;
+			}
+			newcontent.add(line650+"\n"); //line 650
+			for (int r = 650; r < 715; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			
 			String contentupdate = ""; // process from arraylist to string
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
@@ -709,9 +821,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String loc2x = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
 			String loc2y = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
 
-			double[] p1convert = CRSTransformer.transform("EPSG:4326", epsgActive,
+			double[] p1convert = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
 					new double[] { Double.valueOf(loc1x), Double.valueOf(loc1y) });
-			double[] p2convert = CRSTransformer.transform("EPSG:4326", epsgActive,
+			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
 					new double[] { Double.valueOf(loc2x), Double.valueOf(loc2y) });
 			double dx1 = p1convert[0] - proclowx;
 			double dy1 = p1convert[1] - proclowy;
@@ -726,7 +838,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				newcontent.add(lineoffile.get(r));
 			}
 
-			double[] pmidconvert = CRSTransformer.transform(epsgActive, "EPSG:4326",
+			double[] pmidconvert = CRSTransformer.transform("EPSG:"+epsgActive, "EPSG:4326",
 					new double[] { center[0], center[1] });
 			DecimalFormat df = new DecimalFormat("#.#");
 			String xmid = df.format(pmidconvert[0]);
@@ -739,7 +851,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(line23);
 
 			String line24 = lineoffile.get(24);
-			line24 = line24.replace("-8", "-8");// change if timezone is different
+			line24 = line24.replace("-8", gmttimedifference);// change if timezone is different
 			newcontent.add(line24);
 			newcontent.add(lineoffile.get(25));
 			String line26b = lineoffile.get(26).split("!")[1] + "!" + lineoffile.get(26).split("!")[2] + "!"
