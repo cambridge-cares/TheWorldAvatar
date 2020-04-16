@@ -15,7 +15,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.http.util.TextUtils;
 import org.apache.log4j.BasicConfigurator;
 import org.json.JSONObject;
 
@@ -47,7 +46,6 @@ public class OntoCompChemUpload extends HttpServlet{
 	private static final long serialVersionUID = 1L;
 	
 	public Utility utility = new FileUtility();	
-	
 	
 	/**
 	 * 
@@ -114,8 +112,6 @@ public class OntoCompChemUpload extends HttpServlet{
 		
 		printerWriter.println("reference species folder path: " + referenceSpecieFolderPath+ "<br>");
 		
-		
-
 		/**
 		 * 
 		 * @author NK510 (cresssd@hermes.cam.ac.uk)
@@ -158,8 +154,15 @@ public class OntoCompChemUpload extends HttpServlet{
 				 */
 				GenerateXml.generateRootModule(file, outputXMLFile, rootModule);
 			
+				/**
+				 * 
+				 * Previous version of the code creates wiht StreamSource
+				 * 
+				 */
 				String xsltFilePath =getClass().getClassLoader().getResource("gxmltoowl.xsl").getPath();
-			    
+				
+				System.out.println("xsltFilePath: " + xsltFilePath);
+				
 				/**
 				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -177,7 +180,7 @@ public class OntoCompChemUpload extends HttpServlet{
 					
 				}
 				
-				System.out.println("xsltFilePath: " + xsltFilePath);
+				
 				/**
 				 * 
 				 * @author NK510 (caressd@hermes.cam.ac.uk)
@@ -213,7 +216,7 @@ public class OntoCompChemUpload extends HttpServlet{
 			}
 			
 			printerWriter.println("[ xml file path:" + outputXMLFile.getCanonicalPath()+ "] [owl file path: " + owlFile.getCanonicalPath() + " ]" + " [consistency:   " + consistency +" ]" + "<br>");
-		
+
 		}
 		
 		printerWriter.close();

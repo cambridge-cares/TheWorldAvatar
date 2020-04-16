@@ -15,7 +15,7 @@ import uk.ac.cam.cares.ebr.manager.RepositoryManager;
 
 /**
  * 
- * @author NK
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
  *
  *Main method generates csv file that contains cas registy id and species IRIs related to that cas registry id.
  *
@@ -23,11 +23,10 @@ import uk.ac.cam.cares.ebr.manager.RepositoryManager;
 public class CSVGenerator {
 
 	static String localHostOntoSpeciesUrl = "http://localhost:8080/rdf4j-server/repositories/ontospecieskb";
-	static String csvFilePath = "C:\\Users\\NK\\Documents\\cas_species.csv";
+	static String csvFilePath = "C:\\Users\\NK\\Documents\\cas_reg_id_species_2.csv";
 	static String gaussianFolderPath ="C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09";
 	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 
 		LinkedList<String> speciesCasRegId = new LinkedList<String>(FolderManager.getHCOSpeciesCasRegID(gaussianFolderPath));
 		
@@ -45,16 +44,15 @@ public class CSVGenerator {
 		}
 		
 		generateCSVFile(speciesCasMap,csvFilePath);
-		
 	}
 	
-	
-	
 	/**
+	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
 	 * @param speciesCasMap the hash map that contains species cas registry id and correspoding species IRI 
 	 * @param csvFilePath the csv file path
+	 * 
 	 */
 public static void generateCSVFile(HashMap<String, LinkedList<String>> speciesCasMap, String csvFilePath){
 		
@@ -75,10 +73,8 @@ public static void generateCSVFile(HashMap<String, LinkedList<String>> speciesCa
 			int size = map.getValue().size();
 			
 			for(String s: map.getValue()) {
-			
 				
 				if(size>1) {
-					
 					
 				speciesIRI =  s + "," +speciesIRI;
 				
@@ -90,16 +86,15 @@ public static void generateCSVFile(HashMap<String, LinkedList<String>> speciesCa
 
 			String[] line = {key, speciesIRI};
 			
-			writer.writeNext(line);			
+			writer.writeNext(line);
 		}
 		
 		writer.close();
 		
-		}catch(IOException e) {
+		}catch(IOException e){
 		
 		e.printStackTrace();
-			
+		
 		}
 	}
-
 }

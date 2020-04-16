@@ -2,15 +2,22 @@ package uk.ac.cam.cares.ebr.manager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+
+import java.util.Map.Entry;
 import java.util.UUID;
+
+import au.com.bytecode.opencsv.CSVReader;
 
 /**
  * @author nk510 The Class FolderManager.
@@ -171,10 +178,47 @@ public class FolderManager {
 
 			}
 			
-			
 		}
 
 	return hcoSpeciesList;
 
+	}
+	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param csvFilePath the csv file path. The csv file contains 923 cas registry IDs and related ontospecies IRIs.
+	 * @return the linked hash map. Key in this map is cas regisry id.
+	 * @throws IOException the IO exception
+	 * 
+	 */
+	public static LinkedHashMap<String, String> getOntoSpeciesCasRegIDAndIRI(String csvFilePath) throws IOException{
+		
+		LinkedHashMap<String, String> ontoCompChemSpecieMap = new LinkedHashMap<String, String>();
+		
+		CSVReader reader = new CSVReader(new FileReader(csvFilePath));
+		
+		String[] line;
+		
+		while((line=reader.readNext())!=null) {
+		
+			ontoCompChemSpecieMap.put(line[0], line[1]);
+		}
+		
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * 
+		 * Prints the LinkedHasMap content.
+		 */
+		for(Entry<String, String> map: ontoCompChemSpecieMap.entrySet()) {
+			
+//			System.out.println(map.getKey() + " " + map.getValue());
+		}
+		
+		System.out.println("ontoCompChemSpecieMap.size(): " +ontoCompChemSpecieMap.size());
+		
+		reader.close();
+		
+		return ontoCompChemSpecieMap;
 	}
 }
