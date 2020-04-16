@@ -153,7 +153,7 @@ public class MetaDataQuery implements Prefixes {
 		
 		if (topics != null) {
 			for (String current : topics) {
-				sparql.append("OPTIONAL {?resource dcterms:subject <" + current + "> .}. \r\n");
+				sparql.append("?resource dcterms:subject <" + current + "> . \r\n");
 			}
 		}
 		

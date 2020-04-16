@@ -302,7 +302,7 @@ public class TestSoftSensor extends TestCase {
 		jo.put("cityname", "hong kong");
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SoftSensor",jo.toString());
 		//System.out.println("result= "+result);
-		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
+		//System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
 		int number=JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").length();
 		int co2=0;
 		for(int d=0;d<number;d++) {
@@ -336,7 +336,7 @@ public class TestSoftSensor extends TestCase {
 		JSONObject time = new JSONObject();
 		
 		time.put("from", "2019-06-17T05:00:00");//oldest
-		//time.put("to", "2019-08-20T05:00:00");
+		//time.put("to", "2019-09-20T05:00:00");
 		time.put("to", "2019-12-09T07:30:00"); //latest range
 		JSONObject jo = new JSONObject();
 		jo.put("timeinterval", time);
@@ -345,7 +345,7 @@ public class TestSoftSensor extends TestCase {
 		jo.put("cityname", "hong kong");
 		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SoftSensor",jo.toString());
 		//System.out.println("result= "+result);
-		System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
+		//System.out.println("simplified result= "+JenaResultSetFormatter.convertToSimplifiedList(result));
 		int number=JenaResultSetFormatter.convertToSimplifiedList(result).getJSONArray("results").length();
 		int co2=0;
 		for(int d=0;d<number;d++) {
