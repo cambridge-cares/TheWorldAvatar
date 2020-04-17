@@ -123,7 +123,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." 
 			+ "?y   j2:hasValue ?yval ."
 			+ "?yval   j2:numericalValue ?yvalue ."
-			+ "}";
+			+ "}"
+			+ "ORDER BY ASC(?entity)";
 	/** gets the transportation route, the tax on the route, the capacity of travel, the cost of travel, and
 	 * emission rate of travelling on that route. 
 	 */
