@@ -18,6 +18,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.log4j.BasicConfigurator;
 import org.json.JSONObject;
 
+import com.google.common.io.Files;
+
 import uk.ac.cam.cares.ebr.manager.FolderManager;
 import uk.ac.cam.cares.ebr.manager.JsonManager;
 import uk.ac.cam.cares.ebr.manager.RepositoryManager;
@@ -128,6 +130,8 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 			
 			for(File file : fileList) {
 				
+				
+				
 				boolean consistency = false;
 				
 				Module rootModule = new Module();
@@ -146,6 +150,21 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 //				Constants.KB_FOLDER_PATH_LOCAL_HOST
 				FolderManager.createFolder(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName);
 				
+				String gaussinaFileExtension = Files.getFileExtension(file.getAbsolutePath());
+				
+				File outputGaussianFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName + "." + gaussinaFileExtension);
+				
+				/**
+				 * 
+				 * @author NK510 (caresssd@hermes.cam.ac.uk)
+				 * 
+				 * Save Gaussian file to target folder path
+				 * 
+				 */
+				printerWriter.println("outputGaussianFile.getAbsolutePath(): " +outputGaussianFile.getAbsolutePath());
+				
+				FolderManager.copy(file, outputGaussianFile);
+				
 				try {
 					
 					/**
@@ -159,7 +178,7 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 				
 					/**
 					 * 
-					 * Previous version of the code creates wiht StreamSource
+					 * Previous version of the code creates wiht StreamSource.
 					 * 
 					 */
 					String xsltFilePath =getClass().getClassLoader().getResource("gxmltoowl.xsl").getPath();

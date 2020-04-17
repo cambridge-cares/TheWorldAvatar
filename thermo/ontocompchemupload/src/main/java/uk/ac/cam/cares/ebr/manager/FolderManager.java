@@ -2,10 +2,12 @@ package uk.ac.cam.cares.ebr.manager;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -221,4 +223,35 @@ public class FolderManager {
 		
 		return ontoCompChemSpecieMap;
 	}
+	
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param sourceFile the source Gaussian file.
+	 * @param destinationFile destination Gaussian file.
+	 * @throws IOException the IO exception.
+	 */
+	public static void copy(File sourceFile, File destinationFile) throws IOException {
+		
+        InputStream is = null;
+        OutputStream os = null;
+        
+        try {
+            is = new FileInputStream(sourceFile);
+            os = new FileOutputStream(destinationFile);
+
+            // buffer size 2K
+            byte[] buf = new byte[2048];
+
+            int bytesRead;
+            while ((bytesRead = is.read(buf)) > 0) {
+                os.write(buf, 0, bytesRead);
+            }
+        } finally {
+            is.close();
+            os.close();
+        }
+    }
+	
 }
