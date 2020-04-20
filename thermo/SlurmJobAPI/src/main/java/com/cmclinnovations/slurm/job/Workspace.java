@@ -118,10 +118,15 @@ public class Workspace {
 	}
 	
 	public String getInputFileExtension(File input) throws SlurmJobException{
+		
 		if(input.isFile()){
+			
 			return input.getAbsolutePath().substring(input.getAbsolutePath().lastIndexOf("."));
+			
 		}else{
+			
 			logger.error("SlurmJobAPI: The provided input file is not a file.");
+			
 			throw new SlurmJobException("SlurmJobAPI: The provided input file is not a file.");
 		}
 	}
