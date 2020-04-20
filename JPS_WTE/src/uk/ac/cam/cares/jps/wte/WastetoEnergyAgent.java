@@ -123,8 +123,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?coorsys   j7:hasProjectedCoordinate_y ?y ." 
 			+ "?y   j2:hasValue ?yval ."
 			+ "?yval   j2:numericalValue ?yvalue ."
-			+ "}"
-			+ "ORDER BY ASC(?entity)";
+			+ "}";
 	/** gets the transportation route, the tax on the route, the capacity of travel, the cost of travel, and
 	 * emission rate of travelling on that route. 
 	 */
@@ -297,7 +296,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT DISTINCT ?pollutiontreatmenttaxvalue ?Tech1Capvalue ?installationcostvalue ?operationcostvalue ?transferrateelectricvalue ?energyconsumptionvalue "
+			+ "SELECT DISTINCT ?pollutiontreatmenttaxvalue ?Tech1Capvalue ?installationcostvalue ?operationcostvalue ?transferrateelectricvalue ?energyconsumptionvalue ?laborcostvalue "
 			+ "WHERE {" + "?entity  a j1:OffsiteWasteTreatmentFacility ." // specified class declared (off or on)
 			
 			+ "?entity   j1:useTechnology ?Tech1 ." 
@@ -314,7 +313,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 			+ "?Tech1   j3:hasInstallationCost ?IC ." + "?IC     j2:hasValue ?vIC ."
 			+ "?vIC  j2:numericalValue ?installationcostvalue ."
-
+			
+			+ "?Tech1   j3:hasLaborCost ?LC ."+"?LC     j2:hasValue ?vLC . "
+			+ "?vLC  j2:numericalValue ?laborcostvalue ."
+			
 			+ "?Tech1   j1:hasTransferRate ?TR3 ."
 			+ "?TR3     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#electricity> ."
 			+ "?TR3     j2:hasValue ?vTR3 ." + "?vTR3  j2:numericalValue ?transferrateelectricvalue ."
@@ -336,7 +338,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "PREFIX j6:<http://www.w3.org/2006/time#> "
 			+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 			+ "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
-			+ "SELECT DISTINCT ?pollutiontreatmenttaxvalue ?Tech1Capvalue ?installationcostvalue ?operationcostvalue ?transferrateelectricvalue ?energyconsumptionvalue "
+			+ "SELECT DISTINCT ?pollutiontreatmenttaxvalue ?Tech1Capvalue ?installationcostvalue ?operationcostvalue ?transferrateelectricvalue ?energyconsumptionvalue ?laborcostvalue "
 			+ "WHERE {" + "?entity  a j1:OnsiteWasteTreatmentFacility ." // specified class declared (off or on)
 			
 			+ "?entity   j1:useTechnology ?Tech1 ." 
@@ -353,7 +355,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 
 			+ "?Tech1   j3:hasInstallationCost ?IC ." + "?IC     j2:hasValue ?vIC ."
 			+ "?vIC  j2:numericalValue ?installationcostvalue ."
-
+			
+			+ "?Tech1   j3:hasLaborCost ?LC ."+"?LC     j2:hasValue ?vLC . "
+			+ "?vLC  j2:numericalValue ?laborcostvalue ."
+			
 			+ "?Tech1   j1:hasTransferRate ?TR3 ."
 			+ "?TR3     j1:obtainedFrom <http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#electricity> ."
 			+ "?TR3     j2:hasValue ?vTR3 ." + "?vTR3  j2:numericalValue ?transferrateelectricvalue ."

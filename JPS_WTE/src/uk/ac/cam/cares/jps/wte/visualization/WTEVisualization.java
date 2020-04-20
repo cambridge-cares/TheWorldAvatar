@@ -212,6 +212,7 @@ public class WTEVisualization extends JPSHttpServlet{
         	jo.put("tax", newList.get(i)[0]);
         	jo.put("installationcost", newList.get(i)[2]);
         	jo.put("operationcost", newList.get(i)[3]);
+        	jo.put("manpowercost", newList.get(i)[6]);
 			res.add(jo.toString());
 		}
 		return res;
