@@ -276,10 +276,12 @@ var request = $.ajax({
     
     });  
     //Because simulation takes some time to run, then asynchronous watcher object is triggered next. 
-    request.done(function() { 
+    request.done(function() {
+        document.getElementById("loader").style.display = "block"; 
         delayedCallback(function(){
-            // queryForEconomicComp();
-            // queryForOnsiteWT();
+            queryForEconomicComp();
+            queryForOnsiteWT();
+            document.getElementById("loader").style.display = "none";
         });
     });
 }
@@ -506,7 +508,7 @@ function dumpTransport(transportArray){
  * @param {Integer} index Incineration = 1, Co = 2, Ana = 3
  */
 function updateSite(inpParameters, index){
-    lstOfTargetIRI = ["#V_OperationalCost", "#V_InstallationCost", "#V_PollutionTreatmentTax"];
+    lstOfTargetIRI = ["#V_OperationalCost", "#V_ManPowerCost", "#V_InstallationCost", "#V_PollutionTreatmentTax"];
     
     if (index==0){//proviso for onsite and ONLY if initial condition
         newLst = [] 
@@ -623,7 +625,7 @@ function queryForMarkers(agenturl,fnCreate,  callback){
         if (name.includes("FoodCourt")){
             var icon = {
                 url: 'images/naturalgas.png',
-                scaledSize : new google.maps.Size(30, 30),
+                scaledSize : new google.maps.Size(50, 50),
             };
         }else if (name.includes("OnSite")){
             if (name.includes("-0")){
@@ -631,13 +633,13 @@ function queryForMarkers(agenturl,fnCreate,  callback){
             }
             var icon = {
                 url: 'images/onsite.png', 
-                scaledSize : new google.maps.Size(10, 10),
+                scaledSize : new google.maps.Size(30, 30),
             };
             listOfIRIs.push(name);  
         }else{
             var icon = {
                 url: 'images/solar.png', 
-                scaledSize : new google.maps.Size(30, 30),
+                scaledSize : new google.maps.Size(50, 50),
             };
             listOfIRIs.push(name);  
         }
