@@ -423,6 +423,7 @@ public class WeatherTimeStampKB {
 		location[2]=height1;
 		}else if(locationID.contains("HK")) {
 			List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(refDirFile);
+			readingFromCSV.remove(0);//remove header
 			String lat1=readingFromCSV.get(index)[1];
 			String long1=readingFromCSV.get(index)[2];
 			String height1=readingFromCSV.get(index)[3];
@@ -447,6 +448,7 @@ public class WeatherTimeStampKB {
 		//for HK:
 		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
 		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
+		readingFromCSVHK.remove(0);//move the header
 		int numberofstn=readingFromCSVHK.size();
 		String locationid="HK";
 		

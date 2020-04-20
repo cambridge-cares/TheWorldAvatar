@@ -32,8 +32,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 	
     @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams) {
-		String baseUrl= requestParams.getString("baseUrl");
-		String wasteIRI=requestParams.getString("wastenetwork");
+
 
 
 		return requestParams;
