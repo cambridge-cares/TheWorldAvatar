@@ -1,4 +1,4 @@
 setlocal
 cd /d %~dp0
-python ocrv1.py
+python ocrv2.py
 timeout 10
