@@ -42,7 +42,7 @@ import com.cmclinnovations.slurm.job.SlurmJob;
 import com.cmclinnovations.slurm.job.Status;
 import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
-
+import com.jayway.jsonpath.JsonPath;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -86,6 +86,39 @@ public class EBRAgent extends HttpServlet{
 		EBRAgent ebrAgent = new EBRAgent();
 		ebrAgent.init();
 	}
+	
+	/**
+	 * 
+	 * @author msff2@cam.ac.uk
+	 * 
+	 * The is modified by @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+     * Allows to perform a SPARQL query of any complexity.</br>
+     * JSON content contains a file path to input JSON file.
+     * 
+     * @param input the JSON input to set up and run a quantum job. The JSON
+     * @return a message if the job was set up successfully or failed. 
+	 * @throws Exception
+	 *  
+     */
+	@RequestMapping(value="/job/request/file", method = RequestMethod.GET)
+    @ResponseBody
+    public String queryViaFile(@RequestParam String input) throws Exception{	
+		
+		System.out.println("received query:\n"+input);
+		
+		/**
+		 * 
+		 * Extract the content of that file to String
+		 * Check whether the file paht exists.
+		 * Read content of the file and put it into 'input' String
+		 *  
+		 */
+		
+		logger.info("received query:\n"+input);
+		
+		return setUpJob(input);
+    }
 	
 	/**
      * Allows to perform a SPARQL query of any complexity.</br>
@@ -315,15 +348,17 @@ public class EBRAgent extends HttpServlet{
 		/**
 		 * Feroz's code
 		 */
-//		return jobSubmission.setUpJob(
-//				jsonInput, new File(getClass().getClassLoader()
-//						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
-//				getInputFile(jsonInput), timeStamp);
+		return jobSubmission.setUpJob(
+				jsonInput, new File(getClass().getClassLoader()
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
+				getInputFile(jsonInput), timeStamp);
 		
-		
-		return jobSubmission.setUpJob(jsonInput, new File(getClass().getClassLoader()
-				.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), getInputFile(jsonInput), new File(getClass().getClassLoader()
-						.getResource(Property.EBR_EXECUTABLE.getPropertyName()).getPath()),timeStamp);
+		/**
+		 * The code below should be uncommented and Feroz's code should be commented.
+		 */
+//		return jobSubmission.setUpJob(jsonInput, new File(getClass().getClassLoader()
+//				.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), getInputFile(jsonInput), new File(getClass().getClassLoader()
+//						.getResource(Property.EBR_EXECUTABLE.getPropertyName()).getPath()),timeStamp);
 	}	
 	
 	/**
@@ -356,6 +391,8 @@ public class EBRAgent extends HttpServlet{
 		
 		List<Map<String, Object>> species =  JSonRequestParser.getAllSpeciesIRI(jsonInput);
 		
+		logger.info("message:" + species.size());
+		
 		for (Map<String, Object> speciesMap : species) {
 		
 		LinkedList<String> speciesIRIList = new LinkedList<String>();
@@ -363,7 +400,7 @@ public class EBRAgent extends HttpServlet{
 		for(Map.Entry<String, Object> entry : speciesMap.entrySet()) {
 		
 		speciesIRIList.add(entry.getValue().toString());
-			
+		
 		}
 		
         String queryString =oskg.formSpeciesQueryFromJsonInput(speciesIRIList.getFirst(),speciesIRIList.getLast());
@@ -377,11 +414,6 @@ public class EBRAgent extends HttpServlet{
 		
 		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getSrcRefPool(jsonInput));
 		
-		/**
-		 * 1. Zip the input folder and 
-		 * 2. Return the path of the input.zip 
-		 * 
-		 */
 		/**
 		 * 
 		 * Commented lines is Feroz's code.
@@ -412,6 +444,7 @@ public class EBRAgent extends HttpServlet{
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
+	 * 
 	 */
 	public String createInputFile(String inputFilePath, String jobFolder, String geometry, String jsonString) throws IOException{
 		BufferedWriter inputFile = Utils.openBufferedWriter(inputFilePath);

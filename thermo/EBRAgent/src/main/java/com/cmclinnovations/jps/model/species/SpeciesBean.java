@@ -1,8 +1,6 @@
 package com.cmclinnovations.jps.model.species;
 
-public class SpeciesBean {
-
-	
+public class SpeciesBean {	
 
 	private String name = "";
 	private String formula = "";
