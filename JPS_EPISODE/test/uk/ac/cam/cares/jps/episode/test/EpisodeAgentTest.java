@@ -12,6 +12,7 @@ import org.json.JSONStringer;
 import org.json.JSONWriter;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.episode.EpisodeAgent;
@@ -20,12 +21,13 @@ import uk.ac.cam.cares.jps.episode.WeatherAgent;
 public class EpisodeAgentTest extends TestCase {
 	
 	RepositoryConnection con = WeatherAgent.repo.getConnection();
+	String cityiri= "http://dbpedia.org/resource/Singapore";
 	
 	public void testRunPeriodic() {
 		
 		//RepositoryConnection con = WeatherAgent.repo.getConnection();
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
-		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
+		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-008.owl#WeatherStation-008";
+		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-006.owl#WeatherStation-006";
 		
 		try {
 			new WeatherAgent().executeFunctionPeriodically(con,context,context2);
@@ -37,14 +39,18 @@ public class EpisodeAgentTest extends TestCase {
 	}
 	
 	public void testextract() {
-		List<String[]>result=new WeatherAgent().extractAvailableContext(con);
+    	String stnname1="Sentosa";
+    	String stnname2="Pulau Ubin";
+		List<String[]>result=new WeatherAgent().extractAvailableContext(con,cityiri,stnname1,stnname2);
 		System.out.println("size="+result.size());
 		System.out.println(result.get(0)[0]);
 		System.out.println(result.get(1)[0]);
 	}
 	
 	public void testDirectCallingWeather() {
-		List<String[]>result=new WeatherAgent().extractAvailableContext(con);
+    	String stnname1="Sentosa";
+    	String stnname2="Pulau Ubin";
+		List<String[]>result=new WeatherAgent().extractAvailableContext(con,cityiri,stnname1,stnname2);
 		try {
 			new WeatherAgent().executeFunctionPeriodically(con,result.get(0)[0],result.get(1)[0]);
 		} catch (URISyntaxException e) {
@@ -58,8 +64,8 @@ public class EpisodeAgentTest extends TestCase {
 		String dataPath = QueryBroker.getLocalDataPath();
 		String filename="mcwind_input_singapore_20191118.txt";
 		List<String>stniri= new ArrayList<String>();
-		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");//clementi main
-		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-008.owl#WeatherStation-008");//clementi main
+		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-006.owl#WeatherStation-006");
 		
 		new EpisodeAgent().createWeatherInput(dataPath,filename,stniri);
 	}
@@ -162,8 +168,8 @@ public class EpisodeAgentTest extends TestCase {
 	public void testControlWeather() throws IOException {
 		String dataPath = QueryBroker.getLocalDataPath();
 		List<String>stniri=new ArrayList<String>();
-		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
-		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-008.owl#WeatherStation-008");
+		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-006.owl#WeatherStation-006");
 		JSONWriter jsonInput = new JSONStringer().object()
 				.key("srsname").value("EPSG:32648")
 				.key("lowercorner").object()
@@ -180,8 +186,8 @@ public class EpisodeAgentTest extends TestCase {
 	public void testControlCityChem() throws IOException {
 		String dataPath = QueryBroker.getLocalDataPath();
 		List<String>stniri=new ArrayList<String>();
-		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
-		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-008.owl#WeatherStation-008");
+		stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-006.owl#WeatherStation-006");
 		JSONWriter jsonInput = new JSONStringer().object()
 				.key("srsname").value("EPSG:32648")
 				.key("lowercorner").object()
@@ -219,13 +225,50 @@ public class EpisodeAgentTest extends TestCase {
 		JSONObject result=new WeatherAgent().extractedSingleDataFromAccuweather("pressure", "hongkong");
 		System.out.println("result= "+result.toString());
 	}
-	public void xxxtestinsertdataContext() {// should be used when the context want to be attached with some info
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
-		List<String>info= new ArrayList<String>();
-		info.add("http://dbpedia.org/resource/singapore");
-		info.add("clementi");
-		new WeatherAgent().insertDataRepoContext(con,info,context);
+	public void testinsertdataContext() {// should be used when the context want to be attached with some info
+//		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
+//		List<String>info= new ArrayList<String>();
+//		info.add("http://dbpedia.org/resource/Singapore");
+//		info.add("clementi");
+//		
+//		
+//		new WeatherAgent().insertDataRepoContext(con,info,context);
+		String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
+		int []indexchosen= {0,1,2,3,4,5,6,7,8,10,11,12}; //based on json object file because stn 24 is ignored
+		JSONObject current= new JSONObject(inputRef);
+		for(int x=1;x<=indexchosen.length;x++) {
+			String index="0"+x;
+			if(x<10) {
+				index="00"+x;
+			}
+			String name = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[x-1])
+					.get("name").toString();
+			String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+index+".owl#WeatherStation-"+index;
+			List<String>info= new ArrayList<String>();
+			info.add("http://dbpedia.org/resource/Singapore");
+			info.add(name);
+			new WeatherAgent().insertDataRepoContext(con,info,context);
+		}
+		
+		
+		//for hongkong case
+//		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+//		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
+//		for(int x=1;x<=readingFromCSV.size();x++) {
+//			String index="0"+x;
+//			if(x<10) {
+//				index="00"+x;
+//			}
+//			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//			String name=readingFromCSV.get(x-1)[0];	
+//			List<String>info= new ArrayList<String>();
+//			info.add("http://dbpedia.org/resource/Hong_Kong");
+//			info.add(name);
+//			new WeatherAgent().insertDataRepoContext(con,info,context);
+//		}
+
 	}
+	
 	
 	public void testAgentCalling() {
 		//for the ship region is in epsg 3857
@@ -273,8 +316,8 @@ public class EpisodeAgentTest extends TestCase {
 				.endObject(); 
 		JSONObject jo2= new JSONObject(region.toString());
     	JSONArray station= new JSONArray();
-    	station.put("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
-    	station.put("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+    	station.put("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-008.owl#WeatherStation-008");
+    	station.put("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-006.owl#WeatherStation-006");
 		jo2.put("stationiri", station);
 		
 		jo2.put("ship",shipdata);

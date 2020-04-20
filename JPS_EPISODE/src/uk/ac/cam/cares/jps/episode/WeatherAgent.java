@@ -44,8 +44,9 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static String rdf4jServer = "http://localhost:8080/rdf4j-server"; //this is only the local repo, changed if it's inside claudius
 	public static String repositoryID = "weatherstation";
 	public static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
-	static String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/sgp/singapore/";
-	static String iriprefix="http://www.theworldavatar.com/kb/sgp/singapore/";
+	String stnname1="Sentosa"; //current selected name
+	String stnname2="Pulau Ubin"; //current selected name
+
 	public static final String weatherRequest = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=%s&appid=329f65c3f7166977f6751cff95bfcb0a";
 
 	
@@ -59,21 +60,16 @@ public class WeatherAgent extends JPSHttpServlet {
 	    
 	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	    	String cityiri=requestParams.get("city").toString();
-	    	if(!cityiri.toLowerCase().contains("singapore")) {
-	    		//TODO:
-	    		//repo = new HTTPRepository(rdf4jServer, repositoryID);
-	    		//later should be implemented that the repository ID is different if not singapore
-	    	}
 	    	RepositoryConnection con = repo.getConnection();	
-		List<String[]> listmap = extractAvailableContext(con);
-		 String context=listmap.get(0)[0];
-		 String context2=listmap.get(1)[0];
-		 
-		 
 
-//	    	String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
-//			String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
-		 	
+		List<String[]> listmap = extractAvailableContext(con,cityiri,stnname1,stnname2);
+		 String context=listmap.get(0)[0]; //main stn
+		 String context2=listmap.get(1)[0]; // the furthest station
+		 
+		 //here the context will be more than 2, need to decide which two are picked
+		 //for now only the 2 stn choosen will be updated
+		 //for more stn to be updated, need to update the "executeFunctionPeriodically"
+		 		 	
 		 try {
 			new WeatherAgent().executeFunctionPeriodically(con,context,context2);
 		} catch (URISyntaxException e) {
@@ -90,12 +86,23 @@ public class WeatherAgent extends JPSHttpServlet {
 			
 		}
 
-	public List<String[]> extractAvailableContext(RepositoryConnection con) {
+	public List<String[]> extractAvailableContext(RepositoryConnection con, String cityiri,String stnname1,String stnname2) {
 		String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT DISTINCT ?graph " + "{ graph ?graph " + "{ "
-				+ "?entity j4:observes ?prop ." + "}" + "}";
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+				+ "SELECT DISTINCT ?graph ?stnname " 
+				+ "{ graph ?graph " 
+				+ "{ "
+				+ "?entity j4:observes ?prop ." 
+				+ "?graph j2:hasAddress <"+cityiri+"> ."
+				+ "{ "
+				+ "?graph j2:enumerationValue \""+stnname1+"\" .}"
+				+"UNION"
+				+ "{ "
+				+ "?graph j2:enumerationValue \""+stnname2+"\" .}"
+				+ "}" 
+				+ "}";
 //		String dataseturl = rdf4jServer + "/repositories/" + repositoryID;// which is the weather stn dataset
 //		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 //		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
@@ -142,6 +149,15 @@ public class WeatherAgent extends JPSHttpServlet {
 		
 	
 	public void addFiletoRepo(RepositoryConnection con,String filename,String contextiri) {
+		String dir="";
+		if(filename.contains("SG")) {
+			dir="sgp/singapore";
+		}else if(filename.contains("HK")) {
+			dir="hkg/hongkong";
+		}
+		
+		String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/"+dir+"/";
+		String iriprefix="http://www.theworldavatar.com/kb/"+dir+"/";
 		File file =new File(fileprefix+filename);
 		String baseURI=iriprefix+filename;
 		try {
@@ -453,20 +469,45 @@ public class WeatherAgent extends JPSHttpServlet {
 
 	}
 	
-	public void resetRepoTrial(RepositoryConnection con,String context) {
-		for(int d=1;d<=12;d++) {
-			String number="00"+d;
-			if(d>9) {
-				number="0"+d;
-			}
-			String[] filenames= {"SGCloudCoverSensor-"+number+".owl","SGTemperatureSensor-"+number+".owl","SGWindSpeedSensor-"+number+".owl",
-					"SGPrecipitationSensor-"+number+".owl","SGPressureSensor-"+number+".owl","SGRelativeHumiditySensor-"+number+".owl","SGWindDirectionSensor-"+number+".owl"};
-			context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+number+".owl#WeatherStation-"+number;
+	public void resetRepoTrial(RepositoryConnection con,String location) {
+		if (location.contains("singapore")) {
+			for (int d = 1; d <= 12; d++) {
+				String number = "00" + d;
+				if (d > 9) {
+					number = "0" + d;
+				}
+				String[] filenames = { "SGCloudCoverSensor-" + number + ".owl",
+						"SGTemperatureSensor-" + number + ".owl", "SGWindSpeedSensor-" + number + ".owl",
+						"SGPrecipitationSensor-" + number + ".owl", "SGPressureSensor-" + number + ".owl",
+						"SGRelativeHumiditySensor-" + number + ".owl", "SGWindDirectionSensor-" + number + ".owl" };
+				String context = "http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-" + number
+						+ ".owl#WeatherStation-" + number;
 				System.out.println("upload files for graph 1");
 				for (String el : filenames) {
 					new WeatherAgent().addFiletoRepo(con, el, context);
 
 				}
+
+			}
+		}else if(location.contains("kong")) {
+			for (int d = 1; d <= 8; d++) {
+				String number = "00" + d;
+				if (d > 9) {
+					number = "0" + d;
+				}
+				String[] filenames = { "HKCloudCoverSensor-" + number + ".owl",
+						"HKTemperatureSensor-" + number + ".owl", "HKWindSpeedSensor-" + number + ".owl",
+						"HKPrecipitationSensor-" + number + ".owl", "HKPressureSensor-" + number + ".owl",
+						"HKRelativeHumiditySensor-" + number + ".owl", "HKWindDirectionSensor-" + number + ".owl" };
+				String context = "http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-" + number
+						+ ".owl#WeatherStation-" + number;
+				System.out.println("upload files for graph 1");
+				for (String el : filenames) {
+					new WeatherAgent().addFiletoRepo(con, el, context);
+
+				}
+
+			}
 			
 		}
 //		String[] filenames= {"SGCloudCoverSensor-001.owl","SGTemperatureSensor-001.owl","SGWindSpeedSensor-001.owl","SGSolarIrradiationSensor-001.owl","SGPrecipitationSensor-001.owl","SGPressureSensor-001.owl","SGRelativeHumiditySensor-001.owl","SGWindDirectionSensor-001.owl"};
@@ -508,10 +549,12 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static void main(String[]args) {
 
 		RepositoryConnection con = repo.getConnection();
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
-		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
+//		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
+//		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
+		String location="singapore";
+//		String location="hong kong";
 		WeatherAgent a=new WeatherAgent();
-		a.resetRepoTrial(con,context); //currently the context is not used
+		a.resetRepoTrial(con,location); //currently the context is not used
 		
 //		new WeatherAgent().queryValuefromRepo(con,context); only for query testing
 		String completeformat=WeatherAgent.provideCurrentTime();

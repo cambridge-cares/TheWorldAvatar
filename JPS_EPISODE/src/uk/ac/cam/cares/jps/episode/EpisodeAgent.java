@@ -49,9 +49,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	double upperheight=75.0;
 	double lowerheight=2.0;
 	
+	//below is based on location input (city iri)
 	String epsgInUTM="48";//48N
 	String epsgActive="32648";
-	String gmttimedifference="-8"; //should it be dependent on the location it simulates, or the where the user execute the simulation??
+	String gmttimedifference="-8"; //it should be dependent on the location it simulates
 	
     private static final String DATA_KEY_COLLECTION = "collection";
     private static final String DATA_KEY_ITEMS = "items";
@@ -216,7 +217,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				epsgInUTM="50";
 				epsgActive="32650";
 				gmttimedifference="-8";
-				srtm.add("N01E105.tif");
+				srtm.add("N22E114.tif");
 			}
 			
 			List<String>stniri=new ArrayList<String>();
