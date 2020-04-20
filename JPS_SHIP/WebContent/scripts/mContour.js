@@ -129,7 +129,7 @@ function getContourMaps (address, folder) {
 
       let canvas = $('#drawcanvas')[0]
       let context = canvas.getContext('2d')
-
+      context.save();
       context.translate(canvas.width, 0)
       context.scale(-1, 1)
 
@@ -154,7 +154,7 @@ function getContourMaps (address, folder) {
           return [dataurl, image[1], image[2]]
         })
         console.log(dataurls)
-
+        context.restore();
         resolve([dataurls,POL_LIST,POL_NUM,HEIGHT_NUM])
 
       }, err => {//todo: err handling
