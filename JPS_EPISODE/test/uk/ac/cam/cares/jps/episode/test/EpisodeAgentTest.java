@@ -15,6 +15,8 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.episode.CalculationUtils;
 import uk.ac.cam.cares.jps.episode.EpisodeAgent;
 import uk.ac.cam.cares.jps.episode.WeatherAgent;
 
@@ -39,20 +41,30 @@ public class EpisodeAgentTest extends TestCase {
 	}
 	
 	public void testextract() {
-    	String stnname1="Sentosa";
-    	String stnname2="Pulau Ubin";
-		List<String[]>result=new WeatherAgent().extractAvailableContext(con,cityiri,stnname1,stnname2);
+		double proclowx = Double.valueOf("11560879.832");
+		double procupx = Double.valueOf("11563323.926");
+		double proclowy = Double.valueOf("140107.739");
+		double procupy = Double.valueOf("143305.896");
+		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
+				center);
+		List<String>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("size="+result.size());
-		System.out.println(result.get(0)[0]);
-		System.out.println(result.get(1)[0]);
+		//System.out.println(result.get(0)[0]);
+		//System.out.println(result.get(1)[0]);
 	}
 	
 	public void testDirectCallingWeather() {
-    	String stnname1="Sentosa";
-    	String stnname2="Pulau Ubin";
-		List<String[]>result=new WeatherAgent().extractAvailableContext(con,cityiri,stnname1,stnname2);
+		double proclowx = Double.valueOf("11560879.832");
+		double procupx = Double.valueOf("11563323.926");
+		double proclowy = Double.valueOf("140107.739");
+		double procupy = Double.valueOf("143305.896");
+		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
+				center);
+		List<String>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		try {
-			new WeatherAgent().executeFunctionPeriodically(con,result.get(0)[0],result.get(1)[0]);
+			new WeatherAgent().executeFunctionPeriodically(con,result.get(0),result.get(1));
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -225,6 +237,7 @@ public class EpisodeAgentTest extends TestCase {
 		JSONObject result=new WeatherAgent().extractedSingleDataFromAccuweather("pressure", "hongkong");
 		System.out.println("result= "+result.toString());
 	}
+	
 	public void testinsertdataContext() {// should be used when the context want to be attached with some info
 //		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
 //		List<String>info= new ArrayList<String>();
@@ -247,7 +260,7 @@ public class EpisodeAgentTest extends TestCase {
 			List<String>info= new ArrayList<String>();
 			info.add("http://dbpedia.org/resource/Singapore");
 			info.add(name);
-			new WeatherAgent().insertDataRepoContext(con,info,context);
+			new WeatherAgent().insertDataRepoContext(info,context);
 		}
 		
 		

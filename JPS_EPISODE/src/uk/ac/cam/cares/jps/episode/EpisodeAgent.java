@@ -13,25 +13,38 @@ import javax.servlet.annotation.WebServlet;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/EpisodeAgent")
 public class EpisodeAgent extends DispersionModellingAgent {
+	
+	public  EpisodeAgent() {
+		  EpisodeConfig episodeconfig= new EpisodeConfig();  // Set the initial value for config
+		  System.out.println("initializing the value of config properties");
+		 System.out.println("episode confif dxrec= "+episodeconfig.getDx_rec());
+		 dx_rec=episodeconfig.getDx_rec();
+		 dy_rec=episodeconfig.getDy_rec();
+		 dx=episodeconfig.getDx();
+		 dy=episodeconfig.getDy();
+		 dz=episodeconfig.getDz();
+		 nz=episodeconfig.getNz();
+		 upperheight=episodeconfig.getUpperheight();
+		 lowerheight=episodeconfig.getLowerheight();
+		 deltaT=episodeconfig.getDeltaT();
+		  }
 
 	/**
 	 * 
@@ -40,19 +53,20 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private static final String separator="\t";
 	
 	//later to be moved to config
-	double dx_rec=100; //TODO hardcoded? decide the dx for the receptor
-	double dy_rec=100;//TODO hardcoded? decide the dy for the receptor
-	double dx=1000.0 ;//decide the dx for the scope
-	double dy=1000.0 ;//decide the dy for the scope	
-	double dz=10;
-	double nz=13;
-	double upperheight=75.0;
-	double lowerheight=2.0;
+	private double dx_rec; // decide the dx for the receptor
+	private double dy_rec;// decide the dy for the receptor
+	private double dx ;//decide the dx for the scope
+	private double dy;//decide the dy for the scope	
+	private double dz;
+	private double nz;
+	private double upperheight;
+	private double lowerheight;
+	private double deltaT;
 	
 	//below is based on location input (city iri)
-	String epsgInUTM="48";//48N
-	String epsgActive="32648";
-	String gmttimedifference="-8"; //it should be dependent on the location it simulates
+	private String epsgInUTM="48";//48N
+	private String epsgActive="32648";
+	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
 	
     private static final String DATA_KEY_COLLECTION = "collection";
     private static final String DATA_KEY_ITEMS = "items";
@@ -156,12 +170,20 @@ public class EpisodeAgent extends DispersionModellingAgent {
         return coordinates;
     }
     
+	private List<String[]> queryEndPointDataset(String querycontext) {
+		String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);
+		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
+		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
+		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
+		return listmap;
+	}
+
     private double unitflowconverter(double numberInGramPerS) {
     	double result=numberInGramPerS*0.001*365*24*3600;
     	return result;
     }
     
-	private List<String[]> queryIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
+	private List<String[]> queryKBIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -192,9 +214,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
         logger = LoggerFactory.getLogger(EpisodeAgent.class);
     }
 	 Logger logger = LoggerFactory.getLogger(EpisodeAgent.class);
+	
 	 
 	    @Override
 		protected JSONObject processRequestParameters(JSONObject requestParams) {
+	  
+	    	
 			JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
 			JSONObject region = requestParams.getJSONObject("region");
 			JSONObject shipdata=requestParams.getJSONObject("ship");
@@ -255,8 +280,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
 				+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
-				+ "SELECT ?entity ?class ?propval ?proptimeval ?graph "
-//				+ "WHERE " //it's replaced when named graph is used
+				+ "SELECT ?class ?propval ?proptimeval ?graph "
 				+ "{ GRAPH ?graph "
 				+ "{ "
 				 
@@ -269,41 +293,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				+ "}" 
 				+ "}" 
 				+ "ORDER BY DESC(?proptimeval)LIMIT 9";
-//		String dataseturl="";//which is the weather stn dataset
-//		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, sensorinfo);
-//		 String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
-//		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
-		RepositoryConnection con = WeatherAgent.repo.getConnection();
-		 List<String[]> listmap = new ArrayList<String[]>();
-			TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, sensorinfo);
-			TupleQueryResult result = query.evaluate();
-			int d = 0;
-			try {
-				while (result.hasNext()) {
-					BindingSet bindingSet = result.next();
-					//String iri = bindingSet.getValue("graph").stringValue();
-					String classprop = bindingSet.getValue("class").stringValue();
-					String propval = bindingSet.getValue("propval").stringValue();
-					String dateval = bindingSet.getValue("proptimeval").stringValue();
-					String graphval = bindingSet.getValue("graph").stringValue();
-					String[] content = { classprop,propval,dateval,graphval};
-					listmap.add(content);
+		
+		List<String[]> listmap = queryEndPointDataset(sensorinfo);
 
-					d++;
-				}
-				System.out.println("total data=" + d);
-
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
 		 System.out.println("size="+listmap.size());
 		 
 		 List<String[]> resultquery = new ArrayList<String[]>();
-			
-			
-			
-			
+
 	        String[]header= {"*","yyyy","mm","dd","hh","FF1","DD1","T25m","DT","RH%","PP_mm","Cloud","Press","FF2","DD2"};
 	        resultquery.add(0,header);
 	        String time=listmap.get(0)[2];
@@ -314,8 +310,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	        content[3]=time.split("-")[2].split("T")[0];
 	        content[4]=time.split("-")[2].split("T")[1].split(":")[0];
 	        for(int r=0;r<listmap.size();r++) {
-//	        	System.out.println(listmap.get(r)[0]);
-//	        	System.out.println(listmap.get(r)[3]);
 	        	if(listmap.get(r)[3].toLowerCase().contains(stniri.get(1))) {
 	        		System.out.println("it goes number 2");
 	        		if(listmap.get(r)[0].toLowerCase().contains("speed"))
@@ -344,7 +338,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		        	}
 	        	}
 	        }
-	        content[8]="0.022"; //currently hardcoded about the delta T but can be substituted by model
+	        content[8]=""+deltaT; //currently hardcoded about the delta T but can be substituted by model
 	        resultquery.add(content);
 	        StringBuilder sb= new StringBuilder();
 	       //convert to tsv
@@ -379,7 +373,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			
 			jenaOwlModel.read(iriofchimney);
 
-			List<String[]> resultListChimneyGasPollutant = queryIRI(chimneyiriInfo, jenaOwlModel);
+			List<String[]> resultListChimneyGasPollutant = queryKBIRI(chimneyiriInfo, jenaOwlModel);
 
 			JSONObject mappollutant = new JSONObject();
 
@@ -390,7 +384,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				}
 			}
 
-			List<String[]> resultListParticlePollutant = queryIRI(chimneyiriparticleInfo, jenaOwlModel);
+			List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
 			double fractionpm25 = 0.0;
 			double fractionpm10 = 0.0;
 			for (int x = 0; x < resultListParticlePollutant.size(); x++) {
@@ -492,32 +486,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
 					+ "}" 
 					+ "}" ;
 			
-			RepositoryConnection con = WeatherAgent.repo.getConnection();
-				TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, sensorinfo);
-				TupleQueryResult result = query.evaluate();
-				int d = 0;
-				try {
-					while (result.hasNext()) {
-						BindingSet bindingSet = result.next();
-						String name=stniri.get(t).split("#")[1];
-						String valueofx = bindingSet.getValue("valueofx").stringValue();
-						String valueofy = bindingSet.getValue("valueofy").stringValue();
-						String valueofz = bindingSet.getValue("valueofz").stringValue();
-						
-						stn.put("name",name);
-						stn.put("x",valueofx);
-						stn.put("y",valueofy);
-						stn.put("z",valueofz);
-
-						d++;
-					}
-					System.out.println("total data=" + d);
-
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
+			List<String[]> listmap = queryEndPointDataset(sensorinfo);
+			for(int d=0;d<listmap.size();d++) {
+				String name=stniri.get(t).split("#")[1];
+				String valueofx = listmap.get(d)[0];
+				String valueofy = listmap.get(d)[1];
+				String valueofz = listmap.get(d)[2];
+				stn.put("name",name);
+				stn.put("x",valueofx);
+				stn.put("y",valueofy);
+				stn.put("z",valueofz);
+			}
 				weather.put(stn);	
 		}
 
@@ -584,12 +563,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	}
 	
 
-	private double[] calculateCenterPoint(double xup, double yup,double xdown, double ydown) {
-		double xcenter=(xup+xdown)/2;
-		double ycenter=(yup+ydown)/2;
-		double[]res= {xcenter,ycenter};
-		return res;
-	}
+
 	private double[] calculateLowerLeftInit(double xup, double yup,double xdown, double ydown) {
 		double xlowerinit=-1*(xup-xdown)/2;
 		double ylowerinit=-1*(yup-ydown)/2;
@@ -630,7 +604,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double procupx = Double.valueOf(upx);
 		double proclowy = Double.valueOf(lowy);
 		double procupy = Double.valueOf(upy);
-		double[] center = calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
 		double[] ncell = calculatenumberCellDetails(procupx, procupy, proclowx, proclowy, dx, dy);
 
@@ -826,10 +800,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 					new double[] { Double.valueOf(loc1x), Double.valueOf(loc1y) });
 			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
 					new double[] { Double.valueOf(loc2x), Double.valueOf(loc2y) });
-			double dx1 = p1convert[0] - proclowx;
-			double dy1 = p1convert[1] - proclowy;
-			double dx2 = p2convert[0] - proclowx;
-			double dy2 = p2convert[1] - proclowy;
+			double dx1 = (p1convert[0] - proclowx)/1000; //in km
+			double dy1 = (p1convert[1] - proclowy)/1000;//in km
+			double dx2 = (p2convert[0] - proclowx)/1000;//in km
+			double dy2 = (p2convert[1] - proclowy)/1000;//in km
 
 			// System.out.println("line 0= "+filename);
 			String[] line = fileContext.split("\n");

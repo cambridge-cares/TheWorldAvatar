@@ -17,10 +17,6 @@ import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.ValueFactory;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.QueryLanguage;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
@@ -30,9 +26,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
 @WebServlet(urlPatterns ="/SensorWeatherAgent")
 public class WeatherAgent extends JPSHttpServlet {
@@ -60,11 +61,34 @@ public class WeatherAgent extends JPSHttpServlet {
 	    
 	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	    	String cityiri=requestParams.get("city").toString();
-	    	RepositoryConnection con = repo.getConnection();	
+	    	JSONObject region = requestParams.getJSONObject("region");
+			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
+		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+		    	sourceCRSName = CRSTransformer.EPSG_4326; 
+		    }
+			String lowx = region.getJSONObject("regioninput").getJSONObject("lowercorner")
+					.get("lowerx").toString();
+			String lowy = region.getJSONObject("regioninput").getJSONObject("lowercorner")
+					.get("lowery").toString();
+			String upx = region.getJSONObject("regioninput").getJSONObject("uppercorner")
+					.get("upperx").toString();
+			String upy = region.getJSONObject("regioninput").getJSONObject("uppercorner")
+					.get("uppery").toString();
+			double proclowx = Double.valueOf(lowx);
+			double procupx = Double.valueOf(upx);
+			double proclowy = Double.valueOf(lowy);
+			double procupy = Double.valueOf(upy);
+			double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+			double[] centerPointConverted = CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,
+					center);
+			
+			
+		    
+		RepositoryConnection con = repo.getConnection();	
 
-		List<String[]> listmap = extractAvailableContext(con,cityiri,stnname1,stnname2);
-		 String context=listmap.get(0)[0]; //main stn
-		 String context2=listmap.get(1)[0]; // the furthest station
+		List<String> listmap = extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+		 String context=listmap.get(0); //main stn
+		 String context2=listmap.get(1); // the furthest station
 		 
 		 //here the context will be more than 2, need to decide which two are picked
 		 //for now only the 2 stn choosen will be updated
@@ -85,55 +109,92 @@ public class WeatherAgent extends JPSHttpServlet {
 			return response;
 			
 		}
+	    		
 
-	public List<String[]> extractAvailableContext(RepositoryConnection con, String cityiri,String stnname1,String stnname2) {
-		String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+	public List<String> extractAvailableContext(String cityiri,double x0,double y0) {
+		
+		  String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-				+ "SELECT DISTINCT ?graph ?stnname " 
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "SELECT DISTINCT ?graph ?stnname ?xval ?yval " 
 				+ "{ graph ?graph " 
 				+ "{ "
 				+ "?entity j4:observes ?prop ." 
+				+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+                + "?xent j2:hasValue ?vxent ."
+                + "?vxent   j2:numericalValue ?xval ." // xvalue
+                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+                + "?yent j2:hasValue ?vyent ."
+                + "?vyent   j2:numericalValue ?yval ." // yvalue
 				+ "?graph j2:hasAddress <"+cityiri+"> ."
-				+ "{ "
-				+ "?graph j2:enumerationValue \""+stnname1+"\" .}"
-				+"UNION"
-				+ "{ "
-				+ "?graph j2:enumerationValue \""+stnname2+"\" .}"
+				+ "?graph j2:enumerationValue ?stnname ." 
 				+ "}" 
 				+ "}";
-//		String dataseturl = rdf4jServer + "/repositories/" + repositoryID;// which is the weather stn dataset
-//		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
-//		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
-//		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
-
-		List<String[]> listmap = new ArrayList<String[]>();
-		TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, querycontext);
-		TupleQueryResult result = query.evaluate();
-		int d = 0;
-		try {
-//			String[] header = { "graph" };
-//			listmap.add(header);
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				String iri = bindingSet.getValue("graph").stringValue();
-				String[] content = { iri };
-				listmap.add(content);
-
-				d++;
+		  
+		  List<String> listiristn = new ArrayList<String>();
+		
+		
+		//String dataseturl = rdf4jServer + "/repositories/" + repositoryID;// which is the weather stn dataset
+		List<String[]> listmap = queryEndPointDataset(querycontext);
+		
+		double yfinal= 0.0; //temporary
+		double xfinal=0.0; //temporary
+		String mainstniri="";//temporary
+			
+			//find the main station now
+			double distmin=CalculationUtils.distanceWGS84(y0,x0, Double.valueOf(listmap.get(0)[3]),Double.valueOf(listmap.get(0)[2]),"K");
+			for(int r=0;r<listmap.size();r++) {
+				String yval=listmap.get(r)[3];
+				String xval=listmap.get(r)[2];
+				double dist=CalculationUtils.distanceWGS84(y0,x0, Double.valueOf(yval),Double.valueOf(xval),"K");
+				if(Math.abs(dist)<distmin) {
+					mainstniri=listmap.get(r)[0];
+					distmin=Math.abs(dist);
+					yfinal=Double.valueOf(yval);
+					xfinal=Double.valueOf(xval);
+				}	
 			}
-			System.out.println("total data=" + d);
+		
+			//find the 2nd station now
+			double distmax=0.0;
+			String secondiri="";
+			for(int r=0;r<listmap.size();r++) {
+				String yval=listmap.get(r)[3];
+				String xval=listmap.get(r)[2];
+				double dist=CalculationUtils.distanceWGS84(yfinal,xfinal, Double.valueOf(yval),Double.valueOf(xval),"K");
+				if(Math.abs(dist)>distmax) {
+					secondiri=listmap.get(r)[0];
+					distmax=Math.abs(dist);
+				}
+				
+			}
+			
+			System.out.println ("main stn final= "+mainstniri);
+			System.out.println("dist minimum final from center point= "+distmin);
+			System.out.println ("2nd stn final= "+secondiri);
+			System.out.println("dist maximum final from the 1st stn= "+distmax);
+			listiristn.add(mainstniri); //as the main stn
+			listiristn.add(secondiri); //as the 2nd stn
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
+
+		
+		return listiristn; //expected to return list of 2 stn iri
+	}
+
+
+	private List<String[]> queryEndPointDataset(String querycontext) {
+		String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);
+		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
+		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
+		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		return listmap;
 	}
 	    
-		public static String provideCurrentTime() {			//timing format should be year, month, date, hour, minute,second
+	public static String provideCurrentTime() {			//timing format should be year, month, date, hour, minute,second
 
 			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 			   LocalDateTime now = LocalDateTime.now();
@@ -183,61 +244,13 @@ public class WeatherAgent extends JPSHttpServlet {
 		}
 	}
 	
-	public void queryValueLatestfromRepo(RepositoryConnection con, String context) { //should we use top node concept or the name graph to categorize some triples??
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-				+ "SELECT ?entity ?class ?propval ?proptimeval "
-//				+ "WHERE " //it's replaced when named graph is used
-				+ "{graph "+"<"+context+">"
-				+ "{ "
-				 
-				+ "  ?entity j4:observes ?prop ." 
-				+ " ?entity a ?class ."
-				+ " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." 
-				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
-				+ "}" 
-				+ "}" 
-				+ "ORDER BY DESC(?proptimeval)LIMIT 10";
-		
-		TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, sensorinfo);
-		TupleQueryResult result = query.evaluate();
-		int d=0;
-		try {
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				String time = bindingSet.getValue("proptimeval").stringValue();
-				String inst = bindingSet.getValue("entity").stringValue();
-				String propclass = bindingSet.getValue("class").stringValue();
-				String value = bindingSet.getValue("propval").stringValue();
-
-				// String time="random";
-				System.out.println("measured property= " + propclass);
-				System.out.println("measured property value= " + value);
-				System.out.println("instance sensor= "+inst);
-				System.out.println(" at the time= " + time);
-				// logger.info("species-uri: " + speciesUri);
-				d++;
-			}
-			System.out.println("total data=" + d);
-		} catch (Exception e) {
-
-			System.out.println(e.getMessage());
-		}
-//		con.commit();
-//		con.close();
-	}
-	
 	public List<String[]> provideDataRepoRoutine(RepositoryConnection con, String context,String propnameclass) {
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?vprop ?propval ?proptime ?proptimeval ?vxent ?vyent "
+				+ "SELECT ?vprop ?propval ?proptime ?proptimeval "
 //				+ "WHERE " //it's replaced when named graph is used
 				+ "{graph "+"<"+context+">"
 				+ "{ "
@@ -260,26 +273,7 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "}" 
 				+ "ORDER BY ASC(?proptimeval)";
 		
-		TupleQuery query = con.prepareTupleQuery(QueryLanguage.SPARQL, sensorinfo);
-		TupleQueryResult result = query.evaluate();
-		int d=0;
-		List<String[]> keyvaluemapold= new ArrayList<String[]>();
-		
-		try {
-			while (result.hasNext()) {
-				BindingSet bindingSet = result.next();
-				String timevalue = bindingSet.getValue("proptimeval").stringValue();
-				String timeinstance = bindingSet.getValue("proptime").stringValue();
-				String propvalue = bindingSet.getValue("propval").stringValue();
-				String propinstance = bindingSet.getValue("vprop").stringValue();
-				String[]keyelement= {propinstance,propvalue,timeinstance,timevalue};
-				keyvaluemapold.add(keyelement);
-				d++;
-			}
-		} catch (Exception e) {
-
-			System.out.println(e.getMessage());
-		}
+		List<String[]> keyvaluemapold =queryEndPointDataset(sensorinfo);
 		
 		return keyvaluemapold;
 		
@@ -452,24 +446,27 @@ public class WeatherAgent extends JPSHttpServlet {
 		}
 	}
 	
-	public void insertDataRepoContext(RepositoryConnection con,List<String>info,String context) {
+	public void insertDataRepoContext(List<String>info,String context) {
 
-		ValueFactory f=repo.getValueFactory();
-		IRI contextiri= f.createIRI(context);
-		
-		IRI address=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasAddress");
-		IRI name=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#enumerationValue");
-		
-
-			IRI prop1=f.createIRI(info.get(0)); //cityiri
-			String prop2=info.get(1);// stnname
-
-			con.add(contextiri, address, prop1, contextiri);
-			con.add(contextiri, name, f.createLiteral(prop2), contextiri);
+		String sparqlupdate2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "WITH <" + context + ">"
+					//+ "DELETE { ?valueemission j2:numericalValue ?vemission .} "
+					+ "INSERT {"
+					+ "<" + context+ "> j2:hasAddress <"+info.get(0)+"> ." 
+					+ "<" + context+ "> j2:enumerationValue \""+info.get(1)+"\" ." 
+					+ "} "
+					+ "WHERE { " 
+					+ "}";
+			
+		KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate2);	
 
 	}
 	
-	public void resetRepoTrial(RepositoryConnection con,String location) {
+	public void resetRepoTrial(RepositoryConnection con,String location) { //unused for the servlet
 		if (location.contains("singapore")) {
 			for (int d = 1; d <= 12; d++) {
 				String number = "00" + d;
@@ -482,7 +479,7 @@ public class WeatherAgent extends JPSHttpServlet {
 						"SGRelativeHumiditySensor-" + number + ".owl", "SGWindDirectionSensor-" + number + ".owl" };
 				String context = "http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-" + number
 						+ ".owl#WeatherStation-" + number;
-				System.out.println("upload files for graph 1");
+				System.out.println("upload files for graph");
 				for (String el : filenames) {
 					new WeatherAgent().addFiletoRepo(con, el, context);
 
@@ -501,7 +498,7 @@ public class WeatherAgent extends JPSHttpServlet {
 						"HKRelativeHumiditySensor-" + number + ".owl", "HKWindDirectionSensor-" + number + ".owl" };
 				String context = "http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-" + number
 						+ ".owl#WeatherStation-" + number;
-				System.out.println("upload files for graph 1");
+				System.out.println("upload files for graph");
 				for (String el : filenames) {
 					new WeatherAgent().addFiletoRepo(con, el, context);
 
