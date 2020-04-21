@@ -90,10 +90,6 @@ public class TestWTE extends TestCase {
 		
 	}
 	
-	public void testDirectCall() {
-		new WastetoEnergyAgent().runTestInSequence(iriofnetwork);
-		
-	}
 	
 	public void xxxtestAgentCall() {
 		/**
