@@ -244,7 +244,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		}
 	}
 	
-	public List<String[]> provideDataRepoRoutine(RepositoryConnection con, String context,String propnameclass) {
+	public List<String[]> provideDataRepoRoutine(String context,String propnameclass) {
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
@@ -402,9 +402,40 @@ public class WeatherAgent extends JPSHttpServlet {
 		return jo1;
 	}
 	
-    
+	public void updateRepoNew(String context,String propnameclass, String newpropvalue, String newtimestamp) {
+		List<String[]>oldcontent= provideDataRepoRoutine(context,propnameclass);
+		List<String[]> valuemapold= new ArrayList<String[]>();
+		valuemapold.addAll(oldcontent);
+		valuemapold.remove(0);
+		String[]newcontent= {"key1prop",newpropvalue,"key2time",newtimestamp};
+		valuemapold.add(newcontent);
+		
+		for(int x=0; x<oldcontent.size();x++) {
+			String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "WITH <" + context + ">"
+					+ "DELETE { "
+					+ "<" + oldcontent.get(x)[0]+ "> j2:numericalValue \""+oldcontent.get(x)[1]+"\"^^xsd:double ."
+					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp \""+ oldcontent.get(x)[3]+"\" ."
+					+ "} "
+					+ "INSERT {"
+					+ "<" + oldcontent.get(x)[0]+ "> j2:numericalValue \""+valuemapold.get(x)[1]+"\"^^xsd:double ."
+					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp \""+valuemapold.get(x)[3]+"\" ." 
+					+ "} "
+					+ "WHERE { " 
+					+ "}";
+			
+			KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate);
+
+		}
+		
+	}
+	
 	public void removeDataRepoRoutine(RepositoryConnection con,List<String[]>oldcontent) {
-				
+
 			int d=oldcontent.size();
 			ValueFactory f=repo.getValueFactory();
 			IRI numval=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
@@ -422,7 +453,7 @@ public class WeatherAgent extends JPSHttpServlet {
 	
 	public void insertDataRepo(RepositoryConnection con, List<String[]>oldcontent,String newpropvalue, String newtimestamp,String context) {
 		List<String[]> valuemapold= new ArrayList<String[]>();
-		ValueFactory f=repo.getValueFactory();
+		
 		for(int r=0;r<oldcontent.size();r++) {
 			String[]content= {oldcontent.get(r)[1],oldcontent.get(r)[3]};
 			valuemapold.add(content);
@@ -430,6 +461,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		valuemapold.remove(0);
 		String []newcontent= {newpropvalue,newtimestamp};
 		valuemapold.add(newcontent);
+		ValueFactory f=repo.getValueFactory();
 		System.out.println("size of data= "+valuemapold.size());
 		IRI numval=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
 		IRI timeval=f.createIRI("http://www.w3.org/2006/time#inXSDDateTimeStamp");
@@ -514,7 +546,7 @@ public class WeatherAgent extends JPSHttpServlet {
 	}
 	
 	public void updateRepo(RepositoryConnection con,String context,String propnameclass, String newpropvalue, String newtimestamp) {
-		List<String[]>currentdatarepo= provideDataRepoRoutine(con,context,propnameclass);
+		List<String[]>currentdatarepo= provideDataRepoRoutine(context,propnameclass);
 		System.out.println("current size= "+currentdatarepo.size());
 		removeDataRepoRoutine(con,currentdatarepo);
 		insertDataRepo(con, currentdatarepo,newpropvalue, newtimestamp,context);
@@ -528,17 +560,28 @@ public class WeatherAgent extends JPSHttpServlet {
 		Double convertedspeed2=Double.valueOf(result.getJSONObject("windspeed2").get("value").toString())*0.514444;
 		Double convertedcloud=Double.valueOf(result.getJSONObject("cloudcover").get("value").toString())/100;
 		Double convertedRH=Double.valueOf(result.getJSONObject("relativehumidity").get("value").toString())/100;
-		new WeatherAgent().updateRepo(con,context,"OutsideAirTemperature",result.getJSONObject("temperature").get("value").toString(),completeformat);//stored in Celcius
-		new WeatherAgent().updateRepo(con,context,"OutsideWindSpeed",""+convertedspeed1,completeformat); //stored in m/s instead of knot
-		new WeatherAgent().updateRepo(con,context,"OutsideWindDirection",result.getJSONObject("winddirection1").get("value").toString(),completeformat);//stored in degree
-		new WeatherAgent().updateRepo(con,context,"OutsideAirCloudCover",""+convertedcloud,completeformat);//stored in decimal instead of %
-		new WeatherAgent().updateRepo(con,context,"OutsideAirPressure",result.getJSONObject("pressure").get("value").toString(),completeformat);//stored in mBar, no need conversion from hPa
-		new WeatherAgent().updateRepo(con,context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
-		new WeatherAgent().updateRepo(con,context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
-		//new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
-		new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
-		new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
 		
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirTemperature",result.getJSONObject("temperature").get("value").toString(),completeformat);//stored in Celcius
+		//new WeatherAgent().updateRepo(con,context,"OutsideWindSpeed",""+convertedspeed1,completeformat); //stored in m/s instead of knot
+		//new WeatherAgent().updateRepo(con,context,"OutsideWindDirection",result.getJSONObject("winddirection1").get("value").toString(),completeformat);//stored in degree
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirCloudCover",""+convertedcloud,completeformat);//stored in decimal instead of %
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirPressure",result.getJSONObject("pressure").get("value").toString(),completeformat);//stored in mBar, no need conversion from hPa
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
+		//new WeatherAgent().updateRepo(con,context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
+		//new WeatherAgent().updateRepo(con,context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
+		
+		new WeatherAgent().updateRepoNew(context,"OutsideAirTemperature",result.getJSONObject("temperature").get("value").toString(),completeformat);//stored in Celcius
+		new WeatherAgent().updateRepoNew(context,"OutsideWindSpeed",""+convertedspeed1,completeformat); //stored in m/s instead of knot
+		new WeatherAgent().updateRepoNew(context,"OutsideWindDirection",result.getJSONObject("winddirection1").get("value").toString(),completeformat);//stored in degree
+		new WeatherAgent().updateRepoNew(context,"OutsideAirCloudCover",""+convertedcloud,completeformat);//stored in decimal instead of %
+		new WeatherAgent().updateRepoNew(context,"OutsideAirPressure",result.getJSONObject("pressure").get("value").toString(),completeformat);//stored in mBar, no need conversion from hPa
+		new WeatherAgent().updateRepoNew(context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
+		new WeatherAgent().updateRepoNew(context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
+		//new WeatherAgent().updateRepo(con,context,"OutsideAirProperties","25.4",completeformat); //it's for solar irradiation
+		new WeatherAgent().updateRepoNew(context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
+		new WeatherAgent().updateRepoNew(context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
 	}
 	
 

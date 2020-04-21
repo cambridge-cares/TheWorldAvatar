@@ -50,8 +50,8 @@ public class EpisodeAgentTest extends TestCase {
 				center);
 		List<String>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("size="+result.size());
-		//System.out.println(result.get(0)[0]);
-		//System.out.println(result.get(1)[0]);
+		System.out.println(result.get(0));
+		System.out.println(result.get(1));
 	}
 	
 	public void testDirectCallingWeather() {
@@ -239,13 +239,7 @@ public class EpisodeAgentTest extends TestCase {
 	}
 	
 	public void testinsertdataContext() {// should be used when the context want to be attached with some info
-//		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
-//		List<String>info= new ArrayList<String>();
-//		info.add("http://dbpedia.org/resource/Singapore");
-//		info.add("clementi");
-//		
-//		
-//		new WeatherAgent().insertDataRepoContext(con,info,context);
+
 		String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
 		int []indexchosen= {0,1,2,3,4,5,6,7,8,10,11,12}; //based on json object file because stn 24 is ignored
 		JSONObject current= new JSONObject(inputRef);
