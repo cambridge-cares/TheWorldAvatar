@@ -5,7 +5,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONStringer;
@@ -22,24 +21,8 @@ import uk.ac.cam.cares.jps.episode.WeatherAgent;
 
 public class EpisodeAgentTest extends TestCase {
 	
-	RepositoryConnection con = WeatherAgent.repo.getConnection();
 	String cityiri= "http://dbpedia.org/resource/Singapore";
-	
-	public void testRunPeriodic() {
 		
-		//RepositoryConnection con = WeatherAgent.repo.getConnection();
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-008.owl#WeatherStation-008";
-		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-006.owl#WeatherStation-006";
-		
-		try {
-			new WeatherAgent().executeFunctionPeriodically(con,context,context2);
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println("it is updated");
-	}
-	
 	public void testextract() {
 		double proclowx = Double.valueOf("11560879.832");
 		double procupx = Double.valueOf("11563323.926");
@@ -48,10 +31,10 @@ public class EpisodeAgentTest extends TestCase {
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
-		List<String>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("size="+result.size());
-		System.out.println(result.get(0));
-		System.out.println(result.get(1));
+		System.out.println(result.get(0)[0]);
+		System.out.println(result.get(1)[0]);
 	}
 	
 	public void testDirectCallingWeather() {
@@ -62,9 +45,9 @@ public class EpisodeAgentTest extends TestCase {
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
-		List<String>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		try {
-			new WeatherAgent().executeFunctionPeriodically(con,result.get(0),result.get(1));
+			new WeatherAgent().executeFunctionPeriodically(result,cityiri);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
