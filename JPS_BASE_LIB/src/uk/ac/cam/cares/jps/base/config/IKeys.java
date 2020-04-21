@@ -16,6 +16,7 @@ public interface IKeys {
 	String DATASET_TEMPLATE_KBCLASS = "dataset.%s.kbclass";
 	String DATASET_TEMPLATE_ENDPOINT_URL = "dataset.%s.endpoint.url";
 	String DATASET_META_URL = "dataset.meta.url";
+	String DATASET_WEATHER_URL = "dataset.weather.url";
 	String URL_RDF_METADATA = "url.rdf.metadata";
 	
 	String SCENARIO_USECASEDIRECTORY_SEPARATOR = "scenario.usecasedirectory.separator";
