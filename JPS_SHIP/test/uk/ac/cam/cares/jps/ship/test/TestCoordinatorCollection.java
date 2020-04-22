@@ -178,4 +178,9 @@ public class TestCoordinatorCollection extends TestCase{
 		System.out.println("averageinscope o3= "+average2o3);
 	}
 	 
+	public void testGetLatestHKWeatherData() {
+		JSONObject jo = new JSONObject();
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/GetHKUWeatherLatestData",jo.toString());
+		System.out.println("result= "+result);
+	}
 }
