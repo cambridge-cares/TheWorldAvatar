@@ -26,7 +26,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
-@WebServlet(urlPatterns= {"/processresult"})
+@WebServlet(urlPatterns= {"/WTESingleAgent/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
 	/** Find offsite technologies that use technology
 	 * 

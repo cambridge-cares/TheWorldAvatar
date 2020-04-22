@@ -34,7 +34,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-@WebServlet(urlPatterns= {"/startsimulation"})
+@WebServlet(urlPatterns= {"/WastetoEnergyAgent/startsimulation"})
 
 public class WastetoEnergyAgent extends JPSHttpServlet {
 	
@@ -54,7 +54,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	// first called to begin simulation. 
 	public static final String SIM_START_PATH = "/WastetoEnergyAgent/startsimulation";
 	//called to produce this result directly after start simulation is called. Waits for the first simulation to finish. 
-	public static final String SIM_PROCESS_PATH = "/WastetoEnergyAgent/processresult";
+	public static final String SIM_PROCESS_PATH = "/WTESingleAgent/processresult";
 	/**gets the food court name, xy coordinates, amount of waste, the year
 	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -85,7 +85,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			+ "?time     j6:inDateTime ?vdatetime ."
 			+ "?vdatetime  j6:year ?year ." 
 			+ "}"
-			+ "ORDER BY ASC(?entity)";//1,10,2,3...
+			+ "ORDER BY ASC(?year)";//1,10,2,3...
 	/**gets the Offsite Waste Treatment facility, and its xy coordinates. 
 	 */
 	public static String WTquery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
@@ -365,7 +365,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String sourceUrl = JPSContext.getScenarioUrl(requestParams);
 		String sourceName = BucketHelper.getScenarioName(sourceUrl);
 		OntModel model= readModelGreedy(wasteIRI);
-		prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		List<String[]> inputsondata = prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
 		prepareCSVTransport(transportQuery,"transport.csv", baseUrl,model); 
 		prepareCSVCompTECHBased(compquery,baseUrl,model);
@@ -374,25 +374,15 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
 		copyTemplate(baseUrl, "D2R.m");
-		try
-		{
-			logger.info("Scenario Url" + sourceUrl);
-		    Thread.sleep(30000);
+		
+		try {
+			createBat(baseUrl);
+			runModel(baseUrl);
+            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
+                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		catch(InterruptedException ex)
-		{
-		    Thread.currentThread().interrupt();
-		}
-		if (SIM_START_PATH.equals(path)) {
-			try {
-				createBat(baseUrl);
-				runModel(baseUrl);
-	            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
-	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		 }
 		return requestParams;
 	}
 	 
@@ -421,27 +411,29 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * @param model
 	 * @return
 	 */
-	public void prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) { //create csv for food court and giving the list of complete food court iri
+	public List<String[]> prepareCSVFC(String mainquery,String filename,String filename2, String baseUrl,OntModel model) { //create csv for food court and giving the list of complete food court iri
 		//csv input file		
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
         String[] keysfc = JenaResultSetFormatter.getKeys(result);
         List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keysfc);
         List<String[]> resultxy = new ArrayList<String[]>();
+        List<String[]> resultfcmapper = new ArrayList<String[]>();
 		for (int d = 0; d < resultList.size(); d++) {
 			String[] comp = { resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
+			String[] mapper = {resultList.get(d)[5],resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
 			if (resultList.get(d)[4].contentEquals("1")) {
 				resultxy.add(comp);
+				resultfcmapper.add(mapper);
 			}
 		}
         if (filename2 != null) {//waste.csv
 			List<String[]> resultwaste = new ArrayList<String[]>();
 			int size = resultList.size();
-			int yearend = Integer.valueOf(resultList.get(resultList.size() - 1)[4]);
-			int amountinst = size / yearend; // assume it's from year 1
+			int amountinst = size / 15; // assume it's from year 1
 
 			for (int n = 0; n < amountinst; n++) {
-				yearend=1;//control how many year we want to use;assume yearend =1 (only 1 year)
+				int yearend=1;//control how many year we want to use;assume yearend =1 (only 1 year)
 				String[] consumption = new String[yearend];
 				for (int r = 0; r < yearend; r++) { 
 					consumption[r] = resultList.get(r * amountinst + n)[3];
@@ -456,6 +448,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
         //resultwaste.add(0,headerwaste);
         new QueryBroker().putLocal(baseUrl + "/"+filename, MatrixConverter.fromArraytoCsv(resultxy));
     	
+        return resultfcmapper;
 	}
 	/** prepares the CSV file for the Waste treatment facility and it's xy coordinates. 
 	 * 
