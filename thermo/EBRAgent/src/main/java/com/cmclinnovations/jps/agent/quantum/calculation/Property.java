@@ -27,7 +27,14 @@ public enum Property {
 	 */
 	RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontospecieskb"),
 	RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT("http://localhost:8080/rdf4j-server/repositories/ontocompchem"),
-	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
+	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/repositories/"),
+
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 */
+
+	SERVER_URL_LOCALHOST("http://localhost:8080/"),
+	SERVER_URL_CLAUDIUS("http://theworldavatar.com/"),
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 */
@@ -38,6 +45,7 @@ public enum Property {
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 */
 	RDF4J_ONTOCOMPCHEM_REPOSITORY_ID("ontocompchem"),
+	
 	PREFIX_BINDING_ONTOSPECIES("PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> \n"),
 	PREFIX_BINDING_RDFS("PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n"),
 	PREFIX_BINDING_RDF("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"),

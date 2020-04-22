@@ -1,5 +1,12 @@
 package com.cmclinnovations.jps.model.species;
 
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import com.cmclinnovations.jps.agent.quantum.calculation.Property;
+import com.cmclinnovations.jps.kg.OntoSpeciesKG;
+
 public class SpeciesBean {	
 
 	private String name = "";
@@ -174,4 +181,45 @@ public class SpeciesBean {
 		this.standardEnthalpyOfFormation = standardEnthalpyOfFormation;
 	}
 	
+
+	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param species the List<Map> of species IRIs. Map contains json key as the
+	 *                map key value and speices IRI as a map value.
+	 * @param nistSpeciesIdList The list of SpeciesBean objects 
+	 * @param oskg the onto species knowledge graph object
+	 * @return the list of SpeciesBean objects.
+	 * @throws Exception
+	 */
+	public static LinkedList<SpeciesBean> getSpeciesIRIList(List<Map<String, Object>> species,
+			LinkedList<SpeciesBean> nistSpeciesIdList, OntoSpeciesKG oskg) throws Exception {
+
+		for (Map<String, Object> speciesMap : species) {
+
+			LinkedList<String> speciesIRIList = new LinkedList<String>();
+
+			for (Map.Entry<String, Object> entry : speciesMap.entrySet()) {
+
+				speciesIRIList.add(entry.getValue().toString());
+
+			}
+
+			String queryString = oskg.getSpeciesQueryFromJsonInput(speciesIRIList.getFirst(), speciesIRIList.getLast());
+
+			System.out.println("");
+			System.out.println("queryString: " + queryString);
+
+			nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories(
+					Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(),
+					Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(), queryString));
+
+		}
+
+		return nistSpeciesIdList;
+	}
+	
+	
+
 }

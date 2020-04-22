@@ -7,13 +7,16 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 
@@ -22,9 +25,12 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.SystemUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.slurm.job.Status;
 
 public class Utils {
@@ -267,6 +273,53 @@ public static File getZipFile(String folderName) throws IOException {
 		File zipFile = new File(zipFileName);
 		
 		return zipFile;
-		
+	
 	}
+
+/**
+ * 
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * 
+ * @param fileUrl the gaussina file url
+ * @param destinationFilePath the destination file path where Gausian file will be stored. It is given in JSON input file.
+ * @throws MalformedURLException
+ * @throws IOException
+ */
+public static void copyFileFromURL(String fileUrl, String destinationFilePath) throws MalformedURLException, IOException {
+	
+	InputStream in = new URL(fileUrl).openStream();
+	
+	Files.copy(in, Paths.get(destinationFilePath),StandardCopyOption.REPLACE_EXISTING);
+}
+
+/**
+ * It creates JSON input folder under user home.  If it finds it then it deletes it and after that it creates it.
+ * 
+ * @author Dr Feroz Farazi msff2@cam.ac.uk
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ *   
+ * @param jsonInput the JSON input string. 
+ * @throws IOException
+ */
+public static void createInputFolder(String jsonInput) throws IOException {
+
+	String inputFolderPath =JSonRequestParser.getGaussianFolderPath(jsonInput);
+	
+	String[] tokens = inputFolderPath.split("/");
+	
+	System.out.println(tokens[0]);
+	
+	if(new File(SystemUtils.getUserHome()+"/"+tokens[0]).exists()) {
+		
+		System.out.println(SystemUtils.getUserHome()+File.separator+tokens[0]);
+		
+		FileUtils.deleteDirectory(new File(SystemUtils.getUserHome()+File.separator+tokens[0]));
+	}
+	
+	new File(SystemUtils.getUserHome()+File.separator+tokens[0]).mkdir();
+	new File(SystemUtils.getUserHome()+File.separator+inputFolderPath).mkdir();
+	
+
+}
+
 }

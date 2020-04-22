@@ -1,15 +1,19 @@
 package com.cmclinnovations.jps.kg;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
+import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.federated.FedXFactory;
 
 import org.eclipse.rdf4j.query.BindingSet;
+import org.eclipse.rdf4j.query.QueryLanguage;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.query.TupleQueryResultHandlerException;
@@ -134,8 +138,20 @@ public class OntoSpeciesKG{
 		try {
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
 			
-			repo.initialize();
-						
+			/**
+			 * Feroz line
+			 */
+//			repo.initialize();
+			
+			/**
+			 * Added the first line below by @author NK510 (caresssd@hermes.cam.ac.uk)
+			 * 
+			 */
+			repo.init();
+				
+			/**
+			 * Feroz's code
+			 */
 			RepositoryConnection con = repo.getConnection();
 			try {
 				System.out.println("Query String:\n" + queryString);
@@ -282,35 +298,54 @@ public class OntoSpeciesKG{
 	
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * @param species onto species iri given is jos input file
-	 * @param ontoComChemIRI ontocompchem iri given in json input file
+	 * @param ontoSpeciesIRI onto species iri given is jos input file
+	 * @param ontoCompChemIRI ontocompchem iri given in json input file
 	 * @return sparql query string.
 	 * 
 	 */
-	public String formSpeciesQueryFromJsonInput(String species, String ontoComChemIRI){
+	public String getSpeciesQueryFromJsonInput(String ontoSpeciesIRI, String ontoCompChemIRI){
 		
 			String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
 					+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
 					+ "PREFIX gc: <http://purl.org/gc/> "
 					+ "SELECT DISTINCT ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue  ?scfEnergyValue ?zeroEnergyValue "
 					+ "WHERE { "
-					+ "<"+species+"> OntoSpecies:casRegistryID ?crid . "
-					+ "<"+species+"> OntoSpecies:hasAtomicBond ?atomicBond . "
-					+ "<"+species+"> OntoSpecies:hasGeometry ?geometry . "
-					+ "<"+species+"> OntoSpecies:hasStandardEnthalpyOfFormation ?enthalpy . "
+					+ "<"+ontoSpeciesIRI+"> OntoSpecies:casRegistryID ?crid . "
+					+ "<"+ontoSpeciesIRI+"> OntoSpecies:hasAtomicBond ?atomicBond . "
+					+ "<"+ontoSpeciesIRI+"> OntoSpecies:hasGeometry ?geometry . "
+					+ "<"+ontoSpeciesIRI+"> OntoSpecies:hasStandardEnthalpyOfFormation ?enthalpy . "
 					+ "?enthalpy OntoSpecies:value ?enthalpyOfFormationValue ."
-					+ "<"+ontoComChemIRI+"> ontocompchem:hasUniqueSpecies <"+species+"> . "
-					+ "<"+ontoComChemIRI+"> gc:isCalculationOn ?scfEnergy . "
+					+ "<"+ontoCompChemIRI+"> ontocompchem:hasUniqueSpecies <"+ontoSpeciesIRI+"> . "
+					+ "<"+ontoCompChemIRI+"> gc:isCalculationOn ?scfEnergy . "
 					+ "?scfEnergy a ontocompchem:ScfEnergy . "
 					+ "?scfEnergy gc:hasElectronicEnergy ?scfElectronicEnergy . "
 					+ "?scfElectronicEnergy gc:hasValue ?scfEnergyValue . "
-					+ "<"+ontoComChemIRI+"> gc:isCalculationOn ?zeroEnergy . "
+					+ "<"+ontoCompChemIRI+"> gc:isCalculationOn ?zeroEnergy . "
 					+ "?zeroEnergy a ontocompchem:ZeroPointEnergy . "
 					+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
 					+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "
 					+ "}";
 			
 			return query;
+	}
+	
+	
+	public static String getGaussianFileIRI(String ontoCompChemIRI) {
+		
+		
+		String query="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
+				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
+				+ "PREFIX gc: <http://purl.org/gc/> "
+				+ "SELECT DISTINCT ?outputFile "
+				+ "WHERE { "
+				+ "<"+ontoCompChemIRI+"> ontocompchem:hasEnvironment ?environment . "
+				+ "?environment ontocompchem:hasProgram ?program . "
+				+ "?environment gc:hasOutputFile ?outputFile . "
+				+ "FILTER(REGEX(str(?outputFile),'.g09') || REGEX(str(?outputFile),'.log') || REGEX(str(?outputFile),'.g16')) ."
+				+ "FILTER(str(?program)='Gaussian') ."
+				+ "}";
+		
+		return query;
 	}
 	
 	/**
@@ -354,7 +389,11 @@ public class OntoSpeciesKG{
 		while (result.hasNext()) {
 			BindingSet solution = result.next();
 			for (String bindingName : solution.getBindingNames()) {
+				
+				System.out.println("bindingName: " + bindingName);
+				
 				processedResult.add(removeDataType(solution.getValue(bindingName).toString()));
+				
 			}
 		}
 	}
@@ -403,5 +442,116 @@ public class OntoSpeciesKG{
 		}
 		return value;
 	}
+	
+	/**
+	 * 
+	 * @param serverUrl the server url
+	 * @param ontoCompChemIRI the ontocompchem species IRIs
+	 * @return the list of 
+	 */
+	public LinkedList<String> queryOntoCompChemSpeciesRepository(String serverUrl, String ontoCompChemIRI) {
+
+		LinkedList<String> outputGaussianFileIRIList = new LinkedList<String>();
+		
+		String queryString = getGaussianFileIRI(ontoCompChemIRI);
+		
+		System.out.println("queryString: " + queryString);
+		
+		Repository repository = new HTTPRepository(serverUrl);
+
+		repository.init();
+
+		RepositoryConnection connection = repository.getConnection();
+
+		System.out.println("connection.isActive(): " + connection.isActive());
+		
+		try {
+
+			connection.begin(IsolationLevels.SNAPSHOT_READ);
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			TupleQueryResult result = tupleQuery.evaluate();
+
+			try {
+
+				System.out.println("result: " + result);
+				
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+
+					String gaussianFile = bindingSet.getValue("outputFile").stringValue();
+					
+					System.out.println("gaussian File: " + gaussianFile);
+					
+					outputGaussianFileIRIList.add(gaussianFile);
+
+				}
+
+				connection.commit();
+
+			} catch (Exception e) {
+
+				System.out.println(e.getMessage());
+
+			} finally {
+
+				result.close();
+			}
+
+		} catch (RepositoryException e) {
+
+			System.out.println(e.getMessage());
+
+			connection.rollback();
+
+		} finally {
+
+			connection.close();
+
+			repository.shutDown();
+		}
+		
+		return outputGaussianFileIRIList;
+	}
+/**
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * 
+ * @param referenceSpeciesList the List<Map> of reference species.
+ * @return linked list of Gaussian files URL.
+ */
+public LinkedList<String> getGaussianSpeciesSPARQLResults(List<Map<String, Object>> referenceSpeciesList){
+	
+	LinkedList<String> ontoCompChemIRIList =null;
+	
+	for(Map<String, Object> map: referenceSpeciesList) {
+		
+		ontoCompChemIRIList = new LinkedList<String>();
+		
+		for(Map.Entry<String, Object> m : map.entrySet()) {
+			
+			if(m.getKey().matches("ontocompchemIRI")) {
+			
+			System.out.println("m.getKey(): " + m.getKey());
+			System.out.println("m.getValue(): " + m.getValue());
+			
+			String speciesIRI =m.getValue().toString();
+				
+			ontoCompChemIRIList.add(speciesIRI);
+			
+			} else {
+				
+				continue;
+			}
+		}
+		
+		
+	}
+	
+	return ontoCompChemIRIList;
+	
+}
+
 
 }

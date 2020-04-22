@@ -2,11 +2,15 @@ package com.cmclinnovations.jps.agent.quantum.calculation;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+
+import java.io.FileOutputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -374,6 +379,8 @@ public class EBRAgent extends HttpServlet{
 	
 	private File getInputFile(String jsonInput) throws Exception{
 		
+		Utils.createInputFolder(jsonInput);
+		
 		LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
 		
 		CSVGenerator csvGenerator = new CSVGenerator();
@@ -387,29 +394,81 @@ public class EBRAgent extends HttpServlet{
 		
 		/**
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * 
+		 * Stores in List<Map> pairs of target species IRIs and corresponding ontospecies IRIs.
+		 * 
 		 */	
 		
-		List<Map<String, Object>> species =  JSonRequestParser.getAllSpeciesIRI(jsonInput);
+		List<Map<String, Object>> targetSpeciesList =  JSonRequestParser.getAllTargetSpeciesIRI(jsonInput);
 		
-		logger.info("message:" + species.size());
+		System.out.println("target species size: " + targetSpeciesList.size());
+
+		nistSpeciesIdList = SpeciesBean.getSpeciesIRIList(targetSpeciesList, nistSpeciesIdList, oskg);
 		
-		for (Map<String, Object> speciesMap : species) {
+		List<Map<String, Object>> referenceSpeciesList =  JSonRequestParser.getAllReferenceSpeciesIRI(jsonInput);
 		
-		LinkedList<String> speciesIRIList = new LinkedList<String>();
+		System.out.println("reference species size: " + referenceSpeciesList.size());
+		
+		for(Map<String, Object> map: referenceSpeciesList) {
 			
-		for(Map.Entry<String, Object> entry : speciesMap.entrySet()) {
-		
-		speciesIRIList.add(entry.getValue().toString());
-		
-		}
-		
-        String queryString =oskg.formSpeciesQueryFromJsonInput(speciesIRIList.getFirst(),speciesIRIList.getLast());
-        
-		System.out.println("");
-        System.out.println("queryString: " + queryString);
-        
-		nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories( Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(),Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(),queryString));
-		
+			LinkedList<String> ontoCompChemIRIList = new LinkedList<String>();
+			
+			for(Map.Entry<String, Object> m : map.entrySet()) {
+				
+				if(m.getKey().matches("ontocompchemIRI")) {
+				
+				System.out.println("m.getKey(): " + m.getKey());
+				System.out.println("m.getValue(): " + m.getValue());
+				
+				String speciesIRI =m.getValue().toString();
+					
+				ontoCompChemIRIList.add(speciesIRI);
+				
+				} else {
+					
+					continue;
+				}
+			}
+			
+			LinkedList<String> queryResultList = new LinkedList<String>();
+			
+			for(String s : ontoCompChemIRIList) {
+				
+				System.out.println("onto comp chem species iri : " + s);
+				
+				queryResultList.addAll(oskg.queryOntoCompChemSpeciesRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(), s));
+			}
+			
+			for(String gaussianIRI : queryResultList) {
+				
+				System.out.println("gaussianIRI: " + gaussianIRI);
+				
+				String inputSourceGaussianFileOnLocalHost = gaussianIRI.replaceAll("http://www.theworldavatar.com/", "http://localhost:8080/");
+
+				String gaussianFileName = inputSourceGaussianFileOnLocalHost.substring(inputSourceGaussianFileOnLocalHost.lastIndexOf("/") + 1);
+				
+				/**
+				 * Copies all uploaded Gaussian files to input folder on users profile
+				 */
+//				String inputFolderPath =JSonRequestParser.getGaussianFolderPath(jsonInput);
+				
+//				String[] tokens = inputFolderPath.split("/");
+//				
+//				System.out.println(tokens[0]);
+//				
+//				if(new File(SystemUtils.getUserHome()+"/"+tokens[0]).exists()) {
+//					
+//					System.out.println(SystemUtils.getUserHome()+File.separator+tokens[0]);
+//					
+//					FileUtils.deleteDirectory(new File(SystemUtils.getUserHome()+File.separator+tokens[0]));
+//				}
+//				
+//				new File(SystemUtils.getUserHome()+File.separator+tokens[0]).mkdir();
+//				new File(SystemUtils.getUserHome()+File.separator+inputFolderPath).mkdir();
+				
+				
+				Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getGaussianFolderPath(jsonInput)+"/" +gaussianFileName);
+			}
 		}
 		
 		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getSrcRefPool(jsonInput));
@@ -420,7 +479,7 @@ public class EBRAgent extends HttpServlet{
 		 * 
 		 */
 		
-//    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);    	
+//    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);   
 //    	System.out.println("speciesGeometry:  " + speciesGeometry);    
 //		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
 //		throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
@@ -511,6 +570,37 @@ public class EBRAgent extends HttpServlet{
 		.concat(slurmJobProperty.getInputFileExtension());
 	}
 	
-	
-	
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param inputFolderPath the folder path where Gaussian file will be copied. It is input folder on user's profile.
+	 * @param serverFolderName the folder name on sarver where Gaussian file is uploaded.
+	 * @param serverUrl the server url. For example, localhost or Claudius.
+	 * @throws IOException
+	 * 
+	 */
+	public void copyGaussianFile(List<Map<String, Object>> referenceSpeciesList, String inputFolderPathJson,  String referenceSpeciesFilePathIRI ) throws IOException {
+
+		
+		
+		InputStream is = null;
+        OutputStream os = null;
+        
+        try {
+            is = new FileInputStream(referenceSpeciesFilePathIRI);
+            os = new FileOutputStream(inputFolderPathJson);
+
+            // buffer size 2K
+            byte[] buf = new byte[2048];
+
+            int bytesRead;
+            while ((bytesRead = is.read(buf)) > 0) {
+                os.write(buf, 0, bytesRead);
+            }
+        } finally {
+            is.close();
+            os.close();
+        }
+	}
 }
