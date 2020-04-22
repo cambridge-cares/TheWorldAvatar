@@ -1,6 +1,13 @@
 package uk.ac.cam.cares.ebr.manager;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
@@ -66,6 +73,9 @@ public class RepositoryManager {
 					try {
 
 						Resource context =connection.getValueFactory().createIRI(ontoCompChemNs, owlFile.getName()) ;
+						
+						System.out.println("context: " + context);
+						
 						/**
 						 * @author nk510
 						 *         <p>
@@ -174,4 +184,5 @@ public class RepositoryManager {
 
 		return casRegIdMap;
 	}
+	
 }

@@ -134,16 +134,16 @@ public class OntoCompChemUpload extends HttpServlet{
 			String uuidFolderName = FolderManager.generateUniqueFolderName(file.getName());
 			
 //			Constants.DATA_FOLDER_PATH_LOCAL_HOST
-			File outputXMLFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml"); 
+			File outputXMLFile = new File(properties.getProperty("data.folder.path.claudius") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml"); 
 			
 //			Constants.KB_FOLDER_PATH_LOCAL_HOST
-			File owlFile = new File(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
+			File owlFile = new File(properties.getProperty("kb.folder.path.claudius") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
 			
 //			Constants.DATA_FOLDER_PATH_LOCAL_HOST
-			FolderManager.createFolder(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName);
+			FolderManager.createFolder(properties.getProperty("data.folder.path.claudius") + "/" + uuidFolderName);
 			
 //			Constants.KB_FOLDER_PATH_LOCAL_HOST
-			FolderManager.createFolder(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName);
+			FolderManager.createFolder(properties.getProperty("kb.folder.path.claudius") + "/" + uuidFolderName);
 			
 			/**
 			 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -157,7 +157,7 @@ public class OntoCompChemUpload extends HttpServlet{
 			 * 
 			 * Gaussian file path on ApacheTomcat.
 			 */
-			File outputGaussianFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName + "." + gaussinaFileExtension);
+			File outputGaussianFile = new File(properties.getProperty("data.folder.path.claudius") + "/" + uuidFolderName + "/" + uuidFolderName + "." + gaussinaFileExtension);
 			
 			/**
 			 * 
@@ -168,7 +168,7 @@ public class OntoCompChemUpload extends HttpServlet{
 			 */
 			printerWriter.println("outputGaussianFile.getAbsolutePath(): " +outputGaussianFile.getAbsolutePath());
 			
-			FolderManager.copy(file, outputGaussianFile);
+			FolderManager.copyFileToDestinationFolder(file, outputGaussianFile);
 			
 			try {
 				

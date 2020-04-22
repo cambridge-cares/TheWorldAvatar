@@ -37,6 +37,8 @@ public class HttpRequest {
         
         URLConnection httpURLConnection = httpURL.openConnection();
         
+        System.out.println("httpURLConnection.getURL(): " + httpURLConnection.getURL());
+        
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
                                 		httpURLConnection.getInputStream()));
@@ -51,7 +53,7 @@ public class HttpRequest {
         
         in.close();
         
-        System.out.println("fileContent:\n"+fileContent);
+        System.out.println("fileContent: "+ fileContent + "  fileContent.isEmpty(): " +fileContent.isEmpty());
         
         return fileContent;
     }
@@ -78,8 +80,6 @@ public class HttpRequest {
 		
 		String gaussianFilePath = speciesFolderPath+ "\\" + referenceSpeciesCASRegID + fileExtension;
 		
-		
-		
 //		System.out.println(" file exists: " + gaussianFile.exists() + "  gaussianFile: " + gaussianFile.getAbsolutePath() + "   speciesIRI: " + uniqueSpeciesIRI);
 		
 //		if(gaussianFile.exists()){
@@ -91,11 +91,11 @@ public class HttpRequest {
 			System.out.println("jsonInput: " + jsonInput);
 			
 			// Performs a HTTP request to upload the log file (output) to<br>
-			// the OntoCompChem knowledge graph.   
+			// the OntoCompChem knowledge graph. 
 			
 //			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
 			
-			performHTTPRequest("http://localhost:8080/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
+			performHTTPRequest("http://theworldavatar.com/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
 			
 			return true;
 			
@@ -144,14 +144,19 @@ public class HttpRequest {
 	 */
 	public static void uploadSpecies(LinkedHashMap<String,String> speciesMap, String speciesFolderPath, String fileExtension) throws IOException {
 
+		int count = 1;
 		
 		for(Entry<String, String> map :speciesMap.entrySet()) {
 			
-			if(new File (speciesFolderPath + "//" + map.getKey()+ ".g09").exists()){
+			if(new File (speciesFolderPath + "//" + map.getKey() +fileExtension).exists()){
 				
-			boolean uploadedGaussianFile = isGaussianFileUploaded(map.getKey(),map.getValue(),speciesFolderPath, fileExtension);
+			boolean uploadedGaussianFile = isGaussianFileUploaded(map.getKey().toString(),map.getValue().toString(),speciesFolderPath, fileExtension);
 			
-			logger.info("Log file " + speciesFolderPath + map.getKey()+ ".g09 is upladed: " + uploadedGaussianFile);
+			logger.info(count + " . Log file " + speciesFolderPath + map.getKey()+ ".g09 is upladed: " + uploadedGaussianFile);
+			
+			System.out.println(count + " . Log file " + speciesFolderPath + map.getKey()+ ".g09 is upladed: " + uploadedGaussianFile);
+			
+			count++;
 			
 			}else {
 				continue;

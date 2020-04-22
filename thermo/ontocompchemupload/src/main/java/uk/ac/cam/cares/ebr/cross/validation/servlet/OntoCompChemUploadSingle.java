@@ -45,6 +45,7 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 		
 		public Utility utility = new FileUtility();	
 		
+		JSONObject inputJson =null;
 		/**
 		 * 
 		 * @author NK510 Adds ebr upload properties such as: Folder path where g09, xml and
@@ -61,8 +62,7 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 
 			BasicConfigurator.configure();
 			
-			InputStream input =  getServletContext().getResourceAsStream("/WEB-INF/ontocompchemupload.properties");
-			
+			InputStream input =  getServletContext().getResourceAsStream("/WEB-INF/ontocompchemupload.properties");			
 			
 			Properties properties = new Properties();
 			
@@ -78,11 +78,11 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 			 */
 			PrintWriter printerWriter = response.getWriter();
 			
-			printerWriter.println("ontocompchem.ns:  " + properties.getProperty("ontocompchem.ns")+ "<br>");
+//			printerWriter.println("ontocompchem.ns:  " + properties.getProperty("ontocompchem.ns")+ "<br>");
 			
 			String[] inputs = request.getParameterValues("input");
 			
-			printerWriter.println("json content (input parameter): " + inputs[0] + "<br>");
+			System.out.println("json content (input parameter): " + inputs[0] + "<br>");
 			
 			JSONObject inputJson = new JSONObject(inputs[0]);
 			
@@ -108,15 +108,15 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 			
 				speciesIRI = JsonManager.getSpeciesIRI(inputs[0]);
 					
-					printerWriter.println("unique species IRI: " + speciesIRI + "<br>");
+					System.out.println("unique species IRI: " + speciesIRI + "<br>");
 					
 			}else {
 				
-				printerWriter.println("unique species IRI is empty  : " + speciesIRI + "<br>");
+				System.out.println("unique species IRI is empty  : " + speciesIRI + "<br>");
 				
 			}
 			
-			printerWriter.println("reference species file path: " + referenceSpecieFilePath+ "<br>");
+			System.out.println("reference species file path: " + referenceSpecieFilePath+ "<br>");
 			
 			/**
 			 * 
@@ -130,8 +130,6 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 			
 			for(File file : fileList) {
 				
-				
-				
 				boolean consistency = false;
 				
 				Module rootModule = new Module();
@@ -139,16 +137,17 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 				String uuidFolderName = FolderManager.generateUniqueFolderName(file.getName());
 				
 //				Constants.DATA_FOLDER_PATH_LOCAL_HOST
-				File outputXMLFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml"); 
-				
-//				Constants.KB_FOLDER_PATH_LOCAL_HOST
-				File owlFile = new File(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
-				
-//				Constants.DATA_FOLDER_PATH_LOCAL_HOST
 				FolderManager.createFolder(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName);
 				
 //				Constants.KB_FOLDER_PATH_LOCAL_HOST
 				FolderManager.createFolder(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName);
+				
+//				Constants.DATA_FOLDER_PATH_LOCAL_HOST
+				
+				File outputXMLFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
+				
+//				Constants.KB_FOLDER_PATH_LOCAL_HOST
+				File owlFile = new File(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
 				
 				String gaussinaFileExtension = Files.getFileExtension(file.getAbsolutePath());
 				
@@ -161,9 +160,9 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 				 * Save Gaussian file to target folder path
 				 * 
 				 */
-				printerWriter.println("outputGaussianFile.getAbsolutePath(): " +outputGaussianFile.getAbsolutePath());
+				System.out.println("outputGaussianFile.getAbsolutePath(): " +outputGaussianFile.getAbsolutePath());
 				
-				FolderManager.copy(file, outputGaussianFile);
+				FolderManager.copyFileToDestinationFolder(file, outputGaussianFile);
 				
 				try {
 					
@@ -227,13 +226,13 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 					
 //					Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST.toString()
 //					Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString()
-					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host"),properties.getProperty("ontocompchem.kb.tbox.uri"), properties.getProperty("ontocompchem.ns"));
+					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host").toString(),properties.getProperty("ontocompchem.kb.tbox.uri").toString(), properties.getProperty("ontocompchem.ns").toString());
 					
 					}
 					
 				}catch (Exception e){
 				
-					e.printStackTrace();
+				e.printStackTrace();
 					
 				}
 				
@@ -241,9 +240,8 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 
 			}
 			
-			printerWriter.close();
+		printerWriter.close();
 			
-		
 	}
 
 	@Override

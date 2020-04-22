@@ -232,7 +232,7 @@ public class FolderManager {
 	 * @param destinationFile destination Gaussian file.
 	 * @throws IOException the IO exception.
 	 */
-	public static void copy(File sourceFile, File destinationFile) throws IOException {
+	public static void copyFileToDestinationFolder(File sourceFile, File destinationFile) throws IOException {
 		
         InputStream is = null;
         OutputStream os = null;
