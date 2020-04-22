@@ -15,6 +15,7 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.episode.CalculationUtils;
 import uk.ac.cam.cares.jps.episode.EpisodeAgent;
 import uk.ac.cam.cares.jps.episode.WeatherAgent;
@@ -22,19 +23,28 @@ import uk.ac.cam.cares.jps.episode.WeatherAgent;
 public class EpisodeAgentTest extends TestCase {
 	
 	String cityiri= "http://dbpedia.org/resource/Singapore";
+	String cityiri2= "http://dbpedia.org/resource/Hong_Kong";
 		
 	public void testextract() {
+		//for sg
 		double proclowx = Double.valueOf("11560879.832");
 		double procupx = Double.valueOf("11563323.926");
 		double proclowy = Double.valueOf("140107.739");
 		double procupy = Double.valueOf("143305.896");
+		//for hk
+//		double proclowx = Double.valueOf("12706630.262");
+//		double procupx = Double.valueOf("12708200.45");
+//		double proclowy = Double.valueOf("2545539.172");
+//		double procupy = Double.valueOf("2546850.028");
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
 		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("size="+result.size());
 		System.out.println(result.get(0)[0]);
+		System.out.println("name1= "+result.get(0)[1]);
 		System.out.println(result.get(1)[0]);
+		System.out.println("name2= "+result.get(1)[1]);
 	}
 	
 	public void testDirectCallingWeather() {
@@ -242,25 +252,26 @@ public class EpisodeAgentTest extends TestCase {
 		
 		
 		//for hongkong case
-//		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
-//		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
-//		for(int x=1;x<=readingFromCSV.size();x++) {
-//			String index="0"+x;
-//			if(x<10) {
-//				index="00"+x;
-//			}
-//			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
-//			String name=readingFromCSV.get(x-1)[0];	
-//			List<String>info= new ArrayList<String>();
-//			info.add("http://dbpedia.org/resource/Hong_Kong");
-//			info.add(name);
-//			new WeatherAgent().insertDataRepoContext(con,info,context);
-//		}
+		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
+		readingFromCSV.remove(0);
+		for(int x=1;x<=readingFromCSV.size();x++) {
+			String index="0"+x;
+			if(x<10) {
+				index="00"+x;
+			}
+			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
+			String name=readingFromCSV.get(x-1)[0];	
+			List<String>info= new ArrayList<String>();
+			info.add(cityiri2);
+			info.add(name);
+			new WeatherAgent().insertDataRepoContext(info,context);
+		}
 
 	}
 	
 	
-	public void testAgentCalling() {
+	public void testEpisodeAgentCalling() {
 		//for the ship region is in epsg 3857
 				double xmin=11560879/*.832*/;
 				double ymin=140107/*.739*/;

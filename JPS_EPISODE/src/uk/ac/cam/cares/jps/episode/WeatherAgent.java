@@ -153,10 +153,14 @@ public class WeatherAgent extends JPSHttpServlet {
 				String yval=listmap.get(r)[3];
 				String xval=listmap.get(r)[2];
 				double dist=CalculationUtils.distanceWGS84(yfinal,xfinal, Double.valueOf(yval),Double.valueOf(xval),"K");
+				System.out.println("stn = "+listmap.get(r)[1]);
+				System.out.println("dist = "+dist);
 				if(Math.abs(dist)>distmax) {
 					secondiri=listmap.get(r)[0];
 					distmax=Math.abs(dist);
 					secondstnname=listmap.get(r)[1];
+					System.out.println("stnchosen now = "+secondstnname);
+					System.out.println("distmax now = "+distmax);
 				}
 				
 			}
@@ -361,16 +365,19 @@ public class WeatherAgent extends JPSHttpServlet {
         	jo8=extractedSingleDataFromAccuweather("cloud", "singapore");//in percent
         	jo9=extractedSingleDataFromAccuweather("pressure", "singapore");//in hPa exactly the same as millibar
     	}
-//    	else if(cityIRI.toLowerCase().contains("kong")) {
-//
-//            	jo1=extractedSingleDataFromAccuweather("precipitation", "hongkong");//in mm
-//            	
-//            	
-//            	
-//            	
-//    			jo8=extractedSingleDataFromAccuweather("cloud", "hongkong");//in percent
-//            	jo9=extractedSingleDataFromAccuweather("pressure", "singapore");//in hPa exactly the same as millibar
-//        	}
+    	else if(cityIRI.toLowerCase().contains("kong")) {
+
+            	jo1=extractedSingleDataFromAccuweather("precipitation", "hongkong");//in mm
+            	jo2=extractedSingleDataFromHKU("temperature",contextname);
+            	jo3=extractedSingleDataFromHKU("relativehumidity",contextname);
+            	jo3=extractedSingleDataFromHKU("relativehumidity",contextname);
+            	jo4=extractedSingleDataFromHKU("windspeed",contextname);
+            	jo5=extractedSingleDataFromHKU("winddirection",contextname);
+            	jo6=extractedSingleDataFromHKU("windspeed",context2name);
+            	jo7=extractedSingleDataFromHKU("winddirection",context2name);
+    			jo8=extractedSingleDataFromAccuweather("cloud", "hongkong");//in percent
+            	jo9=extractedSingleDataFromHKU("pressure", contextname);//in hPa exactly the same as millibar
+        	}
     	
     	JSONObject finaljo= new JSONObject();
     	finaljo.put("precipitation", jo1);
@@ -396,12 +403,21 @@ public class WeatherAgent extends JPSHttpServlet {
 		int index = -1;
 		for (int r = 0; r < size; r++) {
 			String name = stn.getJSONObject(r).get("name").toString();
-			if (name.toLowerCase().contains(stnname)) {
+			if (name.contains(stnname)) {
 				index = r;
 			}
 		}
-
-		// index 7 for the clementi road
+		//safeguard if the stn is lost from api
+		if (index==-1) {
+			System.out.println("it's going here");
+			for (int r = 0; r < size; r++) {
+				String name = stn.getJSONObject(r).get("name").toString();
+				System.out.println(name);
+				if (name.contains("Clementi Road")) {
+					index = r;
+				}
+			}
+		}
 		String lat1 = joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index)
 				.getJSONObject("location").get("latitude").toString();
 		String long1 = joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index)
@@ -417,30 +433,28 @@ public class WeatherAgent extends JPSHttpServlet {
 		return jo1;
 	}
 	
-	private JSONObject extractedSingleDataFromHKU(String path, String stnname) {//later need to be updated
-		String precipitation = getWeatherDataFromGovAPI(path, null);
-		JSONObject joPr = new JSONObject(precipitation);
+	private JSONObject extractedSingleDataFromHKU(String propertyname, String stnname) {//later need to be updated
+		JSONObject jo = new JSONObject();
+		String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/GetHKUWeatherLatestData",jo.toString());
+		JSONObject joPr = new JSONObject(result);
 
 		// input stn name:
 		// output sequence index
-		JSONArray stn = joPr.getJSONObject("metadata").getJSONArray("stations");
-		int size = stn.length();
+		JSONArray stnCollection = joPr.getJSONArray("HKWeather");
+		int size = stnCollection.length();
 		int index = -1;
 		for (int r = 0; r < size; r++) {
-			String name = stn.getJSONObject(r).get("name").toString();
-			if (name.toLowerCase().contains(stnname)) {
+			String name = stnCollection.getJSONObject(r).get("stnname").toString();
+			if (name.contains(stnname)) {
 				index = r;
 			}
 		}
 
 		// index 7 for the clementi road
-		String lat1 = joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index)
-				.getJSONObject("location").get("latitude").toString();
-		String long1 = joPr.getJSONObject("metadata").getJSONArray("stations").getJSONObject(index)
-				.getJSONObject("location").get("longitude").toString();
-		String timestamp = joPr.getJSONArray("items").getJSONObject(0).get("timestamp").toString();
-		String propertyValue = joPr.getJSONArray("items").getJSONObject(0).getJSONArray("readings").getJSONObject(index)
-				.get("value").toString(); // in mm
+		String lat1 = stnCollection.getJSONObject(index).get("y").toString();
+		String long1 = stnCollection.getJSONObject(index).get("x").toString();
+		String timestamp = stnCollection.getJSONObject(index).get("timestamp").toString();
+		String propertyValue = stnCollection.getJSONObject(index).get(propertyname).toString(); 
 		JSONObject jo1 = new JSONObject();
 		jo1.put("long", long1);
 		jo1.put("lat", lat1);
@@ -586,9 +600,6 @@ public class WeatherAgent extends JPSHttpServlet {
 			}
 			
 		}
-//		String[] filenames= {"SGCloudCoverSensor-001.owl","SGTemperatureSensor-001.owl","SGWindSpeedSensor-001.owl","SGSolarIrradiationSensor-001.owl","SGPrecipitationSensor-001.owl","SGPressureSensor-001.owl","SGRelativeHumiditySensor-001.owl","SGWindDirectionSensor-001.owl"};
-		
-//		String[] filenames2= {"SGWindSpeedSensor-002.owl","SGWindDirectionSensor-002.owl"};
 
 	}
 	
