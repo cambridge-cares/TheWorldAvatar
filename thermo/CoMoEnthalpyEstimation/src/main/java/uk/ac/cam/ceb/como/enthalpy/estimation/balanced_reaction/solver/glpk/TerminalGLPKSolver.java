@@ -73,7 +73,7 @@ public class TerminalGLPKSolver extends LPSolver {
          * Settings to run the code (LP solver) on local Windows (PC) machine. The GLPK solver should be copied (installed) in Java project ComoEnthalpyEstimationPaper.
          *  
          */
-//        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
+        map.put("glpsol", System.getProperty("user.dir") + "/glpk/w32/glpsol"); 
 
         /**
          * 
@@ -88,7 +88,7 @@ public class TerminalGLPKSolver extends LPSolver {
         System.out.println("SystemUtils.getUserHome(): "+ SystemUtils.getUserHome());
         
         //System.getProperty("user.dir")  -in previous verion of the code this was used. Now we use SystemUtils.getUserHome()
-        map.put("glpsol",  SystemUtils.getUserHome() + "/glpk-4.65/examples/glpsol");
+//        map.put("glpsol",  SystemUtils.getUserHome() + "/glpk-4.65/examples/glpsol");
         
         //"C:\Program Files\glpk-4.53\w32"
         //map.put("glpsol", "C:\\Program Files\\glpk-4.53\\w32\\glpsol");
