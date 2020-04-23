@@ -217,7 +217,7 @@ public class FolderManager {
 //			System.out.println(map.getKey() + " " + map.getValue());
 		}
 		
-		System.out.println("ontoCompChemSpecieMap.size(): " +ontoCompChemSpecieMap.size());
+		System.out.println("number of species in csv file: " +ontoCompChemSpecieMap.size());
 		
 		reader.close();
 		
@@ -253,5 +253,8 @@ public class FolderManager {
             os.close();
         }
     }
+	
+	
+	
 	
 }

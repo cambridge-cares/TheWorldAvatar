@@ -1,16 +1,21 @@
 package uk.ac.cam.cares.ebr.upload.species;
 
+
 import java.io.BufferedReader;
 import java.io.File;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
+
+import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.LinkedHashMap;
 
+import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 
 import org.json.JSONObject;
@@ -30,33 +35,73 @@ public class HttpRequest {
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
-	public static String performHTTPRequest(String query) throws MalformedURLException, IOException {
+	public static String performHTTPRequest(String query) throws MalformedURLException, IOException {		
 		
-		
-        URL httpURL = new URL(query);
+       URL httpURL = new URL(query);
         
-        URLConnection httpURLConnection = httpURL.openConnection();
+       System.out.println("query inside perfromHTTPRequest " + query);
         
-        System.out.println("httpURLConnection.getURL(): " + httpURLConnection.getURL());
+      URLConnection httpURLConnection = httpURL.openConnection();
+      
+      System.out.println("httpURLConnection.getURL(): " + httpURLConnection.getURL());
+      
+      BufferedReader in = new BufferedReader(
+                                new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
+      
+      String line = in.readLine();
+      
+      System.out.println("line: " + line);
+      
+      String inputLine;
         
-        BufferedReader in = new BufferedReader(
-                                new InputStreamReader(
-                                		httpURLConnection.getInputStream()));
-        String inputLine;
+      String fileContent = "";
         
-        String fileContent = "";
+      while ((inputLine = in.readLine()) != null){       	
+       
+      fileContent = fileContent.concat(inputLine);
+       
+      }
         
-        while ((inputLine = in.readLine()) != null){
-        	
-            fileContent = fileContent.concat(inputLine);
-        }
+      in.close();
         
-        in.close();
+      System.out.println("fileContent: "+ fileContent + "  fileContent.isEmpty(): " +fileContent.isEmpty());
         
-        System.out.println("fileContent: "+ fileContent + "  fileContent.isEmpty(): " +fileContent.isEmpty());
-        
-        return fileContent;
+      return fileContent;
     }
+	
+	/**
+	 * The method is borrowed from the web. this method will be modified or deleted.
+	 * 
+	 * @param query
+	 * @return
+	 * @throws IOException
+	 */
+	public static String sendReceive(String query) throws IOException {
+		
+		URL url = new URL(query);
+		URLConnection conn = url.openConnection();		
+		      
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		
+		OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream());
+		out.write("send file");
+		out.flush();
+		
+		BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+		String receive = "";
+		do {
+		    String line = in.readLine();
+		    if (line == null)
+		        break;
+		    receive += line;
+		} while (true);
+		out.close();
+		in.close();
+		
+		return receive;
+		}
+	
 	
 	/**
 	 * @author msff2@cam.ac.uk
@@ -78,7 +123,9 @@ public class HttpRequest {
 		
 //		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
 		
-		String gaussianFilePath = speciesFolderPath+ "\\" + referenceSpeciesCASRegID + fileExtension;
+		String gaussianFilePath = speciesFolderPath+ File.separator + referenceSpeciesCASRegID + fileExtension;
+		
+		System.out.println("Gaussian file path inside isGaussianFileUploaded: " + gaussianFilePath);
 		
 //		System.out.println(" file exists: " + gaussianFile.exists() + "  gaussianFile: " + gaussianFile.getAbsolutePath() + "   speciesIRI: " + uniqueSpeciesIRI);
 		
@@ -95,7 +142,9 @@ public class HttpRequest {
 			
 //			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
 			
-			performHTTPRequest("http://theworldavatar.com/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
+			performHTTPRequest("http://www.theworldavatar.com/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
+			
+//			sendReceive("http://theworldavatar.com/ontocompchemupload/convert/single?input=".concat(encodeIntoURLFormat(jsonInput)));
 			
 			return true;
 			
@@ -148,7 +197,11 @@ public class HttpRequest {
 		
 		for(Entry<String, String> map :speciesMap.entrySet()) {
 			
-			if(new File (speciesFolderPath + "//" + map.getKey() +fileExtension).exists()){
+			
+			
+			if(new File (speciesFolderPath + File.separator + map.getKey() +fileExtension).exists()){
+				
+			System.out.println("file path: " + speciesFolderPath + File.separator + map.getKey() +fileExtension);
 				
 			boolean uploadedGaussianFile = isGaussianFileUploaded(map.getKey().toString(),map.getValue().toString(),speciesFolderPath, fileExtension);
 			
@@ -163,4 +216,6 @@ public class HttpRequest {
 			}
 		}		
 	}
+	
+	
 }

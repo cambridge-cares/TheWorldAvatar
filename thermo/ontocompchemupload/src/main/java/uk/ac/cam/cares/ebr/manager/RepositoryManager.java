@@ -13,7 +13,9 @@ import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.TupleQuery;
 import org.eclipse.rdf4j.query.TupleQueryResult;
@@ -184,5 +186,43 @@ public class RepositoryManager {
 
 		return casRegIdMap;
 	}
+	
+	
+	/**
+	* Loads an ontology to the Ontokin KB repository. It also creates</br>
+	* a context, which is a necessary feature to delete the mechanism</br>
+	* if user wants.
+	*
+	* @param serverURL
+	* @param owlFileName
+	* @param owlFilePath
+	* @param baseURI
+	* @param repositoryID
+	* @throws OntoException
+	*/
+	public static void loadOntology(String serverURL, String owlFileName, String owlFilePath, String repositoryID) throws Exception{
+//	http://www.theworldavatar.com/kb/ontokin/
+		
+		try {
+	Repository repo = new HTTPRepository(serverURL, repositoryID);
+	repo.init();;
+	RepositoryConnection con = repo.getConnection();
+	ValueFactory f = repo.getValueFactory();
+	org.eclipse.rdf4j.model.IRI context = f.createIRI("http://www.theworldavatar.com/kb/ontocompchem/".concat(owlFileName));
+	try {
+	URL url = new URL("file:/".concat(owlFilePath).concat(owlFileName));
+	con.add(url, url.toString(), RDFFormat.RDFXML, context);
+	} finally {
+	con.close();
+	}
+	} catch (RDF4JException e) {
+	System.out.println("RDF4JException occurred.");
+	e.printStackTrace();
+	} catch (IOException e) {
+	System.out.println("IOException occurred.");
+	e.printStackTrace();
+	}
+	}
+	
 	
 }

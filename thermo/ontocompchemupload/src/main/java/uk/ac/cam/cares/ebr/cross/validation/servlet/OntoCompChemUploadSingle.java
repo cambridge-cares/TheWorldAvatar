@@ -90,6 +90,7 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 			
 			File gaussianFile = new File(referenceSpecieFilePath);
 			
+			
 			if(!gaussianFile.exists()) {
 				
 				throw new IOException("Gaussian file does not exist!");
@@ -142,17 +143,19 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 //				Constants.KB_FOLDER_PATH_LOCAL_HOST
 				FolderManager.createFolder(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName);
 				
-//				Constants.DATA_FOLDER_PATH_LOCAL_HOST
-				
-				File outputXMLFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
-				
 //				Constants.KB_FOLDER_PATH_LOCAL_HOST
 				File owlFile = new File(properties.getProperty("kb.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl");
+				
+				
+//				Constants.DATA_FOLDER_PATH_LOCAL_HOST				
+				File outputXMLFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
 				
 				String gaussinaFileExtension = Files.getFileExtension(file.getAbsolutePath());
 				
 				File outputGaussianFile = new File(properties.getProperty("data.folder.path.local.host") + "/" + uuidFolderName + "/" + uuidFolderName + "." + gaussinaFileExtension);
 				
+				FolderManager.saveFileInFolder(outputGaussianFile, file.getAbsolutePath());
+
 				/**
 				 * 
 				 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -162,7 +165,8 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 				 */
 				System.out.println("outputGaussianFile.getAbsolutePath(): " +outputGaussianFile.getAbsolutePath());
 				
-				FolderManager.copyFileToDestinationFolder(file, outputGaussianFile);
+				FolderManager.copyFileToDestinationFolder(file, outputGaussianFile);			
+
 				
 				try {
 					
@@ -226,7 +230,10 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 					
 //					Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST.toString()
 //					Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString()
-					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host").toString(),properties.getProperty("ontocompchem.kb.tbox.uri").toString(), properties.getProperty("ontocompchem.ns").toString());
+						
+//					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host").toString(),properties.getProperty("ontocompchem.kb.tbox.uri").toString(), properties.getProperty("ontocompchem.ns").toString());
+						
+					RepositoryManager.loadOntology("http://localhost/rdf4j-server/", uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl", owlFile.getAbsolutePath(), "ontocompchem");
 					
 					}
 					
