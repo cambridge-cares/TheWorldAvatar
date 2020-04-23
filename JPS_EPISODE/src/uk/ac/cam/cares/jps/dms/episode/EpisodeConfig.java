@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.episode;
+package uk.ac.cam.cares.jps.dms.episode;
 
 public class EpisodeConfig {
 	private double dx_rec=100; //TODO hardcoded? decide the dx for the receptor

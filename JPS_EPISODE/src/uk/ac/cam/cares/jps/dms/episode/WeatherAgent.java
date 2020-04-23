@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.episode;
+package uk.ac.cam.cares.jps.dms.episode;
 
 import java.io.File;
 import java.net.URI;
@@ -60,13 +60,13 @@ public class WeatherAgent extends JPSHttpServlet {
 		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
 		    	sourceCRSName = CRSTransformer.EPSG_4326; 
 		    }
-			String lowx = region.getJSONObject("regioninput").getJSONObject("lowercorner")
+			String lowx = region.getJSONObject("lowercorner")
 					.get("lowerx").toString();
-			String lowy = region.getJSONObject("regioninput").getJSONObject("lowercorner")
+			String lowy = region.getJSONObject("lowercorner")
 					.get("lowery").toString();
-			String upx = region.getJSONObject("regioninput").getJSONObject("uppercorner")
+			String upx = region.getJSONObject("uppercorner")
 					.get("upperx").toString();
-			String upy = region.getJSONObject("regioninput").getJSONObject("uppercorner")
+			String upy = region.getJSONObject("uppercorner")
 					.get("uppery").toString();
 			double proclowx = Double.valueOf(lowx);
 			double procupx = Double.valueOf(upx);
@@ -76,7 +76,7 @@ public class WeatherAgent extends JPSHttpServlet {
 			double[] centerPointConverted = CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,
 					center);
 				
-
+		
 		List<String[]> listmap = extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 		 String context=listmap.get(0)[0]; //main stn
 		 String context2=listmap.get(1)[0]; // the furthest station	 	
@@ -153,14 +153,11 @@ public class WeatherAgent extends JPSHttpServlet {
 				String yval=listmap.get(r)[3];
 				String xval=listmap.get(r)[2];
 				double dist=CalculationUtils.distanceWGS84(yfinal,xfinal, Double.valueOf(yval),Double.valueOf(xval),"K");
-				System.out.println("stn = "+listmap.get(r)[1]);
-				System.out.println("dist = "+dist);
+
 				if(Math.abs(dist)>distmax) {
 					secondiri=listmap.get(r)[0];
 					distmax=Math.abs(dist);
 					secondstnname=listmap.get(r)[1];
-					System.out.println("stnchosen now = "+secondstnname);
-					System.out.println("distmax now = "+distmax);
 				}
 				
 			}
@@ -311,7 +308,7 @@ public class WeatherAgent extends JPSHttpServlet {
     	JSONObject joPr= new JSONObject(result);
     	String precipitation="0.0"; //in mm
     	if (joPr.has("rain")) {
-    		precipitation = joPr.getJSONObject("rain").optString("3h",joPr.getJSONObject("rain").getString("1h"));
+    		precipitation = joPr.getJSONObject("rain").optString("3h",joPr.getJSONObject("rain").get("1h").toString());
 		}
     	
     	String pressure=joPr.getJSONObject("main").get("pressure").toString(); //in hPa
@@ -440,7 +437,7 @@ public class WeatherAgent extends JPSHttpServlet {
 
 		// input stn name:
 		// output sequence index
-		JSONArray stnCollection = joPr.getJSONArray("HKWeather");
+		JSONArray stnCollection = joPr.getJSONArray("HKweather");
 		int size = stnCollection.length();
 		int index = -1;
 		for (int r = 0; r < size; r++) {
@@ -480,13 +477,14 @@ public class WeatherAgent extends JPSHttpServlet {
 					+ "WITH <" + context + ">"
 					+ "DELETE { "
 					+ "<" + oldcontent.get(x)[0]+ "> j2:numericalValue \""+oldcontent.get(x)[1]+"\"^^xsd:double ."
-					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp \""+ oldcontent.get(x)[3]+"\" ."
+					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp ?olddata ."
 					+ "} "
 					+ "INSERT {"
 					+ "<" + oldcontent.get(x)[0]+ "> j2:numericalValue \""+valuemapold.get(x)[1]+"\"^^xsd:double ."
 					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp \""+valuemapold.get(x)[3]+"\" ." 
 					+ "} "
-					+ "WHERE { " 
+					+ "WHERE { "
+					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp ?olddata ."
 					+ "}";
 			
 			KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate);
@@ -642,8 +640,8 @@ public class WeatherAgent extends JPSHttpServlet {
 		RepositoryConnection con = repo.getConnection();
 //		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
 //		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
-		String location="singapore";
-//		String location="hong kong";
+//		String location="singapore";
+		String location="hong kong";
 		WeatherAgent a=new WeatherAgent();
 		a.resetRepoTrial(con,location); //currently the context is not used
 		
