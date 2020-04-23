@@ -33,6 +33,7 @@ import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.SolverHel
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.MPSFormat;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.glpk.TerminalGLPKSolver;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISDReactionType;
+import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.solver.reactiontype.ISGReactionType;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.species.Species;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.MultiRunCalculator;
 import uk.ac.cam.ceb.como.enthalpy.estimation.balanced_reaction.wrapper.singlecore.PoolModificationCalculator;
@@ -71,9 +72,9 @@ public class TiCl4CalculationISD {
         String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\plain-ref_scaled_kJperMols_v8-0p05.csv"; //171//ref-enthalpy_scaled_kJperMol.csv
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 1 species in first raw. Other species from the list belong to reference species.
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-O2-3let.csv";
-        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-10-species.csv"; //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
+        String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-1-species.csv"; //Target 10 species from 1st to 10th raw. Other species from the list belong to reference species.
 //      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\calc-enthalpy_scaled_kJperMol-test-no-ref-data.csv"; // There are no reference species that are included in the list of target species. //171//calc-enthalpy_scaled_kJperMol.csv
-        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isd\\";
+        String destRList = "C:\\Users\\NK\\Documents\\philipp\\180-pb556\\TiCl4\\isg-1-reaction\\";
 
 //      String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; 
 //      String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
@@ -203,7 +204,7 @@ public class TiCl4CalculationISD {
         
         int[] ctrRes = new int[]{1}; // 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18, - number of reactions //8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40
         
-        int[] ctrRadicals = new int[]{100}; // 0, 1, 2, 3, 4, 5
+        int[] ctrRadicals = new int[]{5}; // 0, 1, 2, 3, 4, 5
 
         for (int z = 0; z < ctrRadicals.length; z++) {
         	
@@ -277,7 +278,7 @@ public class TiCl4CalculationISD {
                         
                         ExecutorService executor = Executors.newSingleThreadExecutor();
                         
-                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISDReactionType()));
+                        PoolModificationCalculator poolModCalc = new PoolModificationCalculator(ctrRes[k], solver, new MPSFormat(false, new ISGReactionType(true)));
                         
                         poolModCalc.setMaximumSearchDepth(50);
                         

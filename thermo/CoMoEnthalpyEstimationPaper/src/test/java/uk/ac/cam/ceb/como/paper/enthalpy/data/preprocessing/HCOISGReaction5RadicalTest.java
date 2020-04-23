@@ -13,11 +13,13 @@ import uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.LeaveOneOutCrossValida
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 
 public class HCOISGReaction5RadicalTest {
+	
 	String folderName;
 	String validTestResults;
 	
 	@Before
 	public void generateTestResults() throws Exception{
+		
 		validTestResults = Folder.VALID_TEST_RESULT_ISG_HCO_115.getFolderName();
 		folderName = new FolderUtils().generateUniqueFolderName(Folder.ISG_HCO_115.getFolderName());
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();

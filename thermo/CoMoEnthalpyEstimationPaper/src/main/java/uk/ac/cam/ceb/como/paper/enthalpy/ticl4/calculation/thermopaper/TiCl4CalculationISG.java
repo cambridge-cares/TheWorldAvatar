@@ -80,8 +80,8 @@ public class TiCl4CalculationISG {
         
       String srcCompoundsRef = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\esc\\g09\\"; 
       String srcRefPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\ref-enthalpy_scaled_kJperMol.csv";  //171//ref-enthalpy_scaled_kJperMol.csv
-      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
-      String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_hd\\";
+      String srcSoiPool = "C:\\Users\\NK\\Documents\\philipp\\171-pb556\\calc-enthalpy_scaled_kJperMol-1-species.csv"; //171//calc-enthalpy_scaled_kJperMol.csv
+      String destRList = "C:\\Users\\NK\\Documents\\philipp\\\\171-pb556\\hco_isg\\";
         
 //        String srcCompoundsRef = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\west-recalc\\all-g09\\";
 //        String srcRefPool = "W:\\projects\\TiCl4_thermo\\thermo-calculations\\enthalpy\\reference\\ref_scaled_kJperMols_v8.csv";

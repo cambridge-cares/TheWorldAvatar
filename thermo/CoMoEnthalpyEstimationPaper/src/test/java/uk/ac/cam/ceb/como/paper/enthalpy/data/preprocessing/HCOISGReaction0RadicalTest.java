@@ -14,6 +14,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.LeaveOneOutCrossValida
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.FolderUtils;
 
 public class HCOISGReaction0RadicalTest {
+	
 	String folderName;
 	String validTestResults;
 	
