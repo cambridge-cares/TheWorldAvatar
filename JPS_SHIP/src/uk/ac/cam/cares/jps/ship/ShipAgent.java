@@ -242,7 +242,7 @@ public class ShipAgent extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         JSONObject joforrec = AgentCaller.readJsonParameter(request);
-        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST);
+        String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)+":"+KeyValueManager.get(IKeys.PORT);
         String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
         String iri = null;
         String mmsi = null;
