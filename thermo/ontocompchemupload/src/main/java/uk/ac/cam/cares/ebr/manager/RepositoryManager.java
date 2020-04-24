@@ -189,6 +189,8 @@ public class RepositoryManager {
 	
 	
 	/**
+	 * @author msff2@cam.ac.uk
+	 * 
 	* Loads an ontology to the Ontokin KB repository. It also creates</br>
 	* a context, which is a necessary feature to delete the mechanism</br>
 	* if user wants.

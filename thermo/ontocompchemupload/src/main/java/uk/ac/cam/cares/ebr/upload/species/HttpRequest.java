@@ -6,8 +6,9 @@ import java.io.File;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
 import java.net.MalformedURLException;
@@ -42,7 +43,15 @@ public class HttpRequest {
        System.out.println("query inside perfromHTTPRequest " + query);
         
       URLConnection httpURLConnection = httpURL.openConnection();
-      
+      /**
+       * -------------
+       */
+      httpURLConnection.setUseCaches(false);
+      httpURLConnection.setDoOutput(true); // indicates POST method
+      httpURLConnection.setDoInput(true);
+      /**
+       * --------------------
+       */
       System.out.println("httpURLConnection.getURL(): " + httpURLConnection.getURL());
       
       BufferedReader in = new BufferedReader(
@@ -63,6 +72,18 @@ public class HttpRequest {
       }
         
       in.close();
+      
+      /**
+       * Nenad
+       */
+      OutputStream outputStream = httpURLConnection.getOutputStream();
+      PrintWriter writer = new PrintWriter(new OutputStreamWriter(outputStream, fileContent),
+              true);
+      
+      writer.close();
+      /**
+       * -------------
+       */
         
       System.out.println("fileContent: "+ fileContent + "  fileContent.isEmpty(): " +fileContent.isEmpty());
         
@@ -129,7 +150,7 @@ public class HttpRequest {
 		
 //		System.out.println(" file exists: " + gaussianFile.exists() + "  gaussianFile: " + gaussianFile.getAbsolutePath() + "   speciesIRI: " + uniqueSpeciesIRI);
 		
-//		if(gaussianFile.exists()){
+//		    if(gaussianFile.exists()){
 			
 //			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
 			
@@ -160,6 +181,7 @@ public class HttpRequest {
 	 * @param jsonInput
 	 * @return
 	 * @throws UnsupportedEncodingException
+	 * 
 	 */
 	private static String encodeIntoURLFormat(String jsonInput) throws UnsupportedEncodingException{
 		return URLEncoder.encode(jsonInput, "UTF-8");

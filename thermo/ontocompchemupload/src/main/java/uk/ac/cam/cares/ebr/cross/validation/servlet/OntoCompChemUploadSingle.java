@@ -231,9 +231,9 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 //					Constants.ONTOCOMPCHEM_KB_LOCAL_RDF4J_SERVER_URL_LOCAL_HOST.toString()
 //					Constants.ONTOCOMPCHEM_KB_TBOX_URI.toString()
 						
-//					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host").toString(),properties.getProperty("ontocompchem.kb.tbox.uri").toString(), properties.getProperty("ontocompchem.ns").toString());
+					RepositoryManager.uploadOwlFileOnRDF4JRepository(owlFile,properties.getProperty("ontocompchem.kb.local.rdf4j.server.url.local.host").toString(),properties.getProperty("ontocompchem.kb.tbox.uri").toString(), properties.getProperty("ontocompchem.ns").toString());
 						
-					RepositoryManager.loadOntology("http://localhost/rdf4j-server/", uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl", owlFile.getAbsolutePath(), "ontocompchem");
+//					RepositoryManager.loadOntology("http://localhost/rdf4j-server/", uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl", owlFile.getAbsolutePath(), "ontocompchem");
 					
 					}
 					
@@ -243,11 +243,11 @@ public class OntoCompChemUploadSingle extends HttpServlet{
 					
 				}
 				
-				printerWriter.println("[ xml file path:" + outputXMLFile.getCanonicalPath()+ "] [owl file path: " + owlFile.getCanonicalPath() + " ]" + " [consistency:   " + consistency +" ]" + "<br>");
+			printerWriter.println("[ xml file path:" + outputXMLFile.getCanonicalPath()+ "] [owl file path: " + owlFile.getCanonicalPath() + " ]" + " [consistency:   " + consistency +" ]" + "<br>");
 
 			}
 			
-		printerWriter.close();
+printerWriter.close();
 			
 	}
 
