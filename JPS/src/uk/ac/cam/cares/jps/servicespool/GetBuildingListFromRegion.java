@@ -13,19 +13,56 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
-import uk.ac.cam.cares.jps.building.CRSTransformer;
 import uk.ac.cam.cares.jps.building.SimpleBuildingData;
 
 
+
 @WebServlet(urlPatterns ={"/GetBuildingListFromRegion","/BuildingsData"})
+
 public class GetBuildingListFromRegion extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
-	private Logger logger = LoggerFactory.getLogger(GetBuildingListFromRegion.class);   
-   
+	//private Logger logger = LoggerFactory.getLogger(GetBuildingListFromRegion.class);   
+	
+	@Override
+    protected void setLogger() {
+        logger = LoggerFactory.getLogger(GetBuildingListFromRegion.class);
+    }
+	Logger logger = LoggerFactory.getLogger(GetBuildingListFromRegion.class);
     public GetBuildingListFromRegion() {
         super();
     }
+    
+	 @Override
+	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	    	String path = request.getServletPath();
+	    	 System.out.println("path= " + path);
+	    	JSONObject result = new JSONObject();
+	    	String city = requestParams.get("city").toString();
+	    	JSONObject region = requestParams.getJSONObject("region");
+			double upperx = Double.parseDouble(String.valueOf(region.getJSONObject("uppercorner").get("upperx")));
+			double uppery = Double.parseDouble(String.valueOf(region.getJSONObject("uppercorner").get("uppery")));
+			double lowerx = Double.parseDouble(String.valueOf(region.getJSONObject("lowercorner").get("lowerx")));
+			double lowery = Double.parseDouble(String.valueOf(region.getJSONObject("lowercorner").get("lowery")));
+			double[] sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};	
+			double plantx=sourceXY[0];
+			double planty=sourceXY[1];
+			BuildingQueryPerformer performer = new BuildingQueryPerformer();
+			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(city.trim(), plantx, planty, 25, 
+					Double.valueOf(lowerx), Double.valueOf(lowery), Double.valueOf(upperx),  Double.valueOf(uppery));
+		if ("/GetBuildingListFromRegion".equals(path)) {
+			result.put("building", buildingIRIs);
+
+		} else if ("/BuildingsData".equals(path)) {
+			SimpleBuildingData resultdata = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
+			String argument = new Gson().toJson(resultdata);
+			result=new JSONObject(argument);
+		}
+		 return result;
+		 
+		 
+	 }
 
 //	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 // 
@@ -77,35 +114,7 @@ public class GetBuildingListFromRegion extends JPSHttpServlet {
 //		doGet(request, response);
 //	}
 	
-	 @Override
-	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-	    	String path = request.getServletPath();
-	    	JSONObject result = new JSONObject();
-	    	String city = requestParams.get("city").toString();
-	    	JSONObject region = requestParams.getJSONObject("region");
-			double upperx = Double.parseDouble(String.valueOf(region.getJSONObject("uppercorner").get("upperx")));
-			double uppery = Double.parseDouble(String.valueOf(region.getJSONObject("uppercorner").get("uppery")));
-			double lowerx = Double.parseDouble(String.valueOf(region.getJSONObject("lowercorner").get("lowerx")));
-			double lowery = Double.parseDouble(String.valueOf(region.getJSONObject("lowercorner").get("lowery")));
-			double[] sourceXY = new double[] {(lowerx + upperx)/2, (lowery + uppery)/2};	
-			double plantx=sourceXY[0];
-			double planty=sourceXY[1];
-			BuildingQueryPerformer performer = new BuildingQueryPerformer();
-			List<String> buildingIRIs = performer.performQueryClosestBuildingsFromRegion(city.trim(), plantx, planty, 25, 
-					Double.valueOf(lowerx), Double.valueOf(lowery), Double.valueOf(upperx),  Double.valueOf(uppery));
-			SimpleBuildingData resultdata = new BuildingQueryPerformer().performQuerySimpleBuildingData(city, buildingIRIs);
-		if ("/GetBuildingListFromRegion".equals(path)) {
 
-			result.put("building", buildingIRIs);
-
-		} else if ("/BuildingsData".equals(path)) {
-			String argument = new Gson().toJson(resultdata);
-			result=new JSONObject(argument);
-		}
-		 return result;
-		 
-		 
-	 }
 	
 	public double[] getCenterLatLon(double xmin, double xmax, double ymin, double ymax) {
 		double xcenter = (xmax + xmin)/2;

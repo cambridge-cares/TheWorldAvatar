@@ -4,10 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import com.google.gson.Gson;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
 import uk.ac.cam.cares.jps.building.CRSTransformer;
@@ -100,5 +103,30 @@ public class TestBuildingQueryAgent extends TestCase {
 	public long GetLastModifiedTime(String targetFolder, String fileName) {
         File f = new File(targetFolder + "/" + fileName);
         return f.lastModified();
+	}
+	
+	public void testGetBuildingsData() {
+		double xmin=11560879/*.832*/;
+		double ymin=140107/*.739*/;
+		double xmax=11563323/*.926*/;
+		double ymax=143305/*.896*/;
+		String city= "http://dbpedia.org/resource/Singapore";  
+		   JSONObject scope = new JSONObject();
+		   JSONObject low = new JSONObject();
+		   JSONObject up = new JSONObject();
+		   up.put("upperx", xmax);
+		   up.put("uppery", ymax);
+		   low.put("lowerx", xmin);
+		   low.put("lowery", ymin);
+		   scope.put("lowercorner", low);
+		   scope.put("uppercorner", up);
+
+    	JSONObject req= new JSONObject();
+    	req.put("region",scope);
+    	req.put("city",city);
+		
+		//String resultdata=execute("/JPS/BuildingsData", req.toString());
+		String resultdata = AgentCaller.executeGetWithJsonParameter("/JPS/BuildingsData",req.toString());
+		System.out.println(resultdata);
 	}
 }

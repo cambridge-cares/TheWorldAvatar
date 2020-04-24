@@ -21,10 +21,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MiscUtil;
-//import uk.ac.cam.cares.jps.building.BuildingQueryPerformer;
-//import uk.ac.cam.cares.jps.building.CRSTransformer;
-//import uk.ac.cam.cares.jps.building.SimpleBuildingData;
-//import uk.ac.cam.cares.jps.servicespool.ADMSAgent;
+
 
 
 @WebServlet("/ADMSAgent")
@@ -76,11 +73,11 @@ public class ADMSAgent extends DispersionModellingAgent {
         String targetCRSName = getTargetCRS(cityIRI);
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
-        String newBuildingData = getBuildingData(requestParams);
+        String newBuildingData = getBuildingData(region,cityIRI);
        
         JSONObject newRegion = getNewRegionData(upperx, uppery, lowerx, lowery, targetCRSName, sourceCRSName);
         
-        JSONObject bkgjson = null; // temporary only to test 1/7,right
+        JSONObject bkgjson = region; // temporary only to test 1/7,right
         // now it is hardcoded in python and
         // don't take any from the bkgjson
         
@@ -134,8 +131,9 @@ public class ADMSAgent extends DispersionModellingAgent {
 
     @Override
 	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
+    	System.out.println("going to create the weather input for ship");
 		//in here file name is not used as it is hard-coded in python
-		
+		logger.info("going to weather creation");
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
@@ -157,7 +155,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 		List<String[]> listmap = queryEndPointDataset(sensorinfo); //taken from dispersion modelling agent
 
 		 System.out.println("size="+listmap.size());
-
+		 logger.info("query is successful");
 	        JSONObject weather = new JSONObject();
 		    JSONObject cloudcover= new JSONObject();
 		    JSONObject precipitation= new JSONObject();
@@ -166,7 +164,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 		    JSONObject relativehumidity= new JSONObject();
 		    
 	        for(int r=0;r<listmap.size();r++) {
-	        	if(listmap.get(r)[3].toLowerCase().contains(stniri.get(0))) {
+	        	if(listmap.get(r)[3].contains(stniri.get(0))) {
 	        		System.out.println("it goes number 1");
 	        		if(listmap.get(r)[0].toLowerCase().contains("speed")) {
 	        			wind.put("hasspeed", listmap.get(r)[1]);
@@ -197,6 +195,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 	        weather.put("hasprecipation", precipitation);
 	        weather.put("hascloudcover", cloudcover);
 	        
+	        System.out.println("weather data= "+weather.toString());
 	        writeMetFile(weather, dataPath);
 	}
 
@@ -220,7 +219,7 @@ public class ADMSAgent extends DispersionModellingAgent {
         return targetCRSName;
     }
 
-    private String getBuildingData(JSONObject requestParams) {
+    private String getBuildingData(JSONObject region, String city) {
 //        double[] sourceXY = null;
 
 //        if (cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Singapore") || cityIRI.equalsIgnoreCase("http://dbpedia.org/resource/Hong_Kong")) {
@@ -230,7 +229,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 //        }
 
         //String newBuildingData = retrieveBuildingDataInJSONOLD(cityIRI, sourceXY[0], sourceXY[1], lowerx, lowery, upperx, uppery);
-        String newBuildingData = retrieveBuildingDataInJSON(requestParams);  //23/4 the new version that remove the duplicate query, but the composition must be changed first
+        String newBuildingData = retrieveBuildingDataInJSON(region,city);  //23/4 the new version that remove the duplicate query, but the composition must be changed first
         newBuildingData = newBuildingData.replace('\"', '\'');
         return newBuildingData;
     }
@@ -382,7 +381,10 @@ public class ADMSAgent extends DispersionModellingAgent {
 //        return argument;
 //    }
 
-    private String retrieveBuildingDataInJSON(JSONObject requestParams) {
+    private String retrieveBuildingDataInJSON(JSONObject region, String city) {
+    	JSONObject req= new JSONObject();
+    	req.put("region",region);
+    	req.put("city",city);
 
 //        int buildingnum = building.length();
 //        List<String> buildingIRIs = new ArrayList<String>();
@@ -398,7 +400,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 //        String argument = new Gson().toJson(result);
 //        return argument;
         
-        String resultdata=execute("/JPS/BuildingsData", requestParams.toString());
+        String resultdata=execute("/JPS/BuildingsData", req.toString());
         return resultdata;
     }
 
