@@ -21,8 +21,8 @@ public class DMSCoordinationAgentTest extends TestCase {
 		joregion.put("srsname","EPSG:3857");
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
-		
-		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
+//		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		jo.put("region", joregion);
 		//jo.put("location", "Singapore");
 		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");

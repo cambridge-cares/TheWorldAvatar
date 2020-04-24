@@ -47,10 +47,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams) {
     	String cityIRI = requestParams.getString("city");
+    	String agent=requestParams.get("agent").toString();
     	DispersionModellingAgent s=null;
     	JSONObject responseParams=requestParams;
     	if(cityIRI.toLowerCase().contains("singapore")||cityIRI.toLowerCase().contains("kong")) {
-    		String agent="ADMS";
     		if(agent.contains("ADMS")) {
     			s=new ADMSAgent();
     		}else if(agent.contains("Episode")){
