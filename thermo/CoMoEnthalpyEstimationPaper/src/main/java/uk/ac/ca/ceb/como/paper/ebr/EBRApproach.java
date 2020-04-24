@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 import uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.LeaveOneOutCrossValidationAlgorithm;
+import uk.ac.cam.ceb.como.paper.enthalpy.estimation.EnthalpyEstimation;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
 
 /**
@@ -67,8 +68,8 @@ public class EBRApproach {
 	private void runCrossValidation(String jsonInput) throws Exception{
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
 		leaveOneOutCrossValidationAlgorithm.runGlobalCrossValidation(
-				InputParser.getSrcCompoundsRef("srcCompoundsRef").toString() + "/",
-				InputParser.getSrcRefPool("srcRefPool").toString(), InputParser.getDestRList("destRList").toString(),
+				InputParser.getSrcCompoundsRef("srcCompoundsRef") + "/",
+				InputParser.getSrcRefPool("srcRefPool"), InputParser.getDestRList("destRList"),
 				EvaluationUtils.getCtrRuns(InputParser.getCtrRuns("ctrRuns")),
 				EvaluationUtils.getCtrRuns(InputParser.getCtrRes("ctrRes")),
 				EvaluationUtils.getCtrRuns(InputParser.getCtrRadicals("ctrRadicals")),
@@ -81,8 +82,16 @@ public class EBRApproach {
 	 * 
 	 * @param jsonInput
 	 */
-	private void calculateEoF(String jsonInput){
-		
+	private void calculateEoF(String jsonInput) throws Exception{
+		EnthalpyEstimation enthalpyEstimation = new EnthalpyEstimation();
+		enthalpyEstimation.estimateEnthalpy(InputParser.getSrcCompoundsRef("srcCompoundsRef") + "/",
+				InputParser.getSrcRefPool("srcRefPool"), InputParser.getSrcTargetPool("srcTargetPool"), 
+				InputParser.getDestRList("destRList"),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRuns("ctrRuns")),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRes("ctrRes")),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRadicals("ctrRadicals")),
+				EvaluationUtils.getReactionType(InputParser.getReactionType("reactionType")),
+				InputParser.getTempFolder("tempFolder") + "/");
 	}
 	
 	/**
