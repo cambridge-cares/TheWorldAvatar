@@ -43,6 +43,10 @@
                             <directory>workingdir</directory>
                             <targetPath>workingdir</targetPath>
                         </resource>
+                        <resource>
+           					<directory>python</directory>
+           					<targetPath>python</targetPath>
+           				</resource>
 
                     </webResources>
           <warName>${project.artifactId}##${project.version}</warName>
