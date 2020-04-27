@@ -24,6 +24,7 @@ let Parser = require('node-xml-stream')
 const { Readable,PassThrough } = require('stream');
 const csv = require('csv-parser');
 const strStream = require('string-to-stream')
+const $rdf = require('rdflib');
 /**out a asyn function, provide data :
  [
  {source: , target: , level: }
@@ -184,16 +185,39 @@ owlProcessor.connectPromise = function (address, level) {
             return new Error('address for this node is not a string')
         }
         let fileP = null;
+        let filetype = me.guessFormat(address);
         if (fs.existsSync(address)){//is local
 		    console.log('read local')
             address = path.resolve(address);
-            fileP = this.fileStreamPromise(address);
+            fileP = this.fileStreamPromise(address,filetype);
         } else{ //remote url
-            fileP = this.urlPromise(address);
+            fileP = this.urlPromise(address,filetype);
         }
         //stream parse fileP
         fileP.then(function (instream) {
-            if(!instream){//query endpoint
+            if (filetype !== 'xml'){//not xml format: use rdflib to do full parsing
+                let store = $rdf.graph()
+                try {
+                    $rdf.parse(instream, store, me.diskLoc2Uri(address), filetype);
+                    const query = $rdf.SPARQLToQuery(me.queryStrC, false, store);
+                    let results = []
+                    store.query(query, function(result) {
+                        console.log('query ran');
+                        let processed = me.processRdflibQResult(result)
+                        console.log('start process')
+                        console.log(processed)
+                        results.push(processed)
+                    }, null,function () {
+                    console.log('done')
+                        resolve(results);
+
+                    });
+                } catch (err) {
+                    console.log(err)
+                }
+
+            }
+            else if(!instream){//query endpoint
                 //todo: run endpoint
                 console.log('check endpoint')
                 me.queryPromise(address, 'endpoint',level).then(result =>{
@@ -234,14 +258,18 @@ owlProcessor.normalAddr = function(loc){
  * @param loc
  * @returns {Promise for a null if not a file, a file stream otherwise}
  */
-owlProcessor.urlPromise = function (loc) {
+owlProcessor.urlPromise = function (loc, type) {
     //send request
     return new Promise((resolve, reject) => {
             //check if file, if not, test if an endpoint
             //probably can still send for query if not sure if an endpoint...
             //quick xml parse, we don't wa
-         
-             owlProcessor.checkFile(loc).then((result)=>{
+                 let res = request.get(loc, {timeout: 30000, agent: false}).on('error', function (err) {
+            reject(err)//don't throw
+        });
+        if (type !== 'xml'){ resolve(res)};
+
+             owlProcessor.checkXMLFile(res).then((result)=>{
                  "use strict";
                  if(!result){
                      //return as endpoint
@@ -329,11 +357,21 @@ owlProcessor.xmlstreamParser = function (instream, level) {
     })
     
 };
+owlProcessor.guessFormat = function(fileName){
+let strArr = fileName.split('.');
+let ext = strArr[strArr.length - 1];
+switch(ext){
+case 'ttl':
+return 'text/turtle';
+default:
+return 'xml';
+}
+}
 
 /***
 check if retreived file is a valid file
 ***/
-owlProcessor.checkFile = function (loc) {
+owlProcessor.checkXMLFile = function (fileResponse) {
     return new Promise((resolve, reject) => {
         let parser = new Parser();
         const clone = new PassThrough();
@@ -357,12 +395,9 @@ owlProcessor.checkFile = function (loc) {
         console.log('finished checking for validation')
         resolve(null)
     });
-    
-        let res = request.get(loc, {timeout: 30000, agent: false}).on('error', function (err) {
-            reject(err)//don't throw
-        });
-        res.pipe(parser)
-        res.pipe(clone)
+
+        fileResponse.pipe(parser)
+        fileResponse.pipe(clone)
     
     })
 
@@ -431,6 +466,17 @@ owlProcessor.queryPromise = function (loc, type, level) {
             return new Error('Undefined query type')
     }
     
+
+}
+
+owlProcessor.processRdflibQResult = function(item){
+    console.log(item)
+     let o = {};
+        for (let name in item){
+            console.log(name)
+            o[name.slice(1)] = item[name]['value']
+        }
+        return o
 
 }
 
@@ -580,9 +626,14 @@ owlProcessor.filePromise = function (loc) {
  * @param loc
  * @returns {Promise for file stream}
  */
-owlProcessor.fileStreamPromise = function (loc) {
+owlProcessor.fileStreamPromise = function (loc, type) {
     return new Promise(function (resolve,reject) {
-        resolve(fs.createReadStream(loc))
+        if (type !== 'xml'){
+            console.log('not xml, return file, not stream')
+            resolve(fs.readFileSync(loc,'utf8'))
+        } else{
+            resolve(fs.createReadStream(loc))
+        }
     })
 }
 
