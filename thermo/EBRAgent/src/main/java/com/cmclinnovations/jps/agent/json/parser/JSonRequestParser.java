@@ -65,15 +65,15 @@ public class JSonRequestParser {
 		return JsonPath.read(jsonString, "$.reactionType");
 	}
 
-	public static String getNumberOfRuns(String jsonString){	
+	public static int getNumberOfRuns(String jsonString){	
 		return JsonPath.read(jsonString, "$.ctrRuns");
 	}
 
-	public static String getNumberOfEBRsToFind(String jsonString){	
+	public static int getNumberOfEBRsToFind(String jsonString){	
 		return JsonPath.read(jsonString, "$.ctrRes");
 	}
 
-	public static String getNumberOfRadicalsToUse(String jsonString){	
+	public static int getNumberOfRadicalsToUse(String jsonString){	
 		return JsonPath.read(jsonString, "$.ctrRadicals");
 	}
 	
@@ -85,7 +85,7 @@ public class JSonRequestParser {
 		return JsonPath.read(jsonString, "$.whichProcessToRun");
 	}
 
-	public static String getIsRefAndTargetSetSame(String jsonString){	
+	public static boolean getIsRefAndTargetSetSame(String jsonString){	
 		return JsonPath.read(jsonString, "$.isRefAndTargetSetSame");
 	}
 }
