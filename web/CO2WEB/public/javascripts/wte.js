@@ -349,6 +349,14 @@ function clearMarkers() {
         marker=null;
     }
 }
+
+function openNav() {
+    document.getElementById("mySidenav").style.width = "350px";
+  }
+  
+  function closeNav() {
+    document.getElementById("mySidenav").style.width = "0";
+  }
 /** calls the creation of markers (with extra parameters) before creating the onsite WTF technology
  * 
  */
