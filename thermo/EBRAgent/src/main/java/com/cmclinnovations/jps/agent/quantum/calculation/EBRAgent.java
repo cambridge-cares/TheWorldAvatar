@@ -338,32 +338,10 @@ public class EBRAgent extends HttpServlet{
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}
-		
-		
-		//jobSubmission.setUpJob(jsonInput, slurmScript, input, executable)
-		/**
-		 * executable = jar file of comoenthalpyestimatiopaper.jar
-		 * input = zip file containting g09 files, generated csv file (target species)
-		 * slurmScript
-		 * jsonInput = input
-		 */
-		
 		long timeStamp = Utils.getTimeStamp();	
-		
-		/**
-		 * Feroz's code
-		 */
-		return jobSubmission.setUpJob(
-				jsonInput, new File(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
-				getInputFile(jsonInput), timeStamp);
-		
-		/**
-		 * The code below should be uncommented and Feroz's code should be commented.
-		 */
-//		return jobSubmission.setUpJob(jsonInput, new File(getClass().getClassLoader()
-//				.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), getInputFile(jsonInput), new File(getClass().getClassLoader()
-//						.getResource(Property.EBR_EXECUTABLE.getPropertyName()).getPath()),timeStamp);
+		return jobSubmission.setUpJob(jsonInput, new File(getClass().getClassLoader()
+				.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), getInputFile(jsonInput), new File(getClass().getClassLoader()
+						.getResource(Property.EBR_EXECUTABLE.getPropertyName()).getPath()),timeStamp);
 	}	
 	
 	/**
@@ -467,11 +445,11 @@ public class EBRAgent extends HttpServlet{
 //				new File(SystemUtils.getUserHome()+File.separator+inputFolderPath).mkdir();
 				
 				
-				Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getGaussianFolderPath(jsonInput)+"/" +gaussianFileName);
+				Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getDFTCalculationPath(jsonInput)+"/" +gaussianFileName);
 			}
 		}
 		
-		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getSrcRefPool(jsonInput));
+		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getReferenceSpeciesPool(jsonInput));
 		
 		/**
 		 * 
@@ -516,10 +494,6 @@ public class EBRAgent extends HttpServlet{
 		inputFile.write(Property.JOB_CHK_POINT_FILE_PREFIX.getPropertyName().concat(slurmJobProperty.getHpcAddress()).concat("_")
 				.concat(getTimeStampPart(jobFolder))
 				.concat(slurmJobProperty.getCheckPointFileExtension()).concat("\n"));
-		inputFile.write(slurmJobProperty.getJobPreprintDirective().concat(" ")
-				.concat(JSonRequestParser.getLevelOfTheory(jsonString)).concat(" ")
-				.concat(JSonRequestParser.getJobKeyword(jsonString)).concat(" ")
-				.concat(JSonRequestParser.getAlgorithmChoice(jsonString)).concat("\n\n"));
 		inputFile.write(" ".concat(jobFolder).concat("\n\n"));
 		inputFile.write(Property.SPECIES_CHARGE_ZERO.getPropertyName().concat(" ")
 				.concat(Property.SPECIES_MULTIPLICITY.getPropertyName()).concat("\n"));

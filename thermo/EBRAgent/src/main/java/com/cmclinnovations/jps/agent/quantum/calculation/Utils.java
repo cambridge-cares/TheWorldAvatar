@@ -303,7 +303,7 @@ public static void copyFileFromURL(String fileUrl, String destinationFilePath) t
  */
 public static void createInputFolder(String jsonInput) throws IOException {
 
-	String inputFolderPath =JSonRequestParser.getGaussianFolderPath(jsonInput);
+	String inputFolderPath =JSonRequestParser.getDFTCalculationPath(jsonInput);
 	
 	String[] tokens = inputFolderPath.split("/");
 	
