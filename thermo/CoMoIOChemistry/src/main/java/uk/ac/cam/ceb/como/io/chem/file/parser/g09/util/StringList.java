@@ -21,9 +21,9 @@ public class StringList extends ArrayList<String> {
 		 *         Date: MAY-17th-2018. </p>
 		 * 
 		 *        
-		 */
-
-		addAll(lines);
+		 */		
+			
+		addAll(lines);	
 
 	}
 

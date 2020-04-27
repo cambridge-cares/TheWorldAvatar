@@ -54,7 +54,11 @@ public class FrequencyParser extends GaussianParser {
 		JobSection jobsecFreq = this.getFrequencyJobSection(this.jSections);
 
 		String archiveString = GaussianHelper.extractArchive(jobsecGeom);
-		String archiveStringFreq = GaussianHelper.extractArchive(jobsecFreq);
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Line below is commented.
+		 */
+//		String archiveStringFreq = GaussianHelper.extractArchive(jobsecFreq);
 
 		// parse archive
 		Archive archive = this.parseArchive(archiveString);
@@ -66,6 +70,8 @@ public class FrequencyParser extends GaussianParser {
 		// TODO
 		zpeAndThermal = extractEnergies(jobsecFreq);
 
+		System.out.println("this.parseRawVibrationalFrequencies(jobsecFreq).isEmpty(): " + this.parseRawVibrationalFrequencies(jobsecFreq).isEmpty());
+		
 		this.normalModes = this.parseVibrationalFrequencies(this.parseRawVibrationalFrequencies(jobsecFreq));
 
 		CMLModule jobMod = CompChemElementUtils.addJob(((CompChem) (this.obj)).getFirstJobListModule());
@@ -74,20 +80,70 @@ public class FrequencyParser extends GaussianParser {
 
 	}
 
+	/**
+	 * Extended by @author NK510 (caresssd@hermes.cam.ac.uk) with conditional 'if' statements that avoids emptiness of thermal and zpe values. 
+	 * @param jobsec
+	 * @return
+	 */
 	protected double[] extractEnergies(JobSection jobsec) {
-
-		double thermal = Double.parseDouble(ParserHelper.parseLine(
+		/**
+		 * Ask Angiras and Feroz, what would be default value of thermal?
+		 */
+		double thermal =0;
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * 
+		 * Tries to find string 'Thermal correction to Enthalpy'.
+		 */
+		Pattern thermalPattern = Pattern.compile("\\s*Thermal correction to Enthalpy.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ").*");
+	    Matcher thermalMatcher = thermalPattern.matcher("Thermal correction to Enthalpy"); 
+		
+	    if(thermalMatcher.find()) {
+	    	  
+		thermal = Double.parseDouble(ParserHelper.parseLine(
 				Pattern.compile("\\s*Thermal correction to Enthalpy.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ").*"),
-				jobsec.get(jobsec.getLastMatchPosition(0,
-						"\\s*Thermal correction to Enthalpy.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ").*"))));
-		double zpe = Double.parseDouble(ParserHelper.parseLine(
+				jobsec.get(jobsec.getLastMatchPosition(0,"\\s*Thermal correction to Enthalpy.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ").*"))));
+	    } 
+	    
+	    /**
+	     * 
+	     * @author NK510 (caressd@hermes.cam.ac.uk)
+	     * 
+		 * Ask Angiras and Feroz, what would be default value of zpe?
+		 */
+	    double zpe=0;
+	      
+	    Pattern zpePattern = Pattern.compile("\\s*Zero.*?-point correction.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ")\\s*\\(Hartree/Particle\\).*");
+	    Matcher zpeMatcher = zpePattern.matcher("point correction"); 
+	    
+	    if(zpeMatcher.find()) {
+		zpe = Double.parseDouble(ParserHelper.parseLine(
 				Pattern.compile("\\s*Zero.*?-point correction.*?=\\s*(" + DoubleTool.NUMBER_REGEX
 						+ ")\\s*\\(Hartree/Particle\\).*"),
 				jobsec.get(jobsec.getLastMatchPosition(0, "\\s*Zero.*?-point correction.*?=\\s*("
 						+ DoubleTool.NUMBER_REGEX + ")\\s*\\(Hartree/Particle\\).*"))));
+	    }
+	    
 		return new double[] { zpe, thermal };
 	}
 
+//	protected double[] extractEnergies(JobSection jobsec) {
+//	    	  
+//		double thermal = Double.parseDouble(ParserHelper.parseLine(
+//				Pattern.compile("\\s*Thermal correction to Enthalpy.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ").*"),
+//				jobsec.get(jobsec.getLastMatchPosition(0,"\\s*Thermal correction to Enthalpy.*?=\\s*(" + DoubleTool.NUMBER_REGEX + ").*"))));
+//	 
+//	      
+//		double zpe = Double.parseDouble(ParserHelper.parseLine(
+//				Pattern.compile("\\s*Zero.*?-point correction.*?=\\s*(" + DoubleTool.NUMBER_REGEX
+//						+ ")\\s*\\(Hartree/Particle\\).*"),
+//				jobsec.get(jobsec.getLastMatchPosition(0, "\\s*Zero.*?-point correction.*?=\\s*("
+//						+ DoubleTool.NUMBER_REGEX + ")\\s*\\(Hartree/Particle\\).*"))));
+//		
+//		return new double[] { zpe, thermal };
+//	}
+	
 	protected MolecularInfoImpl getMolecularInfo(JobSection jobsecGeom, JobSection jobsecFreq) {
 		MolecularInfoImpl molecularInfo = this.getMolecularInfo(jobsecGeom);
 		molecularInfo.setRotationalSymmetryNumber(Integer.parseInt(ParserHelper.parseLine(
@@ -159,7 +215,7 @@ public class FrequencyParser extends GaussianParser {
 			property_list.addProperty(chelper.createCMLPropertyScalar(zpeAndThermal[1], "nonSi:hartree",
 					"cc:thermalenergy", CompChem.COMPCHEM_NS));
 		}
-
+		
 		// TODO
 
 		// add thermal
@@ -217,17 +273,19 @@ public class FrequencyParser extends GaussianParser {
 		HashMap<Integer, DisplacementList> dispArrayList = new HashMap<>();
 		// normalModes.setUnits("nonSi:cm^-1", "nonSi:amu", "nonSi:A^4/amu",
 		// "nonSi:mDyne/A^-1", "nonSi:Angstroms");
+		
 		while ((pos = sl.getFirstMatchPosition(from_line, "\\s*Frequencies\\s+--.*")) > -1) {
-			int atomHeaderPos = sl.getFirstMatchPosition(pos, "\\s*Atom\\s+AN.*");
-			int displacementSectionEnd = sl.getFirstMatchPosition(atomHeaderPos + 1, "\\s*Frequencies\\s+--.*") - 2;
-			if (displacementSectionEnd < 0) {
-				displacementSectionEnd = rawFreqs.size();
-			}
-			// int local_num_freqs = 0;
+		int atomHeaderPos = sl.getFirstMatchPosition(pos, "\\s*Atom\\s+AN.*");
+		int displacementSectionEnd = sl.getFirstMatchPosition(atomHeaderPos + 1, "\\s*Frequencies\\s+--.*") - 2;
+		if (displacementSectionEnd < 0) {
+		displacementSectionEnd = rawFreqs.size();
+		}
+			
+		// int local_num_freqs = 0;
 
-			List<String> infos = sl.subList(pos, atomHeaderPos);
-			// parse frequency info
-			for (String line : infos) {
+		List<String> infos = sl.subList(pos, atomHeaderPos);
+		// parse frequency info
+		for (String line : infos) {
 				if (line.contains("Frequencies")) {
 					final String freqs = line.replaceAll("^.+?--", "");
 					final List<Double> local_fs = ParserHelper.parseDoubles(ParserHelper.tokenize(freqs));
@@ -297,6 +355,111 @@ public class FrequencyParser extends GaussianParser {
 
 		return normalModes;
 	}
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * Commented original source of 'protected Vibrations parseVibrationalFrequencies(final List<String> rawFreqs) throws Exception ' method.
+	 */
+//	/**
+//	 * 
+//	 * @param rawFreqs
+//	 * @return
+//	 * @throws Exception
+//	 * 
+//	 */
+//	protected Vibrations parseVibrationalFrequencies(final List<String> rawFreqs) throws Exception {
+//
+//		StringList sl = new StringList(rawFreqs);
+//
+//		int from_line = 0;
+//		int pos = 0;
+//		int indexCounter = 1;
+//		int size = 0;
+//		// temporary storages
+//		Vibrations normalModes = new Vibrations();
+//		HashMap<Integer, DisplacementList> dispArrayList = new HashMap<>();
+//		// normalModes.setUnits("nonSi:cm^-1", "nonSi:amu", "nonSi:A^4/amu",
+//		// "nonSi:mDyne/A^-1", "nonSi:Angstroms");
+//		while ((pos = sl.getFirstMatchPosition(from_line, "\\s*Frequencies\\s+--.*")) > -1) {
+//			int atomHeaderPos = sl.getFirstMatchPosition(pos, "\\s*Atom\\s+AN.*");
+//			int displacementSectionEnd = sl.getFirstMatchPosition(atomHeaderPos + 1, "\\s*Frequencies\\s+--.*") - 2;
+//			if (displacementSectionEnd < 0) {
+//				displacementSectionEnd = rawFreqs.size();
+//			}
+//			// int local_num_freqs = 0;
+//
+//			List<String> infos = sl.subList(pos, atomHeaderPos);
+//			// parse frequency info
+//			for (String line : infos) {
+//				if (line.contains("Frequencies")) {
+//					final String freqs = line.replaceAll("^.+?--", "");
+//					final List<Double> local_fs = ParserHelper.parseDoubles(ParserHelper.tokenize(freqs));
+//					size = local_fs.size();
+//					// number of frequencies interface each section
+//					// local_num_freqs = local_fs.size();
+//					normalModes.addAll(Vibrations.Property.FREQUENCY, local_fs);
+//				} else if (line.contains("Red. masses")) {
+//					final String rms = line.replaceAll("^.+?--", "");
+//					final List<Double> local_rms = ParserHelper.parseDoubles(ParserHelper.tokenize(rms));
+//					normalModes.addAll(Vibrations.Property.REDUCED_MASS, normalModes.size() - local_rms.size(),
+//							local_rms);
+//				} else if (line.contains("Frc consts")) {
+//					final String fcs = line.replaceAll("^.+?--", "");
+//					final List<Double> local_fcs = ParserHelper.parseDoubles(ParserHelper.tokenize(fcs));
+//					normalModes.addAll(Vibrations.Property.FORCE_CONSTANT, normalModes.size() - local_fcs.size(),
+//							local_fcs);
+//				} else if (line.contains("IR Inten")) {
+//					final String irs = line.replaceAll("^.+?--", "");
+//					final List<Double> local_irs = ParserHelper.parseDoubles(ParserHelper.tokenize(irs));
+//					normalModes.addAll(Vibrations.Property.IR_INTEN, normalModes.size() - local_irs.size(), local_irs);
+//				}
+//			}
+//
+//			List<String> displacement = sl.subList(atomHeaderPos + 1, displacementSectionEnd);
+//
+//			for (int i = 0; i < size; i++) {
+//				dispArrayList.put(indexCounter, new DisplacementList());
+//				indexCounter++;
+//			}
+//
+//			// parse frequency info
+//			for (String line : displacement) {
+//				// extract the displacement information
+//				final List<Double> local_disp = ParserHelper.parseDoubles(ParserHelper.tokenize(line));
+//				if (local_disp.size() >= 5) {
+//					// extract the displacements and add them
+//					if ((local_disp.size() - 2) % 3 == 0) {
+//						for (int i = 0; i < size; i++) {
+//							double[] d = new double[3];
+//							Displacement xyz = new Displacement();
+//							xyz.setdx(local_disp.get(2 + i * 3));
+//							xyz.setdy(local_disp.get(2 + i * 3 + 1));
+//							xyz.setdz(local_disp.get(2 + i * 3 + 2));
+//							xyz.setAtomReference(
+//									Integer.toString(dispArrayList.get(indexCounter - size + i).size() + 1));
+//
+//							// add to the list and to the hash map!
+//							dispArrayList.get(indexCounter - size + i).add(xyz);
+//						}
+//					}
+//				}
+//			}
+//
+//			// update indexes
+//			pos = atomHeaderPos;
+//			from_line = atomHeaderPos;
+//		}
+//
+//		List<Double> mode = new ArrayList<Double>();
+//		for (int i = 0; i < normalModes.size(); i++) {
+//			mode.add(i + 1.0);
+//			// List<VibrationalNormalMode.XYZ> p = dispArrayList.get(i + 1);
+//			normalModes.get(i).setDisplacements(dispArrayList.get(i + 1));
+//		}
+//		normalModes.addAll(Vibrations.Property.MODE, 0, mode);
+//
+//		return normalModes;
+//	}
 
 	protected List<CMLProperty> createCMLProperties(Vibrations normalModes) {
 
