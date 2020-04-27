@@ -477,7 +477,7 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() {
-		// initialising classes to read properties from the dft-agent.properites file
+		// initialising classes to read properties from the slurm-job.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
