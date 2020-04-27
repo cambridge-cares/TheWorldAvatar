@@ -5,6 +5,8 @@ block title
 
 block sheets
 	link(rel="stylesheet" href='/stylesheets/mpage.css')
+	link(href='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css', rel='stylesheet')
+
 
 block subtitle
 
@@ -66,21 +68,17 @@ block content
 		.sidenav a {font-size: 18px;}
 		}
 	#loader(style='display:none;')
+	.panel.panel-default
+		.panel-body
+			input( id="toggle-event" type='checkbox', checked='', data-toggle='toggle', data-on='Single', data-off='Cluster')
 	div#wrapper
 		div.overlay-panel-wrapper
-			div#mySidenav.sidenav
-				a.closebtn(href='javascript:void(0)', onclick='closeNav()',aria-label="Close Account Info Modal Box") x
-				div#text-panel(style='overflow-inline:scroll;')
-				br
-				button#run-btn.btn.btn-primary Run Simulation
-
-		//- 	div#overlay-setting-panel.panel.panel-default 
-		//- 		div.panel-heading Run
-		//- 		div.panel-body.container-fluid
-		//- 			div#setting-panel-body
-		//- 				div#text-panel(style='overflow-inline:scroll;')
-		//- 				br
-		//- 				button#run-btn.btn.btn-primary Run Simulation
+			div#overlay-setting-panel.panel.panel-default
+				div.panel-body.container-fluid
+					div#setting-panel-body
+						div#text-panel(style='overflow-inline:scroll;')
+						br
+						button#run-btn.btn.btn-primary Run Simulation
 
 						   
 	div#map
@@ -112,4 +110,4 @@ block content
 	script(src="/javascripts/wte.js")
 	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
 	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
-	
+	script(src='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js')
