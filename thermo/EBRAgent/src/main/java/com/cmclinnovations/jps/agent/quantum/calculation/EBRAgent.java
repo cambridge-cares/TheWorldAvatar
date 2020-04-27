@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
 import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.csv.species.CSVGenerator;
@@ -85,6 +86,7 @@ public class EBRAgent extends HttpServlet{
 	static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
+	public static EBRAgentProperty ebrAgentProperty;
 	
 	
 	public static void main(String[] args) throws ServletException, EBRAgentException{
@@ -136,11 +138,8 @@ public class EBRAgent extends HttpServlet{
 	@RequestMapping(value="/job/request", method = RequestMethod.GET)
     @ResponseBody
     public String query(@RequestParam String input) throws Exception{	
-		
 		System.out.println("received query:\n"+input);
-		
 		logger.info("received query:\n"+input);
-		
 		return setUpJob(input);
     }
 	
@@ -209,7 +208,10 @@ public class EBRAgent extends HttpServlet{
 		if (slurmJobProperty == null) {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 		}
-        logger.info("---------- Quantum jobs are being monitored  ----------");
+		if (ebrAgentProperty == null) {
+			ebrAgentProperty = applicationContext.getBean(EBRAgentProperty.class);
+		}
+		logger.info("---------- Quantum jobs are being monitored  ----------");
         System.out.println("---------- Quantum jobs are being monitored  ----------");
        	
 	}
