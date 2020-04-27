@@ -45,11 +45,11 @@ public class JSonRequestParser {
 		return JsonPath.read(jsonString, "$.srcCompoundsRef");
 	}
 	
-	public static String getSrcReferencePool(String jsonString){		
+	public static String getReferenceSpeciesPool(String jsonString){		
 		return JsonPath.read(jsonString, "$.srcRefPool");
 	}
 	
-	public static String getsrcTargetPool(String jsonString){		
+	public static String getTargetSpeciesPool(String jsonString){		
 		return JsonPath.read(jsonString, "$.srcTargetPool");
 	}
 
