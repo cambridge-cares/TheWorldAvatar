@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import uk.ac.cam.ceb.como.paper.enthalpy.cross_validation.LeaveOneOutCrossValidationAlgorithm;
 import uk.ac.cam.ceb.como.paper.enthalpy.estimation.EnthalpyEstimation;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.EvaluationUtils;
+import uk.ac.cam.ceb.como.paper.enthalpy.utils.FileUtils;
 
 /**
  * This class reads user requirements from a JSON input file to decide<br>
@@ -44,6 +45,8 @@ public class EBRApproach {
 	 */
 	public void callEBRProcess(String jsonInputFileName) throws Exception{
 		String jsonInput = null;
+		// Decompresses the zip file that contains all input files. 
+		FileUtils.getUnzipFolder(InputParser.getInputZipFile(jsonInputFileName));
 		EBRApproach ebrApproach = new EBRApproach();
 		jsonInput = ebrApproach.readJsonFile(jsonInputFileName);
 		ebrApproach.callEBRProcess(jsonInput);
