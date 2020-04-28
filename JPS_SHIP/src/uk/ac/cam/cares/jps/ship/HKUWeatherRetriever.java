@@ -57,11 +57,11 @@ public class HKUWeatherRetriever extends JPSHttpServlet { //the time result stil
 						weather.put("x",readingFromCSV.get(x)[1]);
 						weather.put("y",readingFromCSV.get(x)[2]);
 						weather.put("z",readingFromCSV.get(x)[3]);
-						weather.put("temperature",readingFromCSV.get(x)[4]);
-						weather.put("pressure",readingFromCSV.get(x)[5]);
-						weather.put("relativehumidity",readingFromCSV.get(x)[6]);
-						weather.put("windspeed",readingFromCSV.get(x)[7]);
-						weather.put("winddirection",readingFromCSV.get(x)[8]);
+						weather.put("OutsideAirTemperature",readingFromCSV.get(x)[4]);
+						weather.put("OutsideAirPressure",readingFromCSV.get(x)[5]);
+						weather.put("OutsideAirRelativeHumidity",readingFromCSV.get(x)[6]);
+						weather.put("OutsideWindSpeed",readingFromCSV.get(x)[7]);
+						weather.put("OutsideWindDirection",readingFromCSV.get(x)[8]);
 						weather.put("timestamp",readingFromCSV.get(x)[9]);
 						weatherreading.put(weather);
 					}
