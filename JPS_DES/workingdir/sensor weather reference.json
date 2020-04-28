@@ -130,7 +130,17 @@
           "longitude": 103.74855,
 		  "height": 10.0
         }
-      }
+      },
+      {
+          "id": "S108",
+          "device_id": "S108",
+          "name": "Marina Gardens Drive",
+          "location": {
+            "latitude": 1.2799,
+            "longitude": 103.8703,
+  		  "height": 15.0
+          }
+        }
     ],
     "reading_type": "Wind Speed AVG(S)10M M1M",
     "reading_unit": "knots"
@@ -190,7 +200,11 @@
         {
           "station_id": "S100",
           "value": 3.5
-        }
+        },
+        {
+            "station_id": "S108",
+            "value": 3.5
+          }
       ]
     }
   ],

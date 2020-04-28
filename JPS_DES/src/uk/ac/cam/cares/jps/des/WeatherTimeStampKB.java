@@ -324,6 +324,14 @@ public class WeatherTimeStampKB {
 			countryname="hongkong";
 			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
 			Prefix="http://www.theworldavatar.com/kb/hkg/"+countryname+"/";
+		}else if(locationID.contentEquals("NL")) {
+			countryname="thehague";
+			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/.....csv");
+			Prefix="http://www.theworldavatar.com/kb/nld/"+countryname+"/";
+		}else if(locationID.contentEquals("DE")) {
+			countryname="berlin";
+			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/......csv");
+			Prefix="http://www.theworldavatar.com/kb/deu/"+countryname+"/";
 		}
 		
 		String mainobjectname = locationID+"TemperatureSensor-"+idOfStation; // still hard-coded for the sample
@@ -408,9 +416,9 @@ public class WeatherTimeStampKB {
 	private String[] extractLocationofStation(String id, String refDirFile,String locationID) {
 		String []location=new String[3];
 		int index=Integer.valueOf(id)-1;
-		if(locationID.contains("SG")&&index<12) {
+		if(locationID.contains("SG")&&index<14) {
 		JSONObject current= new JSONObject(refDirFile);
-		int []indexchosen= {0,1,2,3,4,5,6,7,8,10,11,12}; //based on json object file because stn 24 is ignored
+		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; //based on json object file because stn 24 is ignored
 		String lat1 = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
 				.getJSONObject("location").get("latitude").toString();
 		String long1 = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
@@ -442,15 +450,24 @@ public class WeatherTimeStampKB {
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
 		
 		//for SG:
-//		int numberofstn=12;
-//		String locationid="SG";
+		int numberofstn=14;
+		String locationid="SG";
+		
+		//for Berlin:
+//		int numberofstn=1;
+//		String locationid="DE";
+		
+		//for THeHague:
+//		int numberofstn=1;
+//		String locationid="NL";
+			
 		
 		//for HK:
-		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
-		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
-		readingFromCSVHK.remove(0);//move the header
-		int numberofstn=readingFromCSVHK.size();
-		String locationid="HK";
+//		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+//		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
+//		readingFromCSVHK.remove(0);//move the header
+//		int numberofstn=readingFromCSVHK.size();
+//		String locationid="HK";
 		
 		for(int d=1;d<=numberofstn;d++) {
 			String number="00"+d;
