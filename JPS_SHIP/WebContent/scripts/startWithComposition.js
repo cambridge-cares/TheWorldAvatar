@@ -220,7 +220,8 @@ $(function(){
         				query
     				});
     	} else {
-        		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition',
+//        		result =  $.getJSON('/JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition',
+    		result =  $.getJSON('/JPS_DMS/DMSCoordinationAgent',
         				{
 	        				query
         				});
