@@ -2,9 +2,11 @@ package com.cmclinnovations.jps.kg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
@@ -22,6 +24,7 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
+import com.cmclinnovations.jps.agent.ebr.EBRAgent;
 import com.cmclinnovations.jps.agent.ebr.EBRAgentException;
 import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.model.species.SpeciesBean;
@@ -33,7 +36,7 @@ import com.cmclinnovations.jps.model.species.SpeciesBean;
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
-public class OntoSpeciesKG{
+public class OntoSpeciesKG extends EBRAgent{
 	Logger logger = Logger.getLogger(OntoSpeciesKG.class);	
 	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
@@ -187,6 +190,7 @@ public class OntoSpeciesKG{
 	
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @author msff2 (msff2@cam.ac.uk)
 	 * 
 	 * @param localHostSparqlEndPoint the localhost sparql endpoint.
 	 * @param claudiusServerSparqlEndPoint the remote repository sparql.
@@ -195,90 +199,82 @@ public class OntoSpeciesKG{
 	 * @throws Exception 
 	 */
 	
-	public LinkedList<SpeciesBean> runFederatedQueryRepositories(String localHostSparqlEndPoint, String claudiusServerSparqlEndPoint, String query) throws Exception {
-		
-	LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
-		
-    Repository repository = FedXFactory.newFederation()
-    
-    
-    		/**
-    		 * 
-    		 * @author NK510 
-    		 * a sparql endpoint on localhost
-    		 * 
-    		 */
-	    .withSparqlEndpoint(localHostSparqlEndPoint)
-	    
-	    /**
-	     * 
-	     * @author NK510
-	     * a sparql endpoint on Caludius server .
-	     * 
-	     */
-        .withSparqlEndpoint(claudiusServerSparqlEndPoint)
-		.create();
-    
-    try {
-		
+	public LinkedList<SpeciesBean> querySpecies(List<String> endpoints, String query, boolean isTargetSpecies) throws Exception {
+		LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
+		Repository repository = FedXFactory.createSparqlFederation(endpoints);
+		repository.init();		
+		String eof="";
+		try {
+			RepositoryConnection conn = repository.getConnection();
+			TupleQuery tq = conn.prepareTupleQuery(QueryLanguage.SPARQL, query);
+			try {
+				TupleQueryResult tqRes = tq.evaluate();
+				while (tqRes.hasNext()) {
+					BindingSet bSet = tqRes.next();
+					if(isTargetSpecies){
+						eof="?";
+					}else{
+						eof = bSet.getValue("enthalpyOfFormationValue").stringValue();
+					}
+					SpeciesBean nistSpeciesId = new SpeciesBean(bSet.getValue("crid").stringValue(),
+							bSet.getValue("atomicBond").stringValue(), bSet.getValue("geometry").stringValue(),
+							eof,
+							bSet.getValue("scfEnergyValue").stringValue(),
+							bSet.getValue("zeroEnergyValue").stringValue());
+					System.out.println("crsid:"+bSet.getValue("crid"));
+					nistSpeciesIdList.add(nistSpeciesId);
+				}
+			} catch (TupleQueryResultHandlerException e) {
+				e.printStackTrace();
+			}
+			conn.close();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		repository.shutDown();
+		return nistSpeciesIdList;
+	}	
 
-    	
-	RepositoryConnection conn = repository.getConnection();
-	
 	/**
-	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
-	 * Returns a result of federated sparql query via ontospecieskb repositories stored on local host and on Claudius server.
 	 * 
+	 * @param localHostSparqlEndPoint the localhost sparql endpoint.
+	 * @param claudiusServerSparqlEndPoint the remote repository sparql.
+	 * @param query the query string.
+	 * @return the set of sparql results.
+	 * @throws Exception 
 	 */
 	
-	TupleQuery tq = conn.prepareTupleQuery(query);
-	
-	try{
-		
-	TupleQueryResult tqRes = tq.evaluate();
-	
-	while (tqRes.hasNext()) {
-				
-				BindingSet bSet = tqRes.next();
-				
-				/**
-				 * 
-				 * @author NK510 (caresssd@hermes.cam.ac.uk)
-				 * Stores query results into NISTSpeciesId bean: cas reg number, atomic bond, geometry, enthalpy of formation, scf energy, zero point energy.
-				 * 
-				 */		
-//				SpeciesBean nistSpeciesId= new SpeciesBean(bSet.getValue("crid").stringValue());
-				
-				SpeciesBean nistSpeciesId = new SpeciesBean(
-						bSet.getValue("crid").stringValue(), 
-						bSet.getValue("atomicBond").stringValue(),
-						bSet.getValue("geometry").stringValue(),
-						bSet.getValue("enthalpyOfFormationValue").stringValue(),
-						bSet.getValue("scfEnergyValue").stringValue(),
-						bSet.getValue("zeroEnergyValue").stringValue());
-				
-				nistSpeciesIdList.add(nistSpeciesId);
-	}
-	
-	}catch(TupleQueryResultHandlerException e) {
-	
-		e.printStackTrace();
-		
-	}
-		conn.close();
-		
-	}catch(RepositoryException e) {
-		
-		e.printStackTrace();
-	}
-    
-	repository.shutDown();	
-
-	return nistSpeciesIdList;
-	
+	public LinkedList<SpeciesBean> queryTargetSpecies(List<String> endpoints, String query) throws Exception {
+		LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
+		Repository repository = FedXFactory.createSparqlFederation(endpoints);
+		repository.init();		
+		try {
+			RepositoryConnection conn = repository.getConnection();
+			TupleQuery tq = conn.prepareTupleQuery(QueryLanguage.SPARQL, query);
+			try {
+				TupleQueryResult tqRes = tq.evaluate();
+				while (tqRes.hasNext()) {
+					BindingSet bSet = tqRes.next();
+					SpeciesBean nistSpeciesId = new SpeciesBean(bSet.getValue("crid").stringValue(),
+							bSet.getValue("atomicBond").stringValue(), bSet.getValue("geometry").stringValue(),
+							bSet.getValue("enthalpyOfFormationValue").stringValue(),
+							bSet.getValue("scfEnergyValue").stringValue(),
+							bSet.getValue("zeroEnergyValue").stringValue());
+					System.out.println("crsid:"+bSet.getValue("crid"));
+					nistSpeciesIdList.add(nistSpeciesId);
+				}
+			} catch (TupleQueryResultHandlerException e) {
+				e.printStackTrace();
+			}
+			conn.close();
+		} catch (RepositoryException e) {
+			e.printStackTrace();
+		}
+		repository.shutDown();
+		return nistSpeciesIdList;
 	}	
-	
+
 	
 	/**
 	 * Builds a query to retrieve the geometry of species.</br> 
