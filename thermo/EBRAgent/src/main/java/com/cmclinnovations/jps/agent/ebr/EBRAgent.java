@@ -1,4 +1,4 @@
-package com.cmclinnovations.jps.agent.quantum.calculation;
+package com.cmclinnovations.jps.agent.ebr;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.cmclinnovations.jps.agent.quantum.calculation.Property;
+import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 
 public class SpeciesBean {	

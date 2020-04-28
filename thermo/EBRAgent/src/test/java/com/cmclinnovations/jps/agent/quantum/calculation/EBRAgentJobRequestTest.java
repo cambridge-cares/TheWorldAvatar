@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
+import com.cmclinnovations.jps.agent.ebr.EBRAgent;
+import com.cmclinnovations.jps.agent.ebr.EBRAgentException;
 import com.cmclinnovations.slurm.job.SlurmJobException;
 import com.cmclinnovations.slurm.job.Status;
 

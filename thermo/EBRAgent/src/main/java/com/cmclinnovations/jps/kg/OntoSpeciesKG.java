@@ -22,8 +22,8 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
-import com.cmclinnovations.jps.agent.quantum.calculation.EBRAgentException;
-import com.cmclinnovations.jps.agent.quantum.calculation.Property;
+import com.cmclinnovations.jps.agent.ebr.EBRAgentException;
+import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.model.species.SpeciesBean;
 
 /**

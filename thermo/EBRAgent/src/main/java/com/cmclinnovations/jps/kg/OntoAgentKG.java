@@ -3,8 +3,8 @@ package com.cmclinnovations.jps.kg;
 import java.io.IOException;
 import java.net.URLEncoder;
 
+import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.agent.http.Request;
-import com.cmclinnovations.jps.agent.quantum.calculation.Property;
 
 /**
  * This class manages the query of hardware requirement for DFT Agent from</br>
