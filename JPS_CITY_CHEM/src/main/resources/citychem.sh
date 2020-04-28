@@ -12,38 +12,44 @@ runWholeScript=$(cat input.json | jq .runWholeScript)
 if [ $runWholeScript = true ]
 then
 	echo "Running the whole script."
-	unzip -o code.zip
-	codeDir=$PWD/code
+	#unzip -o code.zip
+	#codeDir=$PWD/code
 	#Copying main code
-	cd code/main
-	cp csubpr.f90 csubpx.f90 mod_psrc.f90 roldp.f90 rpsrc.f90 tspsrc.f90 ${HOME}/citychem-1.3/src/point
-	cp mod_readnc.f90 ${HOME}/citychem-1.3/src/main
-	cp ricon.f90 tsgrid.f90 ${HOME}/citychem-1.3/src/grid
-	cp wstatm.f90 wstatr.f90 ${HOME}/citychem-1.3/src/stat
+	#cd code/main
+	#cp csubpr.f90 csubpx.f90 mod_psrc.f90 roldp.f90 rpsrc.f90 tspsrc.f90 ${HOME}/citychem-1.3/src/point
+	#cp mod_readnc.f90 ${HOME}/citychem-1.3/src/main
+	#cp ricon.f90 tsgrid.f90 ${HOME}/citychem-1.3/src/grid
+	#cp wstatm.f90 wstatr.f90 ${HOME}/citychem-1.3/src/stat
 	#Copying preprocessing code
-	cd ${codeDir}/pre-processor/uect
-	cp emission_points.for get_user_input.for module_uect_exe.for module_uect_io.for output_citychem_pse.for ${HOME}/citychem-1.3/preproc/uect2.3/src
-	cp ${codeDir}/pre-processor/auxiliary/aermap_reader.for ${HOME}/citychem-1.3/preproc/auxiliary/src
-	#Copying input files N01E103.hgt and N01E104.hgt
+	#cd ${codeDir}/pre-processor/uect
+	#cp emission_points.for get_user_input.for module_uect_exe.for module_uect_io.for output_citychem_pse.for ${HOME}/citychem-1.3/preproc/uect2.3/src
+	#cp ${codeDir}/pre-processor/auxiliary/aermap_reader.for ${HOME}/citychem-1.3/preproc/auxiliary/src
+	#Copying input files N22E113.hgt and N22E114.hgt
 	cd ${inputDir}/input
-	cp N01E103.hgt N01E104.hgt ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
-	#Changing directory to srtm3
-	cd ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
-	zip N01E103.hgt.zip N01E103.hgt
-	zip N01E104.hgt.zip N01E104.hgt
-	cd ..
+	cp *.hgt ${HOME}/citychem-1.3/preproc/auxiliary/srtm3
 	#Copying the srtm file conversion script
-	cp ${inputDir}/input/srtm_generate_hdr.sh ./
+	cp ${inputDir}/input/srtm_generate_hdr.sh ${HOME}/citychem-1.3/preproc/auxiliary
+	cd ${HOME}/citychem-1.3/preproc/auxiliary
 	chmod +x srtm_generate_hdr.sh
-	./srtm_generate_hdr.sh ./srtm3/N01E103.hgt.zip
-	./srtm_generate_hdr.sh ./srtm3/N01E104.hgt.zip
-	mv N01E10* ./srtm3
+	#Changing directory to srtm3
+	cd srtm3
+	files=$( ls *.hgt )
+	for i in $files ; do
+		echo Next: $i
+		zip $i.zip $i
+		cd ..
+		./srtm_generate_hdr.sh ./srtm3/$i.zip
+		mv $i* ./srtm3
+		cd srtm3
+	done
+	cd ${HOME}/citychem-1.3/preproc/auxiliary
 	#Copying aermap.inp from input to preproc/auxiliary
 	cp ${inputDir}/input/aermap.inp ./
 	./aermap.exe
 	mv *.OUT *.out *.REC TiffDebug* ./output
 	cp ./output/AERMAP*.REC ${HOME}/citychem-1.3/INPUT/other
-	cp ${inputDir}/input/cctapm_meta_PSE.inp ${HOME}/citychem-1.3/preproc
+	cp ./output/AERMAP*.REC ${HOME}/citychem-1.3/INPUT/emis
+	cp ${inputDir}/input/cctapm_meta_PSE.inp ${HOME}/citychem-1.3/preproc/cctapm_meta.inp
 	cd ..
 	./static4cc.exe
 	cp ${HOME}/citychem-1.3/INPUT/emis/*.asc ${HOME}/citychem-1.3/INPUT/other
@@ -53,11 +59,11 @@ then
 	cp ${inputDir}/input/mcwind_input*.txt ${HOME}/citychem-1.3/preproc/mcwind/input
 	cd ${HOME}/citychem-1.3/preproc/mcwind
 	./MCWIND.exe
-	cp ./output/*.* ${HOME}/citychem-1.3/INPUT/mcwind
-	cd ${inputDir}
+	cp ./output/*.* ${HOME}/citychem-1.3/INPUT/mcwind	
 fi
-cp input/lines_*.csv ${HOME}/citychem-1.3/preproc/uect2.3/input
-cp input/points_*.csv ${HOME}/citychem-1.3/preproc/uect2.3/input
+cd ${inputDir}
+cp input/lines*.csv ${HOME}/citychem-1.3/preproc/uect2.3/input
+cp input/points*.csv ${HOME}/citychem-1.3/preproc/uect2.3/input
 cp input/cctapm_meta_PSE.inp ${HOME}/citychem-1.3/preproc/cctapm_meta.inp
 LD_LIBRARY_PATH=${HOME}/netcdf4/lib
 cd ${HOME}/citychem-1.3/preproc
@@ -66,13 +72,15 @@ cd ${inputDir}
 cp input/cctapm_meta_LSE.inp ${HOME}/citychem-1.3/preproc/cctapm_meta.inp
 cd ${HOME}/citychem-1.3/preproc
 ./uect.exe
+cd ${inputDir}
+cp input/receptor_input.txt ${HOME}/citychem-1.3/receptor_raster_kang/input
 cd ${HOME}/citychem-1.3/receptor_raster_kang
 gfortran receptor_raster.f90
 ./a.out
-cp ${inputDir}/input/receptor_stations_raster.txt ${HOME}/citychem-1.3/INPUT/other
-cp ${inputDir}/input/citychem_singapore_2020_restart.txt ${HOME}/citychem-1.3/SIMU 
+cp output/receptor_stations_raster.txt ${HOME}/citychem-1.3/INPUT/other
+cp ${inputDir}/input/citychem_restart.txt ${HOME}/citychem-1.3/SIMU 
 cd ${HOME}/citychem-1.3/SIMU
-./citychem.exe citychem_singapore_2020_restart.txt
+./citychem.exe citychem_restart.txt
 cd ${HOME}/citychem-1.3/OUTPUT
 zip -r output.zip *.*
 cp output.zip ${inputDir}
