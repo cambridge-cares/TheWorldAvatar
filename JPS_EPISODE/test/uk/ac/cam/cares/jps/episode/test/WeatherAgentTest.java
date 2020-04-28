@@ -45,22 +45,22 @@ public class WeatherAgentTest extends TestCase {
 	}
 	
 	public void testDirectCallingWeather() {
-//		double proclowx = Double.valueOf("11560879.832");
-//		double procupx = Double.valueOf("11563323.926");
-//		double proclowy = Double.valueOf("140107.739");
-//		double procupy = Double.valueOf("143305.896");
+		double proclowx = Double.valueOf("11560879.832");
+		double procupx = Double.valueOf("11563323.926");
+		double proclowy = Double.valueOf("140107.739");
+		double procupy = Double.valueOf("143305.896");
 		//for hk:
-		double proclowx = Double.valueOf("12706630.262");
-		double procupx = Double.valueOf("12708200.45");
-		double proclowy = Double.valueOf("2545539.172");
-		double procupy = Double.valueOf("2546850.028");
+//		double proclowx = Double.valueOf("12706630.262");
+//		double procupx = Double.valueOf("12708200.45");
+//		double proclowy = Double.valueOf("2545539.172");
+//		double procupy = Double.valueOf("2546850.028");
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
-		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri2,centerPointConverted[0],centerPointConverted[1]);
+		//List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri2,centerPointConverted[0],centerPointConverted[1]);
 		try {
 			//new WeatherAgent().executeFunctionPeriodically(result,cityiri2);
-			new WeatherAgent().executePeriodicUpdate(cityiri2);
+			new WeatherAgent().executePeriodicUpdate(cityiri);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -100,10 +100,10 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println("result= "+resp);
 	}
 	
-	public void xxxtestinsertdataContext() {// should be used when the context want to be attached with some info
+	public void testinsertdataContext() {// should be used when the context want to be attached with some info
 
 		String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
-		int []indexchosen= {0,1,2,3,4,5,6,7,8,10,11,12}; //based on json object file because stn 24 is ignored
+		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; 
 		JSONObject current= new JSONObject(inputRef);
 		for(int x=1;x<=indexchosen.length;x++) {
 			String index="0"+x;
@@ -138,8 +138,9 @@ public class WeatherAgentTest extends TestCase {
 		}
 
 	}
-	public void testtime() {
+	public void testtime() throws URISyntaxException {
 		System.out.println(new WeatherAgent().provideCurrentTime());
+
 	}
 	
 }

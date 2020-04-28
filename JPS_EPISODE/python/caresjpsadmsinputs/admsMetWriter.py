@@ -42,7 +42,7 @@ try:
 	fullPath = sys.argv[1]
 	
 	cloudCover = weatherData['hascloudcover']['hascloudcovervalue']
-	cloudCover = (float(cloudCover) / 100) * 8
+	cloudCover = (float(cloudCover)) * 8
 	if weatherData['haswind']['hasdirection'] == '':
 		windDirection = 180
 	else:

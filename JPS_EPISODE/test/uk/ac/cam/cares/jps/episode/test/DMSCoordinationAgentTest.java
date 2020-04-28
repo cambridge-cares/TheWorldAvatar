@@ -112,8 +112,9 @@ public class DMSCoordinationAgentTest extends TestCase {
 		 OntModel jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);;
 			String iriofchimney = "http://localhost:8080/kb/ships/" + "563030060" + "/" + "Chimney-1.owl" ;
 			jenaOwlModel.read(iriofchimney);
-//			try {
-//				//jenaOwlModel = LocalOntologyModelManager.createChimneyModelForMMSI("477995499");
+//		OntModel jenaOwlModel = null;
+//		try {
+//				jenaOwlModel = LocalOntologyModelManager.createChimneyModelForMMSI("563030060");
 //
 //			} catch (IOException e) {
 //				// TODO Auto-generated catch block
@@ -125,6 +126,8 @@ public class DMSCoordinationAgentTest extends TestCase {
 		
 		
 	}
+	
+
 	
 	private List<String[]> queryKBIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
