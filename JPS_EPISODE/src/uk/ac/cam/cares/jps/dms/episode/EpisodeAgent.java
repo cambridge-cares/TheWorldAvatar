@@ -11,7 +11,9 @@ import javax.servlet.annotation.WebServlet;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -24,7 +26,6 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dms.dispersion.DispersionModellingAgent;
-import uk.ac.cam.cares.jps.dms.listener.LocalOntologyModelManager;
 
 @WebServlet("/EpisodeAgent")
 public class EpisodeAgent extends DispersionModellingAgent {
@@ -111,17 +112,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
             + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
             +"PREFIX j10:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#>"
             + "SELECT ?overallflowrateval ?particulatefractionval ?particulatediameterval "
+		
             + "WHERE {?entity  a  j3:Pipe  ."
-            + "?entity   j3:hasHeight ?heightchimney ."
-            + "?heightchimney  j2:hasValue ?vheightchimney ."
-            + "?vheightchimney  j2:numericalValue ?heightchimneyval ."
-            + "?entity   j3:hasInsideDiameter ?diameterchimney ."
-            + "?diameterchimney  j2:hasValue ?vdiameterchimney ."
-            + "?vdiameterchimney  j2:numericalValue ?diameterchimneyval ."
             + "?entity   j4:realizes ?proc ."
             + "?proc j5:hasOutput ?waste ."
             + "?waste j6:refersToGeneralizedAmount ?genwaste ."
-            + "?genwaste   j2:contains ?particle ." + 
+            + "?genwaste   j2:contains ?particle ." 
+            + 
               " ?particle j2:hasProperty ?overallflowrate ." + 
             " ?overallflowrate j2:hasValue ?voverallflowrate ." + 
             "?voverallflowrate j2:numericalValue ?overallflowrateval ." + 
@@ -219,74 +216,74 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 			
 			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_centerBCZ.dat");
-			return requestParams;
+			return responseParams;
 		}
     
     @Override
 	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
-		
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
-				+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
-				+ "SELECT ?class ?propval ?proptimeval ?graph "
-				+ "{ GRAPH ?graph "
-				+ "{ "
-				 
-				+ "  ?entity j4:observes ?prop ." 
-				+ " ?prop a ?class ."
-				+ " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." 
-				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
-				+ "}" 
-				+ "}" 
-				+ "ORDER BY DESC(?proptimeval)LIMIT20"; 
-		
-		List<String[]> listmap = queryEndPointDataset(sensorinfo);
-
 		 List<String[]> resultquery = new ArrayList<String[]>();
 
 	        String[]header= {"*","yyyy","mm","dd","hh","FF1","DD1","T25m","DT","RH%","PP_mm","Cloud","Press","FF2","DD2"};
 	        resultquery.add(0,header);
-	        String time=listmap.get(0)[2];
 	        String[]content=new String[15];
 	        content[0]="";
-	        content[1]=time.split("-")[0];
-	        content[2]=time.split("-")[1];
-	        content[3]=time.split("-")[2].split("T")[0];
-	        content[4]=time.split("-")[2].split("T")[1].split(":")[0];
-	        for(int r=0;r<listmap.size();r++) {
-	        	if(listmap.get(r)[3].contains(stniri.get(1))) {
-	        		System.out.println("it goes number 2");
-	        		if(listmap.get(r)[0].toLowerCase().contains("speed"))
-	        		content[13]=listmap.get(r)[1];
-	        		else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
-	        			content[14]=listmap.get(r)[1];
-	        		}
-	        	}else if(listmap.get(r)[3].contains(stniri.get(0))) {
-	        		System.out.println("it goes number 1");
-	        		if(listmap.get(r)[0].toLowerCase().contains("speed")) {
-		        		content[5]=listmap.get(r)[1];
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
-		        		content[6]=listmap.get(r)[1];
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
-		        		content[7]=listmap.get(r)[1];
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
-		        		String decimalhumidity=listmap.get(r)[1];
-		        		double percent=Double.valueOf(decimalhumidity)*100;
-		        		content[9]=""+percent;
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
-		        		content[10]=listmap.get(r)[1];
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("cloud")) {
-		        		content[11]=listmap.get(r)[1];
-		        	}else if(listmap.get(r)[0].toLowerCase().contains("pressure")) {
-		        		content[12]=listmap.get(r)[1];
-		        	}
-	        	}
-	        }
 	        content[8]=""+deltaT; //currently hardcoded about the delta T but can be substituted by model
-	        resultquery.add(content);
+	        
+    	for(int x=0;x<stniri.size();x++) {
+    		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
+    				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
+    				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
+    				+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
+    				+ "SELECT ?class ?propval ?proptimeval "
+    				+ "{ GRAPH <"+stniri.get(x)+"> "
+    				+ "{ "
+    				 
+    				+ "  ?entity j4:observes ?prop ." 
+    				+ " ?prop a ?class ."
+    				+ " ?prop   j2:hasValue ?vprop ."
+    				+ " ?vprop   j2:numericalValue ?propval ." 
+    				+ " ?vprop   j6:hasTime ?proptime ."
+    				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+    				+ "}" 
+    				+ "}" 
+    				+ "ORDER BY DESC(?proptimeval)LIMIT7";
+    		List<String[]> listmap = queryEndPointDataset(sensorinfo);
+    		for(int r=0;r<listmap.size();r++) {
+    			if(x==0) {
+    				if(listmap.get(r)[0].toLowerCase().contains("speed")) {
+    	        		content[5]=listmap.get(r)[1];
+    	        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
+    	        		content[6]=listmap.get(r)[1];
+    	        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
+    	        		content[7]=listmap.get(r)[1];
+    	        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
+    	        		String decimalhumidity=listmap.get(r)[1];
+    	        		double percent=Double.valueOf(decimalhumidity)*100;
+    	        		content[9]=""+percent;
+    	        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
+    	        		content[10]=listmap.get(r)[1];
+    	        	}else if(listmap.get(r)[0].toLowerCase().contains("cloud")) {
+    	        		content[11]=listmap.get(r)[1];
+    	        	}else if(listmap.get(r)[0].toLowerCase().contains("pressure")) {
+    	        		content[12]=listmap.get(r)[1];
+    	        	}
+    				String time=listmap.get(0)[2];
+    	    		content[0]="";
+    		        content[1]=time.split("-")[0];
+    		        content[2]=time.split("-")[1];
+    		        content[3]=time.split("-")[2].split("T")[0];
+    		        content[4]=time.split("-")[2].split("T")[1].split(":")[0];
+    				
+    			}else {
+    				if(listmap.get(r)[0].toLowerCase().contains("speed"))
+    	        		content[13]=listmap.get(r)[1];
+    	        		else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
+    	        			content[14]=listmap.get(r)[1];
+    	        		}
+    			}
+    		}    		
+    	}
+    	 resultquery.add(content);
 	        StringBuilder sb= new StringBuilder();
 	       //convert to tsv
 	        for(int v=0;v<resultquery.size();v++) {
@@ -323,15 +320,15 @@ public class EpisodeAgent extends DispersionModellingAgent {
 //			
 //			jenaOwlModel.read(iriofchimney);
 			
-			 OntModel jenaOwlModel = null;
-			try {
-				jenaOwlModel = LocalOntologyModelManager.createChimneyModelForMMSI(mmsi);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			 OntModel jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+			 String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl" ;   
+			 if (AgentLocator.isJPSRunningForTest()) {
+				 iriofchimney = "http://localhost:8080/kb/ships/" + mmsi + "/" + "Chimney-1.owl" ;
+		        }
+				
+				jenaOwlModel.read(iriofchimney);
 			System.out.println("iri chimney now= "+mmsi);
-			System.out.println("result for particle query number= "+ship);
+
 			
 			List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
 			System.out.println("result for particle size= "+resultListParticlePollutant.size());
