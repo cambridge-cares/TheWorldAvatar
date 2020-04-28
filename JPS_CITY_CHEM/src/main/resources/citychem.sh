@@ -39,7 +39,8 @@ then
 		zip $i.zip $i
 		cd ..
 		./srtm_generate_hdr.sh ./srtm3/$i.zip
-		mv $i* ./srtm3
+		fileName=${i%.*}
+		mv $fileName.* ./srtm3
 		cd srtm3
 	done
 	cd ${HOME}/citychem-1.3/preproc/auxiliary
