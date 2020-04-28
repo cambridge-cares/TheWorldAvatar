@@ -59,7 +59,8 @@ public class WeatherAgentTest extends TestCase {
 				center);
 		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri2,centerPointConverted[0],centerPointConverted[1]);
 		try {
-			new WeatherAgent().executeFunctionPeriodically(result,cityiri2);
+			//new WeatherAgent().executeFunctionPeriodically(result,cityiri2);
+			new WeatherAgent().executePeriodicUpdate(cityiri2);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -67,10 +68,7 @@ public class WeatherAgentTest extends TestCase {
 		
 	}
 	
-	public void testhongkongaccuweather() throws URISyntaxException {
-		JSONObject result=new WeatherAgent().extractedSingleDataFromAccuweather("pressure", "hongkong");
-		System.out.println("result= "+result.toString());
-	}
+
 	
 	public void testAgentCallWeatherAgent() {
 		double xmin=11560879.832;
@@ -139,6 +137,9 @@ public class WeatherAgentTest extends TestCase {
 			new WeatherAgent().insertDataRepoContext(info,context);
 		}
 
+	}
+	public void testtime() {
+		System.out.println(new WeatherAgent().provideCurrentTime());
 	}
 	
 }
