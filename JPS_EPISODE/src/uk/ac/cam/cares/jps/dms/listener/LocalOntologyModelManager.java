@@ -26,7 +26,7 @@ public class LocalOntologyModelManager extends BaseChimneyOntologyModelManager i
 
         String content = getBaseChimneyContent();
         content = content.replaceAll(IRI_KB_BASE + OWL_CHIMNEY, shipKbURL + mmsi + "/" + OWL_CHIMNEY);
-
+        System.out.println("new iri ship= "+shipKbURL + mmsi + "/" + OWL_CHIMNEY);
         return createModelFromString(content);
     }
 

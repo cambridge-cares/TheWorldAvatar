@@ -146,6 +146,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
+		System.out.println("keys-0="+keys[0]);
+		System.out.println("jenaOwlModel content= "+jenaOwlModel.isEmpty());
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultList;
 	}
@@ -196,8 +198,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
 			double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
 			double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
-			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
 			
+			System.out.println("sourcecoordinate= "+sourceCRSName);
+			System.out.println("lowerx="+lowx);
+			System.out.println("upperx="+upx);
+			System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
+			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
+			createEmissionInput(dataPath, "points_singapore_2019.csv",shipdata);
 			try { //for control file
 				createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
 				createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
@@ -209,7 +216,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 			createReceptorFile(region,dataPath,"receptor_input.txt");
 			createWeatherInput(dataPath,"mcwind_input_singapore_20191118.txt",stniri);
-			createEmissionInput(dataPath, "cctapm_meta.inp",shipdata);
+
 			
 			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_centerBCZ.dat");
 			return requestParams;
@@ -299,9 +306,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 	@Override
 	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {
+		
 		JSONArray coordinateship=getEntityData(shipdata);
 	    //OntModel jenaOwlModel = JenaHelper.createModel();
-	    
+	    System.out.println("it goes to create emission input here");
 	   
 	    
 		int shipAmount=coordinateship.length();
@@ -310,10 +318,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		 resultquery.add(0,header);
 		for (int ship = 0; ship < shipAmount; ship++) {
 			String mmsi = coordinateship.getJSONObject(ship).get(DATA_KEY_MMSI).toString();
-			String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl" + "#"
-					+ "Chimney-1";
-			
-			//jenaOwlModel.read(iriofchimney);
+//			String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl" + "#"
+//					+ "Chimney-1";
+//			
+//			jenaOwlModel.read(iriofchimney);
 			
 			 OntModel jenaOwlModel = null;
 			try {
@@ -322,9 +330,15 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
+			System.out.println("iri chimney now= "+mmsi);
+			System.out.println("result for particle query number= "+ship);
+			
+			List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
+			System.out.println("result for particle size= "+resultListParticlePollutant.size());
+			
+			
 			List<String[]> resultListChimneyGasPollutant = queryKBIRI(chimneyiriInfo, jenaOwlModel);
-
+			System.out.println("result for gas size= "+resultListChimneyGasPollutant.size());
 			JSONObject mappollutant = new JSONObject();
 			for (int d = 0; d < resultListChimneyGasPollutant.size(); d++) {
 				if (resultListChimneyGasPollutant.get(d)[5].contains("EmissionRate")) {
@@ -332,7 +346,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 					mappollutant.put(key, resultListChimneyGasPollutant.get(d)[6]);
 				}
 			}
-			List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
+
+			
 			double fractionpm25 = 0.0;
 			double fractionpm10 = 0.0;
 			for (int x = 0; x < resultListParticlePollutant.size(); x++) {
@@ -516,18 +531,21 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double[]res= {xlowerinit,ylowerinit};
 		return res;
 	}
-	private double[] calculatenumberCellDetails(double xup, double yup,double xdown, double ydown, double dx, double dy) {
+	private int[] calculatenumberCellDetails(double xup, double yup,double xdown, double ydown, double dx, double dy) {
 		// dx and dy should be  min 1000 m
 		double nx=(xup-xdown)/dx;
 		double ny=(yup-ydown)/dy;
-		if(nx%5!=0||ny%5!=0) { //nx and ny should be factor of 5
-			System.out.println("boundary conditions is not fulfilled");
-			System.out.println("nx= "+nx);
-			System.out.println("ny= "+ny);
-			
-			return null;
-		}
-		double[]ncell= {nx,ny};
+		System.out.println("nx= "+nx);
+		System.out.println("ny= "+ny);
+		//nx and ny should be factor of 5
+//		if(nx%5!=0||ny%5!=0) { 
+//			System.out.println("boundary conditions is not fulfilled");
+//			System.out.println("nx= "+nx);
+//			System.out.println("ny= "+ny);
+//			
+//			return null;
+//		}
+		int[]ncell= {(int)Math.round(nx),(int) Math.round(ny)};
 		return ncell;
 	}
 	
@@ -543,7 +561,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				.get("upperx").toString();
 		String upy = inputparameter.getJSONObject("regioninput").getJSONObject("uppercorner")
 				.get("uppery").toString();
-
+		
+		System.out.println("newlowerx="+lowx);
+		System.out.println("newupperx="+upx);
 
 		// it is assumed to be already in utm 48 or this calculation?
 		double proclowx = Double.valueOf(lowx);
@@ -552,7 +572,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double procupy = Double.valueOf(upy);
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
-		double[] ncell = calculatenumberCellDetails(procupx, procupy, proclowx, proclowy, dx, dy);
+		int[] ncell = calculatenumberCellDetails(procupx, procupy, proclowx, proclowy, dx, dy);
 
 
 		
