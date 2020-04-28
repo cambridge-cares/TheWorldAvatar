@@ -1,5 +1,5 @@
 #!/bin/bash
-# Slurm job submission script for Kinetics and SRM Engine Suite.
+# Slurm job submission script for EPISODE CityChem.
 # It is being used by a wrapper script.
 # DO NOT EXECUTE THIS DIRECTLY ON THE COMMAND LINE!
 # DO NOT SUBMIT THIS DIRECTLY TO SLURM!
@@ -39,7 +39,7 @@ cp $SLURM_SUBMIT_DIR/citychem.sh .
 #cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.chk .
 #cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.rwf .
 
-#Run Java
+#Run Fortran
 chmod +x citychem.sh
 ./citychem.sh
 
