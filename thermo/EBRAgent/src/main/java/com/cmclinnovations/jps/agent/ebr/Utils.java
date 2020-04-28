@@ -322,4 +322,26 @@ public static void createInputFolder(String jsonInput) throws IOException {
 
 }
 
+	/**
+	 * Converts a string with one more elements into a list. If there are
+	 * more<br>
+	 * than one element, the elements can be comma (,) or pipe (|) separated.
+	 * However,<br>
+	 * separator can be passed as a parameter.
+	 * 
+	 * @param input
+	 *            string to convert into a list
+	 * @param separator
+	 *            for example , or |
+	 * @return
+	 */
+	public static List<String> convertStringToList(String input, String separator) {
+		List<String> list = new ArrayList<>();
+		String[] tokens = input.split(separator);
+		for (String token : tokens) {
+			list.add(token.trim());
+		}
+		return list;
+	}
+
 }
