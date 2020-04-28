@@ -1,8 +1,12 @@
 package com.cmclinnovations.jps.agent.configuration;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+
+import com.cmclinnovations.jps.agent.ebr.Utils;
 
 /**
  * This class reads all inputs from the ebr-agent.properties file, that is<br>
@@ -22,12 +26,53 @@ public class EBRAgentProperty {
 	
 	@Value("${ebr.agent.ontocompchem.kb.endpoints}")
 	private String ontoCompChemKBEndPoints;
+	
+	/**
+	 * Both the OntoSpecies and OntoCompChem endpoints can be listed here.<br>
+	 * This will be used in performing federated queries which involve the<br>
+	 * use of both knowledge bases.  
+	 * 
+	 */
+	@Value("${ebr.agent.endpoints}")
+	private String ebrAgentEndPoints;
+	
+	@Value("${ebr.agent.ontospecies.repsitory.id}")
+	private String ontoSpeciesRepositoryID;
+	
+	@Value("${ebr.agent.ontocompchem.repsitory.id}")
+	private String ontoCompChemRepositoryID;
 
-	public String getOntoSpeciesKBEndPoints() {
-		return ontoSpeciesKBEndPoints;
+	@Value("${ebr.agent.cross.validation.process}")
+	private String ebrAgentCrossValidation;
+
+	@Value("${ebr.agent.eof.calculation}")
+	private String ebrAgentCalculation;
+
+	public List<String> getOntoSpeciesKBEndPoints() {
+		return Utils.convertStringToList(ontoSpeciesKBEndPoints, ",");
 	}
 
-	public String getOntoCompChemKBEndPoints() {
-		return ontoCompChemKBEndPoints;
+	public List<String> getOntoCompChemKBEndPoints() {
+		return Utils.convertStringToList(ontoCompChemKBEndPoints, ",");
+	}
+	
+	public List<String> getEbrAgentEndPoints() {
+		return Utils.convertStringToList(ebrAgentEndPoints, ",");
+	}
+
+	public String getOntoSpeciesRepositoryID() {
+		return ontoSpeciesRepositoryID;
+	}
+
+	public String getOntoCompChemRepositoryID() {
+		return ontoCompChemRepositoryID;
+	}
+
+	public String getEbrAgentCrossValidation() {
+		return ebrAgentCrossValidation;
+	}
+
+	public String getEbrAgentCalculation() {
+		return ebrAgentCalculation;
 	}
 }
