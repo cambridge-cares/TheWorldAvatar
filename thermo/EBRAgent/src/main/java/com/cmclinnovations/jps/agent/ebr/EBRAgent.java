@@ -84,7 +84,8 @@ public class EBRAgent extends HttpServlet{
 	
 	SlurmJob slurmJob = new SlurmJob();
 	static JobSubmission jobSubmission;
-	public static ApplicationContext applicationContext;
+	public static ApplicationContext applicationContextSlurmJobAPI;
+	public static ApplicationContext applicationContextEBRAgent;
 	public static SlurmJobProperty slurmJobProperty;
 	public static EBRAgentProperty ebrAgentProperty;
 	
@@ -202,14 +203,17 @@ public class EBRAgent extends HttpServlet{
         // tive executions of the scheduler.
         executorService.scheduleAtFixedRate(ebrAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the ebr-agent.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+        if (applicationContextSlurmJobAPI == null) {
+        	applicationContextSlurmJobAPI = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+        if (applicationContextEBRAgent == null) {
+        	applicationContextEBRAgent = new AnnotationConfigApplicationContext(com.cmclinnovations.jps.agent.configuration.SpringConfiguration.class);
 		}
 		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+			slurmJobProperty = applicationContextSlurmJobAPI.getBean(SlurmJobProperty.class);
 		}
 		if (ebrAgentProperty == null) {
-			ebrAgentProperty = applicationContext.getBean(EBRAgentProperty.class);
+			ebrAgentProperty = applicationContextEBRAgent.getBean(EBRAgentProperty.class);
 		}
 		logger.info("---------- Quantum jobs are being monitored  ----------");
         System.out.println("---------- Quantum jobs are being monitored  ----------");
@@ -356,37 +360,23 @@ public class EBRAgent extends HttpServlet{
 	 * @throws Exception 
 	 * 
 	 */
-	
-	private File getInputFile(String jsonInput) throws Exception{
-		
+	public File getInputFile(String jsonInput) throws Exception{
 		Utils.createInputFolder(jsonInput);
-		
-		LinkedList<SpeciesBean> nistSpeciesIdList = new LinkedList<SpeciesBean>();
-		
+		LinkedList<SpeciesBean> nistRefSpeciesIdList = new LinkedList<SpeciesBean>();
+		LinkedList<SpeciesBean> nistTargetSpeciesIdList = new LinkedList<SpeciesBean>();
 		CSVGenerator csvGenerator = new CSVGenerator();
-		
 		OntoSpeciesKG oskg = new OntoSpeciesKG();
-		
-		/**
-		 * Feroz's line
-		 */
-//    	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
-		
-		/**
-		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * 
-		 * Stores in List<Map> pairs of target species IRIs and corresponding ontospecies IRIs.
-		 * 
-		 */	
-		
-		List<Map<String, Object>> targetSpeciesList =  JSonRequestParser.getAllTargetSpeciesIRI(jsonInput);
-		
-		System.out.println("target species size: " + targetSpeciesList.size());
-
-		nistSpeciesIdList = SpeciesBean.getSpeciesIRIList(targetSpeciesList, nistSpeciesIdList, oskg);
-		
 		List<Map<String, Object>> referenceSpeciesList =  JSonRequestParser.getAllReferenceSpeciesIRI(jsonInput);
+		/**
+		 * Stores in List<Map> pairs of target species IRIs and corresponding ontospecies IRIs.
+		 */
+		List<Map<String, Object>> targetSpeciesList =  JSonRequestParser.getAllTargetSpeciesIRI(jsonInput);
+		System.out.println("reference species size: " + referenceSpeciesList.size());
+		System.out.println("target species size: " + targetSpeciesList.size());
 		
+		nistRefSpeciesIdList = SpeciesBean.getSpeciesIRIList(referenceSpeciesList, nistRefSpeciesIdList, oskg, false);
+		nistTargetSpeciesIdList = SpeciesBean.getSpeciesIRIList(targetSpeciesList, nistTargetSpeciesIdList, oskg, true);
+				
 		System.out.println("reference species size: " + referenceSpeciesList.size());
 		
 		for(Map<String, Object> map: referenceSpeciesList) {
@@ -423,7 +413,7 @@ public class EBRAgent extends HttpServlet{
 				
 				System.out.println("gaussianIRI: " + gaussianIRI);
 				
-				String inputSourceGaussianFileOnLocalHost = gaussianIRI.replaceAll("http://www.theworldavatar.com/", "http://localhost:8080/");
+				String inputSourceGaussianFileOnLocalHost = gaussianIRI;//.replaceAll("http://www.theworldavatar.com/", "http://localhost:8080/");
 
 				String gaussianFileName = inputSourceGaussianFileOnLocalHost.substring(inputSourceGaussianFileOnLocalHost.lastIndexOf("/") + 1);
 				
@@ -451,26 +441,8 @@ public class EBRAgent extends HttpServlet{
 			}
 		}
 		
-		csvGenerator.generateCSVFile(nistSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getReferenceSpeciesPool(jsonInput));
-		
-		/**
-		 * 
-		 * Commented lines is Feroz's code.
-		 * 
-		 */
-		
-//    	String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);   
-//    	System.out.println("speciesGeometry:  " + speciesGeometry);    
-//		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
-//		throw new EBRAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
-//    	}
-		
-		
-	/**
-	 * Feroz line	
-	 */
-//		String inputFilePath = getInputFilePath();	
-		
+		csvGenerator.generateCSVFile(nistRefSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getReferenceSpeciesPool(jsonInput));
+		csvGenerator.generateCSVFile(nistTargetSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getTargetSpeciesPool(jsonInput));
     	return new File(SystemUtils.getUserHome()+"/"+JSonRequestParser.getInputZipFile(jsonInput)); //here should be absolute file path of the zip file. 
 	}
 	
