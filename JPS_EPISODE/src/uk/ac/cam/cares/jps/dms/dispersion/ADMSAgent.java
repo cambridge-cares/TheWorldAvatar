@@ -138,8 +138,8 @@ public class ADMSAgent extends DispersionModellingAgent {
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
 				+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
-				+ "SELECT ?class ?propval ?proptimeval ?graph "
-				+ "{ GRAPH ?graph "
+				+ "SELECT ?class ?propval ?proptimeval "
+				+ "{ GRAPH <"+stniri.get(0)+"> "
 				+ "{ "
 				 
 				+ "  ?entity j4:observes ?prop ." 
@@ -150,7 +150,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
 				+ "}" 
 				+ "}" 
-				+ "ORDER BY DESC(?proptimeval)LIMIT 9";
+				+ "ORDER BY DESC(?proptimeval)LIMIT 7";
 		
 		List<String[]> listmap = queryEndPointDataset(sensorinfo); //taken from dispersion modelling agent
 
@@ -164,7 +164,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 		    JSONObject relativehumidity= new JSONObject();
 		    
 	        for(int r=0;r<listmap.size();r++) {
-	        	if(listmap.get(r)[3].contains(stniri.get(0))) {
+	        	
 	        		System.out.println("it goes number 1");
 	        		if(listmap.get(r)[0].toLowerCase().contains("speed")) {
 	        			wind.put("hasspeed", listmap.get(r)[1]);
@@ -187,7 +187,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("pressure")) {
 
 		        	}
-	        	}
+	        	
 	        }
 	        weather.put("haswind", wind);
 	        weather.put("hasexteriortemperature", temperature);
