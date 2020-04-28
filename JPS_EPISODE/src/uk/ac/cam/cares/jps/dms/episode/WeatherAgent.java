@@ -334,37 +334,54 @@ public class WeatherAgent extends JPSHttpServlet {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
     }
-  	
-	public void updateRepoNew(String context,String propnameclass, String newpropvalue, String newtimestamp) {
-		List<String[]>oldcontent= provideDataRepoRoutine(context,propnameclass);
-		List<String[]> valuemapold= new ArrayList<String[]>();
-		valuemapold.addAll(oldcontent);
-		valuemapold.remove(0);
-		String[]newcontent= {"key1prop",newpropvalue,"key2time",newtimestamp};
-		valuemapold.add(newcontent);
+  		
+	public void updateRepoNewMethod(String context,String propnameclass, String newpropvalue, String newtimestamp) {
+		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "SELECT ?vprop ?proptime "
+//				+ "WHERE " //it's replaced when named graph is used
+				+ "{graph "+"<"+context+">"
+				+ "{ "
 		
-		for(int x=0; x<oldcontent.size();x++) {
-			String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-					+ "WITH <" + context + ">"
-					+ "DELETE { "
-					+ "<" + oldcontent.get(x)[0]+ "> j2:numericalValue \""+oldcontent.get(x)[1]+"\"^^xsd:double ."
-					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp ?olddata ."
-					+ "} "
-					+ "INSERT {"
-					+ "<" + oldcontent.get(x)[0]+ "> j2:numericalValue \""+valuemapold.get(x)[1]+"\"^^xsd:double ."
-					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp \""+valuemapold.get(x)[3]+"\" ." 
-					+ "} "
-					+ "WHERE { "
-					+ "<" + oldcontent.get(x)[2]+ "> j6:inXSDDateTimeStamp ?olddata ."
-					+ "}";
+				+ "  ?entity j4:observes ?prop ."
+
+				+ " ?prop a j4:"+propnameclass+" ."
+				+ " ?prop   j2:hasValue ?vprop ."
+				+ " ?vprop   j2:numericalValue ?propval ." 
+				+ " ?vprop   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+				+ "}" 
+				+ "}" 
+				+ "ORDER BY ASC(?proptimeval)LIMIT1";
+		
+		List<String[]> keyvaluemapold =queryEndPointDataset(sensorinfo);
+		
+		String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "WITH <" + context + ">"
+				+ "DELETE { "
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j2:numericalValue ?oldpropertydata ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddata ."
+				+ "} "
+				+ "INSERT {"
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j2:numericalValue \""+newpropvalue+"\"^^xsd:double ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				+ "} "
+				+ "WHERE { "
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j2:numericalValue ?oldpropertydata ."	
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddata ."
+				+ "}";
+		
 			
 			KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate);
 
-		}
+		
 		
 	}
 	
@@ -513,14 +530,23 @@ public class WeatherAgent extends JPSHttpServlet {
 		JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 		for (int r = 0; r < data.length(); r++) {
 			String name = data.getJSONObject(r).get("name").toString();
-			String propertyValue = datasource.getJSONArray("items").getJSONObject(0).getJSONArray("readings").getJSONObject(r)
-					.get("value").toString(); 
-			if(properties.contentEquals("OutsideWindSpeed")){
-				propertyValue =""+Double.valueOf(propertyValue)*0.514444;
-			}else if(properties.contentEquals("OutsideAirRelativeHumidity")){
-				propertyValue =""+Double.valueOf(propertyValue)/100;
+			System.out.println("name= "+name);
+			if(map.get(name)!=null) {
+				String propertyValue = datasource.getJSONArray("items").getJSONObject(0).getJSONArray("readings").getJSONObject(r)
+						.get("value").toString(); 
+				if(properties.contentEquals("OutsideWindSpeed")){
+					String newpropertyValue =""+Double.valueOf(propertyValue)*0.514444;
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),properties,newpropertyValue,completeformattime);
+				}else if(properties.contentEquals("OutsideAirRelativeHumidity")){
+					String newpropertyValue =""+Double.valueOf(propertyValue)/100;
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),properties,newpropertyValue,completeformattime);
+				}else {
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),properties,propertyValue,completeformattime);
+				}
 			}
-			new WeatherAgent().updateRepoNew(map.get(name).toString(),properties,propertyValue,completeformattime);//stored in Celcius
+
+
+			
 			
 		}
 
@@ -537,17 +563,17 @@ public class WeatherAgent extends JPSHttpServlet {
     	
     	String cloudcover=joPr.getJSONObject("clouds").get("all").toString(); //in %
     	
-    	
+    	//accuweather already in m/s
 		if (cityName.contains("singapore")) {
 			JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 			for (int r = 0; r < data.length(); r++) {
 				String name = data.getJSONObject(r).get("name").toString();
 				if (properties.contentEquals("OutsideAirCloudCover")) {
-					cloudcover = "" + Double.valueOf(cloudcover) / 100;
-					new WeatherAgent().updateRepoNew(map.get(name).toString(), properties, cloudcover,
+					String newcloudcover = "" + Double.valueOf(cloudcover) / 100; //stored in decimal
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, newcloudcover,
 							completeformattime);// stored in decimal
 				}else if (properties.contentEquals("OutsideAirPressure")) {
-					new WeatherAgent().updateRepoNew(map.get(name).toString(), properties, pressure,
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, pressure,
 							completeformattime);// stored in decimal
 				}
 
@@ -558,11 +584,11 @@ public class WeatherAgent extends JPSHttpServlet {
 			for (int r = 0; r < stnCollection.length(); r++) {
 				String name = stnCollection.getJSONObject(r).get("stnname").toString();
 				if (properties.contentEquals("OutsideAirCloudCover")) {
-					cloudcover = "" + Double.valueOf(cloudcover) / 100;
-					new WeatherAgent().updateRepoNew(map.get(name).toString(), properties, cloudcover,
+					String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, newcloudcover,
 							completeformattime);// stored in decimal
 				} else if (properties.contentEquals("OutsideAirPrecipitation")) {
-					new WeatherAgent().updateRepoNew(map.get(name).toString(), properties, precipitation,
+					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, precipitation,
 							completeformattime);// stored in decimal
 				}
 
@@ -631,7 +657,16 @@ public class WeatherAgent extends JPSHttpServlet {
 			String long1 = stnCollection.getJSONObject(r).get("x").toString();
 			String timestamp = stnCollection.getJSONObject(r).get("timestamp").toString();
 			String propertyValue = stnCollection.getJSONObject(r).get(propertyname).toString(); 
-			new WeatherAgent().updateRepoNew(map.get(name).toString(),propertyname,propertyValue,completeformattime);//stored in Celcius
+			if (propertyname.contentEquals("OutsideAirRelativeHumidity")) {
+				String newpropertyValue = "" + Double.valueOf(propertyValue) / 100; //stored in decimal
+				new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),propertyname,newpropertyValue,completeformattime);
+			}else if (propertyname.contentEquals("OutsideWindSpeed")) {
+				String newpropertyValue = "" + Double.valueOf(propertyValue) *1000/3600; //stored in m/s
+				new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),propertyname,newpropertyValue,completeformattime);
+			}else {
+				new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),propertyname,propertyValue,completeformattime);
+			}
+			
 			
 		}
 
@@ -643,10 +678,8 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static void main(String[]args) { //used for upload all content locally
 
 		RepositoryConnection con = repo.getConnection();
-//		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001";
-//		String context2="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002";
-//		String location="singapore";
-		String location="hong kong";
+		String location="singapore";
+//		String location="hong kong";
 		WeatherAgent a=new WeatherAgent();
 		a.resetRepoTrial(con,location); //currently the context is not used
 		
