@@ -6,7 +6,7 @@ public class EpisodeConfig {
 	private int nx=10 ;//decide the nx for the scope
 	private int ny=10 ;//decide the ny for the scope	
 	private double dz=10;
-	private double nz=13;
+	private int nz=13;
 	private double upperheight=25.0;
 	private double lowerheight=2.0;
 	//typical gradient = 0.6K/100m
@@ -42,10 +42,10 @@ public class EpisodeConfig {
 	public void setDz(double dz) {
 		this.dz = dz;
 	}
-	public double getNz() {
+	public int getNz() {
 		return nz;
 	}
-	public void setNz(double nz) {
+	public void setNz(int nz) {
 		this.nz = nz;
 	}
 	public double getUpperheight() {

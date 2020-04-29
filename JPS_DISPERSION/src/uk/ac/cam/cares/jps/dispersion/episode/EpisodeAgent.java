@@ -57,7 +57,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private int nx ;//decide the dx for the scope
 	private int ny;//decide the dy for the scope	
 	private double dz;
-	private double nz;
+	private int nz;
 	private double upperheight;
 	private double lowerheight;
 	private double deltaT;
@@ -694,7 +694,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 			String line62=dcell[0]+","+dcell[1];
 			String line62b="";
-			for(int x=0;x<Math.round(nz);x++) {
+			for(int x=0;x<nz;x++) {
 				line62b=line62b+","+dz;
 			}
 			newcontent.add(line62+line62b+"\n"); //line 62
@@ -736,7 +736,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 			String segmentfraction="0.25";
 			String line650=segmentfraction;
-			for(int x=0;x<Math.round(nz);x++) {
+			for(int x=0;x<nz;x++) {
 				line650=line650+","+segmentfraction;
 			}
 			newcontent.add(line650+"\n"); //line 650
