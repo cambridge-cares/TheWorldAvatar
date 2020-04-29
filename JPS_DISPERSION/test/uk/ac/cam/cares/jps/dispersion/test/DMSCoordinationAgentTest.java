@@ -59,7 +59,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		//jo.put("location", "Singapore");
 		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
 
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DMS/DMSCoordinationAgent",jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/DMSCoordinationAgent",jo.toString());
 		
 	}
 	
@@ -69,7 +69,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 	public void testjsoninputsample() {
 		JSONObject input= new JSONObject (jsonparamsample2); //with episode instead of ADMS
 		System.out.println("size of array waste= "+input.getJSONArray("waste").length());
-		String resultStart=AgentCaller.executePost("/JPS_DMS/DispersionModellingAgent", input.toString());
+		String resultStart=AgentCaller.executePost("/JPS_DISPERSION/DispersionModellingAgent", input.toString());
 	
 //        Method executeObject = new JPSHttpServlet().getClass().getDeclaredMethod("execute", String.class);
 //        executeObject.setAccessible(true);

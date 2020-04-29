@@ -69,7 +69,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		requestParams.put("building", building);
 		logger.info("building FROM COORDINATION AGENT: " + building.toString());
 
-		result = execute("/JPS_DMS/SensorWeatherAgent", requestParams.toString());
+		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
 		
@@ -100,7 +100,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			requestParams.put("waste", waste);
 		}
 
-        result = execute("/JPS_DMS/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
+        result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
         String folder = new JSONObject(result).getString("folder");
         requestParams.put("folder", folder);
 //----------------------------------------------------------------------------       

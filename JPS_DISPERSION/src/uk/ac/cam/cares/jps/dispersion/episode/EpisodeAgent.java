@@ -143,8 +143,6 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
-		System.out.println("keys-0="+keys[0]);
-		System.out.println("jenaOwlModel content= "+jenaOwlModel.isEmpty());
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultList;
 	}
@@ -328,14 +326,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				
 				jenaOwlModel.read(iriofchimney);
 			System.out.println("iri chimney now= "+mmsi);
-
-			
 			List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
-			System.out.println("result for particle size= "+resultListParticlePollutant.size());
-			
-			
 			List<String[]> resultListChimneyGasPollutant = queryKBIRI(chimneyiriInfo, jenaOwlModel);
-			System.out.println("result for gas size= "+resultListChimneyGasPollutant.size());
 			JSONObject mappollutant = new JSONObject();
 			for (int d = 0; d < resultListChimneyGasPollutant.size(); d++) {
 				if (resultListChimneyGasPollutant.get(d)[5].contains("EmissionRate")) {

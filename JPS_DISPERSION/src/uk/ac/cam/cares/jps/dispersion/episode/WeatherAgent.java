@@ -84,7 +84,10 @@ public class WeatherAgent extends JPSHttpServlet {
 		 String context2=listmap.get(1)[0]; // the furthest station	 	
 		 try {
 			//new WeatherAgent().executeFunctionPeriodically(listmap,cityiri);
-			 new WeatherAgent().executePeriodicUpdate(cityiri);
+			 new WeatherAgent().executePeriodicUpdate("singapore");
+			 new WeatherAgent().executePeriodicUpdate("kong");
+			 new WeatherAgent().executePeriodicUpdate("hague");
+			 new WeatherAgent().executePeriodicUpdate("berlin");
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -542,9 +545,9 @@ public class WeatherAgent extends JPSHttpServlet {
     	String relativehumidity=joPr.getJSONObject("main").get("humidity").toString();
     	String temperature=joPr.getJSONObject("main").get("temp").toString();
     	
+    	//System.out.println("cityIRI= "+cityIRI);
     	
-    	
-		if (cityIRI.contains("singapore")) {
+		if (cityIRI.toLowerCase().contains("singapore")) {
 			JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 			for (int r = 0; r < data.length(); r++) {
 				String name = data.getJSONObject(r).get("name").toString();
@@ -558,7 +561,7 @@ public class WeatherAgent extends JPSHttpServlet {
 				}
 
 			}
-		}else if (cityIRI.contains("kong")) {
+		}else if (cityIRI.toLowerCase().contains("kong")) {
 			
 			JSONArray stnCollection = datasource.getJSONArray("HKweather");
 			for (int r = 0; r < stnCollection.length(); r++) {
@@ -576,10 +579,10 @@ public class WeatherAgent extends JPSHttpServlet {
 			
 		}else {
 			String name=null;
-			if (cityIRI.contains("berlin")) {
+			if (cityIRI.toLowerCase().contains("berlin")) {
 				name ="Berlin-Alexanderplatz";
 //				iri="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-001.owl#WeatherStation-001";
-			}else if (cityIRI.contains("hague")) {
+			}else if (cityIRI.toLowerCase().contains("hague")) {
 				name ="Scheveningen";
 //				iri="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-001.owl#WeatherStation-001";
 			}
