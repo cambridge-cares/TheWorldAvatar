@@ -36,8 +36,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		 System.out.println("episode confif dxrec= "+episodeconfig.getDx_rec());
 		 dx_rec=episodeconfig.getDx_rec();
 		 dy_rec=episodeconfig.getDy_rec();
-		 dx=episodeconfig.getDx();
-		 dy=episodeconfig.getDy();
+		 nx=episodeconfig.getNx();
+		 ny=episodeconfig.getNy();
 		 dz=episodeconfig.getDz();
 		 nz=episodeconfig.getNz();
 		 upperheight=episodeconfig.getUpperheight();
@@ -54,8 +54,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	//later to be moved to config
 	private double dx_rec; // decide the dx for the receptor
 	private double dy_rec;// decide the dy for the receptor
-	private double dx ;//decide the dx for the scope
-	private double dy;//decide the dy for the scope	
+	private int nx ;//decide the dx for the scope
+	private int ny;//decide the dy for the scope	
 	private double dz;
 	private double nz;
 	private double upperheight;
@@ -528,12 +528,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double[]res= {xlowerinit,ylowerinit};
 		return res;
 	}
-	private int[] calculatenumberCellDetails(double xup, double yup,double xdown, double ydown, double dx, double dy) {
+	private double[] calculateEachDistanceCellDetails(double xup, double yup,double xdown, double ydown, int nx, int ny) {
 		// dx and dy should be  min 1000 m
-		double nx=(xup-xdown)/dx;
-		double ny=(yup-ydown)/dy;
-		System.out.println("nx= "+nx);
-		System.out.println("ny= "+ny);
+		double dx=(xup-xdown)/nx;
+		double dy=(yup-ydown)/ny;
+		System.out.println("dx= "+dx);
+		System.out.println("dy= "+dy);
 		//nx and ny should be factor of 5
 //		if(nx%5!=0||ny%5!=0) { 
 //			System.out.println("boundary conditions is not fulfilled");
@@ -542,8 +542,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 //			
 //			return null;
 //		}
-		int[]ncell= {(int)Math.round(nx),(int) Math.round(ny)};
-		return ncell;
+		double[]dcell= {dx,dy};
+		return dcell;
 	}
 	
 	public String modifyTemplate(String filename, JSONObject inputparameter) throws IOException {
@@ -569,7 +569,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double procupy = Double.valueOf(upy);
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
-		int[] ncell = calculatenumberCellDetails(procupx, procupy, proclowx, proclowy, dx, dy);
+		double[] dcell = calculateEachDistanceCellDetails(procupx, procupy, proclowx, proclowy, nx, ny);
 
 
 		
@@ -602,11 +602,11 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			fileContext = fileContext.replaceAll("154000.0", "" + center[1]); // replace with the new value y center
 																				// point
 			fileContext = fileContext.replaceAll("-35000.0a", "" + leftcorner[0]);
-			fileContext = fileContext.replaceAll("35b", "" + ncell[0]);
-			fileContext = fileContext.replaceAll("2000.0c", "" + dx);
+			fileContext = fileContext.replaceAll("35b", "" + nx );
+			fileContext = fileContext.replaceAll("2000.0c", "" + dcell[0]);
 			fileContext = fileContext.replaceAll("-35000.0d", "" + leftcorner[1]);
-			fileContext = fileContext.replaceAll("35e", "" + ncell[1]);
-			fileContext = fileContext.replaceAll("2000.0f", "" + dy);
+			fileContext = fileContext.replaceAll("35e", "" +ny );
+			fileContext = fileContext.replaceAll("2000.0f", "" + dcell[1]);
 
 			return fileContext;
 
@@ -634,13 +634,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
 					+ time.split("T")[1].split(":")[0] + line16b);
 			String line17b = separator + "!" + separator + lineoffile.get(16).split("!")[1];
-			newcontent.add(ncell[0] + line17b);
+			newcontent.add(nx + line17b);
 			String line18b = separator + "!" + separator + lineoffile.get(17).split("!")[1];
-			newcontent.add(ncell[1] + line18b);
+			newcontent.add(ny + line18b);
 			String line19b = separator + "!" + separator + lineoffile.get(18).split("!")[1];
 			newcontent.add(dx_rec + line19b);
 			String line20b = separator + "!" + separator + lineoffile.get(19).split("!")[1];
-			newcontent.add(dx + line20b);
+			newcontent.add(dcell[0] + line20b);
 			String line21b = separator + "!" + separator + lineoffile.get(20).split("!")[1];
 			newcontent.add(proclowx + "," + proclowy + line21b);// corner left
 			String line22b = separator + "!" + separator + lineoffile.get(21).split("!")[1];
@@ -688,11 +688,11 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int r = 52; r < 55; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(ncell[0]+","+ncell[1]+","+nz+","+"1,1,1\n"); //line 56
+			newcontent.add(nx+","+ny+","+nz+","+"1,1,1\n"); //line 56
 			for (int r = 56; r < 61; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			String line62=dx+","+dy;
+			String line62=dcell[0]+","+dcell[1];
 			String line62b="";
 			for(int x=0;x<Math.round(nz);x++) {
 				line62b=line62b+","+dz;
@@ -794,12 +794,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(lineoffile.get(25));
 			String line26b = lineoffile.get(26).split("!")[1] + "!" + lineoffile.get(26).split("!")[2] + "!"
 					+ lineoffile.get(26).split("!")[3];
-			String line26 = ncell[0] + separator + ncell[1] + separator + nz + separator + "!" + line26b;
+			String line26 = nx + separator + ny + separator + nz + separator + "!" + line26b;
 			newcontent.add(line26);
 			System.out.println("line26= " + line26);
 
 			String line27b = lineoffile.get(27).split("!")[1];
-			String line27 = dx + separator + dy + separator + "!" + line27b;
+			String line27 = dcell[0] + separator + dcell[1] + separator + "!" + line27b;
 			newcontent.add(line27);
 			System.out.println("line27= " + line27);
 			newcontent.add(lineoffile.get(28));// base with stretch factor
