@@ -128,7 +128,6 @@ public class DMSCoordinationAgentTest extends TestCase {
 	}
 	
 
-	
 	private List<String[]> queryKBIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);

@@ -20,7 +20,7 @@ import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-public class WeatherTimeStampKB {
+public class WeatherTimeStampKB { //control which location from
 	private OntClass mainobjclass = null;
 	private OntClass mainobj2class = null;
 	private OntClass mainobj3class = null;
@@ -91,6 +91,58 @@ public class WeatherTimeStampKB {
 		mBar=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#mBar");
 		degree=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree");
 		m=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m");
+	}
+	
+	public void executeConversion() throws Exception { //control which location to be created
+		System.out.println("Starting Process");
+		WeatherTimeStampKB converter = new WeatherTimeStampKB();
+		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Weather.csv");
+		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
+
+		
+		//for SG:
+//		int numberofstn=14;
+//		String locationid="SG";
+		
+		//for Berlin:
+//		int numberofstn=1;
+//		String locationid="DE";
+		
+		//for THeHague:
+		int numberofstn=1;
+		String locationid="NL";
+			
+		
+		//for HK:
+//		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+//		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
+//		readingFromCSVHK.remove(0);//move the header
+//		int numberofstn=readingFromCSVHK.size();
+//		String locationid="HK";
+		
+		for(int d=1;d<=numberofstn;d++) {
+			String number="00"+d;
+			if(d>9&&d<100) {
+				number="0"+d;
+			}else if(d>99) {
+				number=""+d;
+			}
+			converter.startConversion(readingFromCSV,"relativehumidity",number,locationid);
+			converter.startConversion(readingFromCSV,"windspeed",number,locationid);
+			converter.startConversion(readingFromCSV,"winddirection",number,locationid);
+			converter.startConversion(readingFromCSV,"precipitation",number,locationid);
+			converter.startConversion(readingFromCSV,"temperature",number,locationid);
+			converter.startConversion(readingFromCSV,"cloudcover",number,locationid);
+			converter.startConversion(readingFromCSV,"pressure",number,locationid);
+		}
+		//converter.startConversion(readingFromCSV,"temperature","001");
+		//converter.startConversion(readingFromCSV,"irradiation","001");
+		//converter.startConversion(readingFromCSV,"windspeed","001");
+		//converter.startConversion(readingFromCSV,"winddirection","001");
+		//converter.startConversion(readingFromCSV,"precipitation","001");
+		//converter.startConversion(readingFromCSV,"pressure","001");
+		//converter.startConversion(readingFromCSV,"relativehumidity","001");
+		//converter.startConversion(readingFromCSV,"cloudcover","001");
 	}
 	
 	public void doConversiontempsensor(OntModel jenaOwlModel, String mainobjectname,String Prefix,List<String[]> readingFromCSV,String[]location) throws FileNotFoundException, URISyntaxException{
@@ -326,11 +378,11 @@ public class WeatherTimeStampKB {
 			Prefix="http://www.theworldavatar.com/kb/hkg/"+countryname+"/";
 		}else if(locationID.contentEquals("NL")) {
 			countryname="thehague";
-			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/.....csv");
+			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/TheHagueTemplate.csv");
 			Prefix="http://www.theworldavatar.com/kb/nld/"+countryname+"/";
 		}else if(locationID.contentEquals("DE")) {
 			countryname="berlin";
-			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/......csv");
+			inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/BerlinTemplate.csv");
 			Prefix="http://www.theworldavatar.com/kb/deu/"+countryname+"/";
 		}
 		
@@ -438,62 +490,28 @@ public class WeatherTimeStampKB {
 			location[0]=long1;
 			location[1]=lat1;
 			location[2]=height1;
+		}else if(locationID.contains("DE")) {
+			List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(refDirFile);
+			readingFromCSV.remove(0);//remove header
+			String lat1=readingFromCSV.get(index)[1];
+			String long1=readingFromCSV.get(index)[2];
+			String height1=readingFromCSV.get(index)[3];
+			location[0]=long1;
+			location[1]=lat1;
+			location[2]=height1;
+		}else if(locationID.contains("NL")) {
+			List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(refDirFile);
+			readingFromCSV.remove(0);//remove header
+			String lat1=readingFromCSV.get(index)[1];
+			String long1=readingFromCSV.get(index)[2];
+			String height1=readingFromCSV.get(index)[3];
+			location[0]=long1;
+			location[1]=lat1;
+			location[2]=height1;
 		}
 		return location;
 	}
-	
-	public void executeConversion() throws Exception { //only singapore now
-		System.out.println("Starting Process");
-		WeatherTimeStampKB converter = new WeatherTimeStampKB();
-		String csv = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/Weather.csv");
-		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(csv);
-		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
 		
-		//for SG:
-		int numberofstn=14;
-		String locationid="SG";
-		
-		//for Berlin:
-//		int numberofstn=1;
-//		String locationid="DE";
-		
-		//for THeHague:
-//		int numberofstn=1;
-//		String locationid="NL";
-			
-		
-		//for HK:
-//		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
-//		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
-//		readingFromCSVHK.remove(0);//move the header
-//		int numberofstn=readingFromCSVHK.size();
-//		String locationid="HK";
-		
-		for(int d=1;d<=numberofstn;d++) {
-			String number="00"+d;
-			if(d>9&&d<100) {
-				number="0"+d;
-			}else if(d>99) {
-				number=""+d;
-			}
-			converter.startConversion(readingFromCSV,"relativehumidity",number,locationid);
-			converter.startConversion(readingFromCSV,"windspeed",number,locationid);
-			converter.startConversion(readingFromCSV,"winddirection",number,locationid);
-			converter.startConversion(readingFromCSV,"precipitation",number,locationid);
-			converter.startConversion(readingFromCSV,"temperature",number,locationid);
-			converter.startConversion(readingFromCSV,"cloudcover",number,locationid);
-			converter.startConversion(readingFromCSV,"pressure",number,locationid);
-		}
-		//converter.startConversion(readingFromCSV,"temperature","001");
-		//converter.startConversion(readingFromCSV,"irradiation","001");
-		//converter.startConversion(readingFromCSV,"windspeed","001");
-		//converter.startConversion(readingFromCSV,"winddirection","001");
-		//converter.startConversion(readingFromCSV,"precipitation","001");
-		//converter.startConversion(readingFromCSV,"pressure","001");
-		//converter.startConversion(readingFromCSV,"relativehumidity","001");
-		//converter.startConversion(readingFromCSV,"cloudcover","001");
-	}
-	
 	public String startConversionForecast(List<String[]> readingFromCSV,String flag, Integer position) throws Exception {
 		String baseURL = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
 		String filePath = baseURL + "SensorTemp.owl"; // the empty owl file

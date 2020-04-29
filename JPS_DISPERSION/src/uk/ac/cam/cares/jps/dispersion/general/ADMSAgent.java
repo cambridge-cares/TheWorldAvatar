@@ -53,8 +53,9 @@ public class ADMSAgent extends DispersionModellingAgent {
     	logger.info("enter adms request parameter");
         JSONObject region = requestParams.getJSONObject("region");
         String cityIRI = requestParams.getString("city");
-        //weather put to down first
-
+        
+        JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
+        List<String> stnList = MiscUtil.toList(stnIRI);
         //JSONArray buildingIRI=requestParams.getJSONArray("building");
     	logger.info("getting  source");
     	logger.info("getting the region,city, weather, and source");
@@ -84,27 +85,19 @@ public class ADMSAgent extends DispersionModellingAgent {
         
         try {
             if (requestParams.has(PARAM_KEY_SHIP)) {
- 
-                JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
-                List<String> stnList = MiscUtil.toList(stnIRI);
                 JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
                 broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
-
                 createWeatherInput(fullPath,null,stnList);
                 createEmissionInput(PARAM_KEY_SHIP, newBuildingData, coordinates, newRegion, targetCRSName, fullPath, precipitationdata);
-                //writeMetFile(weather, fullPath);
                 writeBkgFile(bkgjson, fullPath);
 
             } else {
-                JSONObject weather = requestParams.getJSONObject("weatherstate");
                 String plantIRI = getSourceData(requestParams, cityIRI);
-               
                 fullPath = AgentLocator.getPathToJpsWorkingDir() + "/JPS/ADMS";
-                //createWeatherInput(fullPath,null,stnList); //still cannot use this one at the moment
+                createWeatherInput(fullPath,null,stnList); //still cannot use this one at the moment
                 createEmissionInput(PARAM_KEY_PLANT, newBuildingData, plantIRI, newRegion, targetCRSName);
-                writeMetFile(weather, fullPath);
             }
         } catch (Exception e) {
             throw new JPSRuntimeException(e.getMessage(), e);
@@ -131,7 +124,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 
     @Override
 	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
-    	System.out.println("going to create the weather input for ship");
+    	System.out.println("going to create the weather input");
 		//in here file name is not used as it is hard-coded in python
 		logger.info("going to weather creation");
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"

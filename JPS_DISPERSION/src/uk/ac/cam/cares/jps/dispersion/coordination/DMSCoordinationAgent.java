@@ -69,10 +69,12 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		requestParams.put("building", building);
 		logger.info("building FROM COORDINATION AGENT: " + building.toString());
 
+		result = execute("/JPS_DMS/SensorWeatherAgent", requestParams.toString());
+		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
+		requestParams.put("stationiri", stationiri);
+		
 		if (city.toLowerCase().contains("kong") || city.toLowerCase().contains("singapore")) {
-			result = execute("/JPS_DMS/SensorWeatherAgent", requestParams.toString());
-			JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
-			requestParams.put("stationiri", stationiri);
+
 			//=======================================================================
 			logger.info("calling postgres= " + requestParams.toString());
 			String url = KeyValueManager.get(IKeys.URL_POSITIONQUERY);
@@ -92,9 +94,6 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			}
 			
 		} else {
-			result = execute("/JPS_COMPOSITION/CityToWeather", requestParams.toString());
-			JSONObject weatherstate = new JSONObject(result).getJSONObject("weatherstate");
-			requestParams.put("weatherstate", weatherstate);
 			//=======================================================================
 			String wasteresult = execute("/JPS/PowerPlant", requestParams.toString());
 			String waste = new JSONObject(wasteresult).getString("waste");

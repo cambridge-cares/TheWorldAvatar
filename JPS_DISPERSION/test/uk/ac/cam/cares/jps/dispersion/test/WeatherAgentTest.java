@@ -18,6 +18,8 @@ import uk.ac.cam.cares.jps.dispersion.episode.WeatherAgent;
 public class WeatherAgentTest extends TestCase {
 	String cityiri= "http://dbpedia.org/resource/Singapore";
 	String cityiri2= "http://dbpedia.org/resource/Hong_Kong";
+	String cityiri3= "http://dbpedia.org/resource/The_Hague";
+	String cityiri4= "http://dbpedia.org/resource/Berlin";
 	
 	public void testextract() {
 		//for sg
@@ -68,8 +70,6 @@ public class WeatherAgentTest extends TestCase {
 		
 	}
 	
-
-	
 	public void testAgentCallWeatherAgent() {
 		double xmin=11560879.832;
 		double xmax=11563323.926;
@@ -103,36 +103,70 @@ public class WeatherAgentTest extends TestCase {
 	public void testinsertdataContext() {// should be used when the context want to be attached with some info
 
 		String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
-		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; 
-		JSONObject current= new JSONObject(inputRef);
-		for(int x=1;x<=indexchosen.length;x++) {
+//		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; 
+//		JSONObject current= new JSONObject(inputRef);
+//		for(int x=1;x<=indexchosen.length;x++) {
+//			String index="0"+x;
+//			if(x<10) {
+//				index="00"+x;
+//			}
+//			String name = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[x-1])
+//					.get("name").toString();
+//			String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//			List<String>info= new ArrayList<String>();
+//			info.add("http://dbpedia.org/resource/Singapore");
+//			info.add(name);
+//			new WeatherAgent().insertDataRepoContext(info,context);
+//		}
+		
+		
+		//for hongkong case
+//		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+//		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
+//		readingFromCSV.remove(0);
+//		for(int x=1;x<=readingFromCSV.size();x++) {
+//			String index="0"+x;
+//			if(x<10) {
+//				index="00"+x;
+//			}
+//			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//			String name=readingFromCSV.get(x-1)[0];	
+//			List<String>info= new ArrayList<String>();
+//			info.add(cityiri2);
+//			info.add(name);
+//			new WeatherAgent().insertDataRepoContext(info,context);
+//		}
+		
+		//for TheHague
+		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/TheHagueTemplate.csv");
+		List<String[]> readingFromCSV2 = MatrixConverter.fromCsvToArray(inputRef);
+		readingFromCSV2.remove(0);
+		for(int x=1;x<=readingFromCSV2.size();x++) {
 			String index="0"+x;
 			if(x<10) {
 				index="00"+x;
 			}
-			String name = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[x-1])
-					.get("name").toString();
-			String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+index+".owl#WeatherStation-"+index;
+			String context="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-"+index+".owl#WeatherStation-"+index;
+			String name=readingFromCSV2.get(x-1)[0];	
 			List<String>info= new ArrayList<String>();
-			info.add("http://dbpedia.org/resource/Singapore");
+			info.add(cityiri3);
 			info.add(name);
 			new WeatherAgent().insertDataRepoContext(info,context);
 		}
 		
-		
-		//for hongkong case
-		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
-		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
-		readingFromCSV.remove(0);
-		for(int x=1;x<=readingFromCSV.size();x++) {
+		//for Berlin
+		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/BerlinTemplate.csv");
+		List<String[]> readingFromCSV3 = MatrixConverter.fromCsvToArray(inputRef);
+		readingFromCSV3.remove(0);
+		for(int x=1;x<=readingFromCSV3.size();x++) {
 			String index="0"+x;
 			if(x<10) {
 				index="00"+x;
 			}
-			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
-			String name=readingFromCSV.get(x-1)[0];	
+			String context="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-"+index+".owl#WeatherStation-"+index;
+			String name=readingFromCSV3.get(x-1)[0];	
 			List<String>info= new ArrayList<String>();
-			info.add(cityiri2);
+			info.add(cityiri4);
 			info.add(name);
 			new WeatherAgent().insertDataRepoContext(info,context);
 		}
@@ -142,5 +176,11 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println(new WeatherAgent().provideCurrentTime());
 
 	}
+	
+	public void testAccuweatherAPI() throws URISyntaxException {
+		String result= WeatherAgent.getWeatherDataFromAccuweatherAPI("thehague");
+		System.out.println(result);
+	}
+
 	
 }

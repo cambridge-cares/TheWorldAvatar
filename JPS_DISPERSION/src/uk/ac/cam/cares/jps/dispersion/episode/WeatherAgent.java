@@ -233,16 +233,10 @@ public class WeatherAgent extends JPSHttpServlet {
 		}
 		
 	
-	public void addFiletoRepo(RepositoryConnection con,String filename,String contextiri) {
-		String dir="";
-		if(filename.contains("SG")) {
-			dir="sgp/singapore";
-		}else if(filename.contains("HK")) {
-			dir="hkg/hongkong";
-		}
+	public void addFiletoRepo(RepositoryConnection con,String filename,String contextiri, String midfix) {
 		
-		String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/"+dir+"/";
-		String iriprefix="http://www.theworldavatar.com/kb/"+dir+"/";
+		String fileprefix="C:/Users/KADIT01/TOMCAT/webapps/ROOT/kb/"+midfix+"/";
+		String iriprefix="http://www.theworldavatar.com/kb/"+midfix+"/";
 		File file =new File(fileprefix+filename);
 		String baseURI=iriprefix+filename;
 		try {
@@ -320,8 +314,18 @@ public class WeatherAgent extends JPSHttpServlet {
         }
     }
     
-    private static String getWeatherDataFromAccuweatherAPI(String cityName) throws URISyntaxException {
-    	String requestURL = String.format(weatherRequest, cityName);
+    public static String getWeatherDataFromAccuweatherAPI(String cityIRI) throws URISyntaxException {
+    	String cityname=null;
+    	if(cityIRI.toLowerCase().contains("singapore")) {
+    		cityname="singapore";
+    	}else if(cityIRI.toLowerCase().contains("kong")) {
+    		cityname="hongkong";
+    	}else if(cityIRI.toLowerCase().contains("berlin")) {
+    		cityname="berlin";
+    	}else if(cityIRI.toLowerCase().contains("hague")) {
+    		cityname="Den%20Haag"; //unique case
+    	}
+    	String requestURL = String.format(weatherRequest, cityname);
     	URI obj = new URI(requestURL);
 
         try {
@@ -448,49 +452,45 @@ public class WeatherAgent extends JPSHttpServlet {
 		KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate2);	
 
 	}
-	
-	public void resetRepoTrial(RepositoryConnection con,String location) { //unused for the servlet
-		if (location.contains("singapore")) {
-			for (int d = 1; d <= 14; d++) {
-				String number = "00" + d;
-				if (d > 9) {
-					number = "0" + d;
-				}
-				String[] filenames = { "SGCloudCoverSensor-" + number + ".owl",
-						"SGTemperatureSensor-" + number + ".owl", "SGWindSpeedSensor-" + number + ".owl",
-						"SGPrecipitationSensor-" + number + ".owl", "SGPressureSensor-" + number + ".owl",
-						"SGRelativeHumiditySensor-" + number + ".owl", "SGWindDirectionSensor-" + number + ".owl" };
-				String context = "http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-" + number
-						+ ".owl#WeatherStation-" + number;
-				System.out.println("upload files for graph");
-				for (String el : filenames) {
-					new WeatherAgent().addFiletoRepo(con, el, context);
-
-				}
-
-			}
+		
+	public void resetRepoTrial(RepositoryConnection con, String location) {// unused for the servlet
+		int stnnumber=1;
+		String index="";
+		String midfix="";
+		if(location.contains("hague")) {
+			stnnumber=1;
+			index="NL";
+			midfix="nld/thehague";
+		}else if(location.contains("berlin")) {
+			stnnumber=1;
+			index="DE";
+			midfix="deu/berlin";
 		}else if(location.contains("kong")) {
-			for (int d = 1; d <= 8; d++) {
-				String number = "00" + d;
-				if (d > 9) {
-					number = "0" + d;
-				}
-				String[] filenames = { "HKCloudCoverSensor-" + number + ".owl",
-						"HKTemperatureSensor-" + number + ".owl", "HKWindSpeedSensor-" + number + ".owl",
-						"HKPrecipitationSensor-" + number + ".owl", "HKPressureSensor-" + number + ".owl",
-						"HKRelativeHumiditySensor-" + number + ".owl", "HKWindDirectionSensor-" + number + ".owl" };
-				String context = "http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-" + number
-						+ ".owl#WeatherStation-" + number;
-				System.out.println("upload files for graph");
-				for (String el : filenames) {
-					new WeatherAgent().addFiletoRepo(con, el, context);
-
-				}
+			stnnumber=8;
+			index="HK";
+			midfix="hkg/hongkong";
+		}else if(location.contains("singapore")) {
+			stnnumber=14;
+			index="SG";
+			midfix="sgp/singapore";
+		}
+		for (int d = 1; d <= stnnumber; d++) {
+			String number = "00" + d;
+			if (d > 9&& d<=99) {
+				number = "0" + d;
+			}
+			String[] filenames = { index+"CloudCoverSensor-" + number + ".owl",
+					index+"TemperatureSensor-" + number + ".owl", index+"WindSpeedSensor-" + number + ".owl",
+					index+"PrecipitationSensor-" + number + ".owl", index+"PressureSensor-" + number + ".owl",
+					index+"RelativeHumiditySensor-" + number + ".owl", index+"WindDirectionSensor-" + number + ".owl" };
+			String context = "http://www.theworldavatar.com/kb/"+midfix+"/WeatherStation-" + number
+					+ ".owl#WeatherStation-" + number;
+			System.out.println("upload files for graph");
+			for (String el : filenames) {
+				new WeatherAgent().addFiletoRepo(con, el, context,midfix);
 
 			}
-			
 		}
-
 	}
 	
 	public void updateRepo(RepositoryConnection con,String context,String propnameclass, String newpropvalue, String newtimestamp) {
@@ -500,32 +500,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		insertDataRepo(con, currentdatarepo,newpropvalue, newtimestamp,context);
 		System.out.println("update for "+propnameclass+" in context "+context+" is done");
 	}
-	
-//	public void executeFunctionPeriodically(List<String[]>listmap,String cityIRI) throws URISyntaxException {
-//		String context=listmap.get(0)[0];
-//		String contextname=listmap.get(0)[1];
-//		String context2=listmap.get(1)[0];
-//		String context2name=listmap.get(1)[1];
-//		String completeformat=WeatherAgent.provideCurrentTime();
-//		JSONObject result=new WeatherAgent().provideJSONDataFromAPI(contextname,context2name,cityIRI);	
-//		Double convertedspeed1=Double.valueOf(result.getJSONObject("windspeed1").get("value").toString())*0.514444;
-//		Double convertedspeed2=Double.valueOf(result.getJSONObject("windspeed2").get("value").toString())*0.514444;
-//		Double convertedcloud=Double.valueOf(result.getJSONObject("cloudcover").get("value").toString())/100;
-//		Double convertedRH=Double.valueOf(result.getJSONObject("relativehumidity").get("value").toString())/100;
-//		
-//		new WeatherAgent().updateRepoNew(context,"OutsideAirTemperature",result.getJSONObject("temperature").get("value").toString(),completeformat);//stored in Celcius
-//		new WeatherAgent().updateRepoNew(context,"OutsideWindSpeed",""+convertedspeed1,completeformat); //stored in m/s instead of knot
-//		new WeatherAgent().updateRepoNew(context,"OutsideWindDirection",result.getJSONObject("winddirection1").get("value").toString(),completeformat);//stored in degree
-//		new WeatherAgent().updateRepoNew(context,"OutsideAirCloudCover",""+convertedcloud,completeformat);//stored in decimal instead of %
-//		new WeatherAgent().updateRepoNew(context,"OutsideAirPressure",result.getJSONObject("pressure").get("value").toString(),completeformat);//stored in mBar, no need conversion from hPa
-//		new WeatherAgent().updateRepoNew(context,"OutsideAirPrecipitation",result.getJSONObject("precipitation").get("value").toString(),completeformat);// stored in mm
-//		new WeatherAgent().updateRepoNew(context,"OutsideAirRelativeHumidity",""+convertedRH,completeformat);//stored in decimal instead of %
-//		new WeatherAgent().updateRepoNew(context2,"OutsideWindSpeed",""+convertedspeed2,completeformat);//stored in m/s instead of knot
-//		new WeatherAgent().updateRepoNew(context2,"OutsideWindDirection",result.getJSONObject("winddirection2").get("value").toString(),completeformat); //stored in degree
-//	
-//
-//	}
-	
+		
 	public void updatePropertiesFromDataGov(Map<String,String> map,String properties, JSONObject datasource,String completeformattime) {
 		JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 		for (int r = 0; r < data.length(); r++) {
@@ -544,16 +519,12 @@ public class WeatherAgent extends JPSHttpServlet {
 					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(),properties,propertyValue,completeformattime);
 				}
 			}
-
-
-			
-			
 		}
 
 	}
 	
-	public void updatePropertiesFromDataAccuWeather(Map<String,String> map,String properties, JSONObject datasource,String completeformattime,String cityName) throws URISyntaxException {
-		String result= getWeatherDataFromAccuweatherAPI(cityName);
+	public void updatePropertiesFromDataAccuWeather(Map<String,String> map,String properties, JSONObject datasource,String completeformattime,String cityIRI) throws URISyntaxException {		
+		String result= getWeatherDataFromAccuweatherAPI(cityIRI);
     	JSONObject joPr= new JSONObject(result);
     	String precipitation="0.0"; //in mm
     	if (joPr.has("rain")) {
@@ -563,8 +534,17 @@ public class WeatherAgent extends JPSHttpServlet {
     	
     	String cloudcover=joPr.getJSONObject("clouds").get("all").toString(); //in %
     	
-    	//accuweather already in m/s
-		if (cityName.contains("singapore")) {
+    	String windspeed=joPr.getJSONObject("wind").get("speed").toString(); // in m/s
+    	String winddirection="0.0";
+    	if(joPr.getJSONObject("wind").has("deg")) {
+    		winddirection=joPr.getJSONObject("wind").get("deg").toString();
+    	}
+    	String relativehumidity=joPr.getJSONObject("main").get("humidity").toString();
+    	String temperature=joPr.getJSONObject("main").get("temp").toString();
+    	
+    	
+    	
+		if (cityIRI.contains("singapore")) {
 			JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 			for (int r = 0; r < data.length(); r++) {
 				String name = data.getJSONObject(r).get("name").toString();
@@ -574,11 +554,11 @@ public class WeatherAgent extends JPSHttpServlet {
 							completeformattime);// stored in decimal
 				}else if (properties.contentEquals("OutsideAirPressure")) {
 					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, pressure,
-							completeformattime);// stored in decimal
+							completeformattime);
 				}
 
 			}
-		}else if (cityName.contains("kong")) {
+		}else if (cityIRI.contains("kong")) {
 			
 			JSONArray stnCollection = datasource.getJSONArray("HKweather");
 			for (int r = 0; r < stnCollection.length(); r++) {
@@ -594,15 +574,44 @@ public class WeatherAgent extends JPSHttpServlet {
 
 			}
 			
+		}else {
+			String name=null;
+			if (cityIRI.contains("berlin")) {
+				name ="Berlin-Alexanderplatz";
+//				iri="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-001.owl#WeatherStation-001";
+			}else if (cityIRI.contains("hague")) {
+				name ="Scheveningen";
+//				iri="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-001.owl#WeatherStation-001";
+			}
+			String iri=map.get(name).toString();
+			if (properties.contentEquals("OutsideAirCloudCover")) {
+				String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newcloudcover,
+						completeformattime);// stored in decimal
+			} else if (properties.contentEquals("OutsideAirPrecipitation")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, precipitation,
+						completeformattime);// stored in decimal
+			}else if (properties.contentEquals("OutsideAirPressure")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, pressure,
+						completeformattime);
+			}else if (properties.contentEquals("OutsideAirTemperature")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, temperature,
+					completeformattime);
+			}else if (properties.contentEquals("OutsideAirRelativeHumidity")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, relativehumidity,
+						completeformattime);
+			}else if (properties.contentEquals("OutsideWindSpeed")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, windspeed,
+						completeformattime);
+			}else if (properties.contentEquals("OutsideWindDirection")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, winddirection,
+						completeformattime);
+			}
+			
 		}
 			
 	}
 
-			
-		
-		
-
-	
 	public void executePeriodicUpdate(String cityIRI) throws URISyntaxException {
 		String completeformat=WeatherAgent.provideCurrentTime();
 		Map<String,String>stnmap=extractMappingname();
@@ -624,8 +633,8 @@ public class WeatherAgent extends JPSHttpServlet {
 	    	updatePropertiesFromDataGov(stnmap,"OutsideWindSpeed",jowindspeed,completeformat); 
 	    	updatePropertiesFromDataGov(stnmap,"OutsideAirRelativeHumidity",joRH,completeformat);
 	    	updatePropertiesFromDataGov(stnmap,"OutsideAirPrecipitation",joPrecipitation,completeformat);
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",jowinddirection,completeformat,"singapore");//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPressure",jowinddirection,completeformat,"singapore");//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",jowinddirection,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPressure",jowinddirection,completeformat,cityIRI);//accu
 	    	//in accuweather the json data is needed from the data gov to update each stn written in data gov
 	  
 		}else if(cityIRI.toLowerCase().contains("kong")) {
@@ -637,8 +646,18 @@ public class WeatherAgent extends JPSHttpServlet {
 			updatePropertiesFromHKU(stnmap,"OutsideWindSpeed",joPr,completeformat);
 			updatePropertiesFromHKU(stnmap,"OutsideWindDirection",joPr,completeformat);
         	updatePropertiesFromHKU(stnmap,"OutsideAirPressure",joPr,completeformat);//in hPa exactly the same as millibar
-        	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",joPr,completeformat,"hongkong");//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",joPr,completeformat,"hongkong");//accu
+        	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",joPr,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",joPr,completeformat,cityIRI);//accu
+	    	
+		}else {
+			JSONObject joPr = new JSONObject();
+			updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirTemperature",joPr,completeformat,cityIRI);
+			updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirRelativeHumidity",joPr,completeformat,cityIRI);
+			updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindSpeed",joPr,completeformat,cityIRI);
+			updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindDirection",joPr,completeformat,cityIRI);
+			updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPressure",joPr,completeformat,cityIRI);//in hPa exactly the same as millibar
+        	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",joPr,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",joPr,completeformat,cityIRI);//accu
 	    	
 		}
 	}
@@ -678,8 +697,10 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static void main(String[]args) { //used for upload all content locally
 
 		RepositoryConnection con = repo.getConnection();
-		String location="singapore";
+//		String location="singapore";
 //		String location="hong kong";
+		String location="berlin";
+//		String location="the hague";
 		WeatherAgent a=new WeatherAgent();
 		a.resetRepoTrial(con,location); //currently the context is not used
 		
