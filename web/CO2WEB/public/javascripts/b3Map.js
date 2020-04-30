@@ -3,7 +3,7 @@ map logic for b3 powerplant
 ***/
 var b3map = new PopupMap({useCluster:true,  editable: true});
 // var prefix = "http://www.jparksimulator.com";
-var prefix = "http://localhost:8080";
+// var prefix = "http://localhost:8080";
 var socket = io();
 var prefix = "http://www.jparksimulator.com";
 var scenario = "base";
@@ -294,7 +294,7 @@ function  outputUpdate(input,cb) { //called in PopupMap for b3Map, not in the si
         success: function (data) {//SUCESS updating
             //Update display
             console.log(cb);
-            callDoSimulation(uris);
+            callDoSimulationNew(uris);
             cb(null, data);
         },
         error: function (err) {
@@ -313,7 +313,6 @@ function displayMessageModal(msg) {
 }
 function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
 
-    var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
     urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
     url2 += encodeURIComponent(JSON.stringify(urljson)); 
     //url2 += JSON.stringify(urljson); 
@@ -332,15 +331,14 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
 
     return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
 }
-function callDoSimulation(uris){
-    var agentUrl = prefix + '/JPS_BIODIESELPLANT3/SimCoord'; 
-    //check if it is biodiesel plant 2 or 3: 
+
+
+function callDoSimulationNew(uris){
     var data = {};
-    if (uris[0].includes('biodieselplant2')){
-        data = {"PLANTIRI":"http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant2/BiodieselPlant2.owl" }
-    }else{
-        data = {"PLANTIRI": "http://www.theworldavatar.com/kb/sgp/jurongisland/biodieselplant3/BiodieselPlant3.owl"}
-    }
+    console.log(uris);
+    var arr = uris[0].split('/');
+    var splittag = "#" + arr[arr.length-1].split('.')[0]
+    data = {"componentIRI":uris[0]+splittag}
     var simUrl = createUrlForAgent(scenario, agentUrl, data );
     var request = $.ajax({
         url: simUrl,
@@ -350,5 +348,5 @@ function callDoSimulation(uris){
     })
     request.done(function() {
         console.log("Completed Simulation");
+
     });
-}
