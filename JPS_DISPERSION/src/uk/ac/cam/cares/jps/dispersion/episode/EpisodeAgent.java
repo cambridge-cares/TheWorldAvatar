@@ -199,18 +199,20 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			System.out.println("upperx="+upx);
 			System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
 			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
-			createEmissionInput(dataPath, "points_singapore_2019.csv",shipdata);
+			createEmissionInput(dataPath, "points.csv",shipdata);
+			createEmissionInput(dataPath, "lines.csv",shipdata);
 			try { //for control file
 				createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
 				createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
-				createControlWeatherORCityChemFile(region, dataPath, "citychem_singapore_2019_1pointline_restart.txt",stniri);
-				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta.inp");
+				createControlWeatherORCityChemFile(region, dataPath, "citychem_restart.txt",stniri);
+				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_LSE.inp");
+				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_PSE.inp");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			createReceptorFile(region,dataPath,"receptor_input.txt");
-			createWeatherInput(dataPath,"mcwind_input_singapore_20191118.txt",stniri);
+			createWeatherInput(dataPath,"mcwind_input.txt",stniri);
 
 			
 			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_centerBCZ.dat");
@@ -301,96 +303,116 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 	@Override
 	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {
-		
-		JSONArray coordinateship=getEntityData(shipdata);
-	    //OntModel jenaOwlModel = JenaHelper.createModel();
-	    System.out.println("it goes to create emission input here");
-	   
-	    
-		int shipAmount=coordinateship.length();
-		List<String[]> resultquery = new ArrayList<String[]>();
-		 String[]header= {"snap","xcor","ycor","Hi","Vi","Ti","radi","BH","BW","Pvec","Pdir","pcir_ang","Ptstart","Ptend","NOx","NMVOC","CO","SO2","NH3","PM2.5","PM10"};
-		 resultquery.add(0,header);
-		for (int ship = 0; ship < shipAmount; ship++) {
-			String mmsi = coordinateship.getJSONObject(ship).get(DATA_KEY_MMSI).toString();
-//			String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl" + "#"
-//					+ "Chimney-1";
-//			
-//			jenaOwlModel.read(iriofchimney);
+		JSONArray coordinateship = getEntityData(shipdata);
+		if (filename.contains("point")) {
 			
-			 OntModel jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
-			 String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl" ;   
-			 if (AgentLocator.isJPSRunningForTest()) {
-				 iriofchimney = "http://localhost:8080/kb/ships/" + mmsi + "/" + "Chimney-1.owl" ;
-		        }
-				
+			System.out.println("it goes to create point emission input here");
+
+			int shipAmount = coordinateship.length();
+			List<String[]> resultquery = new ArrayList<String[]>();
+			String[] header = { "snap", "xcor", "ycor", "Hi", "Vi", "Ti", "radi", "BH", "BW", "Pvec", "Pdir",
+					"pcir_ang", "Ptstart", "Ptend", "NOx", "NMVOC", "CO", "SO2", "NH3", "PM2.5", "PM10" };
+			resultquery.add(0, header);
+			for (int ship = 0; ship < shipAmount; ship++) {
+				String mmsi = coordinateship.getJSONObject(ship).get(DATA_KEY_MMSI).toString();
+
+				OntModel jenaOwlModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
+				String iriofchimney = "http://www.theworldavatar.com/kb/ships/" + mmsi + "/" + "Chimney-1.owl";
+				if (AgentLocator.isJPSRunningForTest()) {
+					iriofchimney = "http://localhost:8080/kb/ships/" + mmsi + "/" + "Chimney-1.owl";
+				}
+
 				jenaOwlModel.read(iriofchimney);
-			System.out.println("iri chimney now= "+mmsi);
-			List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
-			List<String[]> resultListChimneyGasPollutant = queryKBIRI(chimneyiriInfo, jenaOwlModel);
-			JSONObject mappollutant = new JSONObject();
-			for (int d = 0; d < resultListChimneyGasPollutant.size(); d++) {
-				if (resultListChimneyGasPollutant.get(d)[5].contains("EmissionRate")) {
-					String key = resultListChimneyGasPollutant.get(d)[5].split("#V_")[1];
-					mappollutant.put(key, resultListChimneyGasPollutant.get(d)[6]);
+				System.out.println("iri chimney now= " + mmsi);
+				List<String[]> resultListParticlePollutant = queryKBIRI(chimneyiriparticleInfo, jenaOwlModel);
+				List<String[]> resultListChimneyGasPollutant = queryKBIRI(chimneyiriInfo, jenaOwlModel);
+				JSONObject mappollutant = new JSONObject();
+				for (int d = 0; d < resultListChimneyGasPollutant.size(); d++) {
+					if (resultListChimneyGasPollutant.get(d)[5].contains("EmissionRate")) {
+						String key = resultListChimneyGasPollutant.get(d)[5].split("#V_")[1];
+						mappollutant.put(key, resultListChimneyGasPollutant.get(d)[6]);
+					}
 				}
+
+				double fractionpm25 = 0.0;
+				double fractionpm10 = 0.0;
+				for (int x = 0; x < resultListParticlePollutant.size(); x++) {
+					if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.0000025) {
+						fractionpm25 = fractionpm25 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
+					}
+					if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.00001) {
+						fractionpm10 = fractionpm10 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
+					}
+				}
+				// all emission are in g/s
+				double emissionratepm25 = fractionpm25 * Double.valueOf(resultListParticlePollutant.get(0)[0]);
+				double emissionratepm10 = fractionpm10 * Double.valueOf(resultListParticlePollutant.get(0)[0]);
+				double nox = Double.valueOf(mappollutant.getString("ChemSpecies_Nitrogen__dioxide_EmissionRate"))
+						+ Double.valueOf(mappollutant.getString("PseudoComponent_Nitrogen__oxides_EmissionRate"));
+				double voc = Double
+						.valueOf(mappollutant.getString("PseudoComponent_Unburned_Hydrocarbon_EmissionRate"));
+				double co = Double.valueOf(mappollutant.getString("ChemSpecies_Carbon__monoxide_EmissionRate"));
+				double so2 = Double.valueOf(mappollutant.getString("ChemSpecies_Sulfur__dioxide_EmissionRate"));
+
+				double area = Math.PI * Math.pow(Double.valueOf(resultListChimneyGasPollutant.get(0)[1]) / 2, 2);
+				double massflowrate = Double.valueOf(resultListChimneyGasPollutant.get(0)[2]); // in kg/hr
+				double density = Double.valueOf(resultListChimneyGasPollutant.get(0)[4]); // kg/m3
+				double velocity = massflowrate / area / density; // should be in m/hr
+
+				String[] content = new String[21];
+				content[0] = "8";
+				double shipx = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LON);
+				double shipy = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LAT);
+				double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+						new double[] { shipx, shipy });
+				content[1] = "" + locationshipconverted[0];
+				content[2] = "" + locationshipconverted[1];
+				content[3] = resultListChimneyGasPollutant.get(0)[0];// QUERY FROM CHIMNEY height //in m
+				content[4] = "" + velocity;// DERIVED FROM CHIMNEY velocity
+				content[5] = resultListChimneyGasPollutant.get(0)[3];// QUERY FROM CHIMNEY //temperature celcius
+				content[6] = "" + (Double.valueOf(resultListChimneyGasPollutant.get(0)[1]) / 2);// QUERY FROM CHIMNEY
+																								// radius in m
+				content[7] = "10"; // constant unused building height
+				content[8] = "20";// constant unused building width;
+				content[9] = coordinateship.getJSONObject(ship).get("speed").toString(); // should be in knot?
+				content[10] = coordinateship.getJSONObject(ship).get("angle").toString();
+				content[11] = "0";// circularangle assume it moves straightline
+				content[12] = "0";// moving starting time;
+				content[13] = "3600";// moving ending time;
+				content[14] = "" + unitflowconverter(nox);
+				content[15] = "" + unitflowconverter(voc); // voc
+				content[16] = "" + unitflowconverter(co); // CO
+				content[17] = "" + unitflowconverter(so2); // SO2
+				content[18] = "-999"; // NH3 not avilable
+				content[19] = "" + unitflowconverter(emissionratepm25); // pm2.5
+				content[20] = "" + unitflowconverter(emissionratepm10); // pm10
+				resultquery.add(content);
 			}
 
-			
-			double fractionpm25 = 0.0;
-			double fractionpm10 = 0.0;
-			for (int x = 0; x < resultListParticlePollutant.size(); x++) {
-				if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.0000025) {
-					fractionpm25 = fractionpm25 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
-				}
-				if (Double.valueOf(resultListParticlePollutant.get(x)[2]) <= 0.00001) {
-					fractionpm10 = fractionpm10 + Double.valueOf(resultListParticlePollutant.get(x)[1]);
-				}
+			new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultquery));
+		} else {
+			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			double x0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LON);
+			double y0 = coordinateship.getJSONObject(0).getDouble(DATA_KEY_LAT);
+			double x1 = coordinateship.getJSONObject(1).getDouble(DATA_KEY_LON);
+			double y1 = coordinateship.getJSONObject(1).getDouble(DATA_KEY_LAT);
+			double[] locationshipconverted0 = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+					new double[] { x0, y0 });
+			double[] locationshipconverted1 = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+					new double[] { x1, y1 });
+			try {
+				String fileContext = FileUtils.readFileToString(file);
+				fileContext = fileContext.replaceAll("351474", "" + locationshipconverted0[0]);
+				fileContext = fileContext.replaceAll("133855", "" + locationshipconverted0[1] );
+				fileContext = fileContext.replaceAll("351476", "" + locationshipconverted1[0]);
+				fileContext = fileContext.replaceAll("139903", "" +locationshipconverted1[1] );
+				new QueryBroker().putLocal(dataPath + "/"+filename, fileContext); 
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			// all emission are in g/s
-			double emissionratepm25 = fractionpm25 * Double.valueOf(resultListParticlePollutant.get(0)[0]);
-			double emissionratepm10 = fractionpm10 * Double.valueOf(resultListParticlePollutant.get(0)[0]);
-			double nox = Double.valueOf(mappollutant.getString("ChemSpecies_Nitrogen__dioxide_EmissionRate"))
-					+ Double.valueOf(mappollutant.getString("PseudoComponent_Nitrogen__oxides_EmissionRate"));
-			double voc = Double.valueOf(mappollutant.getString("PseudoComponent_Unburned_Hydrocarbon_EmissionRate"));
-			double co = Double.valueOf(mappollutant.getString("ChemSpecies_Carbon__monoxide_EmissionRate"));
-			double so2 = Double.valueOf(mappollutant.getString("ChemSpecies_Sulfur__dioxide_EmissionRate"));
 
-			double area = Math.PI * Math.pow(Double.valueOf(resultListChimneyGasPollutant.get(0)[1]) / 2, 2);
-			double massflowrate = Double.valueOf(resultListChimneyGasPollutant.get(0)[2]); // in kg/hr
-			double density = Double.valueOf(resultListChimneyGasPollutant.get(0)[4]); // kg/m3
-			double velocity = massflowrate / area / density; // should be in m/hr
-
-			String[] content = new String[21];
-			content[0] = "8";
-			double shipx = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LON);
-			double shipy = coordinateship.getJSONObject(ship).getDouble(DATA_KEY_LAT);
-			double[] locationshipconverted = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
-					new double[] { shipx, shipy });
-			content[1] = "" + locationshipconverted[0];
-			content[2] = "" + locationshipconverted[1];
-			content[3] = resultListChimneyGasPollutant.get(0)[0];// QUERY FROM CHIMNEY height //in m
-			content[4] = "" + velocity;// DERIVED FROM CHIMNEY velocity
-			content[5] = resultListChimneyGasPollutant.get(0)[3];// QUERY FROM CHIMNEY //temperature celcius
-			content[6] = "" + (Double.valueOf(resultListChimneyGasPollutant.get(0)[1]) / 2);// QUERY FROM CHIMNEY radius in m
-			content[7] = "10"; // constant unused building height
-			content[8] = "20";// constant unused building width;
-			content[9] = coordinateship.getJSONObject(ship).get("speed").toString(); // should be in knot?
-			content[10] = coordinateship.getJSONObject(ship).get("angle").toString();
-			content[11] = "0";// circularangle assume it moves straightline
-			content[12] = "0";// moving starting time;
-			content[13] = "3600";// moving ending time;
-			content[14] = "" + unitflowconverter(nox);
-			content[15] = "" + unitflowconverter(voc); // voc
-			content[16] = "" + unitflowconverter(co); // CO
-			content[17] = "" + unitflowconverter(so2); // SO2
-			content[18] = "-999"; // NH3 not avilable
-			content[19] = "" + unitflowconverter(emissionratepm25); // pm2.5
-			content[20] = "" + unitflowconverter(emissionratepm10); // pm10
-			resultquery.add(content);
 		}
-		    
-		 new QueryBroker().putLocal(dataPath + "/"+filename, MatrixConverter.fromArraytoCsv(resultquery)); 
 	}
 
 	public void createControlTopologyFile(List<String>srtmlist,JSONObject region,String dataPath, String Filename) throws IOException {
@@ -540,8 +562,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	
 	public String modifyTemplate(String filename, JSONObject inputparameter) throws IOException {
 		String time = WeatherAgent.provideCurrentTime();
-		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
-		String fileContext = FileUtils.readFileToString(file);
+		String fileContext = "";
 		String lowx = inputparameter.getJSONObject("regioninput").getJSONObject("lowercorner")
 				.get("lowerx").toString();
 		String lowy = inputparameter.getJSONObject("regioninput").getJSONObject("lowercorner")
@@ -566,6 +587,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 		
 		if (filename.contentEquals("aermap.inp")) { // assume srtm=1
+			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			fileContext = FileUtils.readFileToString(file);
 			int sizeofsrtm=inputparameter.getJSONArray("srtminput").length();
 			String srtmin1 = inputparameter.getJSONArray("srtminput").get(0).toString();
 			String tif1 = "   DATAFILE  \"./srtm3/N01E103.tif\"   tiffdebug";
@@ -602,17 +625,22 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 			return fileContext;
 
-		} else if (filename.contentEquals("cctapm_meta.inp")) {
+		} else if (filename.contains("cctapm_meta_LSE")||filename.contains("cctapm_meta_PSE")) {
 			int size = inputparameter.getJSONObject("sourceinput").getJSONObject(DATA_KEY_COLLECTION).getJSONArray(DATA_KEY_ITEMS).length();
-                
-                
+           String lseORpse=filename.split("_")[2].split(".inp")[0];     
+           File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/cctapm_meta.inp");
+   			 fileContext = FileUtils.readFileToString(file);   
 			String[] line = fileContext.split("\n");
 			List<String> lineoffile = Arrays.asList(line);
 			List<String> newcontent = new ArrayList<String>();
-			for (int r = 0; r < 12; r++) {
+			for (int r = 0; r < 9; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			
+			String line10b = separator + "!" + separator + lineoffile.get(9).split("!")[1];
+			newcontent.add("'"+lseORpse+"'"+ line10b);
+			for (int r = 10; r < 12; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
 			String line13b = separator + "!" + separator + lineoffile.get(12).split("!")[1];
 			newcontent.add(
 					"'" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line13b);
@@ -648,7 +676,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 			return contentupdate;
 
-		} else if (filename.contentEquals("citychem_singapore_2019_1pointline_restart.txt")) {
+		} else if (filename.contentEquals("citychem_restart.txt")) {
+			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			fileContext = FileUtils.readFileToString(file);
 			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString(); //main
 			String loc1x = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
 			String loc1y = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
@@ -743,10 +773,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			return contentupdate;
 
 		} else if (filename.contentEquals("run_file.asc")) {
+			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
+			fileContext = FileUtils.readFileToString(file);
 			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString();
 			String loc1x = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
 			String loc1y = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
-			String heighttemp = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("z").toString();
+			//String heighttemp = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("z").toString();
+			String heighttemp = "2.0";
 			String name2 = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("name").toString();
 			String loc2x = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("x").toString();
 			String loc2y = inputparameter.getJSONArray("weatherinput").getJSONObject(1).get("y").toString();
