@@ -96,7 +96,7 @@ public class WeatherAgentTest extends TestCase {
 		   jo.put("region",scope);
 		   jo.put("city",cityiri);
 		  
-		   String resp=AgentCaller.executeGetWithJsonParameter("JPS_DMS/SensorWeatherAgent", jo.toString());
+		   String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/SensorWeatherAgent", jo.toString());
 		System.out.println("result= "+resp);
 	}
 	
@@ -180,6 +180,18 @@ public class WeatherAgentTest extends TestCase {
 	public void testAccuweatherAPI() throws URISyntaxException {
 		String result= WeatherAgent.getWeatherDataFromAccuweatherAPI("thehague");
 		System.out.println(result);
+	}
+	
+	public void testextractcontext() {
+		double[] center = CalculationUtils.calculateCenterPoint(11563323.926, 143305.896, 11560879.832, 140107.739);
+		double[] centerPointConverted = CRSTransformer.transform("EPSG:3857",CRSTransformer.EPSG_4326,
+				center);
+		new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+	}
+	
+	public void xxxtestresetWeatherClaudius() {
+		JSONObject empty= new JSONObject();
+		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", empty.toString());
 	}
 
 	
