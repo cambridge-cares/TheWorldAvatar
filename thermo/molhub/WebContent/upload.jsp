@@ -106,9 +106,9 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 					
 						<s:form action="upload" method="post" enctype="multipart/form-data" theme="bootstrap" cssClass="well form-search" align="left">
 						
-						<s:file name="upload" label="Select Gaussian files to upload:" multiple="multiple" theme="bootstrap"/>
-
-						<s:submit value="Upload" label="Select files" theme="bootstrap"/>
+							<s:file name="upload" label="Select Gaussian files to upload:" multiple="multiple" theme="bootstrap"/>
+							<s:textfield name="ontoSpciesIRI" type="text" label="Provide the corresponding OntoSpeciesIRI:" theme="bootstrap"/>
+							<s:submit value="Upload" label="Select files" theme="bootstrap"/>
 
 						</s:form>
 				    
