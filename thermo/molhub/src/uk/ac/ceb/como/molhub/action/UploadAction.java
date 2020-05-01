@@ -3,6 +3,7 @@ package uk.ac.ceb.como.molhub.action;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -34,14 +35,13 @@ import uk.ac.ceb.como.molhub.model.PropertiesManager;
 import uk.ac.ceb.como.molhub.model.XMLValidationManager;
 
 /**
- * The Class UploadAction.
+ * The Class uploads one or more selected Gaussian files (g09)<br>
+ * on server, and generates XML, ontology file, image file, and<br>
+ * adds ontologies into triple store (RDF4J).
  *
- * @author nk510
- *         <p>
- *         The Class UploadAction: Uploads one or more selected Gaussian files
- *         (g09) on server, and generates XML, ontology file, image file, and
- *         adds ontology files into tripe store (RDF4J).
- *         </p>
+ * @author nk510 (Nenad Krdzabac)
+ * @author msff2 (Feroz Farazi)
+ * 
  */
 
 public class UploadAction extends ActionSupport implements ValidationAware {
@@ -89,6 +89,10 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 	/** The upload content type. */
 	private String[] uploadContentType;
+	
+	/** The OntoSpecies entry that is connected to the current<br> 
+	 * Gaussian calculation */
+	private String ontoSpeciesIRI;
 
 	/** The start time. */
 	final long startTime = System.currentTimeMillis();
@@ -115,155 +119,67 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	/** The upload report list. */
 	private List<GaussianUploadReport> uploadReportList = new ArrayList<GaussianUploadReport>();
 	
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.opensymphony.xwork2.ActionSupport#execute()
+	/**
+	 * When user clicks on the upload button, this method executes<br>
+	 * as it is instructed in the struts2.xml file, which is located in<br>
+	 * molhub\WebContent\WEB-INF\classes.
 	 */
 	@Override
 	public String execute() throws Exception {
-
 		int fileNumber = 0;
-
-		/**
-		 * @author nk510
-		 *         <p>
-		 *         Column names in generated table (report) appearing after completing
-		 *         upload action.
-		 *         </p>
-		 */
-
+		// These column names appear in the generated report table 
+		// after the upload.
 		if (!files.isEmpty()) {
-
 			column.add("UUID");
 			column.add("Gaussian file");
 			column.add("XML validation");
 			column.add("OWL consistency");
 		}
-
+		// If user clicks on the upload button without selecting any files.
 		if (files.isEmpty()) {
-
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
-
 		}
-
-		/**
-		 * 
-		 * @author nk510
-		 *         <p>
-		 *         Iterates over selected (uploaded) files.
-		 *         </p>
-		 * 
-		 */
-
+		// For each file selected, it iterates once.
 		for (File f : files) {
-
 			Module rootModule = new Module();
-
-			/**
-			 * @author nk510
-			 *         <p>
-			 *         Creates unique folder name for each uploaded Gaussian file. (g09),
-			 *         XML file, OWL file, and PNG file.
-			 *         </p>
-			 */
-			
+			// Creates unique folder name for each uploaded Gaussian file (g09),
+			// XML file, OWL file, and PNG file.
 			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
-
-//			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uploadFileName[fileNumber].replaceAll(".log", "") + ".g09");
-
 			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".g09");
-			
-			/**
-			 * 
-			 * @author NK510
-			 *         <p>
-			 *         Get file extension.
-			 *         </p>
-			 * 
-			 */
-			
-//			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uploadFileName[fileNumber].replaceAll(".g09", "") + ".xml");
-			
+			// Adds .xml extension to the XML file.  
 			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
-
+			// Adds .owl extension to the OWL file.
 			String outputOwlFile = kbFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl";
-
 			final File owlFile = new File(outputOwlFile);
-
-			/**
-			 * 
-			 * @author nk510
-			 * 
-			 *         <p>
-			 *         Png file name is the same as the name of folder where that image is
-			 *         saved.
-			 *         </p>
-			 *
-			 */
-
+			// Png file name is the same as the name of folder where that
+			// image is saved. Adds .png extension to the png file.
 			File pngFile = new File(dataFolderPath + "/" + uuidFolderName + "/"
 					+ uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".png");
-
-			/**
-			 * @author nk510 Creates folders where molhub stores ontologies (owl file), G09,
-			 *         xml, and png files.
-			 */
-
+			// Creates folders where molhub stores G09, xml and png files
 			FolderManager.createFolder(dataFolderPath + "/" + uuidFolderName);
-
-			
+			// Creates a folder for saving the ontology.
 			FolderManager.createFolder(kbFolderPath + "/" + uuidFolderName);
-
-			/**
-			 * @author nk510
-			 *         <p>
-			 *         Gaussian file and XML file are saved into generated folder.
-			 *         </p>
-			 */
+			// User uploaded Gaussian file is saved.
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
-
+			// Molhub generated XML file is saved. 
 			GenerateXml.generateRootModule(inputG09File, outputXMLFile, rootModule);
-
+			// Validates the generated XML file 
 			boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd, outputXMLFile);
-
-			/**
-			 * @author nk510
-			 *         <p>
-			 *         If generated XML file is valid against Compchem XML Schema then run
-			 *         XSLT transformations from XML file to OWL file.
-			 *         </p>
-			 */
+			// If the generated XML file is valid against Compchem XML Schema
+			// then in this if block the XSLT transformations convert the XML
+			// file into an OWL file. 
 			if (xmlValidation) {
-				/**
-				 * 
-				 * @author nk510
-				 *         <p>
-				 *         Runs Xslt transformation. Here we use just created folder name as a
-				 *         part of IRI in generated ontology (owl file).
-				 *         </p>
-				 * 
-				 */
-
+				// Runs XSLT transformation. The UUID folder name created
+				// earlier is used as part of IRI of the OWL file.  
 				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
 						new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 						new StreamSource(xslt));
-
-				/**
-				 * @author nk510
-				 *         <p>
-				 *         Generates image (.png file) from uploaded Gaussian file by using
-				 *         JmolData.jar.
-				 *         </p>
-				 */
-
-//				String[] cmd = { "java", "-jar", catalinaFolderPath + "/conf/Catalina/jmol/JmolData.jar", "--nodisplay", 
+				// Generates image (.png file) from uploaded Gaussian file by
+				// using JmolData.jar.
 				String[] cmd = { "java", "-jar", jmolDataJarFilePath, "--nodisplay", "-j", "background white",
 						inputG09File.getAbsolutePath().toString(), "-w",
 						"png:" + pngFile.getAbsolutePath().toString() };
-
 				Runtime.getRuntime().exec(cmd);
-
 			}
 
 			/**
@@ -451,6 +367,26 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	public void setUploadFileName(String[] uploadFileName) {
 		this.uploadFileName = uploadFileName;
 	}
+	
+	/**
+	 * Gets the IRI of the corresponding OntoSpecies entry of the current<br>
+	 * Gaussian file.
+	 * 
+	 * @return
+	 */
+	public String getOntoSpeciesIRI() {
+		return ontoSpeciesIRI;
+	}
+
+	/**
+	 * Sets the IRI of the corresponding OntoSpecies entry of the current<br>
+	 * Gaussian file. 
+	 * 
+	 * @param ontoSpeciesIRI
+	 */
+	public void setOntoSpeciesIRI(String ontoSpeciesIRI) {
+		this.ontoSpeciesIRI = ontoSpeciesIRI;
+	}
 
 	/**
 	 * Gets the upload report list.
@@ -565,6 +501,28 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 */
 	public void setUploadContentType(String[] uploadContentType) {
 		this.uploadContentType = uploadContentType;
+	}
+	
+	/**
+	 * Checks the validity of a URL.
+	 * 
+	 * @param url
+	 * @param message
+	 * @throws OntoException
+	 */
+	private void checkURLValidity(String iri) throws Exception{
+		if(iri==null){
+				throw new Exception("Provided IRI is null.");
+		}
+		if(iri.isEmpty()){
+			throw new Exception("Provided IRI is empty.");
+		}
+		try{
+			URL url = new URL(iri);
+			url.toURI();
+		}catch(Exception e){
+			throw new Exception("Provided IRI is not a valid URL.");
+		}
 	}
 
 }
