@@ -172,7 +172,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 				// Both in the if block and else block, it runs the XSLT
 				// transformation and the UUID folder name generated earlier
 				// is used as part of IRI of the OWL file.
-				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().length() == 0)) {
+				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().length() == 0) || (files.size() > 1)) {
 					Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
 							new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 							new StreamSource(xslt));
