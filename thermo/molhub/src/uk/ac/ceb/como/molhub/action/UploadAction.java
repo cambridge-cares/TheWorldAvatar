@@ -166,14 +166,26 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 			// Validates the generated XML file 
 			boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd, outputXMLFile);
 			// If the generated XML file is valid against Compchem XML Schema
-			// then in this if block the XSLT transformations convert the XML
-			// file into an OWL file. 
+			// then in both the if and else blocks the XSLT transformations
+			// convert the XML file into an OWL file. 
 			if (xmlValidation) {
-				// Runs XSLT transformation. The UUID folder name created
-				// earlier is used as part of IRI of the OWL file.  
-				Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
-						new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
-						new StreamSource(xslt));
+				// Both in the if block and else block, it runs the XSLT
+				// transformation and the UUID folder name generated earlier
+				// is used as part of IRI of the OWL file.
+				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().length() == 0)) {
+					Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
+							new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
+							new StreamSource(xslt));
+				}else {
+					// Verifies the validity of the OntoSpcecies IRI in the case
+					// of a single file upload.
+					checkURLValidity(getOntoSpeciesIRI());
+					// In addition to the transformation into OWL it establishes
+					// a link to the corresponding OntoSpecies entry (Species).
+					Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
+							getOntoSpeciesIRI(), new FileInputStream(outputXMLFile.getPath()),
+							new FileOutputStream(owlFile), new StreamSource(xslt));
+				}
 				// Generates image (.png file) from uploaded Gaussian file by
 				// using JmolData.jar.
 				String[] cmd = { "java", "-jar", jmolDataJarFilePath, "--nodisplay", "-j", "background white",
