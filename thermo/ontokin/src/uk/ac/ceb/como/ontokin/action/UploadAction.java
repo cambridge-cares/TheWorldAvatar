@@ -184,15 +184,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		// Defined to produce the list of directory names under the folder of data. 
 		Set<String> directoryNames = new HashSet<String>(); 
 		// Adding the name of each OWL file to the list
-		FileWriter fw = new FileWriter("D:/directorynames.txt");
 		for (int i = 0; i < listOfDirectories.length; i++) {
-			fw.write("number of dirs:"+listOfDirectories.length+"\n");
 			if (listOfDirectories[i].isDirectory()) {
-				fw.write("dir name:"+listOfDirectories[i].getName()+"\n");
 				directoryNames.add(listOfDirectories[i].getName());
 			}
 		}
-		fw.close();
 		// If user proposed mechanism name already exists in the repository, 
 		// this part will generate and propose a new name
 		for(int i = 0; i < listOfDirectories.length; i++){
