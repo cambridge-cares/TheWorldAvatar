@@ -3,6 +3,7 @@ package uk.ac.ceb.como.molhub.action;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -15,6 +16,8 @@ import java.util.concurrent.Executors;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.eclipse.rdf4j.RDF4JException;
+import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
@@ -79,7 +82,11 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 	private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString();
 
-	private String serverUrl = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url").toString();
+	private final String ONTOCOMPCHEM_KB_URL = kbProperties.getProperty("ontocompchem.kb.uri").toString();
+	
+	private String serverURL = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url").toString();
+	
+	private String REPOSITORY_ID = kbProperties.getProperty("ontocompchem.repository.id").toString();
 
 	/** The files. */
 	private List<File> files = new ArrayList<File>();
@@ -172,7 +179,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 				// Both in the if block and else block, it runs the XSLT
 				// transformation and the UUID folder name generated earlier
 				// is used as part of IRI of the OWL file.
-				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().length() == 0) || (files.size() > 1)) {
+				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().trim().length() == 0)) {
 					Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
 							new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
 							new StreamSource(xslt));
@@ -193,153 +200,46 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 						"png:" + pngFile.getAbsolutePath().toString() };
 				Runtime.getRuntime().exec(cmd);
 			}
-
 			/**
-			 * @author nk510
-			 *         <p>
-			 *         Validates of generated Compchem xml file against Compchem XML schema,
-			 *         and checks consistency of generated Compchem ontology (owl file).
-			 *         </p>
-			 * 
+			 * It validates of generated Compchem xml file against Compchem XML schema,
+			 * and checks consistency of the generated Compchem ontology (ABox).
 			 */
-
 			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlFile);
 
 			gaussianUploadReport = new GaussianUploadReport(
 					uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber],
 					xmlValidation, consistency);
-
 			uploadReportList.add(gaussianUploadReport);
-
+			
 			/**
-			 * 
-			 * @author nk510
-			 *         <p>
-			 *         Adding generated ontology files (owl) into RDF4J triple store, only
-			 *         in case when generated ontology (owl file) is consistent.
-			 *         </p>
-			 * 
+			 * If the generated OWL file is valid, it is loaded to the triple
+			 * store.
 			 */
-
 			if (consistency) {
-
-				ExecutorService executor = Executors.newSingleThreadExecutor();
-
-				Thread threadTask = new Thread(new Runnable() {
-
-					@Override
-					public void run() {
-
-						/**
-						 * @author nk510 Gets the repository connection.
-						 * @param serverUrl remote molhub sparql endpoint.
-						 * 
-						 */
-
-						Repository repository = new HTTPRepository(serverUrl);
-
-						repository.initialize();
-
-						RepositoryConnection connection = repository.getConnection();
-
-						try {
-
-							/**
-							 * @author nk510
-							 *         <p>
-							 *         Begins a new transaction. Requires commit() or rollback() to be
-							 *         called to end of the transaction.
-							 *         </p>
-							 */
-
-							connection.begin();
-
-							try {
-
-								/**
-								 * @author nk510
-								 *         <p>
-								 *         Each generated owl file will be stored in RDF4J triple store.
-								 *         </p>
-								 */
-								
-								connection.add(owlFile, ontoCompChemUri, RDFFormat.RDFXML);
-								
-								connection.commit();
-
-							} catch (RepositoryException e) {
-
-								/**
-								 * @author nk510
-								 *         <p>
-								 *         If something is wrong during the transaction, it will return a
-								 *         message about it.
-								 *         </p>
-								 * 
-								 */
-
-								logger.info("RepositoryException: " + e.getMessage());
-
-								connection.rollback();
-							}
-
-						} catch (Exception e) {
-
-							logger.info(e.getStackTrace());
-
-						}
-
-						connection.close();
-
-						repository.shutDown();
-					}
-
-				});
-
-				executor.submit(threadTask);
-
-				ExecutorManager em = new ExecutorManager();
-
-				em.shutdownExecutorService(executor);
-
+				if (consistency) {
+					loadOntology(serverURL, uuidFolderName + ".owl", kbFolderPath + uuidFolderName + "/",
+							serverURL + uuidFolderName + ".owl", REPOSITORY_ID);
+				}
 			}
-
+			
 			/**
-			 *
-			 * @author nk510
-			 *         <p>
-			 *         In case of inconsistency of generated ontology (Abox) Error message
-			 *         will appear.
-			 *         </p>
-			 *
+			 * An error message is shown if the generated ontology (ABox) is
+			 * inconsistent.
 			 */
-
 			if (!consistency) {
-
 				addFieldError("term.name", "Ontology '" + owlFile.getName()
 						+ "' is not consistent. Owl file is not loaded into triple store.");
-
 				return ERROR;
-
 			}
-
 			fileNumber++;
 		}
-
 		NumberFormat formatter = new DecimalFormat("#00.000");
-
 		final long endTime = System.currentTimeMillis();
-
 		runningTime = formatter.format((endTime - startTime) / 1000d) + " seconds";
-
 		if (!files.isEmpty()) {
-
 			addActionMessage("Upload completed in " + runningTime);
-
 		}
-
 		return SUCCESS;
-
 	}
 
 	/**
@@ -514,7 +414,21 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	public void setUploadContentType(String[] uploadContentType) {
 		this.uploadContentType = uploadContentType;
 	}
-	
+	/**
+	 * Sets the URL of the RDF4J server.
+	 * @return
+	 */
+	public String getServerUrl() {
+		return serverURL;
+	}
+	/**
+	 * Reads the URL of the RDF4J server.
+	 * @param serverUrl
+	 */
+	public void setServerUrl(String serverUrl) {
+		this.serverURL = serverUrl;
+	}
+
 	/**
 	 * Checks the validity of a URL.
 	 * 
@@ -537,4 +451,37 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		}
 	}
 
+	/**
+	 * Loads an ontology to the OntoCompChem KB repository. It also creates</br>
+	 * a context, which is a necessary feature to delete the mechanism</br>
+	 * if user wants.
+	 * 
+	 * @param serverURL
+	 * @param owlFileName
+	 * @param owlFilePath
+	 * @param baseURI
+	 * @param repositoryID
+	 * @throws OntoException
+	 */
+	public void loadOntology(String serverURL, String owlFileName, String owlFilePath, String baseURI, String repositoryID) throws Exception{
+		try {
+			Repository repo = new HTTPRepository(serverURL, repositoryID);
+			repo.initialize();
+			RepositoryConnection con = repo.getConnection();
+			ValueFactory f = repo.getValueFactory();
+			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOCOMPCHEM_KB_URL.concat(owlFileName));
+			try {
+				URL url = new URL("file:/".concat(owlFilePath).concat(owlFileName));
+				con.add(url, url.toString(), RDFFormat.RDFXML, context);
+			} finally {
+				con.close();
+			}
+		} catch (RDF4JException e) {
+			logger.error("RDF4JException occurred.");
+			e.printStackTrace();
+		} catch (IOException e) {
+			System.out.println("IOException occurred.");
+			e.printStackTrace();
+		}
+	}
 }
