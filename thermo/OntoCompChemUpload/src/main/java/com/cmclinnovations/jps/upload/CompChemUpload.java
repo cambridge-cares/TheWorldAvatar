@@ -100,6 +100,15 @@ public class CompChemUpload {
 		}
 	}
 	
+	/**
+	 * It uploads a calculation and establishes a link between the<br>
+	 * calculation OWL file and the corresponding OntoSpecies IRI.
+	 * 
+	 * @param calculationFileName
+	 * @param calculationFilePath
+	 * @param ontoSpeciesIRI
+	 * @return
+	 */
 	private RequestBody uploadWithOntoSpeciesIRI(String calculationFileName, String calculationFilePath, String ontoSpeciesIRI){
 		return new MultipartBody.Builder().setType(MultipartBody.FORM)
 				.addFormDataPart("upload", calculationFileName,
@@ -109,6 +118,14 @@ public class CompChemUpload {
 				.build();
 	}
 	
+	/**
+	 * It uploads a calculation and doesn't include the corresponding<br>
+	 * OntoSpecies IRI.
+	 * 
+	 * @param calculationFileName
+	 * @param calculationPath
+	 * @return
+	 */
 	private RequestBody uploadWithoutOntoSpeciesIRI(String calculationFileName, String calculationPath){
 		return new MultipartBody.Builder().setType(MultipartBody.FORM)
 				.addFormDataPart("upload", calculationFileName,
