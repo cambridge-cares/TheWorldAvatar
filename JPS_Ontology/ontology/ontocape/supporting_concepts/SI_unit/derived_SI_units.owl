@@ -765,6 +765,17 @@ The following classes, relations, and individuals from other ontology modules ar
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIBAR -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIBAR">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/binary_tree.owl#Node"/>
+        <binary_tree:hasLeftChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#MILLI-"/>
+        <binary_tree:hasRightChild rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#BAR"/>
+        <maths:hasNodeValue rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl#times"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER -->
 
     <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIMETER">
@@ -1672,6 +1683,16 @@ The following classes, relations, and individuals from other ontology modules ar
         <owl:sameAs rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#m3/s"/>
         <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#CUBIC_METER_PER_SECOND"/>
         <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#volume_flowrate"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#mBar -->
+
+    <owl:NamedIndividual rdf:about="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#mBar">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#SI_DerivedUnit"/>
+        <SI_unit:isDefinedBy rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MILLIBAR"/>
+        <system1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl#pressure"/>
     </owl:NamedIndividual>
     
 
