@@ -9,7 +9,10 @@ package com.cmclinnovations.jps.upload;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.util.Properties;
+
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -34,7 +37,10 @@ public class CompChemUpload {
 	 * The IRI of species that corresponds to the current calculation file.
 	 */
 	private String ontoSpeciesIRI;
-	
+	/**
+	 * Reads the property file. 
+	 */
+	Properties prop;
 	/**
 	 * The default constructor.
 	 */
@@ -77,12 +83,17 @@ public class CompChemUpload {
 	 * @throws IOException
 	 */
 	public void upload() throws Exception {
+		init();
 		if(getCalculationFileName() == null || getCalculationFileName().trim().isEmpty()){
 			throw new Exception("Claculation File Name is not provided.");
 		}
 		if(getCalculationFilePath() == null || getCalculationFilePath().trim().isEmpty()){
 			throw new Exception("Claculation File Path is not provided.");
-		}		
+		}
+		if(prop == null){
+			throw new IOException("Calculation upload property file could not be initialised.");
+		}
+		String molhubUploadURL = prop.getProperty("molhub.upload.url");
 		OkHttpClient client = new OkHttpClient().newBuilder().build();
 		RequestBody body = null;
 		// Uploads without the IRI of species in OntoSpecies
@@ -93,10 +104,22 @@ public class CompChemUpload {
 			body = uploadWithOntoSpeciesIRI(getCalculationFileName(), getCalculationFilePath(), getOntoSpeciesIRI());
 		}
 		if(body!=null){
-			Request request = new Request.Builder().url("http://theworldavatar.com/molhub/upload.action").method("POST", body)
+			Request request = new Request.Builder().url(molhubUploadURL).method("POST", body)
 					.addHeader("Content-Type", "multipart/form-data").build();
 			Response response = client.newCall(request).execute();
 			System.out.println("respone:" + response.toString());
+		}
+	}
+	/**
+	 * Initialises the property file reading facility and loads the file. 
+	 * 
+	 * @throws IOException
+	 */
+	private void init() throws IOException{
+		if(prop == null){
+			prop = new Properties();
+			InputStream stream = CompChemUpload.class.getClassLoader().getResourceAsStream("compchem-upload.properties");
+			prop.load(stream);
 		}
 	}
 	
