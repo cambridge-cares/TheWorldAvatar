@@ -65,14 +65,6 @@ public class CompChemUpload {
 		this.ontoSpeciesIRI = ontoSpeciesIRI;
 	}
 	
-	public static void main(String[] args) throws Exception{
-		CompChemUpload compChemUpload = new CompChemUpload();
-		compChemUpload.setCalculationFileName("login-skylake.hpc.cam.ac.uk_113420049902577.log");
-		compChemUpload.setCalculationFilePath("C:/Users/msff2/DFTAgent_435827288195609/login-skylake.hpc.cam.ac.uk_113420049902577/login-skylake.hpc.cam.ac.uk_113420049902577.log");
-//		compChemUpload.setOntoSpeciesIRI("http://www.theworldavatar.com/kb/ontospecies/3ad49265-0d58-3827-ba0f-18201693f82b.owl#3ad49265-0d58-3827-ba0f-18201693f82b");
-		compChemUpload.upload();
-	}
-	
 	/**
 	 * When the following three parameters are set, it uploads the<br>
 	 * corresponding calculation to the OntoCompChem repository:
