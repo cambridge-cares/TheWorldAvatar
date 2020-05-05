@@ -1,11 +1,18 @@
 package uk.ac.cam.cares.jps.dispersion.episode;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 public class CalculationUtils {
 	
 	public static double[] calculateCenterPoint(double xup, double yup,double xdown, double ydown) {
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
 		double xcenter=(xup+xdown)/2;
 		double ycenter=(yup+ydown)/2;
-		double[]res= {xcenter,ycenter};
+		double newdx=Double.valueOf(df.format(xcenter));
+		double newdy=Double.valueOf(df.format(ycenter));
+		double[]res= {newdx,newdy};
 		return res;
 	}
 	

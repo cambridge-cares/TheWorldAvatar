@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.dispersion.episode;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -197,6 +198,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			System.out.println("sourcecoordinate= "+sourceCRSName);
 			System.out.println("lowerx="+lowx);
 			System.out.println("upperx="+upx);
+			System.out.println("lowery="+lowy);
+			System.out.println("uppery="+upy);
 			System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
 			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
 			createEmissionInput(dataPath, "points.csv",shipdata);
@@ -488,58 +491,47 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	}
 	
 	public void createReceptorFile(JSONObject region,String dataPath, String Filename) {
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
 		double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
 		double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
 		double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
 		double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
-   
+
+		double newlowx = Double.valueOf(df.format(lowx));
+		double newlowy = Double.valueOf(df.format(lowy));
 
 		double z_rec=9.5;//TODO hardcoded?
-		double nx_rec =(upx-lowx)/dx_rec;
-		double ny_rec =(upy-lowy)/dy_rec;
+		int nx_rec =(int) Math.round((upx-lowx)/dx_rec);
+		int ny_rec =(int) Math.round((upy-lowy)/dy_rec);
 		
-		//assume no monitor station is needed
-		List<String[]>resultquery= new ArrayList<String[]>();
-		String[]key= {"simid","nstation","nx_rec","ny_rec","dx_rec","dy_rec","z_rec","xsw_main","ysw_main","rcmax"};
-		resultquery.add(key);
-		String[] content= new String[key.length];
-		content[0]="{Citychem-Singapore--testnotapm-00001}";
-		content[1]="0"; //assume no monitor station
-		content[2]=""+nx_rec;	
-		content[3]=""+ny_rec;
-		content[4]=""+dx_rec;
-		content[5]=""+dy_rec;
-		content[6]=""+z_rec;
-		content[7]=""+lowx;
-		content[8]=""+lowy;	
-		content[9]="-9900";
-		resultquery.add(content);
-		
-		//convert to tsv
-		 StringBuilder sb= new StringBuilder();
-        for(int v=0;v<resultquery.get(0).length;v++) {
-	        for (int c=0;c<resultquery.size();c++) {
-	        	sb.append(resultquery.get(c)[v]);
-	        	if(c!=1) {
-	        		sb.append(separator);
-	        	}
-	        	else {
-	        		sb.append("\n");
-	        	}
-	        }
-        	
-        }
-        
-        new QueryBroker().putLocal(dataPath + "/"+Filename, sb.toString());
-        
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + Filename);
+		String fileContext;
+		try {
+			fileContext = FileUtils.readFileToString(file);
+			fileContext=fileContext.replaceAll("aaa",""+nx_rec);
+			fileContext=fileContext.replaceAll("bbb",""+ny_rec);
+			fileContext=fileContext.replaceAll("ccc",""+dx_rec);
+			fileContext=fileContext.replaceAll("ddd",""+dy_rec);
+			fileContext=fileContext.replaceAll("eee",""+z_rec);
+			fileContext=fileContext.replaceAll("fff",""+newlowx);
+			fileContext=fileContext.replaceAll("ggg",""+newlowy);
+			new QueryBroker().putLocal(dataPath + "/"+Filename, fileContext);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+		}
+  
 	}
 	
-
-
 	private double[] calculateLowerLeftInit(double xup, double yup,double xdown, double ydown) {
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
 		double xlowerinit=-1*(xup-xdown)/2;
 		double ylowerinit=-1*(yup-ydown)/2;
-		double[]res= {xlowerinit,ylowerinit};
+		double newdx=Double.valueOf(df.format(xlowerinit));
+		double newdy=Double.valueOf(df.format(ylowerinit));
+		double[]res= {newdx,newdy};
 		return res;
 	}
 	private double[] calculateEachDistanceCellDetails(double xup, double yup,double xdown, double ydown, int nx, int ny) {
@@ -548,6 +540,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		double dy=(yup-ydown)/ny;
 		System.out.println("dx= "+dx);
 		System.out.println("dy= "+dy);
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
+		double newdx=Double.valueOf(df.format(dx));
+		double newdy=Double.valueOf(df.format(dy));
 		//nx and ny should be factor of 5
 //		if(nx%5!=0||ny%5!=0) { 
 //			System.out.println("boundary conditions is not fulfilled");
@@ -556,7 +552,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 //			
 //			return null;
 //		}
-		double[]dcell= {dx,dy};
+		double[]dcell= {newdx,newdy};
 		return dcell;
 	}
 	
@@ -574,12 +570,20 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		
 		System.out.println("newlowerx="+lowx);
 		System.out.println("newupperx="+upx);
+		System.out.println("newlowery="+lowy);
+		System.out.println("newuppery="+upy);
 
 		// it is assumed to be already in utm 48 or this calculation?
+		DecimalFormat df = new DecimalFormat("0.0");
+		df.setRoundingMode(RoundingMode.HALF_EVEN);
 		double proclowx = Double.valueOf(lowx);
+		proclowx=Double.valueOf(df.format(proclowx));
 		double procupx = Double.valueOf(upx);
+		procupx=Double.valueOf(df.format(procupx));
 		double proclowy = Double.valueOf(lowy);
+		proclowy=Double.valueOf(df.format(proclowy));
 		double procupy = Double.valueOf(upy);
+		procupy=Double.valueOf(df.format(procupy));
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] leftcorner = calculateLowerLeftInit(procupx, procupy, proclowx, proclowy);
 		double[] dcell = calculateEachDistanceCellDetails(procupx, procupy, proclowx, proclowy, nx, ny);
@@ -592,12 +596,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			int sizeofsrtm=inputparameter.getJSONArray("srtminput").length();
 			String srtmin1 = inputparameter.getJSONArray("srtminput").get(0).toString();
 			String tif1 = "   DATAFILE  \"./srtm3/N01E103.tif\"   tiffdebug";
-			String tif1aft = "DATAFILE  " + "./srtm3/" + srtmin1 + "   tiffdebug";
+			String tif1aft = "   DATAFILE  \"" + "./srtm3/" + srtmin1 + "\"   tiffdebug";
 			String tif2 = "   DATAFILE  \"./srtm3/N01E104.tif\"   tiffdebug";
 			String tif2aft="";
 			if(sizeofsrtm>1) {
 				String srtmin2 = inputparameter.getJSONArray("srtminput").get(1).toString();
-				tif2aft = "DATAFILE  " + "./srtm3/" + srtmin2 + "   tiffdebug";
+				tif2aft = "   DATAFILE  " + "\"./srtm3/" + srtmin2 + "\"   tiffdebug";
 			}
 
 			fileContext = fileContext.replaceAll(tif1, tif1aft); // replace with the new tif
@@ -636,37 +640,38 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int r = 0; r < 9; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
+			String enter=System.getProperty("line.separator");
 			String line10b = separator + "!" + separator + lineoffile.get(9).split("!")[1];
-			newcontent.add("'"+lseORpse+"'"+ line10b);
+			newcontent.add(" '"+lseORpse+"'"+ line10b);
 			for (int r = 10; r < 12; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
 			String line13b = separator + "!" + separator + lineoffile.get(12).split("!")[1];
 			newcontent.add(
-					"'" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line13b);
+					" '" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line13b);
 			String line14b = separator + "!" + separator + lineoffile.get(13).split("!")[1];
 			newcontent.add(
-					"'" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line14b);
+					" '" + time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0] + "'" + line14b);
 			String line15b = separator + "!" + separator + lineoffile.get(14).split("!")[1];
-			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
+			newcontent.add(" "+time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
 					+ time.split("T")[1].split(":")[0] + line15b);
 			String line16b = separator + "!" + separator + lineoffile.get(15).split("!")[1];
-			newcontent.add(time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
+			newcontent.add(" "+time.split("-")[0] + "," + time.split("-")[1] + "," + time.split("-")[2].split("T")[0] + ","
 					+ time.split("T")[1].split(":")[0] + line16b);
 			String line17b = separator + "!" + separator + lineoffile.get(16).split("!")[1];
-			newcontent.add(nx + line17b);
+			newcontent.add(" "+nx + line17b);
 			String line18b = separator + "!" + separator + lineoffile.get(17).split("!")[1];
-			newcontent.add(ny + line18b);
+			newcontent.add(" "+ny + line18b);
 			String line19b = separator + "!" + separator + lineoffile.get(18).split("!")[1];
-			newcontent.add(dx_rec + line19b);
+			newcontent.add(" "+dx_rec + line19b);
 			String line20b = separator + "!" + separator + lineoffile.get(19).split("!")[1];
-			newcontent.add(dcell[0] + line20b);
+			newcontent.add(" "+dcell[0] + line20b);
 			String line21b = separator + "!" + separator + lineoffile.get(20).split("!")[1];
-			newcontent.add(proclowx + "," + proclowy + line21b);// corner left
+			newcontent.add(" "+proclowx + "," + proclowy + line21b);// corner left
 			String line22b = separator + "!" + separator + lineoffile.get(21).split("!")[1];
-			newcontent.add("'"+epsgInUTM+"N'"+ line22b);// UTM
+			newcontent.add(" '"+epsgInUTM+"N'"+ line22b);// UTM
 			String line23b = separator + "!" + separator + lineoffile.get(22).split("!")[1];
-			newcontent.add(size+line23b);// number of point source?
+			newcontent.add(" "+size+line23b);// number of point source?
 			for (int r = 23; r < lineoffile.size(); r++) {
 				newcontent.add(lineoffile.get(r));
 			}
@@ -674,6 +679,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
 			}
+			contentupdate = contentupdate.replaceAll("\r\n", "\n");
 			return contentupdate;
 
 		} else if (filename.contentEquals("citychem_restart.txt")) {
@@ -770,6 +776,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
 			}
+			contentupdate = contentupdate.replaceAll("\r\n", "\n");
 			return contentupdate;
 
 		} else if (filename.contentEquals("run_file.asc")) {
@@ -803,10 +810,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 			double[] pmidconvert = CRSTransformer.transform("EPSG:"+epsgActive, "EPSG:4326",
 					new double[] { center[0], center[1] });
-			DecimalFormat df = new DecimalFormat("#.#");
-			String xmid = df.format(pmidconvert[0]);
+			DecimalFormat df2 = new DecimalFormat("#.#");
+			String xmid = df2.format(pmidconvert[0]);
 			System.out.println("xmid=" + xmid);
-			String ymid = df.format(pmidconvert[1]);
+			String ymid = df2.format(pmidconvert[1]);
 			System.out.println("ymid=" + ymid);
 			String line23 = lineoffile.get(23);
 			line23 = line23.replace("1.4", ymid);
@@ -855,6 +862,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
 			}
+			contentupdate = contentupdate.replaceAll("\r\n", "\n");
 			return contentupdate;
 		}
 

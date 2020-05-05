@@ -41,11 +41,11 @@ public class DMSCoordinationAgentTest extends TestCase {
 		
 		//HK
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12720831.57");
-		upcorn.put("uppery", "2562311.02");
+		upcorn.put("upperx", "12720578.56");
+		upcorn.put("uppery", "2562555.26");
 		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12693826.33");
-		lowcorn.put("lowery", "2535141.08");
+		lowcorn.put("lowerx", "12694101.21");
+		lowcorn.put("lowery", "2534900.06");
 		JSONObject joregion = new JSONObject();
 		joregion.put("srsname","EPSG:3857");
 		joregion.put("lowercorner",lowcorn);
@@ -137,4 +137,5 @@ public class DMSCoordinationAgentTest extends TestCase {
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
 		return resultList;
 	}
+	
 }

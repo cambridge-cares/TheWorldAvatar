@@ -1,8 +1,8 @@
 package uk.ac.cam.cares.jps.dispersion.episode;
 
 public class EpisodeConfig {
-	private double dx_rec=100; //TODO hardcoded? decide the dx for the receptor
-	private double dy_rec=100;//TODO hardcoded? decide the dy for the receptor
+	private double dx_rec=100.0; //TODO hardcoded? decide the dx for the receptor
+	private double dy_rec=100.0;//TODO hardcoded? decide the dy for the receptor
 	private int nx=10 ;//decide the nx for the scope
 	private int ny=10 ;//decide the ny for the scope	
 	private double dz=10;
