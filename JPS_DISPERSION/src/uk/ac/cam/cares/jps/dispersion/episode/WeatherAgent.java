@@ -174,10 +174,10 @@ public class WeatherAgent extends JPSHttpServlet {
 			 String context2=listmap.get(1)[0]; // the furthest station	 	
 			 try {
 				//new WeatherAgent().executeFunctionPeriodically(listmap,cityiri);
-				 new WeatherAgent().executePeriodicUpdate("singapore");
-				 new WeatherAgent().executePeriodicUpdate("kong");
-				 new WeatherAgent().executePeriodicUpdate("hague");
-				 new WeatherAgent().executePeriodicUpdate("berlin");
+				 executePeriodicUpdate("singapore");
+				 executePeriodicUpdate("kong");
+				 executePeriodicUpdate("hague");
+				 executePeriodicUpdate("berlin");
 			} catch (URISyntaxException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -471,11 +471,10 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "{graph "+"<"+context+">"
 				+ "{ "
 		
-				+ "  ?entity j4:observes ?prop ."
+//				+ "  ?entity j4:observes ?prop ."
 
 				+ " ?prop a j4:"+propnameclass+" ."
-				+ " ?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j2:numericalValue ?propval ." 
+				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
 				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
 				+ "}" 
