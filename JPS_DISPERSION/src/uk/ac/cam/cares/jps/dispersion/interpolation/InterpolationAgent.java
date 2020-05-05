@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet({"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
 	public String SIM_START_PATH = "/InterpolationAgent/startSimulation";
@@ -46,17 +47,19 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		String baseUrl= requestParams.getString("folder");
-		String wasteIRI=requestParams.getString("wastenetwork");
-		//copy over data from iri to base folder
-		//copy over data 
-		copyTemplate(baseUrl, "Interpolation_gas_updated.m");
+		//temporarily until we get an idea of how to read input from Front End
+		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
+		//eventually we would run simulation and dump results
+		String coordinates = "[380000 150000 0]";
+		String gasType = "['NO NO2'],"+baseUrl+",3D_instantanous_mainconc_center.dat";
+		copyTemplate(baseUrl,"3D_instantanous_mainconc_center.dat");
+		copyTemplate(baseUrl, "virtual_sensor.m");
 		//modify matlab to read 
 		if (SIM_START_PATH.equals(path)) {
 			try {
-				createBat(baseUrl);
+				createBat(baseUrl, coordinates,gasType );
 				runModel(baseUrl);
-	            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
+	            notifyWatcher(requestParams, baseUrl+"/exp.txt",
 	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -64,6 +67,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		 }else if (SIM_PROCESS_PATH.equals(path)) {
 			 try {
 				 //update respective OWL FILES
+				 logger.info("Completed Matlab Simulation");
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 
@@ -86,7 +90,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param newdir
 	 * @param filename
 	 */
-	private void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
+	public void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
 		
 		String destinationUrl = newdir + "/"+filename;
@@ -97,10 +101,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param baseUrl
 	 * @throws Exception
 	 */
-	public void createBat(String baseUrl) throws Exception {
-		String loc = baseUrl + "\\Main.m";
-		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" + "matlab -nosplash -noFigureWindows -r \"try; run('"
-				+ loc + "'); catch; end; quit\"";
+	public void createBat(String baseUrl, String coordinates, String gasType) throws Exception {
+		String loc = " virtual_sensor(" + coordinates +"," +gasType;
+		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
+		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
+		+"');"+ loc + "); catch; end; quit\"";
 		new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
 	}
 	/** runs the batch file. 
@@ -149,4 +154,19 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		}
 		return resultString; 
 	}
+	 /** reads the result from the csv file produced and returns as List<String[]>
+		 * 
+		 * @param baseUrl String
+		 * @param filename name of the file. 
+		 * @return
+		 * @throws IOException
+		 */
+		private List<String[]> readResult(String baseUrl,String filename) throws IOException {
+
+	        String outputFile = baseUrl + "/"+filename;
+	        String csv = new QueryBroker().readFileLocal(outputFile);
+	        List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
+			
+			return simulationResult;
+		}
 }
