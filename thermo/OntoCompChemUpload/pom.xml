@@ -4,4 +4,25 @@
   <artifactId>OntoCompChemUpload</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>OntoCompChemUpload</name>
+
+  <dependencies>
+	<!-- https://mvnrepository.com/artifact/com.squareup.okhttp3/okhttp -->
+	<dependency>
+	    <groupId>com.squareup.okhttp3</groupId>
+	    <artifactId>okhttp</artifactId>
+	    <version>4.2.2</version>
+	</dependency>
+  </dependencies>
+  <build>
+    <finalName>SlurmJobAPI</finalName>
+      <plugins>
+	    <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+            <configuration>
+              <source>1.8</source>
+              <target>1.8</target>
+            </configuration>
+        </plugin>
+     </plugins>
+  </build>
 </project>
