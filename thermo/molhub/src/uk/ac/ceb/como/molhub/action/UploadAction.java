@@ -84,7 +84,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 
 	private final String ONTOCOMPCHEM_KB_URL = kbProperties.getProperty("ontocompchem.kb.uri").toString();
 	
-	private String serverURL = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url").toString();
+	private String serverURL = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server").toString();
 	
 	private String REPOSITORY_ID = kbProperties.getProperty("ontocompchem.repository.id").toString();
 
