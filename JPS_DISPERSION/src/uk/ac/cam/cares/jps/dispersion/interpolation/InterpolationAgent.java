@@ -24,7 +24,7 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet({"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
 	public String SIM_START_PATH = "/InterpolationAgent/startSimulation";
-	public String SIM_PROCESS_PATH = "/InterpolationAgent/startSimulation";
+	public String SIM_PROCESS_PATH = "/InterpolationAgent/endSimulation";
 	
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_WATCH = "watch";
@@ -49,28 +49,28 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String path = request.getServletPath();
 		//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		//eventually we would run simulation and dump results
-		String coordinates = "[380000 150000 0]";
-		String gasType = "['NO NO2'],"+baseUrl+",3D_instantanous_mainconc_center.dat";
-		copyTemplate(baseUrl,"3D_instantanous_mainconc_center.dat");
+		String coordinates = requestParams.optString("coordinates","[380000 150000 0]");
+		String gasType = requestParams.optString("gasType","['NO NO2']");
+		String options = requestParams.optString("options","1");
+		String dispMatrix;
+		if (requestParams.getInt("typ")==1){
+			dispMatrix = "3D_instantanous_mainconc_center.dat";
+		}else {
+			dispMatrix = "test.gst";//has not configured to this step yet. 
+		}
+		copyTemplate(baseUrl,dispMatrix);
 		copyTemplate(baseUrl, "virtual_sensor.m");
 		//modify matlab to read 
 		if (SIM_START_PATH.equals(path)) {
 			try {
-				createBat(baseUrl, coordinates,gasType );
+				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
 				runModel(baseUrl);
-	            notifyWatcher(requestParams, baseUrl+"/exp.txt",
-	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+				//save in somewhere... readings are read to exp.txt for now
+				logger.info("finish Simulation");
+	           
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		 }else if (SIM_PROCESS_PATH.equals(path)) {
-			 try {
-				 //update respective OWL FILES
-				 logger.info("Completed Matlab Simulation");
-			 }catch (Exception e) {
-				e.printStackTrace();
-			}			 
 		 }
 		return requestParams;
 	}
@@ -101,8 +101,9 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param baseUrl
 	 * @throws Exception
 	 */
-	public void createBat(String baseUrl, String coordinates, String gasType) throws Exception {
-		String loc = " virtual_sensor(" + coordinates +"," +gasType;
+	public void createBat(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
+		String loc = " virtual_sensor(" + coordinates +"," +gasType
+				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
 		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
 		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
 		+"');"+ loc + "); catch; end; quit\"";

@@ -1,3 +1,4 @@
+function [c_gas, ic_name]=virtual_sensor(location, ic_name1, option, data_path, filename)
 %**************************************************************************
 % This is a post-processing code to estimate gas concentration at any
 % selected location in the simulation domain.  Written by Kang @ Mar, 2020
@@ -18,20 +19,23 @@
 % estimated. (ic_gas=1: O3, =2: NO, =3: NO2 .... ref to EPISODE gas index).
 % 5), "c_gas(:)" contains the concentration for gas species
 % defined in input window at selected location.  
-
-clc;
-clear;
-close all;
+%workspace;
+ clc;
+ %clear;
+ close all;
 
 %% ************************************************************************
 %% Part 1: define the input variables
 nrun_stop=0;  %% if selected point is within simluation domain. =0, yes, run interpolation. =1, no, stop interpolation.
 ic_gas_run=1;  %% if gas name is available. if not, =0, and stop running code.
 
-var_input=inputdlg({'Enter space-separated location (x y z) @ meter:','Gas species (Such as NO, NO2, PM2.5)','Interpolation option (1: linear. 2: interp3 - spline, 3: interp3 - cubic, 4: interp3 - makima)'}, 'sensor', [1 100; 1 100; 1 100]);
-location=str2num(var_input{1}); %% x,y,z (m) of selected point to get its local gas concentration
-ic_name1=var_input{2};  %% gas name from input box. 
-option=str2double(var_input{3});  %% method to interpolate data in seleted location.  =1, trilinear.  =2, matlab interp3 option (spline) =3, matlab interp3 option (cubic)
+
+%var_input=inputdlg({'Enter space-separated location (x y z) @ meter:','Gas species (Such as NO, NO2, PM2.5)','Interpolation option (1: linear. 2: interp3 - spline, 3: interp3 - cubic, 4: interp3 - makima)'}, 'sensor', [1 100; 1 100; 1 100]);
+%location=str2num(vinput); %% x,y,z (m) of selected point to get its local gas concentration
+%ic_name1=name;  %% gas name from input box. 
+%option=str2double(options);  %% method to interpolate data in seleted location.  =1, trilinear.  =2, matlab interp3 option (spline) =3, matlab interp3 option (cubic)
+%ic_name1=convertCharsToStrings(ic_name0);
+
 ic_name=strsplit(ic_name1); %% gas name. =2, NO, =3, NO2 check EPISODE for index # of gas species
 
 if option==2
@@ -44,8 +48,8 @@ if option==4
     interp_method='makima';
 end
 
-data_path='D:Users/Kang_file/virtual_sensor/';  %% file path for data file
-filename=strcat(data_path, '3D_instantanous_mainconc_center.dat');   %% data file name   
+%%data_path='C:\Users\ongajong\Downloads\';  %% file path for data file
+filename=strcat(data_path,filename);   %% data file name   
 
 %% 1.1: read orignal data from data file
 delimiterIn = ' ';
@@ -483,13 +487,18 @@ end  %% end of option=2
 c_gas(nn)=max(c_gas(nn),0.0);
 end %% end of nn=1:length(ic_name).
 
-CreateStruct.Interpreter = 'tex';
-CreateStruct.WindowStyle = 'modal';
-Message=cell(length(ic_name),1);
+%CreateStruct.Interpreter = 'tex';
+%CreateStruct.WindowStyle = 'modal';
+%Message=cell(length(ic_name),1);
+%for nn=1:length(ic_name)
+%    Message{nn} = sprintf('%s concentration is %f ug/m^3 \n',char(ic_name(nn)),c_gas(nn));
+%    f=msgbox(Message,'value',CreateStruct);  
+%end%
+fileID = fopen('exp.txt','w');
 for nn=1:length(ic_name)
-    Message{nn} = sprintf('%s concentration is %f ug/m^3 \n',char(ic_name(nn)),c_gas(nn));
-    f=msgbox(Message,'value',CreateStruct);  
+    fprintf(fileID,'%s %f \n',char(ic_name(nn)),c_gas(nn)); 
 end%
+fclose(fileID);
 end %% end of nrun_stop =0
 
-
+end %% end of function
