@@ -30,8 +30,9 @@ public class InterpolationTest extends TestCase{
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
 		jo.put("typ", 1);
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());
-		
-		
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
+	}
+	public void testdetermineGas() {
+		System.out.println(new InterpolationAgent().determineGas("C:\\Users\\ongajong\\JParkSimulator-git\\JPS_DISPERSION\\workingdir"));
 	}
 }
