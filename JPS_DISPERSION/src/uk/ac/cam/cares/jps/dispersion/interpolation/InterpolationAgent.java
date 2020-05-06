@@ -2,8 +2,13 @@ package uk.ac.cam.cares.jps.dispersion.interpolation;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
@@ -15,9 +20,11 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -50,15 +57,18 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
 		String coordinates = requestParams.optString("coordinates","[380000 150000 0]");
-		String gasType = requestParams.optString("gasType","['NO NO2']");
-		String options = requestParams.optString("options","1");
-		String dispMatrix;
-		if (requestParams.getInt("typ")==1){
-			dispMatrix = "3D_instantanous_mainconc_center.dat";
-		}else {
-			dispMatrix = "test.gst";//has not configured to this step yet. 
-		}
-		copyTemplate(baseUrl,dispMatrix);
+		String gasType;
+		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		String location = requestParams.optString("location","http://dbpedia.org/resource/Singapore");
+		String directoryFolder = getLastModifiedDirectory(agentiri, location);
+		
+		ArrayList<String> gsType = determineGas(directoryFolder);
+		gasType = gsType.get(0);
+		String fileName = gsType.get(1);
+		String options = requestParams.optString("options","1");//How do we select the options? 
+		
+		
+		String dispMatrix = copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
 		copyTemplate(baseUrl, "virtual_sensor.m");
 		//modify matlab to read 
 		if (SIM_START_PATH.equals(path)) {
@@ -73,6 +83,49 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			}
 		 }
 		return requestParams;
+	}
+	/** find an array of path names that follow dat or match
+	 * 
+	 * @param dirName
+	 * @return
+	 */
+	public String[] finder(String dirName) {
+        File dir = new File(dirName);
+        return dir.list(new FilenameFilter(){
+        		//checks if file ends with dat or gst file
+                 public boolean accept(File dir, String filename){ 
+                	 return (filename.endsWith(".dat"));
+                }
+        });
+
+    }
+	/** determine the types of gas available. 
+	 * 
+	 * @param dirName
+	 * @return {ArrayList} [gases, name of relevantFile]
+	 */
+	public ArrayList<String> determineGas(String dirName) {
+		//Since there are two files with gst, then we'll just choose the first in the array of [1] or [2]
+		String[] arrayFile = finder(dirName);
+		String fGas = arrayFile[0];
+		String fullString = "['NO NO2']";
+		File lstName = new File(dirName, fGas);
+		try {
+		BufferedReader bff = new BufferedReader(new FileReader(lstName));
+		String text = bff.readLine(); //get first line of file
+		String[] gasTypes = text.split(","); 
+		String gasType = gasTypes[gasTypes.length-1].trim();
+		//get last element (the gases are separated by six spaces
+		
+		String[] gasTypes2 = gasType.split("\\s+");
+		fullString = "['" +String.join(" ", gasTypes2) +"']";
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+		ArrayList<String> lst_a = new ArrayList<String>();
+		lst_a.add(fullString);
+		lst_a.add(lstName.getAbsolutePath());
+		return lst_a;
 	}
 	/** notifies the watcher to return with the callback. 
 	 * 
@@ -90,11 +143,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param newdir
 	 * @param filename
 	 */
-	public void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
+	public void copyTemplate(String newdir, String filename) { //in this case for main .m file
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
 		
 		String destinationUrl = newdir + "/"+filename;
 		new QueryBroker().putLocal(destinationUrl, file);
+	}
+	/** copies over the files in the working directory over to scenario folder. 
+	 * 
+	 * @param newdir location of directory of scenario folder
+	 * @param filename name of actual file without directory
+	 */
+	public String copyOverFile(String newdir, String filename) { //in this case for source folder
+		Path path = Paths.get(filename);
+		File file = new File(filename);
+		Path fileName = path.getFileName(); 
+		logger.info(filename);
+		String destinationUrl = newdir + "/"+fileName.toString();
+		logger.info(destinationUrl);
+		new QueryBroker().putLocal(destinationUrl, file);
+		return fileName.toString();
 	}
 	/** create the batch file in the mentioned folder. 
 	 * 
@@ -170,4 +238,19 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			
 			return simulationResult;
 		}
+	/**
+     * Gets the latest file created using rdf4j
+     * @return last created file
+     */
+    public String getLastModifiedDirectory(String agentiri, String location ) {
+//    	agentiri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+		List<String> lst = new ArrayList<String>();
+		lst.add(location);
+    	System.out.println(lst);
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
+		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
+		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
+    	return listmap.get(0)[0];
+    }
+
 }

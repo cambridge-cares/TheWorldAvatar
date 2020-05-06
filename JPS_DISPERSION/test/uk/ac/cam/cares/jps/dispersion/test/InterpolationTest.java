@@ -1,14 +1,18 @@
 package uk.ac.cam.cares.jps.dispersion.test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.dispersion.interpolation.InterpolationAgent;
 
 public class InterpolationTest extends TestCase{
-
+	//test simulation
 	public void testepisoderunTestinSequenceDirect() {
 		String baseUrl= QueryBroker.getLocalDataPath();
 		InterpolationAgent ag = new InterpolationAgent();
@@ -27,12 +31,31 @@ public class InterpolationTest extends TestCase{
 		}
 	
 		}
+	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
 		jo.put("typ", 1);
+		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
 	}
+	//test determineGas
 	public void testdetermineGas() {
 		System.out.println(new InterpolationAgent().determineGas("C:\\Users\\ongajong\\JParkSimulator-git\\JPS_DISPERSION\\workingdir"));
+	}
+	//test getLastModifiedDirectory
+	public void testAddMetadataAnnotator() {
+		String baseUrl = "C://Users//ongajong//JParkSimulator-git//JPS_DISPERSION//workingdir";//folder baseUrl should be // and not \\
+		//expect baseUrl to be returned
+		String agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service";
+		String location = "http://dbpedia.org/resource/Singapore";
+		List<String> lst = new ArrayList<String>();
+		lst.add(location);
+		MetaDataAnnotator.annotate(baseUrl, null, agent, true, lst);
+		assertEquals(new InterpolationAgent().getLastModifiedDirectory(agent, location), baseUrl);
+	}
+	//test copyOverFile
+	public void testcopyOverFile() {
+		System.out.println(new InterpolationAgent().copyOverFile("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\ddfd101b-33ca-4511-82f2-1f4fa48f4ee8\\JPS_DIS",
+				"C://Users//ongajong//JParkSimulator-git//JPS_DISPERSION//workingdir//3D_instantanous_mainconc_center.dat"));
 	}
 }
