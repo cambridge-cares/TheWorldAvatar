@@ -162,7 +162,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
 			JSONObject region = requestParams.getJSONObject("region");
 			JSONObject shipdata=requestParams.getJSONObject("ship");
-			String dataPath = QueryBroker.getLocalDataPath();
+			String dataPath = QueryBroker.getLocalDataPath()+"/input";
 			String cityIRI = requestParams.getString("city"); //later to be used for annotation??
 			
 			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
@@ -218,7 +218,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			createWeatherInput(dataPath,"mcwind_input.txt",stniri);
 
 			
-			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_centerBCZ.dat");
+			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_centerBCZ.dat"); //or withoutBCZ?
 			return responseParams;
 		}
     
@@ -679,12 +679,16 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
 			}
-			contentupdate = contentupdate.replaceAll("\r\n", "\n");
+//			contentupdate = contentupdate.replaceAll("\r\n", "\n");
+			contentupdate = contentupdate.replaceAll("\\r", "\n");
 			return contentupdate;
 
 		} else if (filename.contentEquals("citychem_restart.txt")) {
 			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 			fileContext = FileUtils.readFileToString(file);
+			String timeinput=time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0];
+			fileContext=fileContext.replace("20191118_20191118", timeinput+"_"+timeinput);
+			fileContext=fileContext.replace("20130701_20130731",timeinput+"_"+timeinput);
 			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString(); //main
 			String loc1x = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
 			String loc1y = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
@@ -701,7 +705,11 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				newcontent.add(lineoffile.get(r));
 			}
 			newcontent.add(loc1y+" "+loc1x+"\n");//line 40
-			for (int r = 40; r < 45; r++) {
+			for (int r = 40; r < 42; r++) {
+				newcontent.add(lineoffile.get(r));
+			}
+			newcontent.add("0"+"\n");//line 43
+			for (int r = 43; r < 45; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
 			newcontent.add(proclowx+","+proclowy+"\n"); //line 46
@@ -776,12 +784,15 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
 			}
-			contentupdate = contentupdate.replaceAll("\r\n", "\n");
+			//contentupdate = contentupdate.replaceAll("\r\n", "\n");
+			contentupdate = contentupdate.replaceAll("\\r", "\n");
 			return contentupdate;
 
 		} else if (filename.contentEquals("run_file.asc")) {
 			File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/" + filename);
 			fileContext = FileUtils.readFileToString(file);
+			String timeinput=time.split("-")[0] + time.split("-")[1] + time.split("-")[2].split("T")[0];
+			fileContext=fileContext.replaceAll("20191118_20191118", timeinput+"_"+timeinput);
 			String name1 = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("name").toString();
 			String loc1x = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("x").toString();
 			String loc1y = inputparameter.getJSONArray("weatherinput").getJSONObject(0).get("y").toString();
@@ -795,10 +806,12 @@ public class EpisodeAgent extends DispersionModellingAgent {
 					new double[] { Double.valueOf(loc1x), Double.valueOf(loc1y) });
 			double[] p2convert = CRSTransformer.transform("EPSG:4326", "EPSG:"+epsgActive,
 					new double[] { Double.valueOf(loc2x), Double.valueOf(loc2y) });
-			double dx1 = (p1convert[0] - proclowx)/1000; //in km
-			double dy1 = (p1convert[1] - proclowy)/1000;//in km
-			double dx2 = (p2convert[0] - proclowx)/1000;//in km
-			double dy2 = (p2convert[1] - proclowy)/1000;//in km
+			
+			
+			double dx1 = Math.abs((p1convert[0] - proclowx)/1000); //in km
+			double dy1 = Math.abs((p1convert[1] - proclowy)/1000);//in km
+			double dx2 = Math.abs((p2convert[0] - proclowx)/1000);//in km
+			double dy2 = Math.abs((p2convert[1] - proclowy)/1000);//in km
 
 			// System.out.println("line 0= "+filename);
 			String[] line = fileContext.split("\n");
@@ -826,33 +839,33 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			newcontent.add(lineoffile.get(25));
 			String line26b = lineoffile.get(26).split("!")[1] + "!" + lineoffile.get(26).split("!")[2] + "!"
 					+ lineoffile.get(26).split("!")[3];
-			String line26 = nx + separator + ny + separator + nz + separator + "!" + line26b;
+			String line26 = " "+nx + " " + ny + " " + nz + separator + "!" + line26b;
 			newcontent.add(line26);
 			System.out.println("line26= " + line26);
 
 			String line27b = lineoffile.get(27).split("!")[1];
-			String line27 = dcell[0] + separator + dcell[1] + separator + "!" + line27b;
+			String line27 = " "+dcell[0] + " " + dcell[1] + separator + "!" + line27b;
 			newcontent.add(line27);
 			System.out.println("line27= " + line27);
 			newcontent.add(lineoffile.get(28));// base with stretch factor
 			newcontent.add(lineoffile.get(29));// base
 			for (int r = 1; r < nz; r++) {
-				newcontent.add(dz + separator + "!" + "\n");
+				newcontent.add(" "+dz + separator + "!" + "\n");
 			}
 			for (int r = 42; r < 73; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(name1 + separator + "!" + lineoffile.get(73).split("!")[1]);
-			newcontent.add(dx1 + separator + dy1 + separator + "!" + lineoffile.get(74).split("!")[1]);
+			newcontent.add(" '"+name1 +"'"+ separator + "!" + lineoffile.get(73).split("!")[1]);
+			newcontent.add(" "+dx1 + " " + dy1 + separator + "!" + lineoffile.get(74).split("!")[1]);
 			newcontent.add(lineoffile.get(75));
-			newcontent.add(heighttemp + separator + "!" + lineoffile.get(76).split("!")[1]);
-			newcontent.add(upperheight + separator + "!" + lineoffile.get(77).split("!")[1]);
-			newcontent.add(lowerheight + separator + "!" + lineoffile.get(78).split("!")[1]);
+			newcontent.add(" "+heighttemp + separator + "!" + lineoffile.get(76).split("!")[1]);
+			newcontent.add(" "+upperheight + separator + "!" + lineoffile.get(77).split("!")[1]);
+			newcontent.add(" "+lowerheight + separator + "!" + lineoffile.get(78).split("!")[1]);
 			for (int r = 79; r < 82; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
-			newcontent.add(name2 + separator + "!" + lineoffile.get(82).split("!")[1]);
-			newcontent.add(dx2 + separator + dy2 + separator + "!" + lineoffile.get(83).split("!")[1]);
+			newcontent.add(" '"+name2+"'" + separator + "!" + lineoffile.get(82).split("!")[1]);
+			newcontent.add(" "+dx2 + " " + dy2 + separator + "!" + lineoffile.get(83).split("!")[1]);
 			for (int r = 84; r < 89; r++) {
 				newcontent.add(lineoffile.get(r));
 			}
@@ -862,7 +875,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			for (int x = 0; x < newcontent.size(); x++) {
 				contentupdate += newcontent.get(x);
 			}
-			contentupdate = contentupdate.replaceAll("\r\n", "\n");
+			contentupdate = contentupdate.replaceAll("\\r", "\n");
 			return contentupdate;
 		}
 

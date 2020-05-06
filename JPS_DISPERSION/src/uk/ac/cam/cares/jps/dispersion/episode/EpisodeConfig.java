@@ -5,8 +5,8 @@ public class EpisodeConfig {
 	private double dy_rec=100.0;//TODO hardcoded? decide the dy for the receptor
 	private int nx=10 ;//decide the nx for the scope
 	private int ny=10 ;//decide the ny for the scope	
-	private double dz=10;
-	private int nz=13;
+	private double dz=20;//10 previously
+	private int nz=30;//13 previously
 	private double upperheight=25.0;
 	private double lowerheight=2.0;
 	//typical gradient = 0.6K/100m

@@ -32,24 +32,28 @@ public class DMSCoordinationAgentTest extends TestCase {
 //		joregion.put("uppercorner",upcorn);
 		
 		
-		
-//		upcorn.put("upperx", "11563323.926");new xupper for episode=11572101.926
-//		upcorn.put("uppery", "143305.896"); new yupper for episode= 151705.896
-//		JSONObject lowcorn = new JSONObject();
-//		lowcorn.put("lowerx", "11560879.832");new xlower for episode=11552101.832
-//		lowcorn.put("lowery", "140107.739");new ylower for episode=131707.739
-		
-		//HK
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12720578.56");
-		upcorn.put("uppery", "2562555.26");
+		upcorn.put("upperx", "11572101.89");
+		upcorn.put("uppery", "151860.32");
 		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12694101.21");
-		lowcorn.put("lowery", "2534900.06");
+		lowcorn.put("lowerx", "11552101.832");
+		lowcorn.put("lowery", "131707.739");
 		JSONObject joregion = new JSONObject();
 		joregion.put("srsname","EPSG:3857");
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
+		
+		//HK episode
+//		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12720578.56");
+//		upcorn.put("uppery", "2562555.26");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12694101.21");
+//		lowcorn.put("lowery", "2534900.06");
+//		JSONObject joregion = new JSONObject();
+//		joregion.put("srsname","EPSG:3857");
+//		joregion.put("lowercorner",lowcorn);
+//		joregion.put("uppercorner",upcorn);
 	
 		
 		
