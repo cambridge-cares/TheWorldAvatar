@@ -58,7 +58,7 @@ public class EBRApproach {
 			runCrossValidation(jsonInput);
 		}
 		if (InputParser.getWhichProcessToRun(jsonInput)
-				.equalsIgnoreCase(Property.EBR_PROCESS_EOF_ESTIMATION.getName())) {
+				.equalsIgnoreCase(Property.EBR_PROCESS_CALCULATION.getName())) {
 			calculateEoF(jsonInput);
 		}
 	}
