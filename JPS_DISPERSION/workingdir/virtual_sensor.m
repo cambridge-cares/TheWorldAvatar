@@ -8,18 +8,26 @@ function [c_gas, ic_name]=virtual_sensor(location, ic_name1, option, data_path, 
 % 1). In current version, 
 % if option =1 (trilinear)
 % if option =2 (interp3 function) - 'spline' method
+% if option =3 (interp3 function) - 'cubic' method
+% if option =4 (interp3 function) - 'makima' method
 %
 % 2). option =1 uses Trilinear interpolation (selected point is within a
 % cubic inside simluation domain); 
-% 3). option =2 uses Matlab interp3() function.  "spline" option is used
-% and considers 4 orignal points in x,y and z direction as coarse input
-% data.  The finer mesh where interpolation is taken has a resolution of 10
-% m which can be modified as per requirements
+% 3). option =2 -4 uses Matlab interp3() function.
+% when option =2, "spline" option is used, which has the highest continuity.
+% It considers 4 orignal points in x,y and z direction as coarse input
+% data. The finer mesh where interpolation is taken has a resolution of
+% 5m (dxx) by 5m (dyy) by 1m (dzz), which can be modified as per requirements.
+% However, if dxx,dyy and dzz values are too small, the calculation may too
+% heavy to make the Matlab program crash.ß
+% When option =3 "cubic" option is used.
+% When option =4 "makima" option is used. More details for this function
+% can be found in Matlab interp3() funciton
 % 4). the input window will let user to determine which gas species to be
 % estimated. (ic_gas=1: O3, =2: NO, =3: NO2 .... ref to EPISODE gas index).
 % 5), "c_gas(:)" contains the concentration for gas species
 % defined in input window at selected location.  
-%workspace;
+
  clc;
  %clear;
  close all;
@@ -28,7 +36,8 @@ function [c_gas, ic_name]=virtual_sensor(location, ic_name1, option, data_path, 
 %% Part 1: define the input variables
 nrun_stop=0;  %% if selected point is within simluation domain. =0, yes, run interpolation. =1, no, stop interpolation.
 ic_gas_run=1;  %% if gas name is available. if not, =0, and stop running code.
-
+ic_coladd=3; %% how many columns from x to first species
+date_coladd=4; %% how many columns for date information in concentration data files;
 
 %var_input=inputdlg({'Enter space-separated location (x y z) @ meter:','Gas species (Such as NO, NO2, PM2.5)','Interpolation option (1: linear. 2: interp3 - spline, 3: interp3 - cubic, 4: interp3 - makima)'}, 'sensor', [1 100; 1 100; 1 100]);
 %location=str2num(vinput); %% x,y,z (m) of selected point to get its local gas concentration
@@ -48,13 +57,11 @@ if option==4
     interp_method='makima';
 end
 
-%%data_path='C:\Users\ongajong\Downloads\';  %% file path for data file
 filename=strcat(data_path,filename);   %% data file name   
-
 %% 1.1: read orignal data from data file
 delimiterIn = ' ';
 headerlinesIn = 1;% BC points is not included and not read from data file. 
-
+disp(filename);
 A = importdata(filename,delimiterIn,headerlinesIn);  %% read oringal data from output data file
 
     ic_gas=zeros(length(ic_name),1); %%index of selected gas species.
@@ -64,7 +71,7 @@ for nn=1:length(ic_name)
 for mm=1:length(A.textdata)
     tr=strcmp(ic_name(nn), A.textdata(mm));
     if tr==1
-        ic_gas(nn)=mm-8; %% gas index. =2, NO, =3, NO2 check EPISODE for index # of gas species
+        ic_gas(nn)=mm-ic_coladd-date_coladd; %% gas index. =2, NO, =3, NO2 check EPISODE for index # of gas species
     end
 end
 end
@@ -151,11 +158,18 @@ for i=1:num_i
     if location(1)<x(1) && location(1)>=x(1)-dx/2
         ix=0; %% for point in west side for 1st layer points      
     end
+end
+    if option == 1
+        if location(1)<x(1) || location(1)>x(num_i)
+            nrun_stop=1;
+        end
+    end
+    if option > 1
     if location(1)<x(1)-dx/2 || location(1)>x(num_i)+dx/2
         nrun_stop=1;
     end
-end
-
+    end
+    
 for j=1:num_j  
     if location(2)>=y(j) && location(2)<=y(num_j)+dy/2
         iy=j;      %% y index of selected point 
@@ -163,11 +177,17 @@ for j=1:num_j
     if location(2)<y(1) && location(2)>=y(1)-dy/2
         iy=0; %% for point in south side for 1st layer points      
     end
+end
+    if option == 1
+        if location(2)<y(1) || location(2)>y(num_j)
+            nrun_stop=1;
+        end
+    end
+    if option >1
     if location(2)<y(1)-dy/2 || location(2)>y(num_j)+dy/2
         nrun_stop=1;
-    end    
-end
-
+    end   
+    end
 
 for k=1:num_k  
     if location(3)>=z(k) && location(3)<=z(num_k)+dz(num_k)/2
@@ -183,6 +203,9 @@ end
 
 if nrun_stop == 1  %% if out of domain, stop and print out message
     f=msgbox("outside of domain! STOP!");
+    fileID = fopen('err.txt','w');
+    fprintf(fileID,"outside of domain! STOP!"); 
+	fclose(fileID);
 end
 
 for nn=1:length(ic_name)
@@ -201,13 +224,13 @@ if nrun_stop == 0 && ic_gas_run~=0 && option<=4 %% if inside simluation domain. 
 
 for nn=1:length(ic_name)
 %% 1.3. transfer orignal data to matix for following calculation
-B_data=zeros(num_col-4,num_i,num_j,num_k);   %% read x,y,z,z_act and species concentration c(ic=1:nc) to matix
+B_data=zeros(num_col-date_coladd,num_i,num_j,num_k);   %% read x,y,z and species concentration c(ic=1:nc) to matix
 for k=1:num_k
     for i=1:num_i
         for j=1:num_j
             for in=1:num_col-4
                 ijk=j+(i-1)*num_j+(k-1)*num_i*num_j;
-                B_data(in,i,j,k)=A.data(ijk,in+4);  
+                B_data(in,i,j,k)=A.data(ijk,in+date_coladd);  
             end
         end
     end
@@ -272,14 +295,14 @@ if option ==1
     
 %% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!   
 %% <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    c(:,1)=c_0(:,1)*(1-y_d)+c_1(:,1)*y_d;  
+    c(:,1)=c0(:,1)*(1-y_d)+c1(:,1)*y_d;  
 %%<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     end   
     
 %% !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %% <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-c_gas(nn)=c(ic_gas(nn)+4,1); %% output the concentration for gas species in selected location 
+c_gas(nn)=c(ic_gas(nn)+ic_coladd,1); %% output the concentration for gas species in selected location 
 %%<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     
 end %% end of option=1
@@ -340,7 +363,7 @@ iz_end=iz_start+num_ref-1;
     for k=1:num_ref
         for j=1:num_ref
             for i=1:num_ref    
-                V.data(j,i,k)=B_data(ic_gas(nn)+4,ix_start+i-1,iy_start+j-1,iz_start+k-1);  %% data matix for gas species (ic_gas: ic index. =2, NO) that close to the selected loation with at least four point in x, y, z direction. 
+                V.data(j,i,k)=B_data(ic_gas(nn)+ic_coladd,ix_start+i-1,iy_start+j-1,iz_start+k-1);  %% data matix for gas species (ic_gas: ic index. =2, NO) that close to the selected loation with at least four point in x, y, z direction. 
                 % matrix is at V.data(j,i,k) as xx1 will be at xx1(j,i,k) not at xx1(i,j,k).  
             end
         end
@@ -348,8 +371,8 @@ iz_end=iz_start+num_ref-1;
     
 %% 2.2.3.1. finer grid resolution (can be changed based on requirements)     
 %%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-dxx=500; %% space for finer grid that used to interpolating coarse data.  unit:m.  Will be changed for different resolution requirement.
-dyy=500;
+dxx=5; %% space for finer grid that used to interpolating coarse data.  unit:m.  Will be changed for different resolution requirement.
+dyy=5;
 dzz=1; 
 %%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     
@@ -487,13 +510,9 @@ end  %% end of option=2
 c_gas(nn)=max(c_gas(nn),0.0);
 end %% end of nn=1:length(ic_name).
 
-%CreateStruct.Interpreter = 'tex';
-%CreateStruct.WindowStyle = 'modal';
-%Message=cell(length(ic_name),1);
-%for nn=1:length(ic_name)
-%    Message{nn} = sprintf('%s concentration is %f ug/m^3 \n',char(ic_name(nn)),c_gas(nn));
-%    f=msgbox(Message,'value',CreateStruct);  
-%end%
+CreateStruct.Interpreter = 'tex';
+CreateStruct.WindowStyle = 'modal';
+Message=cell(length(ic_name),1);
 fileID = fopen('exp.txt','w');
 for nn=1:length(ic_name)
     fprintf(fileID,'%s %f \n',char(ic_name(nn)),c_gas(nn)); 
