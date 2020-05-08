@@ -34,17 +34,19 @@ public class InterpolationTest extends TestCase{
 	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
-		jo.put("typ", 1);
 		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
+		jo.put("options","1");
+		jo.put("coordinates","[364638.312 131904.703 0]");
+		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
 	}
 	//test determineGas
 	public void testdetermineGas() {
-		System.out.println(new InterpolationAgent().determineGas("C:\\Users\\ongajong\\JParkSimulator-git\\JPS_DISPERSION\\workingdir"));
+		System.out.println(new InterpolationAgent().determineGasGst("C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS"));
 	}
 	//test getLastModifiedDirectory
 	public void testAddMetadataAnnotator() {
-		String baseUrl = "C://Users//ongajong//JParkSimulator-git//JPS_DISPERSION//workingdir";//folder baseUrl should be // and not \\
+		String baseUrl = QueryBroker.getLocalDataPath();//folder baseUrl should be // and not \\
 		//expect baseUrl to be returned
 		String agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service";
 		String location = "http://dbpedia.org/resource/Singapore";

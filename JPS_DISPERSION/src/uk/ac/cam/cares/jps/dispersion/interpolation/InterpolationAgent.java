@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
@@ -56,7 +57,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String path = request.getServletPath();
 		//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		String coordinates = requestParams.optString("coordinates","[380000 150000 0]");
+		String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
 		String gasType;
 		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		String location = requestParams.optString("location","http://dbpedia.org/resource/Singapore");
@@ -65,7 +66,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		ArrayList<String> gsType = determineGas(directoryFolder);
 		gasType = gsType.get(0);
 		String fileName = gsType.get(1);
-		String options = requestParams.optString("options","1");//How do we select the options? 
+		String options = requestParams.optString("options","2");//How do we select the options? 
 		
 		
 		String dispMatrix = copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
@@ -94,11 +95,43 @@ public class InterpolationAgent  extends JPSHttpServlet {
         return dir.list(new FilenameFilter(){
         		//checks if file ends with dat or gst file
                  public boolean accept(File dir, String filename){ 
-                	 return (filename.endsWith(".dat"));
+                	 return (filename.endsWith(".dat")||filename.endsWith("levels.gst"));
                 }
         });
 
     }
+	public ArrayList<String> determineGasGst(String dirName){
+		String[] arrayFile = finder(dirName);
+		String fGas = arrayFile[0];
+		String fullString = "";
+		File lstName = new File(dirName, fGas);//fGas is the name of the test.levels.gst
+		//unlike the method below which looks for header in .dat
+		try {
+			BufferedReader bff = new BufferedReader(new FileReader(lstName));
+			String text = bff.readLine(); //get first line of file
+			String[] gasTypes = text.split(",Conc"); //Have to insert \\ because of parenthesis
+			List<String> newLst = Arrays.asList(gasTypes);
+			List<String> gasTypeArr = new ArrayList<String>();
+			gasTypeArr.addAll(newLst); //because asList returns a fixed-size list
+			gasTypeArr.remove(0);
+			List<String> gasTypeArr2 = gasTypeArr.subList(0,(gasTypeArr.size()/4));
+			for (int i = 0; i < gasTypeArr2.size(); i ++) {
+				String j= gasTypeArr2.get(i).split("\\|")[2];
+				gasTypeArr2.set(i, j);
+			}
+			String[] gasTypes2 = new String[gasTypeArr2.size()];
+			gasTypes2 = gasTypeArr2.toArray(gasTypes2);	
+			
+			fullString = "['" +String.join(" ", gasTypes2) +"']";
+		}catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		ArrayList<String> lst_a = new ArrayList<String>();
+		lst_a.add(fullString);
+		lst_a.add(lstName.getAbsolutePath());
+		return lst_a;
+	}
 	/** determine the types of gas available. 
 	 * 
 	 * @param dirName
@@ -111,14 +144,14 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String fullString = "['NO NO2']";
 		File lstName = new File(dirName, fGas);
 		try {
-		BufferedReader bff = new BufferedReader(new FileReader(lstName));
-		String text = bff.readLine(); //get first line of file
-		String[] gasTypes = text.split(","); 
-		String gasType = gasTypes[gasTypes.length-1].trim();
-		//get last element (the gases are separated by six spaces
-		
-		String[] gasTypes2 = gasType.split("\\s+");
-		fullString = "['" +String.join(" ", gasTypes2) +"']";
+			BufferedReader bff = new BufferedReader(new FileReader(lstName));
+			String text = bff.readLine(); //get first line of file
+			String[] gasTypes = text.split("Z\\(m\\)"); //Have to insert \\ because of parenthesis
+			String gasType = gasTypes[gasTypes.length-1].trim();
+			//get last element (the gases are separated by six spaces
+			
+			String[] gasTypes2 = gasType.split("\\s+");
+			fullString = "['" +String.join(" ", gasTypes2) +"']";
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
