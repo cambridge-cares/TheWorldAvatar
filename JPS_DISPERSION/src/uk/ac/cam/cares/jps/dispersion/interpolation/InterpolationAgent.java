@@ -1,8 +1,11 @@
 package uk.ac.cam.cares.jps.dispersion.interpolation;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,18 +61,27 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
 		String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
-		String gasType;
+		String gasType, dispMatrix ="";
 		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		String location = requestParams.optString("location","http://dbpedia.org/resource/Singapore");
 		String directoryFolder = getLastModifiedDirectory(agentiri, location);
-		
-		ArrayList<String> gsType = determineGas(directoryFolder);
-		gasType = gsType.get(0);
-		String fileName = gsType.get(1);
 		String options = requestParams.optString("options","2");//How do we select the options? 
-		
-		
-		String dispMatrix = copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
+		String[] arrayFile = finder(directoryFolder);
+		String fGas = arrayFile[0];
+		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
+		if (lstName.getName().endsWith(".dat")) {
+			ArrayList<String> gsType = determineGas(directoryFolder, lstName);
+			gasType = gsType.get(0);
+			String fileName = gsType.get(1);		
+			dispMatrix = copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
+		}
+		else {
+			ArrayList<String> gsType = determineGasGst(directoryFolder, lstName);
+			gasType = gsType.get(0);
+			String fileName = gsType.get(1);
+			dispMatrix = rearrangeGst(baseUrl, fileName, gasType);
+			
+		}
 		copyTemplate(baseUrl, "virtual_sensor.m");
 		//modify matlab to read 
 		if (SIM_START_PATH.equals(path)) {
@@ -100,12 +112,14 @@ public class InterpolationAgent  extends JPSHttpServlet {
         });
 
     }
-	public ArrayList<String> determineGasGst(String dirName){
-		String[] arrayFile = finder(dirName);
-		String fGas = arrayFile[0];
-		String fullString = "";
-		File lstName = new File(dirName, fGas);//fGas is the name of the test.levels.gst
+	/** determine the Gas from a Gst file rather than from a .dat file
+	 * 
+	 * @param dirName
+	 * @return
+	 */
+	public ArrayList<String> determineGasGst(String dirName, File lstName){
 		//unlike the method below which looks for header in .dat
+		String fullString = "";
 		try {
 			BufferedReader bff = new BufferedReader(new FileReader(lstName));
 			String text = bff.readLine(); //get first line of file
@@ -137,12 +151,9 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param dirName
 	 * @return {ArrayList} [gases, name of relevantFile]
 	 */
-	public ArrayList<String> determineGas(String dirName) {
+	public ArrayList<String> determineGas(String dirName, File lstName) {
 		//Since there are two files with gst, then we'll just choose the first in the array of [1] or [2]
-		String[] arrayFile = finder(dirName);
-		String fGas = arrayFile[0];
-		String fullString = "['NO NO2']";
-		File lstName = new File(dirName, fGas);
+		String fullString = "";
 		try {
 			BufferedReader bff = new BufferedReader(new FileReader(lstName));
 			String text = bff.readLine(); //get first line of file
@@ -190,11 +201,67 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	public String copyOverFile(String newdir, String filename) { //in this case for source folder
 		Path path = Paths.get(filename);
 		File file = new File(filename);
-		Path fileName = path.getFileName(); 
-		logger.info(filename);
+		Path fileName = path.getFileName();
 		String destinationUrl = newdir + "/"+fileName.toString();
-		logger.info(destinationUrl);
 		new QueryBroker().putLocal(destinationUrl, file);
+		return fileName.toString();
+	}
+	/** copies over the files in the working directory over to scenario folder. 
+	 * current run of 4 minutes to make file
+	 * @param newdir location of directory of scenario folder
+	 * @param filename name of actual file without directory
+	 */
+	public String rearrangeGst(String newdir, String filename, String gasType) { //in this case for source folder
+		Path path = Paths.get(filename);
+		File file = new File(filename);
+		Path fileName = path.getFileName(); 
+		
+		String writePath = newdir + "\\"+"test.tsv";
+		File myObj = new File(writePath);
+		
+		
+		gasType = gasType.substring(2, gasType.length()-2);
+        List<String> finalLine = new ArrayList<String>();
+		int noOfGas = (gasType.split(" ")).length;
+		try {
+			myObj.createNewFile();
+			BufferedReader bff = new BufferedReader(new FileReader(file));
+			BufferedWriter writer = new BufferedWriter(new FileWriter(myObj));
+			writer.write("Year      Month     Day      Hour      X(m)      Y(m)      Z(m)      ");
+			writer.write("CO2      CO      NO2      HC      NOx      SO2      O3      PM2.5-0      PM2.5-1      PM2.5-2\n");
+			bff.readLine();
+			String thisLine = null;
+			 while ((thisLine = bff.readLine()) != null) {
+		            String[] lineArr = thisLine.split(",");
+		            List<String> arr = Arrays.asList(lineArr);
+		            List<String> introArr = arr.subList(0,6);
+
+		            StringBuilder sb = new StringBuilder();
+		            for (int i = 0; i<= 3; i++) {
+			            List<String> arr1 = new ArrayList<String>();
+			            arr1.addAll(introArr);
+			            arr1.add(String.valueOf(i*10));
+			            arr1.addAll(arr.subList(7+i*noOfGas,(i+1)*noOfGas+7));
+			            for (String s : arr1){
+			                sb.append(s);
+			                sb.append("\t");
+			            }
+			            sb.append("\n");
+			            System.gc();
+		            }
+		            writer.write(sb.toString());
+		            
+		         }   
+		}
+		catch (FileNotFoundException ex) {
+			ex.printStackTrace();
+		}catch (IOException ex) {
+			ex.printStackTrace();
+		}
+//		logger.info(filename);
+//		String destinationUrl = newdir + "/"+fileName.toString();
+//		logger.info(destinationUrl);
+//		new QueryBroker().putLocal(destinationUrl, file);
 		return fileName.toString();
 	}
 	/** create the batch file in the mentioned folder. 

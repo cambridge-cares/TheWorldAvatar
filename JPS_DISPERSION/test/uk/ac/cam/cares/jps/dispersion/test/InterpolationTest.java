@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.test;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,9 @@ public class InterpolationTest extends TestCase{
 	}
 	//test determineGas
 	public void testdetermineGas() {
-		System.out.println(new InterpolationAgent().determineGasGst("C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS"));
+		System.out.println(new InterpolationAgent()
+				.determineGasGst("C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS",
+						new File("C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS","test.levels.gst")));
 	}
 	//test getLastModifiedDirectory
 	public void testAddMetadataAnnotator() {
@@ -59,5 +62,9 @@ public class InterpolationTest extends TestCase{
 	public void testcopyOverFile() {
 		System.out.println(new InterpolationAgent().copyOverFile("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\ddfd101b-33ca-4511-82f2-1f4fa48f4ee8\\JPS_DIS",
 				"C://Users//ongajong//JParkSimulator-git//JPS_DISPERSION//workingdir//3D_instantanous_mainconc_center.dat"));
+	}
+	public void testrearrangeGst() {
+		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
+				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2"));
 	}
 }
