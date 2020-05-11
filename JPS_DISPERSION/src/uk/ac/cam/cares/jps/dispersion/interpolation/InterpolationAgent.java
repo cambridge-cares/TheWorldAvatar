@@ -62,6 +62,9 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
 		String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
+		//replace the above method with below (commented out. 
+		//String stationiri = requestParams.optString("station", "http://www.theworldavatar.com/kb/sgp/singapore/SGCOSensor-001.owl#SGCOSensor-001");
+		//String coordinates = readCoordinates(stationiri);
 		String gasType, dispMatrix ="";
 		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		String location = requestParams.optString("location","http://dbpedia.org/resource/Singapore");
@@ -215,17 +218,16 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	public String rearrangeGst(String newdir, String filename, String gasType) { //in this case for source folder
 		Path path = Paths.get(filename);
 		File file = new File(filename);
-		Path fileName = path.getFileName(); 
-		
-		String writePath = newdir + "\\"+"test.dat";
+		String writePath = newdir + "/"+"test.dat";
 		File myObj = new File(writePath);
-		
-		
-//		gasType = gasType.substring(2, gasType.length()-2);
-        List<String> finalLine = new ArrayList<String>();
+		logger.info(writePath);
+		Path fileName = path.getFileName();
+		String destinationUrl = newdir + "/"+fileName.toString();
+		new QueryBroker().putLocal(destinationUrl, file);
+		gasType = gasType.substring(2, gasType.length()-2);
 		int noOfGas = (gasType.split(" ")).length;
+		int j = 0;
 		try {
-			myObj.createNewFile();
 			BufferedReader bff = new BufferedReader(new FileReader(file));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(myObj));
 			writer.write("Year  Month  Day  Hour  X(m)  Y(m)  Z(m)  ");
@@ -234,6 +236,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			String thisLine = null;
 			 while ((thisLine = bff.readLine()) != null) {
 				 	thisLine.trim();
+				 	j++;
 		            String[] lineArr = thisLine.split(",");
 		            List<String> arr = Arrays.asList(lineArr);
 		            List<String> introArr = arr.subList(0,6);
@@ -252,13 +255,15 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		         }
 			 bff.close();
 			 writer.close();
+			 System.out.println(j);
+			 return writePath;
 		}
 		catch (FileNotFoundException ex) {
 			ex.printStackTrace();
 		}catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		return fileName.toString();
+		return "";
 	}
 	/** create the batch file in the mentioned folder. 
 	 * 
@@ -348,7 +353,12 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
     }
-    public String readCoordinate(String agentiri) {
+    /** read the coordinates of the station based on the iri
+     * 
+     * @param stationiri
+     * @return
+     */
+    public String readCoordinate(String stationiri) {
 		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
 				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
 				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
@@ -371,7 +381,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				"}" + 
 //				"}" + 
 				"ORDER BY DESC(?proptimeendval)LIMIT 1";
-			String result2 = new QueryBroker().queryFile(agentiri, sparqlQuery);
+			String result2 = new QueryBroker().queryFile(stationiri, sparqlQuery);
 			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
 			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
 			String xVal = resultListfromquery.get(0)[0];

@@ -15,23 +15,40 @@ import uk.ac.cam.cares.jps.dispersion.interpolation.InterpolationAgent;
 public class InterpolationTest extends TestCase{
 	//test simulation
 	public void testepisoderunTestinSequenceDirect() {
-		String baseUrl= QueryBroker.getLocalDataPath();
 		InterpolationAgent ag = new InterpolationAgent();
-		String coordinates = "[30217.15 26794.95 0]";
-		String gasType = "['O3']";
-		String options = "1";
-		String dispMatrix = "3D_instantanous_mainconc_center.dat";
-		ag.copyTemplate(baseUrl,"3D_instantanous_mainconc_center.dat");
+		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
+		String coordinates = "[30207.15 26784.95 0]";
+		String gasType, dispMatrix ="";
+		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+		String location = "http://dbpedia.org/resource/Singapore";
+		String directoryFolder = ag.getLastModifiedDirectory(agentiri, location);
+		String[] arrayFile = ag.finder(directoryFolder);
+		String fGas = arrayFile[0];
+		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
+		if (lstName.getName().endsWith(".dat")) {
+			ArrayList<String> gsType = ag.determineGas(directoryFolder, lstName);
+			gasType = gsType.get(0);
+			String fileName = gsType.get(1);		
+			dispMatrix = ag.copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
+		}
+		else {
+			ArrayList<String> gsType = ag.determineGasGst(directoryFolder, lstName);
+			gasType = gsType.get(0);
+			String fileName = gsType.get(1);
+			dispMatrix = ag.rearrangeGst(baseUrl, fileName, gasType);
+			
+		}
 		ag.copyTemplate(baseUrl, "virtual_sensor.m");
+		//modify matlab to read 
+			try {
+				ag.createBat(baseUrl, coordinates,gasType, "1", dispMatrix);
+				ag.runModel(baseUrl);
+	           
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		 }
 	
-		try {
-			ag.createBat(baseUrl, coordinates,gasType, options,dispMatrix );
-			ag.runModel(baseUrl);
-		}catch (Exception e) {
-			e.printStackTrace();
-		}
-	
-		}
 	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
@@ -77,7 +94,7 @@ public class InterpolationTest extends TestCase{
 	}
 	public void testrearrangeGst() {
 		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
-				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2"));
+				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","['CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2']"));
 	}
 	public void testgrabCoordinates() {
 		System.out.println(new InterpolationAgent().readCoordinate("http://www.theworldavatar.com/kb/sgp/singapore/SGCOSensor-001.owl#SGCOSensor-001"));
