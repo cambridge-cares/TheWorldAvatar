@@ -75,6 +75,9 @@ public class ADMSAgent extends DispersionModellingAgent {
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
         String newBuildingData = getBuildingData(region,cityIRI);
+        
+     
+       
        
         JSONObject newRegion = getNewRegionData(upperx, uppery, lowerx, lowery, targetCRSName, sourceCRSName);
         
@@ -87,6 +90,17 @@ public class ADMSAgent extends DispersionModellingAgent {
             if (requestParams.has(PARAM_KEY_SHIP)) {
                 JSONArray coords  = getEntityCoordinates(requestParams.getJSONObject(PARAM_KEY_SHIP));
                 QueryBroker broker = new QueryBroker();
+                
+                // write extra info to a file: 1. buildings, ships, coordinates
+                
+                JSONObject extra_info = new JSONObject();
+                extra_info.put("buildings", newBuildingData);
+                extra_info.put("coordinates", region);
+                extra_info.put("ships", coords);
+                QueryBroker extra_file_broker = new QueryBroker();
+                extra_file_broker.putLocal(fullPath + "/extra_info.json",extra_info.toString());
+                
+                
                 broker.putLocal(fullPath + "/arbitrary.txt", "text to assign something arbitrary");
                 String coordinates = new Gson().toJson(coords.toString());
                 createWeatherInput(fullPath,null,stnList);
