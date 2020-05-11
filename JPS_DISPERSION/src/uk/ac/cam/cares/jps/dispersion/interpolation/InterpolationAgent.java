@@ -14,6 +14,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -216,52 +217,47 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		File file = new File(filename);
 		Path fileName = path.getFileName(); 
 		
-		String writePath = newdir + "\\"+"test.tsv";
+		String writePath = newdir + "\\"+"test.dat";
 		File myObj = new File(writePath);
 		
 		
-		gasType = gasType.substring(2, gasType.length()-2);
+//		gasType = gasType.substring(2, gasType.length()-2);
         List<String> finalLine = new ArrayList<String>();
 		int noOfGas = (gasType.split(" ")).length;
 		try {
 			myObj.createNewFile();
 			BufferedReader bff = new BufferedReader(new FileReader(file));
 			BufferedWriter writer = new BufferedWriter(new FileWriter(myObj));
-			writer.write("Year      Month     Day      Hour      X(m)      Y(m)      Z(m)      ");
-			writer.write("CO2      CO      NO2      HC      NOx      SO2      O3      PM2.5-0      PM2.5-1      PM2.5-2\n");
+			writer.write("Year  Month  Day  Hour  X(m)  Y(m)  Z(m)  ");
+			writer.write(gasType +"\r\n");
 			bff.readLine();
 			String thisLine = null;
 			 while ((thisLine = bff.readLine()) != null) {
+				 	thisLine.trim();
 		            String[] lineArr = thisLine.split(",");
 		            List<String> arr = Arrays.asList(lineArr);
 		            List<String> introArr = arr.subList(0,6);
-
-		            StringBuilder sb = new StringBuilder();
-		            for (int i = 0; i<= 3; i++) {
+		            for (int i = 0; i< 4; i++) {
+			            StringJoiner sb = new StringJoiner(" ");
 			            List<String> arr1 = new ArrayList<String>();
 			            arr1.addAll(introArr);
 			            arr1.add(String.valueOf(i*10));
 			            arr1.addAll(arr.subList(7+i*noOfGas,(i+1)*noOfGas+7));
 			            for (String s : arr1){
-			                sb.append(s);
-			                sb.append("\t");
+			                sb.add(s);
 			            }
-			            sb.append("\n");
-			            System.gc();
+			            writer.write(sb.toString().trim()+"\r\n");
 		            }
-		            writer.write(sb.toString());
 		            
-		         }   
+		         }
+			 bff.close();
+			 writer.close();
 		}
 		catch (FileNotFoundException ex) {
 			ex.printStackTrace();
 		}catch (IOException ex) {
 			ex.printStackTrace();
 		}
-//		logger.info(filename);
-//		String destinationUrl = newdir + "/"+fileName.toString();
-//		logger.info(destinationUrl);
-//		new QueryBroker().putLocal(destinationUrl, file);
 		return fileName.toString();
 	}
 	/** create the batch file in the mentioned folder. 
@@ -352,5 +348,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
     }
+//    public String readCoordinate() {
+//		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
+//				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
+//				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
+//				"PREFIX j6:<http://www.w3.org/2006/time#>" + 
+//				"PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
+//				"SELECT Distinct  ?xval ?yval" + 
+//
+//				"{graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001>" + 
+//				"{ " + 
+//				"?entity   j7:hasGISCoordinateSystem ?coordsys ." + 
+//				"?coordsys   j7:hasProjectedCoordinate_x ?xent ." + 
+//				"?xent j2:hasValue ?vxent ." + 
+//				"?vxent   j2:numericalValue ?xval ." + 
+//				"?coordsys   j7:hasProjectedCoordinate_y ?yent ." + 
+//				"?yent j2:hasValue ?vyent ." + 
+//				"?vyent   j2:numericalValue ?yval . " + 
+//				"}" + 
+//				"}" + 
+//				"ORDER BY DESC(?proptimeendval)LIMIT11";
+//    }
 
 }

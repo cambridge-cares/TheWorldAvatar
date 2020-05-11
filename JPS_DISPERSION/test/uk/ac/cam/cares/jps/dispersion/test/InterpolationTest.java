@@ -17,8 +17,8 @@ public class InterpolationTest extends TestCase{
 	public void testepisoderunTestinSequenceDirect() {
 		String baseUrl= QueryBroker.getLocalDataPath();
 		InterpolationAgent ag = new InterpolationAgent();
-		String coordinates = "[380000 150000 0]";
-		String gasType = "['NO NO2']";
+		String coordinates = "[30217.15 26794.95 0]";
+		String gasType = "['O3']";
 		String options = "1";
 		String dispMatrix = "3D_instantanous_mainconc_center.dat";
 		ag.copyTemplate(baseUrl,"3D_instantanous_mainconc_center.dat");
@@ -41,6 +41,14 @@ public class InterpolationTest extends TestCase{
 		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
 	}
+	public void testAgentCallfromFrontEndADMS() {
+		JSONObject jo = new JSONObject();
+		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		jo.put("options","1");
+		jo.put("coordinates","[364638.312 131904.703 0]");
+		
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
+	}
 	//test determineGas
 	public void testdetermineGas() {
 		System.out.println(new InterpolationAgent()
@@ -51,7 +59,7 @@ public class InterpolationTest extends TestCase{
 	public void testAddMetadataAnnotator() {
 		String baseUrl = QueryBroker.getLocalDataPath();//folder baseUrl should be // and not \\
 		//expect baseUrl to be returned
-		String agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service";
+		String agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS#Service";
 		String location = "http://dbpedia.org/resource/Singapore";
 		List<String> lst = new ArrayList<String>();
 		lst.add(location);
@@ -62,6 +70,10 @@ public class InterpolationTest extends TestCase{
 	public void testcopyOverFile() {
 		System.out.println(new InterpolationAgent().copyOverFile("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\ddfd101b-33ca-4511-82f2-1f4fa48f4ee8\\JPS_DIS",
 				"C://Users//ongajong//JParkSimulator-git//JPS_DISPERSION//workingdir//3D_instantanous_mainconc_center.dat"));
+	}
+	public void testgetLastModified() {
+		System.out.println(new InterpolationAgent().getLastModifiedDirectory("http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service",
+				"http://dbpedia.org/resource/Singapore"));
 	}
 	public void testrearrangeGst() {
 		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
