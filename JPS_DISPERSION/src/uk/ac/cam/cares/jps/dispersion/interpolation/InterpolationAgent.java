@@ -348,26 +348,41 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
     	return listmap.get(0)[0];
     }
-//    public String readCoordinate() {
-//		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
-//				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
-//				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
-//				"PREFIX j6:<http://www.w3.org/2006/time#>" + 
-//				"PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
-//				"SELECT Distinct  ?xval ?yval" + 
-//
+    public String readCoordinate(String agentiri) {
+		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
+				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
+				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
+				"PREFIX j6:<http://www.w3.org/2006/time#>" + 
+				"PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
+				"SELECT Distinct  ?xval ?yval ?zval" + 
+//commented out until the context is finished. 
 //				"{graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001>" + 
-//				"{ " + 
-//				"?entity   j7:hasGISCoordinateSystem ?coordsys ." + 
-//				"?coordsys   j7:hasProjectedCoordinate_x ?xent ." + 
-//				"?xent j2:hasValue ?vxent ." + 
-//				"?vxent   j2:numericalValue ?xval ." + 
-//				"?coordsys   j7:hasProjectedCoordinate_y ?yent ." + 
-//				"?yent j2:hasValue ?vyent ." + 
-//				"?vyent   j2:numericalValue ?yval . " + 
+				"{ " + 
+				"?entity   j7:hasGISCoordinateSystem ?coordsys ." + 
+				"?coordsys   j7:hasProjectedCoordinate_x ?xent ." + 
+				"?xent j2:hasValue ?vxent ." + 
+				"?vxent   j2:numericalValue ?xval ." + 
+				"?coordsys   j7:hasProjectedCoordinate_y ?yent ." + 
+				"?yent j2:hasValue ?vyent ." + 
+				"?vyent   j2:numericalValue ?yval . " +
+				"?coordsys   j7:hasProjectedCoordinate_z ?zent ." + 
+				"?zent j2:hasValue ?vzent ." + 
+				"?vzent   j2:numericalValue ?zval . " + 
+				"}" + 
 //				"}" + 
-//				"}" + 
-//				"ORDER BY DESC(?proptimeendval)LIMIT11";
-//    }
+				"ORDER BY DESC(?proptimeendval)LIMIT 1";
+			String result2 = new QueryBroker().queryFile(agentiri, sparqlQuery);
+			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
+			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+			String xVal = resultListfromquery.get(0)[0];
+			String yVal = resultListfromquery.get(0)[1];
+			String zVal = resultListfromquery.get(0)[2];
+			StringJoiner sb = new StringJoiner(" ");
+			sb.add(xVal);
+			sb.add(yVal);
+			sb.add(zVal);
+			return "[" + sb.toString() + "]";
+		
+    }
 
 }

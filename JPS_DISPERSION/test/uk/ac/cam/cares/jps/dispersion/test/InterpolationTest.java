@@ -79,4 +79,7 @@ public class InterpolationTest extends TestCase{
 		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
 				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2"));
 	}
+	public void testgrabCoordinates() {
+		System.out.println(new InterpolationAgent().readCoordinate("http://www.theworldavatar.com/kb/sgp/singapore/SGCOSensor-001.owl#SGCOSensor-001"));
+	}
 }
