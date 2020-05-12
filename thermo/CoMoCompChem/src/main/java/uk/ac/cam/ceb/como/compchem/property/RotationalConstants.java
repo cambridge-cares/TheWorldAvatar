@@ -30,7 +30,23 @@ public class RotationalConstants extends CompositeProperty {
 
     public static RotationalConstants fromPMOI(double[] pmoi) {
         double f_conv = PhysicalConstants.hbar / 4 / Math.PI;
-        double[] rcs = ArrayMathUtils.copyOf(new double[]{f_conv / pmoi[0], f_conv / pmoi[1], f_conv / pmoi[2]});
+        double rc1, rc2, rc3;
+        if(pmoi[0] == 0){
+        	rc1 = 0;
+        } else{
+        	rc1 = f_conv / pmoi[0];
+        }
+        if(pmoi[1] == 0){
+        	rc2 = 0;
+        } else{
+        	rc2 = f_conv / pmoi[1];
+        }
+        if(pmoi[2] == 0){
+        	rc3 = 0;
+        } else{
+        	rc3 = f_conv / pmoi[2];
+        }
+        double[] rcs = ArrayMathUtils.copyOf(new double[]{rc1, rc2, rc3});
         return new RotationalConstants(rcs);
     }
 
