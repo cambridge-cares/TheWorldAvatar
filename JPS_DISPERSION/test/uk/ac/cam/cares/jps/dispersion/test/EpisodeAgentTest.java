@@ -240,7 +240,7 @@ public class EpisodeAgentTest extends TestCase {
 		jo2.put("stationiri", station);
 		
 		jo2.put("ship",shipdata);
-		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DMS/EpisodeAgent", jo2.toString());
+		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/EpisodeAgent", jo2.toString());
 		System.out.println("response= "+resp.toString());
 	}
 

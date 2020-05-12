@@ -53,7 +53,7 @@ public class ADMSAgent extends DispersionModellingAgent {
     	logger.info("enter adms request parameter");
         JSONObject region = requestParams.getJSONObject("region");
         String cityIRI = requestParams.getString("city");
-        
+        String agent = requestParams.getString("agent");
         JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
         List<String> stnList = MiscUtil.toList(stnIRI);
         //JSONArray buildingIRI=requestParams.getJSONArray("building");
@@ -74,6 +74,8 @@ public class ADMSAgent extends DispersionModellingAgent {
         String targetCRSName = getTargetCRS(cityIRI);
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
+        String extrainfo=requestParams.toString();
+        new QueryBroker().putLocal(dataPath+"/VisualizationInput.json", extrainfo);	
         String newBuildingData = getBuildingData(region,cityIRI);
        
         JSONObject newRegion = getNewRegionData(upperx, uppery, lowerx, lowery, targetCRSName, sourceCRSName);
@@ -108,7 +110,7 @@ public class ADMSAgent extends DispersionModellingAgent {
         String target = fullPath + "/test.levels.gst";
         File name=new File(target);
         if(name.length()!=0&&name.exists()) {
-        	String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
+        	//String agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
             //String timestamp = MetaDataAnnotator.getTimeInXsdTimeStampFormat(System.currentTimeMillis());
         	//MetaDataAnnotator.annotateWithTimeAndAgent(target, timestamp, agent);	
         	List<String> topics = new ArrayList<String>();

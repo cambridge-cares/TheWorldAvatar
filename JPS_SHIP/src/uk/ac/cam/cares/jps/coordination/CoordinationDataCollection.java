@@ -31,7 +31,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
 		jo.put("region", joregion);
-		jo.put("location", "Singapore");
+		//jo.put("location", "Singapore");
 //		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		
 		callAgent(jo);
@@ -49,7 +49,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
 		jo.put("region", joregion);
-		jo.put("location", "Hong Kong");
+		//jo.put("location", "Hong Kong");
 //		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		
 		callAgent(jo);
@@ -57,7 +57,8 @@ public class CoordinationDataCollection extends HttpServlet {
 
 	
 	public void callAgent(JSONObject jo) {
-		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		//jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 //		AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
 		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/DMSCoordinationAgent",jo.toString());
 	}
@@ -85,6 +86,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		//retrieveShipdata();
 		executeSGData(jo);
+		
 		executeHKData(jo);
 
 		

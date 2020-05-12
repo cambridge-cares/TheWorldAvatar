@@ -7,6 +7,7 @@ public class EpisodeConfig {
 	private int ny=10 ;//decide the ny for the scope	
 	private double dz=20;//10 previously
 	private int nz=30;//13 previously
+	private double z_rec=9.5;
 	private double upperheight=25.0;
 	private double lowerheight=2.0;
 	//typical gradient = 0.6K/100m
@@ -65,6 +66,12 @@ public class EpisodeConfig {
 	}
 	public void setDeltaT(double deltaT) {
 		this.deltaT = deltaT;
+	}
+	public double getZ_rec() {
+		return z_rec;
+	}
+	public void setZ_rec(double z_rec) {
+		this.z_rec = z_rec;
 	}
 
 }

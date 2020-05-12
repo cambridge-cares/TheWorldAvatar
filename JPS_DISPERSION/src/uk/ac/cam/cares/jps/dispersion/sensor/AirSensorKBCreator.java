@@ -25,6 +25,15 @@ import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 
 public class AirSensorKBCreator {
+	
+	public  AirSensorKBCreator() {
+		
+		AirSensorConfig config= new AirSensorConfig();
+		numberofdataslot=config.getNumberOfDataSlot();
+		xloc=config.getSensorXLocation();
+		yloc=config.getSensorYLocation();
+		zloc= config.getSensorZLocation();
+	}
 	private OntClass mainobjclass = null;
 	private OntClass mainobj2class = null;
 	private OntClass mainobj3class = null;
@@ -51,6 +60,7 @@ public class AirSensorKBCreator {
 	private OntClass outsidepm1class= null;
 	private OntClass outsidepm10class = null;
 	private OntClass outsidepm25class= null;
+	private OntClass outsidehcclass=null;
 	
 	private ObjectProperty hasvalue = null;
 	private ObjectProperty hasunit = null;
@@ -79,6 +89,16 @@ public class AirSensorKBCreator {
 	private DatatypeProperty podSerialNumber = null;
 	private DatatypeProperty scalednumval = null;
 	private DatatypeProperty prescalednumval = null;
+	private DatatypeProperty hasMeasuredPropertyMean = null;
+	private DatatypeProperty hasMeasuredPropertyMin = null;
+	private DatatypeProperty hasMeasuredPropertyMax = null;
+	private DatatypeProperty hasMeasuredPropertyVariance = null;
+	private DatatypeProperty hasPSI = null;
+	
+	private int numberofdataslot;
+	private String xloc;
+	private String yloc;
+	private String zloc;
 	
 	
 	
@@ -93,6 +113,7 @@ public class AirSensorKBCreator {
 		outsidenoxclass = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideNOxConcentration");
 		outsideso2class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideSO2Concentration");
 		outsideo3class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideO3Concentration");
+		outsidehcclass= jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideHCConcentration");
 		outsidepm1class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM1Concentration");
 		outsidepm10class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM10Concentration");
 		outsidepm25class = jenaOwlModel.getOntClass("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsidePM25Concentration");
@@ -130,6 +151,11 @@ public class AirSensorKBCreator {
 		podSerialNumber = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#podSerialNumber");
 		scalednumval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#scaledNumValue");
 		prescalednumval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#prescaledNumValue");
+		hasMeasuredPropertyMin = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMin");
+		hasMeasuredPropertyMax = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMax");
+		hasMeasuredPropertyMean = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMean");
+		hasMeasuredPropertyVariance = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyVariance");
+		hasPSI = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasPSI");
 		
 		
 		C=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius");
@@ -185,6 +211,7 @@ public class AirSensorKBCreator {
 			converter.startConversion(readingFromCSV,"OutsidePM1Concentration",number,locationid);
 			converter.startConversion(readingFromCSV,"OutsidePM10Concentration",number,locationid);
 			converter.startConversion(readingFromCSV,"OutsidePM25Concentration",number,locationid);
+			converter.startConversion(readingFromCSV,"OutsideHCConcentration",number,locationid);
 		}
 	}
 	
@@ -212,8 +239,8 @@ public class AirSensorKBCreator {
 	public void doConversionAirsensor(OntModel jenaOwlModel, String mainobjectname,String Prefix,List<String[]> readingFromCSV,String propertyname,OntClass propclass,String[]location) throws FileNotFoundException, URISyntaxException{
 		String particleprotocol="V3.0";
 		String gasprotocol="V5.1";
-		int numberofdataslots=1440; //1 day every minute
-		
+		//int numberofdataslots=24*7; //(assume now 1 week every hour) 1 day every minute then 1440
+		int numberofdigit=(""+numberofdataslot).length();
 		System.out.println("it is processed= " + mainobjectname);
 		//String mainobjectname= SGTemperatureSensor-001 (sample)
 
@@ -226,7 +253,11 @@ public class AirSensorKBCreator {
 		}else {
 			mainobjinst.setPropertyValue(gasProtocolVersion, jenaOwlModel.createTypedLiteral(gasprotocol));
 		}
-		
+		measuredproperty.setPropertyValue(hasMeasuredPropertyMean, jenaOwlModel.createTypedLiteral(new Double ("0.0")));
+		measuredproperty.setPropertyValue(hasMeasuredPropertyVariance, jenaOwlModel.createTypedLiteral(new Double ("0.0")));
+		measuredproperty.setPropertyValue(hasMeasuredPropertyMin, jenaOwlModel.createTypedLiteral(new Double ("0.0")));
+		measuredproperty.setPropertyValue(hasMeasuredPropertyMax, jenaOwlModel.createTypedLiteral(new Double ("0.0")));
+		measuredproperty.setPropertyValue(hasPSI, jenaOwlModel.createTypedLiteral(new Double ("0.0")));
 		Individual fccoordinate = coordinatesystemclass.createIndividual(Prefix+mainobjectname+".owl#CoordinateSystemOf"+mainobjectname);
 		Individual xcoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#xCoordinateOf"+mainobjectname);
 		Individual ycoordinate = coordinateclass.createIndividual(Prefix+mainobjectname+".owl#yCoordinateOf"+mainobjectname);
@@ -248,55 +279,61 @@ public class AirSensorKBCreator {
 		zcoordinatevalue.addProperty(hasunit, m);
 		mainobjinst.addProperty(hascoordinatesystem, fccoordinate);
 		
-		for(int x=1;x<=numberofdataslots;x++) {
+		for(int x=1;x<=numberofdataslot;x++) {
+			String xindex=String.format("%0"+numberofdigit+"d", x);
 			String prescaledvalue=""; 
 			String scaledvalue=""; 
-			Individual valueofproperty = scalarvalueclass.createIndividual(Prefix+mainobjectname+".owl#V_Measured"+propertyname+"Of"+mainobjectname+"_"+x);
+			int y=3;
+			Individual valueofproperty = scalarvalueclass.createIndividual(Prefix+mainobjectname+".owl#V_Measured"+propertyname+"Of"+mainobjectname+"_"+xindex);
 			if(propertyname.contains("COConc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[5]));
-				prescaledvalue=readingFromCSV.get(x)[6];
-				scaledvalue=readingFromCSV.get(x)[7]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[5]));
+				prescaledvalue=readingFromCSV.get(y)[6];
+				scaledvalue=readingFromCSV.get(y)[7]; 
 			}else if(propertyname.contains("CO2Conc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[8]));
-				prescaledvalue=readingFromCSV.get(x)[9];
-				scaledvalue=readingFromCSV.get(x)[10]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[8]));
+				prescaledvalue=readingFromCSV.get(y)[9];
+				scaledvalue=readingFromCSV.get(y)[10]; 
 			}else if(propertyname.contains("NOConc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[11]));
-				prescaledvalue=readingFromCSV.get(x)[12];
-				scaledvalue=readingFromCSV.get(x)[13]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[11]));
+				prescaledvalue=readingFromCSV.get(y)[12];
+				scaledvalue=readingFromCSV.get(y)[13]; 
 			}else if(propertyname.contains("NO2Conc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[14]));
-				prescaledvalue=readingFromCSV.get(x)[15];
-				scaledvalue=readingFromCSV.get(x)[16]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[14]));
+				prescaledvalue=readingFromCSV.get(y)[15];
+				scaledvalue=readingFromCSV.get(y)[16]; 
 			}else if(propertyname.contains("NOxConc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[17]));
-				prescaledvalue=readingFromCSV.get(x)[18];
-				scaledvalue=readingFromCSV.get(x)[19]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[17]));
+				prescaledvalue=readingFromCSV.get(y)[18];
+				scaledvalue=readingFromCSV.get(y)[19]; 
 			}else if(propertyname.contains("O3Conc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[20]));
-				prescaledvalue=readingFromCSV.get(x)[21];
-				scaledvalue=readingFromCSV.get(x)[22]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[20]));
+				prescaledvalue=readingFromCSV.get(y)[21];
+				scaledvalue=readingFromCSV.get(y)[22]; 
 			}else if(propertyname.contains("SO2Conc")) {
-				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[23]));
-				prescaledvalue=readingFromCSV.get(x)[24];
-				scaledvalue=readingFromCSV.get(x)[25]; 
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[23]));
+				prescaledvalue=readingFromCSV.get(y)[24];
+				scaledvalue=readingFromCSV.get(y)[25]; 
 			}else if(propertyname.contains("PM1Conc")) {
-				valueofproperty.setPropertyValue(particleState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[27]));
-				prescaledvalue=readingFromCSV.get(x)[28];
-				scaledvalue=readingFromCSV.get(x)[29]; 
+				valueofproperty.setPropertyValue(particleState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[27]));
+				prescaledvalue=readingFromCSV.get(y)[28];
+				scaledvalue=readingFromCSV.get(y)[29]; 
 			}else if(propertyname.contains("PM2")) {
-				valueofproperty.setPropertyValue(particleState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[27]));
-				prescaledvalue=readingFromCSV.get(x)[30];
-				scaledvalue=readingFromCSV.get(x)[31]; 
+				valueofproperty.setPropertyValue(particleState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[27]));
+				prescaledvalue=readingFromCSV.get(y)[30];
+				scaledvalue=readingFromCSV.get(y)[31]; 
 			}else if(propertyname.contains("PM10Conc")) {
-				valueofproperty.setPropertyValue(particleState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(x)[27]));
-				prescaledvalue=readingFromCSV.get(x)[32];
-				scaledvalue=readingFromCSV.get(x)[33]; 
+				valueofproperty.setPropertyValue(particleState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[27]));
+				prescaledvalue=readingFromCSV.get(y)[32];
+				scaledvalue=readingFromCSV.get(y)[33]; 
+			}else if(propertyname.contains("HCConc")) {
+				valueofproperty.setPropertyValue(gasState, jenaOwlModel.createTypedLiteral(readingFromCSV.get(y)[8]));
+				prescaledvalue=readingFromCSV.get(y)[9];
+				scaledvalue=readingFromCSV.get(y)[10]; 
 			}
 			String timestampstartvalue=formatTime(readingFromCSV.get(x)[2]);
 			String timestampendvalue=formatTime(readingFromCSV.get(x)[3]);
 			
-			String xindex=String.format("%04d", x);
+			
 			Individual timestamp = timeentityclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
 			Individual timestampstart = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#StartTimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
 			Individual timestampend = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#EndTimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
@@ -357,7 +394,7 @@ public class AirSensorKBCreator {
 		String mainobject8name = locationID+"PM1Sensor-"+idOfStation; // still hard-coded for the sample
 		String mainobject9name = locationID+"PM2.5Sensor-"+idOfStation; // still hard-coded for the sample
 		String mainobject10name = locationID+"PM10Sensor-"+idOfStation; // still hard-coded for the sample
-		
+		String mainobject11name = locationID+"HCSensor-"+idOfStation; // still hard-coded for the sample
 		
 		String filePath1 = Prefix + mainobjectname + ".owl#"+ mainobjectname; // the result of written owl file
 		String filePath2 = Prefix + mainobject2name + ".owl#"+ mainobject2name; // the result of written owl file
@@ -369,8 +406,10 @@ public class AirSensorKBCreator {
 		String filePath8 = Prefix + mainobject8name + ".owl#"+ mainobject8name; // the result of written owl file
 		String filePath9 = Prefix + mainobject9name + ".owl#"+ mainobject9name; // the result of written owl file
 		String filePath10 = Prefix + mainobject10name + ".owl#"+ mainobject10name; // the result of written owl file
+		String filePath11 = Prefix + mainobject11name + ".owl#"+ mainobject11name; // the result of written owl file
 		
-		String[] location = extractLocationofStation(idOfStation, inputRef,locationID);
+		//String[] location = extractLocationofStation(idOfStation, inputRef,locationID);
+		String[]location= {xloc,yloc,zloc}; //assume the sg virtual sensor
 		
 		if (flag.contains("OutsideCO2Concentration")) {
 			System.out.println("creating CO2");
@@ -441,6 +480,12 @@ public class AirSensorKBCreator {
 			String content = JenaHelper.writeToString(jenaOwlModel);
 			new QueryBroker().putOld(Prefix+mainobject9name+".owl", content);
 			return filePath9;
+		}else if (flag.contains("OutsideHCConcentration")) {
+			System.out.println("creating HC");
+			doConversionAirsensor(jenaOwlModel, mainobject11name,Prefix,readingFromCSV,flag,outsidehcclass,location);
+			String content = JenaHelper.writeToString(jenaOwlModel);
+			new QueryBroker().putOld(Prefix+mainobject11name+".owl", content);
+			return filePath11;
 		}
 		return filePath;
 	}

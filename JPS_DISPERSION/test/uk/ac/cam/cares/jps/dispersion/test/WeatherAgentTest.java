@@ -23,10 +23,10 @@ public class WeatherAgentTest extends TestCase {
 	
 	public void testextract() {
 		//for sg
-		double proclowx = Double.valueOf("11560879.832");
-		double procupx = Double.valueOf("11563323.926");
-		double proclowy = Double.valueOf("140107.739");
-		double procupy = Double.valueOf("143305.896");
+		double proclowx = Double.valueOf("11552101.832");
+		double procupx = Double.valueOf("11572101.89");
+		double proclowy = Double.valueOf("131707.739");
+		double procupy = Double.valueOf("151860.32");
 		//for hk
 //		double proclowx = Double.valueOf("12706630.262");
 //		double procupx = Double.valueOf("12708200.45");
@@ -71,10 +71,10 @@ public class WeatherAgentTest extends TestCase {
 	}
 	
 	public void testAgentCallWeatherAgent() {
-		double xmin=11560879.832;
-		double xmax=11563323.926;
-		double ymin=140107.739;
-		double ymax=143305.896;
+		double xmin = Double.valueOf("11552101.832");
+		double xmax = Double.valueOf("11572101.89");
+		double ymin = Double.valueOf("131707.739");
+		double ymax = Double.valueOf("151860.32");
 		
 		//hk
 //		 xmin=12693826.33/*.832*/;

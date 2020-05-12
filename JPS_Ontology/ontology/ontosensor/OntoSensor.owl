@@ -115,6 +115,58 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMax -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMax">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8hr</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMean -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMean">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8 hr duration</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMin -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyMin">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8hr</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyVariance -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasMeasuredPropertyVariance">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasOverallPSI -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasOverallPSI">
+        <rdfs:comment>8 hr for each weather station</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasPSI -->
+
+    <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#hasPSI">
+        <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#double"/>
+        <rdfs:comment>8hr for each pollutant</rdfs:comment>
+    </owl:DatatypeProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#locationName -->
 
     <owl:DatatypeProperty rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#locationName"/>
@@ -434,6 +486,14 @@ The conditions specified here are those that affect the measurement properties, 
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration">
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideAirConcentration"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideHCConcentration -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideHCConcentration">
+        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#OutsideGasConcentration"/>
     </owl:Class>
     
 
