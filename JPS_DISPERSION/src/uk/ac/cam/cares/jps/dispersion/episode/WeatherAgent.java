@@ -50,7 +50,7 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static String rdf4jServer = "http://localhost:8080/rdf4j-server"; //this is only the local repo, changed if it's inside claudius
 	public static String repositoryID = "weatherstation";
 	public static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
-
+	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_WEATHER_URL);
 	public static final String weatherRequest = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=%s&appid=329f65c3f7166977f6751cff95bfcb0a";
 
 	 protected void setLogger() {
@@ -62,6 +62,7 @@ public class WeatherAgent extends JPSHttpServlet {
 	    	JSONObject response= new JSONObject();
 	    	 String path = request.getServletPath();
 	    	 System.out.println("path= " + path);
+	    	 //String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);// should be outside (not looped)
 	    	if(path.contains("/resetWeatherRepository")) {
 	    		rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
 	    		 repo = new HTTPRepository(rdf4jServer, repositoryID);
@@ -227,10 +228,10 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
                 + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
                 + "?xent j2:hasValue ?vxent ."
-                + "?vxent   j2:numericalValue ?xval ." // xvalue
+                + "?vxent   j2:numericalValue ?xval ."
                 + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
                 + "?yent j2:hasValue ?vyent ."
-                + "?vyent   j2:numericalValue ?yval ." // yvalue
+                + "?vyent   j2:numericalValue ?yval ."
 				+ "?graph j2:hasAddress <"+cityiri+"> ."
 				+ "?graph j2:enumerationValue ?stnname ."
 				+ "?prop a j4:OutsideWindSpeed ."
@@ -328,7 +329,6 @@ public class WeatherAgent extends JPSHttpServlet {
 
 
 	private List<String[]> queryEndPointDataset(String querycontext) {
-		String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
@@ -482,6 +482,8 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "ORDER BY ASC(?proptimeval)LIMIT1";
 		
 		List<String[]> keyvaluemapold =queryEndPointDataset(sensorinfo);
+		String propiri=keyvaluemapold.get(0)[0];
+		String timeiri=keyvaluemapold.get(0)[1];
 		
 		String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -490,20 +492,20 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "WITH <" + context + ">"
 				+ "DELETE { "
-				+ "<" + keyvaluemapold.get(0)[0]+ "> j2:numericalValue ?oldpropertydata ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddata ."
+				+ "<" + propiri+ "> j2:numericalValue ?oldpropertydata ."
+				+ "<" + timeiri+ "> j6:inXSDDateTimeStamp ?olddata ."
 				+ "} "
 				+ "INSERT {"
-				+ "<" + keyvaluemapold.get(0)[0]+ "> j2:numericalValue \""+newpropvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				+ "<" + propiri+ "> j2:numericalValue \""+newpropvalue+"\"^^xsd:double ."
+				+ "<" + timeiri+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
 				+ "} "
 				+ "WHERE { "
-				+ "<" + keyvaluemapold.get(0)[0]+ "> j2:numericalValue ?oldpropertydata ."	
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddata ."
+				+ "<" + propiri+ "> j2:numericalValue ?oldpropertydata ."	
+				+ "<" + timeiri+ "> j6:inXSDDateTimeStamp ?olddata ."
 				+ "}";
 		
 			
-			KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate);
+			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate);
 
 		
 		
@@ -569,7 +571,7 @@ public class WeatherAgent extends JPSHttpServlet {
 					+ "WHERE { " 
 					+ "}";
 			
-		KnowledgeBaseClient.update(KeyValueManager.get(IKeys.DATASET_WEATHER_URL), null, sparqlupdate2);	
+		KnowledgeBaseClient.update(dataseturl, null, sparqlupdate2);	
 
 	}
 		
