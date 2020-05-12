@@ -11,25 +11,33 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.StringJoiner;
+import java.util.TimeZone;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.jena.ontology.OntModel;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -41,6 +49,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
+	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_AIRQUALITY_URL);
     protected void setLogger() {
         logger = LoggerFactory.getLogger(InterpolationAgent.class);
     }
@@ -61,14 +70,18 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String path = request.getServletPath();
 		//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
+		//String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
 		//replace the above method with below (commented out. 
-		//String stationiri = requestParams.optString("station", "http://www.theworldavatar.com/kb/sgp/singapore/SGCOSensor-001.owl#SGCOSensor-001");
-		//String coordinates = readCoordinates(stationiri);
+		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+		String coordinates = readCoordinate(stationiri);
 		String gasType, dispMatrix ="";
-		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 		String location = requestParams.optString("location","http://dbpedia.org/resource/Singapore");
-		String directoryFolder = getLastModifiedDirectory(agentiri, location);
+		String[] directorydata = getLastModifiedDirectory(agentiri, location);
+		String directoryFolder=directorydata[0];
+		String directorytime=ConvertTime(directorydata[1]);
+		System.out.println("dirtime= "+directorytime);
+		
 		String options = requestParams.optString("options","2");//How do we select the options? 
 		String[] arrayFile = finder(directoryFolder);
 		String fGas = arrayFile[0];
@@ -104,14 +117,60 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
 				 logger.info(arg);
-//				 updateOwlForWeatherStation(read);
+
 				 //update here
+				 double concpm10=0.0;
+				 double concpm25=0.0;
+				 double concpm1=0.0;
+				 for(int x=0;x<read.size();x++) {
+					 String component=read.get(x)[0];
+					 String classname="Outside"+component+"Concentration";
+					 String value= read.get(x)[1];
+					 if(component.contains("PM2.5")) {
+						 classname="OutsidePM25Concentration";
+						 concpm25=concpm25+Double.valueOf(value);
+					 }else if(component.contains("PM10")) {
+						 classname="OutsidePM10Concentration";
+						 concpm10=concpm10+Double.valueOf(value);
+					 }else if(component.contains("PM1")) {
+						 classname="OutsidePM1Concentration";
+						 concpm1=concpm1+Double.valueOf(value);
+					 }else {
+						 updateRepoNewMethod(stationiri, classname,value,value,directorytime);
+					 }
+				 }
+				 updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
+				 updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
+				 updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
+				 
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 
 		 }
 		return requestParams;
 	}
+	
+	public static String ConvertTime(String current) {
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		   String result=current;
+		try {
+			  Date date = utcFormat.parse(current);
+			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+
+			   System.out.println(pstFormat.format(date));
+			   result=pstFormat.format(date)+"+08:00";
+			   return result;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
+
+	
 	/** find an array of path names that follow dat or match
 	 * 
 	 * @param dirName
@@ -354,15 +413,21 @@ public class InterpolationAgent  extends JPSHttpServlet {
      * Gets the latest file created using rdf4j
      * @return last created file
      */
-    public String getLastModifiedDirectory(String agentiri, String location ) {
+    public String[] getLastModifiedDirectory(String agentiri, String location ) {
 //    	agentiri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
 		List<String> lst = new ArrayList<String>();
 		lst.add(location);
     	System.out.println(lst);
-    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri, null, null,null,lst);
+    	long millis = System.currentTimeMillis();
+		String toSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
+		String fromSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis-3600*1000); //the last 1hr
+    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri,  fromSimulationTime, toSimulationTime,null,lst);
 		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
 		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
-    	return listmap.get(0)[0];
+		 String dir=listmap.get(0)[0];
+		 String simulationtime=listmap.get(0)[4];
+		 String[]resp= {dir,simulationtime};
+    	return resp;
     }
     /** read the coordinates of the station based on the iri
      * 
@@ -376,8 +441,8 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				"PREFIX j6:<http://www.w3.org/2006/time#>" + 
 				"PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>" + 
 				"SELECT Distinct  ?xval ?yval ?zval" + 
-//commented out until the context is finished. 
-//				"{graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001>" + 
+ 
+				"{graph <"+stationiri+">" + 
 				"{ " + 
 				"?entity   j7:hasGISCoordinateSystem ?coordsys ." + 
 				"?coordsys   j7:hasProjectedCoordinate_x ?xent ." + 
@@ -405,31 +470,63 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			return "[" + sb.toString() + "]";
 		
     }
-//    public void updateOwlForWeatherStation(List<String[]> read) {
-//    	String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-//				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-//				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-//				+ "WITH <" + context + ">"
-//				+ "DELETE { "
-//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
-//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
-//				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatastart ."
-//				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
-//				+ "} "
-//				+ "INSERT {"
-//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
-//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-//				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestampstart+"\" ." 
-//				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
-//				+ "} "
-//				+ "WHERE { "
-//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
-//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
-//				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatastart ."
-//				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
-//				+ "}";
-//    }
+    public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestamp) {
+		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "SELECT ?vprop ?proptimeval "
+//				+ "WHERE " //it's replaced when named graph is used
+				+ "{graph "+"<"+context+">"
+				+ "{ "
+				+ " ?prop a j4:"+propnameclass+" ."
+				+ " ?prop   j2:hasValue ?vprop ." 
+				+ " ?vprop   j6:hasTime ?proptime ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+//				+ " ?proptime   j6:hasBeginning ?proptimestart ."
+//				+ " ?proptime   j6:hasEnd ?proptimeend ."
+//				+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
+//				+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
+				+ "}" 
+				+ "}" 
+				+ "ORDER BY ASC(?proptimeval)LIMIT1";
+		
+		List<String[]> keyvaluemapold =queryEndPointDataset(sensorinfo);
+		
+		String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "WITH <" + context + ">"
+				+ "DELETE { "
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
+				+ "} "
+				+ "INSERT {"
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
+				+ "} "
+				+ "WHERE { "
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
+				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
+				+ "}";
+		
+			
+			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
+	}
+	private List<String[]> queryEndPointDataset(String querycontext) {
+		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
+		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
+		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
+		return listmap;
+	}
 
 }

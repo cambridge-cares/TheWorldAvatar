@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import org.json.JSONObject;
 
@@ -146,6 +148,30 @@ System.out.println(responseGas.getBody());
 		String fromSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis-3600*1000);
 		System.out.println(toSimulationTime);
 		System.out.println(fromSimulationTime);
+	}
+	
+	public void testprovideNextTime() {			//timing format should be year, month, date, hour, minute,second
+
+//		DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+//		   LocalDateTime now = LocalDateTime.now();
+		   String com="2020-05-11T07:04:01.221";
+		   
+		   DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		try {
+			  Date date = utcFormat.parse(com);
+			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+
+			   System.out.println(pstFormat.format(date));
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
+			
+
 	}
 	
 	public void xxxtestresetAirQualityClaudius() {

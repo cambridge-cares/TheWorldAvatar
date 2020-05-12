@@ -14,10 +14,13 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.annotation.WebServlet;
+import javax.servlet.ServletException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
@@ -29,24 +32,23 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.cmclinnovations.slurm.job.JobSubmission;
-import com.cmclinnovations.slurm.job.SlurmJobException;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
-
-import uk.ac.cam.cares.jps.agent.quantum.calculation.EpisodeAgentException;
-import uk.ac.cam.cares.jps.agent.quantum.calculation.Utils;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Utils;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
 
-@WebServlet("/EpisodeAgent")
 public class EpisodeAgent extends DispersionModellingAgent {
 	
 	public  EpisodeAgent() {
@@ -162,8 +164,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
             "?vparticulatediameter j2:numericalValue ?particulatediameterval ."
             
             + "}";
-			
-	/*public void init() throws ServletException{
+		
+    @Override
+	public void init(){
         logger.info("---------- Episode Agent has started ----------");
         System.out.println("---------- Episode Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
@@ -178,11 +181,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		}
 		if (slurmJobProperty == null) {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+			logger.info("slurmjobproperty="+slurmJobProperty.toString());
 		}
         logger.info("---------- simulation jobs are being monitored  ----------");
         System.out.println("---------- simulation jobs are being monitored  ----------");
        	
-	}*/
+	}
+    
+	public static void main(String[] args) throws ServletException{
+		EpisodeAgent episodeAgent = new EpisodeAgent();
+		episodeAgent.init();
+	}
     
     private double unitflowconverter(double numberInGramPerS) {
     	double result=numberInGramPerS*0.001*365*24*3600;
@@ -312,8 +321,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			}
 
 			try {
-				setUpJob(requestParams.toString(),dataPath);
-			} catch (IOException | EpisodeAgentException | SlurmJobException e) {
+				JSONObject jsonforslurm = new JSONObject();
+				jsonforslurm.put("runWholeScript",true);
+				setUpJob(jsonforslurm.toString(),dataPath);
+			} catch (IOException | SlurmJobException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -1019,7 +1030,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 	}
 	
-	private File getInputFile(String datapath, String jobFolderName) throws IOException, EpisodeAgentException{
+	private File getInputFile(String datapath, String jobFolderName) throws IOException{
 		//start to prepare all input files and put under folder input
 		
 		String inputFilePath="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\21afbf75-1d47-407e-9569-505c684f7385\\input.zip";
@@ -1036,15 +1047,24 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		return hpcAddress.concat("_").concat("" + timeStamp);
 	}
 	
-	public String setUpJob(String jsonString,String datapath) throws IOException, EpisodeAgentException, SlurmJobException{
+	public String setUpJob(String jsonString,String datapath) throws IOException,  SlurmJobException{
     	String message = setUpJobOnAgentMachine(jsonString,datapath);
 		JSONObject obj = new JSONObject();
 		obj.put("message", message);
     	return obj.toString();
 }
 	
-	private String setUpJobOnAgentMachine(String jsonInput,String datapath) throws IOException, EpisodeAgentException, SlurmJobException {
+	private String setUpJobOnAgentMachine(String jsonInput,String datapath) throws IOException, SlurmJobException {
 		if (jobSubmission == null) {
+			if (slurmJobProperty == null) {
+		        if (applicationContext == null) {
+					applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+				}
+				slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+				logger.info("slurmjobproperty="+slurmJobProperty.toString());
+			}
+			String agentclass= slurmJobProperty.getAgentClass();
+			String agentaddress= slurmJobProperty.getHpcAddress();
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}

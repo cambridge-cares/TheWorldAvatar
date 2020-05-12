@@ -19,9 +19,12 @@ public class InterpolationTest extends TestCase{
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
 		String coordinates = "[30207.15 26784.95 0]";
 		String gasType, dispMatrix ="";
-		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 		String location = "http://dbpedia.org/resource/Singapore";
-		String directoryFolder = ag.getLastModifiedDirectory(agentiri, location);
+		String[] directory = ag.getLastModifiedDirectory(agentiri, location);
+		String directoryFolder = directory[0];
+		String directorytime = directory[1];
+		System.out.println("directorytime= "+directorytime);
 		String[] arrayFile = ag.finder(directoryFolder);
 		String fGas = arrayFile[0];
 		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst

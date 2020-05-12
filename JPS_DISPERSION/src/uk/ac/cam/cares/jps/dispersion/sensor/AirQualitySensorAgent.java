@@ -82,7 +82,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			executePeriodicUpdate("singapore");
 			List<String[]> contextlist=extractAvailableContext( cityiri);
 			String context=contextlist.get(0)[0];
-			response.put("stationiri", context);	
+			response.put("airStationIRI", context);	
 		}
 	
 		return response;
@@ -229,26 +229,27 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	
 	
 	
-	public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestampstart,String newtimestampend) {
+	public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestamp) {
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?vprop ?proptimestart ?proptimeend "
+				+ "SELECT ?vprop ?proptimeval "
 //				+ "WHERE " //it's replaced when named graph is used
 				+ "{graph "+"<"+context+">"
 				+ "{ "
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:hasBeginning ?proptimestart ."
-				+ " ?proptime   j6:hasEnd ?proptimeend ."
-				+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
-				+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
+				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+//				+ " ?proptime   j6:hasBeginning ?proptimestart ."
+//				+ " ?proptime   j6:hasEnd ?proptimeend ."
+//				+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
+//				+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
 				+ "}" 
 				+ "}" 
-				+ "ORDER BY ASC(?proptimeendval)LIMIT1";
+				+ "ORDER BY ASC(?proptimeval)LIMIT1";
 		
 		List<String[]> keyvaluemapold =queryEndPointDataset(sensorinfo);
 		
@@ -261,20 +262,20 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ "DELETE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatastart ."
-				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestampstart+"\" ." 
-				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
 				+ "} "
 				+ "WHERE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatastart ."
-				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "}";
 		
 			

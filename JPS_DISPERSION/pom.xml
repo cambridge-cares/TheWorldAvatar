@@ -129,13 +129,7 @@
 		<artifactId>spring-security-config</artifactId>
 		<version>3.2.9.RELEASE</version>
 	</dependency>
-		
-				
-				<dependency>
-            <groupId>com.cmclinnovations</groupId>
-            <artifactId>SlurmJobAPI</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
+
         		<dependency>
     		<groupId>com.jayway.jsonpath</groupId>
     		<artifactId>json-path</artifactId>

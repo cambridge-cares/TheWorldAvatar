@@ -331,23 +331,24 @@ public class AirSensorKBCreator {
 				scaledvalue=readingFromCSV.get(y)[10]; 
 			}
 			String timestampstartvalue=formatTime(readingFromCSV.get(x)[2]);
-			String timestampendvalue=formatTime(readingFromCSV.get(x)[3]);
+			//String timestampendvalue=formatTime(readingFromCSV.get(x)[3]);
 			
 			
-			Individual timestamp = timeentityclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
-			Individual timestampstart = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#StartTimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
-			Individual timestampend = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#EndTimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
+			//Individual timestamp = timeentityclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
+			Individual timestampstart = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#TimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
+			//Individual timestampend = timeinstanceclass.createIndividual(Prefix+mainobjectname+".owl#EndTimeOfMeasured"+propertyname+"Of"+mainobjectname+"_"+xindex);
 			measuredproperty.addProperty(hasvalue, valueofproperty);
 
 			valueofproperty.setPropertyValue(prescalednumval, jenaOwlModel.createTypedLiteral(new Double (prescaledvalue)));
 			valueofproperty.setPropertyValue(scalednumval, jenaOwlModel.createTypedLiteral(new Double (scaledvalue)));
 			valueofproperty.addProperty(hasunit, ugperm3);
 			
-			valueofproperty.addProperty(hastime, timestamp);
-			timestamp.addProperty(hasBeginning, timestampstart);
-			timestamp.addProperty(hasEnd, timestampend);
+			valueofproperty.addProperty(hastime, timestampstart);
 			timestampstart.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampstartvalue)));
-			timestampend.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampendvalue)));
+//			timestamp.addProperty(hasBeginning, timestampstart);
+//			timestamp.addProperty(hasEnd, timestampend);
+//			timestampstart.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampstartvalue)));
+//			timestampend.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampendvalue)));
 			
 			
 		}

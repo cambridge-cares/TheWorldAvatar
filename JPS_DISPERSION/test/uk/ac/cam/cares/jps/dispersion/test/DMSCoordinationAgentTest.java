@@ -60,8 +60,8 @@ public class DMSCoordinationAgentTest extends TestCase {
 		
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service"); //don't use it for the moment
-		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-//		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
+//		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
 		jo.put("region", joregion);
 		//jo.put("location", "Singapore");
 		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");

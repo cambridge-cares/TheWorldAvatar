@@ -117,6 +117,32 @@ public class Utils {
 		return false;
 	}
 	
+	public static boolean isJobOutputProcessed(File jobFolder) throws IOException{
+		return isJobOutputProcessed(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+	}
+	
+	/**
+	 * Check the status if a job is currently running.
+	 * 
+	 * @param statusFilePath the absolute path to the status file.
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobOutputProcessed(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_OUTPUT.getName())){
+				if(line.contains(Status.OUTPUT_PROCESSED.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
 	/**
 	 * Check the status if a job is currently running.
 	 * 
