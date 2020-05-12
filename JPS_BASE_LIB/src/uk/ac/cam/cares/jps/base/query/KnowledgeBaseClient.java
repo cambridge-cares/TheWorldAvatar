@@ -94,7 +94,7 @@ public class KnowledgeBaseClient {
 		// 1a) HTTP GET on target resource allows to perform SPARQL at the server 
 		// 1b) HTTP GET on target resource to download its content but the SPARQL query must be performed at this client
 		//	   (this is the case for most of the resources outside JPS control but also for files residing 
-		//     in /kb or /data within Tomcat´s ROOT directory)
+		//     in /kb or /data within Tomcats ROOT directory)
 		// 2) the datasetUrl is given, no scenarioUrl in the JPS context
 		//	  This means that the target resource is only requested indirectly via the datasetUrl 
 		// 	  as SPARQL endpoint (such that SPARQL is performed at the endpoint)

@@ -322,7 +322,11 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 			try {
 				JSONObject jsonforslurm = new JSONObject();
-				jsonforslurm.put("runWholeScript",true);
+				boolean value=true;
+				if (restart==true) {
+					value=false;
+				}
+				jsonforslurm.put("runWholeScript",value);
 				setUpJob(jsonforslurm.toString(),dataPath);
 			} catch (IOException | SlurmJobException e) {
 				// TODO Auto-generated catch block
