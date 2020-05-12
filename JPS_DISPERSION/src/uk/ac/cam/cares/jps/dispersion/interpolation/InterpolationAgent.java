@@ -92,12 +92,23 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			try {
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
 				runModel(baseUrl);
-				//save in somewhere... readings are read to exp.txt for now
 				logger.info("finish Simulation");
+				notifyWatcher(requestParams, baseUrl+"/exp.csv",
+	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 	           
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		 }else if (SIM_PROCESS_PATH.equals(path)) {
+			 try {
+				 List<String[]> read =  readResult(baseUrl,"exp.csv");
+				 String arg = read.get(0)[0];
+				 logger.info(arg);
+//				 updateOwlForWeatherStation(read);
+				 //update here
+			 }catch (Exception e) {
+				e.printStackTrace();
+			}			 
 		 }
 		return requestParams;
 	}
@@ -256,7 +267,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			 bff.close();
 			 writer.close();
 			 System.out.println(j);
-			 return writePath;
+			 return "test.dat";
 		}
 		catch (FileNotFoundException ex) {
 			ex.printStackTrace();
@@ -324,7 +335,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		}
 		return resultString; 
 	}
-	 /** reads the result from the csv file produced and returns as List<String[]>
+	 /** reads the result from the txt file produced and returns as List<String[]>
 		 * 
 		 * @param baseUrl String
 		 * @param filename name of the file. 
@@ -394,5 +405,31 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			return "[" + sb.toString() + "]";
 		
     }
+//    public void updateOwlForWeatherStation(List<String[]> read) {
+//    	String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+//				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+//				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+//				+ "WITH <" + context + ">"
+//				+ "DELETE { "
+//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
+//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
+//				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatastart ."
+//				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
+//				+ "} "
+//				+ "INSERT {"
+//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
+//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
+//				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestampstart+"\" ." 
+//				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
+//				+ "} "
+//				+ "WHERE { "
+//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
+//				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
+//				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatastart ."
+//				+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
+//				+ "}";
+//    }
 
 }

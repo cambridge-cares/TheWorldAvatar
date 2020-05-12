@@ -62,7 +62,7 @@ public class InterpolationTest extends TestCase{
 		JSONObject jo = new JSONObject();
 		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		jo.put("options","1");
-		jo.put("coordinates","[364638.312 131904.703 0]");
+		jo.put("coordinates","[32124.80 26825.16, 0]");//reminder! They don't work with the same sort of coordinates!
 		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
 	}

@@ -513,9 +513,9 @@ end %% end of nn=1:length(ic_name).
 CreateStruct.Interpreter = 'tex';
 CreateStruct.WindowStyle = 'modal';
 Message=cell(length(ic_name),1);
-fileID = fopen('exp.txt','w');
+fileID = fopen('exp.csv','w');
 for nn=1:length(ic_name)
-    fprintf(fileID,'%s %f \n',char(ic_name(nn)),c_gas(nn)); 
+    fprintf(fileID,'%s,%f \n',char(ic_name(nn)),c_gas(nn)); 
 end%
 fclose(fileID);
 end %% end of nrun_stop =0
