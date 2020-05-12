@@ -14,9 +14,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -165,28 +162,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
             
             + "}";
 		
-    @Override
-	public void init(){
-        logger.info("---------- Episode Agent has started ----------");
-        System.out.println("---------- Episode Agent has started ----------");
-        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-        EpisodeAgent episodeAgent = new EpisodeAgent();
-       	// the first 60 refers to the delay (in seconds) before the job scheduler
-        // starts and the second 60 refers to the interval between two consecu-
-        // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(episodeAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
-		// initialising classes to read properties from the dft-agent.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-			logger.info("slurmjobproperty="+slurmJobProperty.toString());
-		}
-        logger.info("---------- simulation jobs are being monitored  ----------");
-        System.out.println("---------- simulation jobs are being monitored  ----------");
-       	
-	}
+
     
 	public static void main(String[] args) throws ServletException{
 		EpisodeAgent episodeAgent = new EpisodeAgent();
@@ -1004,35 +980,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		return fileContext;
 	}
 	
-	private void monitorJobs(){
-		if(jobSubmission==null){
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
-		jobSubmission.monitorJobs();
-		processOutputs();
-	}
-	
-	private void processOutputs() {
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
-		jobSpace = jobSubmission.getWorkspaceDirectory();
-		try {
-			if (jobSpace.isDirectory()) {
-				File[] jobFolders = jobSpace.listFiles();
-				for (File jobFolder : jobFolders) {
-					if (Utils.isJobCompleted(jobFolder)) {
-						if (!Utils.isJobOutputProcessed(jobFolder)) {
-						}
-					}
-				}
-			}
-		} catch (IOException e) {
-			logger.error("EpisodeAgent: IOException.".concat(e.getMessage()));
-			e.printStackTrace();
-		} 
 
-	}
 	
 	private File getInputFile(String datapath, String jobFolderName) throws IOException{
 		//start to prepare all input files and put under folder input

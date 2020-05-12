@@ -13,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -22,6 +23,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
  *
  * @author Andreas
  */
+@Controller
 public abstract class JPSHttpServlet extends HttpServlet {
 
     private static final long serialVersionUID = 3507827296966247195L;
