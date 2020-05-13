@@ -1,7 +1,10 @@
 package uk.ac.ceb.como.action;
 
+import java.util.Properties;
+
 import com.opensymphony.xwork2.ActionSupport;
 
+import uk.ac.ceb.como.properties.PropertiesManager;
 import uk.ac.ceb.como.query.QueryManager;
 import uk.ac.ceb.como.query.QueryString;
 
@@ -17,7 +20,9 @@ import uk.ac.ceb.como.query.QueryString;
 public class StatisticsAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
-
+	
+	Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));
+	
 	private String numberOfCalculations;
 
 	private String numberOfSpeciesInOntoSpecies;
@@ -30,6 +35,9 @@ public class StatisticsAction extends ActionSupport {
 	
 	private String numberOfAgents;
 	
+	private String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
+	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
+	private String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
 
 	public String getNumberOfAgents() {
 		return numberOfAgents;
@@ -82,23 +90,15 @@ public class StatisticsAction extends ActionSupport {
 	@Override
 	public String execute() {
 
-		numberOfCalculations = new String(
-				QueryManager.getQuery("http://localhost/rdf4j-server/repositories/ontocompchem",
-						QueryString.getNumberOfGaussianCalculations()));
+		numberOfCalculations = new String(QueryManager.getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations()));
 
-		numberOfSpeciesInOntoSpecies = new String(
-				QueryManager.getQuery("http://localhost/rdf4j-server/repositories/ontospecieskb",
-						QueryString.getNumberOfSpeciesInOntoSpecies()));
+		numberOfSpeciesInOntoSpecies = new String(QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies()));
 
-		numberOfReactionMechanisms = new String(QueryManager.getQuery(
-				"http://localhost/rdf4j-server/repositories/ontokin", QueryString.getNumberOfReactionMechanisms()));
+		numberOfReactionMechanisms = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionMechanisms()));
 
-		numberOfSpeciesInOntoKin = new String(QueryManager.getQuery(
-				"http://localhost/rdf4j-server/repositories/ontokin", QueryString.getNumberOfSpeciesInOntoKin()));
+		numberOfSpeciesInOntoKin = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin()));
 
-		numberOfChemicalReactions = new String(
-				QueryManager.getQuery("http://localhost/rdf4j-server/repositories/ontokin",
-						QueryString.getNumberOfChemicalReactionsInOntoKin()));
+		numberOfChemicalReactions = new String(QueryManager.getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin()));
 
 		return SUCCESS;
 	}
