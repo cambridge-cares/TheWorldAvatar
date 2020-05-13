@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.servlet.annotation.WebServlet;
 
@@ -12,6 +15,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
@@ -22,6 +26,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
@@ -57,28 +62,28 @@ public class DispersionModellingAgent extends JPSHttpServlet {
      */
     Logger logger = LoggerFactory.getLogger(DispersionModellingAgent.class);
 	
-//    @Override
-//	public void init(){
-//        logger.info("---------- Episode Agent has started ----------");
-//        System.out.println("---------- Episode Agent has started ----------");
-//        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-//        DispersionModellingAgent episodeAgent = new DispersionModellingAgent();
-//       	// the first 60 refers to the delay (in seconds) before the job scheduler
-//        // starts and the second 60 refers to the interval between two consecu-
-//        // tive executions of the scheduler.
-//        executorService.scheduleAtFixedRate(episodeAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
-//		// initialising classes to read properties from the dft-agent.properites file
-//        if (applicationContext == null) {
-//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-//		}
-//		if (slurmJobProperty == null) {
-//			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-//			logger.info("slurmjobproperty="+slurmJobProperty.toString());
-//		}
-//        logger.info("---------- simulation jobs are being monitored  ----------");
-//        System.out.println("---------- simulation jobs are being monitored  ----------");
-//       	
-//	}
+    @Override
+	public void init(){
+        logger.info("---------- Episode Agent has started ----------");
+        System.out.println("---------- Episode Agent has started ----------");
+        ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+        DispersionModellingAgent episodeAgent = new DispersionModellingAgent();
+       	// the first 60 refers to the delay (in seconds) before the job scheduler
+        // starts and the second 60 refers to the interval between two consecu-
+        // tive executions of the scheduler.
+        executorService.scheduleAtFixedRate(episodeAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
+		// initialising classes to read properties from the dft-agent.properites file
+        if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+			logger.info("slurmjobproperty="+slurmJobProperty.toString());
+		}
+        logger.info("---------- simulation jobs are being monitored  ----------");
+        System.out.println("---------- simulation jobs are being monitored  ----------");
+       	
+	}
     
     @Override
 	protected JSONObject processRequestParameters(JSONObject requestParams) {
