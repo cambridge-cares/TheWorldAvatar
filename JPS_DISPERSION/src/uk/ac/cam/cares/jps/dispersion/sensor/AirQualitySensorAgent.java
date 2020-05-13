@@ -303,6 +303,8 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			}
 			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
 			String name="VirtualSensor-001";
+			String name2="AQMeshSensor-001";
+			String context2="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-"+index+".owl#AirQualityStationAQMesh-"+index;
 //			String locationname=""; (for AQMESH)
 //			String serialnumber="";
 			List<String>info= new ArrayList<String>();
@@ -313,6 +315,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 //			info.add(serialNumber);
 			
 			a.insertDataRepoContext(info,context);
+			//a.insertDataRepoContext(info,context2);
 		
 		}
 

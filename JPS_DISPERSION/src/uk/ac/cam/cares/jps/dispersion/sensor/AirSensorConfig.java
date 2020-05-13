@@ -1,7 +1,7 @@
 package uk.ac.cam.cares.jps.dispersion.sensor;
 
 public class AirSensorConfig {
-private int numberOfDataSlot=169; //not 1month
+private int numberOfDataSlot=169; //so far 168+1 or 2017 for aqmesh (24*7*60/5+1)
 private String sensorXLocation="103.859";
 private String sensorYLocation="1.27993";
 private String sensorZLocation="2";

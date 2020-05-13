@@ -353,11 +353,19 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
     	        		content[6]=listmap.get(r)[1];
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
+    	        		if(listmap.get(r)[1]==null) {
+    	        			content[7]="25";
+    	        		}else {
     	        		content[7]=listmap.get(r)[1];
+    	        		}
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
-    	        		String decimalhumidity=listmap.get(r)[1];
-    	        		double percent=Double.valueOf(decimalhumidity)*100;
-    	        		content[9]=""+percent;
+    	        		if(listmap.get(r)[1]==null) {
+    	        			content[9]="60";
+    	        		}else {
+        	        		String decimalhumidity=listmap.get(r)[1];
+        	        		double percent=Double.valueOf(decimalhumidity)*100;
+        	        		content[9]=""+percent;
+    	        		}
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
     	        		content[10]=listmap.get(r)[1];
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("cloud")) {

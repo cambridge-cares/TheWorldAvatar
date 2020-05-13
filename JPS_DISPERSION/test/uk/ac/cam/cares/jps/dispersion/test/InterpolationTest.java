@@ -22,9 +22,11 @@ public class InterpolationTest extends TestCase{
 		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 		String location = "http://dbpedia.org/resource/Singapore";
 		String[] directory = ag.getLastModifiedDirectory(agentiri, location);
-		String directoryFolder = directory[0];
+		File directoryFolderWrong = new File(directory[0]);
+		String directoryFolder = directoryFolderWrong.getParent();
 		String directorytime = directory[1];
 		System.out.println("directorytime= "+directorytime);
+		System.out.println("directoryfolder= "+directoryFolder);
 		String[] arrayFile = ag.finder(directoryFolder);
 		String fGas = arrayFile[0];
 		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
@@ -51,6 +53,12 @@ public class InterpolationTest extends TestCase{
 				e.printStackTrace();
 			}
 		 }
+	
+	public void testfinder() {
+		String[] arrayFile = new InterpolationAgent().finder("C:/JPS_DATA/workingdir/JPS_SCENARIO/scenario/base/localhost_8080/data/db57c791-d9aa-4a6e-9f21-44e991ed9c17/JPS_ADMS");
+		System.out.println(arrayFile[0]);
+	
+	}
 	
 	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
@@ -99,7 +107,5 @@ public class InterpolationTest extends TestCase{
 		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
 				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","['CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2']"));
 	}
-	public void testgrabCoordinates() {
-		System.out.println(new InterpolationAgent().readCoordinate("http://www.theworldavatar.com/kb/sgp/singapore/SGCOSensor-001.owl#SGCOSensor-001"));
-	}
+
 }

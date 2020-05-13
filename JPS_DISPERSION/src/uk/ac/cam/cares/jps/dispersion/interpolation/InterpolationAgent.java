@@ -40,6 +40,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet({"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
@@ -73,12 +74,13 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
 		//replace the above method with below (commented out. 
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
-		String coordinates = readCoordinate(stationiri);
-		String gasType, dispMatrix ="";
 		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		String coordinates = readCoordinate(stationiri,agentiri);
+		String gasType, dispMatrix ="";
 		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
-		String directoryFolder=directorydata[0];
+		File directoryFolderWrong = new File(directorydata[0]);
+		String directoryFolder = directoryFolderWrong.getParent();
 		String directorytime=ConvertTime(directorydata[1]);
 		System.out.println("dirtime= "+directorytime);
 		
@@ -184,6 +186,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @return
 	 */
 	public String[] finder(String dirName) {
+		System.out.println("finder dirname= "+dirName);
         File dir = new File(dirName);
         return dir.list(new FilenameFilter(){
         		//checks if file ends with dat or gst file
@@ -441,7 +444,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
      * @param stationiri
      * @return
      */
-    public String readCoordinate(String stationiri) {
+    public String readCoordinate(String stationiri,String agent) {
 		String sparqlQuery = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>" + 
 				"PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>" + 
 				"PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>" + 
@@ -461,18 +464,39 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				"?coordsys   j7:hasProjectedCoordinate_z ?zent ." + 
 				"?zent j2:hasValue ?vzent ." + 
 				"?vzent   j2:numericalValue ?zval . " + 
-				"}" + 
-//				"}" + 
-				"ORDER BY DESC(?proptimeendval)LIMIT 1";
-			String result2 = new QueryBroker().queryFile(stationiri, sparqlQuery);
-			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
-			List<String[]> resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result2, keys2);
+				"}"
+				+ "}" ;
+
+		String epsgActive="3414";//singapore
+		if(stationiri.contains("singapore")) {
+			if(agent.contains("ADMS")) {
+				epsgActive="3414";
+			}else {
+				epsgActive="32648";
+			}
+			
+		}else if(stationiri.contains("hongkong")) {
+			if(agent.contains("ADMS")) {
+				epsgActive="2326";
+			}else {
+				epsgActive="32650";
+			}
+		}else if(stationiri.contains("berlin")) {
+			epsgActive="25833";
+		}else if(stationiri.contains("thehague")) {
+			epsgActive="28992";
+		}
+		
+			List<String[]> resultListfromquery =queryEndPointDataset(sparqlQuery);
 			String xVal = resultListfromquery.get(0)[0];
 			String yVal = resultListfromquery.get(0)[1];
 			String zVal = resultListfromquery.get(0)[2];
+			double[] locationstnconverted = CRSTransformer.transform("EPSG:4326", "EPSG:" + epsgActive,
+					new double[] { Double.valueOf(xVal), Double.valueOf(yVal) });
+			
 			StringJoiner sb = new StringJoiner(" ");
-			sb.add(xVal);
-			sb.add(yVal);
+			sb.add(""+locationstnconverted[0]);
+			sb.add(""+locationstnconverted[1]);
 			sb.add(zVal);
 			return "[" + sb.toString() + "]";
 		
