@@ -13,7 +13,7 @@
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
-<meta http-equiv="refresh" content="5; url=http://theworldavatar.com/jpsgraph/statisticsAction">
+<meta http-equiv="refresh" content="120; url=http://theworldavatar.com/jpsgraph/statisticsAction">
 
 <title>JPS self growing knowledge graph: Statistics</title>
 
