@@ -137,6 +137,9 @@ Here is java script for visualization molecules.
 <tr align="left">
 <td><b>Number of species in OntoSpecies:</b></td><td><b><s:property value="numberOfSpeciesInOntoSpecies"/></b></td>
 </tr>
+<tr align="left">
+<td><b>Number of synonyms in OntoSpecies:</b></td><td><b><s:property value="numberOfSynonyms"/></b></td>
+</tr>
 
 <tr align="left">
 <td><b>Number of reaction mechanisms in OntoKin:</b></td><td><b><s:property value="numberOfReactionMechanisms"/></b></td>
@@ -148,6 +151,10 @@ Here is java script for visualization molecules.
 
 <tr align="left">
 <td><b>Number of chemical reactions in OntoKin :</b></td><td><b><s:property value="numberOfChemicalReactions"/></b></td>
+</tr>
+
+<tr align="left">
+<td><b>Number of agents in OntoAgent:</b></td><td><b><s:property value="numberOfAgents"/></b></td>
 </tr>
 
 </tbody>

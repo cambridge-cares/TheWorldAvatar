@@ -1,5 +1,9 @@
 package uk.ac.ceb.como.query;
 
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Properties;
+
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -10,8 +14,16 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
+
+import uk.ac.ceb.como.properties.PropertiesManager;
+import uk.ac.ceb.como.properties.Request;
+
 public class QueryManager {
 
+	static Properties kbProperties = PropertiesManager.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.properties"));
+	
+	private static String fusakiUrl = kbProperties.getProperty("fusaki.url.for.world.avatar");
+	
 	public static String getQuery(String repositoryUrl, String queryString) {
 		
 		String numberOfGaussianCalculation = new String();
@@ -67,5 +79,19 @@ public class QueryManager {
 		return numberOfGaussianCalculation;
 
 	}
+	/**
+	 * 
+	 * @return the number of agents in OntoAgent. Queries data stored in Fuseki server. 
+	 * @throws IOException
+	 */
+	public static String getNumberOfAgents() throws IOException{
+		String query = QueryString.getNumberOfOntoAgents();
+		System.out.println("Query:"+query);
+		String httpURL = fusakiUrl.concat(URLEncoder.encode(query, "UTF-8"));		
+		return Request.get(httpURL);
+	}
+	
+	
+	
 	
 }

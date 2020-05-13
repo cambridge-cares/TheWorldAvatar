@@ -21,7 +21,6 @@ public class QueryString {
 				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
 				+ "SELECT (count(?g) as ?sum) "
 				+ "WHERE { "
-				+ "?g gc:isCalculationOn ?go5 . "
 				+ "?g rdf:type ?type . "
 				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G16') ||(str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09')) . "
 				+ "}"; 	
@@ -36,11 +35,11 @@ public class QueryString {
 	 */
 	public static String getNumberOfSpeciesInOntoSpecies() {
 
-		String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"				
-				+ "SELECT (count(?g) as ?sum) "
-				+ "WHERE { "				
+		String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+				+ "SELECT (count(?g) AS ?sum) "
+				+ "WHERE { "
 				+ "?g rdf:type ?type . "
-				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species')) . "
+				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#Species') || (str(?type)='http://www.theworldavatar.com/kb/ontokin/ontokin.owl#Species')) . "
 				+ "}"; 	
 				
 
@@ -88,6 +87,38 @@ public class QueryString {
 	 		+ "SELECT DISTINCT (count(?s) as ?sum) "
 	 		+ "WHERE { "
 	 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+	 		+ "}";
+	 
+	 return query;
+ }
+ 
+ /**
+  * 
+  * @return the number of agents in OntoAgent. 
+  * 
+  */
+ public static String getNumberOfOntoAgents() {
+	 
+	 String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	 		+ "SELECT DISTINCT (count(?a) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "?a rdf:type <http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#Service> . "
+	 		+ "}";
+	 
+	 return query;
+ }
+ 
+ /**
+  * 
+  * @return the number of synonyms in OntoSpecies knowledge base
+  */
+ public static String getNumberOfSynonymsInOntoSpecies() {
+	 
+	 String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	 		+ "PREFIX skos: <http://www.w3.org/2004/02/skos/core#> "
+	 		+ "SELECT (count(?label) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "?s  skos:altLabel ?label . "
 	 		+ "}";
 	 
 	 return query;

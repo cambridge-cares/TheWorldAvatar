@@ -1,7 +1,9 @@
 package uk.ac.ceb.como.action;
 
+import java.io.IOException;
 import java.util.Properties;
 
+import com.jayway.jsonpath.JsonPath;
 import com.opensymphony.xwork2.ActionSupport;
 
 import uk.ac.ceb.como.properties.PropertiesManager;
@@ -22,6 +24,11 @@ public class StatisticsAction extends ActionSupport {
 	private static final long serialVersionUID = 1L;
 	
 	Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));
+
+	private String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
+	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
+	private String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
+
 	
 	private String numberOfCalculations;
 
@@ -35,9 +42,16 @@ public class StatisticsAction extends ActionSupport {
 	
 	private String numberOfAgents;
 	
-	private String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
-	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
-	private String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
+	private String numberOfSynonyms;
+	
+
+	public String getNumberOfSynonyms() {
+		return numberOfSynonyms;
+	}
+
+	public void setNumberOfSynonyms(String numberOfSynonyms) {
+		this.numberOfSynonyms = numberOfSynonyms;
+	}
 
 	public String getNumberOfAgents() {
 		return numberOfAgents;
@@ -88,7 +102,7 @@ public class StatisticsAction extends ActionSupport {
 	}
 
 	@Override
-	public String execute() {
+	public String execute() throws IOException {
 
 		numberOfCalculations = new String(QueryManager.getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations()));
 
@@ -99,6 +113,13 @@ public class StatisticsAction extends ActionSupport {
 		numberOfSpeciesInOntoKin = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin()));
 
 		numberOfChemicalReactions = new String(QueryManager.getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin()));
+		
+		numberOfSynonyms = new String(QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSynonymsInOntoSpecies()));
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Line below is implemented by Dr Feroz Farazi (msff2@cam.ac.uk). He contributed in implementation of reading "value" in sparql query result as JSONObject.  
+		 */
+		numberOfAgents = JsonPath.read(QueryManager.getNumberOfAgents().toString(), "$.results.bindings[0].sum.value");
 
 		return SUCCESS;
 	}
