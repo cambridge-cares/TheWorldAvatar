@@ -27,6 +27,17 @@ public class StatisticsAction extends ActionSupport {
 	private String numberOfSpeciesInOntoKin;
 
 	private String numberOfChemicalReactions;
+	
+	private String numberOfAgents;
+	
+
+	public String getNumberOfAgents() {
+		return numberOfAgents;
+	}
+
+	public void setNumberOfAgents(String numberOfAgents) {
+		this.numberOfAgents = numberOfAgents;
+	}
 
 	public String getNumberOfChemicalReactions() {
 		return numberOfChemicalReactions;
