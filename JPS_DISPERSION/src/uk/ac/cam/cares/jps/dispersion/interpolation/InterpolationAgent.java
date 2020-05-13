@@ -75,14 +75,14 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 		String coordinates = readCoordinate(stationiri);
 		String gasType, dispMatrix ="";
-		String agentiri = requestParams.optString("agentiri","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		String location = requestParams.optString("location","http://dbpedia.org/resource/Singapore");
+		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
 		String directoryFolder=directorydata[0];
 		String directorytime=ConvertTime(directorydata[1]);
 		System.out.println("dirtime= "+directorytime);
 		
-		String options = requestParams.optString("options","2");//How do we select the options? 
+		String options = requestParams.optString("options","1");//How do we select the options? 
 		String[] arrayFile = finder(directoryFolder);
 		String fGas = arrayFile[0];
 		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
@@ -122,23 +122,30 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 double concpm10=0.0;
 				 double concpm25=0.0;
 				 double concpm1=0.0;
-				 for(int x=0;x<read.size();x++) {
-					 String component=read.get(x)[0];
-					 String classname="Outside"+component+"Concentration";
-					 String value= read.get(x)[1];
-					 if(component.contains("PM2.5")) {
-						 classname="OutsidePM25Concentration";
-						 concpm25=concpm25+Double.valueOf(value);
-					 }else if(component.contains("PM10")) {
-						 classname="OutsidePM10Concentration";
-						 concpm10=concpm10+Double.valueOf(value);
-					 }else if(component.contains("PM1")) {
-						 classname="OutsidePM1Concentration";
-						 concpm1=concpm1+Double.valueOf(value);
-					 }else {
-						 updateRepoNewMethod(stationiri, classname,value,value,directorytime);
-					 }
-				 }
+				 double concHC=0.0;
+				for (int x = 0; x < read.size(); x++) {
+					String component = read.get(x)[0];
+					String classname = "Outside" + component + "Concentration";
+					String value = read.get(x)[1];
+					if (component.contains("PM2.5")) {
+						concpm25 = concpm25 + Double.valueOf(value);
+					} else if (component.contains("PM10")) {
+						concpm10 = concpm10 + Double.valueOf(value);
+					} else if (component.contains("PM1")) {
+						concpm1 = concpm1 + Double.valueOf(value);
+					} else if (component.contentEquals("O3") || component.contentEquals("NO2")
+							|| component.contentEquals("NO") || component.contentEquals("NOx")
+							|| component.contentEquals("SO2") || component.contentEquals("CO2")
+							|| component.contentEquals("CO")) {
+						updateRepoNewMethod(stationiri, classname, value, value, directorytime);
+					} else if (component.contentEquals("C2H6") || component.contentEquals("C2H4")
+							|| component.contentEquals("nC4H10") || component.contentEquals("HC")
+							|| component.contentEquals("nC3H6") || component.contentEquals("oXylene")
+							|| component.contentEquals("isoprene")) {
+						concHC = concHC + Double.valueOf(value);
+					}
+				}
+				 updateRepoNewMethod(stationiri, "OutsideHCConcentration",""+concHC,""+concHC,directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
