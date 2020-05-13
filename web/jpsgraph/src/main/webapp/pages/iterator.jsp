@@ -13,6 +13,8 @@
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
+<meta http-equiv="refresh" content="5; url=http://theworldavatar.com/jpsgraph/statisticsAction">
+
 <title>JPS self growing knowledge graph: Statistics</title>
 
     <link rel="stylesheet" type="text/css" href="pages/css/static/group/CoMoStyle.css"/>
