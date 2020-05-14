@@ -3,6 +3,7 @@
 #                    Script to run EPISODE CityChem On CSD3                    #
 #                    Author: Feroz Farazi (msff2@cam.ac.uk)                    #
 #------------------------------------------------------------------------------#
+mv *.zip input.zip
 unzip -o input.zip
 homeDir=$HOME
 echo $homeDir
