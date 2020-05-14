@@ -42,7 +42,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-@WebServlet({"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
+@WebServlet({"/InterpolationAgent/startSimulation", "/InterpolationAgent/endSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
 	public String SIM_START_PATH = "/InterpolationAgent/startSimulation";
 	public String SIM_PROCESS_PATH = "/InterpolationAgent/endSimulation";
@@ -69,53 +69,60 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		//temporarily until we get an idea of how to read input from Front End
-		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		//String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
-		//replace the above method with below (commented out. 
-		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
-		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		String coordinates = readCoordinate(stationiri,agentiri);
-		String gasType, dispMatrix ="";
-		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
-		String[] directorydata = getLastModifiedDirectory(agentiri, location);
-		File directoryFolderWrong = new File(directorydata[0]);
-		String directoryFolder = directoryFolderWrong.getParent();
-		String directorytime=ConvertTime(directorydata[1]);
-		System.out.println("dirtime= "+directorytime);
-		
-		String options = requestParams.optString("options","1");//How do we select the options? 
-		String[] arrayFile = finder(directoryFolder);
-		String fGas = arrayFile[0];
-		File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
-		if (lstName.getName().endsWith(".dat")) {
-			ArrayList<String> gsType = determineGas(directoryFolder, lstName);
-			gasType = gsType.get(0);
-			String fileName = gsType.get(1);		
-			dispMatrix = copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
-		}
-		else {
-			ArrayList<String> gsType = determineGasGst(directoryFolder, lstName);
-			gasType = gsType.get(0);
-			String fileName = gsType.get(1);
-			dispMatrix = rearrangeGst(baseUrl, fileName, gasType);
-			
-		}
-		copyTemplate(baseUrl, "virtual_sensor.m");
-		//modify matlab to read 
+
 		if (SIM_START_PATH.equals(path)) {
-			try {
-				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
-				runModel(baseUrl);
-				logger.info("finish Simulation");
-				notifyWatcher(requestParams, baseUrl+"/exp.csv",
-	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-	           
-			} catch (Exception e) {
-				e.printStackTrace();
+			//temporarily until we get an idea of how to read input from Front End
+			String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
+//			String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
+			//replace the above method with below (commented out. 
+			String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+			String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+			String coordinates = readCoordinate(stationiri,agentiri);
+			String gasType, dispMatrix ="";
+			String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
+			String[] directorydata = getLastModifiedDirectory(agentiri, location);
+			File directoryFolderWrong = new File(directorydata[0]);
+			String directoryFolder = directoryFolderWrong.getParent();
+			String directorytime=ConvertTime(directorydata[1]);
+			System.out.println("dirtime= "+directorytime);
+			
+			String options = requestParams.optString("options","1");//How do we select the options? 
+			String[] arrayFile = finder(directoryFolder);
+			String fGas = arrayFile[0];
+			File lstName = new File(directoryFolder, fGas);//fGas is the name of the test.levels.gst
+			if (lstName.getName().endsWith(".dat")) {
+				ArrayList<String> gsType = determineGas(directoryFolder, lstName);
+				gasType = gsType.get(0);
+				String fileName = gsType.get(1);		
+				dispMatrix = copyOverFile(baseUrl,fileName);//to be swapped with copyOverFile
 			}
+			else {
+				ArrayList<String> gsType = determineGasGst(directoryFolder, lstName);
+				gasType = gsType.get(0);
+				String fileName = gsType.get(1);
+				dispMatrix = rearrangeGst(baseUrl, fileName, gasType);
+				
+			}
+			copyTemplate(baseUrl, "virtual_sensor.m");
+			requestParams.put("baseUrl", baseUrl);
+			requestParams.put("directoryTime", directorytime);
+			//modify matlab to read 
+				try {
+					createBat(baseUrl, coordinates,gasType, options, dispMatrix);
+					runModel(baseUrl);
+					logger.info("finish Simulation");
+					notifyWatcher(requestParams, baseUrl+"/exp.csv",
+		                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+		           
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 		 }else if (SIM_PROCESS_PATH.equals(path)) {
 			 try {
+				 String baseUrl = requestParams.getString("baseUrl");
+				 String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+				 String directorytime = requestParams.getString("directoryTime");
+				 Thread.sleep(60000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
 				 logger.info(arg);
@@ -411,7 +418,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		 * @return
 		 * @throws IOException
 		 */
-		private List<String[]> readResult(String baseUrl,String filename) throws IOException {
+		public List<String[]> readResult(String baseUrl,String filename) throws IOException {
 
 	        String outputFile = baseUrl + "/"+filename;
 	        String csv = new QueryBroker().readFileLocal(outputFile);

@@ -17,13 +17,15 @@ public class InterpolationTest extends TestCase{
 	public void testepisoderunTestinSequenceDirect() {
 		InterpolationAgent ag = new InterpolationAgent();
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		String coordinates = "[30207.15 26784.95 0]";
+		String stationiri = "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001";
 		String gasType, dispMatrix ="";
-		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
+		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
 		String location = "http://dbpedia.org/resource/Singapore";
+		String coordinates = ag.readCoordinate(stationiri,agentiri);
 		String[] directory = ag.getLastModifiedDirectory(agentiri, location);
 		File directoryFolderWrong = new File(directory[0]);
 		String directoryFolder = directoryFolderWrong.getParent();
+//		String directoryFolder = directory[0];
 		String directorytime = directory[1];
 		System.out.println("directorytime= "+directorytime);
 		System.out.println("directoryfolder= "+directoryFolder);
@@ -52,6 +54,47 @@ public class InterpolationTest extends TestCase{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		//mimick the notifyWatcher 
+			
+		try {
+			Thread.sleep(60000); //I'll be surprised if it doesn't arrive in two minutes
+			List<String[]> read =  ag.readResult(baseUrl,"exp.csv");
+			 String arg = read.get(0)[0];
+			 //update here
+			 double concpm10=0.0;
+			 double concpm25=0.0;
+			 double concpm1=0.0;
+			 double concHC=0.0;
+			for (int x = 0; x < read.size(); x++) {
+				String component = read.get(x)[0];
+				String classname = "Outside" + component + "Concentration";
+				String value = read.get(x)[1];
+				if (component.contains("PM2.5")) {
+					concpm25 = concpm25 + Double.valueOf(value);
+				} else if (component.contains("PM10")) {
+					concpm10 = concpm10 + Double.valueOf(value);
+				} else if (component.contains("PM1")) {
+					concpm1 = concpm1 + Double.valueOf(value);
+				} else if (component.contentEquals("O3") || component.contentEquals("NO2")
+						|| component.contentEquals("NO") || component.contentEquals("NOx")
+						|| component.contentEquals("SO2") || component.contentEquals("CO2")
+						|| component.contentEquals("CO")) {
+					ag.updateRepoNewMethod(stationiri, classname, value, value, directorytime);
+				} else if (component.contentEquals("C2H6") || component.contentEquals("C2H4")
+						|| component.contentEquals("nC4H10") || component.contentEquals("HC")
+						|| component.contentEquals("nC3H6") || component.contentEquals("oXylene")
+						|| component.contentEquals("isoprene")) {
+					concHC = concHC + Double.valueOf(value);
+				}
+			}
+			 ag.updateRepoNewMethod(stationiri, "OutsideHCConcentration",""+concHC,""+concHC,directorytime);
+			 ag.updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
+			 ag.updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
+			 ag.updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
+			
+		}catch(Exception ex) {
+			ex.printStackTrace();
+		}
 		 }
 	
 	public void testfinder() {
@@ -64,7 +107,7 @@ public class InterpolationTest extends TestCase{
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
 //		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
-		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		jo.put("options","1");
 		jo.put("coordinates","[364638.312 131904.703 0]");
 		
@@ -72,7 +115,7 @@ public class InterpolationTest extends TestCase{
 	}
 	public void testAgentCallfromFrontEndADMS() {
 		JSONObject jo = new JSONObject();
-		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		jo.put("options","1");
 		jo.put("coordinates","[32124.80 26825.16, 0]");//reminder! They don't work with the same sort of coordinates!
 		
@@ -86,7 +129,7 @@ public class InterpolationTest extends TestCase{
 	}
 	//test getLastModifiedDirectory
 	public void testAddMetadataAnnotator() {
-		String baseUrl = QueryBroker.getLocalDataPath();//folder baseUrl should be // and not \\
+		String baseUrl = "C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst";//folder baseUrl should be // and not \\
 		//expect baseUrl to be returned
 		String agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS#Service";
 		String location = "http://dbpedia.org/resource/Singapore";
@@ -101,7 +144,7 @@ public class InterpolationTest extends TestCase{
 				"C://Users//ongajong//JParkSimulator-git//JPS_DISPERSION//workingdir//3D_instantanous_mainconc_center.dat"));
 	}
 	public void testgetLastModified() {
-		System.out.println(new InterpolationAgent().getLastModifiedDirectory("http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service",
+		System.out.println(new InterpolationAgent().getLastModifiedDirectory("http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service",
 				"http://dbpedia.org/resource/Singapore"));
 	}
 	public void testrearrangeGst() {
