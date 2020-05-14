@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.dispersion.coordination;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -9,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.config.IKeys;
+import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
@@ -18,7 +21,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 @WebServlet("/GetLastestPathForSimulation")
 public class GetLastestPathForSimulation extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
+	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_META_URL); 
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -41,7 +44,8 @@ public class GetLastestPathForSimulation extends HttpServlet {
 				"  \r\n" + 
 				"  \r\n" + 
 				"} ORDER BY DESC (?x) Limit 1";
-		String result = KnowledgeBaseClient.query("http://localhost/rdf4j-server/repositories/jpsmetadata", null, query_latest_path);
+		
+		String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
 		response.getWriter().write(result);
 	}
 

@@ -1030,12 +1030,18 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		}
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
+System.out.println("slumscript="+getClass().getClassLoader()
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath());
+System.out.println("excecutable = "+getClass().getClassLoader()
+								.getResource(slurmJobProperty.getExecutableFile()).getPath());
+		
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
 						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
+				getInputFile(datapath, jobFolderName),
 				new File(getClass().getClassLoader()
 								.getResource(slurmJobProperty.getExecutableFile()).getPath()),
-				getInputFile(datapath, jobFolderName), timeStamp);
+				 timeStamp);
 	}
 	
 	public static File getZipFile(String folderName) throws IOException {
