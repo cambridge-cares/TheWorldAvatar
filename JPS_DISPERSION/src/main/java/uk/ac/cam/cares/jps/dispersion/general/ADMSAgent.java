@@ -75,7 +75,7 @@ public class ADMSAgent extends DispersionModellingAgent {
         String dataPath = QueryBroker.getLocalDataPath();
         String fullPath = dataPath + "/JPS_ADMS"; // only applies for ship at the moment
         String extrainfo=requestParams.toString();
-        new QueryBroker().putLocal(dataPath+"/VisualizationInput.json", extrainfo);	
+        new QueryBroker().putLocal(dataPath+"/extra_info.json", extrainfo);	
         String newBuildingData = getBuildingData(region,cityIRI);
        
         JSONObject newRegion = getNewRegionData(upperx, uppery, lowerx, lowery, targetCRSName, sourceCRSName);
@@ -166,13 +166,15 @@ public class ADMSAgent extends DispersionModellingAgent {
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
 		        		wind.put("hasdirection", listmap.get(r)[1]);
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
+
 		        		  temperature.put("hasvalue", listmap.get(r)[1]);
-		        		  
+		        		
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
-		        		String decimalhumidity=listmap.get(r)[1];
-		        		double percent=Double.valueOf(decimalhumidity)*100;
-		        		relativehumidity.put("hasvalue",""+percent);
-		        		  
+
+			        		String decimalhumidity=listmap.get(r)[1];
+			        		double percent=Double.valueOf(decimalhumidity)*100;
+			        		relativehumidity.put("hasvalue",""+percent);
+	
 		        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
 		        		precipitation.put("hasintensity", listmap.get(r)[1]);
 		        		precipitationdata=listmap.get(r)[1];
@@ -189,6 +191,8 @@ public class ADMSAgent extends DispersionModellingAgent {
 	        weather.put("hashumidity", relativehumidity);
 	        weather.put("hasprecipation", precipitation);
 	        weather.put("hascloudcover", cloudcover);
+	        System.out.println("temperature="+temperature);
+	        System.out.println("humidity="+relativehumidity);
 	        
 	        System.out.println("weather data= "+weather.toString());
 	        writeMetFile(weather, dataPath);

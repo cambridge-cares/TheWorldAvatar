@@ -82,7 +82,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 	
 	public void testAQMEsh2() {
 		//Get token information by password. Only valid for 120 min
-		HttpResponse<String> responsetoken = Unirest.post("https://apitest.aqmeshdata.net/api/Authenticate")
+		HttpResponse<String> responsetoken = Unirest.post("https://api.aqmeshdata.net/api/Authenticate")
 				.header("Content-Type", "application/json")
 				.body("{\"username\":\"Cares1\",\"password\":\"Cares1Pa55word#\"}\r\n").asString();
 		System.out.println(responsetoken.getBody());
@@ -94,42 +94,24 @@ public class AirQualitySensorAgentTest extends TestCase {
 //		System.out.println(currenttoken);
 
 		//Get pod information using the token
-		HttpResponse<String> responsepod = Unirest.get("https://apitest.aqmeshdata.net/api/Pods/Assets")
+		HttpResponse<String> responsepod = Unirest.get("https://api.aqmeshdata.net/api/Pods/Assets")
 				.header("Authorization", currenttoken).asString();
 		System.out.println(responsepod.getBody());
 		
 		//Get Gas and temperature measurement data using the token
-				HttpResponse<String> responseGas = Unirest.get("https://apitest.aqmeshdata.net/api/LocationData/Next/390/1/01")
+				HttpResponse<String> responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/1/01")
 					      .header("Accept", "application/json")
 					      .header("Authorization", currenttoken).asString();
 		System.out.println(responseGas.getBody());
 		
 		//Get PM measurement data using the token
-		HttpResponse<String> responsePM = Unirest.get("https://apitest.aqmeshdata.net/api/LocationData/Next/390/2/10/1")
+		HttpResponse<String> responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/2/01/1")
 			      .header("Accept", "application/json")
 			      .header("Authorization", currenttoken).asString();
 		System.out.println(responsePM.getBody());
 	}
 	
-	public void testAQMEsh3() {
-		//Get token information by password. Only valid for 120 min
-		HttpResponse<String> responsetoken = Unirest.post("https://apitest.aqmeshdata.net/api/Authenticate")
-				.header("Content-Type", "application/json")
-				.body("{\"username\":\"Cares1\",\"password\":\"Cares1Pa55word#\"}\r\n").asString();
-		System.out.println(responsetoken.getBody());
 
-		//Modify the token string. I'm not using the best the method...
-		Gson g = new Gson();
-		Token p = g.fromJson(responsetoken.getBody(), Token.class);
-		String currenttoken = ("Bearer " + p.gettoken());
-//		System.out.println(currenttoken);
-
-		HttpResponse<String> responseGas = Unirest.get("https://apitest.aqmeshdata.net/api/LocationData/Next/390/1/01")
-			      .header("Accept", "application/json")
-			      .header("Authorization", currenttoken).asString();
-System.out.println(responseGas.getBody());
-
-	}
 	
 	public void testtimeformat() throws ParseException {
 		String date="16/Apr/2020 12:00:00";

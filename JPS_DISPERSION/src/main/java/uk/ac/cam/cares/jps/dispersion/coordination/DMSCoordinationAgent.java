@@ -103,6 +103,14 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
         result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
         String folder = new JSONObject(result).getString("folder");
         requestParams.put("folder", folder);
+        
+        JSONObject newJo= new JSONObject();
+        	newJo.put("city",city);
+        	newJo.put("airStationIRI",requestParams.get("airStationIRI").toString());
+        	newJo.put("agent", requestParams.get("agent").toString());
+		String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", newJo.toString());
+		
+		//String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
 //----------------------------------------------------------------------------       
         
 		return requestParams;
