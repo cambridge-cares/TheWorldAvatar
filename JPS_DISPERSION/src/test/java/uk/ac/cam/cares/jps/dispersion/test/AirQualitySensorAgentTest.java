@@ -20,7 +20,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
-import uk.ac.cam.cares.jps.dispersion.sensor.Token;
+//import uk.ac.cam.cares.jps.dispersion.sensor.Token;
 
 public class AirQualitySensorAgentTest extends TestCase {
 	
@@ -37,7 +37,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 	
 	
 	
-	public void testAQMeshAPI() throws IOException {
+/*	public void testAQMeshAPI() throws IOException {
 		String url="https://api.aqmeshdata.net/api";
 		String urltest="https://apitest.aqmeshdata.net/api";
         JSONObject jo= new JSONObject();
@@ -178,5 +178,6 @@ System.out.println(responseGas.getBody());
 		JSONObject empty= new JSONObject();
 		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", empty.toString());
 	}
+*/
 
 }
