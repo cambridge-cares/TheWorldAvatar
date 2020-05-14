@@ -381,7 +381,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	        			content[14]=listmap.get(r)[1];
     	        		}
     			}
-    		}    		
+    		}
+	        if(content[9].length()==0) {
+	        	content[9]="68";
+	        }
+	        if(content[7].length()==0) {
+	        	content[7]="25";
+	        }
     	}
     	 resultquery.add(content);
 	        StringBuilder sb= new StringBuilder();

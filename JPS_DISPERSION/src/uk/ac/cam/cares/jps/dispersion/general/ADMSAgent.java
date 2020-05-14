@@ -186,6 +186,12 @@ public class ADMSAgent extends DispersionModellingAgent {
 		        	}
 	        	
 	        }
+	        if(temperature.length()==0) {
+	        	temperature.put("hasvalue", "25");
+	        }
+	        if(relativehumidity.length()==0) {
+	        	relativehumidity.put("hasvalue", "68");
+	        }
 	        weather.put("haswind", wind);
 	        weather.put("hasexteriortemperature", temperature);
 	        weather.put("hashumidity", relativehumidity);

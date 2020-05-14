@@ -42,10 +42,10 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
-@WebServlet({"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
+@WebServlet(urlPatterns ={"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
 	public String SIM_START_PATH = "/InterpolationAgent/startSimulation";
-	public String SIM_PROCESS_PATH = "/InterpolationAgent/endSimulation";
+	public String SIM_PROCESS_PATH = "/InterpolationAgent/continueSimulation";
 	
 	private static final long serialVersionUID = 1L;
 	public static final String KEY_WATCH = "watch";
@@ -105,6 +105,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//modify matlab to read 
 		if (SIM_START_PATH.equals(path)) {
 			try {
+				logger.info("starting to create batch file");
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
 				runModel(baseUrl);
 				logger.info("finish Simulation");
@@ -116,6 +117,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			}
 		 }else if (SIM_PROCESS_PATH.equals(path)) {
 			 try {
+				 Thread.sleep(30000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
 				 logger.info(arg);

@@ -60,6 +60,16 @@ public class InterpolationTest extends TestCase{
 	
 	}
 	
+	public void testsecondcall() {
+		JSONObject jo = new JSONObject();
+//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
+		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("options","1");
+		jo.put("coordinates","[364638.312 131904.703 0]");
+		
+		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/InterpolationAgent/continueSimulation", jo.toString());
+	}
+	
 	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
