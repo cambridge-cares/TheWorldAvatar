@@ -71,7 +71,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
 		
-		if (SIM_START_PATH.equals(path)) {//temporarily until we get an idea of how to read input from Front End
+	//	if (SIM_START_PATH.equals(path)) {//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
 		 
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
@@ -112,17 +112,17 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
 				runModel(baseUrl);
 				logger.info("finish Simulation");
-				notifyWatcher(requestParams, baseUrl+"/exp.csv",
-	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-	           
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		 }else if (SIM_PROCESS_PATH.equals(path)) {
-			 try {
-				 String baseUrl = requestParams.getString("baseUrl");
-				 String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
-				 String directorytime = requestParams.getString("directoryTime");
+//				notifyWatcher(requestParams, baseUrl+"/exp.csv",
+//	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+//	           
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+	//	 }else if (SIM_PROCESS_PATH.equals(path)) {
+//			 try {
+//				 String baseUrl = requestParams.getString("baseUrl");
+//				 String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+//				 String directorytime = requestParams.getString("directoryTime");
 				 Thread.sleep(60000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
@@ -163,7 +163,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 
-		 }
+		 //}
 		return requestParams;
 	}
 	
