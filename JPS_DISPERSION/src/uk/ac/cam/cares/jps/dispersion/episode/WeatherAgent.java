@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -267,10 +268,95 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "}ORDER BY DESC(?proptimeval) Limit30";
 		  
 		  
+		  String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "SELECT DISTINCT ?graph " 
+					+ "{ graph ?graph " 
+					+ "{ "
+					+ "?graph j2:hasAddress <"+cityiri+"> ."
+					+ "}" 
+					+ "}Limit30";
+		  List<String[]> listsgstn = queryEndPointDataset(querygraph); //it will give 30 data
+		  List<String>time= new ArrayList<String>();
+		  for(int x=0;x<listsgstn.size();x++) {
+			  String context= listsgstn.get(x)[0];
+			  String querydata = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+						+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+						+ "SELECT DISTINCT ?stnname ?xval ?yval ?proptimeval " 
+						+ "{ graph <"+context+"> " 
+						+ "{ "
+						+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+		                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+		                + "?xent j2:hasValue ?vxent ."
+		                + "?vxent   j2:numericalValue ?xval ."
+		                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+		                + "?yent j2:hasValue ?vyent ."
+		                + "?vyent   j2:numericalValue ?yval ."
+						+ "?graph j2:enumerationValue ?stnname ."
+						+ "?prop   j2:hasValue ?vprop ."
+						+ " ?vprop   j6:hasTime ?proptime ."
+						+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+						
+						+ "}" 
+						+ "}ORDER BY DESC(?proptimeval) Limit1";
+			  
+			  List<String[]> listsgstndata = queryEndPointDataset(querydata); //it will give 30 data
+			  String timelatest=listsgstndata.get(0)[3];
+			  time.add(timelatest);			  
+		  }
+		  Collections.sort(time, Collections.reverseOrder()); 
+		  System.out.println("Sorted ArrayList "
+                  + "in Descending order : "
+                  + time);
+		  String timelatest=time.get(0);
+		  
+		  List<String[]> listmap=new ArrayList<String[]>();
+		  for(int x=0;x<listsgstn.size();x++) {
+			  String context= listsgstn.get(x)[0];
+			  String query = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+						+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+						+ "SELECT ?entity ?graph ?stnname ?xval ?yval " 
+						+ "{ graph <"+context+"> " 
+						+ "{ "
+						+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+		                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+		                + "?xent j2:hasValue ?vxent ."
+		                + "?vxent   j2:numericalValue ?xval ."
+		                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+		                + "?yent j2:hasValue ?vyent ."
+		                + "?vyent   j2:numericalValue ?yval ."
+						+ "?graph j2:hasAddress <"+cityiri+"> ."
+						+ "?graph j2:enumerationValue ?stnname ."
+						//+ "?prop a j4:OutsideWindSpeed ."
+						+ "?prop   j2:hasValue ?vprop ."
+						+ " ?vprop   j6:hasTime ?proptime ."
+						+ "?proptime   j6:inXSDDateTimeStamp \""+timelatest+"\" ."				
+						+ "}" 
+						+ "}ORDER BY DESC(?proptimeval) Limit7";
+			  List<String[]> listsgstndata = queryEndPointDataset(query); //it will give 30 data
+			  if(listsgstndata.size()==7) {
+				  String[]res= {listsgstndata.get(0)[1],listsgstndata.get(0)[2],listsgstndata.get(0)[3],listsgstndata.get(0)[4],timelatest};
+				  listmap.add(res);
+			  }
+		  }
+		  
+		  
+			
+		  
+		  
 		  List<String[]> listiristn = new ArrayList<String[]>();
 
-		//String dataseturl = rdf4jServer + "/repositories/" + repositoryID;// which is the weather stn dataset
-		List<String[]> listmap = queryEndPointDataset(querycontext); //it will give 30 data
+		
+		//List<String[]> listmap = queryEndPointDataset(querycontext); //it will give 30 data
 			
 		double yfinal= 0.0; //temporary
 		double xfinal=0.0; //temporary

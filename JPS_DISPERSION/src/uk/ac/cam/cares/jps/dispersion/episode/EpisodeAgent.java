@@ -223,7 +223,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			String agent=requestParams.getString("agent");
 			
 			String extrainfo=requestParams.toString();
-			new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/VisualizationInput.json", extrainfo);			
+			new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
 			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
 		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
 		    	sourceCRSName = CRSTransformer.EPSG_4326; 
@@ -353,19 +353,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("direction")) {
     	        		content[6]=listmap.get(r)[1];
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("temperature")) {
-    	        		if(listmap.get(r)[1]==null) {
-    	        			content[7]="25";
-    	        		}else {
+
     	        		content[7]=listmap.get(r)[1];
-    	        		}
+    	        		
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("humidity")) {
-    	        		if(listmap.get(r)[1]==null) {
-    	        			content[9]="60";
-    	        		}else {
         	        		String decimalhumidity=listmap.get(r)[1];
         	        		double percent=Double.valueOf(decimalhumidity)*100;
         	        		content[9]=""+percent;
-    	        		}
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("precipitation")) {
     	        		content[10]=listmap.get(r)[1];
     	        	}else if(listmap.get(r)[0].toLowerCase().contains("cloud")) {

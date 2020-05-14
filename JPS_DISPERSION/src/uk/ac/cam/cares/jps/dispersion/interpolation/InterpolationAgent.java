@@ -119,7 +119,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
 				 logger.info(arg);
-
+				 logger.info("it now updating");
 				 //update here
 				 double concpm10=0.0;
 				 double concpm25=0.0;
@@ -151,7 +151,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
-				 
+				 logger.info("updates finished");
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 

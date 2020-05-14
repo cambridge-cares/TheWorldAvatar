@@ -63,7 +63,8 @@ public class InterpolationTest extends TestCase{
 	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
-		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
+//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
+		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 		jo.put("options","1");
 		jo.put("coordinates","[364638.312 131904.703 0]");
 		
