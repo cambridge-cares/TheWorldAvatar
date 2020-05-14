@@ -110,7 +110,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
         	newJo.put("agent", requestParams.get("agent").toString());
 		String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", newJo.toString());
 		
-		//String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
+		String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
 //----------------------------------------------------------------------------       
         
 		return requestParams;

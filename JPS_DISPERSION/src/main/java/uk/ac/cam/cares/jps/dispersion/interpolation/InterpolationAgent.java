@@ -70,10 +70,10 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		//temporarily until we get an idea of how to read input from Front End
+		
+		if (SIM_START_PATH.equals(path)) {//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		//String coordinates = requestParams.optString("coordinates","[364628.312 131794.703 0]");
-		//replace the above method with below (commented out. 
+		 
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 		String coordinates = readCoordinate(stationiri,agentiri);
@@ -103,8 +103,10 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			
 		}
 		copyTemplate(baseUrl, "virtual_sensor.m");
+		requestParams.put("baseUrl", baseUrl);
+		requestParams.put("directoryTime", directorytime);
 		//modify matlab to read 
-		if (SIM_START_PATH.equals(path)) {
+		
 			try {
 				logger.info("starting to create batch file");
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
@@ -118,7 +120,10 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			}
 		 }else if (SIM_PROCESS_PATH.equals(path)) {
 			 try {
-				 Thread.sleep(30000);
+				 String baseUrl = requestParams.getString("baseUrl");
+				 String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+				 String directorytime = requestParams.getString("directoryTime");
+				 Thread.sleep(60000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
 				 logger.info(arg);
@@ -510,9 +515,9 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?vprop ?proptimeval "
+				+ "SELECT ?vprop ?proptime "
 //				+ "WHERE " //it's replaced when named graph is used
-				+ "{graph "+"<"+context+">"
+				+ "{ graph <"+context+"> "
 				+ "{ "
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
@@ -524,7 +529,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 //				+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
 				+ "}" 
 				+ "}" 
-				+ "ORDER BY ASC(?proptimeval)LIMIT1";
+				+ "ORDER BY ASC(?proptimeval) LIMIT1";
 		
 		List<String[]> keyvaluemapold =queryEndPointDataset(sensorinfo);
 		
@@ -553,6 +558,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "}";
 		
+		//System.out.println("print sparqlupdate= "+sparqlupdate);
 			
 			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
 	}
