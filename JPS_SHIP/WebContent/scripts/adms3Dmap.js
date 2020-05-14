@@ -28,9 +28,11 @@ const controlButtonsSetter = osmb => {
     })
   }
 }
-
+let sensorIRIs = [{x:103.83143122477935 , y:1.2429458210894155, name:"test"}];
+//todo: add render sensor function
 const initadms3dmap = (
   list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
+  //TODO:add: initi render sensor
 
   for (obj of listGeoJsonAddedToOSMB) {
     obj.destroy()
