@@ -4,6 +4,11 @@
             position: relative;
         }
 
+        #sensorTable{
+            position:absolute;
+            width:300px;
+            height:200px;
+        }
         .control {
             position: absolute;
             left: 0;
