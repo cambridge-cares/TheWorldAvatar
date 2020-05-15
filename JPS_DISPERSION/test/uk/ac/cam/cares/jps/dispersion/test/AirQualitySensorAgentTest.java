@@ -8,6 +8,7 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -20,6 +21,7 @@ import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.dispersion.sensor.AirQualitySensorAgent;
 import uk.ac.cam.cares.jps.dispersion.sensor.Token;
 
 public class AirQualitySensorAgentTest extends TestCase {
@@ -155,10 +157,25 @@ public class AirQualitySensorAgentTest extends TestCase {
 			
 
 	}
-	
-	public void xxxtestresetAirQualityClaudius() {
-		JSONObject empty= new JSONObject();
-		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", empty.toString());
+	/** test that call toAPI is available
+	 * 
+	 */
+	public void testAPIClear() {
+		HttpResponse<String> response = Unirest.post("https://api.aqmeshdata.net/api/Authenticate")
+				.header("Content-Type", "application/json")
+				.body("{\"username\":\"Cares1\",\"password\":\"Cares1Pa55word#\"}\r\n").asString();
+		String tokenPhrase = response.getBody();
+
+	    assertNotNull(tokenPhrase);
+	    assertEquals(200, response.getStatus());
+	}
+	/** test to see if response is created and what is the response like
+	 * 
+	 */
+	public void testCallAPI() {
+		AirQualitySensorAgent ag = new AirQualitySensorAgent();
+		ArrayList<JSONObject> jo = ag.getDataFromAPI();
+		System.out.println(jo.toString());
 	}
 
 }

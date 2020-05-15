@@ -1,8 +1,13 @@
 package uk.ac.cam.cares.jps.dispersion.sensor;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,9 +19,12 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
@@ -24,6 +32,9 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 @WebServlet(urlPatterns = {"/AirQualitySensorAgent","/resetAirQualityRepository"})
 public class AirQualitySensorAgent extends JPSHttpServlet {
 
@@ -211,22 +222,94 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		return listmap;
 	}
-	
-	private String  getDataFromAPI() {
+	/** calls on data via REST POST request to api aqmesh
+	 * requires String authorization. 
+	 * @return
+	 */
+	public ArrayList<JSONObject> getDataFromAPI() {
+		//Get token information by password. Only valid for 120 min
+		HttpResponse<String> response = Unirest.post("https://api.aqmeshdata.net/api/Authenticate")
+				.header("Content-Type", "application/json")
+				.body("{\"username\":\"Cares1\",\"password\":\"Cares1Pa55word#\"}\r\n").asString();
+		String tokenPhrase = response.getBody();
+
+		JSONObject jsonToken = new JSONObject(tokenPhrase);
+		String currenttoken = jsonToken.getString("token");
+		currenttoken = "Bearer "+ currenttoken; //Bearer is needed in the keyword. 
 		
-		String result="";
+		//Get pod information using the token
+		String responsepod = Unirest.get("https://api.aqmeshdata.net/api/Pods/Assets")
+				.header("Authorization", currenttoken).asString().getBody();
 		
-		return result;
+		//Get Gas and temperature measurement data using the token
+		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Repeat/1740/1/01")
+					      .header("Accept", "application/json")
+					      .header("Authorization", currenttoken).asString().getBody();
+		JSONArray jArr = new JSONArray(responseGas);
+		ArrayList<String> list = new ArrayList<String>();
+		ArrayList<JSONObject> arrJo = new ArrayList<JSONObject>();
+		if (jArr != null) {
+			for (int i = 1; i< jArr.length(); i++) {
+				JSONObject joGas = new JSONObject(jArr.get(i).toString());//{}
+				JSONObject jo = new JSONObject();			
+				jo.put("CO", joGas.get("co_prescaled"));
+				jo.put("NO", joGas.get("no_prescaled"));
+				jo.put("NO2", joGas.get("no2_prescaled"));
+				jo.put("SO2", joGas.get("so2_prescaled"));
+				jo.put("O3", joGas.get("o3_prescaled"));
+				jo.put("H2S", joGas.get("h2s_prescaled"));
+				arrJo.add(jo);
+			}
+		}
+		//Get PM measurement data using the token
+		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Repeat/1740/2/01/1")
+			      .header("Accept", "application/json")
+			      .header("Authorization", currenttoken).asString().getBody();
+		Unirest.shutDown();
+		jArr = new JSONArray(responsePM);
+		for (int i = 0; i< jArr.length(); i++) {
+			JSONObject joPM = new JSONObject(jArr.get(i).toString());//{}
+			JSONObject jo = new JSONObject();			
+			jo.put("PM1", joPM.get("pm1_prescale"));
+			jo.put("PM2.5", joPM.get("pm2_5_prescale"));
+			jo.put("PM10", joPM.get("pm10_prescale"));
+			//gather the json from here. 
+			jo.put("Timestamp", convertTime(joPM.getString("reading_datestamp")));
+			arrJo.add(jo);
+		}
+		return arrJo;
 	}
-	
+	/**
+	 * 
+	 * @param cityname
+	 */
 	public void executePeriodicUpdate(String cityname) {
-		String result=getDataFromAPI();
+		ArrayList<JSONObject> result=getDataFromAPI();
+		
 		//processed the input to have suitable format
 		
 		
 		
 	}
-	
+	public static String convertTime(String current) {
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		   String result=current;
+		try {
+			  Date date = utcFormat.parse(current);
+			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+
+			   System.out.println(pstFormat.format(date));
+			   result=pstFormat.format(date)+"+08:00";
+			   return result;
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return result;
+		
+	}
 	
 	
 	public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestamp) {
