@@ -1099,4 +1099,10 @@ System.out.println("excecutable = "+getClass().getClassLoader()
 		return zipFile;
 	
 	}
+
+	@Override
+	protected boolean anntateOutputs(File jobFolder) {
+	    	//Implementation
+		return true;
+	}
 }
