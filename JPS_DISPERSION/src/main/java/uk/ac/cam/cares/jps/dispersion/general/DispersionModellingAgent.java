@@ -166,6 +166,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
+							annotateOutputs(jobFolder);
 						}
 					}
 				}
@@ -175,6 +176,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			e.printStackTrace();
 		} 
 
+	}
+
+	protected boolean annotateOutputs(File jobFolder) {
+    	return true;
 	}
 	
 	protected JSONObject getNewRegionData(double upperx, double uppery, double lowerx, double lowery,
