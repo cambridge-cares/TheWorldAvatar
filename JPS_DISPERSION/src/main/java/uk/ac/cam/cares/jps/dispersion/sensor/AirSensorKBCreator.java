@@ -176,7 +176,8 @@ public class AirSensorKBCreator {
 		
 		//for SG:
 		int numberofstn=1;
-		String locationid="SG";
+		String locationid = "SG";
+//		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
 		
 		//for Berlin:
 //		int numberofstn=1;
