@@ -1,4 +1,7 @@
 let osmbGlobal;
+//metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
+metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
+sensorIRIs;
 
 $(function(){
 
@@ -44,7 +47,7 @@ $(function(){
 	
     //***************************************************************************
     // initial map
-        const osmb = new OSMBuildings({
+	const osmb = new OSMBuildings({
         baseURL: './OSMBuildings',
         zoom: 14.5,
         minZoom: 1,
@@ -112,7 +115,7 @@ $(function(){
     `;
 
         $.post({
-            url:"http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation",
+            url:metaEndpoint,
             'Content-Type':"application/json",
             data: { query: qstr,format:'json'}
         })
@@ -139,7 +142,7 @@ $(function(){
  PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
  PREFIX j6:<http://www.w3.org/2006/time#>
  PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
- SELECT ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min
+ SELECT ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi
  {graph stationIRI
  {
   ?graph j4:hasOverallPSI ?allpsi .
@@ -147,6 +150,7 @@ $(function(){
     ?prop j4:hasMeasuredPropertyMean ?mean .
     ?prop j4:hasMeasuredPropertyMax ?max .
     ?prop j4:hasMeasuredPropertyMin ?min .
+    ?prop j4:hasPSI ?individualpsi .
 ?vprop   j4:prescaledNumValue ?propval .
   ?vprop   j6:hasTime ?proptime .
   ?proptime   j6:inXSDDateTimeStamp ?proptimeval .
@@ -156,7 +160,7 @@ $(function(){
    let qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
             console.log(qstr);
         $.post({
-            url:"http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation",
+            url:metaEndpoint,
             'Content-Type':"application/json",
             data: { query: qstr,format:'json'}
         })
@@ -188,7 +192,7 @@ $(function(){
 
 //console.log('test query sensor attributes:')
  //TODO:delete local testing
-    querySensorAttributes('http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001',function (err, result) {
+    querySensorAttributes("http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001",function (err, result) {
 console.log(result)});
     //***************************************************************************
     // buttons to tilt camera angle, rotate the map, and zoom in/out
@@ -239,7 +243,7 @@ console.log(result)});
             if(id && id.includes("marker")){//=>sensor marker query event
                 //TODO: sensor query is added here
                 let stationIRI = id.split('_')[0];
-                console.log('clicked on statiion: '+stationIRI)
+                console.log('clicked on station: '+stationIRI)
                 querySensorAttributes(stationIRI, function (err, sensorAttributes) {
                     if (err){console.log(err)}
                     console.log('got sensor attributes to show');
@@ -282,16 +286,20 @@ console.log(result)});
         let folder;
         console.log('locationIRI '+locationIRI);
         let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation";//"/agent"
-        let agentInformation =  '/JPS_SHIP/GetExtraInfo';//"/info"
+        let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
         //TODO:determine what sequence to query;
-        $.post(agentScenario, {data: {city:locationIRI}}).done(function (data) {
+        $.get(agentScenario, {city:locationIRI}).done(function (data) {
             console.log('requested Scenario Agent for folder: '+data);
         folder = data;
-        $.post(agentInformation, {data:{path:folder}}).done(function (info) {
-            console.log('requested info agent for:');
+        $.get(agentInformation, {path:folder}).done(function (info) {
+            info=JSON.parse(info);
+        	console.log('requested info agent for:');
             console.log(info);
             var buildingIRIs = info.building;
             var shipIRIs = info.ship;
+            
+            console.log("info="+info.region)
+            
             var xmin = parseInt(info.region.lowercorner.lowerx);
             var xmax = parseInt(info.region.uppercorner.upperx);
             var ymin = parseInt(info.region.lowercorner.lowery);
@@ -306,7 +314,7 @@ console.log(result)});
             console.log("buildingIRIs = " + buildingIRIs);
             console.log("shipIRIs = " + shipIRIs);
             $("#myProgressBar").remove();
-            const sensorIRIs = info.stationiri;
+            sensorIRIs = info.stationiri;
             //TODO: sensor rendering is added here
             querySensor(sensorIRIs, function (err, senesorData) {
                 if(err || !senesorData){
@@ -331,6 +339,7 @@ console.log(result)});
     $("#location").on("change", () => {
         const mlocation = $("#location option:selected").text();
 
+
         if (mlocation === "http://dbpedia.org/resource/Singapore") {
             document.getElementById("optmsg").innerHTML = "";
             osmb.setPosition({
@@ -345,6 +354,7 @@ console.log(result)});
             osmb.setZoom(14.5);
             osmb.setTilt(20.6);
             osmb.setRotation(-45.6);
+
         }else if (mlocation === "http://dbpedia.org/resource/HongKong") {
         	document.getElementById("optmsg").innerHTML="Buildings are projected down directly above the ground although elevation is considered in the calculations.";
             osmb.setPosition({

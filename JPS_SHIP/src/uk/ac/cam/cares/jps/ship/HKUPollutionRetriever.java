@@ -19,7 +19,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/GetHKUPollutionData")
-public class HKUPollutionRetriever extends JPSHttpServlet  {
+public class HKUPollutionRetriever extends JPSHttpServlet  {//the expected time range should be in GMT time
 
 	/**
 	 * 

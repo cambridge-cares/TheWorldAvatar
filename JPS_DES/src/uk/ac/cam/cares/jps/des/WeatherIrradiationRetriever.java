@@ -48,7 +48,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	
 	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
-		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
+		new DistributedEnergySystem().copyFromPython(folder,"ocrv2.py");
 		String startbatCommand =folder+"/runpyocr.bat";
 		System.out.println(startbatCommand);
 		try {
@@ -141,11 +141,11 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		String irifortemp=converter.startConversion(readingFromCSV,"temperature");
+		String irifortemp=converter.startConversion(readingFromCSV,"temperature","001","SG");
 		System.out.println(irifortemp+" is updated");
-		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation");
+		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
 		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windpseed");
+		String iriforwind=converter.startConversion(readingFromCSV,"windpseed","001","SG");
 		System.out.println(iriforwind+" is updated");
 		JSONObject resultweather = new JSONObject();
 		//resultweather.put("folder",folder );

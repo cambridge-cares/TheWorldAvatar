@@ -315,7 +315,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return result;
     }
 
-    private String retrieveBuildingDataInJSONOLD(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
+    public String retrieveBuildingDataInJSONOLD(String city, double plantx, double planty, double lowerx, double lowery, double upperx, double uppery) {
 
         logger.info("retrieveBuildingDataInJSON, city=" + city + ", plantx=" + plantx + ", planty=" + planty
                 + ", lowerx=" + lowerx + ", lowery=" + lowery + ", upperx=" + upperx + ", uppery=" + uppery);
@@ -327,7 +327,7 @@ public class ADMSAgent extends JPSHttpServlet {
         return argument;
     }
 
-    private String retrieveBuildingDataInJSON(JSONObject input) {
+    public String retrieveBuildingDataInJSON(JSONObject input) {
 
         String city = input.getString("city");
         int buildingnum = input.getJSONArray("building").length();
