@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -90,9 +91,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		}else { //used for AQmesh only
 			String cityiri=requestParams.get("city").toString();
 			//right now the input is not connected yet
-			executePeriodicUpdate("singapore");
 			List<String[]> contextlist=extractAvailableContext( cityiri);
 			String context=contextlist.get(0)[0];
+			executePeriodicUpdate(context);
 			response.put("airStationIRI", context);	
 		}
 	
@@ -283,9 +284,37 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	 * 
 	 * @param cityname
 	 */
-	public void executePeriodicUpdate(String cityname) {
+	public void executePeriodicUpdate(String stationiri) {
 		ArrayList<JSONObject> result=getDataFromAPI();
-		
+		int len = result.size()/2;
+		for (int x = 0; x < len; x++) { //assuming same frequency of these two.
+			
+			
+			JSONObject jPM = result.get(x+len-1);
+			double concpm10=0.0;
+			double concpm25=0.0;
+			double concpm1=0.0;
+			String directorytime = (String) jPM.get("Timestamp");
+			concpm1 = concpm1 + Double.valueOf((String) jPM.get("PM1"));
+			concpm25 = concpm1 +concpm25 + Double.valueOf((String) jPM.get("PM2.5"));
+			concpm10 = concpm25 +concpm10 + Double.valueOf((String) jPM.get("PM10"));
+			updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
+			updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
+			updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
+			
+			 
+			JSONObject jGas = result.get(x);
+			Iterator<String> keys = jGas.keys();
+			while(keys.hasNext()) {
+			    String key = keys.next();
+			    if (jGas.get(key) instanceof JSONObject) {
+			    	String classname = String.format("Outside%sConcentration", key);
+			    	String value = (String) jGas.get(key);
+			    	updateRepoNewMethod(stationiri, classname, value, value, directorytime);
+			    }
+			}
+		}
+		 logger.info("updates finished");
 		//processed the input to have suitable format
 		
 		
@@ -319,17 +348,12 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "SELECT ?vprop ?proptimeval "
-//				+ "WHERE " //it's replaced when named graph is used
 				+ "{graph "+"<"+context+">"
 				+ "{ "
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
 				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
-//				+ " ?proptime   j6:hasBeginning ?proptimestart ."
-//				+ " ?proptime   j6:hasEnd ?proptimeend ."
-//				+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
-//				+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
 				+ "}" 
 				+ "}" 
 				+ "ORDER BY ASC(?proptimeval)LIMIT1";
@@ -346,19 +370,16 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
 				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
-				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
-				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ."  
 				+ "} "
 				+ "WHERE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
 				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
-				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "}";
 		
 			
