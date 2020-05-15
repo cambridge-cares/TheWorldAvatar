@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.dispersion.coordination;
 
 import java.io.IOException;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,6 +14,7 @@ import org.json.JSONObject;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 
 /**
@@ -46,7 +48,10 @@ public class GetLastestPathForSimulation extends HttpServlet {
 				"} ORDER BY DESC (?x) Limit 1";
 		
 		String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
-		response.getWriter().write(result);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+		String directory=listmap.get(0)[0];
+		response.getWriter().write(directory);
 	}
 
 	/**

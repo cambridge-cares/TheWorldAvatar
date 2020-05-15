@@ -44,14 +44,15 @@ public class ADMSOutputAllForShips extends HttpServlet {
         JSONObject joforEN = AgentCaller.readJsonParameter(request);
         request.setCharacterEncoding("UTF-8");
         // String folder = null;
-        String folder = joforEN.getString("folder");
+        String folderfilename = joforEN.getString("folder");
         
         // X.Zhou@2020.5.9 Implemented an extra mechanism to identify the extension of the target file and trigger different conversion script 
         // accordingly. I also suggest a future clean up/ restructure of the GST conversion script. I personally suspect the maintainability 
         // and extensibility of this script 
-        
-        
+        File output = new File(folderfilename);
+        String folder = output.getParent();
         File dir = new File(folder);
+        
         File[] gst_files = dir.listFiles((dir1, name) -> name.contains("test.levels") && name.endsWith(".gst"));
         File[] dat_files = dir.listFiles((dir1, name) -> name.endsWith(".dat"));
         

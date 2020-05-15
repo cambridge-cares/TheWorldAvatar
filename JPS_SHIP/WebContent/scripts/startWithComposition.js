@@ -1,4 +1,7 @@
 let osmbGlobal;
+//metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
+metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
+sensorIRIs;
 
 $(function(){
 
@@ -112,7 +115,7 @@ $(function(){
     `;
 
         $.post({
-            url:"http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation",
+            url:metaEndpoint,
             'Content-Type':"application/json",
             data: { query: qstr,format:'json'}
         })
@@ -157,7 +160,7 @@ $(function(){
    let qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
             console.log(qstr);
         $.post({
-            url:"http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation",
+            url:metaEndpoint,
             'Content-Type':"application/json",
             data: { query: qstr,format:'json'}
         })
@@ -189,7 +192,7 @@ $(function(){
 
 //console.log('test query sensor attributes:')
  //TODO:delete local testing
-    querySensorAttributes('http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001',function (err, result) {
+    querySensorAttributes("http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001",function (err, result) {
 console.log(result)});
     //***************************************************************************
     // buttons to tilt camera angle, rotate the map, and zoom in/out
@@ -240,7 +243,7 @@ console.log(result)});
             if(id && id.includes("marker")){//=>sensor marker query event
                 //TODO: sensor query is added here
                 let stationIRI = id.split('_')[0];
-                console.log('clicked on statiion: '+stationIRI)
+                console.log('clicked on station: '+stationIRI)
                 querySensorAttributes(stationIRI, function (err, sensorAttributes) {
                     if (err){console.log(err)}
                     console.log('got sensor attributes to show');
@@ -285,14 +288,18 @@ console.log(result)});
         let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation";//"/agent"
         let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
         //TODO:determine what sequence to query;
-        $.post(agentScenario, {data: {city:locationIRI}}).done(function (data) {
+        $.get(agentScenario, {city:locationIRI}).done(function (data) {
             console.log('requested Scenario Agent for folder: '+data);
         folder = data;
-        $.post(agentInformation, {data:{path:folder}}).done(function (info) {
-            console.log('requested info agent for:');
+        $.get(agentInformation, {path:folder}).done(function (info) {
+            info=JSON.parse(info);
+        	console.log('requested info agent for:');
             console.log(info);
             var buildingIRIs = info.building;
             var shipIRIs = info.ship;
+            
+            console.log("info="+info.region)
+            
             var xmin = parseInt(info.region.lowercorner.lowerx);
             var xmax = parseInt(info.region.uppercorner.upperx);
             var ymin = parseInt(info.region.lowercorner.lowery);
@@ -307,7 +314,7 @@ console.log(result)});
             console.log("buildingIRIs = " + buildingIRIs);
             console.log("shipIRIs = " + shipIRIs);
             $("#myProgressBar").remove();
-            const sensorIRIs = info.stationiri;
+            sensorIRIs = info.stationiri;
             //TODO: sensor rendering is added here
             querySensor(sensorIRIs, function (err, senesorData) {
                 if(err || !senesorData){

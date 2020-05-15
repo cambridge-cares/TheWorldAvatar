@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.coordination;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -33,7 +34,15 @@ public class GetExtraInfo extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		JSONObject r = AgentCaller.readJsonParameter(request);
-		String path = r.getString("path");
+		String oripath=r.getString("path");
+		String path="";
+		if(oripath.contains(".gst")) {
+			path = oripath.split("/JPS_ADMS")[0];
+		}
+		else {
+			//path = oripath.split("/input")[0];
+		}
+		
 		 String outputFile = path + "/extra_info.json";
 			// get what file is stored in the folder 
 			// DAT / GST
