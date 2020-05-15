@@ -26,18 +26,6 @@ import uk.ac.cam.cares.jps.dispersion.sensor.Token;
 
 public class AirQualitySensorAgentTest extends TestCase {
 	
-//	public static HttpClient GetClient(String token){
-//		var authValue = new AuthenticationHeaderValue("Bearer", token);
-//		var client = new HttpClient(){
-//			DefaultRequestHeaders = { 
-//					Authorization = authValue}//Set some other client defaults like timeout / BaseAddress
-//			};
-//			return client;
-//			}
-	
-	
-	
-	
 	
 	public void testAQMeshAPI() throws IOException {
 		String url="https://api.aqmeshdata.net/api";
@@ -114,7 +102,14 @@ public class AirQualitySensorAgentTest extends TestCase {
 	}
 	
 
-	
+	public void testAgentCallreset() {
+		JSONObject jo = new JSONObject();
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", jo.toString());	
+	}public void testAgentCallfrom() {
+		JSONObject jo = new JSONObject();
+		jo.put("city","http://dbpedia.org/resource/Singapore" );
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/AirQualitySensorAgent", jo.toString());	
+	}
 	public void testtimeformat() throws ParseException {
 		String date="16/Apr/2020 12:00:00";
 		//Date date1=new SimpleDateFormat("yyyy-mmm-dd hh:mm:ss").parse(date);

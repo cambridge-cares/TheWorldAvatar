@@ -73,15 +73,13 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					index="00"+x;
 				}
 				String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-				String name="VirtualSensor-001";
-//				String locationname=""; (for AQMESH)
-//				String serialnumber="";
+				String name="AQSensor-001";
 				List<String>info= new ArrayList<String>();
 				info.add(cityiri);
 				info.add(name);
 				info.add("0"); //overallpsi
-//				info.add(locationname); (for AQMESH)
-//				info.add(serialNumber);
+//				info.add(locationname); //(for AQMESH)
+//				info.add(serialnumber);
 				
 				insertDataRepoContext(info,context);
 			
@@ -112,7 +110,8 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					+ "?graph j2:hasAddress <"+cityiri+"> ."
 					//+ "?graph j2:enumerationValue <"+"AQMESH"+"> ."
 					
-					+ "}"; 
+					+ "}"
+					+ "}";
 		 
 		 List<String[]> listmap = queryEndPointDataset(querycontext); //it will give 30 data
 		
@@ -123,22 +122,32 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		int stnnumber=1;
 		String index="";
 		String midfix="";
-		if(location.contains("hague")) {
-			stnnumber=1;
-			index="NL";
-			midfix="nld/thehague";
-		}else if(location.contains("berlin")) {
-			stnnumber=1;
-			index="DE";
-			midfix="deu/berlin";
-		}else if(location.contains("kong")) {
-			stnnumber=8;
-			index="HK";
-			midfix="hkg/hongkong";
-		}else if(location.contains("singapore")) {
-			stnnumber=14;
-			index="SG";
-			midfix="sgp/singapore";
+		if(location.contains("AQ")) {
+			if(location.contains("singapore")) {
+				stnnumber=1;
+				index="SGAQMesh";
+				midfix="sgp/singapore";
+			}
+			
+		}
+		else {
+			if(location.contains("hague")) {
+				stnnumber=1;
+				index="NL";
+				midfix="nld/thehague";
+			}else if(location.contains("berlin")) {
+				stnnumber=1;
+				index="DE";
+				midfix="deu/berlin";
+			}else if(location.contains("kong")) {
+				stnnumber=8;
+				index="HK";
+				midfix="hkg/hongkong";
+			}else if(location.contains("singapore")) {
+				stnnumber=14;
+				index="SG";
+				midfix="sgp/singapore";
+			}
 		}
 		for (int d = 1; d <= stnnumber; d++) {
 			String number = "00" + d;
@@ -149,10 +158,14 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					index+"COSensor-" + number + ".owl", index+"SO2Sensor-" + number + ".owl",
 					index+"O3Sensor-" + number + ".owl", index+"NO2Sensor-" + number + ".owl",
 					index+"NOSensor-" + number + ".owl", index+"NOxSensor-" + number + ".owl",
-					index+"PM1Sensor-" + number + ".owl", index+"PM2.5Sensor-" + number + ".owl",
-					index+"HCSensor-" + number + ".owl",index+"PM10Sensor-" + number + ".owl"};
+					index+"PM1Sensor-" + number + ".owl", index+"PM2.5Sensor-" + number + ".owl",index+"PM10Sensor-" + number + ".owl"};
 			String context = "http://www.theworldavatar.com/kb/"+midfix+"/AirQualityStation-" + number
 					+ ".owl#AirQualityStation-" + number;
+			if (location.contains("AQ")) {
+				context = "http://www.theworldavatar.com/kb/"+midfix+"/AirQualityStationAQMesh-" + number
+						+ ".owl#AirQualityStationAQMesh-" + number;
+				
+			}
 			System.out.println("upload files for graph");
 			for (String el : filenames) {
 				new AirQualitySensorAgent().addFiletoRepo(con, el, context,midfix);
@@ -207,8 +220,8 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					+ "<" + context+ "> j2:hasAddress <"+info.get(0)+"> ." 
 					+ "<" + context+ "> j2:enumerationValue \""+info.get(1)+"\" ." 
 					+ "<" + context+ "> j4:hasOverallPSI \""+info.get(2)+"\"^^xsd:integer ." 
-					//+ "<" + context+ "> j4:podSerialNumber \""+info.get(2)+"\" ."  for aqmesh
-					//+ "<" + context+ "> j4:locationName \""+info.get(3)+"\" ." for aqmesh
+					+ "<" + context+ "> j4:podSerialNumber \""+info.get(3)+"\" ."  //for aqmesh
+					+ "<" + context+ "> j4:locationName \""+info.get(4)+"\" ." //for aqmesh
 					+ "} "
 					+ "WHERE { " 
 					+ "}";
@@ -253,12 +266,12 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			for (int i = 1; i< jArr.length(); i++) {
 				JSONObject joGas = new JSONObject(jArr.get(i).toString());//{}
 				JSONObject jo = new JSONObject();			
-				jo.put("CO", joGas.get("co_prescaled"));
-				jo.put("NO", joGas.get("no_prescaled"));
-				jo.put("NO2", joGas.get("no2_prescaled"));
-				jo.put("SO2", joGas.get("so2_prescaled"));
-				jo.put("O3", joGas.get("o3_prescaled"));
-				jo.put("H2S", joGas.get("h2s_prescaled"));
+				jo.put("CO", joGas.getDouble("co_prescaled"));
+				jo.put("NO", joGas.getDouble("no_prescaled"));
+				jo.put("NO2", joGas.getDouble("no2_prescaled"));
+				jo.put("NOx", Double.valueOf( joGas.getDouble("no2_prescaled")+joGas.getDouble("no_prescaled")));
+				jo.put("SO2", joGas.getDouble("so2_prescaled"));
+				jo.put("O3", joGas.getDouble("o3_prescaled"));
 				arrJo.add(jo);
 			}
 		}
@@ -271,9 +284,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		for (int i = 0; i< jArr.length(); i++) {
 			JSONObject joPM = new JSONObject(jArr.get(i).toString());//{}
 			JSONObject jo = new JSONObject();			
-			jo.put("PM1", joPM.get("pm1_prescale"));
-			jo.put("PM2.5", joPM.get("pm2_5_prescale"));
-			jo.put("PM10", joPM.get("pm10_prescale"));
+			jo.put("PM1", joPM.getDouble("pm1_prescale"));
+			jo.put("PM2.5", joPM.getDouble("pm2_5_prescale"));
+			jo.put("PM10", joPM.getDouble("pm10_prescale"));
 			//gather the json from here. 
 			jo.put("Timestamp", convertTime(joPM.getString("reading_datestamp")));
 			arrJo.add(jo);
@@ -287,23 +300,23 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	public void executePeriodicUpdate(String stationiri) {
 		ArrayList<JSONObject> result=getDataFromAPI();
 		int len = result.size()/2;
-		for (int x = 0; x < len; x++) { //assuming same frequency of these two.
+		for (int x = 0; x <10; x++) { //assuming same frequency of these two.
 			
-			
-			JSONObject jPM = result.get(x+len-1);
+
+			JSONObject jGas = result.get(x);
+			JSONObject jPM = result.get(x+len);
 			double concpm10=0.0;
 			double concpm25=0.0;
 			double concpm1=0.0;
 			String directorytime = (String) jPM.get("Timestamp");
-			concpm1 = concpm1 + Double.valueOf((String) jPM.get("PM1"));
-			concpm25 = concpm1 +concpm25 + Double.valueOf((String) jPM.get("PM2.5"));
-			concpm10 = concpm25 +concpm10 + Double.valueOf((String) jPM.get("PM10"));
+			concpm1 = concpm1 + jPM.getDouble("PM1");
+			concpm25 = concpm1 +concpm25 +jPM.getDouble("PM2.5");
+			concpm10 = concpm25 +concpm10 + jPM.getDouble("PM10");
 			updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 			updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
 			updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
 			
 			 
-			JSONObject jGas = result.get(x);
 			Iterator<String> keys = jGas.keys();
 			while(keys.hasNext()) {
 			    String key = keys.next();
@@ -347,7 +360,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT ?vprop ?proptimeval "
+				+ "SELECT ?vprop ?proptime "
 				+ "{graph "+"<"+context+">"
 				+ "{ "
 				+ " ?prop a j4:"+propnameclass+" ."
@@ -388,41 +401,63 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		
 		
 	}
-	
-	public static void main(String[]args) { //used for upload all content locally
-
+	/** Things to do when reseting. 
+	 * 1. create repository named airqualitystation on rdf4j
+	 * 2. create owl files by uncommeting Line 180 of AirSensorKBCreator.java, and commenting Line 179 of the same. 
+	 * 3. Uncomment Line 9 - 12 and comment line 4 - 7 of AirSensorConfig.java
+	 * 4. Run main function in AirSensorKBCreator
+	 * 5. Ensure that your KB files are created. 
+	 * 6. Run this reset function. 
+	 */
+	public static void resetAllAQMesh() {
 		RepositoryConnection con = repo.getConnection();
-		String location="singapore";
-//		String location="hong kong";
-//		String location="berlin";
-//		String location="the hague";
+		String location="singapore_AQ";
+   		String cityiri= "http://dbpedia.org/resource/Singapore";
 		AirQualitySensorAgent a=new AirQualitySensorAgent();
+		//Uploads the owl files onto your rdf4j dataset
 		a.resetRepoTrial(con,location); //currently the context is not used
-		int numbersensor=1; //should change if added by AQMesh
-		String cityiri= "http://dbpedia.org/resource/Singapore";
+		int numbersensor=1; 
+		//there's only one sensor so far. 
+		//
 		for(int x=1;x<=numbersensor;x++) {
 			String index="0"+x;
 			if(x<10) {
 				index="00"+x;
 			}
-			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-			String name="VirtualSensor-001";
-			String name2="AQMeshSensor-001";
-			String context2="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-"+index+".owl#AirQualityStationAQMesh-"+index;
-//			String locationname=""; (for AQMESH)
-//			String serialnumber="";
+			String name="AQMeshSensor-001";
+			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-"+index+".owl#AirQualityStationAQMesh-"+index;
 			List<String>info= new ArrayList<String>();
 			info.add(cityiri);
 			info.add(name);
 			info.add("0"); //overallpsi
-//			info.add(locationname); (for AQMESH)
-//			info.add(serialNumber);
+			String locationname="Location 2450495"; //(for AQMESH)
+			String serialnumber="2450495";
+			info.add(locationname);// (for AQMESH)
+			info.add(serialnumber);
 			
 			a.insertDataRepoContext(info,context);
 			//a.insertDataRepoContext(info,context2);
 		
 		}
+	}
+	/** run this ONLY after you run resetAll
+	 * 1. 
+	 * 
+	 */
+	public static void uploadData() {
+		
+	}
+	public static void main(String[]args) { //used for upload all content locally
 
+		RepositoryConnection con = repo.getConnection();
+		String location="singapore_AQ";
+   		String cityiri= "http://dbpedia.org/resource/Singapore";
+		AirQualitySensorAgent a=new AirQualitySensorAgent();
+
+
+		List<String[]> contextlist=a.extractAvailableContext( cityiri);
+		String context=contextlist.get(0)[0];
+		a.executePeriodicUpdate(context);
 			System.out.println("update is done");		
 
 		
