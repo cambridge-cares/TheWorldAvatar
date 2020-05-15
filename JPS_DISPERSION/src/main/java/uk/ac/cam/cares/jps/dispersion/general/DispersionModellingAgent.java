@@ -166,7 +166,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							anntateOutputs(jobFolder);
+							annotateOutputs(jobFolder);
 						}
 					}
 				}
@@ -178,7 +178,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 
 	}
 
-	protected boolean anntateOutputs(File jobFolder) {
+	protected boolean annotateOutputs(File jobFolder) {
     	return true;
 	}
 	

@@ -1101,7 +1101,7 @@ System.out.println("excecutable = "+getClass().getClassLoader()
 	}
 
 	@Override
-	protected boolean anntateOutputs(File jobFolder) {
+	protected boolean annotateOutputs(File jobFolder) {
 	    	//Implementation
 		return true;
 	}
