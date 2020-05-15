@@ -25,7 +25,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.gson.Gson;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
@@ -33,14 +32,14 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
 @WebServlet(urlPatterns = {"/AirQualitySensorAgent","/resetAirQualityRepository"})
 public class AirQualitySensorAgent extends JPSHttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	public static String rdf4jServer = "http://localhost:8080/rdf4j-server"; //this is only the local repo, changed if it's inside claudius
+	public static AirSensorConfig config= new AirSensorConfig();
+	public static String rdf4jServer = config.getRDF4JLocation();
 	public static String repositoryID = "airqualitystation";
 	public static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
 	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_AIRQUALITY_URL);
@@ -54,44 +53,17 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		JSONObject response= new JSONObject();
 		String path = request.getServletPath();
 		if(path.contains("/resetAirQualityRepository")) { //used for Both AQMesh and soft sensor use case
-			rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
-	   		 repo = new HTTPRepository(rdf4jServer, repositoryID);
+			repo = new HTTPRepository(rdf4jServer, repositoryID);
 	   		RepositoryConnection con = repo.getConnection();
-				
-	   		String[]location= {"singapore"};
-	   		String cityiri= "http://dbpedia.org/resource/Singapore";
-				
-			for (String el:location){
-				resetRepoTrial(con,el); //currently the context is not used
-			}	
-//			String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
-//			List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
-			int numbersensor=1;
-			for(int x=1;x<=numbersensor;x++) {
-				String index="0"+x;
-				if(x<10) {
-					index="00"+x;
-				}
-				String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-				String name="AQSensor-001";
-				List<String>info= new ArrayList<String>();
-				info.add(cityiri);
-				info.add(name);
-				info.add("0"); //overallpsi
-//				info.add(locationname); //(for AQMESH)
-//				info.add(serialnumber);
-				
-				insertDataRepoContext(info,context);
-			
-			}	
+			String location = requestParams.optString("location", "singapore_AQ");
+	   		String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
+	   		resetAllAQMesh(location,cityiri);
 			response.put("status", "reset endpoint successful");
 			
 		}else { //used for AQmesh only
-			String cityiri=requestParams.get("city").toString();
+			String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
 			//right now the input is not connected yet
-			List<String[]> contextlist=extractAvailableContext( cityiri);
-			String context=contextlist.get(0)[0];
-			executePeriodicUpdate(context);
+			String context = uploadData(cityiri);
 			response.put("airStationIRI", context);	
 		}
 	
@@ -237,8 +209,13 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		return listmap;
 	}
 	/** calls on data via REST POST request to api aqmesh
-	 * requires String authorization. 
-	 * @return
+	 * Handshake: HTTP POST request is sent first with the username and password. 
+	 * User gets back a token that lasts 120 minutes 
+	 * DO NOT RUN THIS MORE THAN ONCE A MINUTE OR WE'LL GET INTO TROUBLE! 14/5/20
+	 * User sends the token and requests for information via GET. 
+	 * First get request gets the gas concentration, 
+	 * Second get request gets particle concentration
+	 * @return ArrayList<JSONObject> that contains concentrations
 	 */
 	public ArrayList<JSONObject> getDataFromAPI() {
 		//Get token information by password. Only valid for 120 min
@@ -293,9 +270,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		}
 		return arrJo;
 	}
-	/**
+	/** runs getDataFromAPI() and process the output
 	 * 
-	 * @param cityname
+	 * @param stationiri: the name of the station / graph/context where the owl files are stored under
 	 */
 	public void executePeriodicUpdate(String stationiri) {
 		ArrayList<JSONObject> result=getDataFromAPI();
@@ -333,6 +310,11 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		
 		
 	}
+	/** converts anytime into Singapore timezone. 
+	 * 
+	 * @param current current time in any time zone
+	 * @return time in "yyyy-MM-dd'T'HH:mm:ss" in GMT+8 format
+	 */
 	public static String convertTime(String current) {
 		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
@@ -403,16 +385,16 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	}
 	/** Things to do when reseting. 
 	 * 1. create repository named airqualitystation on rdf4j
-	 * 2. create owl files by uncommeting Line 180 of AirSensorKBCreator.java, and commenting Line 179 of the same. 
+	 *  Ensure that you have "Copy of aqmesh-location-data-Cares1-20200420020751.csv" and 
+	 *   "SensorTemp.owl" (aka the blank copy)in your workingdir folder
+	 * 2. create owl files by uncomment Line 180 of AirSensorKBCreator.java, and commenting Line 179 . 
 	 * 3. Uncomment Line 9 - 12 and comment line 4 - 7 of AirSensorConfig.java
 	 * 4. Run main function in AirSensorKBCreator
 	 * 5. Ensure that your KB files are created. 
 	 * 6. Run this reset function. 
 	 */
-	public static void resetAllAQMesh() {
+	public static void resetAllAQMesh(String location, String cityiri) {
 		RepositoryConnection con = repo.getConnection();
-		String location="singapore_AQ";
-   		String cityiri= "http://dbpedia.org/resource/Singapore";
 		AirQualitySensorAgent a=new AirQualitySensorAgent();
 		//Uploads the owl files onto your rdf4j dataset
 		a.resetRepoTrial(con,location); //currently the context is not used
@@ -434,32 +416,32 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			String serialnumber="2450495";
 			info.add(locationname);// (for AQMESH)
 			info.add(serialnumber);
-			
 			a.insertDataRepoContext(info,context);
-			//a.insertDataRepoContext(info,context2);
 		
 		}
 	}
 	/** run this ONLY after you run resetAll
-	 * 1. 
+	 * In TESTING mode: 
+	 * 1. run uploadData
+	 * 2. Ensure that extractAvailableContext works by going to localhost:8080/rdf4j-workbench
+	 * and checking airqualitystation (no s!) is available
+	 * 3. run testAPIClear() in AirQualitySensorAgentTest to check that the API is working. Contact Yichen if otherwise
+	 * 4. run testCallAPI() if (3) is green but you don't get any data. 
+	 * In Running mode:
+	 * 1. swap getDataFromAPI()'s two API get requests from "Repeat" to "Next"
 	 * 
 	 */
-	public static void uploadData() {
-		
-	}
-	public static void main(String[]args) { //used for upload all content locally
-
-		RepositoryConnection con = repo.getConnection();
-		String location="singapore_AQ";
-   		String cityiri= "http://dbpedia.org/resource/Singapore";
+	public static String uploadData(String cityiri) {
 		AirQualitySensorAgent a=new AirQualitySensorAgent();
-
-
 		List<String[]> contextlist=a.extractAvailableContext( cityiri);
 		String context=contextlist.get(0)[0];
 		a.executePeriodicUpdate(context);
-			System.out.println("update is done");		
-
+		System.out.println("update is done");
+		return context;
+	}
+	public static void main(String[]args) { //used for upload all content locally
+//		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
+		uploadData("http://dbpedia.org/resource/Singapore");
 		
 	}
 	

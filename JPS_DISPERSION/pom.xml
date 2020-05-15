@@ -142,12 +142,11 @@
     <version>2.8.1</version>
 </dependency>
 		
-		<!-- https://mvnrepository.com/artifact/com.konghq/unirest-java -->
 <dependency>
     <groupId>com.konghq</groupId>
     <artifactId>unirest-java</artifactId>
     <version>3.7.02</version>
-    <scope>provided</scope>
+    <classifier>standalone</classifier>
 </dependency>
 		
 		<dependency>
