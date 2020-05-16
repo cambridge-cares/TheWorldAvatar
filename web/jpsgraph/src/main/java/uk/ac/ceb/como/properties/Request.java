@@ -19,24 +19,32 @@ public class Request {
 	/**
 	 * Enables to perform an HTTP get request.
 	 * 
+	 * @author msff2@cam.ac.uk (Dr Feroz Farazi)
 	 * @param query
 	 * @return
 	 * @throws MalformedURLException
 	 * @throws IOException
 	 */
 	public static String get(String query) throws MalformedURLException, IOException{
-        URL httpURL = new URL(query);
+        
+		URL httpURL = new URL(query);
+        
         URLConnection httpURLConnection = httpURL.openConnection();
+        
         BufferedReader in = new BufferedReader(
                                 new InputStreamReader(
                                 		httpURLConnection.getInputStream()));
         String inputLine;
+        
         String fileContent = "";
+        
         while ((inputLine = in.readLine()) != null){ 
             fileContent = fileContent.concat(inputLine);
         }
+        
         in.close();
         System.out.println("fileContent:\n"+fileContent);
+        
         return fileContent;
     }
 }

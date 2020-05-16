@@ -3,6 +3,8 @@ package uk.ac.ceb.como.action;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.jayway.jsonpath.JsonPath;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -25,6 +27,8 @@ public class StatisticsAction extends ActionSupport {
 	
 	Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));
 
+	final static Logger logger = Logger.getLogger(StatisticsAction.class.getName());
+	
 	private String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
 	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
 	private String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
@@ -40,10 +44,74 @@ public class StatisticsAction extends ActionSupport {
 
 	private String numberOfChemicalReactions;
 	
-	private String numberOfAgents;
+//	private String numberOfAgents;
 	
 	private String numberOfSynonyms;
 	
+	private String numberOfCabronAndHydrogenSpecies;
+	
+	private String numberOfCabronAndHydrogenAndOxygenSpecies;
+	
+	private String numberOfNitrogenSpeciesInOntoKin;
+	
+	
+	
+	private String numberOfReactionsThatInvolveOxygenHydrocarbonSpecies;
+	
+	private String numberOfReactionsThatInvolveNitrogenSpecies;
+	
+	private String numberOfReactionsHydrocarbonSpecies;
+	
+	public String getNumberOfReactionsHydrocarbonSpecies() {
+		return numberOfReactionsHydrocarbonSpecies;
+	}
+
+	public void setNumberOfReactionsHydrocarbonSpecies(String numberOfReactionsHydrocarbonSpecies) {
+		this.numberOfReactionsHydrocarbonSpecies = numberOfReactionsHydrocarbonSpecies;
+	}
+
+	public String getNumberOfReactionsThatInvolveNitrogenSpecies() {
+		return numberOfReactionsThatInvolveNitrogenSpecies;
+	}
+
+	public void setNumberOfReactionsThatInvolveNitrogenSpecies(String numberOfReactionsThatInvolveNitrogenSpecies) {
+		this.numberOfReactionsThatInvolveNitrogenSpecies = numberOfReactionsThatInvolveNitrogenSpecies;
+	}
+
+	public String getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies() {
+		return numberOfReactionsThatInvolveOxygenHydrocarbonSpecies;
+	}
+
+	public void setNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies(
+			String numberOfReactionsThatInvolveOxygenHydrocarbonSpecies) {
+		this.numberOfReactionsThatInvolveOxygenHydrocarbonSpecies = numberOfReactionsThatInvolveOxygenHydrocarbonSpecies;
+	}
+
+	
+
+	public String getNumberOfNitrogenSpeciesInOntoKin() {
+		return numberOfNitrogenSpeciesInOntoKin;
+	}
+
+	public void setNumberOfNitrogenSpeciesInOntoKin(String numberOfNitrogenSpeciesInOntoKin) {
+		this.numberOfNitrogenSpeciesInOntoKin = numberOfNitrogenSpeciesInOntoKin;
+	}
+
+	public String getNumberOfCabronAndHydrogenAndOxygenSpecies() {
+		return numberOfCabronAndHydrogenAndOxygenSpecies;
+	}
+
+	public void setNumberOfCabronAndHydrogenAndOxygenSpecies(String numberOfCabronAndHydrogenAndOxygenSpecies) {
+		this.numberOfCabronAndHydrogenAndOxygenSpecies = numberOfCabronAndHydrogenAndOxygenSpecies;
+	}
+
+	public String getNumberOfCabronAndHydrogenSpecies() {
+		return numberOfCabronAndHydrogenSpecies;
+	}
+
+	public void setNumberOfCabronAndHydrogenSpecies(String numberOfCabronAndHydrogenSpecies) {
+		this.numberOfCabronAndHydrogenSpecies = numberOfCabronAndHydrogenSpecies;
+	}
 
 	public String getNumberOfSynonyms() {
 		return numberOfSynonyms;
@@ -53,13 +121,13 @@ public class StatisticsAction extends ActionSupport {
 		this.numberOfSynonyms = numberOfSynonyms;
 	}
 
-	public String getNumberOfAgents() {
-		return numberOfAgents;
-	}
-
-	public void setNumberOfAgents(String numberOfAgents) {
-		this.numberOfAgents = numberOfAgents;
-	}
+//	public String getNumberOfAgents() {
+//		return numberOfAgents;
+//	}
+//
+//	public void setNumberOfAgents(String numberOfAgents) {
+//		this.numberOfAgents = numberOfAgents;
+//	}
 
 	public String getNumberOfChemicalReactions() {
 		return numberOfChemicalReactions;
@@ -104,6 +172,9 @@ public class StatisticsAction extends ActionSupport {
 	@Override
 	public String execute() throws IOException {
 
+		/**
+		 * These properties are shown on first table.
+		 */
 		numberOfCalculations = new String(QueryManager.getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations()));
 
 		numberOfSpeciesInOntoSpecies = new String(QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies()));
@@ -119,8 +190,31 @@ public class StatisticsAction extends ActionSupport {
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
 		 * Line below is implemented by Dr Feroz Farazi (msff2@cam.ac.uk). He contributed in implementation of reading "value" in sparql query result as JSONObject.  
 		 */
-		numberOfAgents = JsonPath.read(QueryManager.getNumberOfAgents().toString(), "$.results.bindings[0].sum.value");
+//		numberOfAgents = JsonPath.read(QueryManager.getNumberOfAgents().toString(), "$.results.bindings[0].sum.value");
 
+		
+		/**
+		 * 
+		 * These properties are shown on second table.
+		 * 
+		 */
+		numberOfCabronAndHydrogenSpecies = new String(QueryManager.getQuery(ontokinkb, QueryString.getCabronHydrogenSpeciesInOntoKin()));
+		
+		numberOfCabronAndHydrogenAndOxygenSpecies = new String(QueryManager.getQuery(ontokinkb, QueryString.getCabronHydrogenOxygenSpeciesInOntoKin()));
+		
+		numberOfNitrogenSpeciesInOntoKin = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberNitrogenSpeciesInOntoKin()));
+		
+		
+		numberOfReactionsHydrocarbonSpecies = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveHydrocarbonSpecies()));
+		
+		logger.info("numberOfReactionsHydrocarbonSpecies: " + numberOfReactionsHydrocarbonSpecies);
+		
+		numberOfReactionsThatInvolveOxygenHydrocarbonSpecies =new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies()));
+		
+		logger.info("numberOfReactionsThatInvolveOxygenHydrocarbonSpecies: " + numberOfReactionsThatInvolveOxygenHydrocarbonSpecies);
+		
+		numberOfReactionsThatInvolveNitrogenSpecies=new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveNitrogenSpecies()));
+		
 		return SUCCESS;
 	}
 

@@ -10,10 +10,12 @@
       -->
 <head>
 
+<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
-<meta http-equiv="refresh" content="120; url=http://theworldavatar.com/jpsgraph/statisticsAction">
+<meta http-equiv="refresh" content="240; url=http://theworldavatar.com/graph/statisticsAction">
 
 <title>JPS self growing knowledge graph: Statistics</title>
 
@@ -27,6 +29,13 @@
     
      <script src="pages/scripts/start.js"></script>
    
+<style type="text/css">
+  
+  .noBorder {
+    border:none !important;
+}
+</style>
+
 </head>
 
 <style>
@@ -41,6 +50,7 @@ TH {
 #tableName td {
 text-align: left;
 }
+
 
 
 
@@ -101,8 +111,11 @@ text-align: left;
 
 
 
+
 <div id="main-content" class="clearfix">
- 
+
+
+
 <!-- <div id="main-content" class="clearfix">-->
 
 <!--<div id="tool-container">-->
@@ -120,6 +133,8 @@ Here is java script for visualization molecules.
 <h1 align="left"><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
 -->
 
+
+
 <div style="width: 100%;margin: auto;position:left;">    
     <div style="position: left;"class="tabcontent paddingAll hide" id="mol-jmol-1">
         <div style="position:left;" id="middlepanel"></div>
@@ -128,10 +143,14 @@ Here is java script for visualization molecules.
     </div>
 </div>
 
+
 <div class="span-24 last params">
     <div class="span-12 paramlist">
         <h2 align="left"></h2>
-        <table style="width:100%;">
+        
+
+<!--          
+<table style="width:100%;">
 <tbody>         
 <tr align="left">
 <td><b>Number of Gaussian calculations in OntoCompChem:</b></td> <td><b><s:property value="numberOfCalculations"/></b></td>
@@ -159,14 +178,538 @@ Here is java script for visualization molecules.
 <td><b>Number of agents in OntoAgent:</b></td><td><b><s:property value="numberOfAgents"/></b></td>
 </tr>
 
-</tbody>
+</tbody >
 </table>
+-->
+<img src = "pages/images/c4e-preprint-236.png" width="500" height="250"/>
+<p></p>
+<b><a href="https://doi.org/10.1016/j.compchemeng.2020.106813">Linking reaction mechanisms and quantum chemistry: An ontological approach</a></b>
+<p></p>
+<p></p>
+<p></p>
+<!-- <img src = "http://www.theworldavatar.com/data/ontocompchem/00ff391e-ac39-36e1-9f86-57aba71e6f64/00ff391e-ac39-36e1-9f86-57aba71e6f64.png" width="500" height="250"/>-->
+ 
+ 
+ <!-- Self growing knowledge graph statistics -->  
+<table border="5" style="text-align:center">
+ 
+  <tr>
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td  class="noBorder" width="150"  height="15"/>  
+             
+      
+      
+      <td class="noBorder" colspan="6" style="font-size: 20px;">
+        <b>Self growing knowledge graph statistics</b> 
+      </td> 
+      
+      <td class="noBorder" width="150"  height="15"/> 
+
+      <td class="noBorder" width="150"  height="15"/> 
+      
+  </tr>
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+     
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+            
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+   </tr>
+  
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+      <s:property value="numberOfCalculations"/>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+       <s:property value="numberOfSpeciesInOntoSpecies"/> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+        <s:property value="numberOfSynonyms"/>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+   </tr>
+   
+      <tr>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td  class="noBorder"colspan="2" width="300"  height="15">
+      <b>Gaussian calculations in OntoCompChem</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td  class="noBorder" colspan="2" width="300"  height="15">
+      <b>Species in OntoSpecies</b>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+       <b>Synonyms in OntoSpecies</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+   </tr>
+   
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" width="150"  height="15"/> 
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+            
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+   </tr>
+  
+   
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+  
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border:5px;" bgcolor="lightgray">
+      <s:property value="numberOfReactionMechanisms"/>
+      </td>
+      
+      <td class="noBorder">
+  
+      </td>
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border:5px;" bgcolor="lightgray">
+       <s:property value="numberOfSpeciesInOntoKin"/>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/> 
+    
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+       <s:property value="numberOfChemicalReactions"/> 
+      </td> 
+      
+      <td class="noBorder" width="150"  height="15"/>    
+   
+   </tr>
+  
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+      <b>Reaction mechanisms in OntoKin</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+      <b>Species in OntoKin</b> 
+      </td>      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+      <b>Chemical reactions in OntoKin</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+   </tr>
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+     
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+            
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+   </tr>
+ 
+
+   
+  </table>
+ 
+<p></p>
+<p></p>
+<p></p>
+
+<!--  Self growing knowledge graph statistics about chemical reactions and species in chemical reactions. -->
+
+<table border="5" style="text-align:center">
+ 
+  <tr>
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td  class="noBorder" width="150"  height="15"/>  
+             
+      
+      
+      <td class="noBorder" colspan="6" style="font-size: 20px;">
+        <b>Self growing knowledge graph: OntoKin species and reactions statistics</b> 
+      </td> 
+      
+      <td class="noBorder" width="150"  height="15"/> 
+
+      <td class="noBorder" width="150"  height="15"/> 
+      
+  </tr>
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+     
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+            
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+   </tr>
+  
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+       <s:property value="numberOfCabronAndHydrogenSpecies"/> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+       <s:property value="numberOfCabronAndHydrogenAndOxygenSpecies"/>  
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+       <s:property value="numberOfNitrogenSpeciesInOntoKin"/>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+   </tr>
+   
+      <tr>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td  class="noBorder"colspan="2" width="300"  height="15">
+      <b>Species in OntoKin that contain only carbon and hydrogen atoms.</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td  class="noBorder" colspan="2" width="300"  height="15">
+      <b>Species in OntoKin that contain only carbon and hydrogen and oxygen atoms.</b>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+       <b>Nitrogen species in OntoKin</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+   </tr>
+   
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" width="150"  height="15"/> 
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+            
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+   </tr>
+  
+   
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+          
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border:5px;" bgcolor="lightgray">
+      <s:property value="numberOfReactionsHydrocarbonSpecies"/> 
+      </td>
+      
+      <td class="noBorder">
+  
+      </td>
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border:5px;" bgcolor="lightgray">
+     <s:property value="numberOfReactionsThatInvolveOxygenHydrocarbonSpecies"/>
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/> 
+    
+      
+      
+      <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
+      <s:property value="numberOfReactionsThatInvolveNitrogenSpecies"/> 
+      </td> 
+      
+      <td class="noBorder" width="150"  height="15"/>    
+   
+   </tr>
+  
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+      <b>Reactions that involve hydrocarbon species</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+      <b>Reactions that involve oxygenHydrocarbon species</b> 
+      </td>      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      <td class="noBorder" colspan="2" width="300"  height="15">
+      <b>Reactions that involve nitrogen species</b> 
+      </td>
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+   </tr>
+   <tr>
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+     
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+      
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+        
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+            
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+      <td class="noBorder" width="150"  height="15"/>
+       
+      
+      
+   </tr>
+ 
+
+   
+  </table>
+ 
+
 
 </div>
 </div>
+
+
 <!--</div>-->
 
+ 
 </div>
+
+
+
 
 <!-- PUT CONTENT HERE -->
 <!--</div>-->
