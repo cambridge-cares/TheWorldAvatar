@@ -2,7 +2,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>uk.ac.ceb.como</groupId>
-  <artifactId>jpsgraph</artifactId>
+  <artifactId>graph</artifactId>
   <packaging>war</packaging>
   <version>uk.ac.ceb.como</version>
   <name>JPS Self growing knowledge graph maven webapp</name>
@@ -107,6 +107,6 @@
 
   </dependencies>
   <build>
-    <finalName>jpsgraph</finalName>
+    <finalName>graph</finalName>
   </build>
 </project>

@@ -123,5 +123,142 @@ public class QueryString {
 	 
 	 return query;
  }
+ 
+ /**
+  * 
+  * @return the number of species in OntoKin that contains ONLY cabron (C) and hydrogen (H) atoms.
+  */
+ public static String getCabronHydrogenSpeciesInOntoKin() {
+	 
+	 String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+	 		+ "SELECT (count(?o) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "?s rdf:type ontokin:Species . "
+	 		+ "?s rdfs:label ?o . "
+	 		+ "FILTER((REGEX(str(?o),'^C([1-9]*)H([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)C([1-9]*)$'))) . " 
+	 		+"}";
+	 
+	 return query;
+ }
+ 
+ /**
+  * 
+  * @return the number of species in OntoKin that contains ONLY cabron (C) and hydrogen (H) atoms.
+  */
+ public static String getCabronHydrogenOxygenSpeciesInOntoKin() {
+	 
+	 String query = "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+	 		+ "SELECT (count(?o) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "?s rdf:type ontokin:Species . "
+	 		+ "?s rdfs:label ?o . "
+	 		+ "FILTER((REGEX(str(?o),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o),'^O([1-9]*)H([1-9]*)C([1-9]*)$'))) . " 
+	 		+"}";
+	 
+	 return query;
+ }
+ 
+ /**
+  * 
+  * @return the number of nitrogen atoms in OntoKin 
+  */
+ public static String getNumberNitrogenSpeciesInOntoKin() {
+	 
+	 String query ="PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>  "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+	 		+ "SELECT (count(?o) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "?s rdf:type ontokin:Species . "
+	 		+ "?s rdfs:label ?o . "
+	 		+ "FILTER(CONTAINS(str(?o),'N2')) . "
+	 		+ "}";
+	 		
+	 		return query;
+ }
 	
+ /**
+  * 
+  * @return the number of chemical reactions that involve hydrocarbon species
+  */
+ public static String getNumberOfReactionsThatInvolveHydrocarbonSpecies() {
+	 
+	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+		 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+		 		+ "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> "
+		 		+ "SELECT (count(?s) as ?sum) "
+		 		+ "WHERE { "
+		 		+ "{"
+		 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+		 		+ "?s reaction_mechanism:hasProduct ?p . "
+		 		+ "?p rdfs:label ?o1 . "
+		 		+ "FILTER((REGEX(str(?o1),'^C([1-9]*)H([1-9]*)$')) || (REGEX(str(?o1),'^H([1-9]*)C([1-9]*)$'))) . "
+		 		+ "}"
+		 		+ "UNION"
+		 		+ "{"
+		 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+		 		+ "?s reaction_mechanism:hasReactant ?r . "
+		 		+ "?r rdfs:label ?o2 . "
+		 		+ "FILTER((REGEX(str(?o2),'^C([1-9]*)H([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)C([1-9]*)$'))) . "
+		 		+ "}"
+		 		+ "}";
+	 
+	 return query;
+ }
+ 
+ public static String getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies() {
+	 
+	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+	 		+ "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> "
+	 		+ "SELECT DISTINCT (count(?s) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "{"
+	 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+	 		+ "?s reaction_mechanism:hasProduct ?p . "
+	 		+ "?p rdfs:label ?o1 . "
+	 		+ "FILTER((REGEX(str(?o1),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o1),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o1),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o1),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o1),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o1),'^O([1-9]*)H([1-9]*)C([1-9]*)$')))   . "
+	 		+ "}"
+	 		+ "UNION "
+	 		+ "{"
+	 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+	 		+ "?s reaction_mechanism:hasReactant ?r . "
+	 		+ "?r rdfs:label ?o2 . "
+	 		+ "FILTER((REGEX(str(?o2),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o2),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o2),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o2),'^O([1-9]*)H([1-9]*)C([1-9]*)$')))  . "
+	 		+ "}"
+	 		+ "}";
+	 
+	 return query;
+ }
+ 
+ 
+ public static String getNumberOfReactionsThatInvolveNitrogenSpecies() {
+	 
+	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+	 		+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> "
+	 		+ "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> "
+	 		+ "SELECT DISTINCT (count(?s) as ?sum) "
+	 		+ "WHERE { "
+	 		+ "{"
+	 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+	 		+ "?s reaction_mechanism:hasProduct ?p . "
+	 		+ "?p rdfs:label ?o1 . "
+	 		+ "FILTER(CONTAINS(str(?o1),'N2')) . "
+	 		+ "}"
+	 		+ "UNION "
+	 		+ "{"
+	 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
+	 		+ "?s reaction_mechanism:hasReactant ?r . "
+	 		+ "?r rdfs:label ?o2 . "
+	 		+ "FILTER(CONTAINS(str(?o2),'N2')) . "
+	 		+ "}"
+	 		+ "}";
+	 
+	 return query;
+ }
+ 
 }
