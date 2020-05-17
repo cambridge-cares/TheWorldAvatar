@@ -29,8 +29,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
-import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -52,6 +50,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
 	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_AIRQUALITY_URL);
+	public static final String metadataseturl=KeyValueManager.get(IKeys.DATASET_META_URL); 
     protected void setLogger() {
         logger = LoggerFactory.getLogger(InterpolationAgent.class);
     }
@@ -80,8 +79,8 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String gasType, dispMatrix ="";
 		String location = requestParams.optString("city","http://dbpedia.org/resource/Singapore");
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
-		File directoryFolderWrong = new File(directorydata[0]);
-		String directoryFolder = directoryFolderWrong.getParent();
+		File dirFile = new File(directorydata[0]);
+		String directoryFolder = dirFile.getParent();
 		String directorytime=ConvertTime(directorydata[1]);
 		System.out.println("dirtime= "+directorytime);
 		
@@ -431,22 +430,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
      * Gets the latest file created using rdf4j
      * @return last created file
      */
-    public String[] getLastModifiedDirectory(String agentiri, String location ) {
+	public String[] getLastModifiedDirectory(String agentiri, String location) {
 //    	agentiri = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
 		List<String> lst = new ArrayList<String>();
 		lst.add(location);
-    	System.out.println(lst);
-    	long millis = System.currentTimeMillis();
-		String toSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
-		String fromSimulationTime = MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis-3600*1000); //the last 1hr
-    	String resultfromfuseki = MetaDataQuery.queryResources(null,null,null,agentiri,  fromSimulationTime, toSimulationTime,null,lst);
-		 String[] keys = JenaResultSetFormatter.getKeys(resultfromfuseki);
-		 List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromfuseki, keys);
-		 String dir=listmap.get(0)[0];
-		 String simulationtime=listmap.get(0)[4];
-		 String[]resp= {dir,simulationtime};
-    	return resp;
-    }
+		System.out.println(lst);
+
+		String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + "\r\n" + "Select ?s ?x \r\n"
+				+ "Where{\r\n" + "  ?s dcterms:creator ?o .\r\n" + "   ?s dcterms:created ?x .\r\n"
+				+ "  ?s dcterms:subject <" + location + "> .\r\n" + "  \r\n" + "  \r\n"
+				+ "} ORDER BY DESC (?x) Limit 1";
+
+		String result = KnowledgeBaseClient.query(metadataseturl, null, query_latest_path);
+		String[] keys = JenaResultSetFormatter.getKeys(result);
+		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+
+		String dir = listmap.get(0)[0];
+		String simulationtime = listmap.get(0)[1];
+		String[] resp = { dir, simulationtime };
+		return resp;
+	}
     /** read the coordinates of the station based on the iri
      * 
      * @param stationiri

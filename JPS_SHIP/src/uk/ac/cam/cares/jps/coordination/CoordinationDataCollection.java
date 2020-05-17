@@ -31,27 +31,38 @@ public class CoordinationDataCollection extends HttpServlet {
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
 		jo.put("region", joregion);
-		//jo.put("location", "Singapore");
-//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		
+
+		
+		//SG episode
+//		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "11572101.89");
+//		upcorn.put("uppery", "151860.32");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "11552101.832");
+//		lowcorn.put("lowery", "131707.739");
+//		JSONObject joregion = new JSONObject();
+//		joregion.put("srsname","EPSG:3857");
+//		joregion.put("lowercorner",lowcorn);
+//		joregion.put("uppercorner",upcorn);
 		callAgent(jo);
 	}
 	
 	public void executeHKData(JSONObject jo){
-		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12720831.57");
-		upcorn.put("uppery", "2562311.02");
-		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12693826.33");
-		lowcorn.put("lowery", "2535141.08");
-		JSONObject joregion = new JSONObject();
-		joregion.put("srsname","EPSG:3857");
-		joregion.put("lowercorner",lowcorn);
-		joregion.put("uppercorner",upcorn);
-		jo.put("region", joregion);
-		//jo.put("location", "Hong Kong");
-//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
-		
+		//HK episode
+//		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12720578.56");
+//		upcorn.put("uppery", "2562555.26");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12694101.21");
+//		lowcorn.put("lowery", "2534900.06");
+//		JSONObject joregion = new JSONObject();
+//		joregion.put("srsname","EPSG:3857");
+//		joregion.put("lowercorner",lowcorn);
+//		joregion.put("uppercorner",upcorn);
+//		jo.put("region", joregion);
+	
+	
 		callAgent(jo);
 	}
 
@@ -59,6 +70,10 @@ public class CoordinationDataCollection extends HttpServlet {
 	public void callAgent(JSONObject jo) {
 		//jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+//		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
+//		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
+		jo.put("reactionmechanism", "none");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 //		AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
 		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/DMSCoordinationAgent",jo.toString());
 	}
@@ -87,7 +102,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		//retrieveShipdata();
 		executeSGData(jo);
 		
-		executeHKData(jo);
+		//executeHKData(jo);
 
 		
 		System.out.println("it is executed");

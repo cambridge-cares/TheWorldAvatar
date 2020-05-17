@@ -39,14 +39,15 @@ public class GetExtraInfo extends HttpServlet {
 		if(oripath.contains(".gst")) {
 			path = oripath.split("/JPS_ADMS")[0];
 		}
-		else {
-			//path = oripath.split("/input")[0];
+		else if(oripath.contains(".dat")){
+			path = oripath.split("/output")[0];
 		}
 		
 		 String outputFile = path + "/extra_info.json";
 			// get what file is stored in the folder 
 			// DAT / GST
          String result = new QueryBroker().readFileLocal(outputFile);
+         System.out.println("info json selected= "+outputFile);
          response.getWriter().write(result);
 	}
 

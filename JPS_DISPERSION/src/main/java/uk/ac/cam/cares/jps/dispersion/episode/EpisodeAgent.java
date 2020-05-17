@@ -209,7 +209,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
         	return "empty";
         }
         String directory=listmap.get(0)[0];
-        String datapath=directory.split("/input")[0];
+        String datapath=directory.split("/output")[0];
         
 		return datapath;
 	}
@@ -319,14 +319,14 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				jsonforslurm.put("runWholeScript",value);
 				jsonforslurm.put("city",cityIRI);
 				jsonforslurm.put("agent",agent);
+				jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
 				setUpJob(jsonforslurm.toString(),dataPath);
 			} catch (IOException | SlurmJobException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-        	
-			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
+			responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
 			return responseParams;
 		}
     
@@ -1000,9 +1000,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 		return fileContext;
 	}
-	
 
-	
 	private File getInputFile(String datapath, String jobFolderName) throws IOException{
 		//start to prepare all input files and put under folder input
 		
@@ -1036,24 +1034,24 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 				logger.info("slurmjobproperty="+slurmJobProperty.toString());
 			}
-			String agentclass= slurmJobProperty.getAgentClass();
-			String agentaddress= slurmJobProperty.getHpcAddress();
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
-System.out.println("slumscript="+getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath());
+//String slurmdir=getClass().getClassLoader()
+//.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#");
+		System.out.println("slumscript="+getClass().getClassLoader()
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#"));
 System.out.println("excecutable = "+getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath());
+								.getResource(slurmJobProperty.getExecutableFile()).getPath().replace("%23", "#"));
 		
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#")),
 				getInputFile(datapath, jobFolderName),
 				new File(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath()),
+								.getResource(slurmJobProperty.getExecutableFile()).getPath().replace("%23", "#")),
 				 timeStamp);
 	}
 	
@@ -1153,20 +1151,29 @@ System.out.println("excecutable = "+getClass().getClassLoader()
 
 	@Override
 	protected boolean annotateOutputs(File jobFolder) throws IOException, JSONException {
-		String directory=jobFolder.getAbsolutePath();
+		String directory = jobFolder.getAbsolutePath() + "/input.json";
+		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
+
+		String destDir = jobFolder.getAbsolutePath() + "/output";
+
+		unzip(zipFilePath, destDir);
+		File json = new File(directory);
+		String content = FileUtils.readFileToString(json);
+		JSONObject jo = new JSONObject(content);
+		String cityIRI = jo.getString("city");
+		String agent = jo.getString("agent");
+		String datapath = jo.getString("datapath");
 		
-		//need to know what is jobFolder value looks like????
-		unzip(directory,directory);
-		String content=FileUtils.readFileToString(jobFolder);
-		JSONObject jo= new JSONObject(content);
-		String cityIRI=jo.getString("city");
-		String agent=jo.getString("agent");
+		
+    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
+		String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
+		new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
 		
 		List<String> topics = new ArrayList<String>();
     	topics.add(cityIRI);
-    	MetaDataAnnotator.annotate(directory+"/3D_instantanous_mainconc_center.dat", null, agent, true, topics);
-		
-	    	//Implementation
+    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics); //annotate
+    	
+	    
 		return true;
 	}
 }

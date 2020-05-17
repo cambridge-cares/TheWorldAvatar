@@ -166,10 +166,11 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
+						if(!annotateOutputs(jobFolder)) {
+							throw new JPSRuntimeException("annotate output fails");
+						}
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							if(!annotateOutputs(jobFolder)) {
-								throw new JPSRuntimeException("annotate output fails");
-							}
+							
 						}
 					}
 				}
