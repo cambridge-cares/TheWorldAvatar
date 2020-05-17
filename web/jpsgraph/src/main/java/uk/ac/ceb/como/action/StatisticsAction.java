@@ -3,9 +3,8 @@ package uk.ac.ceb.como.action;
 import java.io.IOException;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
 
-import com.jayway.jsonpath.JsonPath;
+
 import com.opensymphony.xwork2.ActionSupport;
 
 import uk.ac.ceb.como.properties.PropertiesManager;
@@ -27,7 +26,7 @@ public class StatisticsAction extends ActionSupport {
 	
 	Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));
 
-	final static Logger logger = Logger.getLogger(StatisticsAction.class.getName());
+	
 	
 	private String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
 	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
@@ -175,17 +174,17 @@ public class StatisticsAction extends ActionSupport {
 		/**
 		 * These properties are shown on first table.
 		 */
-		numberOfCalculations = new String(QueryManager.getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations()));
+		numberOfCalculations = QueryManager.getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());
 
-		numberOfSpeciesInOntoSpecies = new String(QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies()));
+		numberOfSpeciesInOntoSpecies = QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies());
 
-		numberOfReactionMechanisms = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionMechanisms()));
+		numberOfReactionMechanisms = QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionMechanisms());
 
-		numberOfSpeciesInOntoKin = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin()));
+		numberOfSpeciesInOntoKin = QueryManager.getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin());
 
-		numberOfChemicalReactions = new String(QueryManager.getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin()));
+		numberOfChemicalReactions = QueryManager.getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin());
 		
-		numberOfSynonyms = new String(QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSynonymsInOntoSpecies()));
+		numberOfSynonyms = QueryManager.getQuery(ontospecieskb,QueryString.getNumberOfSynonymsInOntoSpecies());
 		/**
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
 		 * Line below is implemented by Dr Feroz Farazi (msff2@cam.ac.uk). He contributed in implementation of reading "value" in sparql query result as JSONObject.  
@@ -198,22 +197,17 @@ public class StatisticsAction extends ActionSupport {
 		 * These properties are shown on second table.
 		 * 
 		 */
-		numberOfCabronAndHydrogenSpecies = new String(QueryManager.getQuery(ontokinkb, QueryString.getCabronHydrogenSpeciesInOntoKin()));
+		numberOfCabronAndHydrogenSpecies = QueryManager.getQuery(ontokinkb, QueryString.getCabronHydrogenSpeciesInOntoKin());
 		
-		numberOfCabronAndHydrogenAndOxygenSpecies = new String(QueryManager.getQuery(ontokinkb, QueryString.getCabronHydrogenOxygenSpeciesInOntoKin()));
+		numberOfCabronAndHydrogenAndOxygenSpecies = QueryManager.getQuery(ontokinkb, QueryString.getCabronHydrogenOxygenSpeciesInOntoKin());
 		
-		numberOfNitrogenSpeciesInOntoKin = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberNitrogenSpeciesInOntoKin()));
+		numberOfNitrogenSpeciesInOntoKin = QueryManager.getQuery(ontokinkb, QueryString.getNumberNitrogenSpeciesInOntoKin());
 		
+		numberOfReactionsHydrocarbonSpecies = QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveHydrocarbonSpecies());
 		
-		numberOfReactionsHydrocarbonSpecies = new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveHydrocarbonSpecies()));
+		numberOfReactionsThatInvolveOxygenHydrocarbonSpecies =QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies());
 		
-		logger.info("numberOfReactionsHydrocarbonSpecies: " + numberOfReactionsHydrocarbonSpecies);
-		
-		numberOfReactionsThatInvolveOxygenHydrocarbonSpecies =new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies()));
-		
-		logger.info("numberOfReactionsThatInvolveOxygenHydrocarbonSpecies: " + numberOfReactionsThatInvolveOxygenHydrocarbonSpecies);
-		
-		numberOfReactionsThatInvolveNitrogenSpecies=new String(QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveNitrogenSpecies()));
+		numberOfReactionsThatInvolveNitrogenSpecies=QueryManager.getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveNitrogenSpecies());
 		
 		return SUCCESS;
 	}

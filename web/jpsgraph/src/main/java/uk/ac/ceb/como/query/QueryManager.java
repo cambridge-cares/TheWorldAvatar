@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -23,7 +23,7 @@ public class QueryManager {
 
 	static Properties kbProperties = PropertiesManager.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.properties"));
 	
-	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
+
 	
 	private static String fusakiUrl = kbProperties.getProperty("fusaki.url.for.world.avatar");
 	

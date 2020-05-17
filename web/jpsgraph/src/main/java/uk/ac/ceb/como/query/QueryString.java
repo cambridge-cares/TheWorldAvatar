@@ -7,7 +7,6 @@ package uk.ac.ceb.como.query;
  * <p>The Class QueryString. Class implements methods for parametrised SPARQL queries.</p>
  */
 public class QueryString {	
-
 	
 	/**
 	 * 
