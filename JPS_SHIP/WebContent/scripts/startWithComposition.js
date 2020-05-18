@@ -103,7 +103,8 @@ $(function(){
     PREFIX s:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
     PREFIX t:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
    PREFIX sys:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
-    SELECT ?s ?x ?y WHERE{
+    SELECT Distinct ?graph ?x ?y 
+    {graph ?graph {
         ?s t:hasGISCoordinateSystem ?gs.
          ?gs t:hasProjectedCoordinate_y ?cy.
          ?cy sys:hasValue ?yv.
@@ -112,9 +113,10 @@ $(function(){
          ?cx sys:hasValue ?xv.
          ?xv sys:numericalValue ?x.
     }
+    }
     `;
 
-        $.post({
+        $.get({
             url:metaEndpoint,
             'Content-Type':"application/json",
             data: { query: qstr,format:'json'}
@@ -142,7 +144,7 @@ $(function(){
  PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
  PREFIX j6:<http://www.w3.org/2006/time#>
  PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
- SELECT ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi
+ SELECT ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?unit
  {graph stationIRI
  {
   ?graph j4:hasOverallPSI ?allpsi .
@@ -152,6 +154,7 @@ $(function(){
     ?prop j4:hasMeasuredPropertyMin ?min .
     ?prop j4:hasPSI ?individualpsi .
 ?vprop   j4:prescaledNumValue ?propval .
+    ?vprop   j2:hasUnitOfMeasure ?unit .
   ?vprop   j6:hasTime ?proptime .
   ?proptime   j6:inXSDDateTimeStamp ?proptimeval .
 }}
@@ -159,7 +162,7 @@ $(function(){
        // stationIRI = "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001"
    let qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
             console.log(qstr);
-        $.post({
+        $.get({
             url:metaEndpoint,
             'Content-Type':"application/json",
             data: { query: qstr,format:'json'}
@@ -242,13 +245,13 @@ console.log(result)});
             //TODO: here, add the event listener for clicking on a object
             if(id && id.includes("marker")){//=>sensor marker query event
                 //TODO: sensor query is added here
-                let stationIRI = id.split('_')[0];
+                let stationIRI = id.split('_')[1];
                 console.log('clicked on station: '+stationIRI)
                 querySensorAttributes(stationIRI, function (err, sensorAttributes) {
                     if (err){console.log(err)}
                     console.log('got sensor attributes to show');
                     console.log(sensorAttributes);
-                    sensorAttributes.names= ['pollutant', 'concentration','time','allpsi','individualpsi','mean','max','min']
+                    sensorAttributes.names= ['pollutant', 'concentration','time','allpsi','mean','max','min','individualpsi']
                     sensorAttributes.data.forEach(item=>{
                         let name = item[0].split('/');
                         name = name[name.length-1]
@@ -258,9 +261,10 @@ console.log(result)});
                         let unitArr = unit.split('#')
                         unit = unitArr.splice(-1)
                         item[1] = parseFloat(item[1]).toFixed(2)+' '+unit
+                        item[4] = parseFloat(item[4]).toFixed(2)+' '+unit
                         item[5] = parseFloat(item[5]).toFixed(2)+' '+unit
                         item[6] = parseFloat(item[6]).toFixed(2)+' '+unit
-                        item[7] = parseFloat(item[7]).toFixed(2)+' '+unit
+                        item[7] = parseFloat(item[7]).toFixed(2)
 
                     })
                     renderAttributeTable(sensorAttributes);
@@ -329,7 +333,7 @@ console.log(result)});
             console.log("buildingIRIs = " + buildingIRIs);
             console.log("shipIRIs = " + shipIRIs);
             $("#myProgressBar").remove();
-            sensorIRIs = info.stationiri;
+            sensorIRIs = info.airStationIRI;
             //TODO: sensor rendering is added here
             querySensor(sensorIRIs, function (err, senesorData) {
                 if(err || !senesorData){
