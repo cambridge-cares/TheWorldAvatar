@@ -299,7 +299,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			while(keys.hasNext()) {
 			    String key = keys.next();
 		    	String classname = String.format("Outside%sConcentration", key);
-		    	String value = (String) jGas.get(key);
+		    	String value = jGas.get(key).toString();
 		    	updateRepoNewMethod(stationiri, classname, value, value, directorytime);
 			}
 		}
