@@ -3,13 +3,13 @@ package uk.ac.ceb.como.query;
 /**
  * The Class QueryString.
  *
- * @author nk510
+ * @author nk510 (caresssd@hermes.cam.ac.uk)
  * <p>The Class QueryString. Class implements methods for parametrised SPARQL queries.</p>
  */
 public class QueryString {	
 	
 	/**
-	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * @return number of Gaussian calculations in OntoCompChem
 	 */
 	public static String getNumberOfGaussianCalculations() {
@@ -29,7 +29,7 @@ public class QueryString {
 	}
 	
 	/**
-	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * @return the number of species in OntoSpecies
 	 */
 	public static String getNumberOfSpeciesInOntoSpecies() {
@@ -45,7 +45,7 @@ public class QueryString {
 		return query;
 	}
 /**
- * 
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
  * @return the number of reaction mechanisms in OntoKin
  */
  public static String getNumberOfReactionMechanisms() {
@@ -61,7 +61,7 @@ public class QueryString {
  }
  
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of species in OntoKin
   */
  public static String getNumberOfSpeciesInOntoKin() {
@@ -77,7 +77,7 @@ public class QueryString {
  }
 	
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of chemical reactions in OntoKin.
   */
  public static String getNumberOfChemicalReactionsInOntoKin() {
@@ -92,7 +92,7 @@ public class QueryString {
  }
  
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of agents in OntoAgent. 
   * 
   */
@@ -108,7 +108,7 @@ public class QueryString {
  }
  
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of synonyms in OntoSpecies knowledge base
   */
  public static String getNumberOfSynonymsInOntoSpecies() {
@@ -124,7 +124,7 @@ public class QueryString {
  }
  
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of species in OntoKin that contains ONLY cabron (C) and hydrogen (H) atoms.
   */
  public static String getCabronHydrogenSpeciesInOntoKin() {
@@ -143,7 +143,7 @@ public class QueryString {
  }
  
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of species in OntoKin that contains ONLY cabron (C) and hydrogen (H) atoms.
   */
  public static String getCabronHydrogenOxygenSpeciesInOntoKin() {
@@ -155,14 +155,15 @@ public class QueryString {
 	 		+ "WHERE { "
 	 		+ "?s rdf:type ontokin:Species . "
 	 		+ "?s rdfs:label ?o . "
-	 		+ "FILTER((REGEX(str(?o),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o),'^O([1-9]*)H([1-9]*)C([1-9]*)$'))) . " 
+	 		+ "FILTER((REGEX(str(?o),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o),'^O([1-9]*)H([1-9]*)C([1-9]*)$'))) . "            
 	 		+"}";
 	 
 	 return query;
- }
+ } 
  
  /**
   * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of nitrogen atoms in OntoKin 
   */
  public static String getNumberNitrogenSpeciesInOntoKin() {
@@ -181,7 +182,7 @@ public class QueryString {
  }
 	
  /**
-  * 
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
   * @return the number of chemical reactions that involve hydrocarbon species
   */
  public static String getNumberOfReactionsThatInvolveHydrocarbonSpecies() {
@@ -203,12 +204,17 @@ public class QueryString {
 		 		+ "?s reaction_mechanism:hasReactant ?r . "
 		 		+ "?r rdfs:label ?o2 . "
 		 		+ "FILTER((REGEX(str(?o2),'^C([1-9]*)H([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)C([1-9]*)$'))) . "
+
 		 		+ "}"
 		 		+ "}";
 	 
 	 return query;
  }
  
+ /**
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
+  * return the number of reactions that involce oxygen hydorcarbon species.
+  */
  public static String getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies() {
 	 
 	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
@@ -227,14 +233,18 @@ public class QueryString {
 	 		+ "?s rdf:type <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#ChemicalReaction> . "
 	 		+ "?s reaction_mechanism:hasReactant ?r . "
 	 		+ "?r rdfs:label ?o2 . "
-	 		+ "FILTER((REGEX(str(?o2),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o2),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o2),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o2),'^O([1-9]*)H([1-9]*)C([1-9]*)$')))  . "
+	 		+ "FILTER((REGEX(str(?o2),'^C([1-9]*)H([1-9]*)O([1-9]*)$')) || (REGEX(str(?o2),'^C([1-9]*)O([1-9]*)H([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)C([1-9]*)O([1-9]*)$')) || (REGEX(str(?o2),'^H([1-9]*)O([1-9]*)C([1-9]*)$')) || (REGEX(str(?o2),'^O([1-9]*)H([1-9]*)C([1-9]*)$')) ||  (REGEX(str(?o2),'^O([1-9]*)H([1-9]*)C([1-9]*)$')))  . "	
 	 		+ "}"
 	 		+ "}";
 	 
 	 return query;
  }
  
- 
+ /**
+  * @author NK510 (caresssd@hermes.cam.ac.uk)
+  * 
+  * @return the number of reactions that involve nitrogen species.
+  */
  public static String getNumberOfReactionsThatInvolveNitrogenSpecies() {
 	 
 	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
@@ -259,5 +269,32 @@ public class QueryString {
 	 
 	 return query;
  }
+ 
+ public static String getSpeciesIRIOfGaussianCalculations() {
+	 
+		String query = "PREFIX gc: <http://purl.org/gc/>"
+				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+				+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#>"
+				+ "SELECT ?s  "
+				+ "WHERE { "
+				+ "?s rdf:type ?type . "
+				+ "FILTER((str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G16') ||(str(?type)='http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09')) . "
+				+ "}";
+		
+		return query;
+	}
+ 
+ public static String getSpeciesIRIFromOntoKin() {
+	 
+	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " + 
+	 		"PREFIX ontokin: <http://theworldavatar.com/kb/ontokin/ontokin.owl#>  " + 
+	 		"SELECT ?s " + 
+	 		"WHERE { " + 
+	        "?s rdf:type ontokin:Species . " + 
+	 		"}";
+	 		
+	 		return query;
+ }
+ 
  
 }

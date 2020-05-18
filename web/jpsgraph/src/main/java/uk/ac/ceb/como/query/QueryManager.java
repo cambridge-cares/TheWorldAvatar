@@ -2,8 +2,8 @@ package uk.ac.ceb.como.query;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.Properties;
-
 
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
@@ -23,11 +23,9 @@ public class QueryManager {
 
 	static Properties kbProperties = PropertiesManager.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.properties"));
 	
-
-	
 	private static String fusakiUrl = kbProperties.getProperty("fusaki.url.for.world.avatar");
 	
-	public static String getQuery(String repositoryUrl, String queryString) {
+	public  String getQuery(String repositoryUrl, String queryString) {
 		
 		String queryResult = new String();
 		
@@ -94,6 +92,72 @@ public class QueryManager {
 		return Request.get(httpURL);
 	}
 	
+	/**
+	 * 
+	 * @param repositoryUrl 
+	 * @param queryString
+	 * @return
+	 */
+public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryString) {
+		
+		LinkedList<String> speciesIRIList = new LinkedList<String>();
+		
+		Repository repository = new HTTPRepository(repositoryUrl);
+
+		repository.initialize();
+
+		RepositoryConnection connection = repository.getConnection();
+
+		try {
+
+			connection.begin(IsolationLevels.SNAPSHOT_READ);
+
+			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+
+			TupleQueryResult result = tupleQuery.evaluate();
+
+			try {
+
+				while (result.hasNext()) {
+
+					BindingSet bindingSet = result.next();
+					
+					String speicesIRI = new String();
+					
+					speicesIRI =bindingSet.getValue("s").stringValue();
+					
+					speciesIRIList.add(speicesIRI);
+				}
+
+			} catch (Exception e) {
+
+				e.getMessage();
+
+			} finally {
+
+				result.close();
+			}
+
+			connection.commit();
+
+		} catch (RepositoryException e) {
+
+			e.printStackTrace();
+
+			connection.rollback();
+
+		} finally {
+
+			connection.close();
+
+			repository.shutDown();
+
+		}
+
+		return speciesIRIList;
+
+	}
+
 	
 	
 	

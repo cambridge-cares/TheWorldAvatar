@@ -10,7 +10,10 @@
       -->
 <head>
 
-<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+<!--<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>-->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	
 
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
@@ -28,13 +31,15 @@
     <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
     
      <script src="pages/scripts/start.js"></script>
-   
+           
+	   
 <style type="text/css">
   
   .noBorder {
     border:none !important;
 }
 </style>
+
 
 </head>
 
@@ -189,8 +194,7 @@ Here is java script for visualization molecules.
 <p></p>
 <!-- <img src = "http://www.theworldavatar.com/data/ontocompchem/00ff391e-ac39-36e1-9f86-57aba71e6f64/00ff391e-ac39-36e1-9f86-57aba71e6f64.png" width="500" height="250"/>-->
  
- 
- <!-- Self growing knowledge graph statistics -->  
+<!-- Self growing knowledge graph statistics -->  
 <table border="5" style="text-align:center">
  
   <tr>
@@ -446,6 +450,48 @@ Here is java script for visualization molecules.
 <p></p>
 <p></p>
 
+<canvas id="myChart"></canvas>
+
+<!--<canvas id="canvas"></canvas>-->
+
+<script>
+var arrayList = new Array();
+arrayList= new Array('<s:property value="%{labelList}"/>');
+var jsList = arrayList.toString();
+jsList = carter.replace("[","");
+jsList = carter.replace("]","");
+jsList = carter.split(",");
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: 'bar',
+
+ // The data for our dataset
+    data: {
+       labels: jsList,
+        datasets: [{
+            label: 'Species in OntoCompChem',
+            backgroundColor: 'rgb(255, 99, 132)',
+            borderColor: 'rgb(255, 99, 132)',
+            data: [0, 10, 5, 2, 20, 30, 45]
+        },
+        {
+            label: 'Species in OntoSpecies',
+            backgroundColor: 'rgb(255, 50, 60)',
+            borderColor: 'rgb(255, 50, 60)',
+            data: [10, 30, 34, 4, 55, 31, 44]
+        }
+        
+        ]
+    },
+
+    // Configuration options go here
+    options: {}
+});
+</script>
+
+  
 <!--  Self growing knowledge graph statistics about chemical reactions and species in chemical reactions. -->
 
 <table border="5" style="text-align:center">

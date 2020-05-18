@@ -5,12 +5,13 @@
  
 <struts>
 
- 	<constant name="struts.devMode" value="true" />
+ 	<constant name="struts.devMode" value="false" />
 	
 	<package name="default" namespace="/" extends="struts-default">
 	
 		<action name="statisticsAction" 
 			class="uk.ac.ceb.como.action.StatisticsAction" >
+			<interceptor-ref name="completeStack"/>
 			<result name="success">pages/iterator.jsp</result>
 		</action>
 		
