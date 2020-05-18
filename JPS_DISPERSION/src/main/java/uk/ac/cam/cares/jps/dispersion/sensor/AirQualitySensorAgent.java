@@ -56,7 +56,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	   		 repo = new HTTPRepository(rdf4jServer, repositoryID);
 	   		RepositoryConnection con = repo.getConnection();
 				
-//	   		String[]location= {"singapore,"hongkong"};
+//	   		String[]location= {"singapore,hongkong"};
 //	   		String cityiri= "http://dbpedia.org/resource/Singapore";
 //	   		String cityiri= "http://dbpedia.org/resource/Hong_Kong";
 //				
@@ -70,9 +70,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 //				if(x<10) {
 //					index="00"+x;
 //				}
-//				String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
+//				//String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
 //	   		String context="http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-//				String name="VirtualSensor-001";
+//				//String name="VirtualSensor-001";
 //				String name="VirtualSensor-002";
 //
 //				List<String>info= new ArrayList<String>();
@@ -87,7 +87,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	   		String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
 	   		resetAllAQMesh(location,cityiri);
 			response.put("status", "reset endpoint successful");
-			
+//			}
 		}else { //used for AQmesh only
 			
 			String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
@@ -527,7 +527,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 //
 //		}
 		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
-		uploadData("http://dbpedia.org/resource/Singapore");
+		//uploadData("http://dbpedia.org/resource/Singapore");
 
 			System.out.println("update is done");		
 

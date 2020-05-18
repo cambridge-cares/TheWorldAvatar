@@ -175,9 +175,9 @@ public class AirSensorKBCreator {
 
 		
 		//for SG:
-//		int numberofstn=1;
+		int numberofstn=1;
 //		String locationid="SG";
-//		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
+		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
 		
 		//for the aqmesh use index 2 in number of stn
 		
@@ -191,8 +191,8 @@ public class AirSensorKBCreator {
 			
 		
 		//for HK:
-		int numberofstn=1;
-		String locationid="HK";
+//		int numberofstn=1;
+//		String locationid="HK";
 		
 		//for the aqmesh use index 2 in d
 		for(int d=1;d<=numberofstn;d++) {
