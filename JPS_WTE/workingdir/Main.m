@@ -61,14 +61,14 @@ n_foodcourt=size(site,1);
 Distance=zeros(n_foodcourt,n_offsite);
 for i=1:n_foodcourt
     for j=1:n_offsite
-      Distance(i,j)= SphereDist(site(i,:),location(j,:));  
+      Distance(i,j)= real(SphereDist(site(i,:),location(j,:)));  
     end
 end
 
 Distance_onsite=zeros(n_foodcourt, n_foodcourt);
 for i=1:n_foodcourt
     for j=1:n_foodcourt
-       Distance_onsite(i,j)=SphereDist(site(i,:),site(j,:)); 
+       Distance_onsite(i,j)=real(SphereDist(site(i,:),site(j,:))); 
     end
 end
 
