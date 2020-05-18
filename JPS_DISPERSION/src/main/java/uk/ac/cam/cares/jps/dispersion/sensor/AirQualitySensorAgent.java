@@ -25,15 +25,14 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import kong.unirest.HttpResponse;
+import kong.unirest.Unirest;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import kong.unirest.HttpResponse;
-import kong.unirest.Unirest;
 @WebServlet(urlPatterns = {"/AirQualitySensorAgent","/resetAirQualityRepository"})
 public class AirQualitySensorAgent extends JPSHttpServlet {
 
@@ -53,14 +52,44 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		JSONObject response= new JSONObject();
 		String path = request.getServletPath();
 		if(path.contains("/resetAirQualityRepository")) { //used for Both AQMesh and soft sensor use case
-			repo = new HTTPRepository(rdf4jServer, repositoryID);
+			rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
+	   		 repo = new HTTPRepository(rdf4jServer, repositoryID);
 	   		RepositoryConnection con = repo.getConnection();
-			String location = requestParams.optString("location", "singapore_AQ");
+				
+//	   		String[]location= {"singapore,hongkong"};
+//	   		String cityiri= "http://dbpedia.org/resource/Singapore";
+//	   		String cityiri= "http://dbpedia.org/resource/Hong_Kong";
+//				
+//			for (String el:location){
+//				resetRepoTrial(con,el);
+//			}	
+//
+//			int numbersensor=1;
+//			for(int x=1;x<=numbersensor;x++) {
+//				String index="0"+x;
+//				if(x<10) {
+//					index="00"+x;
+//				}
+//				//String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
+//	   		String context="http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
+//				//String name="VirtualSensor-001";
+//				String name="VirtualSensor-002";
+//
+//				List<String>info= new ArrayList<String>();
+//				info.add(cityiri);
+//				info.add(name);
+//				info.add("0"); //overallpsi
+//
+//				insertDataRepoContext(info,context);
+	   		
+	   		//if AQMesh : go here
+	   		String location = requestParams.optString("location", "singapore_AQ");
 	   		String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
 	   		resetAllAQMesh(location,cityiri);
 			response.put("status", "reset endpoint successful");
-			
+//			}
 		}else { //used for AQmesh only
+			
 			String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
 			//right now the input is not connected yet
 			String context = uploadData(cityiri);
@@ -80,10 +109,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					+ "{ graph ?graph " 
 					+ "{ "
 					+ "?graph j2:hasAddress <"+cityiri+"> ."
-					//+ "?graph j2:enumerationValue <"+"AQMESH"+"> ."
-					
+					+ "?graph j2:enumerationValue \"AQMeshSensor-001\" ."
 					+ "}"
-					+ "}";
+					+ "}"; 
 		 
 		 List<String[]> listmap = queryEndPointDataset(querycontext); //it will give 30 data
 		
@@ -112,11 +140,11 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				index="DE";
 				midfix="deu/berlin";
 			}else if(location.contains("kong")) {
-				stnnumber=8;
+				stnnumber=1;
 				index="HK";
 				midfix="hkg/hongkong";
 			}else if(location.contains("singapore")) {
-				stnnumber=14;
+				stnnumber=1;
 				index="SG";
 				midfix="sgp/singapore";
 			}
@@ -180,8 +208,27 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	}
 	
 	public void insertDataRepoContext(List<String>info,String context) {
-
+		if(info.size()<5) {
 		String sparqlupdate2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "WITH <" + context + ">"
+					//+ "DELETE { ?valueemission j2:numericalValue ?vemission .} "
+					+ "INSERT {"
+					+ "<" + context+ "> j2:hasAddress <"+info.get(0)+"> ." 
+					+ "<" + context+ "> j2:enumerationValue \""+info.get(1)+"\" ." 
+					+ "<" + context+ "> j4:hasOverallPSI \""+info.get(2)+"\"^^xsd:integer ." 
+					//+ "<" + context+ "> j4:podSerialNumber \""+info.get(3)+"\" ."  for aqmesh
+					//+ "<" + context+ "> j4:locationName \""+info.get(4)+"\" ." for aqmesh
+					+ "} "
+					+ "WHERE { " 
+					+ "}";
+			
+		KnowledgeBaseClient.update(dataseturl, null, sparqlupdate2);	
+		}else {
+			String sparqlupdate2 = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
@@ -198,7 +245,8 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					+ "WHERE { " 
 					+ "}";
 			
-		KnowledgeBaseClient.update(dataseturl, null, sparqlupdate2);	
+		KnowledgeBaseClient.update(dataseturl, null, sparqlupdate2);
+		}
 
 	}
 	
@@ -208,6 +256,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		return listmap;
 	}
+	
 	/** calls on data via REST POST request to api aqmesh
 	 * Handshake: HTTP POST request is sent first with the username and password. 
 	 * User gets back a token that lasts 120 minutes 
@@ -270,6 +319,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		}
 		return arrJo;
 	}
+	
 	/** runs getDataFromAPI() and process the output
 	 * 
 	 * @param stationiri: the name of the station / graph/context where the owl files are stored under
@@ -278,8 +328,6 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		ArrayList<JSONObject> result=getDataFromAPI();
 		int len = result.size()/2;
 		for (int x = 0; x <10; x++) { //assuming same frequency of these two.
-			
-
 			JSONObject jGas = result.get(x);
 			JSONObject jPM = result.get(x+len);
 			double concpm10=0.0;
@@ -306,10 +354,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		}
 		 logger.info("updates finished");
 		//processed the input to have suitable format
-		
-		
-		
+	
 	}
+	
 	/** converts anytime into Singapore timezone. 
 	 * 
 	 * @param current current time in any time zone
@@ -336,6 +383,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	}
 	
 	
+	
 	public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestamp) {
 		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -343,6 +391,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "SELECT ?vprop ?proptime "
+//				+ "WHERE " //it's replaced when named graph is used
 				+ "{graph "+"<"+context+">"
 				+ "{ "
 				+ " ?prop a j4:"+propnameclass+" ."
@@ -365,16 +414,19 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
 				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ."  
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
 				+ "} "
 				+ "WHERE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
 				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "}";
 		
 			
@@ -383,12 +435,13 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		
 		
 	}
+	
 	/** Things to do when reseting. 
 	 * 1. create repository named airqualitystation on rdf4j
 	 *  Ensure that you have "Copy of aqmesh-location-data-Cares1-20200420020751.csv" and 
 	 *   "SensorTemp.owl" (aka the blank copy)in your workingdir folder
 	 * 2. create owl files by uncomment Line 180 of AirSensorKBCreator.java, and commenting Line 179 . 
-	 * 3. Uncomment Line 9 - 12 and comment line 4 - 7 of AirSensorConfig.java
+	 * 3. Uncomment Line 11 - 14 and comment line 4 - 7 of AirSensorConfig.java
 	 * 4. Run main function in AirSensorKBCreator
 	 * 5. Ensure that your KB files are created. 
 	 * 6. Run this reset function. 
@@ -420,6 +473,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		
 		}
 	}
+	
 	/** run this ONLY after you run resetAll
 	 * In TESTING mode: 
 	 * 1. run uploadData
@@ -439,9 +493,44 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		System.out.println("update is done");
 		return context;
 	}
+	/** run this ONLY after you run resetAll
+	 * In TESTING mode: 
+	 * 1. run uploadData
+	 * 2. Ensure that extractAvailableContext works by going to localhost:8080/rdf4j-workbench
+	 * and checking airqualitystation (no s!) is available
+	 * 3. run testAPIClear() in AirQualitySensorAgentTest to check that the API is working. Contact Yichen if otherwise
+	 * 4. run testCallAPI() if (3) is green but you don't get any data. 
+	 * In Running mode:
+	 * 1. swap getDataFromAPI()'s two API get requests from "Repeat" to "Next"
+	 * 
+	 */
 	public static void main(String[]args) { //used for upload all content locally
-//		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
-		uploadData("http://dbpedia.org/resource/Singapore");
+
+//		RepositoryConnection con = repo.getConnection();
+//		String location="singapore";
+//		AirQualitySensorAgent a=new AirQualitySensorAgent();
+//		a.resetRepoTrial(con,location); //currently the context is not used
+//		int numbersensor=1; //should change if added by AQMesh
+//		String cityiri= "http://dbpedia.org/resource/Singapore";
+//		for(int x=1;x<=numbersensor;x++) {
+//			String index="0"+x;
+//			if(x<10) {
+//				index="00"+x;
+//			}
+//			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
+//			String name="VirtualSensor-001";
+//			List<String>info= new ArrayList<String>();
+//			info.add(cityiri);
+//			info.add(name);
+//			info.add("0"); //overallpsi
+//			a.insertDataRepoContext(info,context);
+//
+//		}
+		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
+		//uploadData("http://dbpedia.org/resource/Singapore");
+
+			System.out.println("update is done");		
+
 		
 	}
 	

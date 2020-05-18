@@ -28,9 +28,11 @@ const controlButtonsSetter = osmb => {
     })
   }
 }
-
+let sensorIRIs = [{x:103.83143122477935 , y:1.2429458210894155, name:"test"}];
+//todo: add render sensor function
 const initadms3dmap = (
   list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
+  //TODO:add: initi render sensor
 
   for (obj of listGeoJsonAddedToOSMB) {
     obj.destroy()
@@ -51,8 +53,8 @@ const initadms3dmap = (
 
   const position = {}
 
-  position.latitude = coordinatesMid[0]
-  position.longitude = coordinatesMid[1]
+  position.latitude = 1.27993// coordinatesMid[0]
+  position.longitude = 103.859//coordinatesMid[1]
 
   osmb.setPosition(position)
   osmb.setZoom(15.7)
@@ -61,8 +63,10 @@ const initadms3dmap = (
   // --- Rendering 3D building models --- //
   console.log('START')
 
+  //TODO: modify back later
   $.getJSON('/JPS/ADMSHelper',
-    {
+  //$.getJSON('/geo',
+      {
       listOfIRIs: JSON.stringify(list),
       cityiri,
     },
@@ -141,7 +145,8 @@ const initadms3dmap = (
         },
       }],
   }
-
+//change back after local test: '/JPS/ADMSOutputAllForShips'
+  //local test: /result
   getContourMaps('/JPS/ADMSOutputAllForShips', folder).then(data => {
 	const dataurls = data[0]
 	const POL_LIST = data[1]

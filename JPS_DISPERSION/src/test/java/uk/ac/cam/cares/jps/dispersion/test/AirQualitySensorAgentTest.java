@@ -9,7 +9,6 @@ import java.util.TimeZone;
 
 import org.json.JSONObject;
 
-
 import junit.framework.TestCase;
 import kong.unirest.HttpResponse;
 import kong.unirest.Unirest;
@@ -18,14 +17,16 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.dispersion.sensor.AirQualitySensorAgent;
 
 public class AirQualitySensorAgentTest extends TestCase {
-		
-	/** Call this to run reset (upload all files to repository)
-	 * require cityiri, location
-	 */
-	public void testAgentCallreset() {
-		JSONObject jo = new JSONObject();
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", jo.toString());	
-	}
+	
+//	public static HttpClient GetClient(String token){
+//		var authValue = new AuthenticationHeaderValue("Bearer", token);
+//		var client = new HttpClient(){
+//			DefaultRequestHeaders = { 
+//					Authorization = authValue}//Set some other client defaults like timeout / BaseAddress
+//			};
+//			return client;
+//			}
+	
 	/** Call this to run periodic update
 	 * require cityiri
 	 */
@@ -33,6 +34,53 @@ public class AirQualitySensorAgentTest extends TestCase {
 		JSONObject jo = new JSONObject();
 		jo.put("cityiri","http://dbpedia.org/resource/Singapore" );
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/AirQualitySensorAgent", jo.toString());	
+	}	
+	
+	/** test that call toAPI is available
+	 * 
+	 */
+	public void testAPIClear() {
+		HttpResponse<String> response = Unirest.post("https://api.aqmeshdata.net/api/Authenticate")
+				.header("Content-Type", "application/json")
+				.body("{\"username\":\"Cares1\",\"password\":\"Cares1Pa55word#\"}\r\n").asString();
+		String tokenPhrase = response.getBody();
+
+	    assertNotNull(tokenPhrase);
+	    assertEquals(200, response.getStatus());
+	}
+	/** test to see if response is created and what is the response like
+	 * 
+	 */
+	public void testCallAPI() {
+		AirQualitySensorAgent ag = new AirQualitySensorAgent();
+		ArrayList<JSONObject> jo = ag.getDataFromAPI();
+		System.out.println(jo.toString());
+	}
+	
+	public void testdirect() {
+		new AirQualitySensorAgent().executePeriodicUpdate("http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001");
+	}
+	
+	
+	
+	/** Call this to run reset (upload all files to repository)
+	 * require cityiri, location
+	 */
+	public void testAgentCallreset() {
+		JSONObject jo = new JSONObject();
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", jo.toString());	
+	}
+	
+
+	
+	public void testtimeformat() throws ParseException {
+		String date="16/Apr/2020 12:00:00";
+		//Date date1=new SimpleDateFormat("yyyy-mmm-dd hh:mm:ss").parse(date);
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
+		
+		Date date1=dateFormat.parse(date);  
+		String timeformatted=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(date1)+"+08:00";
+		System.out.println("new format= "+timeformatted);
 	}
 	
 	public void testtimeformat2() throws ParseException {
@@ -67,25 +115,10 @@ public class AirQualitySensorAgentTest extends TestCase {
 			
 
 	}
-	/** test that call toAPI is available
-	 * 
-	 */
-	public void testAPIClear() {
-		HttpResponse<String> response = Unirest.post("https://api.aqmeshdata.net/api/Authenticate")
-				.header("Content-Type", "application/json")
-				.body("{\"username\":\"Cares1\",\"password\":\"Cares1Pa55word#\"}\r\n").asString();
-		String tokenPhrase = response.getBody();
-
-	    assertNotNull(tokenPhrase);
-	    assertEquals(200, response.getStatus());
-	}
-	/** test to see if response is created and what is the response like
-	 * 
-	 */
-	public void testCallAPI() {
-		AirQualitySensorAgent ag = new AirQualitySensorAgent();
-		ArrayList<JSONObject> jo = ag.getDataFromAPI();
-		System.out.println(jo.toString());
+	
+	public void xxxtestresetAirQualityClaudius() {
+		JSONObject empty= new JSONObject();
+		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", empty.toString());
 	}
 
 

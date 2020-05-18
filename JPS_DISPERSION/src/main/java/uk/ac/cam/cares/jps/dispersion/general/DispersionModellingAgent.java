@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -155,7 +156,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		processOutputs();
 	}
 	
-	private void processOutputs() {
+	private void processOutputs()throws JPSRuntimeException {
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
@@ -165,8 +166,11 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
+						if(!annotateOutputs(jobFolder)) {
+							throw new JPSRuntimeException("annotate output fails");
+						}
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							annotateOutputs(jobFolder);
+							
 						}
 					}
 				}
@@ -178,7 +182,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 
 	}
 
-	protected boolean annotateOutputs(File jobFolder) {
+	protected boolean annotateOutputs(File jobFolder) throws IOException {
     	return true;
 	}
 	

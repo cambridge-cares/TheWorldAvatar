@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.dispersion.episode;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
@@ -25,6 +27,7 @@ import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -174,6 +177,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	return result;
     }
     
+	public void copyTemplate(String newdir, String filename) {
+		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
+		
+		String destinationUrl = newdir + "/"+filename;
+		new QueryBroker().putLocal(destinationUrl, file);
+	}
+    
 	private List<String[]> queryKBIRI(String chimneyiriInfo, OntModel jenaOwlModel) {
 		ResultSet resultSet = JenaHelper.query(jenaOwlModel, chimneyiriInfo);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -199,7 +209,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
         	return "empty";
         }
         String directory=listmap.get(0)[0];
-        String datapath=directory.split("/input")[0];
+        String datapath=directory.split("/output")[0];
         
 		return datapath;
 	}
@@ -235,12 +245,16 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				gmttimedifference="-8";
 				srtm.add("N01E103.tif");
 				srtm.add("N01E104.tif");
+				copyTemplate(dataPath, "N01E103.hgt");
+				copyTemplate(dataPath, "N01E104.hgt");
 			}
 			else if(cityIRI.toLowerCase().contains("kong")) {
 				epsgInUTM="50";
 				epsgActive="32650";
 				gmttimedifference="-8";
 				srtm.add("N22E114.tif");
+
+				copyTemplate(dataPath, "N22E114.hgt");
 			}
 			
 			List<String>stniri=new ArrayList<String>();
@@ -303,17 +317,16 @@ public class EpisodeAgent extends DispersionModellingAgent {
 					value=false;
 				}
 				jsonforslurm.put("runWholeScript",value);
+				jsonforslurm.put("city",cityIRI);
+				jsonforslurm.put("agent",agent);
+				jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
 				setUpJob(jsonforslurm.toString(),dataPath);
 			} catch (IOException | SlurmJobException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
-        	List<String> topics = new ArrayList<String>();
-        	topics.add(cityIRI);
-        	MetaDataAnnotator.annotate(dataPath+"/3D_instantanous_mainconc_center.dat", null, agent, true, topics);
-			
-			responseParams.put("folder",dataPath+"/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
+			responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
 			return responseParams;
 		}
     
@@ -987,9 +1000,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
 
 		return fileContext;
 	}
-	
 
-	
 	private File getInputFile(String datapath, String jobFolderName) throws IOException{
 		//start to prepare all input files and put under folder input
 		
@@ -1023,24 +1034,24 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 				logger.info("slurmjobproperty="+slurmJobProperty.toString());
 			}
-			String agentclass= slurmJobProperty.getAgentClass();
-			String agentaddress= slurmJobProperty.getHpcAddress();
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
 		}
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
-System.out.println("slumscript="+getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath());
+//String slurmdir=getClass().getClassLoader()
+//.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#");
+		System.out.println("slumscript="+getClass().getClassLoader()
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#"));
 System.out.println("excecutable = "+getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath());
+								.getResource(slurmJobProperty.getExecutableFile()).getPath().replace("%23", "#"));
 		
 		return jobSubmission.setUpJob(
 				jsonInput, new File(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()),
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#")),
 				getInputFile(datapath, jobFolderName),
 				new File(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath()),
+								.getResource(slurmJobProperty.getExecutableFile()).getPath().replace("%23", "#")),
 				 timeStamp);
 	}
 	
@@ -1100,9 +1111,69 @@ System.out.println("excecutable = "+getClass().getClassLoader()
 	
 	}
 
+    public static void unzip(String zipFilePath, String destDir) {
+        File dir = new File(destDir);
+        // create output directory if it doesn't exist
+        if(!dir.exists()) dir.mkdirs();
+        FileInputStream fis;
+        //buffer for read and write data to file
+        byte[] buffer = new byte[1024];
+        try {
+            fis = new FileInputStream(zipFilePath);
+            ZipInputStream zis = new ZipInputStream(fis);
+            ZipEntry ze = zis.getNextEntry();
+            while(ze != null){
+                String fileName = ze.getName();
+                File newFile = new File(destDir + File.separator + fileName);
+                System.out.println("Unzipping to "+newFile.getAbsolutePath());
+                //create directories for sub directories in zip
+                new File(newFile.getParent()).mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+                }
+                fos.close();
+                //close this ZipEntry
+                zis.closeEntry();
+                ze = zis.getNextEntry();
+            }
+            //close last ZipEntry
+            zis.closeEntry();
+            zis.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
+
+
 	@Override
-	protected boolean annotateOutputs(File jobFolder) {
-	    	//Implementation
+	protected boolean annotateOutputs(File jobFolder) throws IOException, JSONException {
+		String directory = jobFolder.getAbsolutePath() + "/input.json";
+		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
+
+		String destDir = jobFolder.getAbsolutePath() + "/output";
+
+		unzip(zipFilePath, destDir);
+		File json = new File(directory);
+		String content = FileUtils.readFileToString(json);
+		JSONObject jo = new JSONObject(content);
+		String cityIRI = jo.getString("city");
+		String agent = jo.getString("agent");
+		String datapath = jo.getString("datapath");
+		
+		
+    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
+		String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
+		new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
+		
+		List<String> topics = new ArrayList<String>();
+    	topics.add(cityIRI);
+    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics); //annotate
+    	
+	    
 		return true;
 	}
 }

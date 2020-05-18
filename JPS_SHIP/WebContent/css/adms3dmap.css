@@ -4,6 +4,9 @@
             position: relative;
         }
 
+        #sensorTable{
+            position:relative;
+        }
         .control {
             position: absolute;
             left: 0;

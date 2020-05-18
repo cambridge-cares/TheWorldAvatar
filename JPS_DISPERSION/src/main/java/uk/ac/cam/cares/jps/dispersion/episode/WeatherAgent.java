@@ -336,7 +336,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		                + "?vyent   j2:numericalValue ?yval ."
 						+ "?graph j2:hasAddress <"+cityiri+"> ."
 						+ "?graph j2:enumerationValue ?stnname ."
-						//+ "?prop a j4:OutsideWindSpeed ."
+						+ "?entity j4:observes ?prop ."
 						+ "?prop   j2:hasValue ?vprop ."
 						+ " ?vprop   j6:hasTime ?proptime ."
 						+ "?proptime   j6:inXSDDateTimeStamp \""+timelatest+"\" ."				

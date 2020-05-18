@@ -176,10 +176,8 @@ public class AirSensorKBCreator {
 		
 		//for SG:
 		int numberofstn=1;
-//		String locationid="SG";
-		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
-		
-		//for the aqmesh use index 2 in number of stn
+		String locationid = "SG";
+//		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
 		
 		//for Berlin:
 //		int numberofstn=1;
@@ -191,10 +189,12 @@ public class AirSensorKBCreator {
 			
 		
 		//for HK:
-//		int numberofstn=1;
+//		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+//		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
+//		readingFromCSVHK.remove(0);//move the header
+//		int numberofstn=readingFromCSVHK.size();
 //		String locationid="HK";
 		
-		//for the aqmesh use index 2 in d
 		for(int d=1;d<=numberofstn;d++) {
 			String number="00"+d;
 			if(d>9&&d<100) {
@@ -489,6 +489,13 @@ public class AirSensorKBCreator {
 			new QueryBroker().putOld(Prefix+mainobject11name+".owl", content);
 			return filePath11;
 		}
+//		else if (flag.contains("OutsideHCConcentration")) {
+//			System.out.println("creating HC");
+//			doConversionAirsensor(jenaOwlModel, mainobject11name,Prefix,readingFromCSV,flag,outsidehcclass,location);
+//			String content = JenaHelper.writeToString(jenaOwlModel);
+//			new QueryBroker().putOld(Prefix+mainobject11name+".owl", content);
+//			return filePath11;
+//		}
 		return filePath;
 	}
 	
