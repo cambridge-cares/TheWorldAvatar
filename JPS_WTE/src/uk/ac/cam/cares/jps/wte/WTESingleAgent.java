@@ -70,9 +70,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 */
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String path = request.getServletPath();
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		String noOfClusters = requestParams.optString("numOfClusters", "0");
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
 			List<String[]> resu =  readAndDump(model,WastetoEnergyAgent.FCQuery);
@@ -80,7 +80,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
+//			List<String[]> inputoffsitedata = readResult(baseUrl,"x_cluster_allocation.csv");
 			List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+//			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
 			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
 			updateinOffsiteWT(inputoffsitedata,baseUrl);
 		 }catch (Exception e) {
@@ -96,7 +98,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return
 	 * @throws IOException
 	 */
-	private List<String[]> readResult(String baseUrl,String filename) throws IOException {
+	public List<String[]> readResult(String baseUrl,String filename) throws IOException {
 
         String outputFile = baseUrl + "/"+filename;
         String csv = new QueryBroker().readFileLocal(outputFile);

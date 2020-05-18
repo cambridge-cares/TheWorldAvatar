@@ -1121,7 +1121,19 @@ public class WTEKBCreator {
 				System.out.println("it is processed= " + flag);
 			 
 			}
-
+			else if(flag.contains("cluster")) { //for the FoodCourt cluster
+				inFile = new FileInputStream(filePath);
+				in = new InputStreamReader(inFile, "UTF-8");
+				System.out.println("it goes to system");
+				OntModel jenaOwlModel = ModelFactory.createOntologyModel();
+				jenaOwlModel.read(in, null);
+				initOWLClasses(jenaOwlModel);
+				String sysname="FoodCourtCluster-"; 
+				doConversionWasteSystem(jenaOwlModel,Prefix, sysname,transportiri, foodcourt,wtf);
+				String content = JenaHelper.writeToString(jenaOwlModel);
+				new QueryBroker().putOld(Prefix+sysname+".owl", content);
+				
+			}
 			else if(flag.contains("system")) { //for the waste treatment system
 				inFile = new FileInputStream(filePath);
 				in = new InputStreamReader(inFile, "UTF-8");
