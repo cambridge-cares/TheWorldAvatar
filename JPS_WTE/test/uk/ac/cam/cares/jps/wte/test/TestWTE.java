@@ -18,6 +18,8 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
+import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
+import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
@@ -186,6 +188,30 @@ public class TestWTE extends TestCase {
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
 		
 		System.out.println(result);
+	}
+	public void testInSuccession() throws Exception {
+		WastetoEnergyAgent ag = new WastetoEnergyAgent();
+		String baseUrl = QueryBroker.getLocalDataPath();
+		String sourceName = BucketHelper.getScenarioName(baseUrl);
+		OntModel model= WastetoEnergyAgent.readModelGreedy("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		List<String[]> inputsondata = ag.prepareCSVFC(ag.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		ag.prepareCSVWT(ag.WTquery,"Location.csv", baseUrl,model); 
+		ag.prepareCSVTransport(ag.transportQuery,"transport.csv", baseUrl,model); 
+		ag.prepareCSVCompTECHBased(ag.compquery,baseUrl,model);
+		ag.prepareCSVTECHBased(ag.WTFTechQuery,baseUrl,model,"offsite");
+		List<String[]> propertydataonsite=ag.prepareCSVTECHBased(ag.WTFTechOnsiteQuery,baseUrl,model,"onsite");
+		ag.copyTemplate(baseUrl, "SphereDist.m");
+		ag.copyTemplate(baseUrl, "Main.m");
+		ag.copyTemplate(baseUrl, "D2R.m");
+		
+		try {
+			ag.createBat(baseUrl);
+			ag.runModel(baseUrl);
+//            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
+//                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

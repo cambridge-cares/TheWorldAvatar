@@ -581,7 +581,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * @param newdir
 	 * @param filename
 	 */
-	private void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
+	public void copyTemplate(String newdir, String filename) { //in this case for SphereDist.m; Main.m; D2R.m
 		File file = new File(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/"+filename);
 		
 		String destinationUrl = newdir + "/"+filename;
