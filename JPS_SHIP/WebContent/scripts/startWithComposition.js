@@ -98,7 +98,7 @@ $(function(){
        }
    }
 
-    function querySensor(sensorIRIs, callback){
+    function querySensor(sensorIRIs, callback){s'ta'
         let qstr = `
     PREFIX s:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
     PREFIX t:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
@@ -319,9 +319,10 @@ console.log(result)});
             var xmax = parseInt(info.region.uppercorner.upperx);
             var ymin = parseInt(info.region.lowercorner.lowery);
             var ymax = parseInt(info.region.uppercorner.uppery);
+            let originRatio = (xmax-xmin)/(ymax-ymin);
             [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
-            var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
-            var svg = $('contoursvg');svg.width(1024*ratio).height(1024); // 28 Aug 18
+            var canvas = $('#drawcanvas'); canvas.width(1024*radio).height(1024); // 28 Aug 18
+            var svg = $('contoursvg');svg.width(1024*originRatio).height(1024); // 28 Aug 18
             console.log(xmin+" "+xmax+" "+ymin+" "+ymax)
             const coordinatesMin = getOSMPoint(xmin, ymin);
             const coordinatesMax = getOSMPoint(xmax, ymax);
@@ -352,9 +353,9 @@ console.log(result)});
     //***************************************************************************
     // Sets position of camera at selected location
     $("#location").on("change", () => {
-            startSimulation();
         const mlocation = $("#location option:selected").text();
         if (mlocation === "http://dbpedia.org/resource/Singapore") {
+            startSimulation();
             document.getElementById("optmsg").innerHTML = "";
             osmb.setPosition({
                 latitude: 1.27993,//1.262008,
@@ -370,6 +371,7 @@ console.log(result)});
             osmb.setRotation(-45.6);
 
         }else if (mlocation === "http://dbpedia.org/resource/HongKong") {
+            startSimulation();
         	document.getElementById("optmsg").innerHTML="Buildings are projected down directly above the ground although elevation is considered in the calculations.";
             osmb.setPosition({
                 longitude: 114.1491155592187,
