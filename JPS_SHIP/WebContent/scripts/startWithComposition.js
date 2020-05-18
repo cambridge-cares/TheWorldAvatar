@@ -93,7 +93,7 @@ $(function(){
            console.log("render sensor")
            console.log(sIRI)
            //TODO: after query the position
-           let obj = osmbGlobal.addOBJ('/images/tinker.obj', {longitude: sIRI[1],latitude: sIRI[2] },{id: "marker_"+sIRI[0], scale : 1, elevation :5, rotation : 120 , color: 'red'});
+           let obj = osmbGlobal.addOBJ('/images/tinker.obj', {longitude: sIRI[1],latitude: sIRI[2] },{id: "marker_"+sIRI[0], scale : 1, elevation :70, rotation : 120 , color: 'red'});
            markers.push(obj);
        }
    }
