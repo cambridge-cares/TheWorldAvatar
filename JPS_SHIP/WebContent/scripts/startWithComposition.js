@@ -248,6 +248,21 @@ console.log(result)});
                     if (err){console.log(err)}
                     console.log('got sensor attributes to show');
                     console.log(sensorAttributes);
+                    sensorAttributes.names= ['pollutant', 'concentration','time','allpsi','individualpsi','mean','max','min']
+                    sensorAttributes.data.forEach(item=>{
+                        let name = item[0].split('/');
+                        name = name[name.length-1]
+                        name = name.split('.')[0]
+                        item[0] = name
+                        let unit = item.splice(-1)[0]
+                        let unitArr = unit.split('#')
+                        unit = unitArr.splice(-1)
+                        item[1] = parseFloat(item[1]).toFixed(2)+' '+unit
+                        item[5] = parseFloat(item[5]).toFixed(2)+' '+unit
+                        item[6] = parseFloat(item[6]).toFixed(2)+' '+unit
+                        item[7] = parseFloat(item[7]).toFixed(2)+' '+unit
+
+                    })
                     renderAttributeTable(sensorAttributes);
                 })
                    // });
@@ -273,7 +288,7 @@ console.log(result)});
     };
     
 
-    $('#start').click(function(){
+    function startSimulation(){
     	//$('#start').attr("disabled", true);
     	
 		console.log('button clicked')
@@ -330,16 +345,15 @@ console.log(result)});
         })
 
 
-    });
+    };
     //***************************************************************************
 
     
     //***************************************************************************
     // Sets position of camera at selected location
     $("#location").on("change", () => {
+            startSimulation();
         const mlocation = $("#location option:selected").text();
-
-
         if (mlocation === "http://dbpedia.org/resource/Singapore") {
             document.getElementById("optmsg").innerHTML = "";
             osmb.setPosition({
