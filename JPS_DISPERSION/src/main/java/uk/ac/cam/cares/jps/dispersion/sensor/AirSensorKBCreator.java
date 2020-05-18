@@ -175,8 +175,11 @@ public class AirSensorKBCreator {
 
 		
 		//for SG:
-		int numberofstn=1;
-		String locationid="SG";
+//		int numberofstn=1;
+//		String locationid="SG";
+//		String locationid="SGAQMesh"; //enable this when creating the AQMesh sensor. 
+		
+		//for the aqmesh use index 2 in number of stn
 		
 		//for Berlin:
 //		int numberofstn=1;
@@ -188,12 +191,10 @@ public class AirSensorKBCreator {
 			
 		
 		//for HK:
-//		String csvhk = new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
-//		List<String[]> readingFromCSVHK = MatrixConverter.fromCsvToArray(csvhk);
-//		readingFromCSVHK.remove(0);//move the header
-//		int numberofstn=readingFromCSVHK.size();
-//		String locationid="HK";
+		int numberofstn=1;
+		String locationid="HK";
 		
+		//for the aqmesh use index 2 in d
 		for(int d=1;d<=numberofstn;d++) {
 			String number="00"+d;
 			if(d>9&&d<100) {

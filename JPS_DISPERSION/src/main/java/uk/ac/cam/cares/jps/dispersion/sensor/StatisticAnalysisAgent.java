@@ -51,11 +51,13 @@ public class StatisticAnalysisAgent extends JPSHttpServlet{
 	    	for(String propnameclass:classname) {
 	    		System.out.println("loop here");
 	    		List<String[]>input=prepareInput(context,propnameclass,dataPath);
-	    		List<Double> newvalues=executeModel(input);
-	   
-	    		int psi=updateTheEndpoint(context,propnameclass,newvalues);
-	    		if(psi>psimax) {
-	    			psimax=psi;
+	    		if(input.size()>1) {
+		    		List<Double> newvalues=executeModel(input);
+		    		   
+		    		int psi=updateTheEndpoint(context,propnameclass,newvalues);
+		    		if(psi>psimax) {
+		    			psimax=psi;
+		    		}
 	    		}
 	    	}
 	    	
@@ -279,7 +281,7 @@ public class StatisticAnalysisAgent extends JPSHttpServlet{
 					+ "ORDER BY DESC(?proptimeval)LIMIT8"; //take 8 newest
 			
 			List<String[]> resultQuery =queryEndPointDataset(sensorinfo);
-			String[]header= {propnameclass,"starttime","endtime"};
+			String[]header= {propnameclass,"starttime"};
 			resultQuery.add(0,header);
 			String filename= propnameclass+"latest8hrdata.csv"; //what is input file name
 			new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultQuery));

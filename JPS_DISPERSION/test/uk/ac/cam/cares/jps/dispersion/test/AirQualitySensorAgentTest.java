@@ -32,7 +32,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 	 */
 	public void testAgentCallfrom() {
 		JSONObject jo = new JSONObject();
-		jo.put("cityiri","http://dbpedia.org/resource/Singapore" );
+		jo.put("city","http://dbpedia.org/resource/Singapore" );
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/AirQualitySensorAgent", jo.toString());	
 	}
 	

@@ -57,12 +57,12 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			repo = new HTTPRepository(rdf4jServer, repositoryID);
 	   		RepositoryConnection con = repo.getConnection();
 			String location = requestParams.optString("location", "singapore_AQ");
-	   		String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
+	   		String cityiri= requestParams.optString("city", "http://dbpedia.org/resource/Singapore");
 	   		resetAllAQMesh(location,cityiri);
 			response.put("status", "reset endpoint successful");
 			
 		}else { //used for AQmesh only
-			String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
+			String cityiri= requestParams.optString("city", "http://dbpedia.org/resource/Singapore");
 			//right now the input is not connected yet
 			String context = uploadData(cityiri);
 			response.put("airStationIRI", context);	
