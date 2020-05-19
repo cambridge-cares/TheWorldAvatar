@@ -99,7 +99,7 @@ $(function(){
        }
    }
 
-    function querySensor(sensorIRIs, callback){s'ta'
+    function querySensor(sensorIRIs, callback){
         let qstr = `
     PREFIX s:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
     PREFIX t:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
@@ -135,7 +135,7 @@ $(function(){
                         console.log('found location for virtual sensor: '+item[0])
                     }
                 }
-                callback(null, searched)
+                callback(null, result)
             });
     }
 
@@ -256,7 +256,7 @@ console.log(result)});
                     sensorAttributes.data.forEach(item=>{
                         let name = item[0].split('/');
                         name = name[name.length-1]
-                        name = name.split('.')[0]
+                        name = name.split('.owl')[0]
                         item[0] = name
                         let unit = item.splice(-1)[0]
                         let unitArr = unit.split('#')
@@ -324,9 +324,11 @@ console.log(result)});
             var xmax = parseInt(info.region.uppercorner.upperx);
             var ymin = parseInt(info.region.lowercorner.lowery);
             var ymax = parseInt(info.region.uppercorner.uppery);
-            let originRatio = (xmax-xmin)/(ymax-ymin);
+            originRatio = (xmax-xmin)/(ymax-ymin);
+            let ratio;
             [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
-            var canvas = $('#drawcanvas'); canvas.width(1024*radio).height(1024); // 28 Aug 18
+ 
+            var canvas = $('#drawcanvas'); canvas.width(1024*ratio).height(1024); // 28 Aug 18
             var svg = $('#contoursvg');svg.attr('width',1024*originRatio).attr('height',1024); // 28 Aug 18
             console.log(xmin+" "+xmax+" "+ymin+" "+ymax)
             const coordinatesMin = getOSMPoint(xmin, ymin);
@@ -359,7 +361,7 @@ console.log(result)});
     // Sets position of camera at selected location
     $("#location").on("change", () => {
         const mlocation = $("#location option:selected").text();
-        if (mlocation === "http://dbpedia.org/resource/Singapore") {
+        if (mlocation === "Singapore") {
             startSimulation();
             document.getElementById("optmsg").innerHTML = "";
             osmb.setPosition({
@@ -375,7 +377,7 @@ console.log(result)});
             osmb.setTilt(20.6);
             osmb.setRotation(-45.6);
 
-        }else if (mlocation === "http://dbpedia.org/resource/HongKong") {
+        }else if (mlocation === "Hong Kong") {
             startSimulation();
         	document.getElementById("optmsg").innerHTML="Buildings are projected down directly above the ground although elevation is considered in the calculations.";
             osmb.setPosition({
