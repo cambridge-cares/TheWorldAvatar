@@ -309,6 +309,20 @@ public class Utils {
 	}
 	
 	/**
+	 * Returns the absolute path to the output file on the machine where the Agent is running.
+	 * 
+	 * @param runningJob
+	 * @param taskSpace
+	 * @param outputFileName
+	 * @param outputFileExtension
+	 * @return
+	 */
+	public static String getJobOutputFilePathOnAgentPC(String runningJob, File taskSpace, String outputFileName, String outputFileExtension){
+		return taskSpace.getAbsolutePath().concat(File.separator).concat(runningJob).concat(File.separator)
+				.concat(outputFileName).concat(outputFileExtension);
+	}
+	
+	/**
 	 * Returns the job folder path (absolute path) on the machine where the Agent is running.
 	 * 
 	 * @param runningJob
