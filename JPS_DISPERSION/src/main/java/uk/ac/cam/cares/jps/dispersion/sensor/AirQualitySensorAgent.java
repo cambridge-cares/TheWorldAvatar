@@ -345,11 +345,11 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			Iterator<String> keys = jGas.keys();
 			while(keys.hasNext()) {
 			    String key = keys.next();
-			    if (jGas.get(key) instanceof JSONObject) {
+			    
 			    	String classname = String.format("Outside%sConcentration", key);
-			    	String value = (String) jGas.get(key);
+			    	String value =jGas.get(key).toString();
 			    	updateRepoNewMethod(stationiri, classname, value, value, directorytime);
-			    }
+			    
 			}
 		}
 		 logger.info("updates finished");
