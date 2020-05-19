@@ -140,6 +140,36 @@
 		    <showDeprecation>true</showDeprecation>
 		</configuration>
 	    </plugin>
+<!-- 			<plugin> -->
+<!-- 				<artifactId>maven-assembly-plugin</artifactId> -->
+<!-- 				<version>3.1.1</version> -->
+<!-- 				<configuration> -->
+<!-- 					<descriptorRefs> -->
+<!-- 						<descriptorRef>jar-with-dependencies</descriptorRef> -->
+<!-- 					</descriptorRefs> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>make-assembly</id> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>single</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-jar-plugin</artifactId>
+        		<configuration>
+          			<archive>
+            			<manifest>
+              				<addClasspath>true</addClasspath>
+              				<mainClass>uk.ac.ca.ceb.como.paper.ebr.EBRApproach</mainClass>
+            			</manifest>
+          			</archive>
+        		</configuration>
+      		</plugin> -->
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<version>3.1.1</version>
@@ -147,6 +177,12 @@
 					<descriptorRefs>
 						<descriptorRef>jar-with-dependencies</descriptorRef>
 					</descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>uk.ac.ca.ceb.como.paper.ebr.EBRApproach</mainClass>     
+                        </manifest>
+                    </archive>
 				</configuration>
 				<executions>
 					<execution>
@@ -158,6 +194,19 @@
 					</execution>
 				</executions>
 			</plugin>
-	</plugins>
+<!--             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>uk.ac.ca.ceb.como.paper.ebr.EBRApproach</mainClass>     
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+ -->        </plugins>
     </build>
 </project>
