@@ -69,11 +69,11 @@ public class OntoSpeciesKG extends EBRAgent{
 					}else{
 						eof = bSet.getValue("enthalpyOfFormationValue").stringValue();
 					}
-					String gaussianFileIRI = bSet.getValue("gaussianFileIRI").stringValue();
-					if(gaussianFileIRI!=null && gaussianFileIRI.contains("#")){
-						gaussianFileIRI = gaussianFileIRI.substring(gaussianFileIRI.lastIndexOf("#")+1);
+					String ontoSpeciesIRI = bSet.getValue("ontoSpeciesIRI").stringValue();
+					if(ontoSpeciesIRI!=null && ontoSpeciesIRI.contains("#")){
+						ontoSpeciesIRI = ontoSpeciesIRI.substring(ontoSpeciesIRI.lastIndexOf("#")+1);
 					}
-					SpeciesBean nistSpeciesId = new SpeciesBean(gaussianFileIRI,
+					SpeciesBean nistSpeciesId = new SpeciesBean(ontoSpeciesIRI,
 							bSet.getValue("atomicBond").stringValue(), bSet.getValue("geometry").stringValue(),
 							eof,
 							bSet.getValue("scfEnergyValue").stringValue(),
@@ -104,9 +104,10 @@ public class OntoSpeciesKG extends EBRAgent{
 			String query ="PREFIX OntoSpecies: <http://www.theworldavatar.com/ontology/ontospecies/OntoSpecies.owl#> "
 					+ "PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> "
 					+ "PREFIX gc: <http://purl.org/gc/> "
-					+ "SELECT DISTINCT ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue  ?scfEnergyValue ?zeroEnergyValue ?gaussianFileIRI "
+					+ "SELECT DISTINCT ?crid ?atomicBond ?geometry ?enthalpyOfFormationValue  ?scfEnergyValue ?zeroEnergyValue ?ontoSpeciesIRI "
 					+ "WHERE { "
 					+ "<"+ontoSpeciesIRI+"> OntoSpecies:casRegistryID ?crid . "
+					+ "?ontoSpeciesIRI OntoSpecies:casRegistryID ?crid . "
 					+ "<"+ontoSpeciesIRI+"> OntoSpecies:hasAtomicBond ?atomicBond . "
 					+ "<"+ontoSpeciesIRI+"> OntoSpecies:hasGeometry ?geometry . "
 					+ "<"+ontoSpeciesIRI+"> OntoSpecies:hasStandardEnthalpyOfFormation ?enthalpy . "
@@ -117,7 +118,6 @@ public class OntoSpeciesKG extends EBRAgent{
 					+ "?scfEnergy gc:hasElectronicEnergy ?scfElectronicEnergy . "
 					+ "?scfElectronicEnergy gc:hasValue ?scfEnergyValue . "
 					+ "<"+ontoCompChemIRI+"> gc:isCalculationOn ?zeroEnergy . "
-					+ "?gaussianFileIRI gc:isCalculationOn ?zeroEnergy . "
 					+ "?zeroEnergy a ontocompchem:ZeroPointEnergy . "
 					+ "?zeroEnergy gc:hasElectronicEnergy ?zeroElectronicEnergy . "
 					+ "?zeroElectronicEnergy gc:hasValue ?zeroEnergyValue . "

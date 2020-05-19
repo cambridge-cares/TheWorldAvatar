@@ -21,6 +21,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
+import org.apache.commons.collections.map.HashedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -373,13 +374,22 @@ public class EBRAgent extends HttpServlet{
 		nistTargetSpeciesIdList = SpeciesBean.getSpeciesIRIList(targetSpeciesList, nistTargetSpeciesIdList, oskg, true);
 		System.out.println("reference species size: " + referenceSpeciesList.size());
 		LinkedList<String> ontoCompChemIRIList = new LinkedList<String>();
+		Map<String, String> compChemVsOntoSpeciesMap = new HashedMap(); 
 		for(Map<String, Object> map: referenceSpeciesList) {
+			String ontocompchemIRI = null;
+			String ontospeciesIRI = null;
 			for (Map.Entry<String, Object> m : map.entrySet()) {
 				if (m.getKey().matches("ontocompchemIRI")) {
-					String speciesIRI = m.getValue().toString();
-					ontoCompChemIRIList.add(speciesIRI);
-				} else {
-					continue;
+					ontocompchemIRI = m.getValue().toString();
+					ontoCompChemIRIList.add(ontocompchemIRI);
+				}
+				if(m.getKey().matches("ontospeciesIRI")){
+					ontospeciesIRI = m.getValue().toString();
+				}
+				if(ontocompchemIRI!=null && ontospeciesIRI!=null){
+					compChemVsOntoSpeciesMap.put(ontocompchemIRI, ontospeciesIRI);
+					System.out.println("\n\n\n---------------OntoCompChemIRI:"+ontocompchemIRI);
+					System.out.println("---------------OntoSpeciesIRI:"+ontospeciesIRI);
 				}
 			}
 		}
@@ -393,24 +403,43 @@ public class EBRAgent extends HttpServlet{
 				}
 			}
 		}
+		Map<String, String> gaussianIriVsCompChemMap = new HashedMap(); 
 		LinkedList<String> queryResultList = new LinkedList<String>();
 		for(String s : ontoCompChemIRIList) {
 			System.out.println("onto comp chem species iri : " + s);
-			queryResultList.addAll(oskg.queryOntoCompChemSpeciesRepository(ebrAgentProperty.getOntoCompChemKBSingleEndPoint(), s));
+			List<String> gaussianIRIs = oskg.queryOntoCompChemSpeciesRepository(ebrAgentProperty.getOntoCompChemKBSingleEndPoint(), s); 
+			queryResultList.addAll(gaussianIRIs);
+			if(gaussianIRIs !=null && gaussianIRIs.size()>0){
+				gaussianIriVsCompChemMap.put(gaussianIRIs.get(0), s);
+			}
 		}
 		for(String gaussianIRI : queryResultList) {
 			System.out.println("gaussianIRI: " + gaussianIRI);
 			String inputSourceGaussianFileOnLocalHost = gaussianIRI;//.replaceAll("http://www.theworldavatar.com/", "http://localhost:8080/");
 			String gaussianFileName = inputSourceGaussianFileOnLocalHost.substring(inputSourceGaussianFileOnLocalHost.lastIndexOf("/") + 1);
+			String ontoSpeciesIriAsGaussianFileName = getOntoSpeciesIriAsGaussianFileName(compChemVsOntoSpeciesMap.get(gaussianIriVsCompChemMap.get(gaussianIRI)), gaussianFileName);
 			/**
 			 * Copies all uploaded Gaussian files to input folder on users profile
 			 */
-			Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getDFTCalculationPath(jsonInput)+"/" +gaussianFileName);
+			Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getDFTCalculationPath(jsonInput)+"/" +ontoSpeciesIriAsGaussianFileName);
 		}
 		csvGenerator.generateCSVFile(nistRefSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getReferenceSpeciesPool(jsonInput));
 		csvGenerator.generateCSVFile(nistTargetSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getTargetSpeciesPool(jsonInput));
 		//Return the input zip file.
 		return Utils.getZipFile(inputFolder.getAbsolutePath()); 
+	}
+	
+	private String getOntoSpeciesIriAsGaussianFileName(String ontoSpeciesIRI, String gaussianFileName) throws Exception{
+		if(!gaussianFileName.contains(".")){
+			throw new Exception("Gaussian file name does not have the extension.");
+		}
+		String tokens[] = gaussianFileName.split("\\.");
+		if(!ontoSpeciesIRI.contains("/")){
+			throw new Exception("OntoSpecies IRI does not contain frontslash(/)");
+		}
+		// If the ontospecies IRI is http://www.theworldavatar.com/kb/ontospecies/f2b02ae7-542b-3f63-a81b-af688ae86865.owl#f2b02ae7-542b-3f63-a81b-af688ae86865,
+		// it returns the part between last frontslash (/) and .owl, which is f2b02ae7-542b-3f63-a81b-af688ae86865
+		return ontoSpeciesIRI.substring(ontoSpeciesIRI.lastIndexOf("/") + 1, ontoSpeciesIRI.lastIndexOf(".")+1).concat(tokens[1]);
 	}
 	
 	/**
