@@ -22,7 +22,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import org.slf4j.LoggerFactory;
 import org.apache.commons.collections.map.HashedMap;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -308,13 +307,10 @@ public class EBRAgent extends HttpServlet{
 	 * @throws Exception 
 	 */
 	public String setUpJob(String jsonString) throws Exception{
-		
         	String message = setUpJobOnAgentMachine(jsonString);
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
-			
 			logger.info("message:" + message);
-			
         	return obj.toString();
     }
 	
@@ -368,11 +364,11 @@ public class EBRAgent extends HttpServlet{
 		 * Stores in List<Map> pairs of target species IRIs and corresponding ontospecies IRIs.
 		 */
 		List<Map<String, Object>> targetSpeciesList =  JSonRequestParser.getAllTargetSpeciesIRI(jsonInput);
-		System.out.println("reference species size: " + referenceSpeciesList.size());
-		System.out.println("target species size: " + targetSpeciesList.size());
+		logger.info("reference species size: " + referenceSpeciesList.size());
+		logger.info("target species size: " + targetSpeciesList.size());
 		nistRefSpeciesIdList = SpeciesBean.getSpeciesIRIList(referenceSpeciesList, nistRefSpeciesIdList, oskg, false);
 		nistTargetSpeciesIdList = SpeciesBean.getSpeciesIRIList(targetSpeciesList, nistTargetSpeciesIdList, oskg, true);
-		System.out.println("reference species size: " + referenceSpeciesList.size());
+		logger.info("reference species size: " + referenceSpeciesList.size());
 		LinkedList<String> ontoCompChemIRIList = new LinkedList<String>();
 		Map<String, String> compChemVsOntoSpeciesMap = new HashedMap(); 
 		populateOntoCompChemIriDataStructures(referenceSpeciesList, ontoCompChemIRIList, compChemVsOntoSpeciesMap);
@@ -380,7 +376,7 @@ public class EBRAgent extends HttpServlet{
 		Map<String, String> gaussianIriVsCompChemMap = new HashedMap(); 
 		LinkedList<String> queryResultList = new LinkedList<String>();
 		for(String s : ontoCompChemIRIList) {
-			System.out.println("onto comp chem species iri : " + s);
+			logger.info("onto comp chem species iri : " + s);
 			List<String> gaussianIRIs = oskg.queryOntoCompChemSpeciesRepository(ebrAgentProperty.getOntoCompChemKBSingleEndPoint(), s); 
 			queryResultList.addAll(gaussianIRIs);
 			if(gaussianIRIs !=null && gaussianIRIs.size()>0){
@@ -426,8 +422,6 @@ public class EBRAgent extends HttpServlet{
 				}
 				if(ontocompchemIRI!=null && ontospeciesIRI!=null){
 					compChemVsOntoSpeciesMap.put(ontocompchemIRI, ontospeciesIRI);
-					System.out.println("\n\n\n---------------OntoCompChemIRI:"+ontocompchemIRI);
-					System.out.println("---------------OntoSpeciesIRI:"+ontospeciesIRI);
 				}
 			}
 		}
@@ -444,10 +438,12 @@ public class EBRAgent extends HttpServlet{
 	 */
 	private String getOntoSpeciesIriAsGaussianFileName(String ontoSpeciesIRI, String gaussianFileName) throws Exception{
 		if(!gaussianFileName.contains(".")){
+			logger.error("Gaussian file name does not have the extension.");
 			throw new Exception("Gaussian file name does not have the extension.");
 		}
 		String tokens[] = gaussianFileName.split("\\.");
 		if(!ontoSpeciesIRI.contains("/")){
+			logger.error("OntoSpecies IRI does not contain frontslash(/)");
 			throw new Exception("OntoSpecies IRI does not contain frontslash(/)");
 		}
 		// If the ontospecies IRI is http://www.theworldavatar.com/kb/ontospecies/f2b02ae7-542b-3f63-a81b-af688ae86865.owl#f2b02ae7-542b-3f63-a81b-af688ae86865,
