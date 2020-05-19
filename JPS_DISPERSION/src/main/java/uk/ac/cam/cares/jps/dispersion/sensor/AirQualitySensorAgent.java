@@ -327,7 +327,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	public void executePeriodicUpdate(String stationiri) {
 		ArrayList<JSONObject> result=getDataFromAPI();
 		int len = result.size()/2;
-		for (int x = 0; x <10; x++) { //assuming same frequency of these two.
+		for (int x = 0; x <len; x++) { //assuming same frequency of these two.
 			JSONObject jGas = result.get(x);
 			JSONObject jPM = result.get(x+len);
 			double concpm10=0.0;
