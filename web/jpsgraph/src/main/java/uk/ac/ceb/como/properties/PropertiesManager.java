@@ -7,6 +7,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -63,7 +64,7 @@ public class PropertiesManager {
 	
 	/**
 	 * 
-	 * @param inputDate Month given by name.
+	 * @param inputDate A month given by name.
 	 * @return Month given by number.
 	 */
 	public static String getNumberFromMonthName (String inputDate) {
@@ -87,28 +88,35 @@ public class PropertiesManager {
 	}
 	
 	/**
+	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
 	 * @return the Map of frequencies for species per date
 	 * @throws MalformedURLException
 	 * @throws IOException
+	 * 
 	 */
-	public Map<String,String> getFrequencyOfSpeciesPerDate() throws MalformedURLException, IOException{
+	public Map<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString) throws MalformedURLException, IOException{
 		
-LinkedList<String> linkedList = new LinkedList<String>();
+		LinkedList<String> linkedList = new LinkedList<String>();
 		
 		QueryManager qm = new QueryManager();
 		
+		/**
+		 * An example of querying ontocompchem repository
+		 */
 //		linkedList.addAll((qm.getQueryDateStamp("http://theworldavatar.com/rdf4j-server/repositories/ontocompchem", QueryString.getSpeciesIRIOfGaussianCalculations())));
-		linkedList.addAll((qm.getQueryDateStamp("http://theworldavatar.com/rdf4j-server/repositories/ontokin", QueryString.getSpeciesIRIFromOntoKin())));
 		
+		linkedList.addAll(qm.getQueryDateStamp(serverUrl, queryString));
 
 		LinkedHashMap<String,String> speciesMap = new LinkedHashMap<String,String>();		
 		
 		for(String list: linkedList) {
 			
-			String[] parts = list.split("\\#");			
+			String[] parts = list.split("\\#");		
+			
 			URLConnection connection = new URL(parts[0]).openConnection();			
+			
 			String lastModified = connection.getHeaderField("Last-Modified");
 			
 			/**
@@ -118,7 +126,7 @@ LinkedList<String> linkedList = new LinkedList<String>();
 			
 			String[] dateParts = lastModified.split(" ");
                     
-            System.out.println("file: " + parts[0] + "  lastModified: " + lastModified + " modified date: " + dateParts[1]+"-"+dateParts[2]+"-"+dateParts[3]);
+//            System.out.println("file: " + parts[0] + "  lastModified: " + lastModified + " modified date: " + dateParts[1]+"-"+dateParts[2]+"-"+dateParts[3]);
             
             speciesMap.put(parts[0], dateParts[3]+"-"+PropertiesManager.getNumberFromMonthName(dateParts[2])+"-"+dateParts[1]);
             
@@ -131,7 +139,7 @@ LinkedList<String> linkedList = new LinkedList<String>();
 			
 			int count = Collections.frequency(new ArrayList<String>(speciesMap.values()), map.getValue());
 			
-			System.out.println("date: " +map.getValue() + " count:" + count);
+//			System.out.println("date: " +map.getValue() + " count:" + count);
 			
 			if(!speciesFrequecniesPerDate.containsKey(map.getValue())) {
 				 
@@ -141,13 +149,40 @@ LinkedList<String> linkedList = new LinkedList<String>();
 		
 		Map<String, String> treeMap = new TreeMap<String, String>(speciesFrequecniesPerDate);
 		
-		System.out.println(" - - - - - - - - -  - - -");
-		
-		for(Map.Entry<String, String> m: treeMap.entrySet()) {
-			
-			System.out.println(m.getKey() + " " + m.getValue());
-		}
+//		System.out.println(" - - - - - - - - -  - - -");		
+//		for(Map.Entry<String, String> m: treeMap.entrySet()) {			
+//			System.out.println(m.getKey() + " " + m.getValue());
+//		}
 		
 		return treeMap;
+	}
+	
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * Iterates through source map and adds key value in target map if that key value does not exist in target map. The method adds "0" frequency for number of uploaded species.
+	 * 
+	 * @param sourceMap the source map of number of uploaded species per given date.
+	 * @param targetMap the target map of number of uploaded species per given date.
+	 * @return the updated target map of number of uploaded species per given date.
+	 */
+	public Map<String, String> updateFrequenciesMapData(Map<String,String> sourceMap, Map<String,String> targetMap){
+		
+		for(Map.Entry<String, String> m: sourceMap.entrySet()) {
+			
+		if(!targetMap.containsKey(m.getKey())){
+				
+				targetMap.put(m.getKey(), "0");
+		}
+			
+		}
+		
+		/**
+		 * sort target map by key values.
+		 */
+		Map<String, String> treeMap = new TreeMap<String, String>(targetMap);
+		
+		return treeMap;
+		
 	}
 }

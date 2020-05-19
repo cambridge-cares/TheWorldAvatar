@@ -2,7 +2,10 @@ package uk.ac.ceb.como.action;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -30,8 +33,6 @@ public class StatisticsAction extends ActionSupport {
 	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
 	private String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
 	
-	private String dataFolderPath = kbProperties.getProperty("data.statistics.folder.path").toString();
-	
 	private String numberOfCalculations;
 
 	private String numberOfSpeciesInOntoSpecies ;
@@ -58,8 +59,28 @@ public class StatisticsAction extends ActionSupport {
 	
 	private String numberOfReactionsHydrocarbonSpecies;
 	
-	private List<String> labelList = new ArrayList<String>();
+	private List<String> labelList = new ArrayList<String>();	
 	
+	private List<String> ontoCompChemDataSetList = new ArrayList<String>();
+	
+	private List<String> ontoKinDataSetList = new ArrayList<String>();
+	
+	public List<String> getOntoKinDataSetList() {
+		return ontoKinDataSetList;
+	}
+
+	public void setOntoKinDataSetList(List<String> ontoKinDataSetList) {
+		this.ontoKinDataSetList = ontoKinDataSetList;
+	}
+
+	public List<String> getOntoCompChemDataSetList() {
+		return ontoCompChemDataSetList;
+	}
+
+	public void setOntoCompChemDataSetList(List<String> ontoCompChemDataSetList) {
+		this.ontoCompChemDataSetList = ontoCompChemDataSetList;
+	}
+
 	public List<String> getLabelList() {
 		return labelList;
 	}
@@ -92,9 +113,7 @@ public class StatisticsAction extends ActionSupport {
 			String numberOfReactionsThatInvolveOxygenHydrocarbonSpecies) {
 		this.numberOfReactionsThatInvolveOxygenHydrocarbonSpecies = numberOfReactionsThatInvolveOxygenHydrocarbonSpecies;
 	}
-
 	
-
 	public String getNumberOfNitrogenSpeciesInOntoKin() {
 		return numberOfNitrogenSpeciesInOntoKin;
 	}
@@ -178,13 +197,69 @@ public class StatisticsAction extends ActionSupport {
 	@Override
 	public String execute() throws IOException {
 		
-		List<String> dates = new ArrayList<String>();
-			
-		dates.add("01-Jan-2020");
-		dates.add("03-March-2020");
-		dates.add("03-April-2020");
+//		List<String> list = new ArrayList<String>();
+//		
+//		list.add("2020-03-20");
+//		list.add("2020-09-03");
+//		list.add("2020-03-09");
+//		list.add("2022-03-20");
+//		list.add("2022-09-03");
+//		list.add("2022-03-09");
+//		list.add("2021-03-09");
+//		
+//		labelList.addAll(list);
 		
-		labelList.addAll(dates);
+
+		PropertiesManager propertiesManager = new PropertiesManager();
+		
+		Map<String,String> ontoCompChemMap = new HashMap<String,String>();
+		
+		ontoCompChemMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontocompchemkb,  QueryString.getSpeciesIRIOfGaussianCalculations()));
+		
+		Map<String,String> ontoKinMap = new HashMap<String,String>();
+		
+		ontoKinMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontokinkb,  QueryString.getSpeciesIRIFromOntoKin()));
+		
+		LinkedHashMap<String,String> updatedOntoCompChemMap = new LinkedHashMap<String,String>();
+		
+		updatedOntoCompChemMap.putAll(new PropertiesManager().updateFrequenciesMapData(ontoKinMap, ontoCompChemMap));
+		
+		LinkedHashMap<String,String> updatedOntoKinMap = new LinkedHashMap<String,String>();
+		
+		updatedOntoKinMap.putAll(new PropertiesManager().updateFrequenciesMapData(ontoCompChemMap,ontoKinMap));
+		
+		List<String> list = new ArrayList<String>();
+		List<String> ontoCompChemList = new ArrayList<String>();
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Updated onto compchem data
+		 * 
+		 */
+		for(Map.Entry<String, String> compChemMap: updatedOntoCompChemMap.entrySet()) {
+			
+			list.add(compChemMap.getKey());
+			ontoCompChemList.add(compChemMap.getValue());
+		
+		}
+		
+		ontoCompChemDataSetList.addAll(ontoCompChemList);
+		
+		labelList.addAll(list);
+
+		
+		List<String> ontoKinList = new ArrayList<String>();
+		/**
+		 * 
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Updated onto kin data.
+		 * 
+		 */
+		for(Map.Entry<String, String> m: updatedOntoKinMap.entrySet()) {
+			
+			ontoKinList.add(m.getValue());
+		}
+		
+		ontoKinDataSetList.addAll(ontoKinList);
 		
 		/**
 		 * 

@@ -6,14 +6,12 @@
 
 <!DOCTYPE html>
 <html>
-<!--    
-      -->
+
 <head>
 
-<!--<script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>-->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
-	
+
 
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
@@ -452,15 +450,28 @@ Here is java script for visualization molecules.
 
 <canvas id="myChart"></canvas>
 
-<!--<canvas id="canvas"></canvas>-->
-
 <script>
 var arrayList = new Array();
 arrayList= new Array('<s:property value="%{labelList}"/>');
 var jsList = arrayList.toString();
-jsList = carter.replace("[","");
-jsList = carter.replace("]","");
-jsList = carter.split(",");
+jsList = jsList.replace("[","");
+jsList = jsList.replace("]","");
+jsList = jsList.split(",");
+
+
+var ontoCompChemList = new Array();
+ontoCompChemList= new Array('<s:property value="%{ontoCompChemDataSetList}"/>');
+var jsOntoCompChemList = ontoCompChemList.toString();
+jsOntoCompChemList = jsOntoCompChemList.replace("[","");
+jsOntoCompChemList = jsOntoCompChemList.replace("]","");
+jsOntoCompChemList = jsOntoCompChemList.split(",");
+
+var ontoKinList = new Array();
+ontoKinList= new Array('<s:property value="%{ontoKinDataSetList}"/>');
+var jsOntoKinList = ontoKinList.toString();
+jsOntoKinList = jsOntoKinList.replace("[","");
+jsOntoKinList = jsOntoKinList.replace("]","");
+jsOntoKinList = jsOntoKinList.split(",");
 
 var ctx = document.getElementById('myChart').getContext('2d');
 var chart = new Chart(ctx, {
@@ -474,13 +485,13 @@ var chart = new Chart(ctx, {
             label: 'Species in OntoCompChem',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
-            data: [0, 10, 5, 2, 20, 30, 45]
+            data: jsOntoCompChemList
         },
         {
             label: 'Species in OntoSpecies',
             backgroundColor: 'rgb(255, 50, 60)',
             borderColor: 'rgb(255, 50, 60)',
-            data: [10, 30, 34, 4, 55, 31, 44]
+            data: jsOntoKinList
         }
         
         ]
@@ -684,7 +695,7 @@ var chart = new Chart(ctx, {
       <td class="noBorder" width="150"  height="15"/>
       
       <td class="noBorder" colspan="2" width="300"  height="15">
-      <b>Reactions that involve oxygenHydrocarbon species</b> 
+      <b>Reactions that involve only oxygenated hydrocarbon species</b> 
       </td>      
       
       <td class="noBorder" width="150"  height="15"/>
