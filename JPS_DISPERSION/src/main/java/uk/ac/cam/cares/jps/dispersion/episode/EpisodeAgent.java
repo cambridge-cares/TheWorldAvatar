@@ -1,7 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.episode;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
@@ -27,7 +25,6 @@ import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1111,69 +1108,8 @@ System.out.println("excecutable = "+getClass().getClassLoader()
 	
 	}
 
-    public static void unzip(String zipFilePath, String destDir) {
-        File dir = new File(destDir);
-        // create output directory if it doesn't exist
-        if(!dir.exists()) dir.mkdirs();
-        FileInputStream fis;
-        //buffer for read and write data to file
-        byte[] buffer = new byte[1024];
-        try {
-            fis = new FileInputStream(zipFilePath);
-            ZipInputStream zis = new ZipInputStream(fis);
-            ZipEntry ze = zis.getNextEntry();
-            while(ze != null){
-                String fileName = ze.getName();
-                File newFile = new File(destDir + File.separator + fileName);
-                System.out.println("Unzipping to "+newFile.getAbsolutePath());
-                //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-                }
-                fos.close();
-                //close this ZipEntry
-                zis.closeEntry();
-                ze = zis.getNextEntry();
-            }
-            //close last ZipEntry
-            zis.closeEntry();
-            zis.close();
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-    }
 
 
-	@Override
-	protected boolean annotateOutputs(File jobFolder) throws IOException, JSONException {
-		String directory = jobFolder.getAbsolutePath() + "/input.json";
-		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
 
-		String destDir = jobFolder.getAbsolutePath() + "/output";
 
-		unzip(zipFilePath, destDir);
-		File json = new File(directory);
-		String content = FileUtils.readFileToString(json);
-		JSONObject jo = new JSONObject(content);
-		String cityIRI = jo.getString("city");
-		String agent = jo.getString("agent");
-		String datapath = jo.getString("datapath");
-		
-		
-    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
-		String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
-		new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
-		
-		List<String> topics = new ArrayList<String>();
-    	topics.add(cityIRI);
-    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics); //annotate
-    	
-	    
-		return true;
-	}
 }

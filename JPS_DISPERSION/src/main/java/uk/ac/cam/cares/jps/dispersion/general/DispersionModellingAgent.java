@@ -1,15 +1,21 @@
 package uk.ac.cam.cares.jps.dispersion.general;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.servlet.annotation.WebServlet;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -18,11 +24,13 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
+import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
@@ -149,28 +157,38 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     }
     
 	private void monitorJobs(){
+		System.out.println("monitor job starts");
 		if(jobSubmission==null){
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
 		jobSubmission.monitorJobs();
+		System.out.println("calling process output");
+		
 		processOutputs();
 	}
 	
 	private void processOutputs()throws JPSRuntimeException {
+
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
+		
 		jobSpace = jobSubmission.getWorkspaceDirectory();
+		logger.info("getting jobspace= "+jobSpace.getAbsolutePath());
+		System.out.println("getting jobspace= "+jobSpace.getAbsolutePath());
 		try {
 			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
+						System.out.println("job is completed");
 						if(!annotateOutputs(jobFolder)) {
+							System.out.println("output annotated");
 							throw new JPSRuntimeException("annotate output fails");
 						}
+						
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							
+							logger.info("job output is processed");
 						}
 					}
 				}
@@ -181,9 +199,79 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		} 
 
 	}
+	
+    public static void unzip(String zipFilePath, String destDir) {
+    	System.out.println("unzipping started");
+        File dir = new File(destDir);
+        // create output directory if it doesn't exist
+        if(!dir.exists()) dir.mkdirs();
+        FileInputStream fis;
+        //buffer for read and write data to file
+        byte[] buffer = new byte[1024];
+        try {
+            fis = new FileInputStream(zipFilePath);
+            ZipInputStream zis = new ZipInputStream(fis);
+            ZipEntry ze = zis.getNextEntry();
+            while(ze != null){
+                String fileName = ze.getName();
+                File newFile = new File(destDir + File.separator + fileName);
+                System.out.println("Unzipping to "+newFile.getAbsolutePath());
+                //create directories for sub directories in zip
+                new File(newFile.getParent()).mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                int len;
+                while ((len = zis.read(buffer)) > 0) {
+                fos.write(buffer, 0, len);
+                }
+                fos.close();
+                //close this ZipEntry
+                zis.closeEntry();
+                ze = zis.getNextEntry();
+            }
+            //close last ZipEntry
+            zis.closeEntry();
+            zis.close();
+            fis.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        
+    }
 
 	protected boolean annotateOutputs(File jobFolder) throws IOException {
-    	return true;
+		System.out.println("annotate output started");
+		
+		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
+		File out= new File(zipFilePath);
+		if(out.isFile()) {
+			String directory = jobFolder.getAbsolutePath() + "/input.json";
+			String destDir = jobFolder.getAbsolutePath() + "/output";
+
+			unzip(zipFilePath, destDir);
+			File json = new File(directory);
+			String content = FileUtils.readFileToString(json);
+			JSONObject jo = new JSONObject(content);
+			String cityIRI = jo.getString("city");
+			String agent = jo.getString("agent");
+			String datapath = jo.getString("datapath");
+			
+			
+	    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
+			String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
+	    	File file2 = new File(destDir+"/icmhour.nc");
+			String destinationUrl2 = datapath + "/icmhour.nc";
+	    	File file3 = new File(destDir+"/plume_segments.dat");
+			String destinationUrl3 = datapath + "/plume_segments.dat";
+			new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
+			new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
+			new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
+			List<String> topics = new ArrayList<String>();
+	    	topics.add(cityIRI);
+	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics); //annotate
+			
+	    	out.delete();
+		}
+		return true;
 	}
 	
 	protected JSONObject getNewRegionData(double upperx, double uppery, double lowerx, double lowery,

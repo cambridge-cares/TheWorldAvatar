@@ -244,4 +244,9 @@ public class EpisodeAgentTest extends TestCase {
 		System.out.println("response= "+resp.toString());
 	}
 
+	public void xxxtestunzipping() {
+		String zipFilePath="C:/Users/KADIT01/EpisodeAgent_33850020283200/login-skylake.hpc.cam.ac.uk_396057028520700"+ "/output.zip";
+		String destDir="C:/Users/KADIT01/EpisodeAgent_33850020283200/login-skylake.hpc.cam.ac.uk_396057028520700"+ "/output";
+		new EpisodeAgent().unzip(zipFilePath, destDir);
+	}
 }
