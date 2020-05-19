@@ -360,7 +360,7 @@ public class JobSubmission{
 		if(scriptFileMsg == null){
 			return null;
 		}
-		String executableFileMsg = ws.copyFile(slurmScript.getAbsolutePath(), jobFolder.getAbsolutePath().concat(File.separator).concat(executable.getName()));
+		String executableFileMsg = ws.copyFile(executable.getAbsolutePath(), jobFolder.getAbsolutePath().concat(File.separator).concat(executable.getName()));
 		if(executableFileMsg == null){
 			return null;
 		}
