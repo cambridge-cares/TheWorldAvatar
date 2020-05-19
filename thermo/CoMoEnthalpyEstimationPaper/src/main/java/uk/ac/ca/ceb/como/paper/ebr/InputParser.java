@@ -95,7 +95,7 @@ public class InputParser {
 	 * @return
 	 */
 	public static String getWhichProcessToRun(String jsonString){
-		return JsonPath.read(jsonString, "$.inputZipFile");
+		return JsonPath.read(jsonString, "$.whichProcessToRun");
 	}
 	/**
 	 * If for a process the reference set and target set of species are the<br>

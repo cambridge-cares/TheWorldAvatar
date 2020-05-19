@@ -33,7 +33,7 @@ public class EBRApproach {
 				ebrApproach.callEBRProcess(args[0]);
 			}
 		} catch (IOException e) {
-			throw new IOException("EBRCode: IOException occurred.");
+			throw new IOException("EBRCode:"+e.getMessage());
 		}
 	}
 	
@@ -44,12 +44,10 @@ public class EBRApproach {
 	 * @param jsonInputFileName the JSON input file name including the extension  
 	 */
 	public void callEBRProcess(String jsonInputFileName) throws Exception{
-		String jsonInput = null;
-		// Decompresses the zip file that contains all input files. 
-		FileUtils.getUnzipFolder(InputParser.getInputZipFile(jsonInputFileName));
 		EBRApproach ebrApproach = new EBRApproach();
-		jsonInput = ebrApproach.readJsonFile(jsonInputFileName);
-		ebrApproach.callEBRProcess(jsonInput);
+		String jsonInput = ebrApproach.readJsonFile(jsonInputFileName);
+		// Decompresses the zip file that contains all input files. 
+//		FileUtils.getUnzipFolder(InputParser.getInputZipFile(jsonInput));
 		if (jsonInput.isEmpty()) {
 			throw new IOException("EBRCode: The JSON input file is empty.");
 		}
@@ -71,13 +69,13 @@ public class EBRApproach {
 	private void runCrossValidation(String jsonInput) throws Exception{
 		LeaveOneOutCrossValidationAlgorithm leaveOneOutCrossValidationAlgorithm = new LeaveOneOutCrossValidationAlgorithm();
 		leaveOneOutCrossValidationAlgorithm.runGlobalCrossValidation(
-				InputParser.getSrcCompoundsRef("srcCompoundsRef") + "/",
-				InputParser.getSrcRefPool("srcRefPool"), InputParser.getDestRList("destRList"),
-				EvaluationUtils.getCtrRuns(InputParser.getCtrRuns("ctrRuns")),
-				EvaluationUtils.getCtrRuns(InputParser.getCtrRes("ctrRes")),
-				EvaluationUtils.getCtrRuns(InputParser.getCtrRadicals("ctrRadicals")),
-				EvaluationUtils.getReactionType(InputParser.getReactionType("reactionType")),
-				InputParser.getTempFolder("tempFolder") + "/");
+				InputParser.getSrcCompoundsRef(jsonInput) + "/",
+				InputParser.getSrcRefPool(jsonInput), InputParser.getDestRList(jsonInput),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRuns(jsonInput)),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRes(jsonInput)),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRadicals(jsonInput)),
+				EvaluationUtils.getReactionType(InputParser.getReactionType(jsonInput)),
+				InputParser.getTempFolder(jsonInput) + "/");
 	}
 	
 	/**
@@ -87,14 +85,14 @@ public class EBRApproach {
 	 */
 	private void calculateEoF(String jsonInput) throws Exception{
 		EnthalpyEstimation enthalpyEstimation = new EnthalpyEstimation();
-		enthalpyEstimation.estimateEnthalpy(InputParser.getSrcCompoundsRef("srcCompoundsRef") + "/",
-				InputParser.getSrcRefPool("srcRefPool"), InputParser.getSrcTargetPool("srcTargetPool"), 
-				InputParser.getDestRList("destRList"),
-				EvaluationUtils.getCtrRuns(InputParser.getCtrRuns("ctrRuns")),
-				EvaluationUtils.getCtrRuns(InputParser.getCtrRes("ctrRes")),
-				EvaluationUtils.getCtrRuns(InputParser.getCtrRadicals("ctrRadicals")),
-				EvaluationUtils.getReactionType(InputParser.getReactionType("reactionType")),
-				InputParser.getTempFolder("tempFolder") + "/");
+		enthalpyEstimation.estimateEnthalpy(InputParser.getSrcCompoundsRef(jsonInput) + "/",
+				InputParser.getSrcRefPool(jsonInput), InputParser.getSrcTargetPool(jsonInput), 
+				InputParser.getDestRList(jsonInput),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRuns(jsonInput)),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRes(jsonInput)),
+				EvaluationUtils.getCtrRuns(InputParser.getCtrRadicals(jsonInput)),
+				EvaluationUtils.getReactionType(InputParser.getReactionType(jsonInput)),
+				InputParser.getTempFolder(jsonInput) + "/");
 	}
 	
 	/**
