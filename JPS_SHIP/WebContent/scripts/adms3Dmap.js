@@ -135,11 +135,11 @@ const initadms3dmap = (
           type: 'Polygon',
           coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
             [
-              [lowLeft[0], topRight[1]],
-              [topRight[0], topRight[1]],
               [topRight[0], lowLeft[1]],
-              [lowLeft[0], lowLeft[1]],
+              [topRight[0], topRight[1]],
               [lowLeft[0], topRight[1]],
+              [lowLeft[0], lowLeft[1]],
+              [topRight[0], lowLeft[1]],
             ],
           ],
         },

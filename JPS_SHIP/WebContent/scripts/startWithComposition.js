@@ -1,4 +1,5 @@
 let osmbGlobal;
+let originRatio = 1;
 //metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
 metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
 sensorIRIs;
@@ -322,7 +323,7 @@ console.log(result)});
             let originRatio = (xmax-xmin)/(ymax-ymin);
             [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
             var canvas = $('#drawcanvas'); canvas.width(1024*radio).height(1024); // 28 Aug 18
-            var svg = $('contoursvg');svg.width(1024*originRatio).height(1024); // 28 Aug 18
+            var svg = $('#contoursvg');svg.attr('width',1024*originRatio).attr('height',1024); // 28 Aug 18
             console.log(xmin+" "+xmax+" "+ymin+" "+ymax)
             const coordinatesMin = getOSMPoint(xmin, ymin);
             const coordinatesMax = getOSMPoint(xmax, ymax);
