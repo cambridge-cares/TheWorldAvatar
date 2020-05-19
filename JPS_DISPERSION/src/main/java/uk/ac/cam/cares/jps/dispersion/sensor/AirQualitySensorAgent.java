@@ -282,7 +282,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				.header("Authorization", currenttoken).asString().getBody();
 		
 		//Get Gas and temperature measurement data using the token
-		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Repeat/1740/1/01")
+		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/1/01")
 					      .header("Accept", "application/json")
 					      .header("Authorization", currenttoken).asString().getBody();
 		JSONArray jArr = new JSONArray(responseGas);
@@ -302,7 +302,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			}
 		}
 		//Get PM measurement data using the token
-		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Repeat/1740/2/01/1")
+		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/2/01/1")
 			      .header("Accept", "application/json")
 			      .header("Authorization", currenttoken).asString().getBody();
 		Unirest.shutDown();
@@ -327,7 +327,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	public void executePeriodicUpdate(String stationiri) {
 		ArrayList<JSONObject> result=getDataFromAPI();
 		int len = result.size()/2;
-		for (int x = 0; x <10; x++) { //assuming same frequency of these two.
+		for (int x = 0; x <len; x++) { //assuming same frequency of these two.
 			JSONObject jGas = result.get(x);
 			JSONObject jPM = result.get(x+len);
 			double concpm10=0.0;
@@ -345,11 +345,11 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			Iterator<String> keys = jGas.keys();
 			while(keys.hasNext()) {
 			    String key = keys.next();
-			    if (jGas.get(key) instanceof JSONObject) {
+			    
 			    	String classname = String.format("Outside%sConcentration", key);
-			    	String value = (String) jGas.get(key);
+			    	String value =jGas.get(key).toString();
 			    	updateRepoNewMethod(stationiri, classname, value, value, directorytime);
-			    }
+			    
 			}
 		}
 		 logger.info("updates finished");
