@@ -375,34 +375,8 @@ public class EBRAgent extends HttpServlet{
 		System.out.println("reference species size: " + referenceSpeciesList.size());
 		LinkedList<String> ontoCompChemIRIList = new LinkedList<String>();
 		Map<String, String> compChemVsOntoSpeciesMap = new HashedMap(); 
-		for(Map<String, Object> map: referenceSpeciesList) {
-			String ontocompchemIRI = null;
-			String ontospeciesIRI = null;
-			for (Map.Entry<String, Object> m : map.entrySet()) {
-				if (m.getKey().matches("ontocompchemIRI")) {
-					ontocompchemIRI = m.getValue().toString();
-					ontoCompChemIRIList.add(ontocompchemIRI);
-				}
-				if(m.getKey().matches("ontospeciesIRI")){
-					ontospeciesIRI = m.getValue().toString();
-				}
-				if(ontocompchemIRI!=null && ontospeciesIRI!=null){
-					compChemVsOntoSpeciesMap.put(ontocompchemIRI, ontospeciesIRI);
-					System.out.println("\n\n\n---------------OntoCompChemIRI:"+ontocompchemIRI);
-					System.out.println("---------------OntoSpeciesIRI:"+ontospeciesIRI);
-				}
-			}
-		}
-		for(Map<String, Object> map: targetSpeciesList) {
-			for (Map.Entry<String, Object> m : map.entrySet()) {
-				if (m.getKey().matches("ontocompchemIRI")) {
-					String speciesIRI = m.getValue().toString();
-					ontoCompChemIRIList.add(speciesIRI);
-				} else {
-					continue;
-				}
-			}
-		}
+		populateOntoCompChemIriDataStructures(referenceSpeciesList, ontoCompChemIRIList, compChemVsOntoSpeciesMap);
+		populateOntoCompChemIriDataStructures(targetSpeciesList, ontoCompChemIRIList, compChemVsOntoSpeciesMap);
 		Map<String, String> gaussianIriVsCompChemMap = new HashedMap(); 
 		LinkedList<String> queryResultList = new LinkedList<String>();
 		for(String s : ontoCompChemIRIList) {
@@ -429,6 +403,45 @@ public class EBRAgent extends HttpServlet{
 		return Utils.getZipFile(inputFolder.getAbsolutePath()); 
 	}
 	
+	/**
+	 * Populates a list of map with the key OntoSpecies IRI and value<br>
+	 * OntoCompChem IRI, only OntoCompChemIRI and a map with the key<br>
+	 * OntoCompChemIRI and the value OntoSpecies IRI. 
+	 * 
+	 * @param speciesList
+	 * @param ontoCompChemIRIList
+	 * @param compChemVsOntoSpeciesMap
+	 */
+	private void populateOntoCompChemIriDataStructures(List<Map<String, Object>> speciesList, LinkedList<String> ontoCompChemIRIList, Map<String, String> compChemVsOntoSpeciesMap){
+		for(Map<String, Object> map: speciesList) {
+			String ontocompchemIRI = null;
+			String ontospeciesIRI = null;
+			for (Map.Entry<String, Object> m : map.entrySet()) {
+				if (m.getKey().matches("ontocompchemIRI")) {
+					ontocompchemIRI = m.getValue().toString();
+					ontoCompChemIRIList.add(ontocompchemIRI);
+				}
+				if(m.getKey().matches("ontospeciesIRI")){
+					ontospeciesIRI = m.getValue().toString();
+				}
+				if(ontocompchemIRI!=null && ontospeciesIRI!=null){
+					compChemVsOntoSpeciesMap.put(ontocompchemIRI, ontospeciesIRI);
+					System.out.println("\n\n\n---------------OntoCompChemIRI:"+ontocompchemIRI);
+					System.out.println("---------------OntoSpeciesIRI:"+ontospeciesIRI);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Link species IDs in reference and target CSV files to Gaussian file<br>
+	 * names via UUIDs, which are used as the IRI of species.
+	 * 
+	 * @param ontoSpeciesIRI
+	 * @param gaussianFileName
+	 * @return
+	 * @throws Exception
+	 */
 	private String getOntoSpeciesIriAsGaussianFileName(String ontoSpeciesIRI, String gaussianFileName) throws Exception{
 		if(!gaussianFileName.contains(".")){
 			throw new Exception("Gaussian file name does not have the extension.");
