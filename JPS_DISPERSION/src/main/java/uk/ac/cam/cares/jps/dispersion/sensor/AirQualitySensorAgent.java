@@ -282,7 +282,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				.header("Authorization", currenttoken).asString().getBody();
 		
 		//Get Gas and temperature measurement data using the token
-		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Repeat/1740/1/01")
+		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/1/01")
 					      .header("Accept", "application/json")
 					      .header("Authorization", currenttoken).asString().getBody();
 		JSONArray jArr = new JSONArray(responseGas);
@@ -302,7 +302,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			}
 		}
 		//Get PM measurement data using the token
-		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Repeat/1740/2/01/1")
+		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/2/01/1")
 			      .header("Accept", "application/json")
 			      .header("Authorization", currenttoken).asString().getBody();
 		Unirest.shutDown();
