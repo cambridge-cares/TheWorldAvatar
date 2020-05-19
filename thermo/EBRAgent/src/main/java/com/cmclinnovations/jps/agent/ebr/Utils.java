@@ -19,11 +19,12 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
-
+import java.util.Enumeration;
 import java.util.List;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipFile;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
@@ -300,4 +301,48 @@ public static File createInputFolder(String jsonInput) throws IOException {
 		return list;
 	}
 
+	   /**
+	    * Given a zip file as input, this method unzips it.
+	    * 
+	    * Note: in future this method should go to the utils
+	    * package of a generic library like JPS_BASE_LIBS. 
+	    * 
+	    * @author NK510 (caresssd@hermes.cam.ac.uk)
+	    * @param zipFilePath the file path of zip file
+	    * 
+	    */
+	   public static void getUnzipFolder(String zipFilePath) {
+		   try {
+			   ZipFile zipFile = new ZipFile(zipFilePath);
+			   Enumeration<?> enumeration = zipFile.entries();
+			   while(enumeration.hasMoreElements()) {
+				   ZipEntry zipEntry = (ZipEntry)enumeration.nextElement();
+				   String zipEntryName = zipEntry.getName();
+				   File fileName = new File(zipEntryName);
+				   if(zipEntryName.endsWith("/")) {
+					   fileName.mkdirs();
+					   continue;
+				   }
+				   File parentFile = fileName.getParentFile();
+				   if(parentFile!=null) {
+					   parentFile.mkdirs();
+				   }
+				   InputStream inputStream = zipFile.getInputStream(zipEntry);
+				   FileOutputStream fileOutputStream = new FileOutputStream(fileName);
+				   byte[] bytes = new byte[2048];
+	               int length;
+	               while ((length = inputStream.read(bytes)) >= 0) {
+	                   fileOutputStream.write(bytes, 0, length);
+	               }
+	               inputStream.close();
+	               fileOutputStream.close();
+			   }
+	           zipFile.close();
+	       } catch (IOException e) {
+	           logger.error(e.getMessage());
+	    	   e.printStackTrace();
+	       }
+	   
+	   }
+	 
 }
