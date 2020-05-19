@@ -82,17 +82,17 @@ public class SpeciesBean extends EBRAgent{
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 	
 	/**
-	 * @param CASRegNr the cas registry id
+	 * @param identifier the identifier
 	 * @param bond the bond
 	 * @param geometry the geometry
 	 * @param standardEnthalpyOfFormation the standard enthalpy of formation
 	 * @param scfEnergy the scf energy
 	 * @param zeroPointEnergy the zero point energy
 	 */
-	public SpeciesBean(String CASRegNr, String bond, String geometry, String standardEnthalpyOfFormation,
+	public SpeciesBean(String identifier, String bond, String geometry, String standardEnthalpyOfFormation,
 			String scfEnergy, String zeroPointEnergy) {
 
-		this.CASRegNr = CASRegNr;
+		this.identifier = identifier;
 		this.bond = bond;
 		this.geometry = geometry;
 		this.scfEnergy = scfEnergy;

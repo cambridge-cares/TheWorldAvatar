@@ -27,6 +27,12 @@ public class EBRAgentProperty {
 	@Value("${ebr.agent.ontocompchem.kb.endpoints}")
 	private String ontoCompChemKBEndPoints;
 	
+	@Value("${ebr.agent.ontospecies.kb.single.endpoint}")
+	private String ontoSpeciesKBSingleEndPoint;
+	
+	@Value("${ebr.agent.ontocompchem.kb.single.endpoint}")
+	private String ontoCompChemKBSingleEndPoint;
+	
 	/**
 	 * Both the OntoSpecies and OntoCompChem endpoints can be listed here.<br>
 	 * This will be used in performing federated queries which involve the<br>
@@ -56,6 +62,14 @@ public class EBRAgentProperty {
 		return Utils.convertStringToList(ontoCompChemKBEndPoints, ",");
 	}
 	
+	public String getOntoSpeciesKBSingleEndPoint() {
+		return ontoSpeciesKBSingleEndPoint;
+	}
+
+	public String getOntoCompChemKBSingleEndPoint() {
+		return ontoCompChemKBSingleEndPoint;
+	}
+
 	public List<String> getEbrAgentEndPoints() {
 		return Utils.convertStringToList(ebrAgentEndPoints, ",");
 	}

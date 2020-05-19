@@ -35,7 +35,8 @@ cd $TMPDIR
 
 cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.json .
 cp $SLURM_SUBMIT_DIR/comoenthalpyestimationpaper.jar .
-cp $SLURM_SUBMIT_DIR/input.zip .
+cp $SLURM_SUBMIT_DIR/*.zip .
+mv *.zip input.zip
 #cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.chk .
 #cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.rwf .
 

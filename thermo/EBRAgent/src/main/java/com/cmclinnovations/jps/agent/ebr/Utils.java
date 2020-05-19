@@ -132,32 +132,6 @@ public class Utils {
 		statusFile.close();
 		return false;
 	}
-		
-	/**
-	 * Modifies the status of job in the status file. 
-	 * 
-	 * @param filePath the path to the status file.
-	 * @param status can be "running" or "completed".
-	 * @throws IOException
-	 */
-	public static void modifyStatus(String filePath, String status) throws IOException{
-		List<String> fileContent = new ArrayList<>();
-		BufferedReader br = openSourceFile(filePath);
-		String line;
-		while((line=br.readLine())!=null){
-		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())) {
-		        line = Status.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(status);
-		    }
-		    fileContent.add(line);
-		}
-		br.close();
-		BufferedWriter bw = openBufferedWriter(filePath);
-		for(String lineContent:fileContent){
-			bw.write(lineContent.concat("\n"));
-		}
-		bw.flush();
-		bw.close();
-	}
 	
 	/**
 	 * Modifies the output to processed in the status file. 
@@ -183,21 +157,6 @@ public class Utils {
 		}
 		bw.flush();
 		bw.close();
-	}
-	
-	/**
-	 * Finds the status file from a list of files related to a job.
-	 *  
-	 * @param filePaths paths to all files in a job folder.
-	 * @return
-	 */
-	public static File getStatusFile(List<String> filePaths){
-		for(String filePath:filePaths){
-			if(filePath.toLowerCase().endsWith(Status.STATUS_FILE.getName().toLowerCase())){
-				return new File(filePath);
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -286,9 +245,7 @@ public static File getZipFile(String folderName) throws IOException {
  * @throws IOException
  */
 public static void copyFileFromURL(String fileUrl, String destinationFilePath) throws MalformedURLException, IOException {
-	
 	InputStream in = new URL(fileUrl).openStream();
-	
 	Files.copy(in, Paths.get(destinationFilePath),StandardCopyOption.REPLACE_EXISTING);
 }
 
@@ -301,7 +258,7 @@ public static void copyFileFromURL(String fileUrl, String destinationFilePath) t
  * @param jsonInput the JSON input string. 
  * @throws IOException
  */
-public static void createInputFolder(String jsonInput) throws IOException {
+public static File createInputFolder(String jsonInput) throws IOException {
 
 	String inputFolderPath =JSonRequestParser.getDFTCalculationPath(jsonInput);
 	
@@ -318,8 +275,7 @@ public static void createInputFolder(String jsonInput) throws IOException {
 	
 	new File(SystemUtils.getUserHome()+File.separator+tokens[0]).mkdir();
 	new File(SystemUtils.getUserHome()+File.separator+inputFolderPath).mkdir();
-	
-
+	return new File(SystemUtils.getUserHome()+File.separator+tokens[0]);
 }
 
 	/**

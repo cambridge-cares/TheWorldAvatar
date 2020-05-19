@@ -36,10 +36,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
-import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.csv.species.CSVGenerator;
-import com.cmclinnovations.jps.kg.OntoAgentKG;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.cmclinnovations.jps.model.species.SpeciesBean;
 import com.cmclinnovations.slurm.job.JobSubmission;
@@ -339,7 +337,6 @@ public class EBRAgent extends HttpServlet{
 	 * @throws Exception 
 	 */
 	private String setUpJobOnAgentMachine(String jsonInput) throws Exception {
-		
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
 					slurmJobProperty.getHpcAddress());
@@ -361,7 +358,7 @@ public class EBRAgent extends HttpServlet{
 	 * 
 	 */
 	public File getInputFile(String jsonInput) throws Exception{
-		Utils.createInputFolder(jsonInput);
+		File inputFolder = Utils.createInputFolder(jsonInput);
 		LinkedList<SpeciesBean> nistRefSpeciesIdList = new LinkedList<SpeciesBean>();
 		LinkedList<SpeciesBean> nistTargetSpeciesIdList = new LinkedList<SpeciesBean>();
 		CSVGenerator csvGenerator = new CSVGenerator();
@@ -373,107 +370,48 @@ public class EBRAgent extends HttpServlet{
 		List<Map<String, Object>> targetSpeciesList =  JSonRequestParser.getAllTargetSpeciesIRI(jsonInput);
 		System.out.println("reference species size: " + referenceSpeciesList.size());
 		System.out.println("target species size: " + targetSpeciesList.size());
-		
 		nistRefSpeciesIdList = SpeciesBean.getSpeciesIRIList(referenceSpeciesList, nistRefSpeciesIdList, oskg, false);
 		nistTargetSpeciesIdList = SpeciesBean.getSpeciesIRIList(targetSpeciesList, nistTargetSpeciesIdList, oskg, true);
-				
 		System.out.println("reference species size: " + referenceSpeciesList.size());
-		
+		LinkedList<String> ontoCompChemIRIList = new LinkedList<String>();
 		for(Map<String, Object> map: referenceSpeciesList) {
-			
-			LinkedList<String> ontoCompChemIRIList = new LinkedList<String>();
-			
-			for(Map.Entry<String, Object> m : map.entrySet()) {
-				
-				if(m.getKey().matches("ontocompchemIRI")) {
-				
-				System.out.println("m.getKey(): " + m.getKey());
-				System.out.println("m.getValue(): " + m.getValue());
-				
-				String speciesIRI =m.getValue().toString();
-					
-				ontoCompChemIRIList.add(speciesIRI);
-				
+			for (Map.Entry<String, Object> m : map.entrySet()) {
+				if (m.getKey().matches("ontocompchemIRI")) {
+					String speciesIRI = m.getValue().toString();
+					ontoCompChemIRIList.add(speciesIRI);
 				} else {
-					
 					continue;
 				}
 			}
-			
-			LinkedList<String> queryResultList = new LinkedList<String>();
-			
-			for(String s : ontoCompChemIRIList) {
-				
-				System.out.println("onto comp chem species iri : " + s);
-				
-				queryResultList.addAll(oskg.queryOntoCompChemSpeciesRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(), s));
-			}
-			
-			for(String gaussianIRI : queryResultList) {
-				
-				System.out.println("gaussianIRI: " + gaussianIRI);
-				
-				String inputSourceGaussianFileOnLocalHost = gaussianIRI;//.replaceAll("http://www.theworldavatar.com/", "http://localhost:8080/");
-
-				String gaussianFileName = inputSourceGaussianFileOnLocalHost.substring(inputSourceGaussianFileOnLocalHost.lastIndexOf("/") + 1);
-				
-				/**
-				 * Copies all uploaded Gaussian files to input folder on users profile
-				 */
-//				String inputFolderPath =JSonRequestParser.getGaussianFolderPath(jsonInput);
-				
-//				String[] tokens = inputFolderPath.split("/");
-//				
-//				System.out.println(tokens[0]);
-//				
-//				if(new File(SystemUtils.getUserHome()+"/"+tokens[0]).exists()) {
-//					
-//					System.out.println(SystemUtils.getUserHome()+File.separator+tokens[0]);
-//					
-//					FileUtils.deleteDirectory(new File(SystemUtils.getUserHome()+File.separator+tokens[0]));
-//				}
-//				
-//				new File(SystemUtils.getUserHome()+File.separator+tokens[0]).mkdir();
-//				new File(SystemUtils.getUserHome()+File.separator+inputFolderPath).mkdir();
-				
-				
-				Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getDFTCalculationPath(jsonInput)+"/" +gaussianFileName);
+		}
+		for(Map<String, Object> map: targetSpeciesList) {
+			for (Map.Entry<String, Object> m : map.entrySet()) {
+				if (m.getKey().matches("ontocompchemIRI")) {
+					String speciesIRI = m.getValue().toString();
+					ontoCompChemIRIList.add(speciesIRI);
+				} else {
+					continue;
+				}
 			}
 		}
-		
+		LinkedList<String> queryResultList = new LinkedList<String>();
+		for(String s : ontoCompChemIRIList) {
+			System.out.println("onto comp chem species iri : " + s);
+			queryResultList.addAll(oskg.queryOntoCompChemSpeciesRepository(ebrAgentProperty.getOntoCompChemKBSingleEndPoint(), s));
+		}
+		for(String gaussianIRI : queryResultList) {
+			System.out.println("gaussianIRI: " + gaussianIRI);
+			String inputSourceGaussianFileOnLocalHost = gaussianIRI;//.replaceAll("http://www.theworldavatar.com/", "http://localhost:8080/");
+			String gaussianFileName = inputSourceGaussianFileOnLocalHost.substring(inputSourceGaussianFileOnLocalHost.lastIndexOf("/") + 1);
+			/**
+			 * Copies all uploaded Gaussian files to input folder on users profile
+			 */
+			Utils.copyFileFromURL(inputSourceGaussianFileOnLocalHost,  SystemUtils.getUserHome()+"/"+JSonRequestParser.getDFTCalculationPath(jsonInput)+"/" +gaussianFileName);
+		}
 		csvGenerator.generateCSVFile(nistRefSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getReferenceSpeciesPool(jsonInput));
 		csvGenerator.generateCSVFile(nistTargetSpeciesIdList, SystemUtils.getUserHome()+"/"+JSonRequestParser.getTargetSpeciesPool(jsonInput));
-    	return new File(SystemUtils.getUserHome()+"/"+JSonRequestParser.getInputZipFile(jsonInput)); //here should be absolute file path of the zip file. 
-	}
-	
-	/**
-	 * Creates the input file for a Slurm job.
-	 * 
-	 * @param inputFilePath
-	 * @param jobFolder
-	 * @param geometry
-	 * @param jsonString
-	 * @return
-	 * @throws IOException
-	 * 
-	 */
-	public String createInputFile(String inputFilePath, String jobFolder, String geometry, String jsonString) throws IOException{
-		BufferedWriter inputFile = Utils.openBufferedWriter(inputFilePath);
-		if(inputFile == null){
-			return null;
-		}
-		inputFile.write(Property.JOB_NO_OF_CORES_PREFIX.getPropertyName().concat(AgentRequirementParser.getNumberOfCores(OntoAgentKG.getNumberOfCores()).concat("\n")));
-		inputFile.write(Property.JOB_MEMORY_PREFIX.getPropertyName().concat(AgentRequirementParser.getRAMSize(OntoAgentKG.getMemorySize()))
-				.concat(Property.JOB_MEMORY_UNITS.getPropertyName()).concat("\n"));
-		inputFile.write(Property.JOB_CHK_POINT_FILE_PREFIX.getPropertyName().concat(slurmJobProperty.getHpcAddress()).concat("_")
-				.concat(getTimeStampPart(jobFolder))
-				.concat(slurmJobProperty.getCheckPointFileExtension()).concat("\n"));
-		inputFile.write(" ".concat(jobFolder).concat("\n\n"));
-		inputFile.write(Property.SPECIES_CHARGE_ZERO.getPropertyName().concat(" ")
-				.concat(Property.SPECIES_MULTIPLICITY.getPropertyName()).concat("\n"));
-		inputFile.write(geometry.concat("\n"));
-		inputFile.close();
-		return Status.JOB_SETUP_SUCCESS_MSG.getName();
+		//Return the input zip file.
+		return Utils.getZipFile(inputFolder.getAbsolutePath()); 
 	}
 	
 	/**
@@ -529,19 +467,13 @@ public class EBRAgent extends HttpServlet{
 	 * 
 	 */
 	public void copyGaussianFile(List<Map<String, Object>> referenceSpeciesList, String inputFolderPathJson,  String referenceSpeciesFilePathIRI ) throws IOException {
-
-		
-		
 		InputStream is = null;
         OutputStream os = null;
-        
         try {
             is = new FileInputStream(referenceSpeciesFilePathIRI);
             os = new FileOutputStream(inputFolderPathJson);
-
             // buffer size 2K
             byte[] buf = new byte[2048];
-
             int bytesRead;
             while ((bytesRead = is.read(buf)) > 0) {
                 os.write(buf, 0, bytesRead);
