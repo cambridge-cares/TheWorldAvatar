@@ -488,9 +488,9 @@ var chart = new Chart(ctx, {
             data: jsOntoCompChemList
         },
         {
-            label: 'Species in OntoSpecies',
-            backgroundColor: 'rgb(255, 50, 60)',
-            borderColor: 'rgb(255, 50, 60)',
+            label: 'Species in OntoKin',
+            backgroundColor: 'rgb(255, 20, 30)',
+            borderColor: 'rgb(255, 20, 30)',
             data: jsOntoKinList
         }
         

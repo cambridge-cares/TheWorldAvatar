@@ -1,12 +1,14 @@
 package uk.ac.ceb.como.action;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
+
 import com.opensymphony.xwork2.ActionSupport;
 
 
@@ -27,11 +29,13 @@ public class StatisticsAction extends ActionSupport {
 
 	private static final long serialVersionUID = 1L;
 	
-	Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));	
+	final static Logger logger = Logger.getLogger(StatisticsAction.class.getName());
 	
-	private String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
-	private String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
-	private String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
+	static Properties kbProperties = PropertiesManager.loadProperties(StatisticsAction.class.getClassLoader().getResourceAsStream("kb.properties"));	
+	
+	private static String ontocompchemkb = kbProperties.getProperty("ontocompchem.kb.local.rdf4j.server.url");
+	private static String ontokinkb = kbProperties.getProperty("ontokin.kb.local.rdf4j.server.url");
+	private static String ontospecieskb = kbProperties.getProperty("ontospecies.kb.local.rdf4j.server.url");
 	
 	private String numberOfCalculations;
 
@@ -59,33 +63,33 @@ public class StatisticsAction extends ActionSupport {
 	
 	private String numberOfReactionsHydrocarbonSpecies;
 	
-	private List<String> labelList = new ArrayList<String>();	
+	private LinkedList<String> labelList = new LinkedList<String>();	
 	
-	private List<String> ontoCompChemDataSetList = new ArrayList<String>();
+	private LinkedList<String> ontoCompChemDataSetList = new LinkedList<String>();
 	
-	private List<String> ontoKinDataSetList = new ArrayList<String>();
+	private LinkedList<String> ontoKinDataSetList = new LinkedList<String>();
 	
 	public List<String> getOntoKinDataSetList() {
 		return ontoKinDataSetList;
 	}
 
-	public void setOntoKinDataSetList(List<String> ontoKinDataSetList) {
+	public void setOntoKinDataSetList(LinkedList<String> ontoKinDataSetList) {
 		this.ontoKinDataSetList = ontoKinDataSetList;
 	}
 
-	public List<String> getOntoCompChemDataSetList() {
+	public LinkedList<String> getOntoCompChemDataSetList() {
 		return ontoCompChemDataSetList;
 	}
 
-	public void setOntoCompChemDataSetList(List<String> ontoCompChemDataSetList) {
+	public void setOntoCompChemDataSetList(LinkedList<String> ontoCompChemDataSetList) {
 		this.ontoCompChemDataSetList = ontoCompChemDataSetList;
 	}
 
-	public List<String> getLabelList() {
+	public LinkedList<String> getLabelList() {
 		return labelList;
 	}
 
-	public void setLabelList(List<String> labelList) {
+	public void setLabelList(LinkedList<String> labelList) {
 		this.labelList = labelList;
 	}
 
@@ -195,30 +199,17 @@ public class StatisticsAction extends ActionSupport {
 	}
 
 	@Override
-	public String execute() throws IOException {
-		
-//		List<String> list = new ArrayList<String>();
-//		
-//		list.add("2020-03-20");
-//		list.add("2020-09-03");
-//		list.add("2020-03-09");
-//		list.add("2022-03-20");
-//		list.add("2022-09-03");
-//		list.add("2022-03-09");
-//		list.add("2021-03-09");
-//		
-//		labelList.addAll(list);
-		
+	public String execute() throws IOException {		
 
 		PropertiesManager propertiesManager = new PropertiesManager();
 		
-		Map<String,String> ontoCompChemMap = new HashMap<String,String>();
+		LinkedHashMap<String,String> ontoCompChemMap = new LinkedHashMap<String,String>();
 		
-		ontoCompChemMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontocompchemkb,  QueryString.getSpeciesIRIOfGaussianCalculations()));
+		ontoCompChemMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontocompchemkb,QueryString.getSpeciesIRIFromOntoCompChem()));
 		
-		Map<String,String> ontoKinMap = new HashMap<String,String>();
+		LinkedHashMap<String,String> ontoKinMap = new LinkedHashMap<String,String>();
 		
-		ontoKinMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontokinkb,  QueryString.getSpeciesIRIFromOntoKin()));
+		ontoKinMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontokinkb,QueryString.getSpeciesIRIFromOntoKin()));
 		
 		LinkedHashMap<String,String> updatedOntoCompChemMap = new LinkedHashMap<String,String>();
 		
@@ -226,10 +217,16 @@ public class StatisticsAction extends ActionSupport {
 		
 		LinkedHashMap<String,String> updatedOntoKinMap = new LinkedHashMap<String,String>();
 		
-		updatedOntoKinMap.putAll(new PropertiesManager().updateFrequenciesMapData(ontoCompChemMap,ontoKinMap));
+		updatedOntoKinMap.putAll(new PropertiesManager().updateFrequenciesMapData(updatedOntoCompChemMap,ontoKinMap));
 		
-		List<String> list = new ArrayList<String>();
-		List<String> ontoCompChemList = new ArrayList<String>();
+		for(Map.Entry<String, String> map: updatedOntoKinMap.entrySet()) {
+			
+			logger.info("key: " + map.getKey() + " value: " +map.getValue());
+		}
+		
+		LinkedList<String> labelListTemp = new LinkedList<String>();
+		LinkedList<String> ontoCompChemDataSetListTemp = new LinkedList<String>();
+		
 		/**
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
 		 * Updated onto compchem data
@@ -237,17 +234,12 @@ public class StatisticsAction extends ActionSupport {
 		 */
 		for(Map.Entry<String, String> compChemMap: updatedOntoCompChemMap.entrySet()) {
 			
-			list.add(compChemMap.getKey());
-			ontoCompChemList.add(compChemMap.getValue());
-		
+			labelListTemp.add(compChemMap.getKey());
+			ontoCompChemDataSetListTemp.add(compChemMap.getValue());
 		}
 		
-		ontoCompChemDataSetList.addAll(ontoCompChemList);
-		
-		labelList.addAll(list);
+		LinkedList<String> ontoKinDataSetListTemp = new LinkedList<String>();
 
-		
-		List<String> ontoKinList = new ArrayList<String>();
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -256,10 +248,26 @@ public class StatisticsAction extends ActionSupport {
 		 */
 		for(Map.Entry<String, String> m: updatedOntoKinMap.entrySet()) {
 			
-			ontoKinList.add(m.getValue());
+			ontoKinDataSetListTemp.add(m.getValue());
 		}
 		
-		ontoKinDataSetList.addAll(ontoKinList);
+		labelList.addAll(labelListTemp);
+		ontoCompChemDataSetList.addAll(ontoCompChemDataSetListTemp);
+		ontoKinDataSetList.addAll(ontoKinDataSetListTemp);
+		
+		logger.info("OntoCompChem data set list:");		
+		for(String s: ontoCompChemDataSetList) {
+			
+			logger.info(s);
+		}
+		
+
+		logger.info("OntoKin data set list:");
+		for(String s: ontoKinDataSetList) {
+			
+			logger.info(s);
+		}
+		
 		
 		/**
 		 * 

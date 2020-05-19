@@ -96,7 +96,7 @@ public class PropertiesManager {
 	 * @throws IOException
 	 * 
 	 */
-	public Map<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString) throws MalformedURLException, IOException{
+	public LinkedHashMap<String,String> getFrequencyOfSpeciesPerDate(String serverUrl, String queryString) throws MalformedURLException, IOException{
 		
 		LinkedList<String> linkedList = new LinkedList<String>();
 		
@@ -153,8 +153,9 @@ public class PropertiesManager {
 //		for(Map.Entry<String, String> m: treeMap.entrySet()) {			
 //			System.out.println(m.getKey() + " " + m.getValue());
 //		}
+		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
 		
-		return treeMap;
+		return linkedHashMap;
 	}
 	
 	/**
@@ -166,7 +167,7 @@ public class PropertiesManager {
 	 * @param targetMap the target map of number of uploaded species per given date.
 	 * @return the updated target map of number of uploaded species per given date.
 	 */
-	public Map<String, String> updateFrequenciesMapData(Map<String,String> sourceMap, Map<String,String> targetMap){
+	public LinkedHashMap<String, String> updateFrequenciesMapData(Map<String,String> sourceMap, Map<String,String> targetMap){
 		
 		for(Map.Entry<String, String> m: sourceMap.entrySet()) {
 			
@@ -182,7 +183,9 @@ public class PropertiesManager {
 		 */
 		Map<String, String> treeMap = new TreeMap<String, String>(targetMap);
 		
-		return treeMap;
+		LinkedHashMap<String,String> linkedHashMap = new LinkedHashMap<String,String>(treeMap);
+		
+		return linkedHashMap;
 		
 	}
 }

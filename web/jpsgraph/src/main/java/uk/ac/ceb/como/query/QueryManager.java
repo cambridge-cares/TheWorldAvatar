@@ -49,7 +49,9 @@ public class QueryManager {
 
 					BindingSet bindingSet = result.next();
 					
-					queryResult =bindingSet.getValue("sum").stringValue();					
+					queryResult =bindingSet.getValue("sum").stringValue();		
+					
+					
 				}
 
 			} catch (Exception e) {

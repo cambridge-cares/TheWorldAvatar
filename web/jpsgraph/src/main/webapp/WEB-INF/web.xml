@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-  <display-name>Struts 2 Web Application</display-name>
+  <display-name>Sefl growing knowledge graph: statistics</display-name>
   
   <filter>
 	<filter-name>struts2</filter-name>

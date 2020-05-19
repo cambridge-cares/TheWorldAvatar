@@ -67,11 +67,19 @@ public class QueryString {
  public static String getNumberOfSpeciesInOntoKin() {
 	 
 	 String query = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
-	 		+ "PREFIX ontokin: <http://theworldavatar.com/kb/ontokin/ontokin.owl#> "
-	 		+ "SELECT (count(?s) AS ?sum) "
+	 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "PREFIX ontokin1: <http://theworldavatar.com/kb/ontokin/ontokin.owl#> "
+	 		+ "SELECT (count(?speciesIRI) as ?sum) "
 	 		+ "WHERE { "
-	 		+ "?s rdf:type ontokin:Species . "
-	 		+ "}";
+	 		+ "{"
+	 		+ "?speciesIRI rdf:type ontokin:Species . "
+	 		+ "}"
+	 		+ "UNION "
+	 		+ "{"
+	 		+ "?speciesIRI rdf:type ontokin1:Species . "
+	 		+ "}"
+	 		+ "}"; 
+	 		
 	 
 	 return query;
  }
@@ -270,7 +278,7 @@ public class QueryString {
 	 return query;
  }
  
- public static String getSpeciesIRIOfGaussianCalculations() {
+ public static String getSpeciesIRIFromOntoCompChem() {
 	 
 		String query = "PREFIX gc: <http://purl.org/gc/>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
@@ -286,15 +294,20 @@ public class QueryString {
  
  public static String getSpeciesIRIFromOntoKin() {
 	 
-	 String query="PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> " + 
-	 		"PREFIX ontokin: <http://theworldavatar.com/kb/ontokin/ontokin.owl#>  " + 
-	 		"SELECT ?s " + 
-	 		"WHERE { " + 
-	        "?s rdf:type ontokin:Species . " + 
-	 		"}";
+	 String query= "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
+		 		+ "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#> "
+		 		+ "PREFIX ontokin1: <http://theworldavatar.com/kb/ontokin/ontokin.owl#> "
+		 		+ "SELECT ?s "
+		 		+ "WHERE { "
+		 		+ "{"
+		 		+ "?s rdf:type ontokin:Species . "
+		 		+ "}"
+		 		+ "UNION "
+		 		+ "{"
+		 		+ "?s rdf:type ontokin1:Species . "
+		 		+ "}"
+		 		+ "}"; 
 	 		
 	 		return query;
  }
- 
- 
 }
