@@ -46,15 +46,14 @@ import com.cmclinnovations.slurm.job.SlurmJob;
 import com.cmclinnovations.slurm.job.Status;
 import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
-import com.jayway.jsonpath.JsonPath;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 /**
- * Quantum Calculation Agent developed for setting-up and running quantum
- * jobs at increasing levels of theory.   
+ * EBR Agent is developed for setting-up and running thermodata validation<br>
+ * and calculation jobs at increasing levels of theory.   
  * 
  * @author msff2
  *
@@ -102,7 +101,7 @@ public class EBRAgent extends HttpServlet{
      * Allows to perform a SPARQL query of any complexity.</br>
      * JSON content contains a file path to input JSON file.
      * 
-     * @param input the JSON input to set up and run a quantum job. The JSON
+     * @param input the JSON input to set up and run an EBR job. The JSON
      * @return a message if the job was set up successfully or failed. 
 	 * @throws Exception
 	 *  
@@ -130,7 +129,7 @@ public class EBRAgent extends HttpServlet{
      * Allows to perform a SPARQL query of any complexity.</br>
      * It returns the results in JSON format.
      * 
-     * @param input the JSON input to set up and run a quantum job.
+     * @param input the JSON input to set up and run an EBR job.
      * @return a message if the job was set up successfully or failed. 
 	 * @throws Exception 
      */
@@ -144,7 +143,7 @@ public class EBRAgent extends HttpServlet{
 	
 	
 	/**
-     * Shows the following statistics of quantum jobs processed by EBR Agent.</br>
+     * Shows the following statistics of EBR jobs processed by EBR Agent.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -166,7 +165,7 @@ public class EBRAgent extends HttpServlet{
     }
 	
 	/**
-     * Shows the following statistics of quantum jobs processed by EBR Agent.</br>
+     * Shows the following statistics of EBR jobs processed by EBR Agent.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -187,13 +186,13 @@ public class EBRAgent extends HttpServlet{
     }
 	
 	/**
-	 * Starts the scheduler to monitor quantum jobs.
+	 * Starts the scheduler to monitor EBR jobs.
 	 * 
 	 * @throws EBRAgentException
 	 */
 	public void init() throws ServletException{
-        logger.info("---------- Quantum Calculation Agent has started ----------");
-        System.out.println("---------- Quantum Calculation Agent has started ----------");
+        logger.info("---------- EBR Agent (for thermodata validation and calculation) has started ----------");
+        System.out.println("---------- EBR Agent (for thermodata validation and calculation) has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         EBRAgent ebrAgent = new EBRAgent();
        	// the first 60 refers to the delay (in seconds) before the job scheduler
@@ -213,8 +212,8 @@ public class EBRAgent extends HttpServlet{
 		if (ebrAgentProperty == null) {
 			ebrAgentProperty = applicationContextEBRAgent.getBean(EBRAgentProperty.class);
 		}
-		logger.info("---------- Quantum jobs are being monitored  ----------");
-        System.out.println("---------- Quantum jobs are being monitored  ----------");
+		logger.info("---------- EBR jobs are being monitored  ----------");
+        System.out.println("---------- EBR jobs are being monitored  ----------");
        	
 	}
 	
@@ -227,7 +226,7 @@ public class EBRAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Monitors the currently running quantum jobs to allow new jobs to start.</br>
+	 * Monitors the currently running EBR jobs to allow new jobs to start.</br>
 	 * In doing so, it checks if the number of running jobs is less than the</br>
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
@@ -296,7 +295,7 @@ public class EBRAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Sets up a quantum job by creating the job folder and the following files</br>
+	 * Sets up an EBR job by creating the job folder and the following files</br>
 	 * under this folder:</br>
 	 * - the input file.</br>
 	 * - the Slurm script file.</br.
@@ -330,7 +329,7 @@ public class EBRAgent extends HttpServlet{
 	}
 	
 	/**
-	 * Sets up the quantum job for the current input.
+	 * Sets up the EBR job for the current input.
 	 *   
 	 * @param jsonString
 	 * @return
@@ -348,7 +347,7 @@ public class EBRAgent extends HttpServlet{
 	}	
 	
 	/**
-	 * Sets up the quantum job for the current request.
+	 * Sets up the EBR job for the current request.
 	 * 
 	 * @param ws
 	 * @param workspaceFolder
