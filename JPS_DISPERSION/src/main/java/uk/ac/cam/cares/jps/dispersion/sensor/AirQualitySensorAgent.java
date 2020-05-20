@@ -52,9 +52,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		JSONObject response= new JSONObject();
 		String path = request.getServletPath();
 		if(path.contains("/resetAirQualityRepository")) { //used for Both AQMesh and soft sensor use case
-			rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
-	   		 repo = new HTTPRepository(rdf4jServer, repositoryID);
-	   		RepositoryConnection con = repo.getConnection();
+//			rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
+//	   		 repo = new HTTPRepository(rdf4jServer, repositoryID);
+//	   		RepositoryConnection con = repo.getConnection();
 				
 //	   		String[]location= {"singapore,hongkong"};
 //	   		String cityiri= "http://dbpedia.org/resource/Singapore";
@@ -158,10 +158,17 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					index+"COSensor-" + number + ".owl", index+"SO2Sensor-" + number + ".owl",
 					index+"O3Sensor-" + number + ".owl", index+"NO2Sensor-" + number + ".owl",
 					index+"NOSensor-" + number + ".owl", index+"NOxSensor-" + number + ".owl",
+					index+"HCSensor-" + number + ".owl",
 					index+"PM1Sensor-" + number + ".owl", index+"PM2.5Sensor-" + number + ".owl",index+"PM10Sensor-" + number + ".owl"};
 			String context = "http://www.theworldavatar.com/kb/"+midfix+"/AirQualityStation-" + number
 					+ ".owl#AirQualityStation-" + number;
 			if (location.contains("AQ")) {
+				String[] copyArr = { index+"CO2Sensor-" + number + ".owl",
+					index+"COSensor-" + number + ".owl", index+"SO2Sensor-" + number + ".owl",
+					index+"O3Sensor-" + number + ".owl", index+"NO2Sensor-" + number + ".owl",
+					index+"NOSensor-" + number + ".owl", index+"NOxSensor-" + number + ".owl",
+					index+"PM1Sensor-" + number + ".owl", index+"PM2.5Sensor-" + number + ".owl",index+"PM10Sensor-" + number + ".owl"};
+				filenames = copyArr;
 				context = "http://www.theworldavatar.com/kb/"+midfix+"/AirQualityStationAQMesh-" + number
 						+ ".owl#AirQualityStationAQMesh-" + number;
 				
@@ -459,16 +466,23 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			if(x<10) {
 				index="00"+x;
 			}
-			String name="AQMeshSensor-001";
-			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-"+index+".owl#AirQualityStationAQMesh-"+index;
+			String name="AirSensor-001";
+			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
+		
+			if (location.contains("AQ")) {
+				name="AQMeshSensor-001";
+				context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-"+index+".owl#AirQualityStationAQMesh-"+index;
+			}
 			List<String>info= new ArrayList<String>();
 			info.add(cityiri);
 			info.add(name);
 			info.add("0"); //overallpsi
-			String locationname="Location 2450495"; //(for AQMESH)
-			String serialnumber="2450495";
-			info.add(locationname);// (for AQMESH)
-			info.add(serialnumber);
+			if (location.contains("AQ")) {
+				String locationname="Location 2450495"; //(for AQMESH)
+				String serialnumber="2450495";
+				info.add(locationname);// (for AQMESH)
+				info.add(serialnumber);
+				}
 			a.insertDataRepoContext(info,context);
 		
 		}
@@ -526,7 +540,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 //			a.insertDataRepoContext(info,context);
 //
 //		}
-		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
+		resetAllAQMesh("singapore", "http://dbpedia.org/resource/Singapore");
 		//uploadData("http://dbpedia.org/resource/Singapore");
 
 			System.out.println("update is done");		
