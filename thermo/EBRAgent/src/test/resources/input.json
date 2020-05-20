@@ -1,0 +1,29 @@
+{"job":
+{
+"referenceSpecies": [ 
+{"ontospeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/f2b02ae7-542b-3f63-a81b-af688ae86865.owl#f2b02ae7-542b-3f63-a81b-af688ae86865",
+"ontocompchemIRI": "http://www.theworldavatar.com/kb/ontocompchem/1f1387e6-ffb2-3e73-80c9-25428f053fcf/1f1387e6-ffb2-3e73-80c9-25428f053fcf.owl#1f1387e6-ffb2-3e73-80c9-25428f053fcf"},
+{"ontospeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/e099e8c2-6a7d-3988-ada5-b2488c3d66c6.owl#e099e8c2-6a7d-3988-ada5-b2488c3d66c6",
+"ontocompchemIRI": "http://www.theworldavatar.com/kb/ontocompchem/dd214d1f-5970-34e5-b00c-6498b16245d2/dd214d1f-5970-34e5-b00c-6498b16245d2.owl#dd214d1f-5970-34e5-b00c-6498b16245d2"},
+{"ontospeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/bcbbebed-5a4f-35db-9c66-4e23d04d7a46.owl#bcbbebed-5a4f-35db-9c66-4e23d04d7a46",
+"ontocompchemIRI": "http://www.theworldavatar.com/kb/ontocompchem/88a250ca-76f3-3ec6-bda2-86155f5cba32/88a250ca-76f3-3ec6-bda2-86155f5cba32.owl#88a250ca-76f3-3ec6-bda2-86155f5cba32"},
+{"ontospeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/8733413d-5c0f-37ae-9bae-7fe24b1ae7f3.owl#8733413d-5c0f-37ae-9bae-7fe24b1ae7f3",
+"ontocompchemIRI": "http://www.theworldavatar.com/kb/ontocompchem/59eab8e9-b0ae-3670-be19-a6e1ca138fdb/59eab8e9-b0ae-3670-be19-a6e1ca138fdb.owl#59eab8e9-b0ae-3670-be19-a6e1ca138fdb"}],
+"targetSpecies": 
+[
+{"ontospeciesIRI": "http://www.theworldavatar.com/kb/ontospecies/00b7e248-ae24-35bf-b7a0-b470b923ddf6-1-co2-1.owl#00b7e248-ae24-35bf-b7a0-b470b923ddf6-1-co2-1",	
+"ontocompchemIRI": "http://www.theworldavatar.com/kb/ontocompchem/1608b34f-9f9a-37d0-b542-ba9e3152125c/1608b34f-9f9a-37d0-b542-ba9e3152125c.owl#1608b34f-9f9a-37d0-b542-ba9e3152125c"}]
+},
+"srcCompoundsRef": "input/g09",
+"srcRefPool": "input/referenceSpecies.csv",
+"srcTargetPool": "input/targetSpecies.csv",
+"destRList": "output",
+"tempFolder": "temp",
+"reactionType": "ISG",
+"ctrRuns": 1,
+"ctrRes": 1,
+"ctrRadicals": 0,
+"inputZipFile": "input.zip",
+"whichProcessToRun": "calculation",
+"isRefAndTargetSetSame": false,
+}

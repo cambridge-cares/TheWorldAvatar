@@ -331,7 +331,7 @@ public class DFTAgent extends HttpServlet{
     	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
     		throw new DFTAgentException(Status.JOB_SETUP_SPECIES_IRI_MISSING.getName());
     	}
-		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI);
+		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI, slurmJobProperty);
 		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
 			throw new DFTAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
     	}

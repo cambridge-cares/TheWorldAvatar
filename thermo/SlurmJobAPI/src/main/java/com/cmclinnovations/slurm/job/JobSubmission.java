@@ -360,7 +360,7 @@ public class JobSubmission{
 		if(scriptFileMsg == null){
 			return null;
 		}
-		String executableFileMsg = ws.copyFile(slurmScript.getAbsolutePath(), jobFolder.getAbsolutePath().concat(File.separator).concat(executable.getName()));
+		String executableFileMsg = ws.copyFile(executable.getAbsolutePath(), jobFolder.getAbsolutePath().concat(File.separator).concat(executable.getName()));
 		if(executableFileMsg == null){
 			return null;
 		}
@@ -477,7 +477,7 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() {
-		// initialising classes to read properties from the dft-agent.properites file
+		// initialising classes to read properties from the slurm-job.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -719,7 +719,7 @@ public class JobSubmission{
 					downloadFile(Utils.getLogFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 					updateStatusForErrorTermination(statusFile, Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
 				}else{
-					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobLogFilePathOnAgentPC(runningJob, jobSpace));
+					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, jobSpace, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
 				}
 				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()));
 				return true;

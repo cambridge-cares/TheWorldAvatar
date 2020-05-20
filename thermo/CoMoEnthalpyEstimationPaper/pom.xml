@@ -7,118 +7,78 @@
     <version>0.0.0</version>
     <packaging>jar</packaging>
     <dependencies>
-    <!-- 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
-     -->
-    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
-<dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter-api</artifactId>
-    <version>5.5.2</version>
-    <scope>test</scope>
-</dependency>
-    
-    
+	    <!-- 
+	        <dependency>
+	            <groupId>junit</groupId>
+	            <artifactId>junit</artifactId>
+	            <version>4.12</version>
+	            <scope>test</scope>
+	        </dependency>
+	     -->
+	    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.5.2</version>
+		    <scope>test</scope>
+		</dependency>
         <dependency>
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
             <version>1.2.17</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-exec</artifactId>
             <version>1.3</version>
         </dependency>
-    
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-    
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.4</version>
         </dependency>
-    
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>12.0.1</version>
         </dependency>
-    
         <dependency>
             <groupId>net.sf.opencsv</groupId>
             <artifactId>opencsv</artifactId>
             <version>2.0</version>
         </dependency>
-        
         <dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>4.0</version>
 		</dependency>
-		
-        
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
-<dependency>
-    <groupId>com.googlecode.json-simple</groupId>
-    <artifactId>json-simple</artifactId>
-    <version>1.1.1</version>
-</dependency>
-        
+		<dependency>
+		    <groupId>com.googlecode.json-simple</groupId>
+		    <artifactId>json-simple</artifactId>
+		    <version>1.1.1</version>
+		</dependency>
         <!-- https://mvnrepository.com/artifact/org.json/json -->
-<dependency>
-    <groupId>org.json</groupId>
-    <artifactId>json</artifactId>
-    <version>20190722</version>
-</dependency>
-
-		
-        
-        <!-- 
-        - author: nk510
-        - dependency comment added: 04th-April-2018. 
-        -->
-        
-        <!--
-        
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20190722</version>
+		</dependency>
+		<dependency>
+    		<groupId>com.jayway.jsonpath</groupId>
+    		<artifactId>json-path</artifactId>
+    		<version>2.4.0</version>
+		</dependency>
         <dependency>
-            <groupId>org.gnu.glpk</groupId>
-            <artifactId>glpk-java</artifactId>
-            <version>1.0.30</version>
-        </dependency> 
-        
-        -->
-        
-        <dependency>
-        
-        <!-- 
-        
-        - installation instructions are given at: http://glpk-java.sourceforge.net/ 
-        - author: nk510
-        -->
-        
-            <groupId>org.gnu.glpk</groupId>
-            <artifactId>glpk-java</artifactId>
-            
-            <!-- old version commented: 04th-April-2018.--> 
-            
-            <!--<version>1.0.30</version>-->
-            
-            <!-- new version added on 04th-April-2018.-->
-            <version>1.12.0</version>
-        
+           <groupId>org.gnu.glpk</groupId>
+           <artifactId>glpk-java</artifactId>
+           <version>1.12.0</version>
         </dependency>
-        
-        
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>CoMoTools</artifactId>
@@ -130,17 +90,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            
-            <!--removed org: 04th-April-2018.-->
-            <groupId>com.cmclinnovations</groupId>
-            <artifactId>CMCLIO</artifactId>
-            
-            <!--Comment added: 04th-April-2018.-->
-            <!--<version>0.0.1</version>-->
-            
-            <!--New version added: 04th-April-2018.-->
-            <version>0.0.1-SNAPSHOT</version>
-            
+           <groupId>com.cmclinnovations</groupId>
+           <artifactId>CMCLIO</artifactId>
+           <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -159,45 +111,102 @@
         </dependency>
     </dependencies>
     <repositories>
-    
-        <!-- 
-        - author: nk510. 
-        - repository commented: 04th-April-2018.
-        --> 
-        
-        <!--repository>
-            <id>maven.ch</id>
-            <name>ch.cam.ac.uk Maven2</name>
-            <url>https://maven.ch.cam.ac.uk/m2repo</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository-->
-        
-        <repository>
-            <id>com.hp.hpl.jena</id>
-            <url>http://openjena.org/repo</url>
-        </repository>
-     
-        <repository>
-        
-        <!--
-        - author: nk510 
-        - glpk repository required. Added 04th-April-2018. 
-        - instructions given at: http://glpk-java.sourceforge.net/
-        -->
-            <id>XypronRelease</id>
-            <name>Xypron Release</name>
-            <url>https://www.xypron.de/repository</url>
-            <layout>default</layout>
-        </repository>
-        
-        
-        
+       <repository>
+           <id>com.hp.hpl.jena</id>
+           <url>http://openjena.org/repo</url>
+      </repository>
+      <repository>
+           <id>XypronRelease</id>
+           <name>Xypron Release</name>
+           <url>https://www.xypron.de/repository</url>
+           <layout>default</layout>
+       </repository>
     </repositories>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source> <!-- 1.7 -->
-        <maven.compiler.target>1.8</maven.compiler.target> <!-- 1.7 -->
     </properties>
+        <build>
+	<plugins>
+	    <!-- Compiles source code -->
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<version>3.3</version>
+		<configuration>     
+		    <arg>-verbose</arg>
+		    <arg>-Xlint:all,-options,-path, unchecked</arg>
+		    <source>1.8</source>
+		    <target>1.8</target>
+		    <showDeprecation>true</showDeprecation>
+		</configuration>
+	    </plugin>
+<!-- 			<plugin> -->
+<!-- 				<artifactId>maven-assembly-plugin</artifactId> -->
+<!-- 				<version>3.1.1</version> -->
+<!-- 				<configuration> -->
+<!-- 					<descriptorRefs> -->
+<!-- 						<descriptorRef>jar-with-dependencies</descriptorRef> -->
+<!-- 					</descriptorRefs> -->
+<!-- 				</configuration> -->
+<!-- 				<executions> -->
+<!-- 					<execution> -->
+<!-- 						<id>make-assembly</id> -->
+<!-- 						<phase>package</phase> -->
+<!-- 						<goals> -->
+<!-- 							<goal>single</goal> -->
+<!-- 						</goals> -->
+<!-- 					</execution> -->
+<!-- 				</executions> -->
+<!-- 			</plugin> -->
+<!-- 			<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-jar-plugin</artifactId>
+        		<configuration>
+          			<archive>
+            			<manifest>
+              				<addClasspath>true</addClasspath>
+              				<mainClass>uk.ac.ca.ceb.como.paper.ebr.EBRApproach</mainClass>
+            			</manifest>
+          			</archive>
+        		</configuration>
+      		</plugin> -->
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<version>3.1.1</version>
+				<configuration>
+					<descriptorRefs>
+						<descriptorRef>jar-with-dependencies</descriptorRef>
+					</descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>uk.ac.ca.ceb.como.paper.ebr.EBRApproach</mainClass>     
+                        </manifest>
+                    </archive>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+<!--             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <mainClass>uk.ac.ca.ceb.como.paper.ebr.EBRApproach</mainClass>     
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+ -->        </plugins>
+    </build>
 </project>

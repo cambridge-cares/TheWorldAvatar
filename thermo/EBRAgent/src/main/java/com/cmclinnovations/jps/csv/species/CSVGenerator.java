@@ -71,7 +71,7 @@ public class CSVGenerator {
 			 */
 			String electronicEnergy = ElectronicEnergyCalculation.getElectronicEnergy(species.getScfEnergy(), species.getZeroPointEnergy());
 			
-			String[] line = { species.getCASRegNr(), electronicEnergy, species.getStandardEnthalpyOfFormation(), seg.generateSpeciesElements(speciesFrequencyMap).toString(),  sbg.generateBondConnectivity(species, updatedSpeciesHashMap).toString() };
+			String[] line = { species.getIdentifier(), electronicEnergy, species.getStandardEnthalpyOfFormation(), seg.generateSpeciesElements(speciesFrequencyMap).toString(),  sbg.generateBondConnectivity(species, updatedSpeciesHashMap).toString() };
 			
 			writer.writeNext(line);			
 		}

@@ -4,10 +4,17 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import com.cmclinnovations.jps.agent.quantum.calculation.Property;
-import com.cmclinnovations.jps.kg.OntoSpeciesKG;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Controller;
 
-public class SpeciesBean {	
+import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
+import com.cmclinnovations.jps.agent.ebr.EBRAgent;
+import com.cmclinnovations.jps.agent.ebr.Property;
+import com.cmclinnovations.jps.kg.OntoSpeciesKG;
+import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
+import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
+@Controller
+public class SpeciesBean extends EBRAgent{	
 
 	private String name = "";
 	private String formula = "";
@@ -75,17 +82,17 @@ public class SpeciesBean {
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 	
 	/**
-	 * @param CASRegNr the cas registry id
+	 * @param identifier the identifier
 	 * @param bond the bond
 	 * @param geometry the geometry
 	 * @param standardEnthalpyOfFormation the standard enthalpy of formation
 	 * @param scfEnergy the scf energy
 	 * @param zeroPointEnergy the zero point energy
 	 */
-	public SpeciesBean(String CASRegNr, String bond, String geometry, String standardEnthalpyOfFormation,
+	public SpeciesBean(String identifier, String bond, String geometry, String standardEnthalpyOfFormation,
 			String scfEnergy, String zeroPointEnergy) {
 
-		this.CASRegNr = CASRegNr;
+		this.identifier = identifier;
 		this.bond = bond;
 		this.geometry = geometry;
 		this.scfEnergy = scfEnergy;
@@ -185,6 +192,7 @@ public class SpeciesBean {
 	
 	/**
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @author msff2 (msff2@cam.ac.uk)
 	 * 
 	 * @param species the List<Map> of species IRIs. Map contains json key as the
 	 *                map key value and speices IRI as a map value.
@@ -194,29 +202,30 @@ public class SpeciesBean {
 	 * @throws Exception
 	 */
 	public static LinkedList<SpeciesBean> getSpeciesIRIList(List<Map<String, Object>> species,
-			LinkedList<SpeciesBean> nistSpeciesIdList, OntoSpeciesKG oskg) throws Exception {
-
+		LinkedList<SpeciesBean> nistSpeciesIdList, OntoSpeciesKG oskg, boolean isTargetSpecies) throws Exception {
 		for (Map<String, Object> speciesMap : species) {
-
 			LinkedList<String> speciesIRIList = new LinkedList<String>();
-
 			for (Map.Entry<String, Object> entry : speciesMap.entrySet()) {
-
 				speciesIRIList.add(entry.getValue().toString());
-
 			}
-
 			String queryString = oskg.getSpeciesQueryFromJsonInput(speciesIRIList.getFirst(), speciesIRIList.getLast());
-
 			System.out.println("");
 			System.out.println("queryString: " + queryString);
-
-			nistSpeciesIdList.addAll(oskg.runFederatedQueryRepositories(
-					Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOSPECIES_END_POINT.getPropertyName(),
-					Property.RDF4J_SERVER_URL_FOR_LOCALHOST_ONTOCOMPCHEM_END_POINT.getPropertyName(), queryString));
-
+			// initialising classes to read properties from the ebr-agent.properites file
+	        if (applicationContextSlurmJobAPI == null) {
+	        	applicationContextSlurmJobAPI = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+			}
+	        if (applicationContextEBRAgent == null) {
+	        	applicationContextEBRAgent = new AnnotationConfigApplicationContext(com.cmclinnovations.jps.agent.configuration.SpringConfiguration.class);
+			}
+			if (slurmJobProperty == null) {
+				slurmJobProperty = applicationContextSlurmJobAPI.getBean(SlurmJobProperty.class);
+			}
+			if (ebrAgentProperty == null) {
+				ebrAgentProperty = applicationContextEBRAgent.getBean(EBRAgentProperty.class);
+			}
+			nistSpeciesIdList.addAll(oskg.querySpecies(ebrAgentProperty.getEbrAgentEndPoints(), queryString, isTargetSpecies));
 		}
-
 		return nistSpeciesIdList;
 	}
 	
