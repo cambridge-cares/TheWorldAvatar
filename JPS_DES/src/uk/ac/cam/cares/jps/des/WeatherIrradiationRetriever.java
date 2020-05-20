@@ -48,7 +48,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 	
 	public JSONObject readWritedatatoOWL(String folder,String iritempsensor,String iriirradiationsensor,String irispeedsensor) throws Exception  { 		
 		new DistributedEnergySystem().copyFromPython(folder, "runpyocr.bat");
-		new DistributedEnergySystem().copyFromPython(folder,"ocrv2.py");
+		new DistributedEnergySystem().copyFromPython(folder,"ocrv1.py");
 		String startbatCommand =folder+"/runpyocr.bat";
 		System.out.println(startbatCommand);
 		try {
