@@ -14,11 +14,15 @@
 #! Setting a larger amount per task increases the number of cores.
 #SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
-#SBATCH --time=92:00:00                      #Wallclock time use.
+#SBATCH --time=00:20:00                      #Wallclock time use.
 #SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
 
 #! Optionally modify the environment seen by the application
 #! (note that SLURM reproduces the environment at submission irrespective of ~/.bashrc):
+. /etc/profile.d/modules.sh                # Leave this line (enables the module command)
+module purge                               # Removes all modules still loaded
+module load default-impi                   # REQUIRED - loads the basic environment
+module load gaussian/09                    # REQUIRED - loads the basic environment
 
 #! Number of nodes and tasks per node allocated by SLURM (do not change):
 numnodes=$SLURM_JOB_NUM_NODES
@@ -29,18 +33,16 @@ numtasks=$SLURM_NTASKS
 #! np=$[${numnodes}*${mpi_tasks_per_node}]
 
 SCRATCH_DIRECTORY=/rds/user/$USER/hpc-work/scratch/$SLURM_JOBID/
-export TMPDIR=$SCRATCH_DIRECTORY
-mkdir -p $TMPDIR
-cd $TMPDIR
+export GAUSS_SCRDIR=$SCRATCH_DIRECTORY
+mkdir -p $SCRATCH_DIRECTORY
+cd $SCRATCH_DIRECTORY
 
-cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.json .
-cp $SLURM_SUBMIT_DIR/comoenthalpyestimationpaper.jar .
-cp $SLURM_SUBMIT_DIR/*.zip .
+cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.com .
 #cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.chk .
 #cp $SLURM_SUBMIT_DIR/$SLURM_JOB_NAME.rwf .
 
-#Run Java
-java -jar comoenthalpyestimationpaper.jar $SLURM_JOB_NAME.json
+#Run Gaussian
+g09 < $SLURM_JOB_NAME.com > $SLURM_JOB_NAME.log
 
 echo
 echo 'Slurm job diagnostics:'
