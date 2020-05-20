@@ -1,5 +1,6 @@
 package com.cmclinnovations.jps.agent.ebr;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,12 +9,14 @@ import java.io.FileOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cmclinnovations.jps.agent.caller.AgentCaller;
 import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.csv.species.CSVGenerator;
@@ -200,6 +204,13 @@ public class EBRAgent extends HttpServlet{
         // tive executions of the scheduler.
         executorService.scheduleAtFixedRate(ebrAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the ebr-agent.properites file
+		initConfig();
+        logger.info("---------- EBR jobs are being monitored  ----------");
+        System.out.println("---------- EBR jobs are being monitored  ----------");
+       	
+	}
+
+	public void initConfig(){
         if (applicationContextSlurmJobAPI == null) {
         	applicationContextSlurmJobAPI = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -212,9 +223,6 @@ public class EBRAgent extends HttpServlet{
 		if (ebrAgentProperty == null) {
 			ebrAgentProperty = applicationContextEBRAgent.getBean(EBRAgentProperty.class);
 		}
-		logger.info("---------- EBR jobs are being monitored  ----------");
-        System.out.println("---------- EBR jobs are being monitored  ----------");
-       	
 	}
 	
 	private void monitorJobs(){
@@ -242,7 +250,7 @@ public class EBRAgent extends HttpServlet{
 				for(File jobFolder: jobFolders){
 					if(Utils.isJobCompleted(jobFolder)){
 						if(!Utils.isJobOutputProcessed(jobFolder)){
-							// Call Upload Service
+							doDFTCalcsOfInvalidSpecies(jobFolder);
 							updateJobOutputStatus(jobFolder);
 						}
 					}
@@ -255,6 +263,8 @@ public class EBRAgent extends HttpServlet{
 		} catch(SftpException e){
 			e.printStackTrace();
 		} catch(JSchException e){
+			e.printStackTrace();
+		} catch(Exception e){
 			e.printStackTrace();
 		}
 	}
@@ -273,6 +283,36 @@ public class EBRAgent extends HttpServlet{
 			throws JSchException, SftpException, IOException, InterruptedException {
 			File statusFile = Utils.getStatusFile(jobFolder);
 			return updateJobOutputStatus(jobFolder.getName(), statusFile);
+	}
+	
+	/**
+	 * Performs DFT calculations of those species that were evaluated as<br>
+	 * holding invalid thermodynamic data.
+	 * 
+	 * @param jobFolder
+	 */
+	public void doDFTCalcsOfInvalidSpecies(File jobFolder) throws IOException, Exception{
+		File outputFile = new File(jobFolder.getAbsolutePath());
+		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(slurmJobProperty.getOutputFileExtension());
+		zipFilePath = zipFilePath.replaceAll("\\\\", "/");
+		String destDir = jobFolder.getAbsolutePath();
+		destDir = destDir.replaceAll("\\\\", "/");
+//		Utils.unzipFile(zipFilePath, destDir);
+//		Utils.unzip(outputFile.getAbsolutePath(), new File(jobFolder.getAbsolutePath()));
+		BufferedReader br = Utils.openSourceFile(jobFolder.getAbsolutePath().concat(File.separator)
+				.concat(ebrAgentProperty.getEbrAgentInvalidSpeciesFolder()).concat(File.separator).concat(ebrAgentProperty.getEbrAgentInvalidSpeciesFile()));
+		String line;
+		while((line=br.readLine())!=null){
+			if(!line.isEmpty()){
+				AgentCaller agentCaller = new AgentCaller();
+				String speciesToRunDFTCalculation = ebrAgentProperty.getEbrAgentOntoSpeciesABoxBaseUrl().concat(line).concat(ebrAgentProperty.getEbrAgentOntoSpeciesABoxFileExtension()).concat("#").concat(line);
+				logger.info("EBRAgent: sending a request to do DFT calculation of the species:"+speciesToRunDFTCalculation);
+				String httpRequest = agentCaller.produceHTTPRequest(speciesToRunDFTCalculation);
+				logger.info("EBRAgent: peforming the following http request to DFT Agent:"+httpRequest);
+				AgentCaller. performHTTPRequest(httpRequest);
+				logger.info("EBRAgent: a DFT job has been submitted.");
+			}
+		}
 	}
 	
 	/**
