@@ -54,6 +54,18 @@ public class EBRAgentProperty {
 	@Value("${ebr.agent.eof.calculation}")
 	private String ebrAgentCalculation;
 
+	@Value("${ebr.agent.invalid.species.folder}")
+	private String ebrAgentInvalidSpeciesFolder;
+
+	@Value("${ebr.agent.invalid.species.file}")
+	private String ebrAgentInvalidSpeciesFile;
+
+	@Value("${ebr.agent.ontospecies.abox.base.url}")
+	private String ebrAgentOntoSpeciesABoxBaseUrl;
+
+	@Value("${ebr.agent.ontospecies.abox.file.extension}")
+	private String ebrAgentOntoSpeciesABoxFileExtension;
+	
 	public List<String> getOntoSpeciesKBEndPoints() {
 		return Utils.convertStringToList(ontoSpeciesKBEndPoints, ",");
 	}
@@ -88,5 +100,21 @@ public class EBRAgentProperty {
 
 	public String getEbrAgentCalculation() {
 		return ebrAgentCalculation;
+	}
+
+	public String getEbrAgentInvalidSpeciesFolder() {
+		return ebrAgentInvalidSpeciesFolder;
+	}
+
+	public String getEbrAgentInvalidSpeciesFile() {
+		return ebrAgentInvalidSpeciesFile;
+	}
+
+	public String getEbrAgentOntoSpeciesABoxBaseUrl() {
+		return ebrAgentOntoSpeciesABoxBaseUrl;
+	}
+
+	public String getEbrAgentOntoSpeciesABoxFileExtension() {
+		return ebrAgentOntoSpeciesABoxFileExtension;
 	}
 }
