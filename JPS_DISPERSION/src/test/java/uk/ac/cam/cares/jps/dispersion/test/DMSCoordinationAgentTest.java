@@ -21,7 +21,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 		JSONObject jo = new JSONObject();
 		//sg:
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "11563323.926");
+		upcorn.put("upperx", "11564077.989");
 		upcorn.put("uppery", "143305.896");
 		JSONObject lowcorn = new JSONObject();
 		lowcorn.put("lowerx", "11560879.832");
@@ -51,6 +51,19 @@ public class DMSCoordinationAgentTest extends TestCase {
 //		JSONObject lowcorn = new JSONObject();
 //		lowcorn.put("lowerx", "12694101.21");
 //		lowcorn.put("lowery", "2534900.06");
+//		JSONObject joregion = new JSONObject();
+//		joregion.put("srsname","EPSG:3857");
+//		joregion.put("lowercorner",lowcorn);
+//		joregion.put("uppercorner",upcorn);
+		
+		//hk adms:
+
+//		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12707952.118");
+//		upcorn.put("uppery", "2546838.028");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12706653.262");
+//		lowcorn.put("lowery", "2545539.172");
 //		JSONObject joregion = new JSONObject();
 //		joregion.put("srsname","EPSG:3857");
 //		joregion.put("lowercorner",lowcorn);

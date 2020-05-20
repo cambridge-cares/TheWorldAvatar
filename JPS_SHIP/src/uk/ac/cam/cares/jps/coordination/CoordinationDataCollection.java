@@ -21,7 +21,7 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 	public void executeSGData(JSONObject jo){
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "11563323.926");
+		upcorn.put("upperx", "11564077.989");
 		upcorn.put("uppery", "143305.896");
 		JSONObject lowcorn = new JSONObject();
 		lowcorn.put("lowerx", "11560879.832");

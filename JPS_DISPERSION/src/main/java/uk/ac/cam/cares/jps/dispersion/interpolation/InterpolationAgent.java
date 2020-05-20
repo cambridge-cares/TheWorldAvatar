@@ -39,6 +39,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns ={"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
@@ -372,8 +373,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @throws InterruptedException
 	 */
 	public void runModel(String baseUrl) throws IOException, InterruptedException {
+		System.out.println("Interpolation agent: Running Model");
 		String startbatCommand =baseUrl+"/runm.bat";
-		String result= executeSingleCommand(baseUrl,startbatCommand);
+		System.out.println("Interpolation agent:startbatcommand= "+startbatCommand);
+//		String result= executeSingleCommand(baseUrl,startbatCommand);
+		String result= CommandHelper.executeSingleCommand(baseUrl, startbatCommand);
 		System.out.println("Interpolation agent:final after calling: "+result);
 	}
 	/** executes the process. Called by runModel. 
