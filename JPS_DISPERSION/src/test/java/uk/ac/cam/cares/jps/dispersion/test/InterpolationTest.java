@@ -17,10 +17,12 @@ public class InterpolationTest extends TestCase{
 	public void testepisoderunTestinSequenceDirect() {
 		InterpolationAgent ag = new InterpolationAgent();
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		String coordinates = "[30207.15 26784.95 0]";
-		String gasType, dispMatrix ="";
+		String stationiri ="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001";
+		
 		String agentiri = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service";
 		String location = "http://dbpedia.org/resource/Singapore";
+		String coordinates =  ag.readCoordinate(stationiri,agentiri);
+		String gasType, dispMatrix ="";
 		String[] directory = ag.getLastModifiedDirectory(agentiri, location);
 		File directoryFolderWrong = new File(directory[0]);
 		String directoryFolder = directoryFolderWrong.getParent();
@@ -46,8 +48,8 @@ public class InterpolationTest extends TestCase{
 		ag.copyTemplate(baseUrl, "virtual_sensor.m");
 		//modify matlab to read 
 			try {
-				ag.createBat(baseUrl, coordinates,gasType, "1", dispMatrix);
-				ag.runModel(baseUrl);
+				ag.createCommand(baseUrl, coordinates,gasType, "1", dispMatrix);
+//				ag.runModel(baseUrl);
 	           
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -73,11 +75,6 @@ public class InterpolationTest extends TestCase{
 	//test processRequestParameters
 	public void testAgentCallfromFrontEnd() {
 		JSONObject jo = new JSONObject();
-//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
-		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		jo.put("options","1");
-		jo.put("coordinates","[364638.312 131904.703 0]");
-		
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
 	}
 	public void testAgentCallfromFrontEndADMS() {

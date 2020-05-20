@@ -39,6 +39,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns ={"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
@@ -108,8 +109,8 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		
 			try {
 				logger.info("starting to create batch file");
-				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
-				runModel(baseUrl);
+				createCommand(baseUrl, coordinates,gasType, options, dispMatrix);
+//				runModel(baseUrl);
 				logger.info("finish Simulation");
 //				notifyWatcher(requestParams, baseUrl+"/exp.csv",
 //	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
@@ -357,13 +358,19 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @param baseUrl
 	 * @throws Exception
 	 */
-	public void createBat(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
+	public void createCommand(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
 		String loc = " virtual_sensor(" + coordinates +"," +gasType
 				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
 		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
 		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
 		+"');"+ loc + "); catch; end; quit\"";
-		new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
+		String args = "";
+        args+="matlab -nosplash -r \"try; ";
+        args+=loc;
+        args+="); catch; end; quit\"";
+        System.out.println(args);
+        String result = CommandHelper.executeSingleCommand(baseUrl, args);
+        System.out.println(result);
 	}
 	/** runs the batch file. 
 	 * 
