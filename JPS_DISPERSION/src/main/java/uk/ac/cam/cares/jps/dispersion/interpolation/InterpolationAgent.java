@@ -107,10 +107,10 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//modify matlab to read 
 		
 			try {
-				logger.info("starting to create batch file");
+				System.out.println("Interpolation agent:starting to create batch file");
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
 				runModel(baseUrl);
-				logger.info("finish Simulation");
+				System.out.println("Interpolation agent:finish Simulation");
 //				notifyWatcher(requestParams, baseUrl+"/exp.csv",
 //	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 //	           
@@ -125,8 +125,8 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 Thread.sleep(120000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
-				 logger.info(arg);
-				 logger.info("it now updating");
+				 System.out.println(arg);
+				 System.out.println("Interpolation agent:it now updating");
 				 //update here
 				 double concpm10=0.0;
 				 double concpm25=0.0;
@@ -158,7 +158,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
-				 logger.info("updates finished");
+				 System.out.println("Interpolation agent:updates finished");
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 
@@ -307,7 +307,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		File file = new File(filename);
 		String writePath = newdir + "/"+"test.dat";
 		File myObj = new File(writePath);
-		logger.info(writePath);
+		System.out.println(writePath);
 		Path fileName = path.getFileName();
 		String destinationUrl = newdir + "/"+fileName.toString();
 		new QueryBroker().putLocal(destinationUrl, file);
@@ -374,7 +374,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	public void runModel(String baseUrl) throws IOException, InterruptedException {
 		String startbatCommand =baseUrl+"/runm.bat";
 		String result= executeSingleCommand(baseUrl,startbatCommand);
-		logger.info("final after calling: "+result);
+		System.out.println("Interpolation agent:final after calling: "+result);
 	}
 	/** executes the process. Called by runModel. 
 	 * 
@@ -386,7 +386,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	private String executeSingleCommand(String targetFolder , String command) throws InterruptedException 
 	{  
 	 
-		logger.info("In folder: " + targetFolder + " Executed: " + command);
+		System.out.println("In folder: " + targetFolder + " Executed: " + command);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		try {
