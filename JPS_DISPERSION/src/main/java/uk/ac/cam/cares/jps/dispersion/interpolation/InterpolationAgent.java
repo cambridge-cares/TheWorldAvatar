@@ -110,7 +110,8 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			try {
 				System.out.println("Interpolation agent:starting to create batch file");
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
-				runModel(baseUrl);
+				createCommand(baseUrl, coordinates, gasType, options, dispMatrix);
+				//runModel(baseUrl);
 				System.out.println("Interpolation agent:finish Simulation");
 //				notifyWatcher(requestParams, baseUrl+"/exp.csv",
 //	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
@@ -569,6 +570,22 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			
 			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
 	}
+    
+    public void createCommand(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
+		String loc = " virtual_sensor(" + coordinates +"," +gasType
+				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
+		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
+		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
+		+"');"+ loc + "); catch; end; quit\"";
+		String args = "";
+        args+="matlab -nosplash -r \"try; ";
+        args+=loc;
+        args+="); catch; end; quit\"";
+        System.out.println(args);
+        String result = CommandHelper.executeSingleCommand(baseUrl, args);
+        System.out.println(result);
+	}
+    
 	private List<String[]> queryEndPointDataset(String querycontext) {
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
