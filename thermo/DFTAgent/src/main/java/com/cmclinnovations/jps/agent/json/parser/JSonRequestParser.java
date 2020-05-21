@@ -18,5 +18,13 @@ public class JSonRequestParser {
 
 	public static String getSpeciesIRI(String jsonString){
 		return JsonPath.read(jsonString, "$.speciesIRI");
+	}
+	
+	public static boolean isInvokingThermoAgentRequired(String jsonString){
+		return JsonPath.read(jsonString, "$.isInvokingThermoAgentRequired");
 	}	
+
+	public static String getOntoCompChemIRI(String jsonString){
+		return JsonPath.read(jsonString, "$.gaussian");
+	}
 }
