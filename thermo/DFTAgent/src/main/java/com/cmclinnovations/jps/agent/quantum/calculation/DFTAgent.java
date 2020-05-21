@@ -49,6 +49,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
+import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
  * jobs at increasing levels of theory.   
@@ -193,14 +195,14 @@ public class DFTAgent extends HttpServlet{
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
 							// Calls Upload Service
-							boolean uploaded = isLogFileUploaded(jobFolder);
+							String uploadMessage = UploadLogFile(jobFolder);
 							// The successful completion of the log file upload
 							// triggers the job status update.
-							if (uploaded) {
+							if (uploadMessage != null) {
 								updateJobOutputStatus(jobFolder);
 								boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
 								if(isInvokingThermodataAgentRequired){
-									
+									invokeThermodataAgent(jobFolder, JSonRequestParser.getOntoCompChemIRI(uploadMessage));
 								}
 							}
 						}
@@ -233,8 +235,9 @@ public class DFTAgent extends HttpServlet{
 	 * @return
 	 * @throws IOException
 	 */
-	private boolean isLogFileUploaded(File jobFolder) throws IOException{
+	private String UploadLogFile(File jobFolder) throws IOException{
 		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
+		String uploadMessage = "";
 		if(logFile.exists()){
 			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
 			try{
@@ -242,12 +245,13 @@ public class DFTAgent extends HttpServlet{
 				compChemUpload.setCalculationFileName(logFile.getName());
 				compChemUpload.setCalculationFilePath(logFile.getAbsolutePath());
 				compChemUpload.setOntoSpeciesIRI(uniqueSpeciesIRI);
-				compChemUpload.upload();
+				uploadMessage = compChemUpload.upload();
 				}catch(Exception e){
+					return null;
 				}
-			return true;
+			return uploadMessage;
 		}else{
-			return false;
+			return null;
 		}
 	}
 	
@@ -265,6 +269,13 @@ public class DFTAgent extends HttpServlet{
 			throws JSchException, SftpException, IOException, InterruptedException {
 			File statusFile = Utils.getStatusFile(jobFolder);
 			return updateJobOutputStatus(jobFolder.getName(), statusFile);
+	}
+	
+	private void invokeThermodataAgent(File jobFolder, String ontoCompChemIRI){
+		JSONObject json = new JSONObject();
+		json.put("gaussian", ontoCompChemIRI);
+		String result = AgentCaller.executeGetWithJsonParameter("/JPS_THERMO/calculation", json.toString());
+		System.out.println("result = " + result);
 	}
 	
 	/**
