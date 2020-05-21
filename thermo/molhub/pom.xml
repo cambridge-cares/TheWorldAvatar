@@ -272,5 +272,12 @@
     <artifactId>javaee-web-api</artifactId>    
     <version>7.0</version> <!-- Put here the version of your Java EE app, in my case 7.0 -->
     <scope>provided</scope>
-</dependency>  </dependencies>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.json/json -->
+<dependency>
+	    <groupId>org.json</groupId>
+	    <artifactId>json</artifactId>
+	    <version>20190722</version>
+</dependency>
+</dependencies>
 </project>
