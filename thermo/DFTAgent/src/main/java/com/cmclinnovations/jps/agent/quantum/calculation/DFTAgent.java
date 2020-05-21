@@ -1,5 +1,7 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
+import static org.junit.Assert.fail;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,6 +37,7 @@ import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.kg.OntoAgentKG;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
+import com.cmclinnovations.jps.upload.CompChemUpload;
 import com.cmclinnovations.slurm.job.JobSubmission;
 import com.cmclinnovations.slurm.job.SlurmJob;
 import com.cmclinnovations.slurm.job.SlurmJobException;
@@ -230,10 +233,14 @@ public class DFTAgent extends HttpServlet{
 		File logFile = new File(jobFolder.getAbsolutePath().concat(File.separator).concat(jobFolder.getName()).concat(slurmJobProperty.getOutputFileExtension()));
 		if(logFile.exists()){
 			String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
-			String jsonInput = generateJSONInput(jobFolder, uniqueSpeciesIRI).toString();
-			// Performs a HTTP request to upload the log file (output) to<br>
-			// the OntoCompChem knowledge graph.   
-			performHTTPRequest(slurmJobProperty.getKgURLToUploadResultViaJsonInput().concat(encodeIntoURLFormat(jsonInput)));
+			try{
+				CompChemUpload compChemUpload = new CompChemUpload();
+				compChemUpload.setCalculationFileName(logFile.getName());
+				compChemUpload.setCalculationFilePath(logFile.getAbsolutePath());
+				compChemUpload.setOntoSpeciesIRI(uniqueSpeciesIRI);
+				compChemUpload.upload();
+				}catch(Exception e){
+				}
 			return true;
 		}else{
 			return false;
