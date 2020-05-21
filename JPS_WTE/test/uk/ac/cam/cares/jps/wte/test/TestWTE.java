@@ -121,8 +121,10 @@ public class TestWTE extends TestCase {
 	public void testReadResult() {
 		WTESingleAgent ag = new WTESingleAgent();
 		try {
-			List<String[]> ae = ag.readResult("C:\\Users\\ongajong\\4.30 WTE-JPS Cluster Continuous and Problem of non-real objective", "x_cluster_allocation.csv");
-		} catch (IOException e) {
+			List<String[]> ae = ag.readResult("C:\\Users\\ongajong\\4_30", "x_cluster_allocation.csv");
+
+			System.out.println(ae.get(0)[0]);
+			} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

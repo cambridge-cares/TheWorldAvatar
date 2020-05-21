@@ -80,7 +80,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
-//			List<String[]> inputoffsitedata = readResult(baseUrl,"x_cluster_allocation.csv");
 			List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
 //			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
 			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
@@ -177,16 +176,23 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> updateinFC(String baseUrl,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
+	public List<String> updateinFC(String baseUrl,
+			List<String> inputdataonsite,
+			List<String[]> inputdataoffsite,
+			List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
 		List<String>selectedOnsite=new ArrayList<String>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
+
+		List<String[]> clusterInputs = readResult(baseUrl,"x_cluster_allocation.csv");
 		List<String[]>onsitemapping=new ArrayList<String[]>();
+		List<String[]>fcmapping=new ArrayList<String[]>();
 		int size=treatedwasteon.size();
 		for(int x=0;x<size;x++) {
 			for(int y=0;y<size;y++) {
 				String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
-				if(Double.parseDouble(wastetransfer)>0.01) {
+				String clusterFC=clusterInputs.get(x)[y]; //in ton/day
+				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(wastetransfer)>0.01)) {
 					String[]linemapping= {""+x,""+y,wastetransfer};
 					onsitemapping.add(linemapping);
 				}
@@ -259,15 +265,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 			}
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
-			try {
-			      FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
-			      myWriter.write(sparql);
-			      myWriter.close();
-			      
-			    } catch (IOException e) {
-			      System.out.println("An error occurred.");
-			      e.printStackTrace();
-			    }
 			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
