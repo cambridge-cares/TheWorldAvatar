@@ -1,7 +1,5 @@
 package com.cmclinnovations.jps.agent.quantum.calculation;
 
-import static org.junit.Assert.fail;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -439,31 +437,6 @@ public class DFTAgent extends HttpServlet{
 	public String getInputFilePath(){
 		return Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getInputFileName())
 		.concat(slurmJobProperty.getInputFileExtension());
-	}
-	
-	/**
-	 * Generates the JSON input for uploading the log file of a DFT job<br>
-	 * by calling the ontocompchemupload service. 
-	 * 
-	 * @param speciesIRIInput
-	 * @return
-	 */
-	private JSONObject generateJSONInput(File jobFolder, String speciesIRIInput){
-		JSONObject input = new JSONObject();
-		input.put(Property.JSON_INPUT_REF_SPECIES.getPropertyName(), jobFolder.getAbsolutePath());
-		input.put(Property.JSON_INPUT_UNIQUE_SPECIES_IRI.getPropertyName(), speciesIRIInput);
-		return input;
-	}
-	
-	/**
-	 * Converts a JSON input into the URL formatted string.
-	 * 
-	 * @param jsonInput
-	 * @return
-	 * @throws UnsupportedEncodingException
-	 */
-	private String encodeIntoURLFormat(String jsonInput) throws UnsupportedEncodingException{
-		return URLEncoder.encode(jsonInput, "UTF-8");
 	}
 	
 	/**
