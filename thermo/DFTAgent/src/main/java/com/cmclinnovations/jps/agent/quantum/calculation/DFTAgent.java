@@ -198,6 +198,10 @@ public class DFTAgent extends HttpServlet{
 							// triggers the job status update.
 							if (uploaded) {
 								updateJobOutputStatus(jobFolder);
+								boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
+								if(isInvokingThermodataAgentRequired){
+									
+								}
 							}
 						}
 					}
