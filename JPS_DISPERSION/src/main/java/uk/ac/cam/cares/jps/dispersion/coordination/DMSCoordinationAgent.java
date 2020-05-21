@@ -91,6 +91,20 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 				newwaste = getNewWasteAsync(reactionMechanism, jsonShip);
 
 				requestParams.put("waste", newwaste);
+				
+		        result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
+		        String folder = new JSONObject(result).getString("folder");
+		        requestParams.put("folder", folder);
+		        
+		        JSONObject newJo= new JSONObject();
+	        	newJo.put("city",city);
+	        	newJo.put("airStationIRI",requestParams.get("airStationIRI").toString());
+	        	newJo.put("agent", requestParams.get("agent").toString());
+			String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", newJo.toString());
+			
+			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
+		        
+		        
 			}
 			
 		} else {
@@ -98,19 +112,23 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			String wasteresult = execute("/JPS/PowerPlant", requestParams.toString());
 			String waste = new JSONObject(wasteresult).getString("waste");
 			requestParams.put("waste", waste);
-		}
-
-        result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
-        String folder = new JSONObject(result).getString("folder");
-        requestParams.put("folder", folder);
-        
-        JSONObject newJo= new JSONObject();
+			
+	        result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
+	        String folder = new JSONObject(result).getString("folder");
+	        requestParams.put("folder", folder);
+	        
+	        JSONObject newJo= new JSONObject();
         	newJo.put("city",city);
         	newJo.put("airStationIRI",requestParams.get("airStationIRI").toString());
         	newJo.put("agent", requestParams.get("agent").toString());
 		String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation", newJo.toString());
 		
 		String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", newJo.toString());
+		}
+
+
+        
+
 //----------------------------------------------------------------------------       
         
 		return requestParams;
