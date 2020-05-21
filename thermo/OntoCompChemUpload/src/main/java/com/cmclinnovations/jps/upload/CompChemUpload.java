@@ -74,7 +74,7 @@ public class CompChemUpload {
 	 * 
 	 * @throws IOException
 	 */
-	public void upload() throws Exception {
+	public String upload() throws Exception {
 		init();
 		if(getCalculationFileName() == null || getCalculationFileName().trim().isEmpty()){
 			throw new Exception("Claculation File Name is not provided.");
@@ -95,11 +95,17 @@ public class CompChemUpload {
 			checkURLValidity(getOntoSpeciesIRI());
 			body = uploadWithOntoSpeciesIRI(getCalculationFileName(), getCalculationFilePath(), getOntoSpeciesIRI());
 		}
+		Response response = null;
 		if(body!=null){
 			Request request = new Request.Builder().url(molhubUploadURL).method("POST", body)
 					.addHeader("Content-Type", "multipart/form-data").build();
-			Response response = client.newCall(request).execute();
+			response = client.newCall(request).execute();
 			System.out.println("respone:" + response.toString());
+		}
+		if(response == null){
+			return null;
+		}else{
+			return response.toString();
 		}
 	}
 	/**
