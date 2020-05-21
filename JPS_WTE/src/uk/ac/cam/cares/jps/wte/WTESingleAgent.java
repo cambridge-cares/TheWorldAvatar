@@ -4,7 +4,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -72,7 +75,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
-		String noOfClusters = requestParams.optString("numOfClusters", "0");
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
 			List<String[]> resu =  readAndDump(model,WastetoEnergyAgent.FCQuery);
@@ -183,16 +185,22 @@ public class WTESingleAgent extends JPSHttpServlet {
 		List<String>selectedOnsite=new ArrayList<String>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
-
+		//109x109
 		List<String[]> clusterInputs = readResult(baseUrl,"x_cluster_allocation.csv");
 		List<String[]>onsitemapping=new ArrayList<String[]>();
 		List<String[]>fcmapping=new ArrayList<String[]>();
 		int size=treatedwasteon.size();
 		for(int x=0;x<size;x++) {
+	        // Put all array elements in a HashSet 
+	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteon.get(x))); 
+	        // HashSet should be 1. As HashSet contains only distinct values. 
+	        if (s.size() == 1) { //if they're all zero, skip the loop
+	        	continue;
+	        }
 			for(int y=0;y<size;y++) {
 				String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
 				String clusterFC=clusterInputs.get(x)[y]; //in ton/day
-				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(wastetransfer)>0.01)) {
+				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
 					String[]linemapping= {""+x,""+y,wastetransfer};
 					onsitemapping.add(linemapping);
 				}
@@ -204,15 +212,23 @@ public class WTESingleAgent extends JPSHttpServlet {
 		int size2=treatedwasteoff.size();
 		int colamount2=treatedwasteoff.get(0).length;
 		for(int x=0;x<size2;x++) {
+			// Put all array elements in a HashSet 
+	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteoff.get(x))); 
+	        // HashSet should be 1. As HashSet contains only distinct values. 
+	        if (s.size() == 1) {
+	        	continue;
+	        }
 			for(int y=0;y<colamount2;y++) { //3tech*3instance
 				String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
-				if(Double.parseDouble(wastetransfer)>0.01) {
+				String clusterFC=clusterInputs.get(x)[y]; //in ton/day
+				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
 					String[]linemapping= {""+x,""+y,wastetransfer};
 					offsitemapping.add(linemapping);
 				}
 			}
 		}
-		
+		//NOTE: Offsite and onsite mapping could be both present!
+		//Also, Only when cluster is present. 
 	
 		
 		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
