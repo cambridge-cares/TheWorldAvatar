@@ -217,7 +217,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String directory = jobFolder.getAbsolutePath() + "/input.json";
 			String destDir = jobFolder.getAbsolutePath() + "/output";
 
-			unzip(zipFilePath, jobFolder.getAbsolutePath());
+			unzip(zipFilePath, destDir);
 			File json = new File(directory);
 			String content = FileUtils.readFileToString(json);
 			JSONObject jo = new JSONObject(content);

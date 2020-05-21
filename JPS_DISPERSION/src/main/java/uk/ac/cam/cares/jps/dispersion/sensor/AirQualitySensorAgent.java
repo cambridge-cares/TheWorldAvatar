@@ -316,7 +316,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			JSONObject joPM = new JSONObject(jArr.get(i).toString());//{}
 			JSONObject jo = new JSONObject();			
 			jo.put("PM1", joPM.getDouble("pm1_prescale"));
-			jo.put("PM2.5", joPM.getDouble("pm2_5_prescale"));
+			jo.put("PM25", joPM.getDouble("pm2_5_prescale"));
 			jo.put("PM10", joPM.getDouble("pm10_prescale"));
 			//gather the json from here. 
 			jo.put("Timestamp", convertTime(joPM.getString("reading_datestamp")));
@@ -340,7 +340,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			double concpm1=0.0;
 			String directorytime = (String) jPM.get("Timestamp");
 			concpm1 = concpm1 + jPM.getDouble("PM1");
-			concpm25 = concpm1 +concpm25 +jPM.getDouble("PM2.5");
+			concpm25 = concpm1 +concpm25 +jPM.getDouble("PM25");
 			concpm10 = concpm25 +concpm10 + jPM.getDouble("PM10");
 			updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 			updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);

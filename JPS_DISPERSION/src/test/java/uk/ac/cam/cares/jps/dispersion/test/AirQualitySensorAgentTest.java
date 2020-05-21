@@ -51,13 +51,13 @@ public class AirQualitySensorAgentTest extends TestCase {
 	/** test to see if response is created and what is the response like
 	 * 
 	 */
-	public void testCallAPI() {
+	public void xxxtestCallAPI() {
 		AirQualitySensorAgent ag = new AirQualitySensorAgent();
 		ArrayList<JSONObject> jo = ag.getDataFromAPI();
 		System.out.println(jo.toString());
 	}
 	
-	public void testdirect() {
+	public void xxxtestdirect() {
 		new AirQualitySensorAgent().executePeriodicUpdate("http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001");
 	}
 	
@@ -66,7 +66,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 	/** Call this to run reset (upload all files to repository)
 	 * require cityiri, location
 	 */
-	public void testAgentCallreset() {
+	public void xxxtestAgentCallreset() {
 		JSONObject jo = new JSONObject();
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", jo.toString());	
 	}
@@ -77,9 +77,10 @@ public class AirQualitySensorAgentTest extends TestCase {
 		String date="16/Apr/2020 12:00:00";
 		//Date date1=new SimpleDateFormat("yyyy-mmm-dd hh:mm:ss").parse(date);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
-		
+		 DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		//pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 		Date date1=dateFormat.parse(date);  
-		String timeformatted=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").format(date1)+"+08:00";
+		String timeformatted=pstFormat.format(date1);
 		System.out.println("new format= "+timeformatted);
 	}
 	
