@@ -13,6 +13,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 
 
+	
+
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
@@ -28,8 +30,7 @@
     
     <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
     
-     <script src="pages/scripts/start.js"></script>
-           
+    <script src="pages/scripts/start.js"></script>     
 	   
 <style type="text/css">
   
@@ -53,7 +54,6 @@ TH {
 #tableName td {
 text-align: left;
 }
-
 
 
 
@@ -148,7 +148,7 @@ Here is java script for visualization molecules.
 
 
 <div class="span-24 last params">
-    <div class="span-12 paramlist">
+    <div class="span-24 paramlist">
         <h2 align="left"></h2>
         
 
@@ -190,9 +190,9 @@ Here is java script for visualization molecules.
 <p></p>
 <p></p>
 <p></p>
-<!-- <img src = "http://www.theworldavatar.com/data/ontocompchem/00ff391e-ac39-36e1-9f86-57aba71e6f64/00ff391e-ac39-36e1-9f86-57aba71e6f64.png" width="500" height="250"/>-->
  
 <!-- Self growing knowledge graph statistics -->  
+
 <table border="5" style="text-align:center">
  
   <tr>
@@ -268,14 +268,14 @@ Here is java script for visualization molecules.
       
       
       <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
-       <s:property value="numberOfSpeciesInOntoSpecies"/> 
+       <s:property value="numberOfSpeciesInOntoSpecies"/>
       </td>
       
       <td class="noBorder" width="150"  height="15"/>
       
       
       <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border: 5px;" bgcolor="lightgray">
-        <s:property value="numberOfSynonyms"/>
+       <s:property value="numberOfSynonyms"/>
       </td>
       
       <td class="noBorder" width="150"  height="15"/>
@@ -352,6 +352,7 @@ Here is java script for visualization molecules.
       
       
       <td height="15" width="300" colspan="2" style="font-size: 35px;" style="border:5px;" bgcolor="lightgray">
+      
       <s:property value="numberOfReactionMechanisms"/>
       </td>
       
@@ -435,15 +436,11 @@ Here is java script for visualization molecules.
       
       
       <td class="noBorder" width="150"  height="15"/>
-       
       
+</tr>
       
-   </tr>
- 
+ </table>
 
-   
-  </table>
- 
 <p></p>
 <p></p>
 <p></p>
@@ -482,13 +479,13 @@ var chart = new Chart(ctx, {
     data: {
        labels: jsList,
         datasets: [{
-            label: 'Species in OntoCompChem',
+            label: 'Additional species in OntoCompChem',
             backgroundColor: 'rgb(255, 99, 132)',
             borderColor: 'rgb(255, 99, 132)',
             data: jsOntoCompChemList
         },
         {
-            label: 'Species in OntoKin',
+            label: 'Additional species in OntoKin',
             backgroundColor: 'rgb(255, 20, 30)',
             borderColor: 'rgb(255, 20, 30)',
             data: jsOntoKinList
@@ -504,6 +501,7 @@ var chart = new Chart(ctx, {
 
   
 <!--  Self growing knowledge graph statistics about chemical reactions and species in chemical reactions. -->
+
 
 <table border="5" style="text-align:center">
  
@@ -745,16 +743,13 @@ var chart = new Chart(ctx, {
       
       
       <td class="noBorder" width="150"  height="15"/>
-       
       
-      
-   </tr>
- 
+</tr>   
+</table>
 
-   
-  </table>
- 
 
+
+	
 
 </div>
 </div>
@@ -774,6 +769,7 @@ var chart = new Chart(ctx, {
 </div>
 </div>
 -->
+
 
 </body>
 <!-- 

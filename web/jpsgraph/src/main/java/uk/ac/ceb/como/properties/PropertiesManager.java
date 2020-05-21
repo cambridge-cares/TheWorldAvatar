@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -15,7 +14,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import uk.ac.ceb.como.query.QueryManager;
-import uk.ac.ceb.como.query.QueryString;
+
 
 public class PropertiesManager {
 
@@ -174,8 +173,8 @@ public class PropertiesManager {
 		if(!targetMap.containsKey(m.getKey())){
 				
 				targetMap.put(m.getKey(), "0");
-		}
-			
+		} 
+		
 		}
 		
 		/**

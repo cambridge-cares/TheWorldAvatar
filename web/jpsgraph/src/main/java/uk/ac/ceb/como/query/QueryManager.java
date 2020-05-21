@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.IsolationLevels;
 import org.eclipse.rdf4j.query.BindingSet;
 import org.eclipse.rdf4j.query.QueryLanguage;
@@ -15,7 +16,6 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
-
 import uk.ac.ceb.como.properties.PropertiesManager;
 import uk.ac.ceb.como.properties.Request;
 
@@ -24,6 +24,8 @@ public class QueryManager {
 	static Properties kbProperties = PropertiesManager.loadProperties(QueryManager.class.getClassLoader().getResourceAsStream("kb.properties"));
 	
 	private static String fusakiUrl = kbProperties.getProperty("fusaki.url.for.world.avatar");
+	
+	final static Logger logger = Logger.getLogger(QueryManager.class.getName());
 	
 	public  String getQuery(String repositoryUrl, String queryString) {
 		
@@ -49,9 +51,7 @@ public class QueryManager {
 
 					BindingSet bindingSet = result.next();
 					
-					queryResult =bindingSet.getValue("sum").stringValue();		
-					
-					
+					queryResult =bindingSet.getValue("sum").stringValue();
 				}
 
 			} catch (Exception e) {
@@ -109,7 +109,7 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 		repository.initialize();
 
 		RepositoryConnection connection = repository.getConnection();
-
+		
 		try {
 
 			connection.begin(IsolationLevels.SNAPSHOT_READ);
@@ -151,7 +151,7 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 		} finally {
 
 			connection.close();
-
+			
 			repository.shutDown();
 
 		}
@@ -159,8 +159,4 @@ public  LinkedList<String> getQueryDateStamp(String repositoryUrl, String queryS
 		return speciesIRIList;
 
 	}
-
-	
-	
-	
 }
