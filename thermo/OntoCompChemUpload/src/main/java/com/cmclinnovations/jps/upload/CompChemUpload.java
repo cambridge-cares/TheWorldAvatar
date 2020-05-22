@@ -100,13 +100,26 @@ public class CompChemUpload {
 			Request request = new Request.Builder().url(molhubUploadURL).method("POST", body)
 					.addHeader("Content-Type", "multipart/form-data").build();
 			response = client.newCall(request).execute();
-			System.out.println("respone:" + response.toString());
+			InputStream inputStream = response.body().byteStream();
+			int data = inputStream.read();
+			String line = "";
+			while(data != -1) {
+				data = inputStream.read();
+				line = line + (char)data;
+				if(data == 13){
+					if(line.trim().startsWith("<td")){
+						if(line.trim().startsWith("<td class=\"nowrap\">") && line.trim().endsWith("</td>")){
+							line = line.trim().replace("<td class=\"nowrap\">", "");
+							line = line.trim().replace("</td>", "");
+							return line;
+						}
+					}
+					line = "";
+				}
+			}
+			inputStream.close();
 		}
-		if(response == null){
-			return null;
-		}else{
-			return response.toString();
-		}
+		return null;
 	}
 	/**
 	 * Initialises the property file reading facility and loads the file. 
