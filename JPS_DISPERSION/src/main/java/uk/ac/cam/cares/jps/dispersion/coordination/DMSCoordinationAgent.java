@@ -18,8 +18,6 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
-import uk.ac.cam.cares.jps.dispersion.general.ADMSAgent;
 
 //@WebServlet("/DMSCoordinationAgent")
 @WebServlet(urlPatterns = {"/episode/dispersion/coordination", "/adms/dispersion/coordination"})
@@ -102,9 +100,9 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
                 //result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
                 if (path.equals(ADMS_PATH)) {
-                    result = execute("/JPS_DISPERSION/episode/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
-                } else if (path.equals(EPISODE_PATH)) {
                     result = execute("/JPS_DISPERSION/adms/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
+                } else if (path.equals(EPISODE_PATH)) {
+                    result = execute("/JPS_DISPERSION/episode/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
                 }
 
                 String folder = new JSONObject(result).getString("folder");
@@ -126,6 +124,9 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
             String wasteresult = execute("/JPS/PowerPlant", requestParams.toString());
             String waste = new JSONObject(wasteresult).getString("waste");
             requestParams.put("waste", waste);
+            result = execute("/JPS_DISPERSION/adms/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
+            String folder = new JSONObject(result).getString("folder");
+            requestParams.put("folder", folder);
         }
 
         return requestParams;
