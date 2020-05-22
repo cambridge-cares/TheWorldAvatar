@@ -23,7 +23,8 @@ public class CompChemUploadTest1 {
 		System.out.println(getClass().getClassLoader().getResource("login-skylake.hpc.cam.ac.uk_113420049902577.log").getPath());
 		compChemUpload.setCalculationFilePath(getClass().getClassLoader().getResource("login-skylake.hpc.cam.ac.uk_113420049902577.log").getPath());
 		compChemUpload.setOntoSpeciesIRI("http://www.theworldavatar.com/kb/ontospecies/3ad49265-0d58-3827-ba0f-18201693f82b.owl#3ad49265-0d58-3827-ba0f-18201693f82b");
-		compChemUpload.upload();
+		String response = compChemUpload.upload();
+		System.out.println("received response:"+response);
 		}catch(Exception e){
 			fail(e.getMessage());
 		}
