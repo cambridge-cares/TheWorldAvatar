@@ -237,6 +237,20 @@ public class Utils {
 	}
 	
 	/**
+	 * Checks if thermodata agent needs to be invoked. 
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isApplyingThermoUpdateToMechanismRequired(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getJsonInputFileName()).concat(slurmJobProperty.getJsonFileExtension()));
+		String fileContent = getFileContent(br);
+		return JSonRequestParser.isApplyingThermoUpdateToMechanismRequired(fileContent);
+	}
+	
+	/**
 	 * Returns the content of a text formatted file (e.g. .txt and .json)<br>
 	 * if the file is open using BufferedReader class.
 	 * 

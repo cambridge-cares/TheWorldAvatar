@@ -217,11 +217,7 @@ public class DFTAgent extends HttpServlet{
 							// triggers the job status update.
 							if (uuid != null) {
 								updateJobOutputStatus(jobFolder);
-								boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
-								if(isInvokingThermodataAgentRequired){
-									invokeThermodataAgent(jobFolder, Property.ONTOCOMPCHEM_KB_IRI.getPropertyName()
-											.concat(uuid).concat("/").concat(uuid).concat(".owl#").concat(uuid));
-								}
+								runThermodataAgent(jobFolder, uuid);
 							}
 						}
 					}
@@ -240,6 +236,58 @@ public class DFTAgent extends HttpServlet{
 			logger.error("DFTAgent: JSchException.".concat(e.getMessage()));
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Invokes Thermodata Agent to generate thermodata and update the<br>
+	 * OntoKin knowledge graph.  
+	 * 
+	 * @param jobFolder
+	 * @param uuid
+	 * @throws IOException
+	 */
+	private void runThermodataAgent(File jobFolder, String uuid) throws IOException{
+		boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
+		if(isInvokingThermodataAgentRequired){
+			String result = invokeThermodataAgent(jobFolder, Property.ONTOCOMPCHEM_KB_IRI.getPropertyName()
+					.concat(uuid).concat("/").concat(uuid).concat(".owl#").concat(uuid));
+			boolean isApplyingThermoUpdateToMechanismRequired = Utils.isApplyingThermoUpdateToMechanismRequired(jobFolder, slurmJobProperty);
+			if(isApplyingThermoUpdateToMechanismRequired){
+				String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
+				String lowTCoeff = JSonRequestParser.getLowTemperatureCoefficient(result);
+				lowTCoeff = formatCoefficient(lowTCoeff);
+				String highTCoeff = JSonRequestParser.getHighTemperatureCoefficient(result);
+				highTCoeff = formatCoefficient(highTCoeff);
+			}
+		}
+	}
+	
+	/**
+	 * Formatted NASA Coefficients to align the representation with the<br>
+	 * CTML converter. 
+	 * 
+	 * @param coeff
+	 * @return
+	 */
+	private String formatCoefficient(String coeff){
+		String formattedCoeff = "";
+		if(coeff!=null && !coeff.isEmpty() && coeff.contains(",")){
+			int i = 0;
+			
+			String tokens[] = coeff.split(",");
+			for(String token:tokens){
+				i++;
+				if(i>=7){
+					formattedCoeff = formattedCoeff.concat(token);
+					break;
+				}else if(i==4){
+					formattedCoeff = formattedCoeff.concat(token).concat(",\n");					
+				}else{
+					formattedCoeff = formattedCoeff.concat(token).concat(",   ");
+				}
+			}
+		}
+		return formattedCoeff;
 	}
 	
 	/**
@@ -289,12 +337,12 @@ public class DFTAgent extends HttpServlet{
 			return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
 	
-	private void invokeThermodataAgent(File jobFolder, String ontoCompChemIRI) throws IOException{
+	private String invokeThermodataAgent(File jobFolder, String ontoCompChemIRI) throws IOException{
 		JSONObject json = new JSONObject();
 		json.put("gaussian", ontoCompChemIRI);
 		String httpRequest = dftAgentProperty.getThermoAgentHttpRequestFirstPart().concat(URLEncoder.encode(json.toString(), "UTF-8"));
 		String result = performHTTPRequest(httpRequest);
-		System.out.println("result = " + result);
+		return result;
 	}
 	
 	/**

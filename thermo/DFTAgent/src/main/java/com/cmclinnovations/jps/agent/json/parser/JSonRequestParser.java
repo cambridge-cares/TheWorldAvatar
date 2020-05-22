@@ -24,11 +24,19 @@ public class JSonRequestParser {
 		return JsonPath.read(jsonString, "$.isInvokingThermoAgentRequired");
 	}
 	
-	public static boolean isisApplyingThermoUpdateToMechanismRequired(String jsonString){
+	public static boolean isApplyingThermoUpdateToMechanismRequired(String jsonString){
 		return JsonPath.read(jsonString, "$.isApplyingThermoUpdateToMechanismRequired");
 	}
 
 	public static String getOntoCompChemIRI(String jsonString){
 		return JsonPath.read(jsonString, "$.gaussian");
+	}
+
+	public static String getHighTemperatureCoefficient(String jsonString){
+		return JsonPath.read(jsonString, "$.highTcoeff");
+	}
+
+	public static String getLowTemperatureCoefficient(String jsonString){
+		return JsonPath.read(jsonString, "$.LowTcoeff");
 	}
 }
