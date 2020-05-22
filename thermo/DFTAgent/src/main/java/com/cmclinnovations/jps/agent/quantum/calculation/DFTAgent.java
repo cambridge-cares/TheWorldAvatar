@@ -30,7 +30,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
+import com.cmclinnovations.jps.agent.configuration.DFTAgentConfiguration;
+import com.cmclinnovations.jps.agent.configuration.DFTAgentProperty;
 import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.kg.OntoAgentKG;
@@ -46,8 +47,6 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
-
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
@@ -75,6 +74,8 @@ public class DFTAgent extends HttpServlet{
 	static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
+	public static ApplicationContext applicationContextDFTAgent;
+	public static DFTAgentProperty dftAgentProperty;
 	
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
@@ -162,6 +163,12 @@ public class DFTAgent extends HttpServlet{
 		if (slurmJobProperty == null) {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 		}
+	    if (applicationContextDFTAgent == null) {
+	    	applicationContextDFTAgent = new AnnotationConfigApplicationContext(DFTAgentConfiguration.class);
+		}		
+		if (dftAgentProperty == null) {
+			dftAgentProperty = applicationContextDFTAgent.getBean(DFTAgentProperty.class);
+		}
         logger.info("---------- Quantum jobs are being monitored  ----------");
         System.out.println("---------- Quantum jobs are being monitored  ----------");
        	
@@ -181,9 +188,21 @@ public class DFTAgent extends HttpServlet{
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
 	 */
-	private void processOutputs() {
+	public void processOutputs() {
+        if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+		}
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+		}
+		if (applicationContextDFTAgent == null) {
+	    	applicationContextDFTAgent = new AnnotationConfigApplicationContext(DFTAgentConfiguration.class);
+		}		
+		if (dftAgentProperty == null) {
+			dftAgentProperty = applicationContextDFTAgent.getBean(DFTAgentProperty.class);
 		}
 		jobSpace = jobSubmission.getWorkspaceDirectory();
 		try {
@@ -193,16 +212,15 @@ public class DFTAgent extends HttpServlet{
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
 							// Calls Upload Service
-							String uploadMessage = UploadLogFile(jobFolder);
+							String uuid = UploadLogFile(jobFolder);
 							// The successful completion of the log file upload
 							// triggers the job status update.
-							if (uploadMessage != null) {
+							if (uuid != null) {
 								updateJobOutputStatus(jobFolder);
 								boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
 								if(isInvokingThermodataAgentRequired){
-									String uuid = JSonRequestParser.getOntoCompChemIRI(uploadMessage);
 									invokeThermodataAgent(jobFolder, Property.ONTOCOMPCHEM_KB_IRI.getPropertyName()
-											.concat(uuid).concat("/").concat(uuid).concat(".owl").concat(uuid));
+											.concat(uuid).concat("/").concat(uuid).concat(".owl#").concat(uuid));
 								}
 							}
 						}
@@ -271,10 +289,11 @@ public class DFTAgent extends HttpServlet{
 			return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
 	
-	private void invokeThermodataAgent(File jobFolder, String ontoCompChemIRI){
+	private void invokeThermodataAgent(File jobFolder, String ontoCompChemIRI) throws IOException{
 		JSONObject json = new JSONObject();
 		json.put("gaussian", ontoCompChemIRI);
-		String result = AgentCaller.executeGetWithJsonParameter("/JPS_THERMO/calculation", json.toString());
+		String httpRequest = dftAgentProperty.getThermoAgentHttpRequestFirstPart().concat(URLEncoder.encode(json.toString(), "UTF-8"));
+		String result = performHTTPRequest(httpRequest);
 		System.out.println("result = " + result);
 	}
 	

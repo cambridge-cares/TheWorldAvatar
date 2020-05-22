@@ -150,11 +150,6 @@
             <artifactId>OntoCompChemUpload</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
-        <dependency>
-			<groupId>uk.ac.cam.cares.jps</groupId>
-			<artifactId>jps-base</artifactId>
-			<version>1.3.0</version>
-		</dependency>
 	</dependencies>
     <build>
         <finalName>DFTAgent</finalName>
