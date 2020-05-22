@@ -13,6 +13,8 @@ def convert_dat(filepath):
     pollutants = list(data.columns)[7:]  
     heights = sorted(set(list(data['Z(m)'])))
     num_heights = len(heights)
+    num_interval=heights[2]-heights[1]
+    initial_height=heights[0]
     num_pollutant = len(pollutants)
     result = []
     for height in heights:
@@ -26,7 +28,7 @@ def convert_dat(filepath):
         result.append(height_list)
 
         
-    print(json.dumps({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant}))
+    print(json.dumps({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height}))
 
 
 if __name__ == "__main__":#test

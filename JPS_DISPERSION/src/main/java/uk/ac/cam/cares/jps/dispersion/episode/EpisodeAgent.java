@@ -270,9 +270,21 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			if(!olddatapath.contains("empty")) {
 				restart=true;
 				File file = new File( olddatapath+ "/output/icmhour.nc");
-				new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
+				File file3des=new File(dataPath + "/icmhour.nc");
 				File file2 = new File( olddatapath+ "/output/plume_segments.dat");
-				new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
+				File file2des=new File(dataPath + "/plume_segments.dat");
+				try {
+					FileUtils.copyFile(file, file3des);
+					FileUtils.copyFile(file2, file2des);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				//new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
+
+
+				
+				//new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
 			}
 			
 			System.out.println("sourcecoordinate= "+sourceCRSName);

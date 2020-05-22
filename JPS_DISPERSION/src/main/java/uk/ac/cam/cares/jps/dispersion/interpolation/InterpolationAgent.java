@@ -39,6 +39,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 @WebServlet(urlPatterns ={"/InterpolationAgent/startSimulation", "/InterpolationAgent/continueSimulation"})
 public class InterpolationAgent  extends JPSHttpServlet {
@@ -107,10 +108,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		//modify matlab to read 
 		
 			try {
-				logger.info("starting to create batch file");
+				System.out.println("Interpolation agent:starting to create batch file");
 				createBat(baseUrl, coordinates,gasType, options, dispMatrix);
-				runModel(baseUrl);
-				logger.info("finish Simulation");
+				createCommand(baseUrl, coordinates, gasType, options, dispMatrix);
+				//runModel(baseUrl);
+				System.out.println("Interpolation agent:finish Simulation");
 //				notifyWatcher(requestParams, baseUrl+"/exp.csv",
 //	                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 //	           
@@ -125,8 +127,8 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 Thread.sleep(120000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
-				 logger.info(arg);
-				 logger.info("it now updating");
+				 System.out.println(arg);
+				 System.out.println("Interpolation agent:it now updating");
 				 //update here
 				 double concpm10=0.0;
 				 double concpm25=0.0;
@@ -158,7 +160,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				 updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
 				 updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
-				 logger.info("updates finished");
+				 System.out.println("Interpolation agent:updates finished");
 			 }catch (Exception e) {
 				e.printStackTrace();
 			}			 
@@ -307,7 +309,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		File file = new File(filename);
 		String writePath = newdir + "/"+"test.dat";
 		File myObj = new File(writePath);
-		logger.info(writePath);
+		System.out.println(writePath);
 		Path fileName = path.getFileName();
 		String destinationUrl = newdir + "/"+fileName.toString();
 		new QueryBroker().putLocal(destinationUrl, file);
@@ -372,9 +374,12 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 * @throws InterruptedException
 	 */
 	public void runModel(String baseUrl) throws IOException, InterruptedException {
+		System.out.println("Interpolation agent: Running Model");
 		String startbatCommand =baseUrl+"/runm.bat";
-		String result= executeSingleCommand(baseUrl,startbatCommand);
-		logger.info("final after calling: "+result);
+		System.out.println("Interpolation agent:startbatcommand= "+startbatCommand);
+//		String result= executeSingleCommand(baseUrl,startbatCommand);
+		String result= CommandHelper.executeSingleCommand(baseUrl, startbatCommand);
+		System.out.println("Interpolation agent:final after calling: "+result);
 	}
 	/** executes the process. Called by runModel. 
 	 * 
@@ -386,7 +391,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	private String executeSingleCommand(String targetFolder , String command) throws InterruptedException 
 	{  
 	 
-		logger.info("In folder: " + targetFolder + " Executed: " + command);
+		System.out.println("In folder: " + targetFolder + " Executed: " + command);
 		Runtime rt = Runtime.getRuntime();
 		Process pr = null;
 		try {
@@ -565,6 +570,22 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			
 			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
 	}
+    
+    public void createCommand(String baseUrl, String coordinates, String gasType, String options, String dispMatrix) throws Exception {
+		String loc = " virtual_sensor(" + coordinates +"," +gasType
+				+"," +options+",'"+baseUrl+"/','" + dispMatrix+"'";
+		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" 
+		+ "matlab -nosplash -noFigureWindows -r \"try; cd('"+baseUrl
+		+"');"+ loc + "); catch; end; quit\"";
+		String args = "";
+        args+="matlab -nosplash -r \"try; ";
+        args+=loc;
+        args+="); catch; end; quit\"";
+        System.out.println(args);
+        String result = CommandHelper.executeSingleCommand(baseUrl, args);
+        System.out.println(result);
+	}
+    
 	private List<String[]> queryEndPointDataset(String querycontext) {
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);

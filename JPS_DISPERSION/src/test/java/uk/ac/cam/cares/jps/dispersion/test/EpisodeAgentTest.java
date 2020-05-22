@@ -10,6 +10,9 @@ import org.json.JSONStringer;
 import org.json.JSONWriter;
 
 import junit.framework.TestCase;
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
@@ -244,9 +247,16 @@ public class EpisodeAgentTest extends TestCase {
 		System.out.println("response= "+resp.toString());
 	}
 
-	public void xxxtestunzipping() {
-		String zipFilePath="C:/Users/KADIT01/EpisodeAgent_33850020283200/login-skylake.hpc.cam.ac.uk_396057028520700"+ "/output.zip";
-		String destDir="C:/Users/KADIT01/EpisodeAgent_33850020283200/login-skylake.hpc.cam.ac.uk_396057028520700"+ "/output";
-		new EpisodeAgent().unzip(zipFilePath, destDir);
+	public void testunzipping() {
+		
+		String theZIPFile=AgentLocator.getPathToWorkingDir(this) + "/output.zip";
+		String  theTargetFolder=AgentLocator.getPathToWorkingDir(this);
+	    ZipFile zipFile = new ZipFile(theZIPFile);
+	    try {
+			zipFile.extractAll(theTargetFolder);
+		} catch (ZipException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }

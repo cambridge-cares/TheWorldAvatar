@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.general;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,8 +8,6 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +21,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -221,43 +219,15 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 	}
 	
     public static void unzip(String zipFilePath, String destDir) {
-    	System.out.println("unzipping started");
-        File dir = new File(destDir);
-        // create output directory if it doesn't exist
-        if(!dir.exists()) dir.mkdirs();
-        FileInputStream fis;
-        //buffer for read and write data to file
-        byte[] buffer = new byte[1024];
-        try {
-            fis = new FileInputStream(zipFilePath);
-            ZipInputStream zis = new ZipInputStream(fis);
-            ZipEntry ze = zis.getNextEntry();
-            while(ze != null){
-                String fileName = ze.getName();
-                File newFile = new File(destDir + File.separator + fileName);
-                System.out.println("Unzipping to "+newFile.getAbsolutePath());
-                //create directories for sub directories in zip
-                new File(newFile.getParent()).mkdirs();
-                FileOutputStream fos = new FileOutputStream(newFile);
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-                fos.write(buffer, 0, len);
-                }
-                fos.close();
-                //close this ZipEntry
-                zis.closeEntry();
-                ze = zis.getNextEntry();
-            }
-            //close last ZipEntry
-            zis.closeEntry();
-            zis.close();
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
+    	 ZipFile zipFile = new ZipFile(zipFilePath);
+ 	    try {
+ 			zipFile.extractAll(destDir);
+ 		} catch (ZipException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
     }
-
+    
 	protected boolean annotateOutputs(File jobFolder) throws IOException {
 		System.out.println("annotate output started");
 		
@@ -280,11 +250,15 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
 	    	File file2 = new File(destDir+"/icmhour.nc");
 			String destinationUrl2 = datapath + "/icmhour.nc";
+			File file2des=new File(destinationUrl2);
+			FileUtils.copyFile(file2, file2des);
 	    	File file3 = new File(destDir+"/plume_segments.dat");
 			String destinationUrl3 = datapath + "/plume_segments.dat";
+			File file3des=new File(destinationUrl3);
+			FileUtils.copyFile(file3, file3des);
 			new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
-			new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
-			new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
+			//new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
+			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
 			List<String> topics = new ArrayList<String>();
 	    	topics.add(cityIRI);
 	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics); //annotate

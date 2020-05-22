@@ -6,7 +6,7 @@
 }
 .choice{
     position: absolute;
-    top: 220px;
+    top: 20px;
     left: 50px;
     z-index:1;
 }
