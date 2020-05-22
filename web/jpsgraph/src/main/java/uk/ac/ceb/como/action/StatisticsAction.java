@@ -491,7 +491,9 @@ table2CSVWriter.close();
 		for(int i =0;i<table1Data.length;i++) {			
 			logger.info(table1Data[i]);				
 		}
-		numberOfCalculations = table1Data[0];
+		
+//		numberOfCalculations = table1Data[0];
+		numberOfCalculations=new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());
 		numberOfReactionMechanisms=table1Data[1];
 		numberOfSpeciesInOntoKin=table1Data[2];
 		numberOfChemicalReactions=table1Data[3];
