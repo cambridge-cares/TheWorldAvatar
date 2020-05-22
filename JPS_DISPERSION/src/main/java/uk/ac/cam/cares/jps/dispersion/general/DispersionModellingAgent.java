@@ -55,7 +55,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     private static final String DATA_KEY_SS = "ss";
     private static final String DATA_KEY_CU = "cu";
 	public static final String EPISODE_PATH = "/episode/dispersion";
-	public static final String ADMS_PATH = "adms/dispersion";
+	public static final String ADMS_PATH = "/adms/dispersion";
 	public static final String EX_UNKNOWN_DMAGENT = "Unknown Dispersion Modelling Agent Requested";
 
 	static JobSubmission jobSubmission;
