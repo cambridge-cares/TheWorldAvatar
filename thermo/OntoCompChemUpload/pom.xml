@@ -27,7 +27,7 @@
 
   </dependencies>
   <build>
-    <finalName>SlurmJobAPI</finalName>
+    <finalName>OntoCompChemUpload</finalName>
       <plugins>
 	    <plugin>
           <artifactId>maven-compiler-plugin</artifactId>

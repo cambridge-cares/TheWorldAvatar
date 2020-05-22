@@ -62,7 +62,7 @@ public class SlurmJobProperty {
 	@Value("${kg.url.to.upload.result.via.json.input}")
 	private String kgURLToUploadResultViaJsonInput;
 
-	@Value("${rdf4j.server.url}")
+	@Value("${agent.rdf4j.server.url}")
 	private String rdf4jServerUrl;
 
 	@Value("${rdf4j.repository.ontospecies}")
