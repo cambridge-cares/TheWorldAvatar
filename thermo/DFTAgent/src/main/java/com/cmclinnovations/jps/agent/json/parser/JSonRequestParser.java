@@ -22,7 +22,11 @@ public class JSonRequestParser {
 	
 	public static boolean isInvokingThermoAgentRequired(String jsonString){
 		return JsonPath.read(jsonString, "$.isInvokingThermoAgentRequired");
-	}	
+	}
+	
+	public static boolean isisApplyingThermoUpdateToMechanismRequired(String jsonString){
+		return JsonPath.read(jsonString, "$.isApplyingThermoUpdateToMechanismRequired");
+	}
 
 	public static String getOntoCompChemIRI(String jsonString){
 		return JsonPath.read(jsonString, "$.gaussian");
