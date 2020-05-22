@@ -200,7 +200,9 @@ public class DFTAgent extends HttpServlet{
 								updateJobOutputStatus(jobFolder);
 								boolean isInvokingThermodataAgentRequired = Utils.isInvokingThermoAgentRequired(jobFolder, slurmJobProperty);
 								if(isInvokingThermodataAgentRequired){
-									invokeThermodataAgent(jobFolder, JSonRequestParser.getOntoCompChemIRI(uploadMessage));
+									String uuid = JSonRequestParser.getOntoCompChemIRI(uploadMessage);
+									invokeThermodataAgent(jobFolder, Property.ONTOCOMPCHEM_KB_IRI.getPropertyName()
+											.concat(uuid).concat("/").concat(uuid).concat(".owl").concat(uuid));
 								}
 							}
 						}

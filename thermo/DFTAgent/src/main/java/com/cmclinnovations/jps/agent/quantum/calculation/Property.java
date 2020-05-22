@@ -32,6 +32,7 @@ public enum Property {
 	PREFIX_MSM("msm"),
 	PREFIX_RAM("ram"),
 	DFT_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>"),
+	ONTOCOMPCHEM_KB_IRI("http://www.theworldavatar.com/kb/ontocompchem/"),
 	JSON_INPUT_REF_SPECIES("referenceSpecies"),
 	JSON_INPUT_UNIQUE_SPECIES_IRI("uniqueSpeciesIRI");
 	
