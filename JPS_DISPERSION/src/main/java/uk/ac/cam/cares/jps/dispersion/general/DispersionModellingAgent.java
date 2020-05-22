@@ -14,6 +14,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.io.FileUtils;
 import org.json.JSONArray;
@@ -40,8 +41,8 @@ import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
 @Controller
-@WebServlet("/DispersionModellingAgent")
-
+///@WebServlet("/DispersionModellingAgent")
+@WebServlet(urlPatterns = {"/episode/dispersion","/adms/dispersion"})
 public class DispersionModellingAgent extends JPSHttpServlet {
 	
     /**
@@ -55,6 +56,9 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     protected static final String DATA_KEY_MMSI = "mmsi";
     private static final String DATA_KEY_SS = "ss";
     private static final String DATA_KEY_CU = "cu";
+	public static final String EPISODE_PATH = "/episode/dispersion";
+	public static final String ADMS_PATH = "adms/dispersion";
+	public static final String EX_UNKNOWN_DMAGENT = "Unknown Dispersion Modelling Agent Requested";
 
 	static JobSubmission jobSubmission;
 	public static SlurmJobProperty slurmJobProperty;
@@ -95,12 +99,28 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 	}
     
     @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams) {
-    	String cityIRI = requestParams.getString("city");
-    	String agent=requestParams.get("agent").toString();
-    	DispersionModellingAgent s=null;
-    	JSONObject responseParams=requestParams;
-    	if(cityIRI.toLowerCase().contains("singapore")||cityIRI.toLowerCase().contains("kong")) {
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		String path = request.getServletPath();
+    	//String cityIRI = requestParams.getString("city");
+    	//String agent=requestParams.get("agent").toString();
+    	DispersionModellingAgent dmAgent = null;
+    	JSONObject responseParams = requestParams;
+
+		if(path.equals(ADMS_PATH)) {
+			dmAgent = new ADMSAgent();
+		} else if (path.equals(EPISODE_PATH)) {
+			dmAgent = new EpisodeAgent();
+		}
+
+		if (dmAgent != null) {
+			responseParams = dmAgent.processRequestParameters(requestParams);
+		} else {
+			throw new JPSRuntimeException(EX_UNKNOWN_DMAGENT);
+		}
+
+		return responseParams;
+
+    	/*if(cityIRI.toLowerCase().contains("singapore")||cityIRI.toLowerCase().contains("kong")) {
     		if(agent.contains("ADMS")) {
     			s=new ADMSAgent();
     		}else if(agent.contains("Episode")){
@@ -113,7 +133,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     		s=new ADMSAgent();
     		responseParams=s.processRequestParameters(requestParams);
     		return responseParams;
-    	}
+    	}*/
 	}
 		
 	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {

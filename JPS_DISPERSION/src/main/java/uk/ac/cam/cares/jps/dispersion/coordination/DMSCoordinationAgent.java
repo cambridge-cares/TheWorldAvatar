@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
@@ -17,12 +18,17 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
+import uk.ac.cam.cares.jps.dispersion.general.ADMSAgent;
 
-@WebServlet("/DMSCoordinationAgent")
+//@WebServlet("/DMSCoordinationAgent")
+@WebServlet(urlPatterns = {"/episode/dispersion/coordination","/adms/dispersion/coordination"})
 public class DMSCoordinationAgent extends JPSHttpServlet {
 
 	Logger logger = LoggerFactory.getLogger(DMSCoordinationAgent.class);
 	private static final String PARAM_KEY_SHIP = "ship";
+	public static final String EPISODE_PATH = "/episode/dispersion/coordination";
+	public static final String ADMS_PATH = "adms/dispersion/coordination";
 
 	private JSONArray getNewWasteAsync(String reactionMechanism, JSONObject jsonShip) {
 		JSONArray newwaste = new JSONArray();
@@ -56,7 +62,8 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 	}
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams) {
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		String path = request.getServletPath();
 
 		String regionToCityResult = execute("/JPS/RegionToCity", requestParams.toString());
 		String city = new JSONObject(regionToCityResult).getString("city");
@@ -69,6 +76,7 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 		requestParams.put("building", building);
 		logger.info("building FROM COORDINATION AGENT: " + building.toString());
 
+		//@TODO - improve weather update frequency
 		result = execute("/JPS_DISPERSION/SensorWeatherAgent", requestParams.toString());
 		JSONArray stationiri = new JSONObject(result).getJSONArray("stationiri");
 		requestParams.put("stationiri", stationiri);
@@ -100,7 +108,13 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 			requestParams.put("waste", waste);
 		}
 
-        result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
+        //result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
+		if(path.equals(ADMS_PATH)) {
+			result = execute("/JPS_DISPERSION/episode/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
+		} else if (path.equals(EPISODE_PATH)) {
+			result = execute("/JPS_DISPERSION/adms/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
+		}
+
         String folder = new JSONObject(result).getString("folder");
         requestParams.put("folder", folder);
         

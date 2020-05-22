@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.coordination;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,7 +21,7 @@ import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 public class CoordinationDataCollection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 		
-	public void executeSGData(JSONObject jo){
+	public void executeSGData(JSONObject jo) throws ExecutionException, InterruptedException {
 		JSONObject upcorn = new JSONObject();
 		upcorn.put("upperx", "11563323.926");
 		upcorn.put("uppery", "143305.896");
@@ -63,11 +65,11 @@ public class CoordinationDataCollection extends HttpServlet {
 //		jo.put("region", joregion);
 	
 	
-		callAgent(jo);
+//		callAgent(jo);
 	}
 
 	
-	public void callAgent(JSONObject jo) {
+	public void callAgent(JSONObject jo) throws ExecutionException, InterruptedException {
 		//jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
 		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
@@ -75,7 +77,16 @@ public class CoordinationDataCollection extends HttpServlet {
 		jo.put("reactionmechanism", "none");
 		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 //		AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
-		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/DMSCoordinationAgent",jo.toString());
+
+		//@TODO Make it separate threads
+		/*sample code:*/
+		CompletableFuture<String> asyncEpisode = CompletableFuture.supplyAsync(() ->
+				AgentCaller.executeGetWithJsonParameter("/episode/dispersion/coordination",jo.toString()));
+		CompletableFuture<String> asyncAdms = CompletableFuture.supplyAsync(() ->
+				AgentCaller.executeGetWithJsonParameter("/adms/dispersion/coordination",jo.toString()));
+		asyncEpisode.get();
+		asyncAdms.get();
+
 	}
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
@@ -100,8 +111,11 @@ public class CoordinationDataCollection extends HttpServlet {
 
 		
 		//retrieveShipdata();
-		executeSGData(jo);
-		
+		try {
+			executeSGData(jo);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		//executeHKData(jo);
 
 		
