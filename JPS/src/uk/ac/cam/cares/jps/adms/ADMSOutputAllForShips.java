@@ -261,6 +261,9 @@ public class ADMSOutputAllForShips extends HttpServlet {
             ans.put("numpol", numpol);
             ans.put("listofpol", findUniquePol(copier, startcontentindex));
             ans.put("numheight", heightamount);
+            ans.put("numinterval", 10);
+            ans.put("initialheight", 0);
+            
 
 
             new QueryBroker().putLocal(folder + "/testmod.levels.gst", MatrixConverter.fromArraytoCsv(copier));

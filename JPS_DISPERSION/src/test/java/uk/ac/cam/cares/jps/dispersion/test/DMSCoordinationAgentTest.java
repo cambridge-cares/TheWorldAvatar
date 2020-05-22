@@ -79,7 +79,8 @@ public class DMSCoordinationAgentTest extends TestCase {
 		//jo.put("location", "Singapore");
 //		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
 		jo.put("reactionmechanism", "none");
-		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+//		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002"); //for testing episode
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/DMSCoordinationAgent",jo.toString());
 		
 	}

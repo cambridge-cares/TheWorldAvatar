@@ -324,6 +324,10 @@ console.log(result)});
             var xmax = parseInt(info.region.uppercorner.upperx);
             var ymin = parseInt(info.region.lowercorner.lowery);
             var ymax = parseInt(info.region.uppercorner.uppery);
+            $('#xlower').val(xmin)
+            $('#xupper').val(xmax)
+            $('#ylower').val(ymin)
+            $('#yupper').val(ymax)
             originRatio = (xmax-xmin)/(ymax-ymin);
             let ratio;
             [xmin, xmax, ymin, ymax, ratio] = appro2ratio(xmin, xmax, ymin, ymax); // 28 Aug 18
