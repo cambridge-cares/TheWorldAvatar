@@ -22,10 +22,10 @@ function setEpWatcher(){
         callback(null,"success");
     }
     
-    const epChangeEmitter = new endpointChangeEmitter(informSocket)
-    epChangeEmitter.listen(1200000)
+    const epChangeEmitter = new endpointChangeEmitter(informSocket);
+    epChangeEmitter.listen(1200000);
     
-    return {watchEvent, epChangeEmitter}
+    return {watchEvent, epChangeEmitter};
 }
 
 //

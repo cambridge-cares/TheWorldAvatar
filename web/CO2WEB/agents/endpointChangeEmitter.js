@@ -88,7 +88,6 @@ endPointChangeEmitter.prototype = {
                                         data.push(link)
                                     }
                                 }}
-                                
                                 )
                             let endpoint = me.epNameList[idx];
                             me.epResourcerList[idx].setData({endpoint, data});
@@ -101,7 +100,8 @@ endPointChangeEmitter.prototype = {
             }
         
             setTimeout(pollWhileListen,10000);
-            setInterval(pollWhileListen, interval)
+            setInterval(
+                pollWhileListen, interval)
     },
 
     registerSubsriber: function(epUri, resourceIds, qstr, observerUrl){
@@ -123,12 +123,11 @@ endPointChangeEmitter.prototype = {
                 resourcer2Register.add2ResourceList(idR)
             }
         }
- 
-        console.log('nameList: '+this.epNameList)
-        console.log('resourceList '+list)
+        console.log('nameList: '+this.epNameList);
+        console.log('resourceList '+list);
         },
     
-    //todo:inportant!!!!!
+    //todo
     deregister: function(){
     "use strict";
     //when a resource has no more watcher, deregister it
@@ -165,13 +164,9 @@ endPointChangeEmitter.prototype = {
                 callback(null, resultArr)
             } )
             }
-            
     }
-    
 }
 
-
-    
 
 module.exports = endPointChangeEmitter;
 

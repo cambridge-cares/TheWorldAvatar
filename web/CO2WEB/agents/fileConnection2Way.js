@@ -91,7 +91,7 @@ owlProcessor.doConnect = function(address, level) {
             address = me.equalHost(address);
             if(result&&result.length>0){
 				let iset = new Set();
-				console.log('found result: '+JSON.stringify(result));
+				//console.log('found result: '+JSON.stringify(result));
                 result.forEach(item=>{
                     let parent = null,label = '';
                     if(typeof item === 'object'){
@@ -491,8 +491,6 @@ owlProcessor.singleEpQ = function(loc){
     const self = this;
 
     let q = function(qStr, callback){
-         
-
                    request.get(loc, {qs:{'query':qStr,'output':'json'},timeout: 150000, agent: false}, function (err, res, body) {
                     console.log('endpoint resquest result');
  
@@ -502,13 +500,8 @@ owlProcessor.singleEpQ = function(loc){
                         callback(err);
                         return;
                         };//don't throw
-                    //unwrap query
-    
-                       //console.log("body:"+body);
-                   //body = self.parsePseudoJson(body);
 
                    try {
-
                        if (self.checkJson(body)){
                            body = JSON.parse(body);
                            //todo: rewrite unwrap
@@ -549,8 +542,8 @@ owlProcessor.unwrapResult = function (result, type) {
     if(type!=='item'){
         
         for(let varname of varNames){
-            console.log(result['head']['vars'])
-            console.log(varname)
+            //console.log(result['head']['vars'])
+           // console.log(varname)
             if(!(result['head']['vars'].includes(varname))){
                 return null
             }
@@ -562,7 +555,7 @@ owlProcessor.unwrapResult = function (result, type) {
     
     //unwrap
     console.log('upwrap')
-    console.log(unwrapped)
+    //console.log(unwrapped)
     for(let line of result['results']['bindings']){
         let item = {};
         for(let varname of varNames){
@@ -693,12 +686,12 @@ owlProcessor.packIntoClusterData = function (rawconn) {
     //get level 1 connections
     let self = this
     let firstl = [], subconnections = {};
-	console.log(self.parentMap);
+	//console.log(self.parentMap);
                 let orphan = [];
                 let foster= null;
 
     rawconn.forEach((link)=>{
-		console.log(link)
+		//console.log(link)
         if(link.level === 1){
             firstl.push(link)
         } else{
@@ -782,7 +775,7 @@ owlProcessor.process = function (options) {
 	  })
     
 
-        
+        n
       
     };
 

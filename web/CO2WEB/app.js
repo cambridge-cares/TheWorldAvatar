@@ -18,6 +18,7 @@ var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
 
+
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
@@ -27,6 +28,7 @@ var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
 var visualizeOntokin= require("./routes/visualizeOntokin.js");
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
+
 
 var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
 
@@ -57,7 +59,7 @@ var getChildrenSingle = require('./routes/GetChildrenSingle');
 
 var BMSWatcher = require('./agents/setBMSWatcher');
 var agentWatcher = require('./agents/msgFace');
-let setEpWatcher = require('./agents/setEPWatcher');
+//let setEpWatcher = require('./agents/setEPWatcher');
 
 var app = express();
 var port = config.port;
@@ -84,6 +86,7 @@ app.use(bodyParser.text({ type: 'application/json' }));
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
+
 
 app.use('/getChildrenSingle',getChildrenSingle);
  app.use('/visualizeAgent', visualizeAgent);
@@ -148,7 +151,7 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
-agentWatcher.init(io);
+//agentWatcher.init(io);
 //When any change happened to the file system
 ev.on('update', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");
@@ -159,6 +162,7 @@ ev.on('update', function (data) {
     io.to(path.normalize(data.uri)+"_data").emit("update", data);
 })
 
+/**
 const aepWatcher = setEpWatcher();
 const epChangeEv = aepWatcher.watchEvent;
 const epInformer = aepWatcher.epChangeEmitter;
@@ -169,7 +173,7 @@ epChangeEv.on('new', function (data) {
     io.to(path.normalize(data.endpoint)+"_endpoint").emit("new", data.data);
     
 })
-
+**/
 let qstr = `
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -226,7 +230,7 @@ socket.on('join', function (uriSubscribeList) {
         console.log('join event: to end points')
         let epUrl= sl['url']; let uriList = sl['subscribeList'];
         socket.join(epUrl+'_endpoint');//join the room
-        epInformer.registerSubsriber( epUrl, uriList, qstr, socket.username);
+       //TODO:unquote epInformer.registerSubsriber( epUrl, uriList, qstr, socket.username);
         return;
     }
     
