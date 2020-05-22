@@ -5,6 +5,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -208,7 +211,26 @@ public class StatisticsAction extends ActionSupport {
 
 	@Override
 	public String execute() throws IOException {		
+		
+		/**
+		 * Calculates current time. 
+		 */
+		SimpleDateFormat dateFormat = new SimpleDateFormat("hhmmss aa");
+		String formattedDate = dateFormat.format(new Date()).toString();
+		System.out.println("formattedDate: " +formattedDate);
+		
+		String[] date = formattedDate.split("\\ ");
+		
+		String time = date[0];
+		String am_pm_marker = date[1];
+		
+		
 
+		logger.info("current time (int): " + time + " current am/pm marker: " + am_pm_marker);
+		
+		/**
+		 * Data structure LinkedHashMap<String,String> used in generating data for bar chart
+		 */
 		LinkedHashMap<String,String> ontoCompChemMap = new LinkedHashMap<String,String>();
 		LinkedHashMap<String,String> ontoKinMap = new LinkedHashMap<String,String>();		
 		LinkedHashMap<String,String> updatedOntoCompChemMap = new LinkedHashMap<String,String>();
@@ -219,7 +241,7 @@ public class StatisticsAction extends ActionSupport {
 		LinkedList<String> ontoKinDataSetListTemp = new LinkedList<String>();
 		
 		/**
-		 * Temp data for first table 
+		 * String(s) data used for first table 
 		 */
 		String numberOfCalculationsTemp= new String();
 		String numberOfReactionMechanismsTemp = new String();
@@ -230,7 +252,7 @@ public class StatisticsAction extends ActionSupport {
 		
 		
 		/**
-		 * Temp data for second table
+		 * String(s) used for second table
 		 */
 		String numberOfReactionsHydrocarbonSpeciesTemp = new String();
 		String numberOfReactionsThatInvolveNitrogenSpeciesTemp = new String();
@@ -239,55 +261,49 @@ public class StatisticsAction extends ActionSupport {
 		String numberOfCabronAndHydrogenAndOxygenSpeciesTemp = new String();
 		String numberOfNitrogenSpeciesInOntoKinTemp = new String();
 		
-		
-		
-		
-		File labelFile  = new File(statisticsFolderPath+"label.csv");
-		
-		if(!labelFile.exists()) {
+		/**
+		 * Run SPARQL queries and update the cache (csv files) on given time that is between 02:00am and 02:05am. 
+		 */
+		if ( (time.compareTo("020000")>0)  && (time.compareTo("020500")<0) && (am_pm_marker.equalsIgnoreCase("AM"))) {
 			
-			labelFile.createNewFile();
-		}
-		
-		File ontocompchemFile  = new File(statisticsFolderPath+"ontocompchem.csv");
-		
-		if(!ontocompchemFile.exists()) {
+			/**
+			 * @author NK510 (caresssd@hermes.cam.ac.uk)
+			 * 
+			 * Generate data to be shown in bar chart. 
+			 */
 			
-			ontocompchemFile.createNewFile();
-		}
-		
-		File ontoKinFile  = new File(statisticsFolderPath+"ontokin.csv");
-		
-		if(!ontoKinFile.exists()) {
+			File labelFile  = new File(statisticsFolderPath+"label.csv");
 			
-			ontoKinFile.createNewFile();
-		}
-        
-		File table1File  = new File(statisticsFolderPath+"table1.csv");
-		
-		if(!table1File.exists()) {
+			if(!labelFile.exists()) {
+				
+				labelFile.createNewFile();
+			}
 			
-			table1File.createNewFile();
+			File ontocompchemFile  = new File(statisticsFolderPath+"ontocompchem.csv");
+			
+			if(!ontocompchemFile.exists()) {
+				
+				ontocompchemFile.createNewFile();
+			}
+			
+			File ontoKinFile  = new File(statisticsFolderPath+"ontokin.csv");
+			
+			if(!ontoKinFile.exists()) {
+				
+				ontoKinFile.createNewFile();
+			}
+			
+		PropertiesManager propertiesManager = new PropertiesManager();		
+		ontoCompChemMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontocompchemkb,QueryString.getSpeciesIRIFromOntoCompChem()));
+		ontoKinMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontokinkb,QueryString.getSpeciesIRIFromOntoKin()));
+		updatedOntoCompChemMap.putAll(new PropertiesManager().updateFrequenciesMapData(ontoKinMap, ontoCompChemMap));
+		updatedOntoKinMap.putAll(new PropertiesManager().updateFrequenciesMapData(updatedOntoCompChemMap,ontoKinMap));
+		
+		for(Map.Entry<String, String> map: updatedOntoKinMap.entrySet()) {
+			
+			logger.info("key: " + map.getKey() + " value: " +map.getValue());
 		}
 
-		File table2File  = new File(statisticsFolderPath+"table2.csv");
-		
-		if(!table2File.exists()) {
-			
-			table2File.createNewFile();
-		}
-		
-//		PropertiesManager propertiesManager = new PropertiesManager();		
-//		ontoCompChemMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontocompchemkb,QueryString.getSpeciesIRIFromOntoCompChem()));
-//		ontoKinMap.putAll(propertiesManager.getFrequencyOfSpeciesPerDate(ontokinkb,QueryString.getSpeciesIRIFromOntoKin()));
-//		updatedOntoCompChemMap.putAll(new PropertiesManager().updateFrequenciesMapData(ontoKinMap, ontoCompChemMap));
-//		updatedOntoKinMap.putAll(new PropertiesManager().updateFrequenciesMapData(updatedOntoCompChemMap,ontoKinMap));
-//		
-//		for(Map.Entry<String, String> map: updatedOntoKinMap.entrySet()) {
-//			
-//			logger.info("key: " + map.getKey() + " value: " +map.getValue());
-//		}
-//		
 		
 		/**
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -295,10 +311,10 @@ public class StatisticsAction extends ActionSupport {
 		 * 
 		 */
 		
-//		for(Map.Entry<String, String> compChemMap: updatedOntoCompChemMap.entrySet()) {
-//			labelListTemp.add(compChemMap.getKey());
-//			ontoCompChemDataSetListTemp.add(compChemMap.getValue());
-//		}
+		for(Map.Entry<String, String> compChemMap: updatedOntoCompChemMap.entrySet()) {
+			labelListTemp.add(compChemMap.getKey());
+			ontoCompChemDataSetListTemp.add(compChemMap.getValue());
+		}
 
 
 		/**
@@ -308,9 +324,9 @@ public class StatisticsAction extends ActionSupport {
 		 * 
 		 */
 		
-//		for(Map.Entry<String, String> m: updatedOntoKinMap.entrySet()) {			
-//			ontoKinDataSetListTemp.add(m.getValue());
-//			}
+		for(Map.Entry<String, String> m: updatedOntoKinMap.entrySet()) {			
+			ontoKinDataSetListTemp.add(m.getValue());
+			}
 		
 //		labelList.addAll(labelListTemp);
 //		ontoCompChemDataSetList.addAll(ontoCompChemDataSetListTemp);
@@ -319,92 +335,144 @@ public class StatisticsAction extends ActionSupport {
 		/**
 		 * write results in csv files
 		 */
-//		logger.info("Label data set list writen in csv file:");
-//		String labelCSVFile = statisticsFolderPath +"label.csv";
-//       FileWriter labelCSVWriter = new FileWriter(labelCSVFile);
-//
-//		for(String s: labelListTemp) {
-//			
-//			    labelCSVWriter.append(s);
-//			    labelCSVWriter.append(",");
-//			    
-//			    logger.info(s);
-//		}
-//		labelCSVWriter.append("\n");
-//
-//		labelCSVWriter.flush();
-//		labelCSVWriter.close();
-//		
-//		
-//		logger.info("OntoCompChem data set list writen in csv file:");
-//		String ontoCompChemCSVFile = statisticsFolderPath +"ontocompchem.csv";
-//        FileWriter ontoCompChemCSVWriter = new FileWriter(ontoCompChemCSVFile);
-//		for(String s: ontoCompChemDataSetListTemp) {
-//			
-//			ontoCompChemCSVWriter.append(s);
-//		    ontoCompChemCSVWriter.append(",");
-//		
-//		    
-//			logger.info(s);
-//		}
-//		ontoCompChemCSVWriter.append("\n");
-//		
-//		ontoCompChemCSVWriter.flush();
-//		ontoCompChemCSVWriter.close();
-//		
-//		
-//		
-//		logger.info("OntoKin data set list writen in csv file:");	
-//		String ontoKinCSVFile = statisticsFolderPath +"ontokin.csv";
-//      FileWriter ontoKinCSVWriter = new FileWriter(ontoKinCSVFile);
-//		for(String s: ontoKinDataSetListTemp) {
-//			
-//			ontoKinCSVWriter.append(s);
-//		    ontoKinCSVWriter.append(",");
-//			logger.info(s);
-//		}
-//		ontoKinCSVWriter.append("\n");
-//		ontoKinCSVWriter.flush();
-//		ontoKinCSVWriter.close();
+	   logger.info("Data set writen in label.csv file:");
+	   String labelCSVFile = statisticsFolderPath +"label.csv";
+       FileWriter labelCSVWriter = new FileWriter(labelCSVFile);
+
+	   for(String s: labelListTemp) {
+			
+			    labelCSVWriter.append(s);
+			    labelCSVWriter.append(",");
+			    
+			    logger.info(s);
+	   }
+	   labelCSVWriter.append("\n");
+
+	   labelCSVWriter.flush();
+	   labelCSVWriter.close();
 		
-	
+		
+		logger.info("OntoCompChem data set writen in ontocompchem.csv file:");
+		String ontoCompChemCSVFile = statisticsFolderPath +"ontocompchem.csv";
+        FileWriter ontoCompChemCSVWriter = new FileWriter(ontoCompChemCSVFile);
+		for(String s: ontoCompChemDataSetListTemp) {
+			
+			ontoCompChemCSVWriter.append(s);
+		    ontoCompChemCSVWriter.append(",");
+		
+		    
+			logger.info(s);
+		}
+		ontoCompChemCSVWriter.append("\n");
+		
+		ontoCompChemCSVWriter.flush();
+		ontoCompChemCSVWriter.close();
+		
+		
+		
+		logger.info("OntoKin data set writen in ontokin.csv file:");	
+		String ontoKinCSVFile = statisticsFolderPath +"ontokin.csv";
+      FileWriter ontoKinCSVWriter = new FileWriter(ontoKinCSVFile);
+		for(String s: ontoKinDataSetListTemp) {
+			
+			ontoKinCSVWriter.append(s);
+		    ontoKinCSVWriter.append(",");
+			logger.info(s);
+		}
+		ontoKinCSVWriter.append("\n");
+		ontoKinCSVWriter.flush();
+		ontoKinCSVWriter.close();
+		
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * These properties are shown in first table.
+		 * These properties are shown in first table. 
 		 * 
 		 */
 		
-//		numberOfCalculationsTemp = new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());		
-//		numberOfReactionMechanismsTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionMechanisms());
-//		numberOfSpeciesInOntoKinTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin());
-//		numberOfChemicalReactionsTemp = new QueryManager().getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin());		
-//		numberOfSynonymsTemp = new QueryManager().getQuery(ontospecieskb,QueryString.getNumberOfSynonymsInOntoSpecies());		
-//		numberOfSpeciesInOntoSpeciesTemp = new QueryManager().getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies());
-//		
-//		logger.info("data set writen in table1.csv file:");
-//		String table1CSVFile = statisticsFolderPath +"table1.csv";
-//        FileWriter table1CSVWriter = new FileWriter(table1CSVFile);
-//					
-//		table1CSVWriter.append(numberOfCalculationsTemp);
-//		table1CSVWriter.append(",");
-//		table1CSVWriter.append(numberOfReactionMechanismsTemp);
-//		table1CSVWriter.append(",");
-//		table1CSVWriter.append(numberOfSpeciesInOntoKinTemp);
-//		table1CSVWriter.append(",");
-//		table1CSVWriter.append(numberOfChemicalReactionsTemp);
-//		table1CSVWriter.append(",");
-//		table1CSVWriter.append(numberOfSynonymsTemp);
-//		table1CSVWriter.append(",");
-//		table1CSVWriter.append(numberOfSpeciesInOntoSpeciesTemp);
-//		table1CSVWriter.append(",");
-//		
-//		
-//		table1CSVWriter.append("\n");		
-//		
-//		table1CSVWriter.flush();
-//		table1CSVWriter.close();
+		File table1File  = new File(statisticsFolderPath+"table1.csv");
 		
+		if(!table1File.exists()) {
+			
+			table1File.createNewFile();
+		}
+		
+	numberOfCalculationsTemp = new QueryManager().getQuery(ontocompchemkb,QueryString.getNumberOfGaussianCalculations());		
+	numberOfReactionMechanismsTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionMechanisms());
+	numberOfSpeciesInOntoKinTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfSpeciesInOntoKin());
+	numberOfChemicalReactionsTemp = new QueryManager().getQuery(ontokinkb,QueryString.getNumberOfChemicalReactionsInOntoKin());		
+	numberOfSynonymsTemp = new QueryManager().getQuery(ontospecieskb,QueryString.getNumberOfSynonymsInOntoSpecies());		
+	numberOfSpeciesInOntoSpeciesTemp = new QueryManager().getQuery(ontospecieskb,QueryString.getNumberOfSpeciesInOntoSpecies());
+	
+	logger.info("data set writen in table1.csv file:");
+	String table1CSVFile = statisticsFolderPath +"table1.csv";
+    FileWriter table1CSVWriter = new FileWriter(table1CSVFile);
+				
+	table1CSVWriter.append(numberOfCalculationsTemp);
+	table1CSVWriter.append(",");
+	table1CSVWriter.append(numberOfReactionMechanismsTemp);
+	table1CSVWriter.append(",");
+	table1CSVWriter.append(numberOfSpeciesInOntoKinTemp);
+	table1CSVWriter.append(",");
+	table1CSVWriter.append(numberOfChemicalReactionsTemp);
+	table1CSVWriter.append(",");
+	table1CSVWriter.append(numberOfSynonymsTemp);
+	table1CSVWriter.append(",");
+	table1CSVWriter.append(numberOfSpeciesInOntoSpeciesTemp);
+	table1CSVWriter.append(",");
+	
+	
+	table1CSVWriter.append("\n");		
+	
+	table1CSVWriter.flush();
+	table1CSVWriter.close();
+	
+	
+	/**
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * These properties are shown in second table.
+	 * 
+	 */
+	
+File table2File  = new File(statisticsFolderPath+"table2.csv");
+	
+if(!table2File.exists()) {
+		
+table2File.createNewFile();
+
+}
+
+numberOfReactionsHydrocarbonSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveHydrocarbonSpecies());		
+numberOfReactionsThatInvolveNitrogenSpeciesTemp=new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveNitrogenSpecies());			
+numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp =new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies());		
+numberOfCabronAndHydrogenSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getCabronHydrogenSpeciesInOntoKin());		
+numberOfCabronAndHydrogenAndOxygenSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getCabronHydrogenOxygenSpeciesInOntoKin());		
+numberOfNitrogenSpeciesInOntoKinTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberNitrogenSpeciesInOntoKin());
+
+logger.info("data set writen in table1.csv file:");
+String table2CSVFile = statisticsFolderPath +"table2.csv";
+FileWriter table2CSVWriter = new FileWriter(table2CSVFile);
+			
+table2CSVWriter.append(numberOfReactionsHydrocarbonSpeciesTemp);
+table2CSVWriter.append(",");
+table2CSVWriter.append(numberOfReactionsThatInvolveNitrogenSpeciesTemp);
+table2CSVWriter.append(",");
+table2CSVWriter.append(numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp);
+table2CSVWriter.append(",");
+table2CSVWriter.append(numberOfCabronAndHydrogenSpeciesTemp);
+table2CSVWriter.append(",");
+table2CSVWriter.append(numberOfCabronAndHydrogenAndOxygenSpeciesTemp);
+table2CSVWriter.append(",");
+table2CSVWriter.append(numberOfNitrogenSpeciesInOntoKinTemp);
+table2CSVWriter.append(",");
+
+table2CSVWriter.append("\n");		
+
+table2CSVWriter.flush();
+table2CSVWriter.close();	
+
+}	
 		
 
 		/**
@@ -433,74 +501,8 @@ public class StatisticsAction extends ActionSupport {
 		
 		table1Reader.close();
 		
-		
 
 		
-		
-		/**
-		 * 
-		 * @author NK510 (caresssd@hermes.cam.ac.uk)
-		 * These properties are shown on second table.
-		 * 
-		 */
-		
-//		numberOfReactionsHydrocarbonSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveHydrocarbonSpecies());		
-//		numberOfReactionsThatInvolveNitrogenSpeciesTemp=new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveNitrogenSpecies());			
-//		numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp =new QueryManager().getQuery(ontokinkb, QueryString.getNumberOfReactionsThatInvolveOxygenHydrocarbonSpecies());		
-//		numberOfCabronAndHydrogenSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getCabronHydrogenSpeciesInOntoKin());		
-//		numberOfCabronAndHydrogenAndOxygenSpeciesTemp = new QueryManager().getQuery(ontokinkb, QueryString.getCabronHydrogenOxygenSpeciesInOntoKin());		
-//		numberOfNitrogenSpeciesInOntoKinTemp = new QueryManager().getQuery(ontokinkb, QueryString.getNumberNitrogenSpeciesInOntoKin());
-//		
-//		
-//		logger.info("data set writen in table1.csv file:");
-//		String table2CSVFile = statisticsFolderPath +"table2.csv";
-//        FileWriter table2CSVWriter = new FileWriter(table2CSVFile);
-//					
-//		table2CSVWriter.append(numberOfReactionsHydrocarbonSpeciesTemp);
-//		table2CSVWriter.append(",");
-//		table2CSVWriter.append(numberOfReactionsThatInvolveNitrogenSpeciesTemp);
-//		table2CSVWriter.append(",");
-//		table2CSVWriter.append(numberOfReactionsThatInvolveOxygenHydrocarbonSpeciesTemp);
-//		table2CSVWriter.append(",");
-//		table2CSVWriter.append(numberOfCabronAndHydrogenSpeciesTemp);
-//		table2CSVWriter.append(",");
-//		table2CSVWriter.append(numberOfCabronAndHydrogenAndOxygenSpeciesTemp);
-//		table2CSVWriter.append(",");
-//		table2CSVWriter.append(numberOfNitrogenSpeciesInOntoKinTemp);
-//		table2CSVWriter.append(",");
-//		
-//		
-//		table2CSVWriter.append("\n");		
-//		
-//		table2CSVWriter.flush();
-//		table2CSVWriter.close();
-		
-		
-
-		/**
-		 * Reads data from table2.csv file 
-		 */
-		logger.info("reading table2.csv file :");
-		BufferedReader table2Reader = new BufferedReader(new FileReader(statisticsFolderPath+"table2.csv"));
-		
-		String table2Row="";				
-		String[] table2Data =null;
-		while ((table2Row = table2Reader.readLine()) != null) {
-			table2Data = table2Row.split(","); 
-		}
-		
-
-		for(int i =0;i<table2Data.length;i++) {			
-			logger.info(table2Data[i]);				
-		}
-		numberOfReactionsHydrocarbonSpecies = table2Data[0];
-		numberOfReactionsThatInvolveNitrogenSpecies=table2Data[1];		
-		numberOfReactionsThatInvolveOxygenHydrocarbonSpecies=table2Data[2];		
-		numberOfCabronAndHydrogenSpecies=table2Data[3];		
-		numberOfCabronAndHydrogenAndOxygenSpecies=table2Data[4];		
-		numberOfNitrogenSpeciesInOntoKin=table2Data[5];
-		
-		table2Reader.close();
 		
 		/**
 		 * Reads csv data to plot it on bar chart 
@@ -560,6 +562,31 @@ public class StatisticsAction extends ActionSupport {
 		
 		ontokinCsvReader.close();
 		
+		
+		/**
+		 * Reads data from table2.csv file 
+		 */
+		logger.info("reading table2.csv file :");
+		BufferedReader table2Reader = new BufferedReader(new FileReader(statisticsFolderPath+"table2.csv"));
+		
+		String table2Row="";				
+		String[] table2Data =null;
+		while ((table2Row = table2Reader.readLine()) != null) {
+			table2Data = table2Row.split(","); 
+		}
+		
+
+		for(int i =0;i<table2Data.length;i++) {			
+			logger.info(table2Data[i]);				
+		}
+		numberOfReactionsHydrocarbonSpecies = table2Data[0];
+		numberOfReactionsThatInvolveNitrogenSpecies=table2Data[1];		
+		numberOfReactionsThatInvolveOxygenHydrocarbonSpecies=table2Data[2];		
+		numberOfCabronAndHydrogenSpecies=table2Data[3];		
+		numberOfCabronAndHydrogenAndOxygenSpecies=table2Data[4];		
+		numberOfNitrogenSpeciesInOntoKin=table2Data[5];
+		
+		table2Reader.close();
 		
 		/**
 		 * 

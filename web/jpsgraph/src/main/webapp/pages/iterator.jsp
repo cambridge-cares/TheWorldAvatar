@@ -18,7 +18,7 @@
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
-<meta http-equiv="refresh" content="240; url=http://theworldavatar.com/graph/statisticsAction">
+<meta http-equiv="refresh" content="120; url=http://theworldavatar.com/graph/statisticsAction">
 
 <title>JPS self growing knowledge graph: Statistics</title>
 
@@ -151,7 +151,6 @@ Here is java script for visualization molecules.
     <div class="span-24 paramlist">
         <h2 align="left"></h2>
         
-
 <!--          
 <table style="width:100%;">
 <tbody>         
