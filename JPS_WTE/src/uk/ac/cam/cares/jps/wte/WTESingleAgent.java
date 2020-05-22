@@ -77,10 +77,15 @@ public class WTESingleAgent extends JPSHttpServlet {
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
 		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		try {
+			//read for FC details
 			List<String[]> resu =  readAndDump(model,WastetoEnergyAgent.FCQuery);
+			//select in year 1
 			List<String[]> fcMapping = createFoodCourt(resu);
+			//properties of OnsiteTech
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
+			//creates onsite WTF if indicated by the number of units (onsite).csv
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
+			
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
 //			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
@@ -128,20 +133,19 @@ public class WTESingleAgent extends JPSHttpServlet {
 	private List<String[]> createFoodCourt(List<String[]> resultList) {
 	 List<String[]> inputdata = new ArrayList<String[]>();
 		for (int d = 0; d < resultList.size(); d++) {
-			String[] comp = { resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
+			//entity, x, y
 			String[] mapper = {resultList.get(d)[5],resultList.get(d)[1], resultList.get(d)[2] };// only extract and y
-			if (resultList.get(d)[4].contentEquals("1")) {
+			if (resultList.get(d)[4].contentEquals("1")) { //self select for year
 				inputdata.add(mapper);
 			}
-			
 		}
 		return inputdata;
-		}
-	/** updates the Onsite Waste Treatment Facility OWL file
+	}
+	/** creates the Onsite Waste Treatment Facility OWL file
 	 * 
 	 * @param inputdata {[List<String[]>]}
 	 * @param baseUrl String
-	 * @return List<String>
+	 * @return List<String> list of IRIS of onsite WTF
 	 * @throws Exception
 	 */
 	public List<String> updateinOnsiteWT(List<String[]> inputdata , String baseUrl,List<String[]> propertydata) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
@@ -150,9 +154,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 		List<String[]>onsiteunitmapping=new ArrayList<String[]>();
 		int size3=unitofonsite.size();
 		int colamount3=unitofonsite.get(0).length;
-		for(int x=0;x<size3;x++) {
-			String[]linemapping= new String[colamount3];
-			for(int y=0;y<colamount3;y++) { //1tech only	
+		for(int x=0;x<size3;x++) { //currently 1 with one tech
+			String[]linemapping= new String[colamount3];//109 elements
+			for(int y=0;y<colamount3;y++) { 	
 				BigDecimal bd = new BigDecimal(unitofonsite.get(x)[y]);
 				double newval= Double.parseDouble(bd.toPlainString());
 				linemapping[y]=bd.toPlainString();
@@ -165,6 +169,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			onsiteunitmapping.add(linemapping);	
 		}
 		WTEKBCreator converter = new WTEKBCreator();
+		//create Onsite WTF
 		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping,propertydata);
 		List<String>mappedonsiteiri=converter.onsiteiri;
 		return mappedonsiteiri;
@@ -214,7 +219,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		for(int x=0;x<size2;x++) {
 			// Put all array elements in a HashSet 
 	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteoff.get(x))); 
-	        // HashSet should be 1. As HashSet contains only distinct values. 
+	        // HashSet should be 1 if all zero. As HashSet contains only distinct values. 
 	        if (s.size() == 1) {
 	        	continue;
 	        }
@@ -224,11 +229,14 @@ public class WTESingleAgent extends JPSHttpServlet {
 				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
 					String[]linemapping= {""+x,""+y,wastetransfer};
 					offsitemapping.add(linemapping);
+				}else {
+					String[]linemapping= {""+x,""+y,wastetransfer};
+					offsitemapping.add(linemapping);
 				}
 			}
 		}
 		//NOTE: Offsite and onsite mapping could be both present!
-		//Also, Only when cluster is present. 
+		//onsiteMapping and offsite Mapping = 109
 	
 		
 		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
@@ -246,7 +254,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 						+ wasteindex;
 				Double numfromres = Double.parseDouble(onsitemapping.get(d)[2]);
-				int onsiteindex = Integer.valueOf(onsitemapping.get(d)[1]);
+				int onsiteindex = Integer.valueOf(onsitemapping.get(d)[1]);//onsite cluster name
 				String currentwtf = inputdataonsite.get(onsiteindex);
 				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
