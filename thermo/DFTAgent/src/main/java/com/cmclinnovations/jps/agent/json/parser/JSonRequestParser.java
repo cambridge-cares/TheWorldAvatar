@@ -2,6 +2,8 @@ package com.cmclinnovations.jps.agent.json.parser;
 
 import com.jayway.jsonpath.JsonPath;
 
+import net.minidev.json.JSONArray;
+
 public class JSonRequestParser {
 
 	public static String getLevelOfTheory(String jsonString){
@@ -32,11 +34,15 @@ public class JSonRequestParser {
 		return JsonPath.read(jsonString, "$.gaussian");
 	}
 
-	public static String getHighTemperatureCoefficient(String jsonString){
+	public static JSONArray getHighTemperatureCoefficient(String jsonString){
 		return JsonPath.read(jsonString, "$.highTcoeff");
 	}
 
-	public static String getLowTemperatureCoefficient(String jsonString){
+	public static JSONArray getLowTemperatureCoefficient(String jsonString){
 		return JsonPath.read(jsonString, "$.LowTcoeff");
+	}
+	
+	public static JSONArray getThermoModels(String jsonString){
+		return JsonPath.read(jsonString, "$.results.bindings");
 	}
 }

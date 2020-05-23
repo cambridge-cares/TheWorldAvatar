@@ -11,6 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,6 +36,7 @@ import com.cmclinnovations.jps.agent.configuration.DFTAgentProperty;
 import com.cmclinnovations.jps.agent.json.parser.AgentRequirementParser;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.kg.OntoAgentKG;
+import com.cmclinnovations.jps.kg.OntoKinKG;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.cmclinnovations.jps.upload.CompChemUpload;
 import com.cmclinnovations.slurm.job.JobSubmission;
@@ -43,10 +45,13 @@ import com.cmclinnovations.slurm.job.SlurmJobException;
 import com.cmclinnovations.slurm.job.Status;
 import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
 import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
+import com.jayway.jsonpath.JsonPath;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+
+import net.minidev.json.JSONArray;
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
@@ -252,14 +257,76 @@ public class DFTAgent extends HttpServlet{
 			String result = invokeThermodataAgent(jobFolder, Property.ONTOCOMPCHEM_KB_IRI.getPropertyName()
 					.concat(uuid).concat("/").concat(uuid).concat(".owl#").concat(uuid));
 			boolean isApplyingThermoUpdateToMechanismRequired = Utils.isApplyingThermoUpdateToMechanismRequired(jobFolder, slurmJobProperty);
-			if(isApplyingThermoUpdateToMechanismRequired){
+			if(isApplyingThermoUpdateToMechanismRequired && !result.isEmpty()){
 				String uniqueSpeciesIRI = Utils.getUniqueSpeciesIRI(jobFolder, slurmJobProperty);
-				String lowTCoeff = JSonRequestParser.getLowTemperatureCoefficient(result);
-				lowTCoeff = formatCoefficient(lowTCoeff);
-				String highTCoeff = JSonRequestParser.getHighTemperatureCoefficient(result);
-				highTCoeff = formatCoefficient(highTCoeff);
+				JSONArray lowTCoeffArray = JSonRequestParser.getLowTemperatureCoefficient(result);
+				String lowTCoeff = formatCoefficient(lowTCoeffArray);
+				JSONArray highTCoeffArray = JSonRequestParser.getHighTemperatureCoefficient(result);
+				String highTCoeff = formatCoefficient(highTCoeffArray);
+				List<String> thermoModelModelTriples = queryThermoModelFromOntoKinKG(uniqueSpeciesIRI);
+				updateThermoModelInOntoKinKG(thermoModelModelTriples, lowTCoeff, highTCoeff);
 			}
 		}
+	}
+	
+	/**
+	 * Queries and retrieves a thermo model of the species from the OntoKin KG. 
+	 * 
+	 * @param uniqueSpeciesIRI
+	 * @return
+	 * @throws IOException
+	 */
+	private List<String> queryThermoModelFromOntoKinKG(String uniqueSpeciesIRI) throws IOException{
+		String thermoModelsSPARQLQueryOutputInJson = OntoKinKG.getThermoModelsOfSpecies(uniqueSpeciesIRI, dftAgentProperty);
+		JSONArray thermoModels = JSonRequestParser.getThermoModels(thermoModelsSPARQLQueryOutputInJson);
+		return getSortedThermoModelTriples(thermoModels, thermoModelsSPARQLQueryOutputInJson);
+	}
+	
+	/**
+	 * Updates a thermo model of the species in the OntoKin KG.
+	 * 
+	 * @param thermoModelModelTriples
+	 * @param lowTCoeff
+	 * @param highTCoeff
+	 * @throws IOException
+	 */
+	private void updateThermoModelInOntoKinKG(List<String> thermoModelModelTriples, String lowTCoeff, String highTCoeff) throws IOException{
+		int iteration = 0;
+		for(String thermoModelTriple:thermoModelModelTriples){
+			OntoKinKG.deleteThermoModelsOfSpecies(thermoModelTriple, dftAgentProperty);
+			String tokens[] = thermoModelTriple.split(" ");
+			String newThermoModelTriple = "";
+			for(int i=0;i<tokens.length;i++){
+				if(i<2){
+					newThermoModelTriple = newThermoModelTriple + tokens[i] + " ";
+				}
+			}
+			if(iteration == 0){
+				newThermoModelTriple = newThermoModelTriple + lowTCoeff;
+			}else if(iteration == 1){
+				newThermoModelTriple = newThermoModelTriple + highTCoeff;
+			}
+			iteration++;
+			OntoKinKG.insertThermoModelsOfSpecies(newThermoModelTriple, dftAgentProperty);
+		}
+	}
+	
+	/**
+	 * Puts retrieved thermo models in triple format and srot them.
+	 * 
+	 * @param thermoModels
+	 * @param jsonString
+	 * @return
+	 */
+	private List<String> getSortedThermoModelTriples(JSONArray thermoModels, String jsonString) {
+		List<String> thermoModelTriples = new ArrayList<>();
+		for (int i = 0; i < thermoModels.size(); i++) {
+			thermoModelTriples.add("<"+JsonPath.read(jsonString, "$.results.bindings[" + i + "].thermoModel.value")
+					.toString().concat("> ").concat("ontokin:hasCoefficientValues").concat(" ")
+					.concat(JsonPath.read(jsonString, "$.results.bindings[" + i + "].coeffValues.value").toString()));
+		}
+		Collections.sort(thermoModelTriples);
+		return thermoModelTriples;
 	}
 	
 	/**
@@ -269,22 +336,16 @@ public class DFTAgent extends HttpServlet{
 	 * @param coeff
 	 * @return
 	 */
-	private String formatCoefficient(String coeff){
+	private String formatCoefficient(JSONArray coeffArray){
 		String formattedCoeff = "";
-		if(coeff!=null && !coeff.isEmpty() && coeff.contains(",")){
-			int i = 0;
-			
-			String tokens[] = coeff.split(",");
-			for(String token:tokens){
-				i++;
-				if(i>=7){
-					formattedCoeff = formattedCoeff.concat(token);
-					break;
-				}else if(i==4){
-					formattedCoeff = formattedCoeff.concat(token).concat(",\n");					
-				}else{
-					formattedCoeff = formattedCoeff.concat(token).concat(",   ");
-				}
+		for(int i=0;i<coeffArray.size();i++){
+			if(i>=6){
+				formattedCoeff = formattedCoeff.concat(coeffArray.get(i).toString());
+				break;
+			}else if(i==3){
+				formattedCoeff = formattedCoeff.concat(coeffArray.get(i).toString()).concat(",\n");					
+			}else{
+				formattedCoeff = formattedCoeff.concat(coeffArray.get(i).toString()).concat(",   ");
 			}
 		}
 		return formattedCoeff;
@@ -341,7 +402,16 @@ public class DFTAgent extends HttpServlet{
 		JSONObject json = new JSONObject();
 		json.put("gaussian", ontoCompChemIRI);
 		String httpRequest = dftAgentProperty.getThermoAgentHttpRequestFirstPart().concat(URLEncoder.encode(json.toString(), "UTF-8"));
-		String result = performHTTPRequest(httpRequest);
+		int limit = 5;
+		String result = "";
+		for(int i = 1; i<=5; i++){
+			try{
+				result = performHTTPRequest(httpRequest);
+				break;
+			}catch(IOException e){
+				logger.info("Attempt["+i+"] Could not receive the calculated NASA polynomials.");
+			}
+		}
 		return result;
 	}
 	
