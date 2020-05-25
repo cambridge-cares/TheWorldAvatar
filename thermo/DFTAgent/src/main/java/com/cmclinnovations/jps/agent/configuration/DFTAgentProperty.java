@@ -13,12 +13,27 @@ public class DFTAgentProperty {
 	@Value("${dft.agent.rdf4j.ontokin.repository.iri}")
 	private String ontoKinRepositoryIRI;
 	
+	@Value("${dft.agent.rdf4j.server.url}")
+	private String rdf4jServerURL;
+
+	
+	@Value("${dft.agent.rdf4j.ontokin.repository.id}")
+	private String ontoKinRepositoryID;
+
 	public String getThermoAgentHttpRequestFirstPart() {
 		return thermoAgentHttpRequestFirstPart;
 	}
 
 	public String getOntoKinRepositoryIRI() {
 		return ontoKinRepositoryIRI;
+	}
+
+	public String getRdf4jServerURL() {
+		return rdf4jServerURL;
+	}
+
+	public String getOntoKinRepositoryID() {
+		return ontoKinRepositoryID;
 	}
 }
 

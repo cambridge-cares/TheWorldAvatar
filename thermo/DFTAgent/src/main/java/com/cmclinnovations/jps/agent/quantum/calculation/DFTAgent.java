@@ -299,6 +299,8 @@ public class DFTAgent extends HttpServlet{
 			for(int i=0;i<tokens.length;i++){
 				if(i<2){
 					newThermoModelTriple = newThermoModelTriple + tokens[i] + " ";
+				}else{
+					break;
 				}
 			}
 			if(iteration == 0){
@@ -311,6 +313,8 @@ public class DFTAgent extends HttpServlet{
 		}
 	}
 	
+	
+	
 	/**
 	 * Puts retrieved thermo models in triple format and srot them.
 	 * 
@@ -321,8 +325,8 @@ public class DFTAgent extends HttpServlet{
 	private List<String> getSortedThermoModelTriples(JSONArray thermoModels, String jsonString) {
 		List<String> thermoModelTriples = new ArrayList<>();
 		for (int i = 0; i < thermoModels.size(); i++) {
-			thermoModelTriples.add("<"+JsonPath.read(jsonString, "$.results.bindings[" + i + "].thermoModel.value")
-					.toString().concat("> ").concat("ontokin:hasCoefficientValues").concat(" ")
+			thermoModelTriples.add(JsonPath.read(jsonString, "$.results.bindings[" + i + "].thermoModel.value")
+					.toString().concat(" ").concat("http://www.theworldavatar.com/kb/ontokin/ontokin.owl#hasCoefficientValues").concat(" ")
 					.concat(JsonPath.read(jsonString, "$.results.bindings[" + i + "].coeffValues.value").toString()));
 		}
 		Collections.sort(thermoModelTriples);
@@ -337,7 +341,7 @@ public class DFTAgent extends HttpServlet{
 	 * @return
 	 */
 	private String formatCoefficient(JSONArray coeffArray){
-		String formattedCoeff = "";
+		String formattedCoeff = "\n";
 		for(int i=0;i<coeffArray.size();i++){
 			if(i>=6){
 				formattedCoeff = formattedCoeff.concat(coeffArray.get(i).toString());
