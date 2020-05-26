@@ -246,9 +246,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//input data onsite=onsiteiri
 		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
 			int wasteindex = 1;
-
+			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
-			if (onsitemapping.size() > 0) {
+			if (onsitemapping.size() > 0) {//This is when the logic fails: What if there are both onsite and offsite? 
+				//Then there would be twice the added value.
 				String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
 				String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 						+ wasteindex;
