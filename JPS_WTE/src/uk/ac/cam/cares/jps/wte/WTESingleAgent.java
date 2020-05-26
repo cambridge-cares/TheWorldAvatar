@@ -191,52 +191,49 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
 		//109x109
+		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
+		//109x3x3
+		int size2=treatedwasteoff.size();
+		int colamount2=treatedwasteoff.get(0).length; // 9 currently
+		
 		List<String[]> clusterInputs = readResult(baseUrl,"x_cluster_allocation.csv");
 		List<String[]>onsitemapping=new ArrayList<String[]>();
+		List<String[]>offsitemapping=new ArrayList<String[]>();
 		HashSet<String> clusterName =new HashSet<String>();
-		int size=treatedwasteon.size();
+		int size=treatedwasteon.size(); 
 		for(int x=0;x<size;x++) {
 	        // Put all array elements in a HashSet 
 	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteon.get(x))); 
 	        // HashSet should be 1. As HashSet contains only distinct values. 
-	        if (s.size() == 1) { //if they're all zero, skip the loop
-	        	continue;
-	        }
-			for(int y=0;y<size;y++) {
-				String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
-				String clusterFC=clusterInputs.get(x)[y]; //in ton/day
-				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
-					String[]linemapping= {""+x,""+y,wastetransfer};
-					onsitemapping.add(linemapping);
-					//assuming that we name all of the clusters by their position
-					clusterName.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
-					+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y));
+	        if (s.size() != 1) { //if they're non zero, it's onsite
+	        	for(int y=0;y<size;y++) {//109 rounds
+					String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
+					String clusterFC=clusterInputs.get(x)[y]; //in ton/day
+					if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
+						//assuming that we name all of the clusters by their position
+						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
+						+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
+						clusterName.add(clusterNameO);
+						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO};
+						onsitemapping.add(linemapping);
+					}
 				}
-			}
+	        }else { //otherwise, it's offsite (could it be neither? no.)
+	        	for(int y=0;y<colamount2;y++) { //3tech*3instance
+					String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
+					String clusterFC=clusterInputs.get(x)[y]; //in ton/day
+					if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
+						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
+								+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
+								clusterName.add(clusterNameO);
+						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO};
+						offsitemapping.add(linemapping);		
+					}
+				}
+	        }
+			
 		}
 		
-		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
-		List<String[]>offsitemapping=new ArrayList<String[]>();
-		int size2=treatedwasteoff.size();
-		int colamount2=treatedwasteoff.get(0).length;
-		for(int x=0;x<size2;x++) {
-			// Put all array elements in a HashSet 
-	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteoff.get(x))); 
-	        // HashSet should be 1 if all zero. As HashSet contains only distinct values. 
-	        if (s.size() == 1) {
-	        	continue;
-	        }
-			for(int y=0;y<colamount2;y++) { //3tech*3instance
-				String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
-				String clusterFC=clusterInputs.get(x)[y]; //in ton/day
-				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
-					String[]linemapping= {""+x,""+y,wastetransfer};
-					offsitemapping.add(linemapping);
-					clusterName.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
-							+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y));
-				}
-			}
-		}
 		//NOTE: Offsite and onsite mapping could be both present!
 		//I should have less than 109 cluster Names at this stage and there's a difference
 		//between FC Cluster and onsite Cluster
