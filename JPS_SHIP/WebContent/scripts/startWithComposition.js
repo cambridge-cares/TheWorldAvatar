@@ -306,8 +306,8 @@ console.log(result)});
         var locationIRI =  mlocation = $('#location').val();
         let folder;
         console.log('locationIRI '+locationIRI);
-        let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulationADMS";//"/agent"
-//      let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation"+keyvendor;//"/ADMS or Episode "
+        let agentScenario =  "/JPS_DISPERSION/" + keyvendor + "/results/latest";
+
         let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
         //TODO:determine what sequence to query;
         $.get(agentScenario, {city:locationIRI}).done(function (data) {
