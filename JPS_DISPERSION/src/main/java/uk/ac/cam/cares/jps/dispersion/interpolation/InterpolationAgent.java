@@ -151,7 +151,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 						updateRepoNewMethod(stationiri, classname, value, value, directorytime);
 					} else if (component.contentEquals("C2H6") || component.contentEquals("C2H4")
 							|| component.contentEquals("nC4H10") || component.contentEquals("HC")
-							|| component.contentEquals("nC3H6") || component.contentEquals("oXylene")
+							|| component.contentEquals("C3H6") || component.contentEquals("oXylene")
 							|| component.contentEquals("isoprene")) {
 						concHC = concHC + Double.valueOf(value);
 					}
