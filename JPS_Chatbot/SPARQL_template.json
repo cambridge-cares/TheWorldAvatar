@@ -1,0 +1,7 @@
+{
+  "simple_info": "SELECT ?o\nWHERE \n{\n  wd:%s schema:description ?o.\n  FILTER ( lang(?o) = \"en\" )\n} LIMIT 50",
+  "item_attribute_query": "SELECT ?o\nWHERE \n{\n  wd:%s wdt:%s ?o .  \n\n} LIMIT 50",
+  "relation_filter": "SELECT ?o ?x\nWHERE \n{\n   ?o wdt:P31  wd:%s .\n   ?o wdt:%s wd:%s . \n   \n} LIMIT 50 ",
+  "batch_restriction_query": "SELECT ?oLabel  ?v ?value ?unitLabel\nWHERE\n{\n   ?o wdt:P31  wd:%s .\n   ?o wdt:%s ?v .\n  OPTIONAL {\n   ?o  p:%s/psv:%s ?v .\n   ?v     wikibase:quantityAmount     ?value.\n   ?v     wikibase:quantityUnit       ?unit.\n}\n   SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n      } LIMIT 50\n",
+  "batch_restriction_numerical_query": "SELECT ?o ?v\nWHERE\n  {\n    ?o wdt:P31 wd:%s .\n    ?o wdt:%s ?v .\n    FILTER (?v %s %s)\n   SERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n } LIMIT 50"
+}

@@ -1,0 +1,5133 @@
+@2020-03-30 11:12:20.005708
+--------------------------
+Show me all the species with 8 H atoms  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_relation_numerical_query",
+        "confidence": 0.9706481099128723
+    },
+    "entities": [
+        {
+            "start": 16,
+            "end": 23,
+            "value": "species",
+            "entity": "class",
+            "confidence": 0.9916691289712409,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 28,
+            "value": "with",
+            "entity": "attribute",
+            "confidence": 0.6468937935460509,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 30,
+            "value": "8",
+            "entity": "number",
+            "confidence": 0.8639747649146021,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 31,
+            "end": 38,
+            "value": "H atoms",
+            "entity": "entity",
+            "confidence": 0.8872983848402589,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.9706481099128723
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.012087239883840084
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.004951026756316423
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0035136777441948652
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.003437057603150606
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0017313641728833318
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0012337121879681945
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0010506368707865477
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0010046858806163073
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.00034246829454787076
+        }
+    ],
+    "text": "Show me all the species with 8 H atoms"
+}
+--------------------------
+species that have more than 16 Oxygens  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_relation_numerical_query",
+        "confidence": 0.990375816822052
+    },
+    "entities": [
+        {
+            "start": 0,
+            "end": 7,
+            "value": "species",
+            "entity": "class",
+            "confidence": 0.9281521346013583,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 13,
+            "end": 17,
+            "value": "have",
+            "entity": "attribute",
+            "confidence": 0.8677181007692354,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 28,
+            "end": 30,
+            "value": "16",
+            "entity": "number",
+            "confidence": 0.8917674039636088,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 31,
+            "end": 38,
+            "value": "Oxygens",
+            "entity": "entity",
+            "confidence": 0.8848201782376671,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.990375816822052
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.004891343414783478
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0015526649076491594
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0009774209465831518
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0009466137853451073
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0004163319827057421
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0003061226452700794
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00023812634753994644
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0002260231412947178
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 6.95354538038373e-05
+        }
+    ],
+    "text": "species that have more than 16 Oxygens"
+}
+--------------------------
+Species with an molecular weight larger than 3000  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_numerical_query",
+        "confidence": 0.9629852771759033
+    },
+    "entities": [
+        {
+            "start": 0,
+            "end": 7,
+            "value": "Species",
+            "entity": "class",
+            "confidence": 0.9231726215282179,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 16,
+            "end": 32,
+            "value": "molecular weight",
+            "entity": "attribute",
+            "confidence": 0.9175767462893205,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 33,
+            "end": 39,
+            "value": "larger",
+            "entity": "comparison",
+            "confidence": 0.9018192062049898,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 45,
+            "end": 49,
+            "value": "3000",
+            "entity": "number",
+            "confidence": 0.9718537563581628,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.9629852771759033
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.013507039286196232
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.006085833068937063
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.005812345538288355
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00469572888687253
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.002613506745547056
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.002577519277110696
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0011475428473204374
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.00032150978222489357
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0002537202963139862
+        }
+    ],
+    "text": "Species with an molecular weight larger than 3000"
+}
+--------------------------
+species with enthalpy more than -167  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_numerical_query",
+        "confidence": 0.9691107273101807
+    },
+    "entities": [
+        {
+            "start": 0,
+            "end": 7,
+            "value": "species",
+            "entity": "class",
+            "confidence": 0.9743121956222437,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 13,
+            "end": 21,
+            "value": "enthalpy",
+            "entity": "attribute",
+            "confidence": 0.944856412039986,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 22,
+            "end": 26,
+            "value": "more",
+            "entity": "comparison",
+            "confidence": 0.7006115020331452,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 32,
+            "end": 36,
+            "value": "-167",
+            "entity": "number",
+            "confidence": 0.8534428847280853,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.9691107273101807
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.012990444898605347
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00480698561295867
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.004045295994728804
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0033133027609437704
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0023531767074018717
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0022492273710668087
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0007070680730976164
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0002267840172862634
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0001971140009118244
+        }
+    ],
+    "text": "species with enthalpy more than -167"
+}
+--------------------------
+chemicals with enthalpy less than -200  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_numerical_query",
+        "confidence": 0.9623234272003174
+    },
+    "entities": [
+        {
+            "start": 0,
+            "end": 9,
+            "value": "chemicals",
+            "entity": "class",
+            "confidence": 0.9743301063824442,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 15,
+            "end": 23,
+            "value": "enthalpy",
+            "entity": "attribute",
+            "confidence": 0.9201315546968265,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 28,
+            "value": "less",
+            "entity": "comparison",
+            "confidence": 0.8629311237014268,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 34,
+            "end": 38,
+            "value": "-200",
+            "entity": "number",
+            "confidence": 0.8552602394921432,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.9623234272003174
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.017779823392629623
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.005311490502208471
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.004397488199174404
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.003401093417778611
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0029041210655122995
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0026250751689076424
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0007470644195564091
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0002858822699636221
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.00022467700182460248
+        }
+    ],
+    "text": "chemicals with enthalpy less than -200"
+}
+--------------------------
+species of which enthalpy that is larger than -155  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_numerical_query",
+        "confidence": 0.9706374406814575
+    },
+    "entities": [
+        {
+            "start": 0,
+            "end": 7,
+            "value": "species",
+            "entity": "class",
+            "confidence": 0.9176495133866973,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 17,
+            "end": 25,
+            "value": "enthalpy",
+            "entity": "attribute",
+            "confidence": 0.912126574050307,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 34,
+            "end": 40,
+            "value": "larger",
+            "entity": "comparison",
+            "confidence": 0.8658688252142296,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 46,
+            "end": 50,
+            "value": "-155",
+            "entity": "number",
+            "confidence": 0.8537764444901745,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.9706374406814575
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.012804216705262661
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0045236763544380665
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.003820267738774419
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.002914163749665022
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.002203458221629262
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0020234971307218075
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0007059338386170566
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.00021438549447339028
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.00015291385352611542
+        }
+    ],
+    "text": "species of which enthalpy that is larger than -155"
+}
+--------------------------
+What is the enthalpy of H2O2  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9994198083877563
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 20,
+            "value": "enthalpy",
+            "entity": "attribute",
+            "confidence": 0.9913545501367148,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 28,
+            "value": "H2O2",
+            "entity": "entity",
+            "confidence": 0.9779651805902647,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9994198083877563
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00024397710512857884
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 9.909850632539019e-05
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 8.716960292076692e-05
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 8.465479186270386e-05
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 3.556489173206501e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 1.5092319699760992e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 1.01838286354905e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 4.17745832237415e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 1.353810148430057e-07
+        }
+    ],
+    "text": "What is the enthalpy of H2O2"
+}
+--------------------------
+Give me the name of C6H2  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9990255832672119
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 16,
+            "value": "name",
+            "entity": "attribute",
+            "confidence": 0.910165506569044,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 20,
+            "end": 24,
+            "value": "C6H2",
+            "entity": "entity",
+            "confidence": 0.9291976878682009,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9990255832672119
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0003715197672136128
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00015655452443752438
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00015644438099116087
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00015379452088382095
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 7.581998943351209e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 2.835213308571838e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 2.3189712010207586e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 8.375521247216966e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 3.368598129327438e-07
+        }
+    ],
+    "text": "Give me the name of C6H2"
+}
+--------------------------
+What is the empirical formula of Acetone  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9989227652549744
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 29,
+            "value": "empirical formula",
+            "entity": "attribute",
+            "confidence": 0.9923587237777032,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 33,
+            "end": 40,
+            "value": "Acetone",
+            "entity": "entity",
+            "confidence": 0.9942464761909837,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9989227652549744
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0004211312625557184
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0001921586663229391
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00017797262989915907
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00015426561003550887
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 7.5620693678502e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 2.5380271836183965e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 2.2122399968793616e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 8.196935596060939e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 3.8964265058893943e-07
+        }
+    ],
+    "text": "What is the empirical formula of Acetone"
+}
+--------------------------
+What is the oxidation potential of chloroauric acid  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9964052438735962
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 31,
+            "value": "oxidation potential",
+            "entity": "attribute",
+            "confidence": 0.9927641745360278,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 35,
+            "end": 51,
+            "value": "chloroauric acid",
+            "entity": "entity",
+            "confidence": 0.9060877064307967,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9964052438735962
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0012946161441504955
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0007192767807282507
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00066696188878268
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.000505516305565834
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00020565208978950977
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 8.855552732711658e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 8.297977183246985e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 2.772204788925592e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 3.4361698908469407e-06
+        }
+    ],
+    "text": "What is the oxidation potential of chloroauric acid"
+}
+--------------------------
+What is the pka constant of citric acid  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9965608716011047
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 24,
+            "value": "pka constant",
+            "entity": "attribute",
+            "confidence": 0.9912421321300147,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 28,
+            "end": 39,
+            "value": "citric acid",
+            "entity": "entity",
+            "confidence": 0.9071150340999485,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9965608716011047
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0012497175484895706
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0006298620137386024
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0005413775215856731
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0005032978951931
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00020941476395819336
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00013415141438599676
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.00011552085197763517
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 5.246855289442465e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 3.358555659360718e-06
+        }
+    ],
+    "text": "What is the pka constant of citric acid"
+}
+--------------------------
+what is the explosion limit of methane  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9991770386695862
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 27,
+            "value": "explosion limit",
+            "entity": "attribute",
+            "confidence": 0.9933564560751247,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 31,
+            "end": 38,
+            "value": "methane",
+            "entity": "entity",
+            "confidence": 0.9344345680585718,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9991770386695862
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00034163263626396656
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0001355070562567562
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0001277787669096142
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00011889397137565538
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 5.509496986633167e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 2.3163673176895827e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 1.50741125253262e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 5.448522642836906e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 2.397185028257809e-07
+        }
+    ],
+    "text": "what is the explosion limit of methane"
+}
+--------------------------
+what is the laminar flame speed of ethylene  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9964170455932617
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 31,
+            "value": "laminar flame speed",
+            "entity": "attribute",
+            "confidence": 0.9430688936422046,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 35,
+            "end": 43,
+            "value": "ethylene",
+            "entity": "entity",
+            "confidence": 0.9659471587349084,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9964170455932617
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0014747801469638944
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0006012605736032128
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0005324534140527248
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00046206475235521793
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00027961438172496855
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00011163533781655133
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 8.337706094607711e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 3.464936889940873e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 3.079180260101566e-06
+        }
+    ],
+    "text": "what is the laminar flame speed of ethylene"
+}
+--------------------------
+what is the boiling point of Benzene  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9971565008163452
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 25,
+            "value": "boiling point",
+            "entity": "attribute",
+            "confidence": 0.9919787672393992,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 36,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9954803664106677,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9971565008163452
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0009973918786272407
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0007613888010382652
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00035662984009832144
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0002857278159353882
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00015222519868984818
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0001435681915609166
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 9.028019849210978e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 5.35800754732918e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 2.667167564140982e-06
+        }
+    ],
+    "text": "what is the boiling point of Benzene"
+}
+--------------------------
+what is the energy content of Gasoline  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9919707775115967
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 26,
+            "value": "energy content",
+            "entity": "attribute",
+            "confidence": 0.9926611240536595,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 30,
+            "end": 38,
+            "value": "Gasoline",
+            "entity": "entity",
+            "confidence": 0.9869340415280363,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9919707775115967
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.002711390145123005
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.001521556288935244
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0012019117129966617
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0010145124979317188
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0005652205436490476
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00048199546290561557
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0003719742817338556
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.00014611230290029198
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 1.450959280191455e-05
+        }
+    ],
+    "text": "what is the energy content of Gasoline"
+}
+--------------------------
+what is Benzene's heat capacity  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9984839558601379
+    },
+    "entities": [
+        {
+            "start": 8,
+            "end": 15,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9868530283293317,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 18,
+            "end": 31,
+            "value": "heat capacity",
+            "entity": "attribute",
+            "confidence": 0.8482712921739658,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9984839558601379
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0005403307150118053
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0003052468237001449
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00026731594698503613
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0002342782390769571
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 7.966501289047301e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 3.9814178308006376e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 3.146366361761466e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.737628372211475e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 7.365370038314722e-07
+        }
+    ],
+    "text": "what is Benzene's heat capacity"
+}
+--------------------------
+what is Benzene' std enthalpy of combustion  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9982732534408569
+    },
+    "entities": [
+        {
+            "start": 8,
+            "end": 15,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9749135336880749,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 17,
+            "end": 29,
+            "value": "std enthalpy",
+            "entity": "attribute",
+            "confidence": 0.8011435130311441,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9982732534408569
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0006593543221242726
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0003278875956311822
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0002785701071843505
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0002484191209077835
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 8.909113967092708e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 5.731709461542778e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 4.7129859012784436e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.8064594769384712e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 9.091694437302067e-07
+        }
+    ],
+    "text": "what is Benzene' std enthalpy of combustion"
+}
+--------------------------
+What is the GHS signal word of Benzene   !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.998907208442688
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 27,
+            "value": "GHS signal word",
+            "entity": "attribute",
+            "confidence": 0.9069176085549034,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 31,
+            "end": 38,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9954766804735351,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.998907208442688
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00043945436482317746
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00020482251420617104
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00018123093468602747
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00013442225463222712
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 7.44293283787556e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 3.0994138796813786e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 1.783330117177684e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 9.184753253066447e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 4.081752251750004e-07
+        }
+    ],
+    "text": "What is the GHS signal word of Benzene "
+}
+--------------------------
+What is Benzene's conjugate acid  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9986979961395264
+    },
+    "entities": [
+        {
+            "start": 8,
+            "end": 15,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9868447788347762,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 18,
+            "end": 32,
+            "value": "conjugate acid",
+            "entity": "attribute",
+            "confidence": 0.7961358425850453,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9986979961395264
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0004745013720821589
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00025545802782289684
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00020581024000421166
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0002046052977675572
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 8.092516509350389e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 3.976009975303896e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 2.5766927137738094e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.4479197488981299e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 5.854960818396648e-07
+        }
+    ],
+    "text": "What is Benzene's conjugate acid"
+}
+--------------------------
+Describe the sublimation condition of Methyl salicylate  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9993320107460022
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 34,
+            "value": "sublimation condition",
+            "entity": "attribute",
+            "confidence": 0.9510408675499502,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 38,
+            "end": 55,
+            "value": "Methyl salicylate",
+            "entity": "entity",
+            "confidence": 0.9475199533536511,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9993320107460022
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00019110536959487945
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00015641194477211684
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00012405330198816955
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.000115106777229812
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 2.8600963560165837e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 2.7036812753067352e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 1.8078235370921902e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 7.415671461785678e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 1.553768100848174e-07
+        }
+    ],
+    "text": "Describe the sublimation condition of Methyl salicylate"
+}
+--------------------------
+describe the odor of Methyl salicylate  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9994511008262634
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 17,
+            "value": "odor",
+            "entity": "attribute",
+            "confidence": 0.904335963957304,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 21,
+            "end": 38,
+            "value": "Methyl salicylate",
+            "entity": "entity",
+            "confidence": 0.9474137208268992,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9994511008262634
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00018790457397699356
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00010934120655292645
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00010372821998316795
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 8.693265408510342e-05
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 2.5359378923894837e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 1.9779459762503393e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 1.1460144378361292e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 4.228038505971199e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 1.1776751307479572e-07
+        }
+    ],
+    "text": "describe the odor of Methyl salicylate"
+}
+--------------------------
+what is the acidity of Methyl salicylate  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9978189468383789
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 19,
+            "value": "acidity",
+            "entity": "attribute",
+            "confidence": 0.9615045793760875,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 23,
+            "end": 40,
+            "value": "Methyl salicylate",
+            "entity": "entity",
+            "confidence": 0.9474675862920432,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9978189468383789
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0007460844935849309
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00039565382758155465
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00036672886926680803
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0003640924405772239
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0001436941238353029
+        },
+        {
+            "name": "simple_info",
+            "confidence": 8.148201595759019e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 5.361597868613899e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 2.836427120200824e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 1.3102489901939407e-06
+        }
+    ],
+    "text": "what is the acidity of Methyl salicylate"
+}
+--------------------------
+what is the autoignition tempeature of Methyl salicylate  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9992043375968933
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 35,
+            "value": "autoignition tempeature",
+            "entity": "attribute",
+            "confidence": 0.9571382063989651,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 39,
+            "end": 56,
+            "value": "Methyl salicylate",
+            "entity": "entity",
+            "confidence": 0.9475195376284005,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9992043375968933
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00029252018430270255
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00015556208381894976
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00014131855277810246
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00011250630632275715
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 3.9274604205274954e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 3.105706855421886e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 1.645389238547068e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 6.6254915509489365e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 2.1520645532291383e-07
+        }
+    ],
+    "text": "what is the autoignition tempeature of Methyl salicylate"
+}
+--------------------------
+give me the fire diamond of Ethanol  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9980657696723938
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 24,
+            "value": "fire diamond",
+            "entity": "attribute",
+            "confidence": 0.9395080708471986,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 28,
+            "end": 35,
+            "value": "Ethanol",
+            "entity": "entity",
+            "confidence": 0.9831846408584396,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9980657696723938
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.000781034177634865
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0003326755540911108
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00026957798399962485
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00026436662301421165
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0001363105548080057
+        },
+        {
+            "name": "simple_info",
+            "confidence": 8.450479072052985e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 5.009422602597624e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.46762886288343e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 9.75684883997019e-07
+        }
+    ],
+    "text": "give me the fire diamond of Ethanol"
+}
+--------------------------
+what are the other names for Ethanol  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9968553781509399
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 24,
+            "value": "other names",
+            "entity": "attribute",
+            "confidence": 0.8851252959944519,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 36,
+            "value": "Ethanol",
+            "entity": "entity",
+            "confidence": 0.972555719913771,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9968553781509399
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0012413981603458524
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0005332953296601772
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0004909542039968073
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00044596989755518734
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0002186026977142319
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00010547140118433163
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 7.238360558403656e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 3.406501855351962e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 2.4175474209187087e-06
+        }
+    ],
+    "text": "what are the other names for Ethanol"
+}
+--------------------------
+what is methyl salicylate's solubility in ethanol  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9984639883041382
+    },
+    "entities": [
+        {
+            "start": 28,
+            "end": 38,
+            "value": "solubility",
+            "entity": "attribute",
+            "confidence": 0.8388911893519148,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 42,
+            "end": 49,
+            "value": "ethanol",
+            "entity": "entity",
+            "confidence": 0.8736259320093682,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9984639883041382
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0005511735798791051
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0002829252043738961
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0002694489958230406
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00023937379592098296
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 8.378748316317797e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 5.5185337259899825e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 3.9692105929134414e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.3698725524591282e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 7.451970418514975e-07
+        }
+    ],
+    "text": "what is methyl salicylate's solubility in ethanol"
+}
+--------------------------
+what are the main hazards of Ethanol  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9988021850585938
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 25,
+            "value": "main hazards",
+            "entity": "attribute",
+            "confidence": 0.9537685528704314,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 36,
+            "value": "Ethanol",
+            "entity": "entity",
+            "confidence": 0.9831856494774678,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9988021850585938
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.000512996397446841
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00019272160716354847
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0001849400723585859
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00015776802320033312
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 8.814985631033778e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 2.942457649623975e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 2.278222018503584e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 8.584740498918109e-06
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 4.440364591573598e-07
+        }
+    ],
+    "text": "what are the main hazards of Ethanol"
+}
+--------------------------
+what is the type of diels-alder reaction  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9969486594200134
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 16,
+            "value": "type",
+            "entity": "attribute",
+            "confidence": 0.9177626514424553,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 20,
+            "end": 40,
+            "value": "diels-alder reaction",
+            "entity": "entity",
+            "confidence": 0.973980599422855,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9969486594200134
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0011831404408439994
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0005136720719747245
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0004906886024400592
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0004442007630132139
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00021197565365582705
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00010148408182431012
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 6.786802259739488e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 3.5843357181875035e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 2.464122417222825e-06
+        }
+    ],
+    "text": "what is the type of diels-alder reaction"
+}
+--------------------------
+what is the other names of diels-alder reaction  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9978148937225342
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 23,
+            "value": "other names",
+            "entity": "attribute",
+            "confidence": 0.9872482205623749,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 27,
+            "end": 47,
+            "value": "diels-alder reaction",
+            "entity": "entity",
+            "confidence": 0.9741024799492964,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9978148937225342
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0008387123816646636
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0004293527454137802
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.000336092576617375
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0003128454845864326
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00012141268234699965
+        },
+        {
+            "name": "simple_info",
+            "confidence": 6.890304939588532e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 4.772811007569544e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 2.8451280741137452e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 1.5311173910959042e-06
+        }
+    ],
+    "text": "what is the other names of diels-alder reaction"
+}
+--------------------------
+what are the products of diels-alder reaction  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9968089461326599
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 21,
+            "value": "products",
+            "entity": "attribute",
+            "confidence": 0.9046707901791413,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 25,
+            "end": 45,
+            "value": "diels-alder reaction",
+            "entity": "entity",
+            "confidence": 0.9739938713231464,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9968089461326599
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.001213431591168046
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.000591829011682421
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.000541567278560251
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00041438944754190743
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00020979596592951566
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00011930398613912985
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 6.171879795147106e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 3.673912215163e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 2.1872033357794862e-06
+        }
+    ],
+    "text": "what are the products of diels-alder reaction"
+}
+--------------------------
+what are the isomers of C3H8O  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9986573457717896
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 20,
+            "value": "isomers",
+            "entity": "attribute",
+            "confidence": 0.9149166262669383,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 29,
+            "value": "C3H8O",
+            "entity": "entity",
+            "confidence": 0.9291395273348472,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9986573457717896
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0005052848719060421
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00025722020654939115
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00020128268806729466
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00019905211229342967
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 8.345796959474683e-05
+        },
+        {
+            "name": "simple_info",
+            "confidence": 4.519711364991963e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 3.528222441673279e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.5172480743785854e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 6.010581046211882e-07
+        }
+    ],
+    "text": "what are the isomers of C3H8O"
+}
+--------------------------
+show me the 3d model of Colchicine  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9989559650421143
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 20,
+            "value": "3d model",
+            "entity": "attribute",
+            "confidence": 0.9931601138015064,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 34,
+            "value": "Colchicine",
+            "entity": "entity",
+            "confidence": 0.9968580408592683,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9989559650421143
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00037133219302631915
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00024492223747074604
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0001838395110098645
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00010959859355352819
+        },
+        {
+            "name": "simple_info",
+            "confidence": 4.923717278870754e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 3.719662709045224e-05
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 3.679648943943903e-05
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 1.07862333607045e-05
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 3.8525482182194537e-07
+        }
+    ],
+    "text": "show me the 3d model of Colchicine"
+}
+--------------------------
+what is the vapour pressure of Benzene at 25 degrees  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.9725330471992493
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 27,
+            "value": "vapour pressure",
+            "entity": "attribute",
+            "confidence": 0.9536966036139577,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 31,
+            "end": 38,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9903786938323861,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 42,
+            "end": 44,
+            "value": "25",
+            "entity": "number",
+            "confidence": 0.9404764662338503,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 45,
+            "end": 52,
+            "value": "degrees",
+            "entity": "unit",
+            "confidence": 0.930024617041379,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.9725330471992493
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.023100437596440315
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0028603910468518734
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0008309377008117735
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0003506262437440455
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00019655375217553228
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 7.52054329495877e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 3.6469744372880086e-05
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 1.1441258720878977e-05
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 4.86776343677775e-06
+        }
+    ],
+    "text": "what is the vapour pressure of Benzene at 25 degrees"
+}
+--------------------------
+what is the refractive index of Benzene at 30 degrees  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.9722814559936523
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 28,
+            "value": "refractive index",
+            "entity": "attribute",
+            "confidence": 0.9561311970414558,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 32,
+            "end": 39,
+            "value": "Benzene",
+            "entity": "entity",
+            "confidence": 0.9903665933761455,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 43,
+            "end": 45,
+            "value": "30",
+            "entity": "number",
+            "confidence": 0.9232488757096439,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 46,
+            "end": 53,
+            "value": "degrees",
+            "entity": "unit",
+            "confidence": 0.9102996043054579,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.9722814559936523
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.023332977667450905
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.002787592587992549
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0008945047738961875
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.00036166945938020945
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0002028001326834783
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 8.33597659948282e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 3.981328336521983e-05
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 1.1107047612313181e-05
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 4.7295384320023e-06
+        }
+    ],
+    "text": "what is the refractive index of Benzene at 30 degrees"
+}
+--------------------------
+what is the boiling point of Butanone under 300 kpa  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.9730859398841858
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 25,
+            "value": "boiling point",
+            "entity": "attribute",
+            "confidence": 0.9919749417947502,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 37,
+            "value": "Butanone",
+            "entity": "entity",
+            "confidence": 0.9856462931327349,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 44,
+            "end": 47,
+            "value": "300",
+            "entity": "number",
+            "confidence": 0.8938061849709644,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 48,
+            "end": 51,
+            "value": "kpa",
+            "entity": "unit",
+            "confidence": 0.825230455084347,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.9730859398841858
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.02305774949491024
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0023413950111716986
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.000734103552531451
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0003522158076521009
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00030027885804884136
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 7.033970905467868e-05
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 4.568492659018375e-05
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 8.167938176484313e-06
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 4.037561666336842e-06
+        }
+    ],
+    "text": "what is the boiling point of Butanone under 300 kpa"
+}
+--------------------------
+what is the melting point of Nonafluoro-tert-butyl alcohol under room temperature  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.9074364900588989
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 25,
+            "value": "melting point",
+            "entity": "attribute",
+            "confidence": 0.9907461736223491,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 58,
+            "value": "Nonafluoro-tert-butyl alcohol",
+            "entity": "entity",
+            "confidence": 0.7869001001659729,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.9074364900588989
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0686592236161232
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.009541694074869156
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.004799642600119114
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.004475837107747793
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.00290226680226624
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0010975347831845284
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0007870726403780282
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00020807032706215978
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 9.211368160322309e-05
+        }
+    ],
+    "text": "what is the melting point of Nonafluoro-tert-butyl alcohol under room temperature"
+}
+--------------------------
+what commodity chemicals are derived Butanone  !  batch_restriction_query
+{
+    "intent": {
+        "name": "relation_filter",
+        "confidence": 0.9541304707527161
+    },
+    "entities": [
+        {
+            "start": 15,
+            "end": 24,
+            "value": "chemicals",
+            "entity": "class",
+            "confidence": 0.9673560149444527,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 36,
+            "value": "derived",
+            "entity": "attribute",
+            "confidence": 0.8343028613831115,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 37,
+            "end": 45,
+            "value": "Butanone",
+            "entity": "entity",
+            "confidence": 0.9773816060098007,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "relation_filter",
+            "confidence": 0.9541304707527161
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.01641678437590599
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.007621223106980324
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.005698543973267078
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.005040021147578955
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.004749436862766743
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0016789099900051951
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.001642072107642889
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0015426995232701302
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0014798613265156746
+        }
+    ],
+    "text": "what commodity chemicals are derived Butanone"
+}
+--------------------------
+list the chemicals with Hydrogen  !  batch_restriction_query
+{
+    "intent": {
+        "name": "relation_filter",
+        "confidence": 0.9741004109382629
+    },
+    "entities": [
+        {
+            "start": 9,
+            "end": 18,
+            "value": "chemicals",
+            "entity": "class",
+            "confidence": 0.9939379980299506,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 19,
+            "end": 23,
+            "value": "with",
+            "entity": "attribute",
+            "confidence": 0.8203769632522602,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 32,
+            "value": "Hydrogen",
+            "entity": "entity",
+            "confidence": 0.96815525853384,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "relation_filter",
+            "confidence": 0.9741004109382629
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.012824012897908688
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.003027194645255804
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0026320030447095633
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0025723460130393505
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.002135335700586438
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0010138211073353887
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0007740281289443374
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0005400130758062005
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00038081599632278085
+        }
+    ],
+    "text": "list the chemicals with Hydrogen"
+}
+--------------------------
+Give me the chemicals that have Br element  !  batch_restriction_query
+{
+    "intent": {
+        "name": "relation_filter",
+        "confidence": 0.9837270975112915
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 21,
+            "value": "chemicals",
+            "entity": "class",
+            "confidence": 0.9801916947241923,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 27,
+            "end": 31,
+            "value": "have",
+            "entity": "attribute",
+            "confidence": 0.9340747186166681,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 32,
+            "end": 34,
+            "value": "Br",
+            "entity": "entity",
+            "confidence": 0.8649782196452653,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "relation_filter",
+            "confidence": 0.9837270975112915
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.007775916252285242
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0020821380894631147
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.001767116249538958
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0015951651148498058
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.001515184179879725
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0004875568556599319
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.00044551389873959124
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00036314307362772524
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0002410948509350419
+        }
+    ],
+    "text": "Give me the chemicals that have Br element"
+}
+--------------------------
+what are the chemicals containing Rhenium  !  batch_restriction_query
+{
+    "intent": {
+        "name": "relation_filter",
+        "confidence": 0.9825471043586731
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 22,
+            "value": "chemicals",
+            "entity": "class",
+            "confidence": 0.9789243163048004,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 23,
+            "end": 33,
+            "value": "containing",
+            "entity": "attribute",
+            "confidence": 0.8400720060761419,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 34,
+            "end": 41,
+            "value": "Rhenium",
+            "entity": "entity",
+            "confidence": 0.902019393702801,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "relation_filter",
+            "confidence": 0.9825471043586731
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.008372555486857891
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.002391781425103545
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0018300452502444386
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0015985649079084396
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0013806431088596582
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0006440376746468246
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0005848060245625675
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00040556222666054964
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0002448264858685434
+        }
+    ],
+    "text": "what are the chemicals containing Rhenium"
+}
+--------------------------
+find all reactions with water as a reactant?  !  batch_restriction_query
+{
+    "intent": {
+        "name": "relation_filter",
+        "confidence": 0.9360475540161133
+    },
+    "entities": [
+        {
+            "start": 9,
+            "end": 18,
+            "value": "reactions",
+            "entity": "class",
+            "confidence": 0.8400801855279821,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 29,
+            "value": "water",
+            "entity": "entity",
+            "confidence": 0.8132943221105383,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 35,
+            "end": 43,
+            "value": "reactant",
+            "entity": "attribute",
+            "confidence": 0.7738847183360964,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "relation_filter",
+            "confidence": 0.9360475540161133
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.02686985954642296
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.009018688462674618
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.007267836015671492
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.006604625377804041
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.005046391393989325
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.003792836796492338
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0020258433651179075
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0018614638829603791
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0014649578370153904
+        }
+    ],
+    "text": "find all reactions with water as a reactant?"
+}
+--------------------------
+show me all the acids that are flammable  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_binary",
+        "confidence": 0.9432982802391052
+    },
+    "entities": [
+        {
+            "start": 16,
+            "end": 21,
+            "value": "acids",
+            "entity": "class",
+            "confidence": 0.8340668145326254,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 31,
+            "end": 40,
+            "value": "flammable",
+            "entity": "attribute",
+            "confidence": 0.841142920554011,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.9432982802391052
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.025240406394004822
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.009794794023036957
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0058143907226622105
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.004613512195646763
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00407476257532835
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0031417179852724075
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.002718585543334484
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.000984871294349432
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.00031881994800642133
+        }
+    ],
+    "text": "show me all the acids that are flammable"
+}
+--------------------------
+show me all the amino acids that are polar  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_binary",
+        "confidence": 0.9388225674629211
+    },
+    "entities": [
+        {
+            "start": 16,
+            "end": 27,
+            "value": "amino acids",
+            "entity": "class",
+            "confidence": 0.9514031708793587,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 37,
+            "end": 42,
+            "value": "polar",
+            "entity": "attribute",
+            "confidence": 0.8151991643815313,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.9388225674629211
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.024155836552381516
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.011377301067113876
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.007109039928764105
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.006273789796978235
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.004051744472235441
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.003976568579673767
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0026554472278803587
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.001195305259898305
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0003824658924713731
+        }
+    ],
+    "text": "show me all the amino acids that are polar"
+}
+--------------------------
+show me all the amino acids that are not polar  !  batch_restriction_query
+{
+    "intent": {
+        "name": "batch_restriction_binary",
+        "confidence": 0.9487680792808533
+    },
+    "entities": [
+        {
+            "start": 16,
+            "end": 27,
+            "value": "amino acids",
+            "entity": "class",
+            "confidence": 0.95140517885149,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 37,
+            "end": 40,
+            "value": "not",
+            "entity": "negative",
+            "confidence": 0.6875766183901063,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 41,
+            "end": 46,
+            "value": "polar",
+            "entity": "attribute",
+            "confidence": 0.7514149423727292,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.9487680792808533
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.02104254439473152
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00930404756218195
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.005901650991290808
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00525460671633482
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0032658784184604883
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.003109349636361003
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.002135864458978176
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0009320374228991568
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0002859639935195446
+        }
+    ],
+    "text": "show me all the amino acids that are not polar"
+}
+--------------------------
+give me the flash point of all the fossil fuels  !  batch_attribute_query
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.9799880981445312
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 23,
+            "value": "flash point",
+            "entity": "attribute",
+            "confidence": 0.9919693160766907,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 35,
+            "end": 47,
+            "value": "fossil fuels",
+            "entity": "class",
+            "confidence": 0.8569742263556491,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.9799880981445312
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.004971642512828112
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0035054294858127832
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0034211548045277596
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.002794260624796152
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0025668293237686157
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.002124244347214699
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0003156261518597603
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00023139231780078262
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 8.120249549392611e-05
+        }
+    ],
+    "text": "give me the flash point of all the fossil fuels"
+}
+--------------------------
+show me the melting point of all the metals  !  batch_attribute_query
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.9783616662025452
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 25,
+            "value": "melting point",
+            "entity": "attribute",
+            "confidence": 0.9907428252286391,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 37,
+            "end": 43,
+            "value": "metals",
+            "entity": "class",
+            "confidence": 0.7935269262297696,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.9783616662025452
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.005502473562955856
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0037047932855784893
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.003638083580881357
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0029306362848728895
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0028042159974575043
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.002342020394280553
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0003456373524386436
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00027779111405834556
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 9.265069820685312e-05
+        }
+    ],
+    "text": "show me the melting point of all the metals"
+}
+--------------------------
+give me the acidity of all kinds of acids  !  batch_attribute_query
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.9837793707847595
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 19,
+            "value": "acidity",
+            "entity": "attribute",
+            "confidence": 0.9615406620038418,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 36,
+            "end": 41,
+            "value": "acids",
+            "entity": "class",
+            "confidence": 0.7804738405641871,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.9837793707847595
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.004425976891070604
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0034916659351438284
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00215149880386889
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0020963544957339764
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00195691897533834
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.001647290075197816
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.00025953512522391975
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00014175772957969457
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 4.972852912032977e-05
+        }
+    ],
+    "text": "give me the acidity of all kinds of acids"
+}
+--------------------------
+what are the hydrophobicity scales of all amino acid  !  batch_attribute_query
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.971261203289032
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 34,
+            "value": "hydrophobicity scales",
+            "entity": "attribute",
+            "confidence": 0.9497338679368011,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 42,
+            "end": 52,
+            "value": "amino acid",
+            "entity": "class",
+            "confidence": 0.8907691473799776,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.971261203289032
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.006700129713863134
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.005697502754628658
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.004940750077366829
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.004187357611954212
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.003421471221372485
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0026183652225881815
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0005659208400174975
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00043681851821020246
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00017053999181371182
+        }
+    ],
+    "text": "what are the hydrophobicity scales of all amino acid"
+}
+--------------------------
+what are the bond-dissociation energy of all chemicals at 298 K  !  batch_attribute_query
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.9057087898254395
+    },
+    "entities": [
+        {
+            "start": 13,
+            "end": 37,
+            "value": "bond-dissociation energy",
+            "entity": "attribute",
+            "confidence": 0.9538350309798671,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 45,
+            "end": 54,
+            "value": "chemicals",
+            "entity": "class",
+            "confidence": 0.977174852702628,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 58,
+            "end": 61,
+            "value": "298",
+            "entity": "number",
+            "confidence": 0.5448773838129372,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 62,
+            "end": 63,
+            "value": "K",
+            "entity": "entity",
+            "confidence": 0.7963301366562501,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.9057087898254395
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.027403676882386208
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.01681191846728325
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.014347165822982788
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.012187601998448372
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.009754565544426441
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.008027907460927963
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0024218554608523846
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0019538444466888905
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0013825622154399753
+        }
+    ],
+    "text": "what are the bond-dissociation energy of all chemicals at 298 K"
+}
+--------------------------
+List the diameters of all types of active carbon in nanometers  !  batch_attribute_query_with_unit
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.2608219385147095
+    },
+    "entities": [
+        {
+            "start": 9,
+            "end": 18,
+            "value": "diameters",
+            "entity": "attribute",
+            "confidence": 0.852213962770138,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 26,
+            "end": 31,
+            "value": "types",
+            "entity": "attribute",
+            "confidence": 0.6107335770302302,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 35,
+            "end": 48,
+            "value": "active carbon",
+            "entity": "entity",
+            "confidence": 0.3696147486653476,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.2608219385147095
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.21907486021518707
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.18442732095718384
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.06694338470697403
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.06628602743148804
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.057719532400369644
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.05023803189396858
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.04327502101659775
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.031159473583102226
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.020054390653967857
+        }
+    ],
+    "text": "List the diameters of all types of active carbon in nanometers"
+}
+--------------------------
+give me the flash point of all the fossil fuels in Calvin  !  batch_attribute_query_with_unit
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.9795213341712952
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 23,
+            "value": "flash point",
+            "entity": "attribute",
+            "confidence": 0.9919693160554002,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 35,
+            "end": 47,
+            "value": "fossil fuels",
+            "entity": "class",
+            "confidence": 0.8247481582449622,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 51,
+            "end": 57,
+            "value": "Calvin",
+            "entity": "entity",
+            "confidence": 0.768293063461746,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.9795213341712952
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.005120756570249796
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0037120862398296595
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.003489880356937647
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.002622513798996806
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0026178460102528334
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0022689818870276213
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.00032767714583314955
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00023383840743917972
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 8.516901289112866e-05
+        }
+    ],
+    "text": "give me the flash point of all the fossil fuels in Calvin"
+}
+--------------------------
+show me the melting point of all the metals in Celsius  !  batch_attribute_query_with_unit
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.9810307025909424
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 25,
+            "value": "melting point",
+            "entity": "attribute",
+            "confidence": 0.9907428252603835,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 37,
+            "end": 43,
+            "value": "metals",
+            "entity": "class",
+            "confidence": 0.7266892117857402,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 47,
+            "end": 54,
+            "value": "Celsius",
+            "entity": "entity",
+            "confidence": 0.7692128181813946,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.9810307025909424
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.005075199529528618
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0032815691083669662
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0030303134117275476
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0029073781333863735
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.002187967300415039
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.001870457548648119
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0003019159776158631
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00023876687919255346
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 7.568333967356011e-05
+        }
+    ],
+    "text": "show me the melting point of all the metals in Celsius"
+}
+--------------------------
+what is the precursor of flame synthesis of silica nanoparticles  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.31608259677886963
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 21,
+            "value": "precursor",
+            "entity": "attribute",
+            "confidence": 0.7683269633678507,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 25,
+            "end": 40,
+            "value": "flame synthesis",
+            "entity": "attribute",
+            "confidence": 0.631597106757252,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.31608259677886963
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.160212442278862
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.13737590610980988
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.07930745929479599
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.07562573254108429
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.06389563530683517
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.05784127861261368
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.04389950633049011
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.04387064278125763
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.021888816729187965
+        }
+    ],
+    "text": "what is the precursor of flame synthesis of silica nanoparticles"
+}
+--------------------------
+what is the length of the CO bond in CO2  !  item_attribute_query
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.9148574471473694
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 18,
+            "value": "length",
+            "entity": "attribute",
+            "confidence": 0.8208222127024496,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 26,
+            "end": 33,
+            "value": "CO bond",
+            "entity": "attribute",
+            "confidence": 0.5841883805657829,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 37,
+            "end": 40,
+            "value": "CO2",
+            "entity": "entity",
+            "confidence": 0.7431489920448074,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.9148574471473694
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.018885768949985504
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.017273306846618652
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.011638790369033813
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.011439475230872631
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.007067279424518347
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.006824913434684277
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.006512210238724947
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.004714678972959518
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0007861906196922064
+        }
+    ],
+    "text": "what is the length of the CO bond in CO2"
+}
+--------------------------
+what is the pH value of 1 Mole KOH aqueous solution  !  item_attribute_with_restricted_quantity
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.6225526928901672
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 20,
+            "value": "pH value",
+            "entity": "attribute",
+            "confidence": 0.9595983084497595,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 24,
+            "end": 25,
+            "value": "1",
+            "entity": "number",
+            "confidence": 0.3639211454639034,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.6225526928901672
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.15790148079395294
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.058440592139959335
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.05541952699422836
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.03149906173348427
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.025979628786444664
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.01837184652686119
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.01530320942401886
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.008317608386278152
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.006214359775185585
+        }
+    ],
+    "text": "what is the pH value of 1 Mole KOH aqueous solution"
+}
+--------------------------
+which chemical has the stronger alkalinity, NaOH or KOH  !  selection_by_comparison
+{
+    "intent": {
+        "name": "selection_by_comparison",
+        "confidence": 0.976051926612854
+    },
+    "entities": [
+        {
+            "start": 6,
+            "end": 14,
+            "value": "chemical",
+            "entity": "class",
+            "confidence": 0.857580675209817,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 32,
+            "end": 42,
+            "value": "alkalinity",
+            "entity": "attribute",
+            "confidence": 0.9165339211645338,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 44,
+            "end": 48,
+            "value": "NaOH",
+            "entity": "entity",
+            "confidence": 0.8589411223340083,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 52,
+            "end": 55,
+            "value": "KOH",
+            "entity": "entity",
+            "confidence": 0.9227129035677596,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.976051926612854
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.008394463919103146
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.005599977448582649
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.004184670280665159
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.001884609810076654
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0013908392284065485
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0013100268552079797
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0007292989757843316
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.00032610452035441995
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00012811740452889353
+        }
+    ],
+    "text": "which chemical has the stronger alkalinity, NaOH or KOH"
+}
+--------------------------
+which bond is the strongest, metallic or covalent or ionic  !  selection_by_comparison
+{
+    "intent": {
+        "name": "selection_by_comparison",
+        "confidence": 0.9584895968437195
+    },
+    "entities": [
+        {
+            "start": 6,
+            "end": 10,
+            "value": "bond",
+            "entity": "attribute",
+            "confidence": 0.8202138981950468,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 29,
+            "end": 37,
+            "value": "metallic",
+            "entity": "entity",
+            "confidence": 0.8340262993071503,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 41,
+            "end": 49,
+            "value": "covalent",
+            "entity": "entity",
+            "confidence": 0.829829713829665,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 53,
+            "end": 58,
+            "value": "ionic",
+            "entity": "entity",
+            "confidence": 0.8554423194654827,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.9584895968437195
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.01964748464524746
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.00565351964905858
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00516387727111578
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0033838318195194006
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0028965650126338005
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0025952805299311876
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.001391920610330999
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0005216806312091649
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.00025633000768721104
+        }
+    ],
+    "text": "which bond is the strongest, metallic or covalent or ionic"
+}
+--------------------------
+how many different N-O bond lengths are in the actual structure of NO3  !  count
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.1293938308954239
+    },
+    "entities": [
+        {
+            "start": 19,
+            "end": 22,
+            "value": "N-O",
+            "entity": "entity",
+            "confidence": 0.8033080326052942,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 23,
+            "end": 35,
+            "value": "bond lengths",
+            "entity": "attribute",
+            "confidence": 0.5595444396676248,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 47,
+            "end": 63,
+            "value": "actual structure",
+            "entity": "attribute",
+            "confidence": 0.9474394481534457,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 67,
+            "end": 70,
+            "value": "NO3",
+            "entity": "entity",
+            "confidence": 0.5296082686837251,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.1293938308954239
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.12423868477344513
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.12013006955385208
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.10841479897499084
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.103951096534729
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0983448177576065
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.09517434239387512
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.09001269936561584
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.06910309195518494
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.061236511915922165
+        }
+    ],
+    "text": "how many different N-O bond lengths are in the actual structure of NO3"
+}
+--------------------------
+Is the neutralization reaction reversible or not  !  true_or_false
+{
+    "intent": {
+        "name": "true_or_false",
+        "confidence": 0.9646515846252441
+    },
+    "entities": [
+        {
+            "start": 7,
+            "end": 30,
+            "value": "neutralization reaction",
+            "entity": "entity",
+            "confidence": 0.8801568949987689,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "true_or_false",
+            "confidence": 0.9646515846252441
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.010397135280072689
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.008213515393435955
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.005346504971385002
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.004913549404591322
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.002002511639147997
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0017715967260301113
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0014226819621399045
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0010380212916061282
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00024295687035191804
+        }
+    ],
+    "text": "Is the neutralization reaction reversible or not"
+}
+--------------------------
+is alanine polar  !  true_or_false
+{
+    "intent": {
+        "name": "true_or_false",
+        "confidence": 0.9717038869857788
+    },
+    "entities": [
+        {
+            "start": 3,
+            "end": 10,
+            "value": "alanine",
+            "entity": "entity",
+            "confidence": 0.9051309313480944,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "true_or_false",
+            "confidence": 0.9717038869857788
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.010210733860731125
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.008064670488238335
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0034023008774966
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0029171707574278116
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0010818946175277233
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.001053677056916058
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0007431162521243095
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0006886886549182236
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00013386142381932586
+        }
+    ],
+    "text": "is alanine polar"
+}
+--------------------------
+is alanine a polar acid  !  true_or_false
+{
+    "intent": {
+        "name": "true_or_false",
+        "confidence": 0.9775983095169067
+    },
+    "entities": [
+        {
+            "start": 3,
+            "end": 10,
+            "value": "alanine",
+            "entity": "entity",
+            "confidence": 0.9061277125068474,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "true_or_false",
+            "confidence": 0.9775983095169067
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.008576810359954834
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.006428633816540241
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0025616479106247425
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.002139640273526311
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0007983837858773768
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0007732014637440443
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0005209950031712651
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.000514569110237062
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 8.773301669862121e-05
+        }
+    ],
+    "text": "is alanine a polar acid"
+}
+--------------------------
+what is fourier transform  !  simple_info
+{
+    "intent": {
+        "name": "simple_info",
+        "confidence": 0.9910723567008972
+    },
+    "entities": [
+        {
+            "start": 8,
+            "end": 25,
+            "value": "fourier transform",
+            "entity": "entity",
+            "confidence": 0.9100734754884363,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "simple_info",
+            "confidence": 0.9910723567008972
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.0043005673214793205
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.001280020223930478
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0010145922424271703
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0008437323849648237
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0006417773547582328
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0003236937918700278
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.00029797013849020004
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00016022170893847942
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 6.496493733720854e-05
+        }
+    ],
+    "text": "what is fourier transform"
+}
+--------------------------
+what does navier stokes equation do  !  simple_info
+{
+    "intent": {
+        "name": "simple_info",
+        "confidence": 0.9608817100524902
+    },
+    "entities": [
+        {
+            "start": 10,
+            "end": 32,
+            "value": "navier stokes equation",
+            "entity": "entity",
+            "confidence": 0.898817682900157,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "simple_info",
+            "confidence": 0.9608817100524902
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.013726765289902687
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.006777114234864712
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.005008139181882143
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0038482875097543
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0038267187774181366
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.002608892507851124
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.001961443806067109
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0009747589356265962
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0003861628647428006
+        }
+    ],
+    "text": "what does navier stokes equation do"
+}
+--------------------------
+what is newtons method  !  simple_info
+{
+    "intent": {
+        "name": "simple_info",
+        "confidence": 0.9796929359436035
+    },
+    "entities": [
+        {
+            "start": 8,
+            "end": 22,
+            "value": "newtons method",
+            "entity": "entity",
+            "confidence": 0.9456664950871491,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "simple_info",
+            "confidence": 0.9796929359436035
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.008305095136165619
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.0029672773089259863
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0026013748720288277
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.002157830400392413
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0020772311836481094
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.0008748777909204364
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.000754341424908489
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.00037780017009936273
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00019123515812680125
+        }
+    ],
+    "text": "what is newtons method"
+}
+--------------------------
+what does newton's method do  !  simple_info
+{
+    "intent": {
+        "name": "simple_info",
+        "confidence": 0.9736488461494446
+    },
+    "entities": [
+        {
+            "start": 10,
+            "end": 25,
+            "value": "newton's method",
+            "entity": "entity",
+            "confidence": 0.8967965704579094,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "simple_info",
+            "confidence": 0.9736488461494446
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.009436896070837975
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.00409338204190135
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.0035799772012978792
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.0031743545550853014
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.0029593880753964186
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.001235171570442617
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0010453194845467806
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.0005554393283091486
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.00027126161148771644
+        }
+    ],
+    "text": "what does newton's method do"
+}
+--------------------------
+how long is 4 angstrom in nanometers  !  unit_conversion
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.3686772882938385
+    },
+    "entities": [],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.3686772882938385
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.14932751655578613
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.13709522783756256
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.09687301516532898
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.054529234766960144
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.050292372703552246
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.04705776274204254
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.043033141642808914
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.02701626718044281
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.026098107919096947
+        }
+    ],
+    "text": "how long is 4 angstrom in nanometers"
+}
+--------------------------
+234 Celisus in Clavin  !  unit_conversion
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.3183751404285431
+    },
+    "entities": [
+        {
+            "start": 4,
+            "end": 11,
+            "value": "Celisus",
+            "entity": "entity",
+            "confidence": 0.47501687561819733,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 15,
+            "end": 21,
+            "value": "Clavin",
+            "entity": "entity",
+            "confidence": 0.7765290273942557,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.3183751404285431
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.1676526814699173
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.13922306895256042
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.09461058676242828
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.058328282088041306
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.057439226657152176
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.0517522394657135
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.04932321608066559
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.03187766298651695
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.0314178541302681
+        }
+    ],
+    "text": "234 Celisus in Clavin"
+}
+--------------------------
+convert 456 pounds to kilograms  !  unit_conversion
+{
+    "intent": {
+        "name": "item_attribute_query_with_condition",
+        "confidence": 0.522250235080719
+    },
+    "entities": [],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.522250235080719
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.15077194571495056
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.1278761476278305
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.057640574872493744
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.034285545349121094
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.031247613951563835
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.028801197186112404
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.026055607944726944
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.011815051548182964
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.009256134741008282
+        }
+    ],
+    "text": "convert 456 pounds to kilograms"
+}
+--------------------------
+show me the gap between the heat capacity of molecular hydrogen and water  !  value_subtraction
+{
+    "intent": {
+        "name": "item_attribute_query",
+        "confidence": 0.5874220728874207
+    },
+    "entities": [
+        {
+            "start": 12,
+            "end": 15,
+            "value": "gap",
+            "entity": "attribute",
+            "confidence": 0.5614691884764687,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 28,
+            "end": 41,
+            "value": "heat capacity",
+            "entity": "attribute",
+            "confidence": 0.9954201835523397,
+            "extractor": "CRFEntityExtractor"
+        },
+        {
+            "start": 68,
+            "end": 73,
+            "value": "water",
+            "entity": "entity",
+            "confidence": 0.8089680607781919,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.5874220728874207
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.10595785826444626
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.08872217684984207
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.055647168308496475
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.05430133268237114
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.04064632207155228
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.03474903106689453
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.015798132866621017
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.012966267764568329
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.0037896193098276854
+        }
+    ],
+    "text": "show me the gap between the heat capacity of molecular hydrogen and water"
+}
+--------------------------
+How to synthesize gold nanopatircles  !  how_to_do_something
+{
+    "intent": {
+        "name": "batch_restriction_query",
+        "confidence": 0.11934252083301544
+    },
+    "entities": [],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.11934252083301544
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.11269358545541763
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.10199132561683655
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.10163769870996475
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.10002674162387848
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.09628146141767502
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.09565454721450806
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.09301837533712387
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.09007248282432556
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.08928128331899643
+        }
+    ],
+    "text": "How to synthesize gold nanopatircles"
+}
+--------------------------
+how to synthesize titanium nanoparticles  !  how_to_do_something
+{
+    "intent": {
+        "name": "selection_by_comparison",
+        "confidence": 0.15011478960514069
+    },
+    "entities": [],
+    "intent_ranking": [
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.15011478960514069
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.13230665028095245
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.10743410140275955
+        },
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.10193943232297897
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.09568227082490921
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.09033501148223877
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.08681246638298035
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.08524676412343979
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.07807901501655579
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.07204943150281906
+        }
+    ],
+    "text": "how to synthesize titanium nanoparticles"
+}
+--------------------------
+how to separate oil and water  !  how_to_do_something
+{
+    "intent": {
+        "name": "batch_restriction_binary",
+        "confidence": 0.14892451465129852
+    },
+    "entities": [
+        {
+            "start": 24,
+            "end": 29,
+            "value": "water",
+            "entity": "entity",
+            "confidence": 0.8068718182976876,
+            "extractor": "CRFEntityExtractor"
+        }
+    ],
+    "intent_ranking": [
+        {
+            "name": "batch_restriction_binary",
+            "confidence": 0.14892451465129852
+        },
+        {
+            "name": "relation_filter",
+            "confidence": 0.12450568377971649
+        },
+        {
+            "name": "item_attribute_query",
+            "confidence": 0.10171375423669815
+        },
+        {
+            "name": "batch_restriction_relation_numerical_query",
+            "confidence": 0.10150585323572159
+        },
+        {
+            "name": "simple_info",
+            "confidence": 0.09466066211462021
+        },
+        {
+            "name": "batch_restriction_numerical_query",
+            "confidence": 0.09048791229724884
+        },
+        {
+            "name": "true_or_false",
+            "confidence": 0.08780395984649658
+        },
+        {
+            "name": "item_attribute_query_with_condition",
+            "confidence": 0.08757109940052032
+        },
+        {
+            "name": "selection_by_comparison",
+            "confidence": 0.08398554474115372
+        },
+        {
+            "name": "batch_restriction_query",
+            "confidence": 0.07884108275175095
+        }
+    ],
+    "text": "how to separate oil and water"
+}

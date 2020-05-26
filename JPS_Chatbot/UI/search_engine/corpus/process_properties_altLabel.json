@@ -1,0 +1,67 @@
+[
+  {
+    "uri": "http://www.wikidata.org/entity/P1056",
+    "label": "product or material produced",
+    "altLabel_list": "maker of, makes, manufacturer of, manufactures, material produced, producer of, produces, results in, work produced, output, product, commodity, products, creates, has product"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1071",
+    "label": "location of creation",
+    "altLabel_list": "mint, place of origin, assembly location, location of final assembly, location of origin, made in, manufactured in, manufacturing location, minted at, place built, place made, creation location, location created, place of production, production place, place of manufacture, location of creation, created at, written at"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P176",
+    "label": "manufacturer",
+    "altLabel_list": "builder, made by, built by, mfr, maker, manufactured by, producer (of product), product of"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P186",
+    "label": "material used",
+    "altLabel_list": "derived from, medium, media, ingredient, reactant, feedstock, raw material, construction material, built from, built out of, constructed from, constructed out of, crafted from, crafted out of, formed from, formed out of, ingredients, made from, made of, manufactured from, manufactured out of, ore, source material"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2079",
+    "label": "fabrication method",
+    "altLabel_list": "manufacturing process, assembly method, asssembly process, fabrication process, made by, manufacturing method, production method, production process, technique used, by means, by method, method used, process used, technology used"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2197",
+    "label": "production rate",
+    "altLabel_list": "production volume, rate of production"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2821",
+    "label": "by-product",
+    "altLabel_list": "byproduct"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2822",
+    "label": "by-product of",
+    "altLabel_list": "byproduct of"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P4988",
+    "label": "test method",
+    "altLabel_list": "method, methodology"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P5009",
+    "label": "complies with",
+    "altLabel_list": "technical standard, standard, built to standard, complies with standard, conforms to, conforms to standard, satisfies standard"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1389",
+    "label": "product certification",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P6075",
+    "label": "embodied energy",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P6076",
+    "label": "biobased content weight percentage",
+    "altLabel_list": ""
+  }
+]

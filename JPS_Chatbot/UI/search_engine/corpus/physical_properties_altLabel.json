@@ -1,0 +1,632 @@
+[
+  {
+    "uri": "http://www.wikidata.org/entity/P2923",
+    "label": "focal height",
+    "altLabel_list": "height of focal plane"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2957",
+    "label": "throughput",
+    "altLabel_list": "capacity"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P111",
+    "label": "measured physical quantity",
+    "altLabel_list": "physical quantity, measure of, quantity"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1123",
+    "label": "parity quantum number",
+    "altLabel_list": "parity"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1122",
+    "label": "spin quantum number",
+    "altLabel_list": "spin, spin (physics), spin (quantum mechanics)"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2043",
+    "label": "length",
+    "altLabel_list": "size, dimension, distance, long"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2044",
+    "label": "elevation above sea level",
+    "altLabel_list": "altitude, height, elevation, MASL, AMSL, EASL, MAMSL, elevation above mean sea level"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2046",
+    "label": "area",
+    "altLabel_list": "size, surface, surface area, acreage, total area"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3020",
+    "label": "residence time of water",
+    "altLabel_list": "retention time, lake residence time, lake retention time, water residence time, water retention time"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3041",
+    "label": "luminous intensity",
+    "altLabel_list": "intensity of light, light intenstiy"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2047",
+    "label": "duration",
+    "altLabel_list": "interval, length, period, era, time interval, timespan, run time, runtime, length of time, running length, running time, time span"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3078",
+    "label": "standard enthalpy of formation",
+    "altLabel_list": "standard heat of formation"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3157",
+    "label": "event distance",
+    "altLabel_list": "race distance, stage distance"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2049",
+    "label": "width",
+    "altLabel_list": "size, breadth"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2048",
+    "label": "height",
+    "altLabel_list": "size, depth over terrain"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P5679",
+    "label": "electrical resistivity",
+    "altLabel_list": "electrical resistivity and conductivity, resistivity, specific resistance"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P4036",
+    "label": "field of view",
+    "altLabel_list": "FOV"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P4250",
+    "label": "defined daily dose",
+    "altLabel_list": "DDD"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P4511",
+    "label": "vertical depth",
+    "altLabel_list": "depth, waterdepth"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P5141",
+    "label": "coastline",
+    "altLabel_list": "coastal line, sea shoreline"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2051",
+    "label": "M sin i",
+    "altLabel_list": "M ⋅ sin i, M x sin i"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2053",
+    "label": "watershed area",
+    "altLabel_list": "drainage basin, basin area, catchment basin, size of watershed"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2052",
+    "label": "speed",
+    "altLabel_list": "velocity"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2054",
+    "label": "density",
+    "altLabel_list": "specific gravity"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2056",
+    "label": "heat capacity",
+    "altLabel_list": "heat capacity, thermal capacity, specific heat capacity, specific heat"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2067",
+    "label": "mass",
+    "altLabel_list": "atomic weight, mass, weight, displacement, molar mass, atomic mass, molecular mass"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2073",
+    "label": "vehicle range",
+    "altLabel_list": "range, maximum range, operational range"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2075",
+    "label": "speed of sound",
+    "altLabel_list": "sound speed"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2097",
+    "label": "term length of office",
+    "altLabel_list": "term length, term of office"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2101",
+    "label": "melting point",
+    "altLabel_list": "freezing point"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2113",
+    "label": "sublimation temperature",
+    "altLabel_list": "sublimation point"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2116",
+    "label": "enthalpy of vaporization",
+    "altLabel_list": "heat of evaporation, heat of vaporization, latent heat of vaporization, vaporization enthalpy"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2119",
+    "label": "vapor pressure",
+    "altLabel_list": "vapour pressure"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2129",
+    "label": "immediately dangerous to life or health",
+    "altLabel_list": "IDLH"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2145",
+    "label": "explosive energy equivalent",
+    "altLabel_list": "yield, explosive yield"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2148",
+    "label": "distance from river mouth",
+    "altLabel_list": "river mile, river kilometer, river kilometre"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2150",
+    "label": "FSB speed",
+    "altLabel_list": "bus speed, front-side bus speed"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2199",
+    "label": "autoignition temperature",
+    "altLabel_list": "kindling point"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2211",
+    "label": "position angle",
+    "altLabel_list": "PA, angular position"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2229",
+    "label": "thermal design power",
+    "altLabel_list": "TDP, thermal design point, Thermal Design Parameter"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2228",
+    "label": "maximum thrust",
+    "altLabel_list": "thrust"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2230",
+    "label": "torque",
+    "altLabel_list": "moment, moment of force"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2231",
+    "label": "explosive velocity",
+    "altLabel_list": "detonation velocity, velocity of detonation, VoD"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2233",
+    "label": "semi-major axis of an orbit",
+    "altLabel_list": "semi major axis, orbital semi-major axis, major semi-axis of an orbit, major semiaxis of an orbit, semimajor axis of an orbit"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2234",
+    "label": "volume as quantity",
+    "altLabel_list": "volume (geometry), liquid capacity, fluid capacity, quantity as volume, spatial volume, tonnage"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2248",
+    "label": "argument of periapsis",
+    "altLabel_list": "argument of periastron, argument of pericenter, argument of perifocus, argument of perigee, argument of perihelion, ω"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2250",
+    "label": "life expectancy",
+    "altLabel_list": "life span, lifespan"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2254",
+    "label": "maximum operating altitude",
+    "altLabel_list": "ceiling, maximum altitude, service ceiling"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2261",
+    "label": "beam",
+    "altLabel_list": "BOA, width"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2260",
+    "label": "ionization energy",
+    "altLabel_list": "IP, IE, ionisation energy, ionisation potential, ionization potential"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2262",
+    "label": "draft",
+    "altLabel_list": "draught"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2300",
+    "label": "minimal lethal dose",
+    "altLabel_list": "LDLo"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2362",
+    "label": "time to altitude",
+    "altLabel_list": "time to climb"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2370",
+    "label": "conversion to SI unit",
+    "altLabel_list": "conversion to SI base unit"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2386",
+    "label": "diameter",
+    "altLabel_list": "diametre"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2404",
+    "label": "time-weighted average exposure limit",
+    "altLabel_list": "TWAEL"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2436",
+    "label": "voltage",
+    "altLabel_list": "electric potential difference, electromotive force, electric pressure, electric tension, potential difference"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P795",
+    "label": "located on linear feature",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P873",
+    "label": "phase point",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1117",
+    "label": "pKa",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1127",
+    "label": "isospin z-component",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1126",
+    "label": "isospin quantum number",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P1295",
+    "label": "emissivity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2050",
+    "label": "wingspan",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2055",
+    "label": "electrical conductivity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2060",
+    "label": "luminosity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2066",
+    "label": "fusion enthalpy",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2069",
+    "label": "magnetic moment",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2068",
+    "label": "thermal conductivity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2077",
+    "label": "pressure",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2076",
+    "label": "temperature",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2102",
+    "label": "boiling point",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2107",
+    "label": "decomposition point",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2112",
+    "label": "wing area",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2114",
+    "label": "half-life",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2117",
+    "label": "combustion enthalpy",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2118",
+    "label": "kinematic viscosity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2120",
+    "label": "radius",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2128",
+    "label": "flash point",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2144",
+    "label": "frequency",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2149",
+    "label": "clock speed",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2151",
+    "label": "focal length",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2154",
+    "label": "binding energy",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2160",
+    "label": "mass excess",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2177",
+    "label": "solubility",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2202",
+    "label": "lower flammable limit",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2217",
+    "label": "cruise speed",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2216",
+    "label": "radial velocity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2227",
+    "label": "metallicity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2430",
+    "label": "takeoff roll",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2645",
+    "label": "mean lifetime",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2781",
+    "label": "race time",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2784",
+    "label": "Mercalli intensity scale",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2791",
+    "label": "power consumed",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2797",
+    "label": "sound power level",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2807",
+    "label": "molar volume",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2806",
+    "label": "vibration",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2808",
+    "label": "wavelength",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2873",
+    "label": "time in space",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3013",
+    "label": "surface tension",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3039",
+    "label": "wheelbase",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3071",
+    "label": "standard molar entropy",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3070",
+    "label": "dynamic viscosity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3251",
+    "label": "minimum viable temperature",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3253",
+    "label": "optimum viable temperature",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P3252",
+    "label": "maximum viable temperature",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P4163",
+    "label": "magnification",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P4296",
+    "label": "stellar rotational velocity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P5608",
+    "label": "fatigue limit",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P6272",
+    "label": "specific rotation",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P6876",
+    "label": "solar irradiance",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P7015",
+    "label": "surface gravity",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P7297",
+    "label": "cumulative elevation gain",
+    "altLabel_list": ""
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2442",
+    "label": "conversion to standard unit",
+    "altLabel_list": "unit conversion"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2527",
+    "label": "earthquake magnitude on the moment magnitude scale",
+    "altLabel_list": "earthquake magnitude, magnitude, magnitude of an earthquake, moment magnitude scale value, Mw"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2528",
+    "label": "earthquake magnitude on the Richter magnitude scale",
+    "altLabel_list": "earthquake magnitude, magnitude, magnitude of an earthquake, ML, Richter scale value"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2532",
+    "label": "lowest atmospheric pressure",
+    "altLabel_list": "lowest pressure"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2542",
+    "label": "acceptable daily intake",
+    "altLabel_list": "ADI"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2547",
+    "label": "perimeter",
+    "altLabel_list": "boundary length, circumference, coastline"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2565",
+    "label": "global warming potential",
+    "altLabel_list": "global warming potential, GWP, greenhouse warming potential"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2583",
+    "label": "distance from Earth",
+    "altLabel_list": "angular diameter distance, comoving distance, light-travel distance, light-year distance, luminosity distance, parsec distance, proper distance"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2911",
+    "label": "time gap",
+    "altLabel_list": "gap"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2710",
+    "label": "minimal lethal concentration",
+    "altLabel_list": "LCLo, lowest lethal concentration"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2717",
+    "label": "no-observed-adverse-effect level",
+    "altLabel_list": "NOAEL"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2718",
+    "label": "lowest-observed-adverse-effect level",
+    "altLabel_list": "LOAEL"
+  },
+  {
+    "uri": "http://www.wikidata.org/entity/P2793",
+    "label": "clearance",
+    "altLabel_list": "height, bridge height, clearance below, height of deck bottom, span height"
+  }
+]
