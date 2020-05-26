@@ -441,18 +441,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		lst.add(location);
 		System.out.println(lst);
 
-		String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + "\r\n" + "Select ?s ?x \r\n"
-				+ "Where{\r\n" + "  ?s dcterms:creator ?o .\r\n" + "   ?s dcterms:created ?x .\r\n"
-				+ "  ?s dcterms:subject <" + location + "> .\r\n" + "  \r\n" + "  \r\n"
+		String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + "\r\n" 
+		+ "Select ?s ?x \r\n"
+				+ "Where{\r\n" 
+		+ "  ?s dcterms:creator <"+agentiri+"> .\r\n" 
+		+ "   ?s dcterms:created ?x .\r\n"
+				+ "  ?s dcterms:subject <" + location + "> .\r\n" 
+		+ "  \r\n" + "  \r\n"
 				+ "} ORDER BY DESC (?x) Limit 1";
 
 		String result = KnowledgeBaseClient.query(metadataseturl, null, query_latest_path);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-
-		String dir = listmap.get(0)[0];
-		String simulationtime = listmap.get(0)[1];
+		String dir="none";
+		String simulationtime="none";
+		if(listmap.size()==1) {
+			 dir = listmap.get(0)[0];
+			 simulationtime = listmap.get(0)[1];
+		}
 		String[] resp = { dir, simulationtime };
+
 		return resp;
 	}
     /** read the coordinates of the station based on the iri

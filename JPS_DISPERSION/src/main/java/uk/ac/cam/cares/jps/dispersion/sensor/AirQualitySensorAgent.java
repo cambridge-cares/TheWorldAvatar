@@ -288,6 +288,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					      .header("Accept", "application/json")
 					      .header("Authorization", currenttoken).asString().getBody();
 		JSONArray jArr = new JSONArray(responseGas);
+		//System.out.println("jsonarray= "+jArr.toString());
 		ArrayList<String> list = new ArrayList<String>();
 		ArrayList<JSONObject> arrJo = new ArrayList<JSONObject>();
 		if (jArr != null) {
@@ -295,6 +296,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				JSONObject joGas = new JSONObject(jArr.get(i).toString());//{}
 				JSONObject jo = new JSONObject();			
 				jo.put("CO", joGas.getDouble("co_prescaled"));
+				jo.put("CO2", joGas.getDouble("uart_prescaled")*1000);
 				if(joGas.getDouble("no_prescaled")<0) {
 					jo.put("NO", 0.0);
 					jo.put("NOx", Double.valueOf( joGas.getDouble("no2_prescaled")));
@@ -302,9 +304,14 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 					jo.put("NO", joGas.getDouble("no_prescaled"));
 					jo.put("NOx", Double.valueOf( joGas.getDouble("no2_prescaled")+joGas.getDouble("no_prescaled")));
 				}
+				if(joGas.getDouble("o3_prescaled")<0) {
+					jo.put("O3", 0.0);
+				}else {
+					jo.put("O3", joGas.getDouble("o3_prescaled"));
+				}
 				jo.put("NO2", joGas.getDouble("no2_prescaled"));
 				jo.put("SO2", joGas.getDouble("so2_prescaled"));
-				jo.put("O3", joGas.getDouble("o3_prescaled"));
+				
 				arrJo.add(jo);
 			}
 		}

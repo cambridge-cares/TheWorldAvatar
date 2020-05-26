@@ -136,7 +136,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 				"				 PREFIX j6:<http://www.w3.org/2006/time#>  \r\n" + 
 				"				 PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> \r\n" + 
 				"				 SELECT Distinct ?prop ?propval ?unit  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?xval ?yval\r\n" + 
-				"				 {graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001>\r\n" + 
+				"				 {graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001>\r\n" + 
 				"				 { \r\n" + 
 				"          ?entity   j7:hasGISCoordinateSystem ?coordsys .\r\n" + 
 				"               ?coordsys   j7:hasProjectedCoordinate_x ?xent .\r\n" + 
@@ -159,10 +159,10 @@ public class AirQualitySensorAgentTest extends TestCase {
 				"\r\n" + 
 				"				 } \r\n" + 
 				"				 } \r\n" + 
-				"				 ORDER BY DESC(?proptimeval)LIMIT60";
+				"				 ORDER BY DESC(?proptimeval)LIMIT240";
 		
-		//in virtual sensor is 10 pollutant 
-		//in aqmesh 9 pollutant
+		//in virtual sensor is 10 pollutant ,so limit=240
+		//in aqmesh 9 pollutant = 9*12*24 -> should be 10 pollutant (co2 is missing) 10*12*24=2880
 		String dataPath= QueryBroker.getLocalDataPath();
 		Object[] a = KnowledgeBaseClient.createRequestUrl("http://www.theworldavatar.com/jps/data/airquality", null, true);
 		String requestUrl = "http://www.theworldavatar.com/jps/data/airquality";

@@ -18,7 +18,6 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet("/StatisticAnalysis")
 public class StatisticAnalysisAgent extends JPSHttpServlet{
@@ -304,7 +303,7 @@ public class StatisticAnalysisAgent extends JPSHttpServlet{
 			String[]header= {propnameclass,"starttime"};
 			resultQuery.add(0,header);
 			String filename= propnameclass+"latestdata.csv"; //what is input file name
-			new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultQuery));
+			//new QueryBroker().putLocal(dataPath + "/" + filename, MatrixConverter.fromArraytoCsv(resultQuery));
 			
 			return resultQuery;
 		}

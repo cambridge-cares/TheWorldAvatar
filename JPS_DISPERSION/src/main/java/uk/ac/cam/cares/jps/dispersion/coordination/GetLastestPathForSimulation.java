@@ -20,10 +20,13 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 /**
  * Servlet implementation class GetLastestPathForSimulation
  */
-@WebServlet("/GetLastestPathForSimulation")
+@WebServlet(urlPatterns = {"/GetLastestPathForSimulationADMS","/GetLastestPathForSimulationEpisode"})
 public class GetLastestPathForSimulation extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_META_URL); 
+	public String ADMS_PATH = "/GetLastestPathForSimulationADMS";
+
+	public String EPISODE_PATH = "/GetLastestPathForSimulationEpisode";
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -33,25 +36,47 @@ public class GetLastestPathForSimulation extends HttpServlet {
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		JSONObject r = AgentCaller.readJsonParameter(request);
-		String city_iri = r.getString("city");
-		 
-		String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + 
-				"\r\n" + 
-				"Select ?s\r\n" + 
-				"Where{\r\n" + 
-				"  ?s dcterms:creator ?o .\r\n" + 
-				"   ?s dcterms:created ?x .\r\n" + 
-				"  ?s dcterms:subject <"+ city_iri + "> .\r\n" + 
-				"  \r\n" + 
-				"  \r\n" + 
-				"} ORDER BY DESC (?x) Limit 1";
+		String path = request.getServletPath();
+		if(ADMS_PATH.equals(path)) {
+			JSONObject r = AgentCaller.readJsonParameter(request);
+			String city_iri = r.getString("city");
+			String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + 
+					"\r\n" + 
+					"Select ?s\r\n" + 
+					"Where{\r\n" + 
+					"  ?s dcterms:creator <http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service> .\r\n" + 
+					"   ?s dcterms:created ?x .\r\n" + 
+					"  ?s dcterms:subject <"+ city_iri + "> .\r\n" + 
+					"  \r\n" + 
+					"  \r\n" + 
+					"} ORDER BY DESC (?x) Limit 1";
+			
+			String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
+			String[] keys = JenaResultSetFormatter.getKeys(result);
+			List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			String directory=listmap.get(0)[0];
+			response.getWriter().write(directory);
+		}else if(EPISODE_PATH.equals(path)) {
+			JSONObject r = AgentCaller.readJsonParameter(request);
+			String city_iri = r.getString("city");
+			String query_latest_path = "Prefix dcterms:<http://purl.org/dc/terms/>\r\n" + 
+					"\r\n" + 
+					"Select ?s\r\n" + 
+					"Where{\r\n" + 
+					"  ?s dcterms:creator <http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service> .\r\n" + 
+					"   ?s dcterms:created ?x .\r\n" + 
+					"  ?s dcterms:subject <"+ city_iri + "> .\r\n" + 
+					"  \r\n" + 
+					"  \r\n" + 
+					"} ORDER BY DESC (?x) Limit 1";
+			
+			String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
+			String[] keys = JenaResultSetFormatter.getKeys(result);
+			List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
+			String directory=listmap.get(0)[0];
+			response.getWriter().write(directory);
+		}
 		
-		String result = KnowledgeBaseClient.query(dataseturl, null, query_latest_path);
-		String[] keys = JenaResultSetFormatter.getKeys(result);
-		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-		String directory=listmap.get(0)[0];
-		response.getWriter().write(directory);
 	}
 
 	/**
