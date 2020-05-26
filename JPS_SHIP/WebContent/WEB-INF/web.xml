@@ -19,5 +19,6 @@
     <servlet-mapping>
         <servlet-name>ship</servlet-name>
         <url-pattern>/rest/*</url-pattern>
+        <!--url-pattern>/JPS_SHIP/*</url-pattern-->
     </servlet-mapping>
 </web-app>

@@ -301,11 +301,13 @@ console.log(result)});
 		$('#inputFields').append('<img id="myProgressBar" style="width:100px;height:100px;" src="https://media.giphy.com/media/3oEjI6SIIHBdRxXI40/giphy.gif"/>'
 );
 
-
+		let keyvendor=window.location.pathname.split('/')[2];
+		console.log("Keyvendor= "+keyvendor);
         var locationIRI =  mlocation = $('#location').val();
         let folder;
         console.log('locationIRI '+locationIRI);
-        let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation";//"/agent"
+        let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulationADMS";//"/agent"
+//      let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation"+keyvendor;//"/ADMS or Episode "
         let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
         //TODO:determine what sequence to query;
         $.get(agentScenario, {city:locationIRI}).done(function (data) {
