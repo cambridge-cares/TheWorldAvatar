@@ -18,6 +18,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
 
 //@WebServlet("/DMSCoordinationAgent")
 @WebServlet(urlPatterns = {"/episode/dispersion/coordination", "/adms/dispersion/coordination"})
@@ -25,8 +26,9 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
 
     Logger logger = LoggerFactory.getLogger(DMSCoordinationAgent.class);
     private static final String PARAM_KEY_SHIP = "ship";
+	public static final String DISPERSION_PATH = "/JPS_DISPERSION";
     public static final String EPISODE_PATH = "/episode/dispersion/coordination";
-    public static final String ADMS_PATH = "adms/dispersion/coordination";
+    public static final String ADMS_PATH = "/adms/dispersion/coordination";
 
     private JSONArray getNewWasteAsync(String reactionMechanism, JSONObject jsonShip) {
         JSONArray newwaste = new JSONArray();
@@ -99,11 +101,16 @@ public class DMSCoordinationAgent extends JPSHttpServlet {
                 requestParams.put("waste", newwaste);
 
                 //result = execute("/JPS_DISPERSION/DispersionModellingAgent", requestParams.toString(), HttpPost.METHOD_NAME);
-                if (path.equals(ADMS_PATH)) {
-                    result = execute("/JPS_DISPERSION/adms/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
+
+				String resultPath = DISPERSION_PATH;
+				if (path.equals(ADMS_PATH)) {
+					resultPath = resultPath + DispersionModellingAgent.ADMS_PATH;
+
                 } else if (path.equals(EPISODE_PATH)) {
-                    result = execute("/JPS_DISPERSION/episode/dispersion", requestParams.toString(), HttpPost.METHOD_NAME);
+					resultPath = resultPath + DispersionModellingAgent.EPISODE_PATH;
                 }
+
+				result =  execute(resultPath, requestParams.toString(), HttpPost.METHOD_NAME);
 
                 String folder = new JSONObject(result).getString("folder");
                 requestParams.put("folder", folder);
