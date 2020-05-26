@@ -193,7 +193,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//109x109
 		List<String[]> clusterInputs = readResult(baseUrl,"x_cluster_allocation.csv");
 		List<String[]>onsitemapping=new ArrayList<String[]>();
-		List<String[]>fcmapping=new ArrayList<String[]>();
+		HashSet<String> clusterName =new HashSet<String>();
 		int size=treatedwasteon.size();
 		for(int x=0;x<size;x++) {
 	        // Put all array elements in a HashSet 
@@ -208,6 +208,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
 					String[]linemapping= {""+x,""+y,wastetransfer};
 					onsitemapping.add(linemapping);
+					//assuming that we name all of the clusters by their position
+					clusterName.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
+					+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y));
 				}
 			}
 		}
@@ -229,15 +232,14 @@ public class WTESingleAgent extends JPSHttpServlet {
 				if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
 					String[]linemapping= {""+x,""+y,wastetransfer};
 					offsitemapping.add(linemapping);
-				}else {
-					String[]linemapping= {""+x,""+y,wastetransfer};
-					offsitemapping.add(linemapping);
+					clusterName.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
+							+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y));
 				}
 			}
 		}
 		//NOTE: Offsite and onsite mapping could be both present!
-		//onsiteMapping and offsite Mapping = 109
-	
+		//I should have less than 109 cluster Names at this stage and there's a difference
+		//between FC Cluster and onsite Cluster
 		
 		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
