@@ -27,8 +27,8 @@ public class GetLastestPathForSimulation extends HttpServlet {
     public String LATEST_RESULTS_PATH = "/results/latest";
     public String ADMS_VENDOR = "ADMS";
     public String EPISODE_VENDOR = "Episode";
-    public String ADMS_PATH = ADMS_VENDOR.toLowerCase() + LATEST_RESULTS_PATH;
-    public String EPISODE_PATH = EPISODE_VENDOR.toLowerCase() + LATEST_RESULTS_PATH;
+    public String ADMS_PATH = "/"+ADMS_VENDOR.toLowerCase() + LATEST_RESULTS_PATH;
+    public String EPISODE_PATH = "/"+EPISODE_VENDOR.toLowerCase() + LATEST_RESULTS_PATH;
 
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,15 +41,15 @@ public class GetLastestPathForSimulation extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getServletPath();
         System.out.println("PATH="+path);
-        System.out.println("ADMSPATH="+path);
-        System.out.println("EPISODEPATH="+path);
+        System.out.println("ADMSPATH="+ADMS_PATH);
+        System.out.println("EPISODEPATH="+EPISODE_PATH);
         JSONObject r = AgentCaller.readJsonParameter(request);
         String cityIri = r.getString("city");
         String query_latest_path = "";
-        if (path.contains(ADMS_VENDOR.toLowerCase())) {
+        if (path.contentEquals(ADMS_PATH)) {
         	System.out.println("goes to adms");
             query_latest_path = getPathQuery(ADMS_VENDOR, cityIri);
-        } else if (path.contains(EPISODE_VENDOR.toLowerCase())) {
+        } else if (path.contentEquals(EPISODE_PATH)) {
         	System.out.println("goes to episode");
             query_latest_path = getPathQuery(EPISODE_VENDOR, cityIri);
             
