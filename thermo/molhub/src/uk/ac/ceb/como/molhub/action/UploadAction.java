@@ -23,7 +23,6 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
-import org.json.JSONObject;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
@@ -147,19 +146,17 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		if (files.isEmpty()) {
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
 		}
-		String uuidFolderName = "";
-		String outputOwlFile = "";
 		// For each file selected, it iterates once.
 		for (File f : files) {
 			Module rootModule = new Module();
 			// Creates unique folder name for each uploaded Gaussian file (g09),
 			// XML file, OWL file, and PNG file.
-			uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
+			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
 			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".g09");
 			// Adds .xml extension to the XML file.  
 			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
 			// Adds .owl extension to the OWL file.
-			outputOwlFile = kbFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl";
+			String outputOwlFile = kbFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl";
 			final File owlFile = new File(outputOwlFile);
 			// Png file name is the same as the name of folder where that
 			// image is saved. Adds .png extension to the png file.
@@ -242,9 +239,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		if (!files.isEmpty()) {
 			addActionMessage("Upload completed in " + runningTime);
 		}
-		JSONObject json = new JSONObject();		
-		json.put("gaussian", outputOwlFile.concat("#").concat(uuidFolderName));
-		return json.toString();
+		return SUCCESS;
 	}
 
 	/**
