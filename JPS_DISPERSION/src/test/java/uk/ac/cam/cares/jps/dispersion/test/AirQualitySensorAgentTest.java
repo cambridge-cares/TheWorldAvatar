@@ -177,7 +177,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		listmap.add(0,keys);
-		new QueryBroker().putLocal(dataPath + "/AQMeshSensor.csv", MatrixConverter.fromArraytoCsv(listmap));
+		new QueryBroker().putLocal(dataPath + "/VirtualSensor.csv", MatrixConverter.fromArraytoCsv(listmap));
 		
 	}
 }

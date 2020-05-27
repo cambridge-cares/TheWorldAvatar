@@ -10,6 +10,7 @@ def convert_dat(filepath):
         f.close()
     content = StringIO(content) 
     data = pd.read_csv(content, delimiter=',')
+    data.sort_values(by=['X(m)', 'Y(m)'])
     pollutants = list(data.columns)[7:]  
     heights = sorted(set(list(data['Z(m)'])))
     num_heights = len(heights)
