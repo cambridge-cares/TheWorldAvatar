@@ -77,12 +77,12 @@ public class DMSCoordinationAgentTest extends TestCase {
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
 		jo.put("region", joregion);
 		//jo.put("location", "Singapore");
-		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
-//		jo.put("reactionmechanism", "none");
+//		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
+		jo.put("reactionmechanism", "none");
 		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 //		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002"); //for testing episode
 //		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo.toString());
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/DMSCoordinationAgent",jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/adms/dispersion/coordination",jo.toString());
 		
 	}
 	
@@ -103,7 +103,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 	public void testcalllastestpath() {
 		JSONObject jo= new JSONObject();
 		jo.put("city", "http://dbpedia.org/resource/Singapore");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/GetLastestPathForSimulation",jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/adms/results/latest",jo.toString());
 		System.out.println("result= "+resultStart);
 	}
 	

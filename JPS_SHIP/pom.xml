@@ -73,8 +73,8 @@
                     </webResources>
                     <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>${tomcatPath}/webapps</outputDirectory>
-                    <webappDirectory>WebContent</webappDirectory>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <webappDirectory>WebContent</webappDirectory>
                 </configuration>
             </plugin>
 
