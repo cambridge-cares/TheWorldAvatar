@@ -103,7 +103,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 	public void testcalllastestpath() {
 		JSONObject jo= new JSONObject();
 		jo.put("city", "http://dbpedia.org/resource/Singapore");
-		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/GetLastestPathForSimulation",jo.toString());
+		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/adms/results/latest",jo.toString());
 		System.out.println("result= "+resultStart);
 	}
 	
