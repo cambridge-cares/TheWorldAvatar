@@ -1464,6 +1464,7 @@ WindSpeedCorrected = np.copy(WindSpeedForecast)
 RadiationCorrected = np.copy(RadiationForecast)
 
 
+
 # ### Updated Hourly
 
 # In[19]:
@@ -1533,7 +1534,38 @@ cb.get_T1_range(3600, T1_low, T1_high)
 # disturbance for industrial
 Ta = AirTempForecast
 ip.get_ambient_temperature(Ta)
+#save prelim results (aka based on initial model from OWL files and those two sets of data. )
+l1 = rh1.compute_load(rh1.res.x)['load']
+l2 = rh2.compute_load(rh2.res.x)['load']
+l3 = rh3.compute_load(rh3.res.x)['load']
+l4 = cb.compute_load(cb.res.x)['load']
+l5 = ip.compute_load_fuel(ip.res.x)['load']
 
+residential = l1+l2+l3
+commercial = l4
+industrial = l5
+gridGen = l1+l2+l3+l4+l5 - totGen
+renewableGen = totGen
+np.savetxt("prelimresult.csv",[residential, commercial, industrial, renewableGen, gridGen], delimiter=",")
+
+# residential
+x1 = rh1.res.x
+ref1 = np.dot(rh1.Ta, rh1.sche)
+opt1 = np.dot(rh1.Ta, x1[:rh1.sp])
+load1 = np.dot(rh1.Tx, x1)
+
+x2 = rh2.res.x
+ref2 = np.dot(rh2.Ta, rh2.sche)
+opt2 = np.dot(rh2.Ta, x2[:rh2.sp])
+load2 = np.dot(rh2.Tx, x2)
+
+x3 = rh3.res.x
+ref3 = np.dot(rh3.Ta, rh3.sche)
+opt3 = np.dot(rh3.Ta, x3[:rh3.sp])
+load3 = np.dot(rh3.Tx, x3)
+np.savetxt("prelimrh1.csv",[ref1, opt1, load1], delimiter=",") 
+np.savetxt("prelimrh2.csv",[ref2, opt2, load2], delimiter=",") 
+np.savetxt("prelimrh3.csv",[ref3, opt3, load3], delimiter=",") 
 # sequential game
 start_time = time.time()
 i = 0
