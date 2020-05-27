@@ -29,7 +29,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
 
-@WebServlet(urlPatterns= {"/WTESingleAgent/processresult"})
+@WebServlet(urlPatterns= {"/processresult"})
 public class WTESingleAgent extends JPSHttpServlet {
 	/** Find offsite technologies that use technology
 	 * 
@@ -117,7 +117,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @param model Ontological model created in processRequestParameters
 	 * @return result of Query
 	 */
-	private List<String[]> readAndDump(OntModel model, String mainquery) {
+	public List<String[]> readAndDump(OntModel model, String mainquery) {
 		List<String[]> inputdata = new ArrayList<String[]>();
 		ResultSet resultSet = JenaHelper.query(model, mainquery);
 		String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
@@ -130,7 +130,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @param resultList
 	 * @return
 	 */
-	private List<String[]> createFoodCourt(List<String[]> resultList) {
+	public List<String[]> createFoodCourt(List<String[]> resultList) {
 	 List<String[]> inputdata = new ArrayList<String[]>();
 		for (int d = 0; d < resultList.size(); d++) {
 			//entity, x, y
@@ -193,12 +193,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//109x109
 		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
 		//109x3x3
-		int size2=treatedwasteoff.size();
-		int colamount2=treatedwasteoff.get(0).length; // 9 currently
-		
+		int colamount2=treatedwasteoff.get(0).length; // 3 wtf and 3 technologies currently
+		//determine the number of WTF
+		int noOfWTF = colamount2%3;
 		List<String[]> clusterInputs = readResult(baseUrl,"x_cluster_allocation.csv");
-		List<String[]>onsitemapping=new ArrayList<String[]>();
-		List<String[]>offsitemapping=new ArrayList<String[]>();
+		List<String[]>sitemapping=new ArrayList<String[]>();
 		HashSet<String> clusterName =new HashSet<String>();
 		int size=treatedwasteon.size(); 
 		for(int x=0;x<size;x++) {
@@ -214,8 +213,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
 						+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
 						clusterName.add(clusterNameO);
-						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO};
-						onsitemapping.add(linemapping);
+						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO, "1"};
+						sitemapping.add(linemapping);
 					}
 				}
 	        }else { //otherwise, it's offsite (could it be neither? no.)
@@ -226,8 +225,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
 								+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
 								clusterName.add(clusterNameO);
-						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO};
-						offsitemapping.add(linemapping);		
+						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO, "2"};
+						sitemapping.add(linemapping);		
 					}
 				}
 	        }
@@ -246,15 +245,16 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//input data onsite=onsiteiri
 		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
 			int wasteindex = 1;
+			int g = Integer.valueOf(sitemapping.get(d)[4]);
 			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
-			if (onsitemapping.size() > 0) {//This is when the logic fails: What if there are both onsite and offsite? 
+			if (g == 1) {//This is when the logic fails: What if there are both onsite and offsite? 
 				//Then there would be twice the added value.
 				String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
 				String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 						+ wasteindex;
-				Double numfromres = Double.parseDouble(onsitemapping.get(d)[2]);
-				int onsiteindex = Integer.valueOf(onsitemapping.get(d)[1]);//onsite cluster name
+				Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
+				int onsiteindex = Integer.valueOf(sitemapping.get(d)[1]);//onsite cluster name
 				String currentwtf = inputdataonsite.get(onsiteindex);
 				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
@@ -268,14 +268,14 @@ public class WTESingleAgent extends JPSHttpServlet {
 				selectedOnsite.add(currentwtf);
 			}
 
-			if (offsitemapping.size() > 0) {
+			else {
 				String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
 				String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 						+ wasteindex;
-				Double numfromres = Double.parseDouble(offsitemapping.get(d)[2]);
-				int offsiteindex = Integer.valueOf(offsitemapping.get(d)[1]);
-				int IndexOffsiteHeader = offsiteindex % 3; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
-															// the 3rd
+				Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
+				int offsiteindex = Integer.valueOf(sitemapping.get(d)[1]);
+				int IndexOffsiteHeader = offsiteindex % noOfWTF; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
+															// the 3rd 
 				String currentoffwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
 				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");

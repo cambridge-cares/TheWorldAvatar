@@ -85,7 +85,7 @@ public class TestWTE extends TestCase {
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
 				.endObject().toString();
-		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/WastetoEnergyAgent/startsimulation", json);
+		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
 		
 		System.out.println(result);
 		
@@ -98,7 +98,8 @@ public class TestWTE extends TestCase {
 		WastetoEnergyAgent ag = new WastetoEnergyAgent();
 		String baseUrl = QueryBroker.getLocalDataPath();
 		String sourceName = BucketHelper.getScenarioName(baseUrl);
-		OntModel model= WastetoEnergyAgent.readModelGreedy("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
+		String wasteIRI ="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+		OntModel model= WastetoEnergyAgent.readModelGreedy(wasteIRI);
 		List<String[]> inputsondata = ag.prepareCSVFC(ag.FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
 		ag.prepareCSVWT(ag.WTquery,"Location.csv", baseUrl,model); 
 		ag.prepareCSVTransport(ag.transportQuery,"transport.csv", baseUrl,model); 
@@ -114,6 +115,22 @@ public class TestWTE extends TestCase {
 			ag.runModel(baseUrl);
 //            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
 //                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
+			Thread.sleep(18000);
+			//read for FC details
+			WTESingleAgent at = new WTESingleAgent();
+			List<String[]> resu =  at.readAndDump(model,WastetoEnergyAgent.FCQuery);
+			//select in year 1
+			List<String[]> fcMapping = at.createFoodCourt(resu);
+			//properties of OnsiteTech
+			//creates onsite WTF if indicated by the number of units (onsite).csv
+			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
+			
+			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
+			List<String> onsiteiriselected=at.updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+//			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
+			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
+			at.updateinOffsiteWT(inputoffsitedata,baseUrl);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

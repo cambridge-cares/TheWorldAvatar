@@ -25,7 +25,7 @@ public class WTECoordination extends JPSHttpServlet{
 			String sourceName = BucketHelper.getScenarioName(sourceUrl);
 			logger.info("Scenario Url" + sourceUrl);
 			jo.put("baseUrl", baseUrl);
-			AgentCaller.executeGetWithJsonParameter("JPS_WTE/WastetoEnergyAgent/startsimulation", jo.toString()); //I pray hard that this works
+			AgentCaller.executeGetWithJsonParameter("JPS_WTE/startsimulation", jo.toString()); //I pray hard that this works
 			return jo;
 		}
 

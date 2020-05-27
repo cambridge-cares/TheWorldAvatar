@@ -34,7 +34,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-@WebServlet(urlPatterns= {"/WastetoEnergyAgent/startsimulation"})
+@WebServlet(urlPatterns= {"/startsimulation"})
 
 public class WastetoEnergyAgent extends JPSHttpServlet {
 	
@@ -52,9 +52,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	public static final String KEY_WATCH = "watch";
 	public static final String KEY_CALLBACK_URL = "callback";
 	// first called to begin simulation. 
-	public static final String SIM_START_PATH = "/WastetoEnergyAgent/startsimulation";
+	public static final String SIM_START_PATH = "/startsimulation";
 	//called to produce this result directly after start simulation is called. Waits for the first simulation to finish. 
-	public static final String SIM_PROCESS_PATH = "/WTESingleAgent/processresult";
+	public static final String SIM_PROCESS_PATH = "/processresult";
 	/**gets the food court name, xy coordinates, amount of waste, the year
 	 */
 	public static String FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
