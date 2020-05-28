@@ -156,7 +156,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			if (d > 9&& d<=99) {
 				number = "0" + d;
 			}
-			String[] filenames = { index+"CO2Sensor-" + number + ".owl",
+			String[] filenames = { index+"HCSensor-" + number + ".owl",index+"CO2Sensor-" + number + ".owl",
 					index+"COSensor-" + number + ".owl", index+"SO2Sensor-" + number + ".owl",
 					index+"O3Sensor-" + number + ".owl", index+"NO2Sensor-" + number + ".owl",
 					index+"NOSensor-" + number + ".owl", index+"NOxSensor-" + number + ".owl",
@@ -518,27 +518,28 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	 */
 	public static void main(String[]args) { //used for upload all content locally
 
-//		RepositoryConnection con = repo.getConnection();
-//		String location="singapore";
-//		AirQualitySensorAgent a=new AirQualitySensorAgent();
-//		a.resetRepoTrial(con,location); //currently the context is not used
-//		int numbersensor=1; //should change if added by AQMesh
-//		String cityiri= "http://dbpedia.org/resource/Singapore";
-//		for(int x=1;x<=numbersensor;x++) {
-//			String index="0"+x;
-//			if(x<10) {
-//				index="00"+x;
-//			}
-//			String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-//			String name="VirtualSensor-001";
-//			List<String>info= new ArrayList<String>();
-//			info.add(cityiri);
-//			info.add(name);
-//			info.add("0"); //overallpsi
-//			a.insertDataRepoContext(info,context);
-//
-//		}
-		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
+		RepositoryConnection con = repo.getConnection();
+		String location="singapore";
+		AirQualitySensorAgent a=new AirQualitySensorAgent();
+		String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+"002"+".owl#AirQualityStation-"+"002";
+		a.resetRepoTrial(con,location,context); //currently the context is not used
+		int numbersensor=1; //should change if added by AQMesh
+		String cityiri= "http://dbpedia.org/resource/Singapore";
+		for(int x=1;x<=numbersensor;x++) {
+			String index="0"+x;
+			if(x<10) {
+				index="00"+x;
+			}
+			//String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
+			String name="VirtualSensorEpisode-001";
+			List<String>info= new ArrayList<String>();
+			info.add(cityiri);
+			info.add(name);
+			info.add("0"); //overallpsi
+			a.insertDataRepoContext(info,context);
+
+		}
+//		resetAllAQMesh("singapore_AQ", "http://dbpedia.org/resource/Singapore");
 		//uploadData("http://dbpedia.org/resource/Singapore");
 
 			System.out.println("update is done");		

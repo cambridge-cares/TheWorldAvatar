@@ -406,7 +406,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			      System.out.println("An error occurred.");
 			      e.printStackTrace();
 			    }
-//			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+			new QueryBroker().updateFileOLD(foodcourtmap.get(d)[0], sparql);
 
 		}
 		

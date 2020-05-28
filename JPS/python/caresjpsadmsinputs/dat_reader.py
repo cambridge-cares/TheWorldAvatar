@@ -1,6 +1,7 @@
 import pandas as pd
 import re, csv, json, sys
 from io import StringIO
+import json
 
 
     
@@ -10,6 +11,7 @@ def convert_dat(filepath):
         f.close()
     content = StringIO(content) 
     data = pd.read_csv(content, delimiter=',')
+    data.sort_values(by=['X(m)', 'Y(m)'])
     pollutants = list(data.columns)[7:]  
     heights = sorted(set(list(data['Z(m)'])))
     num_heights = len(heights)
@@ -29,6 +31,8 @@ def convert_dat(filepath):
 
         
     print(json.dumps({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height}))
+    with open('data.json','w') as f:
+        json.dump({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height},f)
 
 
 if __name__ == "__main__":#test

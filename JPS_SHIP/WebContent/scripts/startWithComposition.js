@@ -145,7 +145,7 @@ $(function(){
  PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
  PREFIX j6:<http://www.w3.org/2006/time#>
  PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>
- SELECT ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?unit
+ SELECT Distinct ?prop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?unit
  {graph stationIRI
  {
   ?graph j4:hasOverallPSI ?allpsi .
@@ -306,8 +306,8 @@ console.log(result)});
         var locationIRI =  mlocation = $('#location').val();
         let folder;
         console.log('locationIRI '+locationIRI);
-        let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulationADMS";//"/agent"
-//      let agentScenario =  "/JPS_DISPERSION/GetLastestPathForSimulation"+keyvendor;//"/ADMS or Episode "
+        let agentScenario =  "/JPS_DISPERSION/" + keyvendor + "/results/latest";
+
         let agentInformation =  "/JPS_SHIP/GetExtraInfo";//"/info"
         //TODO:determine what sequence to query;
         $.get(agentScenario, {city:locationIRI}).done(function (data) {
