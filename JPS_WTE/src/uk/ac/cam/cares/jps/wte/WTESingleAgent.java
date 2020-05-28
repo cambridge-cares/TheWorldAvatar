@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.wte;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -87,9 +88,15 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 			
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
-//			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
-			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
+		
+			File f = new File(baseUrl + "/"+"x_cluster_allocation.csv");
+			if(f.exists() && !f.isDirectory()) { 
+				List<String[]> onsiteAndFC = updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+//				updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
+			}else {
+				List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+				updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system	
+			}						
 			updateinOffsiteWT(inputoffsitedata,baseUrl);
 		 }catch (Exception e) {
 			e.printStackTrace();
@@ -183,11 +190,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String> updateinFC(String baseUrl,
+	public List<String[]> updateinFCCluster(String baseUrl,
 			List<String> inputdataonsite,
 			List<String[]> inputdataoffsite,
 			List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
-		List<String>selectedOnsite=new ArrayList<String>();
+		List<String[]> clusterWTF=new ArrayList<String[]>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
 		//109x109
@@ -208,12 +215,12 @@ public class WTESingleAgent extends JPSHttpServlet {
 	        	for(int y=0;y<size;y++) {//109 rounds
 					String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
 					String clusterFC=clusterInputs.get(x)[y]; //in ton/day
-					if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
+					if(Double.parseDouble(wastetransfer)>0.01) {
 						//assuming that we name all of the clusters by their position
 						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
 						+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
 						clusterName.add(clusterNameO);
-						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO, "1"};
+						String[]linemapping= {""+x,""+y,wastetransfer, "1", clusterNameO};
 						sitemapping.add(linemapping);
 					}
 				}
@@ -221,11 +228,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 	        	for(int y=0;y<colamount2;y++) { //3tech*3instance
 					String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
 					String clusterFC=clusterInputs.get(x)[y]; //in ton/day
-					if((Double.parseDouble(wastetransfer)>0.01)&& (Double.parseDouble(clusterFC)==1)) {
+					if(Double.parseDouble(wastetransfer)>0.01) { //assuming that the presence of a cluster
 						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
 								+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
 								clusterName.add(clusterNameO);
-						String[]linemapping= {""+x,""+y,wastetransfer, clusterNameO, "2"};
+						String[]linemapping= {""+x,""+y,wastetransfer, "2", clusterNameO};
 						sitemapping.add(linemapping);		
 					}
 				}
@@ -245,7 +252,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//input data onsite=onsiteiri
 		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
 			int wasteindex = 1;
-			int g = Integer.valueOf(sitemapping.get(d)[4]);
+			int g = Integer.valueOf(sitemapping.get(d)[3]);
+			String fcCluster =  sitemapping.get(d)[4];
 			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
 			if (g == 1) {//This is when the logic fails: What if there are both onsite and offsite? 
@@ -265,7 +273,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 						+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
 				b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
 				wasteindex++;
-				selectedOnsite.add(currentwtf);
+				String[] arr = {currentwtf,fcCluster};
+				clusterWTF.add(arr);
 			}
 
 			else {
@@ -285,11 +294,119 @@ public class WTESingleAgent extends JPSHttpServlet {
 				b.append("<" + valuecurrentwaste
 						+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
 				b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentoffwtf + "> . \r\n");
-						wasteindex++;
+				wasteindex++;
+				String[] arr = {currentoffwtf,fcCluster};
+				clusterWTF.add(arr);
 			}
 
 			String sparql = sparqlStart + b.toString() + "} \r\n";
 			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+
+		}
+		
+		return clusterWTF;
+	}
+	/** if dump without cluster, sparql update is updated into onsite / offsite WTF directly
+	 * 
+	 * @param baseUrl
+	 * @param inputdataonsite
+	 * @param inputdataoffsite
+	 * @param foodcourtmap
+	 * @return
+	 * @throws Exception
+	 */
+	public List<String> updateinFC(String baseUrl,List<String> inputdataonsite,List<String[]> inputdataoffsite,List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
+		List<String>selectedOnsite=new ArrayList<String>();
+		//both of them have row= fc amount, col represents onsite or offsite per tech
+		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
+		List<String[]>onsitemapping=new ArrayList<String[]>();
+		int size=treatedwasteon.size();
+		for(int x=0;x<size;x++) {
+			for(int y=0;y<size;y++) {
+				String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
+				if(Double.parseDouble(wastetransfer)>0.01) {
+					String[]linemapping= {""+x,""+y,wastetransfer};
+					onsitemapping.add(linemapping);
+				}
+			}
+		}
+		
+		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
+		List<String[]>offsitemapping=new ArrayList<String[]>();
+		int size2=treatedwasteoff.size();
+		int colamount2=treatedwasteoff.get(0).length;
+		for(int x=0;x<size2;x++) {
+			for(int y=0;y<colamount2;y++) { //3tech*3instance
+				String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
+				if(Double.parseDouble(wastetransfer)>0.01) {
+					String[]linemapping= {""+x,""+y,wastetransfer};
+					offsitemapping.add(linemapping);
+				}
+			}
+		}
+		
+	
+		
+		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
+		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
+			+ "INSERT DATA { \r\n";
+		
+		//outputdata= treated waste onsite
+		//input data onsite=onsiteiri
+		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
+			int wasteindex = 1;
+
+			StringBuffer b = new StringBuffer();
+			if (onsitemapping.size() > 0) {
+				String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
+				String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
+						+ wasteindex;
+				Double numfromres = Double.parseDouble(onsitemapping.get(d)[2]);
+				int onsiteindex = Integer.valueOf(onsitemapping.get(d)[1]);
+				String currentwtf = inputdataonsite.get(onsiteindex);
+				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
+				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
+				b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
+				b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
+				b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue " + numfromres + " . \r\n");
+				b.append("<" + valuecurrentwaste
+						+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
+				b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
+				wasteindex++;
+				selectedOnsite.add(currentwtf);
+			}
+
+			if (offsitemapping.size() > 0) {
+				String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
+				String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
+						+ wasteindex;
+				Double numfromres = Double.parseDouble(offsitemapping.get(d)[2]);
+				int offsiteindex = Integer.valueOf(offsitemapping.get(d)[1]);
+				int IndexOffsiteHeader = offsiteindex % 3; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
+															// the 3rd
+				String currentoffwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
+				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
+				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
+				b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
+				b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
+				b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue " + numfromres + " . \r\n");
+				b.append("<" + valuecurrentwaste
+						+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
+				b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentoffwtf + "> . \r\n");
+						wasteindex++;
+			}
+
+			String sparql = sparqlStart + b.toString() + "} \r\n";
+			try {
+			      FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
+			      myWriter.write(sparql);
+			      myWriter.close();
+			      
+			    } catch (IOException e) {
+			      System.out.println("An error occurred.");
+			      e.printStackTrace();
+			    }
+//			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
 		
