@@ -259,4 +259,12 @@ public class EpisodeAgentTest extends TestCase {
 			e.printStackTrace();
 		}
 	}
+	
+	public void testlastdirectory() {
+		EpisodeAgent a= new EpisodeAgent();
+		String agent="http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service";
+		
+		String res=a.getPreviousHourDatapath(agent, cityiri);
+		System.out.println("result= "+res);
+	}
 }
