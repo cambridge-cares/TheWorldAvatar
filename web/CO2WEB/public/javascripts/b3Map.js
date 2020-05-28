@@ -312,7 +312,7 @@ function displayMessageModal(msg) {
 
 }
 function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
-
+var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
     urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
     url2 += encodeURIComponent(JSON.stringify(urljson)); 
     //url2 += JSON.stringify(urljson); 
@@ -334,6 +334,7 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
 
 
 function callDoSimulationNew(uris){
+	var agentUrl = prefix + '/JPS_BIODIESELPLANT3/DoModelSelection';
     var data = {};
     console.log(uris);
     var arr = uris[0].split('/');
@@ -350,3 +351,4 @@ function callDoSimulationNew(uris){
         console.log("Completed Simulation");
 
     });
+}

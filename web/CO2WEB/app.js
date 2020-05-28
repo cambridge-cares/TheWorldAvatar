@@ -36,6 +36,7 @@ var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 
+var MAU = require("./routes/runMAU")
 var MAUPlot = require("./routes/plotMAU")
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
@@ -116,6 +117,7 @@ app.use("/mauplot", MAUPlot);
 
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
+app.use("/MAU", MAU);
 
 app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
@@ -126,6 +128,8 @@ app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+io.set('transports', ['websocket','polling']);
+
 
 /*future data change will be post to this route*/
 
@@ -154,8 +158,11 @@ ev.on('update', function (data) {
 	    //let rooms = io.sockets.adapter.rooms;
    //logger.debug(rooms[path.normalize(data.uri)].sockets);
     //update direct clients
-    io.to(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-    io.to(path.normalize(data.uri)+"_data").emit("update", data);
+	if(!('data' in data)){
+    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    } else {
+		console.log(path.normalize(data.uri))
+		io.in(path.normalize(data.uri)+"_data").emit("update", data);}
 })
 
 const aepWatcher = setEpWatcher();
@@ -251,8 +258,8 @@ socket.on('join', function (uriSubscribeList) {
             var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
             logger.debug("number of clients in room: "+numClients);
             if (numClients < 2 ){//first join for data, register for data now
-                logger.debug("first client for this node ,register for data change")
-                bmsWatcher.register(diskLoc,"worldnode", true);
+                console.log("first client for this node ,register for data change")
+                bmsWatcher.register(diskLoc,"worldnodedata", true);
             }
 
 

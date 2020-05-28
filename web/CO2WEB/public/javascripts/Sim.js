@@ -184,7 +184,9 @@ Sim.prototype = {
             },
             error: (err)=>{
                 //Do Something to handle error
-                errCB(err);
+                //errCB(err);
+				console.log(err);
+				console.log(errCB);
             }
         });
     },

@@ -62,7 +62,8 @@ function changeInformer(thingWillChange, informIndi){
                         // logger.debug("!!!!")
                         // logger.debug(observer)
                         var mobserver = observer[1].name;
-        
+						if(mobserver.includes('data'))
+        console.log('informing: '+mobserver)
                         var data = changedFilenames;
                         if(observer[1].receiveData){
                             data = withChangeData;
@@ -108,10 +109,10 @@ function changeInformer(thingWillChange, informIndi){
     
     thingWillChange
         .on('change', (register_name, stats)=>{//when dir changed
-            logger.debug('File '+ register_name+' has been changed');
+            //console.log('File '+ register_name+' has been changed');
             //logger.debug(stats)
             if(watchDogs.has(register_name)){ //check if this file is required to be watched
-                logger.debug("Ask watchdog to inform")
+                //console.log("Ask watchdog to inform")
                 let watchDog = watchDogs.get(register_name);
                 watchDog.informAll(informIndi);
             } else{
