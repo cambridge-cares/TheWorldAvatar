@@ -13,6 +13,7 @@ import java.util.Set;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -197,7 +198,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		List<String[]> clusterWTF=new ArrayList<String[]>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
-		//109x109
+		//NoOf
 		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
 		//109x3x3
 		int colamount2=treatedwasteoff.get(0).length; // 3 wtf and 3 technologies currently
@@ -214,7 +215,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 	        if (s.size() != 1) { //if they're non zero, it's onsite
 	        	for(int y=0;y<size;y++) {//109 rounds
 					String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
-					String clusterFC=clusterInputs.get(x)[y]; //in ton/day
+					String clusterFCe=clusterInputs.get(x)[y]; //in ton/day
 					if(Double.parseDouble(wastetransfer)>0.01) {
 						//assuming that we name all of the clusters by their position
 						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
@@ -303,7 +304,18 @@ public class WTESingleAgent extends JPSHttpServlet {
 			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
-		
+		try {
+		      FileWriter myWriter = new FileWriter("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testFWec7e04f8-831f-43ab-a22d-9b91dc059b7b\\localhost_8080\\data\\78d15fd0-ff0d-4930-bf83-f0e5b93d85ae\\filename.txt");
+		      for (int i = 0; i< clusterWTF.size(); i++) {
+		    	  String sentence = StringUtils.join( clusterWTF.get(i));
+			      myWriter.write(sentence);
+		      }
+		      myWriter.close();
+		      
+		    } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		    }
 		return clusterWTF;
 	}
 	/** if dump without cluster, sparql update is updated into onsite / offsite WTF directly
@@ -319,6 +331,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		List<String>selectedOnsite=new ArrayList<String>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
+		//noOfFc x noOfOnsiteWTF
 		List<String[]>onsitemapping=new ArrayList<String[]>();
 		int size=treatedwasteon.size();
 		for(int x=0;x<size;x++) {
@@ -332,6 +345,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		}
 		
 		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
+		//noOfFc x 3 x 3
 		List<String[]>offsitemapping=new ArrayList<String[]>();
 		int size2=treatedwasteoff.size();
 		int colamount2=treatedwasteoff.get(0).length;

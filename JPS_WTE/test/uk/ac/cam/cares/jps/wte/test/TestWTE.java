@@ -126,9 +126,9 @@ public class TestWTE extends TestCase {
 			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 			
 			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String> onsiteiriselected=at.updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+			List<String[]> onsiteiriselected=at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
 //			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
-			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
+//			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
 			at.updateinOffsiteWT(inputoffsitedata,baseUrl);
 			
 		} catch (Exception e) {

@@ -551,11 +551,12 @@ else
 
     %e=sum(x_offsite_allocation,[2 3])+sum(x_onsite_allocation,2);
     % 
-    writematrix(n_unit_onsite,'number of units (onsite).csv');% no unit
+    writematrix(transpose(n_unit_onsite),'number of units (onsite).csv');% no unit
     writematrix(n_unit_offsite,'number of units (offsite).csv');% no unit
     writematrix(m_onsite,'Treated waste (onsite).csv');% ton,row-from foodcourt i waste generation, column-to foodcourt j for treatment
     writematrix(m_offsite,'Treated waste (offsite).csv');% no unit,row-from foodcourt i waste generation, column-to waste facility j for treatment
     writematrix(x_onsite_allocation,'Waste flow relation (onsite).csv');% no unit,row-from foodcourt i waste generation, column-to foodcourt j for treatment
     writematrix(x_offsite_allocation,'Waste flow relation (offsite).csv');% ton,row-from foodcourt i waste generation, column-to waste facility j for treatment
     writematrix(economicoutput,'Economic output.csv');% $
+    writematrix(x_cluster_allocation1,'x_cluster_allocation.csv');
 end
