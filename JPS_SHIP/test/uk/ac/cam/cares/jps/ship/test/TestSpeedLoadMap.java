@@ -21,7 +21,7 @@ public class TestSpeedLoadMap extends TestCase {
 		
 		
 			JSONObject jo = new JSONObject();
-//			jo.put("speed",8.0); //ori=11
+//			jo.put("speed",0.1); //ori=11
 //			jo.put("type","passenger");
 			jo.put("speed",10.3); //ori=11
 			jo.put("type","cargo");
