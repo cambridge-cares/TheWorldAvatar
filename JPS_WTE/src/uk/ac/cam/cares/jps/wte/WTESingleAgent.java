@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import com.google.common.primitives.Ints; 
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -86,15 +87,16 @@ public class WTESingleAgent extends JPSHttpServlet {
 			//properties of OnsiteTech
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			//creates onsite WTF if indicated by the number of units (onsite).csv
-			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
-			
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 		
 			File f = new File(baseUrl + "/"+"x_cluster_allocation.csv");
 			if(f.exists() && !f.isDirectory()) { 
-				List<String[]> onsiteAndFC = updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+				List<String[]> onsiteAndFC = updateinFCCluster(baseUrl,inputoffsitedata,fcMapping);
 //				updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
 			}else {
+				List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
+				
+				
 				List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
 				updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system	
 			}						
@@ -192,48 +194,56 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @throws Exception
 	 */
 	public List<String[]> updateinFCCluster(String baseUrl,
-			List<String> inputdataonsite,
 			List<String[]> inputdataoffsite,
 			List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
 		List<String[]> clusterWTF=new ArrayList<String[]>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
-		//NoOf
+		//NoOfClusterx1
 		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
-		//109x3x3
+		//NoOfClusterx9
 		int colamount2=treatedwasteoff.get(0).length; // 3 wtf and 3 technologies currently
 		//determine the number of WTF
 		int noOfWTF = colamount2%3;
 		List<String[]> clusterInputs = readResult(baseUrl,"x_cluster_allocation.csv");
+		//noOfFCActualxnoOfFC (repeated values are clusters)
 		List<String[]>sitemapping=new ArrayList<String[]>();
 		HashSet<String> clusterName =new HashSet<String>();
-		int size=treatedwasteon.size(); 
-		for(int x=0;x<size;x++) {
-	        // Put all array elements in a HashSet 
-	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteon.get(x))); 
+		int size=clusterInputs.size();//size = no of FC Actual
+		for(int x=0;x<size;x++) {//NoOfFC
 	        // HashSet should be 1. As HashSet contains only distinct values. 
-	        if (s.size() != 1) { //if they're non zero, it's onsite
+	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteoff.get(x))); 
+	        if (s.size() == 1) { //if all are zero there is only one element in a unique set so onsite
 	        	for(int y=0;y<size;y++) {//109 rounds
-					String wastetransfer=treatedwasteon.get(x)[y]; //in ton/day
-					String clusterFCe=clusterInputs.get(x)[y]; //in ton/day
-					if(Double.parseDouble(wastetransfer)>0.01) {
-						//assuming that we name all of the clusters by their position
-						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
-						+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
-						clusterName.add(clusterNameO);
-						String[]linemapping= {""+x,""+y,wastetransfer, "1", clusterNameO};
-						sitemapping.add(linemapping);
+					String wastetransfer=treatedwasteon.get(clusterName.size())[0]; //in ton/day 
+					//edit for now because we don't know how much FC waste gets fed in
+					if (Integer.parseInt(clusterInputs.get(x)[y]) == 1) {//so 
+						if(Double.parseDouble(wastetransfer)>0.01) {
+							//assuming that we name all of the clusters by their position
+							String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
+							+String.valueOf(y) + ".owl#FoodCourtCluster-"+String.valueOf(y);
+							clusterName.add(clusterNameO);
+							String[]linemapping= {""+x,""+y,wastetransfer, "1", clusterNameO};
+							sitemapping.add(linemapping);
+						}else {//otherwise it is transferred to the onsite WTF
+							String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-"
+							+String.valueOf(y) + ".owl#OnSiteWasteTreatment-"+String.valueOf(y);
+							clusterName.add(clusterNameO);
+							String[]linemapping= {""+x,""+y,wastetransfer, "1", clusterNameO};
+							sitemapping.add(linemapping);
+						}
 					}
 				}
-	        }else { //otherwise, it's offsite (could it be neither? no.)
+	        }else { 
 	        	for(int y=0;y<colamount2;y++) { //3tech*3instance
 					String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
-					String clusterFC=clusterInputs.get(x)[y]; //in ton/day
 					if(Double.parseDouble(wastetransfer)>0.01) { //assuming that the presence of a cluster
+						//figure out where the position of the cluster is in Treated offsite WTF
+						int location = Arrays.asList(clusterInputs.get(x)).indexOf("1");
 						String clusterNameO  = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
-								+String.valueOf(y) + ".owl#FoodCourtCluster"+String.valueOf(y);
-								clusterName.add(clusterNameO);
-						String[]linemapping= {""+x,""+y,wastetransfer, "2", clusterNameO};
+						+String.valueOf(location) + ".owl#FoodCourtCluster"+String.valueOf(location);
+						clusterName.add(clusterNameO);
+						String[]linemapping= {""+x,""+location,wastetransfer, "2", clusterNameO};
 						sitemapping.add(linemapping);		
 					}
 				}
@@ -264,7 +274,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 						+ wasteindex;
 				Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
 				int onsiteindex = Integer.valueOf(sitemapping.get(d)[1]);//onsite cluster name
-				String currentwtf = inputdataonsite.get(onsiteindex);
 				b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 				b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 				b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
