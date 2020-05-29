@@ -15,7 +15,7 @@ SO2
 PM2.5-0
 PM2.5-1
 CO
-PM10-2
+PM10-0
 
 UNITS:
 ppb
