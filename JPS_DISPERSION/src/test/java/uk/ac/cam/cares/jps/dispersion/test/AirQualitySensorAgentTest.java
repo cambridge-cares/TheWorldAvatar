@@ -130,36 +130,73 @@ public class AirQualitySensorAgentTest extends TestCase {
 	}
 
 	public void testmakecsv() {
-		String sensorinfo="PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
-				"				 PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> \r\n" + 
-				"				 PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> \r\n" + 
-				"				 PREFIX j6:<http://www.w3.org/2006/time#>  \r\n" + 
-				"				 PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> \r\n" + 
-				"				 SELECT Distinct ?prop ?propval ?unit  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?xval ?yval\r\n" + 
-				"				 {graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001>\r\n" + 
-				"				 { \r\n" + 
-				"          ?entity   j7:hasGISCoordinateSystem ?coordsys .\r\n" + 
-				"               ?coordsys   j7:hasProjectedCoordinate_x ?xent .\r\n" + 
-				"                ?xent j2:hasValue ?vxent .\r\n" + 
-				"               ?vxent   j2:numericalValue ?xval .\r\n" + 
-				"                ?coordsys   j7:hasProjectedCoordinate_y ?yent .\r\n" + 
-				"                ?yent j2:hasValue ?vyent .\r\n" + 
-				"                ?vyent   j2:numericalValue ?yval .\r\n" + 
-				"    ?graph j4:hasOverallPSI ?allpsi .\r\n" + 
-				"				  #?prop a j4:OutsideCOConcentration .\r\n" + 
-				"				  ?prop   j2:hasValue ?vprop . \r\n" + 
+//		String sensorinfo="PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 
+//				"				 PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> \r\n" + 
+//				"				 PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> \r\n" + 
+//				"				 PREFIX j6:<http://www.w3.org/2006/time#>  \r\n" + 
+//				"				 PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> \r\n" + 
+//				"				 SELECT Distinct ?prop ?propval ?unit  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi ?xval ?yval\r\n" + 
+//				"				 {graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001>\r\n" + 
+//				"				 { \r\n" + 
+//				"          ?entity   j7:hasGISCoordinateSystem ?coordsys .\r\n" + 
+//				"               ?coordsys   j7:hasProjectedCoordinate_x ?xent .\r\n" + 
+//				"                ?xent j2:hasValue ?vxent .\r\n" + 
+//				"               ?vxent   j2:numericalValue ?xval .\r\n" + 
+//				"                ?coordsys   j7:hasProjectedCoordinate_y ?yent .\r\n" + 
+//				"                ?yent j2:hasValue ?vyent .\r\n" + 
+//				"                ?vyent   j2:numericalValue ?yval .\r\n" + 
+//				"    ?graph j4:hasOverallPSI ?allpsi .\r\n" + 
+//				"				  #?prop a j4:OutsideCOConcentration .\r\n" + 
+//				"				  ?prop   j2:hasValue ?vprop . \r\n" + 
+//				"    ?prop j4:hasMeasuredPropertyMean ?mean .\r\n" + 
+//				"    ?prop j4:hasMeasuredPropertyMax ?max .\r\n" + 
+//				"    ?prop j4:hasMeasuredPropertyMin ?min .\r\n" + 
+//				"    ?prop j4:hasPSI ?individualpsi .\r\n" + 
+//				"				?vprop   j4:prescaledNumValue ?propval . \r\n" + 
+//				"    ?vprop   j2:hasUnitOfMeasure ?unit . \r\n" + 
+//				"				  ?vprop   j6:hasTime ?proptime .\r\n" + 
+//				"				  ?proptime   j6:inXSDDateTimeStamp ?proptimeval .\r\n" + 
+//				"\r\n" + 
+//				"				 } \r\n" + 
+//				"				 } \r\n" + 
+//				"				 ORDER BY DESC(?proptimeval)LIMIT10";
+		
+//		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+//				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+//				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+//				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+//				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+//				+ "SELECT ?vprop ?proptime "
+
+//				+ "{graph "+"<http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001>"
+//				+ "{ "
+//				+ " ?prop a j4:OutsideSO2Concentration ."
+//				+ " ?prop   j2:hasValue ?vprop ." 
+//				+ " ?vprop   j6:hasTime ?proptime ."
+//				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+//				+ "}" 
+//				+ "}" 
+//				+ "ORDER BY ASC(?proptimeval)LIMIT1";
+		
+		String sensorinfo="PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" + 
+				" PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>\r\n" + 
+				" PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>\r\n" + 
+				" PREFIX j6:<http://www.w3.org/2006/time#>\r\n" + 
+				" PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#>\r\n" + 
+				" SELECT Distinct ?vprop ?propval  ?proptimeval ?allpsi ?mean ?max ?min ?individualpsi \r\n" + 
+				" {graph <http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001> \r\n" + 
+				" {\r\n" + 
+				"  ?graph j4:hasOverallPSI ?allpsi .\r\n" + 
+				" ?prop   j2:hasValue ?vprop .\r\n" + 
 				"    ?prop j4:hasMeasuredPropertyMean ?mean .\r\n" + 
 				"    ?prop j4:hasMeasuredPropertyMax ?max .\r\n" + 
 				"    ?prop j4:hasMeasuredPropertyMin ?min .\r\n" + 
 				"    ?prop j4:hasPSI ?individualpsi .\r\n" + 
-				"				?vprop   j4:prescaledNumValue ?propval . \r\n" + 
-				"    ?vprop   j2:hasUnitOfMeasure ?unit . \r\n" + 
-				"				  ?vprop   j6:hasTime ?proptime .\r\n" + 
-				"				  ?proptime   j6:inXSDDateTimeStamp ?proptimeval .\r\n" + 
-				"\r\n" + 
-				"				 } \r\n" + 
-				"				 } \r\n" + 
-				"				 ORDER BY DESC(?proptimeval)LIMIT240";
+				"?vprop   j4:prescaledNumValue ?propval .\r\n" + 
+				"  ?vprop   j6:hasTime ?proptime .\r\n" + 
+				"  ?proptime   j6:inXSDDateTimeStamp ?proptimeval .\r\n" + 
+				"}}\r\n" + 
+				" ORDER BY DESC(?proptimeval) LIMIT30";
 		
 		//in virtual sensor is 10 pollutant ,so limit=240
 		//in aqmesh 9 pollutant = 9*12*24 -> should be 10 pollutant (co2 is missing) 10*12*24=2880
@@ -173,11 +210,13 @@ public class AirQualitySensorAgentTest extends TestCase {
 		}
 		joparams.put(JPSConstants.QUERY_SPARQL_QUERY, sensorinfo);
 		String resultfromrdf4j=Http.execute(Http.get(requestUrl, null, joparams));
+
 		//String resultfromrdf4j = KnowledgeBaseClient.query("http://localhost:8080/jps/data/airquality", null, sensorinfo);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		listmap.add(0,keys);
-		new QueryBroker().putLocal(dataPath + "/VirtualSensor.csv", MatrixConverter.fromArraytoCsv(listmap));
+		System.out.println("res= "+MatrixConverter.fromArraytoCsv(listmap));
+		//new QueryBroker().putLocal(dataPath + "/VirtualSensor.csv", MatrixConverter.fromArraytoCsv(listmap));
 		
 	}
 }

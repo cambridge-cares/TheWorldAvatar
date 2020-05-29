@@ -26,8 +26,18 @@ def convert_dat(filepath):
         # 2. seperate each column after 7 and make each of them a list
         list_at_x_m = data_at_x_m.iloc[:,-num_pollutant:]
         for col in list_at_x_m:
-            height_list.append(list(list_at_x_m[col].values))
+            single_array = list(list_at_x_m[col].values)
+            n = 10
+            x = [single_array[i:i + n] for i in range(0, len(single_array), n)] 
+            transpose_single_array = []
+            
+            for k in range(n):
+                for sub_list in x:
+                    transpose_single_array.append(sub_list[k])
+            height_list.append(transpose_single_array)
+ 
         result.append(height_list)
+
 
         
     print(json.dumps({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height}))
