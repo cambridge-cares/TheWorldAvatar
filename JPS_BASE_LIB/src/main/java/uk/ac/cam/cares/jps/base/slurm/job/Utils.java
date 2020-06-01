@@ -387,5 +387,37 @@ public class Utils {
 		}
 		return null;
 	}
-
+	
+	/**
+	 * Windows uses both carriage return (\r) and line feed (\n) as a line<br> 
+	 * ending (\r\n). Unix uses line feed (\n) as a line ending.<br>
+	 * This method translates all line endings codified with "\r\n" in a<br>
+	 * file into "\n".
+	 * 
+	 * @param file
+	 */
+	public static void translateLineEndingIntoUnix(File file) throws IOException{
+		File recreatedFile = new File(System.getProperty("user.home").replace("\\", "/").concat("/").concat(file.getName()));
+		copyModifiedContentForUnix(file, recreatedFile);
+		copyModifiedContentForUnix(recreatedFile, file);
+	}
+	
+	/**
+	 * Copies file from the source path to the destination path with the<br>
+	 * line ending modified to format in Unix.
+	 * 
+	 * @param source
+	 * @param destination
+	 * @throws IOException
+	 */
+	private static void copyModifiedContentForUnix(File source, File destination) throws IOException{
+		BufferedReader receivedFile = openSourceFile(source.getAbsolutePath());
+		BufferedWriter recreatedFile = openBufferedWriter(destination.getAbsolutePath());
+		String line;
+		while((line=receivedFile.readLine())!=null){
+				recreatedFile.write(line.concat("\n"));
+		}
+		recreatedFile.close();
+		receivedFile.close();
+	}
 }
