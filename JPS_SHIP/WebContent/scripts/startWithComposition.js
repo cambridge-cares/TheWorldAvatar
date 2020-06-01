@@ -268,6 +268,16 @@ console.log(result)});
                         item[7] = parseFloat(item[7]).toFixed(2)
 
                     })
+                    sensorAttributes.data.sort(function(a, b) {
+                        var nameA = a[0].toUpperCase(); // ignore upper and lowercase
+                        var nameB = b[0].toUpperCase(); // ignore upper and lowercase
+                        if (nameA < nameB) {
+                            return -1;
+                        }
+                        if (nameA > nameB) {
+                            return 1;
+                        }
+                    });
                     renderAttributeTable(sensorAttributes);
                 })
                    // });
