@@ -342,29 +342,34 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		ArrayList<JSONObject> result=getDataFromAPI();
 		int len = result.size()/2;
 		for (int x = 0; x <len; x++) { //assuming same frequency of these two.
-			JSONObject jGas = result.get(x);
-			JSONObject jPM = result.get(x+len);
-			double concpm10=0.0;
-			double concpm25=0.0;
-			double concpm1=0.0;
-			String directorytime = (String) jPM.get("Timestamp");
-			concpm1 = concpm1 + jPM.getDouble("PM1");
-			concpm25 = concpm1 +concpm25 +jPM.getDouble("PM25");
-			concpm10 = concpm25 +concpm10 + jPM.getDouble("PM10");
-			updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
-			updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
-			updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
-			
-			 
-			Iterator<String> keys = jGas.keys();
-			while(keys.hasNext()) {
-			    String key = keys.next();
-			    
-			    	String classname = String.format("Outside%sConcentration", key);
-			    	String value =jGas.get(key).toString();
-			    	updateRepoNewMethod(stationiri, classname, value, value, directorytime);
-			    
+			try {
+				JSONObject jGas = result.get(x);
+				JSONObject jPM = result.get(x+len);
+				double concpm10=0.0;
+				double concpm25=0.0;
+				double concpm1=0.0;
+				String directorytime = (String) jPM.get("Timestamp");
+				concpm1 = concpm1 + jPM.getDouble("PM1");
+				concpm25 = concpm1 +concpm25 +jPM.getDouble("PM25");
+				concpm10 = concpm25 +concpm10 + jPM.getDouble("PM10");
+				updateRepoNewMethod(stationiri, "OutsidePM1Concentration",""+concpm1,""+concpm1,directorytime);
+				updateRepoNewMethod(stationiri, "OutsidePM25Concentration",""+(concpm1+concpm25),""+(concpm1+concpm25),directorytime);
+				updateRepoNewMethod(stationiri, "OutsidePM10Concentration",""+(concpm1+concpm25+concpm10),""+(concpm1+concpm25+concpm10),directorytime);
+				
+				 
+				Iterator<String> keys = jGas.keys();
+				while(keys.hasNext()) {
+				    String key = keys.next();
+				    
+				    	String classname = String.format("Outside%sConcentration", key);
+				    	String value =jGas.get(key).toString();
+				    	updateRepoNewMethod(stationiri, classname, value, value, directorytime);
+				    
+				} 
+			}catch (Exception e) {
+				 System.out.println("error in getting something from json API result");
 			}
+
 		}
 		 logger.info("updates finished");
 		//processed the input to have suitable format
