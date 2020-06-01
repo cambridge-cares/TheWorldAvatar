@@ -1,0 +1,1389 @@
+/* Main stylesheet contains all framework layout styles 
+@import "CoMoIncludeStyle.css";
+/* -------------------------------------------------------- */
+
+/*
+content -
+1. general styles
+2. top navigation
+3. banner styles
+4. primary navigation
+5. surround styles
+6. secondary navigation
+7. footer styles
+8. landing styles
+9. utility styles
+*/
+
+
+/* ===================================== */
+/* ========= 1. general styles ========= */
+/* ===================================== */
+
+html, body {
+    height:90%;
+}
+sup,
+sub {
+	height: 0;
+	line-height: 1;
+	vertical-align: baseline;
+	_vertical-align: bottom;
+	position: relative;
+	
+}
+
+sup {
+	bottom: 1ex;
+}
+
+sub {
+	top: .5ex;
+}
+body {
+    background-color:rgb(204, 225, 227);/*#99cccc;*/
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:80%;
+    margin:0;
+    padding-top:8px;
+	text-align:center;
+	}
+#wrapper {width: 840px; margin: 0; text-align: left; }
+.oneColFixCtr #container {
+	position: relative;
+	width: 840px;  /* using 20px less than a full 800px width allows for browser chrome and avoids a horizontal scroll bar */
+	margin: 0 auto; /* the auto margins (in conjunction with a width) center the page */
+	text-align: left; /* this overrides the text-align: center on the body element. */
+}
+.oneColFixCtr #mainContent {
+	padding: 0; /* remember that padding is the space inside the div box and margin is the space outside the div box */
+	}
+
+#border {
+    /* background-color:#999966; */
+	background-color:rgb(204, 225, 227);
+	width:800px;
+    min-height:100%;
+    padding:0px 20px 10px 20px;
+    border: 0px solid #000000;
+    margin-left: auto;
+	margin-right: auto;
+}
+
+
+
+
+
+#skiplinks {
+    position:absolute;
+    left:-1000%;
+}
+#main-content a[href ^="http://"], #main-content a.link {
+    background: url("./images/external.png") center right no-repeat;
+    padding-right: 13px;
+}
+#main-content a[href ^="http://como.cheng.cam.ac.uk"] {
+    background-image: none;
+    padding-right: 0px;
+}
+
+
+a.secure, a[href ^="https://"] {
+    background: url("./images/lock_icon.gif") center right no-repeat;
+    padding-right: 16px;
+}
+a[href ^="http://como.cheng.cam.ac.uk/"] {
+    padding-right: 0px;
+    background-image: none;
+}
+a[href ^="https://como.cheng.cam.ac.uk/"] {
+    padding-right: 0px;
+    background-image: none;
+}
+
+a.empty, a[href ^="http://"] {
+    padding-right: 0px;
+    background-image: none;
+}
+
+a.mail, a[href ^="mailto:"] {
+    background: url("./images/mail_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+a.google, a[href ^="http://www.google.com/"] {
+    background: url(google_icon.gif) center right no-repeat;
+    padding-right: 18px;
+}
+a.google, a[href ^="http://scholar.google.com/"] {
+    background: url(scholar_icon.gif) center right no-repeat;
+    padding-right: 18px;
+}
+a.ftp, a[href$="ftp://"] {
+    background: url(file_icon.gif) center right no-repeat;
+    padding-right: 18px;
+}
+
+a.pdf, a[href$=".pdf"] {
+    padding-right: 22px ;
+    background: url("./images/pdf_icon.gif") center right no-repeat;
+}
+a.skype, a[href ^="callto://"] {
+    background: url(skype_icon.png) center right no-repeat;
+    padding-right: 22px;
+}
+a.gizmo, a[href ^="gizmoproject"] {
+    background: url(gizmo_icon.png) center right no-repeat;
+    padding-right: 22px;
+}
+a.zip, a[href$=".zip"] {
+    padding-right: 22px ;
+    background: url("zip_icon.gif") center right no-repeat;
+}
+
+a.ppt, a[href$=".ppt"] {
+    padding-right: 22px ;
+    background: url("ppt_icon.gif") center right no-repeat;
+}
+
+a.pptx, a[href$=".pptx"] {
+    padding-right: 22px ;
+    background: url("ppt_icon.gif") center right no-repeat;
+}
+
+a.doc, a[href$=".doc"] {
+    padding-right: 22px ;
+    background: url("word-doc_icon.gif") center right no-repeat;
+}
+
+a.docx, a[href$=".docx"] {
+    padding-right: 22px ;
+    background: url("word-doc_icon.gif") center right no-repeat;
+}
+
+a.vCard, a[href$="vCard"] {
+    padding-right: 22px ;
+    background: url("vcard_icon.gif") center right no-repeat;
+}
+span.secure, span[href ^="https://"] {
+    background: url(lock_icon.gif) center right no-repeat;
+    padding-right: 16px;
+}
+span[href ^="http://como.cheng.cam.ac.uk/"] {
+    padding-right: 0px;
+    background-image: none;
+}
+
+span.mail, span[href ^="mailto:"] {
+    background: url("./images/mail_icon.gif") center right no-repeat;
+    padding-right: 18px;
+}
+span.ftp, span[href$="ftp://"] {
+    background: url(file_icon.gif) center right no-repeat;
+    padding-right: 18px;
+}
+span.pdf, span[href$=".pdf"] {
+    padding-right: 22px ;
+    background: url("./images/pdf_icon.gif") center right no-repeat;
+}
+
+span.ppt, span[href$=".ppt"] {
+    padding-right: 22px ;
+    background: url("ppt_icon.gif") center right no-repeat;
+}
+
+span.pptx, span[href$=".pptx"] {
+    padding-right: 22px ;
+    background: url("pptx_icon.gif") center right no-repeat;
+}
+
+span.doc, span[href$=".doc"] {
+    padding-right: 22px ;
+    background: url("word-doc_icon.gif") center right no-repeat;
+}
+
+span.docx, span[href$=".docx"] {
+    padding-right: 22px ;
+    background: url("word-docx_icon.gif") center right no-repeat;
+}
+
+span.vCard, span[href$="vCard"] {
+    padding-right: 22px ;
+    background: url("vcard_icon.gif") center right no-repeat;
+}
+
+img.picture-topright{
+    float:right;
+    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000; 
+    margin:0px 0px 10px 10px;
+    padding-right: 0px;
+    background-image: none;
+}
+
+img.picture-topleft{
+    float:left;
+    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000; 
+    margin:0px 10px 10px 0px;
+    padding-right: 0px;
+    background-image: none;
+}
+img.picture-right{
+    float:right;
+    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000; 
+    margin:10px 0px 10px 10px;
+    padding-right: 0px;
+    background-image: none;
+}
+img.picture-nofloat{
+	float:none;
+    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000; 
+    margin:10px 0px 10px 10px;
+    padding-right: 0px;
+    background-image: none;
+}
+img.picture-right-noborder{
+    float:right;
+    margin:10px 0px 10px 10px;
+    padding-right: 0px;
+    background-image: none;
+}
+
+img.picture-left{
+    float:left;
+    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000; 
+    margin:10px 10px 10px 0px;
+    padding-right: 0px;
+    background-image: none;
+}
+.div-left{
+    float:left;
+/*    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000;  */
+    margin:10px 0px 0px 0px;
+    padding:0px 10px 10px 10px;
+    background-image: none;
+	}
+.div-left p{
+    margin:5px 5px 5px 5px;
+    padding:0px 0px 0px 0px;
+	}
+.div-right{
+    float:right;
+/*    border-style:solid; 
+    border-width:1px; 
+    border-color:#000000;  */
+    margin:10px 10px 10px 0px;
+    padding:0px 10px 0px 10px;
+    background-image: none;
+	}
+.div-right p{
+    margin:5px 5px 5px 5px;
+    padding:0px 0px 0px 0px;
+	}
+img.picture-left-noborder{
+    float:left;
+    margin:10px 10px 10px 10px;
+    padding-right: 0px;
+    background-image: none;
+}
+
+.plain a{
+    background-image:none;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+}
+
+.plain a:hover {
+    text-decoration:none;
+    background-color:transparent;
+    color:#CCCCCC;
+}
+.plain img:hover {
+    text-decoration:none;
+    background-color:transparent;
+    color:#CCCCCC;
+}
+
+
+
+/* ===================================== */
+/* ========= end general styles ======== */
+/* ===================================== */
+
+
+
+
+
+
+
+/* ===================================== */
+/* ========= 2. top navigation ========= */
+/* ===================================== */
+
+/* The 'top navigation' is the university standard home-search-az bar across */
+/* the very top of the screen.  CSH replaced graphics with css generated bar */
+/* to allow correct resizing with user-side font size specifications */
+
+#logged_in_top{
+}
+#top-nav {
+	float:left;
+	width:802px;
+	min-height:15px; /* min-height to allow for correct accesibility resizing */
+	background-color:rgb(0, 102, 102);/*#006666;*/
+	border-bottom:2px solid #c8c8c8;
+	font-size:100%;
+}
+#top-nav li {
+    float:right;
+    border-left:1px;
+    border-left-color:#ffffff;
+    padding-left:1em;
+    padding-right:1em;
+    font-size:100%;
+}
+#top-nav #logged_in_top li{
+    float:left;
+    display:block;
+    min-width:100px;
+    font-weight:bold;
+    font-size:85%;
+    text-align:right;
+    list-style-type:none;
+    margin:0px 0px 0px 0px;
+    padding:0px 20px 0px 0px;
+    vertical-align:middle;
+}
+
+
+
+#top-nav span.sep {
+    margin-left:1em;
+    margin-right:1em;
+}
+
+#top-nav a{
+    background:none;
+    padding:0px 0px 0px 0px;
+}
+#top-nav ul {
+    margin: 0px 0px 0px 0px;
+    padding: 0px 0px 0px 0px;
+    list-style-type: none;
+}
+
+#top-nav ul a {
+    display:block;
+    text-align:center;
+    vertical-align:middle;
+    font-size:100%;
+    font-weight:bolder;
+    text-decoration:none;
+    color:#ffffff;
+    min-width:32px; /* min-width to allow for correct accesibility resizing */
+}
+
+#top-nav ul a:hover {
+    text-decoration:none;
+    color:#CCCCCC;
+}
+
+
+
+#top-nav li.home {
+	background-color:rgb(0, 102, 102);
+	border-left-color:#FFFFFF;
+	border-left-width:1px;
+	border-left-style:solid;
+}
+#top-nav li.search {
+	background-color:rgb(0, 150, 150);
+	border-left-color:#FFFFFF;
+	border-left-width:1px;
+	border-left-style:solid;
+}
+#top-nav li.az {
+	background-color:rgb(0, 202, 202);
+	border-left-color:#FFFFFF;
+	border-left-width:1px;
+	border-left-style:solid;
+}
+
+/* ===================================== */
+/* ======== end top navigation ========= */
+/* ===================================== */
+
+
+
+
+/* ===================================== */
+/* ========= 3. banner ================= */
+/* ===================================== */
+
+/* The banner is the graphic splash across the top of the page */
+
+#banner {
+    float:left;
+    background-repeat: no-repeat;
+    background-position:0px 0px;
+    width:802px;
+    height:75px;
+    background-color:#ffffff;
+    border:0px none;
+    padding:0px 0px 0px 0px;
+}
+
+#banner-right {
+    float:right;
+    width:230px;
+}
+
+#banner-center {
+    float:left;
+    clear:none;
+    border:0px none;
+    width:310px;
+}
+
+#banner-logo {
+    float:left;
+    clear:none;
+    margin:0px 0px 0px 0px;
+    border:0px none;
+}
+
+#right-logo {
+    float:right;
+    clear:both;
+    border:0px none;
+    width:230px;
+}
+#right-logo a{
+    text-decoration:none;
+    background:none;
+    padding:0px 0px 0px 0px;
+}
+
+/* ===================================== */
+/* ======== end banner ================= */
+/* ===================================== */
+
+
+
+
+
+/* ===================================== */
+/* ====== 4. primary navigation ======== */
+/* ===================================== */
+
+/* The primary navigation is the list of upper level menus     */
+
+#primary-navigation {
+    float:left;
+    width:100%;
+    margin-top:0px; 
+    background-color:#006666;
+        text-align:center;
+    border-top-color:#000000;
+    border-top-style:solid;
+    border-top-width:1px !important;
+    border-bottom-color:#000000;
+    border-bottom-style:solid;
+    border-bottom-width:1px !important;
+	border-left:#006666 1px solid;
+	border-right:#006666 1px solid;
+}
+
+#primary-navigation ul {
+    margin:0px auto;
+    list-style-type: none;
+    text-align:center;
+    padding:0px 1px 2px 14px;
+}
+
+#primary-navigation ul a {
+    display:block;
+/*  float:left; */
+    z-index:99;
+    font-size:120%;
+    font-weight:bolder;
+    text-decoration:none;
+    color:#ffffff;
+    margin-top:4px;
+    background-color:#006666;
+}
+
+#primary-navigation  a {
+    text-decoration:none;
+    display:block;
+    padding:3px 2px 3px 4px;
+}
+
+#primary-navigation ul a:link {
+    text-decoration:none;
+    color:#ffffff;
+}
+#primary-navigation ul a:visited {
+    text-decoration:none;
+    color:#ffffff;
+}
+#primary-navigation ul a:active {
+    text-decoration:none;
+    color:#990000;
+}
+#primary-navigation ul a:hover {
+    text-decoration:none;
+    color:#CCCCCC;
+    /*background-color:#22AADD;*/
+}
+
+#primary-navigation li {
+    float:left;
+    padding-left:4px;
+    padding-right:4px;
+}
+#primary-navigation a.selected-menu-item {
+        color:#666666;
+    background-color:rgb(153, 204, 204);/*#d3d3b1;*/
+        border-style:solid;
+        border-width:1px 1px 0px 1px;
+        border-color:#000000;
+        position:relative;
+        top:1px;
+}
+
+#primary-navigation a.selected-menu-item:link{
+    text-decoration:none;
+    color: #666666;
+    }
+#primary-navigation a.selected-menu-item:visited {
+    text-decoration:none;
+    color: #666666;
+    }
+
+#primary-navigation a.selected-menu-item:hover {
+    text-decoration:none;
+    color: #222;
+    }
+
+/* ===================================== */
+/* ====== end primary navigation ======= */
+/* ===================================== */
+
+
+
+
+
+/* ===================================== */
+/* ====== 5. surround styles =========== */
+/* ===================================== */
+
+#surround {
+    float:left;
+    width:100%;
+    color:#000000;
+    background-color:#ffffff;
+    padding:0px 0px 0px 0px;
+}
+
+#bodycopy {
+    background-color:#ffffff;
+    margin-left:110px;
+    padding-right:150px;
+    margin-top:4px; 
+}
+
+html>body #bodycopy {
+    margin-left:110px;
+}
+
+
+#content {
+/*  float:left; */
+    width:100%;
+    background-color:#ffffff;
+    font-size:100%;
+}
+/* IE Only, to compensate for lack of min-height support */
+* html #content { height:100%; }    
+
+/* ===================================== */
+/* ===== end surround styles =========== */
+/* ===================================== */
+
+
+
+
+
+/* ===================================== */
+/* ====== 6. secondary navigation ====== */
+/* ===================================== */
+
+#logged_in{
+}
+
+#logged_in ul{
+    list-style-type:none;
+    margin:0px 0px 0px 0px;
+    padding:0px 10px 7px 10px;
+}
+#logged_in li{
+    font-weight:bold;
+    list-style-type:none;
+    padding:0px 10px 7px 10px;
+}
+
+#leftnav {
+    float:left;
+    background-color:rgb(153, 204, 204);
+    width:100%;
+    font-size:85%;
+    padding:4px 0px 0px 0px;
+   border-style:solid;
+border-width: 0 0 1px 0 ;
+border-color: #888888;
+	border-left:#006666 1px solid;
+	border-right:#006666 1px solid;
+}
+
+#leftnav ul {
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 20px;
+    list-style-type: none;
+    text-align:center;
+    margin-left:auto;
+    margin-right:auto;
+
+}
+
+#leftnav a {
+    color:#000000;
+    text-decoration:none;
+    display:block;
+    padding:3px 10px 3px 10px;
+}
+
+#leftnav ul li a  {
+    display:block;
+    font-weight:bold;
+}
+
+#leftnav a:hover{
+    text-decoration:none;
+    color:#990000;
+    background-color:#EEEEEE;
+    padding:3px 10px 3px 10px;
+}
+
+
+#leftnav li {
+    float:left;
+    padding:0px 0px 0px 0px;
+    margin:0px 2px 0px 2px;
+    background-color:#DDDDDD;
+    border-style:solid;
+	border-width: 1px 1px 0 1px;
+	border-color: #888888;
+}
+
+#leftnav li.Methods {
+    background-color:#FFDDDD;
+}
+#leftnav li.Applications {
+    background-color:#DDDDFF;
+
+}
+#leftnav li.Other {
+    background-color:#DDDDDD;
+}
+#leftnav li.selcsm {
+    font-weight:bold;
+    color:#cc0000;  
+    background-color:#FFFFFF;
+    text-decoration:none;
+    display:block;
+    padding:3px 10px 3px 10px;
+    margin:0px 2px 0px 2px;
+	position:relative;
+	top:1px;
+}
+#leftnav li.selcsm a{
+    font-weight:bold;
+    color:#cc0000;  
+    background-color:#FFFFFF;
+    text-decoration:none;
+    display:block;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+	position:relative;
+}
+/* ===================================== */
+/* ====== end secondary navigation ===== */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ======== 7. subsubmenu style ======== */
+/* ===================================== */
+
+#subsubmenu {   
+    float:left;
+    width:100%;
+    background-color:#ffffff;
+    font-size:95%;
+    font-weight:bold;
+    padding:5px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+    border-bottom:1px solid #000000;
+}
+#subsubmenu ul  {
+    float:left;
+    background-color:#ffffff;
+    text-decoration:none;
+    list-style-type:none;
+    margin: 0px 0px 0px 10px;
+    padding: 0px 0px 0px 0px;
+    text-align:left;
+    min-height:18px;
+}
+
+#subsubmenu li{
+    float:left;
+    color:#000000;
+    text-decoration:none;
+    text-align:left;
+    padding: 0px 0px 5px 10px;
+}
+#subsubmenu li a.separator {
+    float:left;
+    color:#000000;
+    text-decoration:none;
+    padding:0px 3px 0px 3px;
+}
+
+#subsubmenu li a.selected {
+    float:left;
+    color:#cc0000;
+    text-decoration:none;
+    vertical-align:middle;
+    padding:0px 2px 0px 12px;
+    background-image:url(images/menu_arrow_roll.gif);
+    background-repeat:no-repeat;
+}
+
+#subsubmenu li a.selected:hover {
+    color:#cc0000;
+    background-color:#ffffff;
+}
+
+#subsubmenu li a.unselected {
+    float:left;
+    color:#000000;
+    text-decoration:none;
+    vertical-align:middle;
+    padding:0px 2px 0px 12px;
+    background-image:url(images/menu_arrow_norm.gif);
+    background-color:#ffffff;
+    background-repeat:no-repeat;
+}
+
+#subsubmenu li a.unselected:hover{
+    text-decoration:none;
+    color:#990000;
+    background-color:#ffffff;
+}
+#subsubmenu li a:visited{
+    text-decoration:none;
+    color:#000000;
+    background-color:#ffffff;
+}
+
+/* ===================================== */
+/* ======== end subsubmenu style ======= */
+/* ===================================== */
+
+
+
+/* ===================================== */
+/* ========= 8. footer styles ========== */
+/* ===================================== */
+
+#footer-bar {
+    clear:both;
+    float:none;
+    width:802px;
+    height:0px;
+	font-size:2px;
+    padding:0px 0px 0px 0px;
+    background-color:rgb(204, 225, 227);
+    border-bottom:0px solid #c8c8c8;
+    border-top:0px solid #ffffff;
+}
+
+#footer {
+    clear:both;
+    width:802px;
+    font-size:80% !important;
+    background-color:#ffffff;
+    padding:5px 0px 5px 0px;
+    display:block;
+    text-align:center;
+    vertical-align:baseline;
+	border-bottom:0px solid #006666;
+	border-left:0px solid #006666;
+	border-right:0px solid #006666;
+	border-top:0px solid #006666;
+	margin-top:10px;
+}
+
+
+
+#footer a[href^="http://"] {
+/* required to stop the external link icon displaying */
+    padding-right : 0px;
+    background-image : none;
+}
+
+#footer ul{
+    color:#000000;
+    background-color:#FFFFFF;
+    list-style-type:none;
+    display:inline;
+    text-align:center;
+} 
+
+#footer li{
+    background-image: none;
+    background-color:#FFFFFF;
+    display:inline;
+    text-align:center;
+}
+
+#footer li a{
+    color: #000000;
+    text-decoration: none;
+    text-align:center;
+}
+
+#footer li a:hover{
+    text-decoration: underline;
+    color:#990000;
+}
+#footer li a.date:hover{
+    text-decoration: none;
+    color:#000000;
+}
+#footer li a.separator{
+    text-decoration: none;
+    color:#000000;
+    padding:0px 5px 0px 5px;
+}
+#footer li a.separator:hover{
+    text-decoration: none;
+    color:#000000;
+}
+
+/* ===================================== */
+/* ========= end footer styles ========= */
+/* ===================================== */
+
+
+
+
+
+
+
+
+
+/* ===================================== */
+/* ========= 9. content styles ========= */
+/* ===================================== */
+
+#main-content{
+	width:772px;
+    float:left;
+    display:block;
+    background-color:#ffffff;
+    font-family: Arial, Helvetica, sans-serif;
+    margin:0px 0px 0px 0px;
+    padding:15px 15px 15px 15px;
+	border-left:0px solid #006666;
+	border-right:0px solid #006666;
+	border-bottom:0px solid #006666;
+}
+
+
+/* ===Below added by Raph to fix login page */
+#main-content #jumpout{
+	width:802px;
+    padding:0px 0px 0px 0px;
+    margin-left:-15px;
+	margin-right:0px;
+	margin-top:-24px;
+	margin-bottom:0px;
+}
+#main-content #jumpout #nav{
+    float:left;
+    background-color:rgb(153, 204, 204);;
+    width:100%;
+    font-size:85%;
+    padding:0px 0px 0px 0px;
+	margin:-1px 0px 0px 0px;
+	border-bottom-style:solid;
+	border-bottom-width:1px;
+	border-bottom-color: #888888;
+	border-top-style:solid;
+	border-top-width:1px;
+	border-top-color:rgb(153, 204, 204);;
+}
+
+#main-content #jumpout #nav ul {
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 20px;
+    list-style-type: none;
+    text-align:center;
+    margin-left:auto;
+    margin-right:auto;
+
+}
+
+#main-content #jumpout #nav a {
+    color:#000000;
+    text-decoration:none;
+    display:block;
+    padding:3px 10px 3px 10px;
+}
+
+#main-content #jumpout #nav ul li a  {
+    display:block;
+    font-weight:bold;
+}
+
+#main-content #jumpout #nav a:hover{
+    text-decoration:none;
+    color:#990000;
+    background-color:#EEEEEE;
+    padding:3px 10px 3px 10px;
+}
+
+
+#main-content #jumpout #nav li {
+    float:left;
+    padding:0px 0px 0px 0px;
+    margin:0px 2px 0px 2px;
+    background-color:#DDDDDD;
+    border-style:solid;
+	border-width: 1px 1px 0 1px;
+	border-color: #888888;
+}
+
+#main-content #jumpout #nav li.selcsm {
+    font-weight:bold;
+    color:#cc0000;  
+    background-color:#FFFFFF;
+    text-decoration:none;
+    display:block;
+    padding:3px 10px 3px 10px;
+    margin:0px 2px 0px 2px;
+	position:relative;
+	top:1px;
+}
+#main-content #jumpout #nav li.selcsm a{
+    font-weight:bold;
+    color:#cc0000;  
+    background-color:#FFFFFF;
+    text-decoration:none;
+    display:block;
+    padding:0px 0px 0px 0px;
+    margin:0px 0px 0px 0px;
+	position:relative;
+}
+/* ===Above added by Raph to fix login page */
+
+#wiki{
+    width:772px;
+    float:left;
+	text-align: left; /* this overrides the text-align: center on the body element. */
+    display:block;
+    background-color:#ffffff;
+    color:#000000;
+    font-family: Arial, Helvetica, sans-serif;
+    margin:0px 0px 0px 0px;
+    padding:15px 15px 0px 15px;
+}
+#main-content p{
+    font-size:100%;
+    padding:0px 10px 0px 10px;
+    text-decoration:none;
+}
+#main-content p:link{
+    color:#000000;
+    text-decoration:none;
+}
+#main-content p:visited{
+    color:#000000;
+    text-decoration:none;
+}
+#main-content a:link{
+    color:#990000;
+    text-decoration:underline;
+}
+#main-content a:visited{
+    color:#990000;
+    text-decoration:underline;
+}
+#main-content a:hover{
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:underline;
+}
+
+#main-content h1{
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 5px 0px;
+    font-size:180%;
+}
+#main-content h2{
+    margin:0px 0px 0px 0px;
+    padding:10px 0px 0px 0px;
+    font-size:150%;
+}
+
+#calendar{
+    width:772px;
+    float:left;
+	text-align: left; /* this overrides the text-align: center on the body element. */
+    display:block;
+    background-color:#ffffff;
+    color:#000000;
+    font-family: Arial, Helvetica, sans-serif;
+    margin:0px 0px 0px 0px;
+    padding:15px 15px 0px 15px;
+}
+
+#calendar p{
+    font-size:100%;
+    padding:0px 10px 0px 10px;
+    text-decoration:none;
+}
+#calendar p:link{
+    color:#000000;
+    text-decoration:none;
+}
+#calendar p:visited{
+    color:#000000;
+    text-decoration:none;
+}
+#calendar a:link{
+    color:#990000;
+    text-decoration:none;
+}
+#calendar a:visited{
+    color:#990000;
+    text-decoration:none;
+}
+#calendar a:hover{
+    color:#990000;
+    background-color:#FFFF99;
+    text-decoration:none;
+}
+
+#calendar h1{
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 5px 0px;
+    font-size:180%;
+}
+#calendar h2{
+    margin:0px 0px 0px 0px;
+    padding:10px 0px 0px 0px;
+    font-size:150%;
+}
+
+/* ===================================== */
+/* ========= end content styles ======== */
+/* ===================================== */
+
+
+/* ===================================== */
+/* ========= 10. utility styles ======== */
+/* ===================================== */
+
+/* stuff to make the projects page look better */
+.theme_list_box li img {
+ vertical-align: middle;
+}
+a img {
+border: 0px;
+background-image:none;
+}
+
+a img:hover {
+background-color: transparent;
+}
+
+#methodlist.theme_list_box img:hover{
+background-color:#ffcccc;
+}
+
+#applicationlist.theme_list_box img:hover{
+background-color:#ccccff;
+}
+
+#otherprojectlist.theme_list_box img:hover{
+background-color:#dddddd;
+}
+
+.bullet{
+    margin:0px 0px 0px 20px;
+    padding:0px 0px 0px 0px;
+    list-style-type:disc;
+}
+.none{
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+    list-style-type:none;
+}
+.plain{
+    margin:0px 0px 0px 20px;
+    padding:0px 0px 0px 0px;
+    list-style-type:none;
+}
+.number{
+    margin:5px 0px 10px 0px;
+    list-style-type:decimal;
+}
+.continuation{
+    margin:5px 0px 0px 0px;
+    list-style-type:none;
+}
+
+.continued-list{
+    margin:0px 0px 0px 0px;
+    padding:0px 0px 0px 0px;
+}
+#schedule{
+    margin:10px 0px 10px 40px;
+}
+#schedule .time{
+    padding:0px 5px 0px 5px;
+    font-weight:bold;
+    vertical-align:text-top;
+}
+
+#schedule .scheduled-item{
+    padding:0px 5px 0px 15px;
+    vertical-align:text-top;
+
+}
+#schedule .scheduled-item-speaker{
+	font-style:italic;
+	padding:0px 5px 0px 20px;
+    vertical-align:text-top;
+
+}
+
+
+#schedule .scheduled-item ol{
+    list-style-type:disc;
+    padding:0px 0px 0px 15px;
+}
+
+#messages{
+    border:2px solid black;
+    background-color:#FFFF99;   
+    padding:5px 10px 5px 10px;
+    margin:10px 0px 10px 0px;
+}
+.messages{
+    border:2px solid black;
+    background-color:#FFFF99;   
+    padding:5px 10px 5px 10px;
+    margin:10px 0px 10px 0px;
+}
+.message-head{
+    font-weight:bold;
+    font-style:italic;
+    display:inline;
+    margin:5px 0px 5px 0px;
+}
+.message{
+    margin:5px 0px 5px 0px;
+    display:inline;
+}
+code {
+    font: 10pt Courier, Courier New, monospace;
+}
+
+/* ===================================== */
+/* ========= end utility styles ======== */
+/* ===================================== */
+
+/* ===================================== */
+/* ========= 11. admin styles ========== */
+/* ===================================== */
+
+.module table:not(#result_list) th {
+    width: 100%;
+}
+
+.module table:not(#result_list) td {
+    white-space: nowrap;
+}
+
+.module table:not(#result_list) td a {
+    display: block;
+    padding-right: .6em;
+}
+
+.module table {
+    width: 100%;
+    border-collapse: collapse;
+    border-color: #ccc;
+}
+
+.module caption {
+    margin: 0;
+    padding: 8px;
+    font-weight: 400;
+    font-size: 13px;
+    text-align: left;
+    background: rgb(153, 204, 204);
+    color: #fff;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.module td, .module th {
+    line-height: 16px;
+    border-bottom: 1px solid #eee;
+    vertical-align: top;
+    padding: 8px;
+}
+
+.module th {
+    text-align: left;
+}
+
+.object-tools {
+    font-size: 10px;
+    font-weight: bold;
+    padding-left: 0;
+    float: right;
+    position: relative;
+    margin-top: -3px;
+}
+
+.form-row .object-tools {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    float: none;
+    height: 2em;
+    padding-left: 3.5em;
+}
+
+.mini {
+    font-size: 10px;
+}
+
+.quiet, a.quiet:link, a.quiet:visited {
+    color: #999;
+    font-weight: normal;
+}
+
+#content-related .actionlist {
+    list-style-type: none;
+    padding-left: 10px;
+}
+
+#content-related .actionlist li {
+    line-height: 1.2;
+    margin-bottom: 5px;
+    padding-left: 18px;
+}
+
+/* ACTION ICONS */
+
+.addlink {
+    padding-left: 16px;
+    background: url(./images/icon-addlink.svg) 0 1px no-repeat;
+}
+
+.changelink, .inlinechangelink {
+    padding-left: 16px;
+    background: url(./images/icon-changelink.svg) 0 1px no-repeat;
+}
+
+.deletelink {
+    padding-left: 16px;
+    background: url(./images/icon-deletelink.svg) 0 1px no-repeat;
+}
+
+a.deletelink:link, a.deletelink:visited {
+    color: #CC3434;
+}
+
+a.deletelink:focus, a.deletelink:hover {
+    color: #993333;
+    text-decoration: none;
+}
+
+/* OBJECT TOOLS */
+
+.object-tools li {
+    display: block;
+    float: left;
+    margin-left: 5px;
+    height: 16px;
+}
+
+.object-tools a {
+    border-radius: 15px;
+}
+
+.object-tools a:link, .object-tools a:visited {
+    display: block;
+    float: left;
+    padding: 3px 12px;
+    background: rgb(153, 204, 204);
+    font-weight: 400;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
+
+.object-tools a:focus, .object-tools a:hover {
+    background-color: #417690;
+}
+
+.object-tools a:focus{
+    text-decoration: none;
+}
+
+.object-tools a.viewsitelink, .object-tools a.golink,.object-tools a.addlink {
+    background-repeat: no-repeat;
+    background-position: right 7px center;
+    padding-right: 26px;
+}
+
+.object-tools a.viewsitelink, .object-tools a.golink {
+    background-image: url(./images/tooltag-arrowright.svg);
+}
+
+.object-tools a.addlink {
+    background-image: url(./images/tooltag-add.svg);
+}
+
+/* ===================================== */
+/* ========= end admin styles ========== */
+/* ===================================== */

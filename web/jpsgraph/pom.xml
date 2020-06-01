@@ -1,0 +1,129 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>uk.ac.ceb.como</groupId>
+  <artifactId>graph</artifactId>
+  <packaging>war</packaging>
+  <version>uk.ac.ceb.como</version>
+  <name>JPS Self growing knowledge graph maven webapp</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+  
+<!-- JSON -->
+<!-- 
+  	<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>json</artifactId>
+		    <version>20190722</version>
+		</dependency>
+		
+ 	<dependency>
+    		<groupId>com.jayway.jsonpath</groupId>
+    		<artifactId>json-path</artifactId>
+    		<version>2.4.0</version>
+	</dependency>
+-->
+		
+
+	
+<!-- Struts 2 -->
+	
+	<dependency>
+      <groupId>org.apache.struts</groupId>
+	  <artifactId>struts2-core</artifactId>
+	  <!--<version>2.1.8</version>-->
+	   <version>2.3.20</version>
+    </dependency>
+	
+	
+	<!-- Struts 2 Dojo Ajax Tags -->
+<!--  
+	<dependency>
+      <groupId>org.apache.struts</groupId>
+	  <artifactId>struts2-dojo-plugin</artifactId>
+	  <version>2.1.8</version>
+    </dependency>
+-->
+
+
+	<!-- Struts 2 JSON Plugins -->
+<!-- 	 
+	<dependency>
+      <groupId>org.apache.struts</groupId>
+	  <artifactId>struts2-json-plugin</artifactId>
+	  <version>2.1.8</version>
+    </dependency>
+-->    
+    
+    
+    
+<!-- RDF4J dependencies -->
+
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-runtime -->
+
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-runtime</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-http -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-http</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-repository-sparql -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-repository-sparql</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.eclipse.rdf4j/rdf4j-sail-nativerdf -->
+<dependency>
+    <groupId>org.eclipse.rdf4j</groupId>
+    <artifactId>rdf4j-sail-nativerdf</artifactId>
+    <version>2.4.0-M2</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/log4j/log4j -->
+<!--
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+-->
+
+<!-- https://mvnrepository.com/artifact/org.ow2.jonas.osgi/woodstox -->
+<!--
+<dependency>
+    <groupId>org.ow2.jonas.osgi</groupId>
+    <artifactId>woodstox</artifactId>
+    <version>5.2.0-M3</version>
+</dependency>
+-->
+
+<!-- https://mvnrepository.com/artifact/net.sourceforge.jmol/jmol -->
+<!--
+    <dependency>
+    <groupId>net.sourceforge.jmol</groupId>
+    <artifactId>jmol</artifactId>
+    <version>14.29.17</version>
+    </dependency>
+-->
+<dependency>
+    <groupId>log4j</groupId>
+    <artifactId>log4j</artifactId>
+    <version>1.2.17</version>
+</dependency>
+
+
+  </dependencies>
+  <build>
+    <finalName>graph</finalName>
+  </build>
+</project>
