@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns="http://www.owl-ontologies.com/forms/protege.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:forms="http://www.owl-ontologies.com/forms/forms.owl#"
+  xml:base="http://www.owl-ontologies.com/forms/protege.owl">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.owl-ontologies.com/forms/forms.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="HeaderWidget">
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.widget.HeaderWidget</javaClassName>
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SwitchableClassDefinitionWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.cls.SwitchableClassDefinitionWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLRangeWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.properties.range.OWLRangeWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="MultiResourceWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.widget.MultiResourceWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLDomainWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.properties.domain.OWLDomainWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLObjectPropertyTypesWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.properties.types.OWLObjectPropertyTypesWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="SingleResourceWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.widget.SingleResourceWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="MultiLiteralWidget">
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.widget.MultiLiteralWidget</javaClassName>
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+  </owl:Class>
+  <owl:Class rdf:ID="RDFPropertyTypesWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.properties.types.RDFPropertyTypesWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="OntologyURIWidget">
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.metadatatab.OntologyURIWidget</javaClassName>
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLNamespacesWidget">
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.metadatatab.OWLNamespacesWidget</javaClassName>
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLInversePropertyWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.properties.OWLInversePropertyWidget</javaClassName>
+  </owl:Class>
+  <owl:Class rdf:ID="SingleLiteralWidget">
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.widget.SingleLiteralWidget</javaClassName>
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+  </owl:Class>
+  <owl:Class rdf:ID="OWLDatatypePropertyTypesWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.properties.types.OWLDatatypePropertyTypesWidget</javaClassName>
+  </owl:Class>
+  <owl:DatatypeProperty rdf:ID="javaClassName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+  </owl:DatatypeProperty>
+  <owl:Class rdf:ID="ClassAnnotationsAndDescriptionWidget">
+    <rdfs:subClassOf rdf:resource="http://www.owl-ontologies.com/forms/forms.owl#Widget"/>
+    <javaClassName rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >edu.stanford.smi.protegex.owl.ui.cls.ClassAnnotationsAndDescriptionWidget</javaClassName>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 2.2 beta, Build 287)  http://protege.stanford.edu -->

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog prefer="public" xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+    <group id="Folder Repository, directory=, recursive=true, Auto-Update=true, version=2" prefer="public" xml:base="">
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl" uri="ELine-047.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl" uri="sds.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl" uri="geometry.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/mathematical_relation/mathematical_relation.owl" uri="dsd.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/derived_dimensions.owl" uri="sdsda.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl" uri="phy.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl" uri="asas.owl"/>
+        <uri id="Automatically generated entry, Timestamp=1556605066123" name="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl" uri="sdds.owl"/>
+    </group>
+</catalog>

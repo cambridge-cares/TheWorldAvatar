@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://swrl.stanford.edu/ontologies/built-ins/3.4/ss.owl#"
+  xml:base="http://swrl.stanford.edu/ontologies/built-ins/3.4/ss.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Column"/>
+  <owl:Class rdf:ID="Workbook"/>
+  <owl:Class rdf:ID="Row"/>
+  <owl:Class rdf:ID="Cell"/>
+  <owl:Class rdf:ID="Sheet"/>
+  <owl:ObjectProperty rdf:ID="hasRows">
+    <rdfs:range rdf:resource="#Row"/>
+    <rdfs:domain rdf:resource="#Sheet"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasSheets">
+    <rdfs:range rdf:resource="#Sheet"/>
+    <rdfs:domain rdf:resource="#Workbook"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasCells">
+    <rdfs:range rdf:resource="#Cell"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Sheet"/>
+          <owl:Class rdf:about="#Row"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="hasColumns">
+    <rdfs:domain rdf:resource="#Sheet"/>
+    <rdfs:range rdf:resource="#Column"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="hasName">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Sheet"/>
+          <owl:Class rdf:about="#Column"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasRowNumber">
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Row"/>
+          <owl:Class rdf:about="#Cell"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="hasContent">
+    <rdfs:domain rdf:resource="#Cell"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="hasColumnNumber">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+    <rdfs:domain>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#Cell"/>
+          <owl:Class rdf:about="#Column"/>
+        </owl:unionOf>
+      </owl:Class>
+    </rdfs:domain>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+  </owl:FunctionalProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 506)  http://protege.stanford.edu -->

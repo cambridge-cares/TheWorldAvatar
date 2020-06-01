@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:EN_behavior="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#"
+  xmlns:ns1="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:geometry="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#"
+  xmlns:Eco-industrialPark="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl#"
+  xmlns:mathematical_model="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#"
+  xmlns:system="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+  xmlns:technical_system="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+  xmlns:ns3="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#"
+  xmlns:topology="http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ns2="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#"
+  xmlns:mereology="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#"
+>
+  <owl:Ontology rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/ecoindustrialpark/EcoIndustrialPark.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Frequency_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Frequency"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Model_ELine-047">
+    <mathematical_model:hasModelVariable>
+      <ns1:AngleMax rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#AngleMax_ELine-047">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_AngleMax_ELine-047"/>
+      </ns1:AngleMax>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:BranchStatus rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Status_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Status_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:BranchStatus>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#FromBusNumber_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_FromBusNumber_ELine-047"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#BusFrom"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#RatioCoeff_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RatioCoeff_ELine-047"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#RatioCoefficient"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Q-loss_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Q-loss_ELine-047"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QLoss"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Q-Average_ELine-047">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#QAverage"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Q-Average_ELine-047"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:B rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#B_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_B_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:B>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#P-Average_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_P-Average_ELine-047"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PAverage"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#R_ELine-047">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#R"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_R_ELine-047"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#S-Average_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_S-Average_ELine-047"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#SAverage"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:RateA rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#RateA_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RateA_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:RateA>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:Angle rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Angle_ELine-047">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Angle_ELine-047"/>
+      </ns1:Angle>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:AngleMin rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#AngleMin_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_AngleMin_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:AngleMin>
+    </mathematical_model:hasModelVariable>
+    <system:models>
+      <ns3:UndergroundCable rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#ELine-047">
+        <technical_system:realizes rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#PowerFlow_ELine-047"/>
+        <EN_behavior:hasActivePowerOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputActivePower_ELine-047"/>
+        <EN_behavior:hasReactivePowerLoss rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#ReactivePowerLosses_ELine-047"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-015.owl#EBus-015"/>
+        <system:isModeledBy rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Model_ELine-047"/>
+        <EN_behavior:hasCurrent rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Current_ELine-047"/>
+        <topology:hasOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/EBus-084.owl#EBus-084"/>
+        <EN_behavior:hasReactivePowerInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputReactivePower_ELine-047"/>
+        <EN_behavior:hasActivePowerInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputActivePower_ELine-047"/>
+        <EN_behavior:hasReactivePowerOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutpuReactivePower_ELine-047"/>
+        <EN_behavior:hasVoltageInput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputVoltage_ELine-047"/>
+        <EN_behavior:hasFrequency rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Frequency_ELine-047"/>
+        <EN_behavior:hasPowerFactor rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#PowerFactor_ELine-047"/>
+        <EN_behavior:hasActivePowerLoss rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#ActivePowerLosses_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <geometry:hasShapeRepresentation rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Shape_ELine-047"/>
+        <EN_behavior:hasVoltageOutput rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputVoltage_ELine-047"/>
+      </ns3:UndergroundCable>
+    </system:models>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#PowerFlowModelAgent"/>
+    <mathematical_model:hasModelVariable>
+      <ns1:RateC rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#RateC_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RateC_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:RateC>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:RateB rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#RateB_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RateB_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:RateB>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:PLoss rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#P-loss_ELine-047">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_P-loss_ELine-047"/>
+      </ns1:PLoss>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#X_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_X_ELine-047"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/model/PowerSystemModel.owl#X"/>
+      </owl:NamedIndividual>
+    </mathematical_model:hasModelVariable>
+    <mathematical_model:hasModelVariable>
+      <ns1:BusTo rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#ToBusNumber_ELine-047">
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_ToBusNumber_ELine-047"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </ns1:BusTo>
+    </mathematical_model:hasModelVariable>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_AngleMin_ELine-047">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">-360</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <EN_behavior:VoltageMagnitude rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputVoltageMagnitude_ELine-047">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_InputVoltageMagnitude_ELine-047">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+      </system:ScalarValue>
+    </system:hasValue>
+  </EN_behavior:VoltageMagnitude>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_AngleMax_ELine-047">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">360</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#CurrentMagnitude_ELine-047">
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_CurrentMagnitude_ELine-047">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#A"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </system:ScalarValue>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#CurrentMagnitude"/>
+  </owl:NamedIndividual>
+  <mathematical_model:ModelVariableSpecification rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_R_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.000799</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ohm"/>
+  </mathematical_model:ModelVariableSpecification>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputVoltageMagnitude_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#VoltageMagnitude"/>
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_OutputVoltageMagnitude_ELine-047">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+      </system:ScalarValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#EBus-x">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#BusNode"/>
+    
+  </owl:NamedIndividual>
+  <mathematical_model:ModelVariableSpecification rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_FromBusNumber_ELine-047">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">15</system:numericalValue>
+  </mathematical_model:ModelVariableSpecification>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_CurrentAngle_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+  </owl:NamedIndividual>
+  <EN_behavior:VoltageAngle rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputVoltageAngle_ELine-047">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_OutputVoltageAngle_ELine-047">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </EN_behavior:VoltageAngle>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_OutputReactivePower_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <mathematical_model:ModelVariableSpecification rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RatioCoeff_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </mathematical_model:ModelVariableSpecification>
+  <mathematical_model:ModelVariableSpecification rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RateC_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </mathematical_model:ModelVariableSpecification>
+  <ns3:BusNode rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#EBus-y">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    
+  </ns3:BusNode>
+  <EN_behavior:ReactivePowerLosses rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#ReactivePowerLosses_ELine-047">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_ReactivePowerLosses_ELine-047">
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </EN_behavior:ReactivePowerLosses>
+  <EN_behavior:CurrentAngle rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#CurrentAngle_ELine-047">
+    <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_CurrentAngle_ELine-047"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </EN_behavior:CurrentAngle>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_S-Average_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <EN_behavior:VoltageAngle rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputVoltageAngle_ELine-047">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_InputVoltageAngle_ELine-047">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+      </owl:NamedIndividual>
+    </system:hasValue>
+  </EN_behavior:VoltageAngle>
+  <mathematical_model:ModelVariableSpecification rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RateA_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">297.2199186</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </mathematical_model:ModelVariableSpecification>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_InputReactivePower_ELine-047">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+  </owl:NamedIndividual>
+  <EN_behavior:PowerFactor rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#PowerFactor_ELine-047">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_PowerFactor_ELine-047">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+      </system:ScalarValue>
+    </system:hasValue>
+  </EN_behavior:PowerFactor>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_P-loss_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Angle_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Length_ELine-047">
+    <system:hasValue>
+      <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Length_ELine-047">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">7.7386464</system:numericalValue>
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#km"/>
+      </owl:NamedIndividual>
+    </system:hasValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#EdgeLength"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#ActivePowerLosses_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#ActivePowerLosses"/>
+    <system:hasValue>
+      <system:ScalarValue rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_ActivePowerLosses_ELine-047">
+        <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+      </system:ScalarValue>
+    </system:hasValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#PowerFlow_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysFunction.owl#PowerFlow"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_InputActivePower_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_B_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">5.47e-05</system:numericalValue>
+  </owl:NamedIndividual>
+  <mathematical_model:ModelVariableSpecification rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_X_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0131</system:numericalValue>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </mathematical_model:ModelVariableSpecification>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputActivePower_ELine-047">
+    <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_InputActivePower_ELine-047"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#InputActivePower"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_OutputActivePower_ELine-047">
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+  </owl:NamedIndividual>
+  <EN_behavior:OutputReactivePower rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutpuReactivePower_ELine-047">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+    <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_OutputReactivePower_ELine-047"/>
+  </EN_behavior:OutputReactivePower>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Q-Average_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_RateB_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Current_ELine-047">
+    <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#CurrentMagnitude_ELine-047"/>
+    <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#CurrentAngle_ELine-047"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#Current"/>
+  </owl:NamedIndividual>
+  <EN_behavior:InputReactivePower rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputReactivePower_ELine-047">
+    <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_InputReactivePower_ELine-047"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </EN_behavior:InputReactivePower>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_ToBusNumber_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">84</system:numericalValue>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Q-loss_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <geometry:Cylinder rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Shape_ELine-047">
+    <geometry:has_length rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#Length_ELine-047"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  </geometry:Cylinder>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputVoltage_ELine-047">
+    <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputVoltageMagnitude_ELine-047"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#InputVoltage"/>
+    <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#InputVoltageAngle_ELine-047"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputActivePower_ELine-047">
+    <system:hasValue rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_OutputActivePower_ELine-047"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#OutputActivePower"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputVoltage_ELine-047">
+    <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputVoltageMagnitude_ELine-047"/>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#OutputVoltage"/>
+    <mereology:isComposedOf rdf:resource="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#OutputVoltageAngle_ELine-047"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_Status_ELine-047">
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</system:numericalValue>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+  </owl:NamedIndividual>
+  <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/ELine-047.owl#V_P-Average_ELine-047">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocape/model/mathematical_model.owl#ModelVariableSpecification"/>
+    <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+    <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</system:numericalValue>
+  </owl:NamedIndividual>
+</rdf:RDF>

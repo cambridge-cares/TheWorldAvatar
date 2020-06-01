@@ -1,0 +1,532 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://protege.stanford.edu/plugins/owl/OWLProfiles.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xml:base="http://protege.stanford.edu/plugins/owl/OWLProfiles.owl">
+  <owl:Ontology rdf:about="">
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >Author: Holger Knublauch (holger@smi.stanford.edu)</owl:versionInfo>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An ontology that attempts a formal specification of the various OWL sublanguages. This is far from being complete and more or less driven by the need for a description of user interface features to block certain features in Protege.</rdfs:comment>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >0.1 (24.11.2004)</owl:versionInfo>
+  </owl:Ontology>
+  <owl:Class rdf:ID="SameAs-between-Classes">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:hasValue>
+              <rdf:Property rdf:about="http://www.w3.org/2002/07/owl#sameAs"/>
+            </owl:hasValue>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+          <owl:Class rdf:ID="OWL-Full"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label>SameAs between classes (owl:sameAs)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Class-Type">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:oneOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.w3.org/2000/01/rdf-schema#Class"/>
+            </owl:oneOf>
+          </owl:Class>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+          </owl:Restriction>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Property-that-is-also-a-Class">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#OWL-Full"/>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="Property-Type"/>
+            </owl:someValuesFrom>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:ID="OWLClass-Type"/>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="ObjectProperty-Type">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWLProperty-type"/>
+    </rdfs:subClassOf>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:oneOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+            </owl:oneOf>
+          </owl:Class>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/2002/07/owl#ObjectProperty"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+          </owl:Restriction>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Class-that-is-also-a-Property">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#OWL-Full"/>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#OWLClass-Type"/>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:someValuesFrom>
+              <owl:Class rdf:about="#Property-Type"/>
+            </owl:someValuesFrom>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="RDFSClass-but-not-OWLClass-Type">
+    <rdfs:subClassOf rdf:resource="#Class-Type"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.w3.org/2000/01/rdf-schema#Class"/>
+                </owl:oneOf>
+              </owl:Class>
+              <owl:Restriction>
+                <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+                <owl:hasValue rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:about="#OWLClass-Type"/>
+            </owl:complementOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Complement-Classes">
+    <rdfs:label>Complement classes (owl:complementOf)</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="OWL-DL"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="DifferentFrom-between-Classes">
+    <rdfs:label>DifferentFrom between classes (owl:differentFrom)</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue>
+              <rdf:Property rdf:about="http://www.w3.org/2002/07/owl#differentFrom"/>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Class rdf:about="#OWL-Full"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DifferentFrom-between-Properties">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/2002/07/owl#differentFrom"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#OWL-Full"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label>DifferentFrom between properties (owl:differentFrom)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Create-ObjectProperty">
+    <rdfs:label>Object properties (owl:ObjectProperty)</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="OWL-Lite"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#ObjectProperty-Type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="DatatypeProperty-Type">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:oneOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+            </owl:oneOf>
+          </owl:Class>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+          </owl:Restriction>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWLProperty-type"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="RDF">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="StatementPattern"/>
+    </rdfs:subClassOf>
+    <rdfs:label>RDF Schema and OWL</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="AllValuesFrom-Restrictions">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWL-Lite"/>
+    </rdfs:subClassOf>
+    <rdfs:label>AllValuesFrom restrictions (owl:allValuesFrom)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="MinCardinality-Restrictions">
+    <rdfs:label>MinCardinality restrictions (owl:minCardinality)</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWL-Lite"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+  <owl:Class rdf:ID="MaxCardinality-Restrictions">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWL-Lite"/>
+    </rdfs:subClassOf>
+    <rdfs:label>MaxCardinality restrictions (owl:maxCardinality)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWL-DL">
+    <rdfs:label>OWL DL</rdfs:label>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWL-Full"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="TransitiveProperties-that-are-FunctionalProperties">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+            <owl:someValuesFrom rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+            <owl:hasValue>
+              <owl:Class rdf:about="http://www.w3.org/2002/07/owl#FunctionalProperty"/>
+            </owl:hasValue>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#OWL-Full"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="RDFProperty-but-not-OWLProperty-Type">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:unionOf rdf:parseType="Collection">
+              <owl:Class>
+                <owl:oneOf rdf:parseType="Collection">
+                  <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+                </owl:oneOf>
+              </owl:Class>
+              <owl:Restriction>
+                <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+                <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+              </owl:Restriction>
+            </owl:unionOf>
+          </owl:Class>
+          <owl:Class>
+            <owl:complementOf>
+              <owl:Class rdf:about="#OWLProperty-type"/>
+            </owl:complementOf>
+          </owl:Class>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Property-Type"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="CreateRDFProperty">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:ID="RDF-but-not-OWL"/>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label>RDF Properties (rdf:Property)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+  <owl:Class rdf:about="#StatementPattern">
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Statement"/>
+  </owl:Class>
+  <owl:Class rdf:ID="SomeValuesFrom-Restrictions">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#OWL-Lite"/>
+    </rdfs:subClassOf>
+    <rdfs:label>SomeValuesFrom restrictions (owl:someValuesFrom)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#Property-Type">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:oneOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+            </owl:oneOf>
+          </owl:Class>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+          </owl:Restriction>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLClass-Type">
+    <rdfs:subClassOf rdf:resource="#Class-Type"/>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:unionOf rdf:parseType="Collection">
+          <owl:Class>
+            <owl:oneOf rdf:parseType="Collection">
+              <rdf:Description rdf:about="http://www.w3.org/2002/07/owl#Class"/>
+            </owl:oneOf>
+          </owl:Class>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/2000/01/rdf-schema#subClassOf"/>
+          </owl:Restriction>
+        </owl:unionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:about="#OWLProperty-type">
+    <rdfs:subClassOf rdf:resource="#Property-Type"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Create-OWLIndividual">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#OWL-Lite"/>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+            <owl:someValuesFrom rdf:resource="#OWLClass-Type"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="HasValue-Restrictions">
+    <rdfs:subClassOf rdf:resource="#OWL-DL"/>
+    <rdfs:label>HasValue restrictions (owl:hasValue)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Enumerated-Classes">
+    <rdfs:label>Enumerated classes (owl:oneOf)</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWL-DL"/>
+  </owl:Class>
+  <owl:Class rdf:about="#OWL-Full">
+    <rdfs:subClassOf rdf:resource="#RDF"/>
+    <rdfs:label>OWL Full</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#OWL-Lite">
+    <rdfs:subClassOf rdf:resource="#OWL-DL"/>
+    <rdfs:label>OWL Lite</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:about="#RDF-but-not-OWL">
+    <rdfs:label>Pure RDF Schema without OWL</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#RDF"/>
+  </owl:Class>
+  <owl:Class rdf:ID="DataRanges">
+    <rdfs:subClassOf rdf:resource="#OWL-DL"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Create-OWLClass">
+    <rdfs:label>OWL classes (owl:Class)</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#OWL-Lite"/>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+            <owl:someValuesFrom rdf:resource="#OWLClass-Type"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="TransitiveProperties-that-are-InverseFunctionalProperties">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/2002/07/owl#InverseFunctionalProperty"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+            <owl:someValuesFrom rdf:resource="http://www.w3.org/2002/07/owl#TransitiveProperty"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#OWL-Full"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="SameAs-between-Properties">
+    <rdfs:label>SameAs between properties (owl:sameAs)</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#subject"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/2002/07/owl#sameAs"/>
+          </owl:Restriction>
+          <owl:Class rdf:about="#OWL-Full"/>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="CreateRDFSClass">
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#RDF-but-not-OWL"/>
+          <owl:Restriction>
+            <owl:hasValue rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+    <rdfs:label>RDFS Classes (rdfs:Class)</rdfs:label>
+  </owl:Class>
+  <owl:Class rdf:ID="Create-DatatypeProperty">
+    <rdfs:label>Datatype properties (owl:DatatypeProperty)</rdfs:label>
+    <owl:equivalentClass>
+      <owl:Class>
+        <owl:intersectionOf rdf:parseType="Collection">
+          <owl:Class rdf:about="#OWL-Lite"/>
+          <owl:Restriction>
+            <owl:someValuesFrom rdf:resource="#DatatypeProperty-Type"/>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#object"/>
+          </owl:Restriction>
+          <owl:Restriction>
+            <owl:onProperty rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#predicate"/>
+            <owl:hasValue rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#type"/>
+          </owl:Restriction>
+        </owl:intersectionOf>
+      </owl:Class>
+    </owl:equivalentClass>
+  </owl:Class>
+  <owl:Class rdf:ID="Union-Classes">
+    <rdfs:label>Union classes (owl:unionOf)</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWL-DL"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Disjoint-Classes">
+    <rdfs:subClassOf rdf:resource="#OWL-DL"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Profile"/>
+  <owl:ObjectProperty rdf:ID="hasFeatures">
+    <rdfs:range rdf:resource="http://www.w3.org/2002/07/owl#Class"/>
+    <rdfs:domain rdf:resource="#Profile"/>
+  </owl:ObjectProperty>
+  <owl:Class rdf:ID="Qualified-Cardinality-Restrictions">
+    <rdfs:label>Qualified Cardinality Restrictions (owl:valuesFrom)</rdfs:label>
+    <rdfs:subClassOf rdf:resource="#OWL-Full"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 1.3, Build 218)  http://protege.stanford.edu -->

@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://www.owl-ontologies.com/forms/forms.owl#"
+  xml:base="http://www.owl-ontologies.com/forms/forms.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="Property"/>
+  <owl:Class rdf:ID="PropertyList">
+    <rdfs:subClassOf rdf:resource="#Property"/>
+  </owl:Class>
+  <owl:Class rdf:ID="String">
+    <rdfs:subClassOf rdf:resource="#Property"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Boolean">
+    <rdfs:subClassOf rdf:resource="#Property"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Widget"/>
+  <owl:Class rdf:ID="FormWidget">
+    <rdfs:subClassOf rdf:resource="#Widget"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LayoutData"/>
+  <owl:Class rdf:ID="Integer">
+    <rdfs:subClassOf rdf:resource="#Property"/>
+  </owl:Class>
+  <owl:ObjectProperty rdf:ID="forClass">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+    <rdfs:domain rdf:resource="#FormWidget"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="property_list">
+    <rdfs:domain rdf:resource="#Widget"/>
+    <rdfs:range rdf:resource="#PropertyList"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="properties">
+    <rdfs:domain rdf:resource="#PropertyList"/>
+    <rdfs:range rdf:resource="#Property"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="forProperty">
+    <rdfs:domain rdf:resource="#Widget"/>
+    <rdfs:range rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="widgets">
+    <rdfs:domain rdf:resource="#FormWidget"/>
+    <rdfs:range rdf:resource="#Widget"/>
+  </owl:ObjectProperty>
+  <owl:ObjectProperty rdf:ID="layoutData">
+    <rdfs:domain rdf:resource="#Widget"/>
+    <rdfs:range rdf:resource="#LayoutData"/>
+  </owl:ObjectProperty>
+  <owl:DatatypeProperty rdf:ID="string_value">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="#String"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="preferredWidth">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#Widget"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="preferredHeight">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#Widget"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="integer_value">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#int"/>
+    <rdfs:domain rdf:resource="#Integer"/>
+  </owl:DatatypeProperty>
+  <owl:DatatypeProperty rdf:ID="booleanValue">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="#Boolean"/>
+  </owl:DatatypeProperty>
+  <owl:FunctionalProperty rdf:ID="name">
+    <rdfs:domain rdf:resource="#Property"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/XMLSchema#string"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#DatatypeProperty"/>
+  </owl:FunctionalProperty>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.2, Build 355)  http://protege.stanford.edu -->

@@ -1,0 +1,17 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns="http://www.owl-ontologies.com/assert.owl#"
+  xml:base="http://www.owl-ontologies.com/assert.owl">
+
+  <owl:Ontology rdf:about="">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+    >An ontology to define assertions about resources.  This can be used for testing constraints in tools like Protege-OWL.</rdfs:comment>
+  </owl:Ontology>
+
+  <owl:AnnotationProperty rdf:ID="empty"/>
+
+  <owl:AnnotationProperty rdf:ID="notEmpty"/>
+
+</rdf:RDF>

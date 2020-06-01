@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" 
+         xmlns:doap="http://usefulinc.com/ns/doap#" 
+         xmlns:foaf="http://xmlns.com/foaf/0.1/" 
+         xmlns:admin="http://webns.net/mvcb/" 
+         xmlns:dod="http://smi-web.stanford.edu/people/dameron/ontology/rdf/doap-od.rdf#"
+	 xmlns="http://protege.stanford.edu/plugins/owl/doap.rdf#"
+	 xml:base="http://protege.stanford.edu/plugins/owl/doap.rdf"
+         xml:lang="en">
+
+  <doap:Project rdf:ID="protegeOwlPlugin-project">
+    <doap:name>Protege OWL Plugin</doap:name>
+    <doap:shortname>Protege OWL Plugin</doap:shortname>
+    <doap:homepage rdf:resource="http://protege.stanford.edu/plugins/owl/"/>
+    <doap:created>2003-04-01</doap:created>
+    <doap:description>The OWL Plugin is an extension of Protégé with support for the Web Ontology Language (OWL). Protégé is an open-source development environment for ontologies and knowledge-based systems.</doap:description>
+    <doap:wiki rdf:resource="http://protege.cim3.net/cgi-bin/wiki.pl?ProtegeOWL"/>
+    <doap:screenshots rdf:resource="http://protege.stanford.edu/plugins/owl/images/owl-s-classes-tab.png"/>
+    <doap:programming-language>java</doap:programming-language>
+    <doap:license rdf:resource="http://usefulinc.com/doap/licenses/mpl"/>
+    <doap:download-page rdf:resource="http://protege.stanford.edu/plugins/owl/download/protege-owl.zip" dod:content-type="application/x-zip" />
+
+    <doap:repository>
+     <doap:SVNRepository>
+      <doap:location rdf:resource="http://smi-protege.stanford.edu/repos/protege/owl/trunk/" />
+      <doap:browse rdf:resource="http://smi-protege.stanford.edu/svn/owl/trunk/" />
+     </doap:SVNRepository>
+    </doap:repository>
+
+    <doap:maintainer>
+      <foaf:Person rdf:about="http://www.knublauch.com/foaf.rdf#me">
+        <foaf:name>Holger Knublauch</foaf:name>
+      </foaf:Person>
+    </doap:maintainer>
+
+    <doap:release>
+      <doap:Version>
+        <doap:branch>stable</doap:branch>
+        <doap:created>2005-07-03</doap:created>
+        <doap:revision>284</doap:revision>
+      </doap:Version>
+    </doap:release>
+
+  </doap:Project>
+</rdf:RDF>
+

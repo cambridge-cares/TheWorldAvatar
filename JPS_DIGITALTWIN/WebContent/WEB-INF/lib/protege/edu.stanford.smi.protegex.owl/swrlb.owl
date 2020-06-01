@@ -1,0 +1,305 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE rdf:RDF [
+         <!ENTITY rdf 'http://www.w3.org/1999/02/22-rdf-syntax-ns'>
+         <!ENTITY rdfs 'http://www.w3.org/2000/01/rdf-schema'>
+	 <!ENTITY owl 'http://www.w3.org/2002/07/owl'>
+         <!ENTITY swrl 'http://www.w3.org/2003/11/swrl'>
+         <!ENTITY swrlb 'http://www.w3.org/2003/11/swrlb'>
+	 <!ENTITY xsd 'http://www.w3.org/2001/XMLSchema'>
+]>
+
+<rdf:RDF
+  xmlns:rdf ="&rdf;#"
+  xmlns:rdfs="&rdfs;#"
+  xmlns:owl ="&owl;#"
+  xmlns:swrl="&swrl;#"
+  xmlns="&swrlb;#"
+  xml:base  ="&swrlb;"
+>
+
+<rdf:Description rdf:about="&swrl;#Builtin">
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#args"/>
+      <owl:allValuesFrom rdf:resource="&xsd;#int"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#args"/>
+      <owl:maxCardinality rdf:datatype="&xsd;#nonNegativeInteger">1</owl:maxCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#minArgs"/>
+      <owl:allValuesFrom rdf:resource="&xsd;#int"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#minArgs"/>
+      <owl:maxCardinality rdf:datatype="&xsd;#nonNegativeInteger">1</owl:maxCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#maxArgs"/>
+      <owl:allValuesFrom rdf:resource="&xsd;#int"/>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+  <rdfs:subClassOf>
+    <owl:Restriction>
+      <owl:onProperty rdf:resource="#maxArgs"/>
+      <owl:maxCardinality rdf:datatype="&xsd;#nonNegativeInteger">1</owl:maxCardinality>
+    </owl:Restriction>
+  </rdfs:subClassOf>
+</rdf:Description>
+
+<owl:DatatypeProperty rdf:ID="args"/>
+<owl:DatatypeProperty rdf:ID="maxArgs"/>
+<owl:DatatypeProperty rdf:ID="minArgs"/>
+
+<swrl:Builtin rdf:ID="equal">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="notEqual">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="lessThan">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="lessThanOrEqual">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="greaterThan">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="greaterThanOrEqual">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+
+<swrl:Builtin rdf:ID="add">
+  <minArgs rdf:datatype="&xsd;#int">3</minArgs>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtract">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="multiply">
+  <minArgs rdf:datatype="&xsd;#int">3</minArgs>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="divide">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="integerDivide">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="mod">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="pow">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="unaryPlus">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="unaryMinus">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="abs">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="ceiling">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="floor">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="round">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="roundHalfToEven">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="sin">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="cos">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="tan">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+
+<swrl:Builtin rdf:ID="booleanNot">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+
+<swrl:Builtin rdf:ID="stringEqualIgnoreCase">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="stringConcat">
+  <minArgs rdf:datatype="&xsd;#int">3</minArgs>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="substring">
+  <minArgs rdf:datatype="&xsd;#int">3</minArgs>
+  <maxArgs rdf:datatype="&xsd;#int">4</maxArgs>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="stringLength">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="normalizeSpace">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="upperCase">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="lowerCase">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="translate">
+  <args rdf:datatype="&xsd;#int">4</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="contains">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="containsIgnoreCase">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="startsWith">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="endsWith">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="substringBefore">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="substringAfter">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="matches">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="replace">
+  <args rdf:datatype="&xsd;#int">4</args>
+</swrl:Builtin>
+
+<swrl:Builtin rdf:ID="yearMonthDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="dayTimeDuration">
+  <args rdf:datatype="&xsd;#int">5</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="dateTime">
+  <args rdf:datatype="&xsd;#int">8</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="date">
+  <args rdf:datatype="&xsd;#int">5</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="time">
+  <args rdf:datatype="&xsd;#int">5</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addYearMonthDurations">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractYearMonthDurations">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="multiplyYearMonthDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="divideYearMonthDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addDayTimeDurations">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDayTimeDurations">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="multiplyDayTimeDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="divideDayTimeDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDates">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractTimes">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addYearMonthDurationToDateTime">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addDayTimeDurationToDateTime">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractYearMonthDurationFromDateTime">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDayTimeDurationFromDateTime">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addYearMonthDurationToDate">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addDayTimeDurationToDate">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractYearMonthDurationFromDate">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDayTimeDurationFromDate">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="addDayTimeDurationToTime">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDayTimeDurationFromTime">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDateTimesYieldingYearMonthDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="subtractDateTimesYieldingDayTimeDuration">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+
+<swrl:Builtin rdf:ID="resolveURI">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="anyURI">
+  <args rdf:datatype="&xsd;#int">7</args>
+</swrl:Builtin>
+
+<swrl:Builtin rdf:ID="listConcat">
+  <minArgs rdf:datatype="&xsd;#int">3</minArgs>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="listIntersection">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="listSubtraction">
+  <args rdf:datatype="&xsd;#int">3</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="member">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="length">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="first">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="rest">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="sublist">
+  <args rdf:datatype="&xsd;#int">2</args>
+</swrl:Builtin>
+<swrl:Builtin rdf:ID="empty">
+  <args rdf:datatype="&xsd;#int">1</args>
+</swrl:Builtin>
+
+</rdf:RDF>
