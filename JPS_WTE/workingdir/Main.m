@@ -17,6 +17,7 @@ Unit_manpower_cost=0; % manpower cost for both onsite and offsite
 
 EOS=1; % Economy of scale
 
+ir=0.01;%discount rate
 
 daysperyear=365;
 
@@ -45,7 +46,7 @@ Product_Conversion_offsite=readmatrix('Conversion rate (offsite).csv');% Electri
 Resource_conversion_offsite=readmatrix('Resource conversion (offsite).csv');% kWh/ton, Electricity consumption for production
 
 % onsite input
-n_unit_onsite_max=readmatrix('n_unit_max_onsite.csv');%max number of unit for each site
+n_unit_onsite_max=10;%max number of unit for each site
 % cost information
 Unit_capacity_onsite=readmatrix('Unit_capacity_onsite.csv');%unit capacity for each tech
 Unit_installation_cost_onsite=readmatrix('Unit installation cost (onsite).csv');%$/unit capacity
