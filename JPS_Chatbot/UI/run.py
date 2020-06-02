@@ -26,3 +26,6 @@ def go():
     print('the questions received', question)
     return bot.analyse_questions(question)
     # return bot.analyse_questions('Species with an molecular weight larger than 200')
+
+if __name__ == '__main__':
+    app.run(host='127.0.0.1', port=8080, debug=True)
