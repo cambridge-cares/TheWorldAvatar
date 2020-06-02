@@ -59,8 +59,8 @@ public class DMSCoordinationAgentTest extends TestCase {
 		//hk adms:
 
 //		JSONObject upcorn = new JSONObject();
-//		upcorn.put("upperx", "12707952.118");
-//		upcorn.put("uppery", "2546838.028");
+//		upcorn.put("upperx", "12708579.81");
+//		upcorn.put("uppery", "2547465.72");
 //		JSONObject lowcorn = new JSONObject();
 //		lowcorn.put("lowerx", "12706653.262");
 //		lowcorn.put("lowery", "2545539.172");
@@ -68,7 +68,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 //		joregion.put("srsname","EPSG:3857");
 //		joregion.put("lowercorner",lowcorn);
 //		joregion.put("uppercorner",upcorn);
-	
+//	
 		
 		
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
@@ -80,6 +80,7 @@ public class DMSCoordinationAgentTest extends TestCase {
 //		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
 		jo.put("reactionmechanism", "none");
 		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+//		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-001.owl#AirQualityStation-001");
 //		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002"); //for testing episode
 //		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo.toString());
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/adms/dispersion/coordination",jo.toString());

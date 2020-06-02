@@ -84,7 +84,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 		String date="16/Apr/2020 12:00:00";
 		//Date date1=new SimpleDateFormat("yyyy-mmm-dd hh:mm:ss").parse(date);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
-		 DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		 DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 		//pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 		Date date1=dateFormat.parse(date);  
 		String timeformatted=pstFormat.format(date1);
