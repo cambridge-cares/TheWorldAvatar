@@ -369,7 +369,9 @@ public class ADMSAgent extends DispersionModellingAgent {
         String result = CommandHelper.executeCommands(targetFolder, args);
         logger.info("ARGUMENTS");
         logger.info(args.toString());
+        System.out.println("ARGUMENTS FOR PYTHON="+args.toString());
         logger.info("APL FOR SHIP WRITTEN= " + result);
+        System.out.println("APL FOR SHIP WRITTEN= " + result);
     }
 
     
