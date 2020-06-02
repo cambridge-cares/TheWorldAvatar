@@ -30,15 +30,12 @@ public class JsonManager {
 	static String ontospeciesServerUrl = ebrAgentProperties.getProperty("ontospecies.rdf4j.server.url").toString();
 	static String ontocompchemServerUrl = ebrAgentProperties.getProperty("ontocompchem.rdf4j.server.url").toString();
 	static String ontospeciesServerUrls = ebrAgentProperties.getProperty("ontospecies.rdf4j.server.urls").toString();
-	
-	static String whichProcessToRun = ebrAgentProperties.getProperty("whichProcessToRun").toString();
 
 	public static void main(String[] args) throws Exception {
 
 	createJsonFile("C:\\Users\\NK\\git\\json-input-ebr-agent\\thermochemistry\\CoMoEnthalpyEstimationPaper\\test_data\\test_results");
 
 	}
-
 	
 	public static void createJsonFile(String rootPath) throws Exception {
 
@@ -62,7 +59,6 @@ public class JsonManager {
 		for (File f : root.listFiles()) {
 
 			if (f.isDirectory()) {
-				
 				
 				JsonBean jsonBean  = new JsonBean();
 
@@ -135,30 +131,29 @@ public class JsonManager {
 										}
 									}
 									
-									for(SpeciesBean s: speciesBeanList) {
-									
-										
-										System.out.println("- s.getOntocompchemIRI(): " + s.getOntocompchemIRI());
-										System.out.println("- s.getOntospeciesIRI(): " + s.getOntospeciesIRI());
-									}
-									
-									jsonBean.setSrcCompoundsRef("input/g09");
-									jsonBean.setSrcRefPool("input/referenceSpecies.csv");
-									jsonBean.setSrcTargetPool("input/targetSpecies.csv");
-									jsonBean.setDestRList("output");
-									jsonBean.setTempFolder("temp");
+									jsonBean.setSrcCompoundsRef(ebrAgentProperties.getProperty("srcCompoundsRef").toString().replaceAll("\"+",""));
+									jsonBean.setSrcRefPool(ebrAgentProperties.getProperty("srcRefPool").toString().replaceAll("\"+",""));
+									jsonBean.setSrcTargetPool(ebrAgentProperties.getProperty("srcTargetPool").toString().replaceAll("\"+",""));
+									jsonBean.setDestRList(ebrAgentProperties.getProperty("destRList").toString().replaceAll("\"+",""));
+									jsonBean.setTempFolder(ebrAgentProperties.getProperty("tempFolder").toString().replaceAll("\"+",""));
 									
 									/**
 									 * Set reaction type that is given as folder name.
 									 */
 									jsonBean.setReactionType(name.substring(name.lastIndexOf("_") + 1));
 									
-									jsonBean.setInputZipFile("input.zip");
+									jsonBean.setInputZipFile(ebrAgentProperties.getProperty("inputZipFile").toString().replaceAll("\"+",""));
 									/**
-									 * reads 'process to run' from .properties file and stores it into json.
+									 * Reads 'process to run' from .properties file and stores it into json.
 									 */
-									jsonBean.setWhichProcessToRun(whichProcessToRun.toString().replaceAll("\"+",""));
-									jsonBean.setRefAndTargetSetSame(false);
+									jsonBean.setWhichProcessToRun(ebrAgentProperties.getProperty("whichProcessToRun").toString().replaceAll("\"+",""));
+									
+									/**
+									 * Converts value of 'isRefAndTargetSetSame' as a String is converted into boolean.
+									 */
+									boolean b  = Boolean.parseBoolean(ebrAgentProperties.getProperty("isRefAndTargetSetSame").toString().replaceAll("\"+",""));
+									
+									jsonBean.setRefAndTargetSetSame(b);
 									
 									System.out.println("- - - - - - - - - Json object- - - - - - - - - - - - - - - - - - - -");
 									

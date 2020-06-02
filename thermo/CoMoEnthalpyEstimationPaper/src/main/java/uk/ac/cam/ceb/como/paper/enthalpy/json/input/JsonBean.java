@@ -19,6 +19,8 @@ public class JsonBean {
 	int ctrRadicals;	
 	boolean isRefAndTargetSetSame;
 	
+	
+	
 	public boolean isRefAndTargetSetSame() {
 		return isRefAndTargetSetSame;
 	}
