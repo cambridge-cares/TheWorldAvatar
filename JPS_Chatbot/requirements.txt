@@ -52,6 +52,7 @@ PyYAML==5.2
 rdflib==4.2.2
 requests==2.22.0
 rsa==4.0
+rasa_nlu==0.15.1
 s3transfer==0.3.3
 s4d==0.0.4.1
 scikit-learn==0.22.1
