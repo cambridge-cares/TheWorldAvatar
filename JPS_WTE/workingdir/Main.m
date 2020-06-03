@@ -2,35 +2,55 @@ clc
 clear
 close all
 
-%_____________________Parameter (Scalar)___________________________________
+%% 
+%6.2 solving each year individually
+%6.1 add the below conditional option for small size problem
+% % if n_year==1
+% %             NPV=-Installation_cost;
+% %             for t=1:15
+% %             NPV = NPV+(revenue-cost)/(1+ir)^t; % $/day; CAPEX converted to daily CAPEX, 25 years, 365 days/y
+% %             end
+% %     
+% % else
+% 
+% %6.1 make the number of clusters changable
+% % n_cluster=round(n_foodcourt/2);
+% % 6.2 delete the n_cluster change;
 
+
+
+%% _____________________Parameter (Scalar)___________________________________
+
+bigM=1000000;
+
+daysperyear=365;
+
+ir=0.01;%discount rate
 %transport
 transport=readmatrix('transport.csv');
 Unit_transport_capacity=transport(1);%ton/truck
 Unit_transport_cost=transport(2);%$/km
 pollutionTransportTax=transport(3);
 dieselConsTruck=transport(4); %gCO2/km
-%other parameters csv not found (and does not affect results for now)
+
+%others=readmatrix('other parameters.csv');
+%Unit_land_cost_onsite=others(1);
+%Unit_land_cost_offsite=others(2);
+%Unit_manpower_cost=others(3);
+%EOS=others(4);
+
 Unit_land_cost_onsite=500; %$/unit capacity
 Unit_land_cost_offsite=300;%$/unit capacity
 Unit_manpower_cost=0; % manpower cost for both onsite and offsite
-
 EOS=1; % Economy of scale
-
-ir=0.01;%discount rate
-
-daysperyear=365;
 
 %_____________________Parameter (Array)____________________________________
 
 % locaton information
-waste=readmatrix('Waste.csv')/1000;% waste in tons/day
 site=readmatrix('Site_xy.csv');% foodcourt
-jiji = size(site,1);
-waste=waste(1:jiji,:);% waste in tons/day
-site=site(1:jiji,:);% foodcourt
-
-waste=waste(:,1);% waste in tons/day
+site=site(1:9,:);% foodcourt
+% % 
+%  waste=waste(:,1);% waste in tons/day
 
 location=readmatrix('Location.csv');% offsite facilities
 
@@ -62,11 +82,97 @@ Unit_resource_cost=0.1; %electricity and water
 [n_tech,n_offsite]=size(n_unit_offsite_max);
 n_tech_onsite=size(Unit_capacity_onsite,1);
 n_foodcourt=size(site,1); 
+n_cluster=5;
+
+revenue_year=zeros(15,1);
+Installation_cost_year=zeros(15,1);
+CTRSt_year=zeros(15,1);
+COMt_year=zeros(15,1);
+CLDt_year=zeros(15,1);
+CMPt_year=zeros(15,1);
+CPLtreatmentt_year=zeros(15,1);
+CPLt_year=zeros(15,1);
+CRCt_year=zeros(15,1);
+cost_year=zeros(15,1);
+NPV_year=zeros(15,1);
+
+if n_foodcourt<=8
+y_offsite_year=zeros(n_foodcourt,n_offsite,n_tech,15);
+y_onsite_year=zeros(n_foodcourt,n_tech_onsite,15);
+n_unit_offsite_year=zeros(n_tech,n_offsite,15);
+n_unit_onsite_year=zeros(n_tech_onsite,n_foodcourt,15);
+m_offsite_year=zeros(n_foodcourt,n_offsite,n_tech,15);
+m_onsite_year=zeros(n_foodcourt,n_tech_onsite,15);
+else
+y_offsite_year=zeros(n_cluster,n_offsite,n_tech,15);
+y_onsite_year=zeros(n_cluster,n_tech_onsite,15);
+n_unit_offsite_year=zeros(n_tech,n_offsite,15);
+n_unit_onsite_year=zeros(n_tech_onsite,n_cluster,15);
+m_offsite_year=zeros(n_cluster,n_offsite,n_tech,15);
+m_onsite_year=zeros(n_cluster,n_tech_onsite,15);
+end
+
+%% ------------------Distance-based clustering----------------------
+    waste_original=readmatrix('Waste.csv')/1000;% waste in tons/day
+    site_original=readmatrix('Site_xy.csv');% foodcourt
+
+    Distance_onsite=zeros(n_foodcourt, n_foodcourt);
+    for i=1:n_foodcourt
+        for j=1:n_foodcourt
+           Distance_onsite(i,j)=real(SphereDist(site(i,:),site(j,:))); 
+        end
+    end
+
+    Distance_offsite=zeros(n_foodcourt,n_offsite);
+    for i=1:n_foodcourt
+        for j=1:n_offsite
+          Distance_offsite(i,j)= real(SphereDist(site(i,:),location(j,:)));  
+        end
+    end
+
+    cvx_begin
+
+    variable x_cluster_allocation1(n_foodcourt, n_foodcourt) binary
+    variable yi1(n_foodcourt) binary %constraint
+
+    z1=sum(sum(Distance_onsite.*x_cluster_allocation1));
+    columnsum1=sum(x_cluster_allocation1,1);
+
+
+    minimize(z1)
+
+            subject to
+
+            sum(x_cluster_allocation1,2)==1;
+            for i=1:n_foodcourt
+               columnsum1(i) <=0+bigM*yi1(i);
+            end
+            sum(yi1)==n_cluster;
+            columnsum1<=4;
+
+     cvx_solver Gurobi_2;
+     cvx_end 
+     
+% --------------------Optimization options begin---------------------------
+     
+for t=1:15
+% locaton information
+waste=readmatrix('Waste.csv')/1000;% waste in tons/day
+waste=waste(:,t);
 n_year=size(waste,2);
+ waste=waste(1:9,:);% waste in tons/day
+
+if t~=1
+Installation_cost_pre=Installation_cost_year(t-1);
+NPV_pre=NPV_year(t-1);
+n_unit_onsite_pre=n_unit_onsite_year(:,:,t-1);
+n_unit_offsite_pre=n_unit_offsite_year(:,:,t-1);
+end
+
 
 %% ________________________Small scale problem _______________________________
 
-if n_foodcourt<=7
+if n_foodcourt<=8
     Distance=zeros(n_foodcourt,n_offsite);
     for i=1:n_foodcourt
         for j=1:n_offsite
@@ -177,20 +283,14 @@ if n_foodcourt<=7
 
     cost = squeeze(CTRSt + COMt + CLDt + CMPt + CPLt + CRCt);
 
-    if n_year==1
-            NPV=-Installation_cost;
-            for t=1:15
-            NPV = NPV+(revenue-cost)/(1+ir)^t; % $/day; CAPEX converted to daily CAPEX, 25 years, 365 days/y
-            end
-    
-    else
+    if t==1
     % Profit
-    NPV=-Installation_cost(1);
-    Installation_cost(n_year+1)=Installation_cost(n_year);
-    for t=1:n_year
-    NPV = NPV+(revenue(t)-cost(t)-(Installation_cost(t+1)-Installation_cost(t)))/(1+ir)^t; % $/day; CAPEX converted to daily CAPEX, 25 years, 365 days/y
+    ir=0.01;%discount rate
+    NPV = -Installation_cost+(revenue-cost)/(i+ir)^1; % $/day; CAPEX converted to daily CAPEX, 25 years, 365 days/y
+    else
+    NPV=NPV_pre+(revenue-cost-(Installation_cost-Installation_cost_pre))/(1+ir)^t;
     end
-    end
+    
     %_________________________Optimization_____________________________________
 
 
@@ -201,6 +301,11 @@ if n_foodcourt<=7
                 n_unit_onsite>=0;
                 n_unit_offsite <= repmat(n_unit_offsite_max,1,1,n_year);
                 n_unit_onsite <= repmat(n_unit_onsite_max,1,n_foodcourt,n_year);
+                
+                if t~=1
+                n_unit_offsite>=n_unit_offsite_pre;
+                n_unit_onsite>=n_unit_onsite_pre;
+                end   
                 
     %           n_unit_offsite <= 0;
     %           n_unit_onsite <= 0; 
@@ -214,11 +319,6 @@ if n_foodcourt<=7
                 h=squeeze(sum(y_onsite,2));
                 h+h1==1;
                 
-                for t=1:n_year-1
-                    n_unit_onsite(:,:,t)<=n_unit_onsite(:,:,t+1);
-                    n_unit_offsite(:,:,t)<=n_unit_offsite(:,:,t+1);
-                end
-
                 m_offsite_jk<=actual_capacity_offsite;
                 m_onsite_jk<=squeeze(actual_capacity_onsite);
 
@@ -243,49 +343,6 @@ if n_foodcourt<=7
 % 
 %% ----------------------Clustering problem----------------------------
 else
-    waste_original=readmatrix('Waste.csv')/1000;% waste in tons/day
-    site_original=readmatrix('Site_xy.csv');% foodcourt
-
-    %n_cluster=readmatrix('Number of clusters.csv');% foodcourt
-    n_cluster=9;
-    bigM=1000000;
-
-    Distance_onsite=zeros(n_foodcourt, n_foodcourt);
-    for i=1:n_foodcourt
-        for j=1:n_foodcourt
-           Distance_onsite(i,j)=real(SphereDist(site(i,:),site(j,:))); 
-        end
-    end
-
-    Distance_offsite=zeros(n_foodcourt,n_offsite);
-    for i=1:n_foodcourt
-        for j=1:n_offsite
-          Distance_offsite(i,j)= real(SphereDist(site(i,:),location(j,:)));  
-        end
-    end
-
-    cvx_begin
-
-    variable x_cluster_allocation1(n_foodcourt, n_foodcourt) binary
-    variable yi1(n_foodcourt) binary %constraint
-
-    z1=sum(sum(Distance_onsite.*x_cluster_allocation1));
-    columnsum1=sum(x_cluster_allocation1,1);
-
-
-    minimize(z1)
-
-            subject to
-
-            sum(x_cluster_allocation1,2)==1;
-            for i=1:n_foodcourt
-               columnsum1(i) <=0+bigM*yi1(i);
-            end
-            sum(yi1)==n_cluster;
-            columnsum1<=4;
-
-     cvx_solver Gurobi_2;
-     cvx_end 
 
     x_cluster_allocation1= round(x_cluster_allocation1);
     columnsum1=sum(x_cluster_allocation1,1);
@@ -450,22 +507,12 @@ end
 
     cost = squeeze(CTRSt + COMt + CLDt + CMPt) + (CPLt + CRCt)';
     
-
-    if n_year==1
-            NPV=-Installation_cost;
-            for t=1:15
-            NPV = NPV+(revenue-cost)/(1+ir)^t; % $/day; CAPEX converted to daily CAPEX, 25 years, 365 days/y
-            end
-    
-    else
+    if t==1
     % Profit
-
-    NPV=-Installation_cost(1);
-    Installation_cost(n_year+1)=Installation_cost(n_year);
-    for t=1:n_year
-    NPV=NPV+(revenue(t)-cost(t)-(Installation_cost(t+1)-Installation_cost(t)))/(1+ir)^t;
-    end
-
+    ir=0.01;%discount rate
+    NPV = -Installation_cost+(revenue-cost)/(i+ir)^1; % $/day; CAPEX converted to daily CAPEX, 25 years, 365 days/y
+    else
+    NPV=NPV_pre+(revenue-cost-(Installation_cost-Installation_cost_pre))/(1+ir)^t;
     end
     %_________________________Optimization_____________________________________
 
@@ -476,7 +523,12 @@ end
                 n_unit_onsite>=0;
                 n_unit_offsite <= repmat(n_unit_offsite_max,1,1,n_year);
                 n_unit_onsite <= repmat(n_unit_onsite_max,1,n_cluster,n_year);
-
+                
+                if t~=1
+                n_unit_offsite>=n_unit_offsite_pre;
+                n_unit_onsite>=n_unit_onsite_pre;
+                end   
+                
                 y_onsite>=0;
                 y_offsite>=0;
                 y_onsite<=1;
@@ -485,11 +537,6 @@ end
 
 %                n_unit_offsite <= 0;
      %          n_unit_onsite <= 0; 
-
-                for t=1:n_year-1
-                n_unit_onsite(:,:,t)<=n_unit_onsite(:,:,t+1);
-                n_unit_offsite(:,:,t)<=n_unit_offsite(:,:,t+1);
-                end
 
                 squeeze(sum(y_onsite,2))+squeeze(sum(sum(y_offsite,2),3))==1;
 if n_year==1
@@ -519,33 +566,48 @@ end
 
      cvx_end 
 
+end
+
+revenue_year(t)=revenue;
+Installation_cost_year(t)=Installation_cost;
+CTRSt_year(t)=CTRSt;
+COMt_year(t)=COMt;
+CLDt_year(t)=CLDt;
+CMPt_year(t)=CMPt;
+CPLtreatmentt_year(t)=CPLtreatmentt;
+CPLt_year(t)=CPLt;
+CRCt_year(t)=CRCt;
+cost_year(t)=cost;
+NPV_year(t)=NPV;
+n_unit_offsite_year(:,:,t)=n_unit_offsite;
+n_unit_onsite_year(:,:,t)=n_unit_onsite;
+m_offsite_year(:,:,:,t)=m_offsite;
+m_onsite_year(:,:,t)=m_onsite;
+y_offsite_year(:,:,:,t)=y_offsite;
+y_onsite_year(:,:,t)=y_onsite;
+
+end
+
+
 %% -------------------Output-----------------------------------------
-    y_onsite=round(y_onsite);
-    y_offsite=round(y_offsite);
-    m_onsite=round(m_onsite,2);
-    m_offsite=round(m_offsite,2);
-    n_unit_onsite=round(n_unit_onsite);
-    n_unit_offsite=round(n_unit_offsite);
+    waste=readmatrix('Waste.csv')/1000;% waste in tons/day
+    waste=waste(1:9,:);
+    
+    n_year=size(waste,2);
+    y_onsite_year=round(y_onsite_year);
+    y_offsite_year=round(y_offsite_year);
+    m_onsite_year=round(m_onsite_year,2);
+    m_offsite_year=round(m_offsite_year,2);
+    n_unit_onsite_year=round(n_unit_onsite_year);
+    n_unit_offsite_year=round(n_unit_offsite_year);
 
-    Nonsite=nnz(sum(y_onsite,2));
-    Noffsite=nnz(sum(sum(y_offsite,1),3));
-
-    ID_onsite_FCin=ind1'.*sum(y_onsite,2);
-    ID_onsite_FCin=ID_onsite_FCin(find(ID_onsite_FCin));
-    ID_offsite_FC=ind1'.*squeeze(sum(sum(y_offsite,2),3));
-    ID_onsite_tech=find(sum(y_onsite,1));
-    ID_offsite_FC=ID_offsite_FC(find(ID_offsite_FC));
-    ID_offsite_facility=find(squeeze(sum(sum(y_offsite,1),3)));
-    ID_offsite_tech=find(squeeze(sum(sum(y_offsite,1),2)));
-
-%     x_onsite_allocation=zeros(n_foodcourt,n_foodcourt,n_tech,n_year);
-%     x_onsite_allocation(:,ID_onsite_FCin)=x_cluster_allocation1(:,ID_onsite_FCin);
+    if n_foodcourt>=8
 
     x_offsite_allocation=zeros(n_foodcourt,n_offsite,n_tech,n_year);
     for k=1:n_cluster
         for i=1:n_foodcourt
             if x_cluster_allocation1(i,ind1(k))==1
-                x_offsite_allocation(i,:,:,:)=y_offsite(k,:,:,:);
+                x_offsite_allocation(i,:,:,:)=y_offsite_year(k,:,:,:);
             end
         end
     end
@@ -554,33 +616,34 @@ end
     for k=1:n_cluster
         for i=1:n_foodcourt
             if x_cluster_allocation1(i,ind1(k))==1
-                x_onsite_allocation(i,ind1(k),:,:)=y_onsite(k,:,:,:);
+                x_onsite_allocation(i,ind1(k),:,:)=y_onsite_year(k,:,:,:);
             end
         end
     end
-    
-    y_onsite_cluster=y_onsite;
-    y_offsite_cluster=y_offsite;
-    y_onsite=x_onsite_allocation;
-    y_offsite=x_offsite_allocation;    
-    m_onsite_cluster=m_onsite;
-    m_offsite_cluster=m_offsite;
-    n_unit_onsite_cluster=n_unit_onsite;
-    n_unit_offsite_cluster=n_unit_offsite;
-    
-    if n_year==1
-    m_onsite=repmat(waste,1,n_foodcourt,n_tech_onsite).*x_onsite_allocation;
-    m_offsite=repmat(waste,1,n_offsite,n_tech).*x_offsite_allocation;
-    n_unit_onsite=ceil(squeeze(sum(m_onsite))./repmat(Unit_capacity_onsite,1,n_foodcourt));
-    n_unit_offsite=ceil(squeeze(sum(m_offsite))'./repmat(Unit_capacity_offsite,1,n_offsite));
-    else
-    m_onsite=permute(repmat(waste,1,1,n_foodcourt,n_tech_onsite),[1 3 4 2]).*x_onsite_allocation;
-    m_offsite=permute(repmat(waste,1,1,n_offsite,n_tech),[1 3 4 2]).*x_offsite_allocation;   
-    n_unit_onsite=ceil(permute(sum(m_onsite),[3 2 4 1])./repmat(Unit_capacity_onsite,1,n_foodcourt,n_year));
-    n_unit_offsite=ceil(permute(squeeze(sum(m_offsite)),[2 1 3])./repmat(Unit_capacity_offsite,1,n_offsite,n_year));
+        
+    n_onsite_allocation=zeros(n_tech_onsite,n_foodcourt,n_year);
+    for k=1:n_cluster
+                n_onsite_allocation(:,ind1(k),:)=n_unit_onsite_year(:,k,:);
     end
     
-end
+    y_onsite_cluster=y_onsite_year;
+    y_offsite_cluster=y_offsite_year;
+    y_onsite_year=x_onsite_allocation;
+    y_offsite_year=x_offsite_allocation;    
+    m_onsite_cluster=m_onsite_year;
+    m_offsite_cluster=m_offsite_year;
+    n_unit_onsite_cluster=n_unit_onsite_year;
+    n_unit_onsite_year=n_onsite_allocation;
+    
+    if n_year==1
+    m_onsite_year=repmat(waste,1,n_foodcourt,n_tech_onsite).*x_onsite_allocation;
+    m_offsite_year=repmat(waste,1,n_offsite,n_tech).*x_offsite_allocation;
+    else
+    m_onsite_year=permute(repmat(waste,1,1,n_foodcourt,n_tech_onsite),[1 3 4 2]).*x_onsite_allocation;
+    m_offsite_year=permute(repmat(waste,1,1,n_offsite,n_tech),[1 3 4 2]).*x_offsite_allocation;   
+     end
+    end
+    
 
   
 %% _________________________Benchmark________________________________________ 
@@ -616,87 +679,7 @@ end
         BenchmarkResourceConsumption = daysperyear*sum(waste) * resourceConsumptionBencmark* Unit_resource_cost.';
         BenchmarkRevenue = daysperyear*sum(waste) * revFromWTFOffSite* transRateList.';
         Benchmarkcost=BenchmarkResourceConsumption+BenchmarkPollution+BenchmarkManpower+BenchmarkLand+BenchmarkOperMgnt+BenchmarkTransportation;
-
    
-if n_year==1
-    NPV_Benchmark=-BenchmarkCapex;
-    for t=1:15
-    NPV_Benchmark=NPV_Benchmark+(BenchmarkRevenue-Benchmarkcost)/(1+ir)^t;
-    end
-    
-    BenchmarkRevenue_total=0;
-    for t=1:15
-    BenchmarkRevenue_total=BenchmarkRevenue_total+BenchmarkRevenue/(1+ir)^t;
-    end
-    Benchmarkcost_total=0;
-    for t=1:15
-    Benchmarkcost_total=Benchmarkcost_total+Benchmarkcost/(1+ir)^t;
-    end
-    
-    BenchmarkCapex_total=BenchmarkCapex(1);
-
-    BenchmarkOperMgnt_total=0 ;     
-        for t=1:15
-    BenchmarkOperMgnt_total=BenchmarkOperMgnt_total+BenchmarkOperMgnt/(1+ir)^t;
-        end
-    BenchmarkManpower_total=0 ;     
-        for t=1:15
-    BenchmarkManpower_total=BenchmarkManpower_total+BenchmarkManpower/(1+ir)^t;
-        end
-    BenchmarkLand_total=0;    
-        for t=1:15
-    BenchmarkLand_total=BenchmarkLand_total+BenchmarkLand/(1+ir)^t;
-        end
-    BenchmarkPollution_total=0;    
-        for t=1:15
-    BenchmarkPollution_total=BenchmarkPollution_total+BenchmarkPollution/(1+ir)^t;
-        end
-    BenchmarkTransportation_total=0;    
-        for t=1:15
-    BenchmarkTransportation_total=BenchmarkTransportation_total+BenchmarkTransportation/(1+ir)^t;
-        end
-    BenchmarkResourceConsumption_total=0;    
-        for t=1:15
-    BenchmarkResourceConsumption_total=BenchmarkResourceConsumption_total+BenchmarkResourceConsumption/(1+ir)^t;
-        end
-
-        
-   cost_total=0;
-    for t=1:15
-    cost_total=cost_total+cost/(1+ir)^t;
-    end
-    revenue_total=0;
-    for t=1:15
-    revenue_total=revenue_total+revenue/(1+ir)^t;
-    end
-    
-    Installation_cost_total=Installation_cost;
-    
-    COMt_total=0 ;     
-        for t=1:15
-    COMt_total=COMt_total+COMt/(1+ir)^t;
-        end
-    CMPt_total=0 ;     
-        for t=1:15
-    CMPt_total=CMPt_total+CMPt/(1+ir)^t;
-        end
-    CLDt_total=0;    
-        for t=1:15
-    CLDt_total=CLDt_total+CLDt/(1+ir)^t;
-        end
-    CPLt_total=0;    
-        for t=1:15
-    CPLt_total=CPLt_total+CPLt/(1+ir)^t;
-        end
-    CTRSt_total=0;    
-        for t=1:15
-    CTRSt_total=CTRSt_total+CTRSt/(1+ir)^t;
-        end
-    CRCt_total=0;    
-        for t=1:15
-    CRCt_total=CRCt_total+CRCt/(1+ir)^t;
-        end        
-else
     
     NPV_Benchmark=-BenchmarkCapex(1);
     BenchmarkCapex(n_year+1)=BenchmarkCapex(n_year);
@@ -743,43 +726,43 @@ else
         
    cost_total=0;
     for t=1:n_year
-    cost_total=cost_total+cost(t)/(1+ir)^t;
+    cost_total=cost_total+cost_year(t)/(1+ir)^t;
     end
     revenue_total=0;
     for t=1:n_year
-    revenue_total=revenue_total+revenue(t)/(1+ir)^t;
+    revenue_total=revenue_total+revenue_year(t)/(1+ir)^t;
     end
     
-    Installation_cost_total=Installation_cost(1);
-        for t=1:n_year
-    Installation_cost_total=Installation_cost_total+(Installation_cost(t+1)-Installation_cost(t))/(1+ir)^t;
+    Installation_cost_total=Installation_cost_year(1);
+        for t=2:n_year
+    Installation_cost_total=Installation_cost_total+(Installation_cost_year(t)-Installation_cost_year(t-1))/(1+ir)^t;
         end
     
     COMt_total=0 ;     
         for t=1:n_year
-    COMt_total=COMt_total+COMt(t)/(1+ir)^t;
+    COMt_total=COMt_total+COMt_year(t)/(1+ir)^t;
         end
     CMPt_total=0 ;     
         for t=1:n_year
-    CMPt_total=CMPt_total+CMPt(t)/(1+ir)^t;
+    CMPt_total=CMPt_total+CMPt_year(t)/(1+ir)^t;
         end
     CLDt_total=0;    
         for t=1:n_year
-    CLDt_total=CLDt_total+CLDt(t)/(1+ir)^t;
+    CLDt_total=CLDt_total+CLDt_year(t)/(1+ir)^t;
         end
     CPLt_total=0;    
         for t=1:n_year
-    CPLt_total=CPLt_total+CPLt(t)/(1+ir)^t;
+    CPLt_total=CPLt_total+CPLt_year(t)/(1+ir)^t;
         end
     CTRSt_total=0;    
         for t=1:n_year
-    CTRSt_total=CTRSt_total+CTRSt(t)/(1+ir)^t;
+    CTRSt_total=CTRSt_total+CTRSt_year(t)/(1+ir)^t;
         end
     CRCt_total=0;    
         for t=1:n_year
-    CRCt_total=CRCt_total+CRCt(t)/(1+ir)^t;
+    CRCt_total=CRCt_total+CRCt_year(t)/(1+ir)^t;
         end        
-end
+
 economicoutput=[revenue_total,BenchmarkRevenue_total;Installation_cost_total,BenchmarkCapex_total;COMt_total,BenchmarkOperMgnt_total;CMPt_total,BenchmarkManpower_total;CLDt_total,BenchmarkLand_total;CPLt_total,BenchmarkPollution_total;CTRSt_total,BenchmarkTransportation_total;CRCt_total,BenchmarkResourceConsumption_total;cost_total,Benchmarkcost_total;NPV,NPV_Benchmark];
 
 %% -------------------------Export-----------------------------------    
@@ -793,112 +776,112 @@ economicoutput=[revenue_total,BenchmarkRevenue_total;Installation_cost_total,Ben
 % 1==sum(x_offsite_allocation,[2 3])+sum(x_onsite_allocation,2);
     % 
     
-    if n_year==1
-    writematrix(n_unit_onsite,'number of units (onsite).csv');% no unit
-    writematrix(n_unit_offsite,'number of units (offsite).csv');% no unit
-    writematrix(m_onsite,'Treated waste (onsite).csv');% ton,row-from foodcourt i waste generation, column-to foodcourt j for treatment
-    writematrix(m_offsite,'Treated waste (offsite).csv');% no unit,row-from foodcourt i waste generation, column-to waste facility j for treatment
-    writematrix(y_onsite,'Waste flow relation (onsite).csv');% no unit,row-from foodcourt i waste generation, column-to foodcourt j for treatment
-    writematrix(y_offsite,'Waste flow relation (offsite).csv');% ton,row-from foodcourt i waste generation, column-to waste facility j for treatment
-    writematrix(economicoutput,'Economic output.csv');% $
-    
-    else
-    writematrix(n_unit_onsite(:,:,1),'number of units (onsite)_1.csv');% no unit
-    writematrix(n_unit_onsite(:,:,2),'number of units (onsite)_2.csv');% no unit
-    writematrix(n_unit_onsite(:,:,3),'number of units (onsite)_3.csv');% no unit
-    writematrix(n_unit_onsite(:,:,4),'number of units (onsite)_4.csv');% no unit
-    writematrix(n_unit_onsite(:,:,5),'number of units (onsite)_5.csv');% no unit
-    writematrix(n_unit_onsite(:,:,6),'number of units (onsite)_6.csv');% no unit
-    writematrix(n_unit_onsite(:,:,7),'number of units (onsite)_7.csv');% no unit
-    writematrix(n_unit_onsite(:,:,8),'number of units (onsite)_8.csv');% no unit
-    writematrix(n_unit_onsite(:,:,9),'number of units (onsite)_9.csv');% no unit
-    writematrix(n_unit_onsite(:,:,10),'number of units (onsite)_10.csv');% no unit
-    writematrix(n_unit_onsite(:,:,11),'number of units (onsite)_11.csv');% no unit
-    writematrix(n_unit_onsite(:,:,12),'number of units (onsite)_12.csv');% no unit
-    writematrix(n_unit_onsite(:,:,13),'number of units (onsite)_13.csv');% no unit
-    writematrix(n_unit_onsite(:,:,14),'number of units (onsite)_14.csv');% no unit
-    writematrix(n_unit_onsite(:,:,15),'number of units (onsite)_15.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,1),'year by year_number of units (onsite)_1.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,2),'year by year_number of units (onsite)_2.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,3),'year by year_number of units (onsite)_3.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,4),'year by year_number of units (onsite)_4.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,5),'year by year_number of units (onsite)_5.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,6),'year by year_number of units (onsite)_6.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,7),'year by year_number of units (onsite)_7.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,8),'year by year_number of units (onsite)_8.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,9),'year by year_number of units (onsite)_9.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,10),'year by year_number of units (onsite)_10.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,11),'year by year_number of units (onsite)_11.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,12),'year by year_number of units (onsite)_12.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,13),'year by year_number of units (onsite)_13.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,14),'year by year_number of units (onsite)_14.csv');% no unit
+    writematrix(n_unit_onsite_year(:,:,15),'year by year_number of units (onsite)_15.csv');% no unit
        
-    writematrix(n_unit_offsite(:,:,1),'number of units (offsite)_1.csv');% no unit
-    writematrix(n_unit_offsite(:,:,2),'number of units (offsite)_2.csv');% no unit
-    writematrix(n_unit_offsite(:,:,3),'number of units (offsite)_3.csv');% no unit
-    writematrix(n_unit_offsite(:,:,4),'number of units (offsite)_4.csv');% no unit
-    writematrix(n_unit_offsite(:,:,5),'number of units (offsite)_5.csv');% no unit
-    writematrix(n_unit_offsite(:,:,6),'number of units (offsite)_6.csv');% no unit
-    writematrix(n_unit_offsite(:,:,7),'number of units (offsite)_7.csv');% no unit
-    writematrix(n_unit_offsite(:,:,8),'number of units (offsite)_8.csv');% no unit
-    writematrix(n_unit_offsite(:,:,9),'number of units (offsite)_9.csv');% no unit
-    writematrix(n_unit_offsite(:,:,10),'number of units (offsite)_10.csv');% no unit
-    writematrix(n_unit_offsite(:,:,11),'number of units (offsite)_11.csv');% no unit
-    writematrix(n_unit_offsite(:,:,12),'number of units (offsite)_12.csv');% no unit
-    writematrix(n_unit_offsite(:,:,13),'number of units (offsite)_13.csv');% no unit
-    writematrix(n_unit_offsite(:,:,14),'number of units (offsite)_14.csv');% no unit
-    writematrix(n_unit_offsite(:,:,15),'number of units (offsite)_15.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,1),'year by year_number of units (offsite)_1.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,2),'year by year_number of units (offsite)_2.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,3),'year by year_number of units (offsite)_3.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,4),'year by year_number of units (offsite)_4.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,5),'year by year_number of units (offsite)_5.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,6),'year by year_number of units (offsite)_6.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,7),'year by year_number of units (offsite)_7.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,8),'year by year_number of units (offsite)_8.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,9),'year by year_number of units (offsite)_9.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,10),'year by year_number of units (offsite)_10.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,11),'year by year_number of units (offsite)_11.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,12),'year by year_number of units (offsite)_12.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,13),'year by year_number of units (offsite)_13.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,14),'year by year_number of units (offsite)_14.csv');% no unit
+    writematrix(n_unit_offsite_year(:,:,15),'year by year_number of units (offsite)_15.csv');% no unit
     
-    writematrix(m_onsite(:,:,:,1),'Treated waste (onsite)_1.csv');% no unit
-    writematrix(m_onsite(:,:,:,2),'Treated waste (onsite)_2.csv');% no unit
-    writematrix(m_onsite(:,:,:,3),'Treated waste (onsite)_3.csv');% no unit
-    writematrix(m_onsite(:,:,:,4),'Treated waste (onsite)_4.csv');% no unit
-    writematrix(m_onsite(:,:,:,5),'Treated waste (onsite)_5.csv');% no unit
-    writematrix(m_onsite(:,:,:,6),'Treated waste (onsite)_6.csv');% no unit
-    writematrix(m_onsite(:,:,:,7),'Treated waste (onsite)_7.csv');% no unit
-    writematrix(m_onsite(:,:,:,8),'Treated waste (onsite)_8.csv');% no unit
-    writematrix(m_onsite(:,:,:,9),'Treated waste (onsite)_9.csv');% no unit
-    writematrix(m_onsite(:,:,:,10),'Treated waste (onsite)_10.csv');% no unit
-    writematrix(m_onsite(:,:,:,11),'Treated waste (onsite)_11.csv');% no unit
-    writematrix(m_onsite(:,:,:,12),'Treated waste (onsite)_12.csv');% no unit
-    writematrix(m_onsite(:,:,:,13),'Treated waste (onsite)_13.csv');% no unit
-    writematrix(m_onsite(:,:,:,14),'Treated waste (onsite)_14.csv');% no unit
-    writematrix(m_onsite(:,:,:,15),'Treated waste (onsite)_15.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,1),'year by year_treated waste (onsite)_1.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,2),'year by year_treated waste (onsite)_2.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,3),'year by year_treated waste (onsite)_3.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,4),'year by year_treated waste (onsite)_4.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,5),'year by year_treated waste (onsite)_5.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,6),'year by year_treated waste (onsite)_6.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,7),'year by year_treated waste (onsite)_7.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,8),'year by year_treated waste (onsite)_8.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,9),'year by year_treated waste (onsite)_9.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,10),'year by year_treated waste (onsite)_10.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,11),'year by year_treated waste (onsite)_11.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,12),'year by year_treated waste (onsite)_12.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,13),'year by year_treated waste (onsite)_13.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,14),'year by year_treated waste (onsite)_14.csv');% no unit
+    writematrix(m_onsite_year(:,:,:,15),'year by year_treated waste (onsite)_15.csv');% no unit
     
-    writematrix(m_offsite(:,:,:,1),'Treated waste (offsite)_1.csv');% no unit
-    writematrix(m_offsite(:,:,:,2),'Treated waste (offsite)_2.csv');% no unit
-    writematrix(m_offsite(:,:,:,3),'Treated waste (offsite)_3.csv');% no unit
-    writematrix(m_offsite(:,:,:,4),'Treated waste (offsite)_4.csv');% no unit
-    writematrix(m_offsite(:,:,:,5),'Treated waste (offsite)_5.csv');% no unit
-    writematrix(m_offsite(:,:,:,6),'Treated waste (offsite)_6.csv');% no unit
-    writematrix(m_offsite(:,:,:,7),'Treated waste (offsite)_7.csv');% no unit
-    writematrix(m_offsite(:,:,:,8),'Treated waste (offsite)_8.csv');% no unit
-    writematrix(m_offsite(:,:,:,9),'Treated waste (offsite)_9.csv');% no unit
-    writematrix(m_offsite(:,:,:,10),'Treated waste (offsite)_10.csv');% no unit
-    writematrix(m_offsite(:,:,:,11),'Treated waste (offsite)_11.csv');% no unit
-    writematrix(m_offsite(:,:,:,12),'Treated waste (offsite)_12.csv');% no unit
-    writematrix(m_offsite(:,:,:,13),'Treated waste (offsite)_13.csv');% no unit
-    writematrix(m_offsite(:,:,:,14),'Treated waste (offsite)_14.csv');% no unit
-    writematrix(m_offsite(:,:,:,15),'Treated waste (offsite)_15.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,1),'year by year_treated waste (offsite)_1.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,2),'year by year_treated waste (offsite)_2.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,3),'year by year_treated waste (offsite)_3.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,4),'year by year_treated waste (offsite)_4.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,5),'year by year_treated waste (offsite)_5.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,6),'year by year_treated waste (offsite)_6.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,7),'year by year_treated waste (offsite)_7.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,8),'year by year_treated waste (offsite)_8.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,9),'year by year_treated waste (offsite)_9.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,10),'year by year_treated waste (offsite)_10.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,11),'year by year_treated waste (offsite)_11.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,12),'year by year_treated waste (offsite)_12.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,13),'year by year_treated waste (offsite)_13.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,14),'year by year_treated waste (offsite)_14.csv');% no unit
+    writematrix(m_offsite_year(:,:,:,15),'year by year_treated waste (offsite)_15.csv');% no unit
            
-    writematrix(y_onsite(:,:,:,1),'Waste flow relation (onsite)_1.csv');% no unit
-    writematrix(y_onsite(:,:,:,2),'Waste flow relation (onsite)_2.csv');% no unit
-    writematrix(y_onsite(:,:,:,3),'Waste flow relation (onsite)_3.csv');% no unit
-    writematrix(y_onsite(:,:,:,4),'Waste flow relation (onsite)_4.csv');% no unit
-    writematrix(y_onsite(:,:,:,5),'Waste flow relation (onsite)_5.csv');% no unit
-    writematrix(y_onsite(:,:,:,6),'Waste flow relation (onsite)_6.csv');% no unit
-    writematrix(y_onsite(:,:,:,7),'Waste flow relation (onsite)_7.csv');% no unit
-    writematrix(y_onsite(:,:,:,8),'Waste flow relation (onsite)_8.csv');% no unit
-    writematrix(y_onsite(:,:,:,9),'Waste flow relation (onsite)_9.csv');% no unit
-    writematrix(y_onsite(:,:,:,10),'Waste flow relation (onsite)_10.csv');% no unit
-    writematrix(y_onsite(:,:,:,11),'Waste flow relation (onsite)_11.csv');% no unit
-    writematrix(y_onsite(:,:,:,12),'Waste flow relation (onsite)_12.csv');% no unit
-    writematrix(y_onsite(:,:,:,13),'Waste flow relation (onsite)_13.csv');% no unit
-    writematrix(y_onsite(:,:,:,14),'Waste flow relation (onsite)_14.csv');% no unit
-    writematrix(y_onsite(:,:,:,15),'Waste flow relation (onsite)_15.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,1),'year by year_waste flow relation (onsite)_1.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,2),'year by year_waste flow relation (onsite)_2.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,3),'year by year_waste flow relation (onsite)_3.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,4),'year by year_waste flow relation (onsite)_4.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,5),'year by year_waste flow relation (onsite)_5.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,6),'year by year_waste flow relation (onsite)_6.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,7),'year by year_waste flow relation (onsite)_7.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,8),'year by year_waste flow relation (onsite)_8.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,9),'year by year_waste flow relation (onsite)_9.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,10),'year by year_waste flow relation (onsite)_10.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,11),'year by year_waste flow relation (onsite)_11.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,12),'year by year_waste flow relation (onsite)_12.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,13),'year by year_waste flow relation (onsite)_13.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,14),'year by year_waste flow relation (onsite)_14.csv');% no unit
+    writematrix(y_onsite_year(:,:,:,15),'year by year_waste flow relation (onsite)_15.csv');% no unit
     
-    writematrix(y_offsite(:,:,:,1),'Waste flow relation (offsite)_1.csv');% no unit
-    writematrix(y_offsite(:,:,:,2),'Waste flow relation (offsite)_2.csv');% no unit
-    writematrix(y_offsite(:,:,:,3),'Waste flow relation (offsite)_3.csv');% no unit
-    writematrix(y_offsite(:,:,:,4),'Waste flow relation (offsite)_4.csv');% no unit
-    writematrix(y_offsite(:,:,:,5),'Waste flow relation (offsite)_5.csv');% no unit
-    writematrix(y_offsite(:,:,:,6),'Waste flow relation (offsite)_6.csv');% no unit
-    writematrix(y_offsite(:,:,:,7),'Waste flow relation (offsite)_7.csv');% no unit
-    writematrix(y_offsite(:,:,:,8),'Waste flow relation (offsite)_8.csv');% no unit
-    writematrix(y_offsite(:,:,:,9),'Waste flow relation (offsite)_9.csv');% no unit
-    writematrix(y_offsite(:,:,:,10),'Waste flow relation (offsite)_10.csv');% no unit
-    writematrix(y_offsite(:,:,:,11),'Waste flow relation (offsite)_11.csv');% no unit
-    writematrix(y_offsite(:,:,:,12),'Waste flow relation (offsite)_12.csv');% no unit
-    writematrix(y_offsite(:,:,:,13),'Waste flow relation (offsite)_13.csv');% no unit
-    writematrix(y_offsite(:,:,:,14),'Waste flow relation (offsite)_14.csv');% no unit
-    writematrix(y_offsite(:,:,:,15),'Waste flow relation (offsite)_15.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,1),'year by year_waste flow relation (offsite)_1.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,2),'year by year_waste flow relation (offsite)_2.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,3),'year by year_waste flow relation (offsite)_3.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,4),'year by year_waste flow relation (offsite)_4.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,5),'year by year_waste flow relation (offsite)_5.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,6),'year by year_waste flow relation (offsite)_6.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,7),'year by year_waste flow relation (offsite)_7.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,8),'year by year_waste flow relation (offsite)_8.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,9),'year by year_waste flow relation (offsite)_9.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,10),'year by year_waste flow relation (offsite)_10.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,11),'year by year_waste flow relation (offsite)_11.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,12),'year by year_waste flow relation (offsite)_12.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,13),'year by year_waste flow relation (offsite)_13.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,14),'year by year_waste flow relation (offsite)_14.csv');% no unit
+    writematrix(y_offsite_year(:,:,:,15),'year by year_waste flow relation (offsite)_15.csv');% no unit
     
-    writematrix(economicoutput,'Economic output.csv');% $
-    end 
+    writematrix(economicoutput,'year by year_Economic output.csv');% $
     
+    
+writematrix(revenue_year,'year by year_revenue.xlsx');
+writematrix(Installation_cost_year,'year by year_Installation_cost_year');
+writematrix(CTRSt_year,'year by year_Transport');
+writematrix(COMt_year,'year by year_Operating');
+writematrix(CLDt_year,'year by year_land');
+writematrix(CMPt_year,'year by year_manpower');
+writematrix(CPLt_year,'year by year_pollution');
+writematrix(CRCt_year,'year by year_resource');
+writematrix(cost_year,'year by year_cost');
+writematrix(NPV_year,'year by year_NPV');
