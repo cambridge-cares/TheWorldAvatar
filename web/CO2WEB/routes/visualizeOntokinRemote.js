@@ -55,7 +55,7 @@ router.get('/links', function(req, res, next) {
         console.log("read connections");
             results2.forEach((item)=>{item['source'] = topNode2})
             connectionsReader.processSingle(opts3).then((labelResult)=>{
-                let filterResult = [];
+                let filterResult = [], co2result = [];
                 console.log('looking for labels')
                     for (let uriItem of results2) {
                         for(let labelItem of labelResult) {
@@ -66,17 +66,28 @@ router.get('/links', function(req, res, next) {
                             }
                         }
                         for(let mechaItem of results){
-                            if (mechaItem["label"] === uriItem["target"]){
-                                mechaItem["label"] =""
-                                filterResult.push(mechaItem)
-                                    filterResult.push(uriItem)
+                            if (mechaItem["label"] === uriItem["target"]){//mechaItem links to co2
+                            if (uriItem["label"] === "CO2"){
+                                mechaItem["label"] ="";
+                                console.log('find co2 entity')
+                                co2result.push(mechaItem);
+                                co2result.push(uriItem);
+                                } else{
+                                mechaItem["label"] ="";
+                                filterResult.push(mechaItem);
+                                filterResult.push(uriItem);
+                            }
+
                             }
                         }
 
                 }
-               filterResult.splice(60)
+
+               filterResult.splice(60);
+
+
                 let finalResults = filterResult.concat(results2)
-                res.json(filterResult); //render the view with this value
+                res.json(filterResult.concat(co2result)); //render the view with this value
             });
     });
     });
