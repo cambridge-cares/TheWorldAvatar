@@ -32,6 +32,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns= {"/startsimulation"})
@@ -377,8 +378,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		
 		try {
 			createBat(baseUrl);
-			runModel(baseUrl);
-            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
+            notifyWatcher(requestParams, baseUrl+"/Economic output.csv",
                     request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -433,7 +433,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 			int amountinst = size / 15; // assume it's from year 1
 
 			for (int n = 0; n < amountinst; n++) {
-				int yearend=1;//control how many year we want to use;assume yearend =1 (only 1 year)
+				int yearend=15;//control how many year we want to use;assume yearend =1 (only 1 year)
 				String[] consumption = new String[yearend];
 				for (int r = 0; r < yearend; r++) { 
 					consumption[r] = resultList.get(r * amountinst + n)[3];
@@ -593,9 +593,10 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 */
 	public void createBat(String baseUrl) throws Exception {
 		String loc = baseUrl + "\\Main.m";
-		String bat = "setlocal" + "\n" + "cd /d %~dp0" + "\n" + "matlab -nosplash -noFigureWindows -r \"try; run('"
+		String bat =  "matlab -nosplash -noFigureWindows -r \"try; run('"
 				+ loc + "'); catch; end; quit\"";
-		new QueryBroker().putLocal(baseUrl + "/runm.bat", bat);
+		System.out.println(bat);
+        String result = CommandHelper.executeSingleCommand(baseUrl, bat);
 	}
 	/** runs the batch file. 
 	 * 

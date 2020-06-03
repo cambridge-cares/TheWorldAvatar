@@ -87,10 +87,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 			//properties of OnsiteTech
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
-		 
-			List<String[]> onsiteAndFC = updateinFCCluster(baseUrl,inputoffsitedata,fcMapping);
-				List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
-				updateinFCCluster(baseUrl,fcMapping,propertydataonsite);
+			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
+			
+			List<String[]> onsiteAndFC = updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+//				updateinFCCluster(baseUrl,fcMapping,propertydataonsite);
 //			}else {
 //				List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 //				List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
@@ -159,7 +159,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			String baseUrl,
 			List<String[]> propertydata) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
 		
-		List<String[]> unitofonsite=readResult(baseUrl,"number of units (onsite).csv");
+		List<String[]> unitofonsite=readResult(baseUrl,"year by year_number of units (onsite)_1.csv");
 		List<String[]>onsiteunitmapping=new ArrayList<String[]>();
 		List<String> mappedonsiteiri=new ArrayList<String>();
 		int size3=unitofonsite.size();
@@ -171,8 +171,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 				double newval= Double.parseDouble(bd.toPlainString());
 				linemapping[y]=bd.toPlainString();
 				if(newval>=1) {
+					int FCname = y +1;
 					mappedonsiteiri.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-				+ y+1 +".owl#OnSiteWasteTreatment-"+y+1);
+				+ FCname +".owl#OnSiteWasteTreatment-"+FCname);
 					
 					
 				}
@@ -187,39 +188,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 //		List<String>mappedonsiteiri=converter.onsiteiri;
 		return mappedonsiteiri;
 	}
-	/** creates the Onsite Waste Treatment Facility OWL file for cluster
-	 * 
-	 * @param inputdata {[List<String[]>]} list of FC 
-	 * @param baseUrl String
-	 * @return List<String> list of IRIS of onsite WTF
-	 * @throws Exception
-	 */
-		
-	public List<String> updateinOnsiteWTCluster(List<String[]> inputdata , String baseUrl,List<String[]> propertydata) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
-		List<String[]> unitofonsite=readResult(baseUrl,"offsiteCluster.csv");
-		List<String[]>onsiteunitmapping=new ArrayList<String[]>();
-		int size3=unitofonsite.size();
-		int colamount3=unitofonsite.get(0).length;
-		for(int x=0;x<size3;x++) { //currently 1 with one tech
-			String[]linemapping= new String[colamount3];//nameOfCluster/nameOfonsiteWTF
-			for(int y=0;y<colamount3;y++) { 	
-				BigDecimal bd = new BigDecimal(unitofonsite.get(x)[y]);
-				double newval= Double.parseDouble(bd.toPlainString());
-				linemapping[y]=bd.toPlainString();
-				if(newval<0) {
-					linemapping[y]="0";
-				}
-				
-				
-			}
-			onsiteunitmapping.add(linemapping);	
-		}
-		WTEKBCreator converter = new WTEKBCreator();
-		//create Onsite WTF
-		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping,propertydata);
-		List<String>mappedonsiteiri=converter.onsiteiri;
-		return mappedonsiteiri;
-	}
+	
 	/** updates the Foodcourt owl file based on the value of the treated waste (onsite) CSV and treated waste (offsite) csv
 	 * This updates the waste delivered to either facility
 	 * @param baseUrl
@@ -229,18 +198,19 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String[]> updateinFCCluster(String baseUrl,
+	public List<String[]> updateinFCCluster(String baseUrl
+			,List<String> inputdataonsite,
 			List<String[]> inputdataoffsite,
 			List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
 		List<String[]> clusterWTF=new ArrayList<String[]>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
-		List<String[]>treatedwasteon=readResult(baseUrl,"Treated waste (onsite).csv");
+		List<String[]>treatedwasteon=readResult(baseUrl,"year by year_Treated waste (onsite)_1.csv");
 		//NoOfClusterx1
-		List<String[]>treatedwasteoff=readResult(baseUrl,"Treated waste (offsite).csv");
+		List<String[]>treatedwasteoff=readResult(baseUrl,"year by year_Treated waste (offsite)_1.csv");
 		//NoOfClusterx9
 		int colamount2=treatedwasteoff.get(0).length; // 3 wtf and 3 technologies currently
 		//determine the number of WTF
-		List<String[]> clusterOnsite = readResult(baseUrl,"Waste flow relation (offsite).csv");
+		List<String[]> clusterOnsite = readResult(baseUrl,"year by year_Waste flow relation (onsite)_1.csv");
 		//noOfFCActualxnoOfFC (repeated values are clusters)
 		List<String[]>sitemapping=new ArrayList<String[]>();
 		HashSet<String> clusterName =new HashSet<String>(); //temporary value until it runs
@@ -251,29 +221,30 @@ public class WTESingleAgent extends JPSHttpServlet {
 	        if (s.size() == 1) { //if all are zero there is only one element in a unique set so onsite
 	        	int size2 = clusterOnsite.get(x).length;//determine how many FC x noOfYears(15)
 	        	for(int y=0;y<size2;y++) {//|noOfFCxnoOfYears|
-//					String wastetransfer=treatedwasteon.get(x)[0]; //in ton/day 
-					String wastetransfer = treatedwasteon.get(clusterName.size())[0];
+	        		String wastetransfer = treatedwasteon.get(x)[y];
 	        		//edit for now because we don't know how much FC waste gets fed in
 					if (Integer.parseInt(clusterOnsite.get(x)[y]) == 1) {//so onsite is present
 						//freak assume that we consider them a cluster even if it only has one element
 						if(Double.parseDouble(wastetransfer)>0.01) {//condition if cluster does not reveal anything
 							//add year on year later
 							//int year = y %15;
-							clusterName.add(wastetransfer);
-							String[]linemapping= {Integer.toString(x),Integer.toString(y),wastetransfer, "1"};
+							int FCname = y +1;
+							String currentwtf = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
+									+ FCname +".owl#OnSiteWasteTreatment-"+FCname;
+							String[]linemapping= {Integer.toString(x+1),Integer.toString(FCname),wastetransfer, "1",currentwtf };
 							sitemapping.add(linemapping);
 						}
 					}
 				} //but FC Cluster can send to multiple WTF and we don't know the mapping!!!
 	        }else { 
-	        	//presuming that anything that involves offsite WTF requires a cluster? 
-	        	//erroneous. Logic Failure 
 	        	for(int y=0;y<colamount2;y++) { //3tech*3instance
 					String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
-					if (Integer.parseInt(clusterOnsite.get(x)[y]) == 1) { //aka it's present
+					if (Integer.parseInt(clusterOnsite.get(x)[y]) > 0) { //aka it's present
 						if(Double.parseDouble(wastetransfer)>0.01) { //assuming that the presence of a cluster
-							//figure out where the position of the cluster is in Treated offsite WTF
-							String[]linemapping= {Integer.toString(x),Integer.toString(y),wastetransfer, "2"};
+							int IndexOffsiteHeader = y % 3; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
+							// the 3rd
+							String currentoffwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
+							String[]linemapping= {Integer.toString(x),Integer.toString(y),wastetransfer, "2",currentoffwtf};
 							sitemapping.add(linemapping);		
 						}
 					}
@@ -293,17 +264,13 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//input data onsite=onsiteiri
 		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
 			int wasteindex = 1;
-			int g = Integer.valueOf(sitemapping.get(d)[3]);
-			String fcCluster =  sitemapping.get(d)[4];
+			String currentwtf =  sitemapping.get(d)[4];
 			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
 			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
 			String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 					+ wasteindex;
 			Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
-			int onsiteindex = Integer.valueOf(sitemapping.get(d)[1]);//onsite cluster name
-			String currentwtf = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster"
-					+String.valueOf(onsiteindex) + ".owl#FoodCourtCluster"+String.valueOf(onsiteindex);
 			b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 			b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 			b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
@@ -312,9 +279,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 			b.append("<" + valuecurrentwaste
 					+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
 			b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
+			String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
+					+sitemapping.get(d)[1] + ".owl#FoodCourtCluster-"+sitemapping.get(d)[1] ;
+			b.append("<" + foodcourtmap.get(d)[0] + "> OCPSYST:isDirectSubsystemOf <" + fcCluster + "> . \r\n");
 			wasteindex++;
-			String[] arr = {currentwtf,fcCluster};
-			clusterWTF.add(arr);
 			String sparql = sparqlStart + b.toString() + "} \r\n";
 			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 

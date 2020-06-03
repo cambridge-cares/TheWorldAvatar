@@ -112,10 +112,8 @@ public class TestWTE extends TestCase {
 		
 		try {
 			ag.createBat(baseUrl);
-			ag.runModel(baseUrl);
 //            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
 //                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
-			Thread.sleep(2*60000);
 			//read for FC details
 			WTESingleAgent at = new WTESingleAgent();
 			List<String[]> resu =  at.readAndDump(model,WastetoEnergyAgent.FCQuery);
@@ -125,7 +123,7 @@ public class TestWTE extends TestCase {
 			//creates onsite WTF if indicated by the number of units (onsite).csv
 			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String[]> onsiteAndFC = at.updateinFCCluster(baseUrl,inputoffsitedata,fcMapping);
+			List<String[]> onsiteAndFC = at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
 
 			at.updateinOffsiteWT(inputoffsitedata,baseUrl);
 //			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
