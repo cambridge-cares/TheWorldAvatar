@@ -75,6 +75,10 @@ public class AirQualitySensorAgentTest extends TestCase {
 	 */
 	public void xxxtestAgentCallreset() {
 		JSONObject jo = new JSONObject();
+		jo.put("location", "hongkong");//or singapore or singapore_AQ
+		jo.put("context", "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+		//context variation only in index number and country (1 sg,2 hk)
+		jo.put("name","VirtualSensorHKEpisode-001");// or ="VirtualSensorEpisode-001"or=VirtualSensor-001 or="VirtualSensorHKADMS-001";
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", jo.toString());	
 	}
 	

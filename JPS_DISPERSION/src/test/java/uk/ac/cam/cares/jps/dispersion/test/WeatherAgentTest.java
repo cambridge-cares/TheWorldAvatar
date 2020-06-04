@@ -29,20 +29,20 @@ public class WeatherAgentTest extends TestCase {
 	
 	public void testextract() {
 		//for sg
-		double proclowx = Double.valueOf("11552101.832");
-		double procupx = Double.valueOf("11572101.89");
-		double proclowy = Double.valueOf("131707.739");
-		double procupy = Double.valueOf("151860.32");
+//		double proclowx = Double.valueOf("11552101.832");
+//		double procupx = Double.valueOf("11572101.89");
+//		double proclowy = Double.valueOf("131707.739");
+//		double procupy = Double.valueOf("151860.32");
 		//for hk
-//		double proclowx = Double.valueOf("12706630.262");
-//		double procupx = Double.valueOf("12708200.45");
-//		double proclowy = Double.valueOf("2545539.172");
-//		double procupy = Double.valueOf("2546850.028");
+		double proclowx = Double.valueOf("12706653.262");
+		double procupx = Double.valueOf("12708579.81");
+		double proclowy = Double.valueOf("2545200.172");
+		double procupy = Double.valueOf("2547126.72");
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
 
-		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri2,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("xconverted="+centerPointConverted[0]);
 		System.out.println("yconverted="+centerPointConverted[1]);
 		System.out.println("size="+result.size());
