@@ -111,13 +111,14 @@ block content
 			span#demo
 
 	div#wrapper
-		div.overlay-panel-wrapper
+		div.overlay-panel-wrapper(width='200')
 			div#overlay-setting-panel.panel.panel-default
 				div.panel-body.container-fluid
 					div#setting-panel-body
 						div#text-panel(style='overflow-inline:scroll;')
-						br
-						button#run-btn.btn.btn-primary Run Simulation
+							div#chart
+						//- br
+						//- button#run-btn.btn.btn-primary Run Simulation
 
 						   
 	div#map
@@ -147,6 +148,9 @@ block content
 	script(src="https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/markerclusterer.js")
 	script(src="/javascripts/PopUpmap.js")
 	script(src="/javascripts/wte.js")
-	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&callback=initMap")
+	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&libraries=visualization&callback=initMap")
 	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
 	script(src='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js')
+	script(src='https://unpkg.com/d3@5.7.0/dist/d3.min.js')
+	script(src='https://unpkg.com/d3fc@14.0.27/build/d3fc.js')
+
