@@ -349,12 +349,13 @@ function clearMarkers() {
         marker=null;
     }
 }
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
 
-$(function() {
-    $('#toggle-event').change(function() {
-      console.log("Toggle bt"+ $(this).prop('checked'));
-    })
-  })
+slider.oninput = function() {
+  output.innerHTML = this.value;
+}
 /** calls the creation of markers (with extra parameters) before creating the onsite WTF technology
  * 
  */

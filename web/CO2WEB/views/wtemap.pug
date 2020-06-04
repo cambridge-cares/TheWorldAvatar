@@ -67,10 +67,49 @@ block content
 		.sidenav {padding-top: 15px;}
 		.sidenav a {font-size: 18px;}
 		}
+		.slidecontainer {
+			width: 100%;
+			}
+
+		.slider {
+		-webkit-appearance: none;
+		width: 100%;
+		height: 30px;
+		border-radius: 5px;
+		background: #d3d3d3;
+		outline: none;
+		opacity: 0.7;
+		-webkit-transition: .2s;
+		transition: opacity .2s;
+		}
+
+		.slider:hover {
+		opacity: 1;
+		}
+
+		.slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background: #4CAF50;
+		cursor: pointer;
+		}
+
+		.slider::-moz-range-thumb {
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background: #4CAF50;
+		cursor: pointer;
+		}
 	#loader(style='display:none;')
-	.panel.panel-default
-		.panel-body
-			input( id="toggle-event" type='checkbox', checked='', data-toggle='toggle', data-on='Single', data-off='Cluster')
+	.slidecontainer
+		input#myRange.slider(type='range', min='1', max='15', value='1')
+		p
+			span#demo
+
 	div#wrapper
 		div.overlay-panel-wrapper
 			div#overlay-setting-panel.panel.panel-default
