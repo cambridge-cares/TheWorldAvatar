@@ -1,81 +1,40 @@
-var $messages = $('.messages-content'),
-    d, h, m,
-    i = 0;
-
 $(window).load(function() {
     google.charts.load('current', {'packages':['table']});
-    $messages.mCustomScrollbar();
- /*   setTimeout(function() {
-        fakeMessage();
-    }, 100); */
+       $('#progress_bar').hide();
+
+
+
 });
 
-function updateScrollbar() {
-    $messages.mCustomScrollbar("update").mCustomScrollbar('scrollTo', 'bottom', {
-        scrollInertia: 10,
-        timeout: 0
-    });
-}
 
-function setDate() {
-    d = new Date()
-    if (m != d.getMinutes()) {
-        m = d.getMinutes();
-        $('<div class="timestamp">' + d.getHours() + ':' + m + '</div>').appendTo($('.message:last'));
-    }
-}
+$('.link_button').click(function(){
 
-function insertMessage() {
-    msg = $('.message-input').val();
-    if ($.trim(msg) == '') {
-        return false;
-    }
-    $('<div class="message message-personal">' + msg + '</div>').appendTo($('.mCSB_container')).addClass('new');
-    setDate();
+    $('#input-field').val($(this).html().trim())
+    $('#input-field').html($(this).html().trim())
+    $('#input-field').attr("placeholder", $(this).html().trim())
+    ask_question()
+});
+
+function ask_question() {
+    $('#progress_bar').show();
 
     // =========================
-    msg = $('.message-input').val();
-    $('.message-input').val(null);
+    msg = $('#input-field').val();
+    $('#input-field').val(null);
     // =========================
     msg = msg.replace(/[/+]/g, 'add_sign')
 
-    $.get("http://127.0.0.1:5000/test?question=" + msg, function( data ) {
-
+    $.get("https://kg.cmclinnovations.com/test?question=" + msg, function( data ) {
         construct_response(data)
-
+        $('#progress_bar').hide();
     });
-
-
-    updateScrollbar();
-    $('<div class="message loading new"><figure class="avatar"><img src="static/bat.png" /></figure><span></span></div>').appendTo($('.mCSB_container'));
-    updateScrollbar();
-
 
 }
 
-$('.message-submit').click(function() {
-    insertMessage();
-});
-
-$(window).on('keydown', function(e) {
-    if (e.which == 13) {
-        insertMessage();
-        return false;
-    }
-})
-
 
 function construct_response(data) {
-    if ($('.message-input').val() != '') {
-        msg = $('.message-input').val();
-        return false;
-    }
-    table_rows = process_json_result(data)
 
-    $('.message.loading').remove();
-    setDate();
-    updateScrollbar();
-    i++;
+    table_rows = process_json_result(data)
     drawTable(table_rows)
 
 
@@ -83,7 +42,7 @@ function construct_response(data) {
 
 function process_json_result(result){
 
-    result = result.replace(/=\]/g, '=>').replace(/[}][\n ]+[{]/g, '},{')
+    // result = result.replace(/=\]/g, '=>').replace(/[}][\n ]+[{]/g, '},{')
     console.log('The request has returned a response ', result)
 
     result = JSON.parse(result)
@@ -157,7 +116,7 @@ function removeItemAll(arr, value) {
 
     if ((rows.length == 1) && (col_size == 1))
     {
-        $('<div class="message new"><figure class="avatar"><img src="static/bat.png" /></figure> <div id="table_div">'+ rows[0][0] +'</div> </div>').appendTo($('.mCSB_container')).addClass('new');
+        $('#single_div').val(rows[0][0])
 
     }
     else{
@@ -166,20 +125,13 @@ function removeItemAll(arr, value) {
         console.log('added col' + variables[col])
 
     }
-         data.addRows(rows);
 
-
-        $('<div class="message new"><figure class="avatar"><img src="static/bat.png" /></figure> <div class="table_div"></div> </div>').appendTo($('.mCSB_container')).addClass('new')    .ready(function () {
-        table_element  =document.getElementsByClassName("table_div")[document.getElementsByClassName("table_div").length -1];
-
-        table_element.style.color = 'black';
-                var table = new google.visualization.Table(table_element);
-
-
-
-
+        data.addRows(rows);
+        table_element = document.getElementById('table_div')
+        // table_element.style.color = 'black';
+        var table = new google.visualization.Table(table_element);
         table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
-      });;
+
 
 
     }
