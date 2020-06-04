@@ -4,7 +4,7 @@ import os
 import re
 
 import tarfile
-from rasa_nlu.model import Interpreter
+from rasa.nlu.model import Interpreter
 import json
 import sys
 import warnings
