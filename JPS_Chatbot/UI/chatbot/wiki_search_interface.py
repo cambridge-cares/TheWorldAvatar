@@ -1,9 +1,11 @@
 import json
+import os.path
 from pprint import pprint
 
 from fuzzywuzzy import fuzz
 from more_itertools import take
 
+from .locations import LOOKUP_TABS_DIR
 
 class WiKiSearchInterface:
 
@@ -11,11 +13,13 @@ class WiKiSearchInterface:
         self.topics = ['chemical_compound_entity', 'chemical_substance_class', 'chemistry', 'chemistry_properties','physical','physical_properties','structural_class']
         self.dictionary = {}
         self.lookup_table = {}
-        self.path = 'C:/Users/xz378_admin/PycharmProjects/JPS_Chemistry_Chatbot/UI/search_engine/lookup_tables/'
+        self.path = LOOKUP_TABS_DIR
         for topic in self.topics:
-            with open(self.path + '%s_dictionary.json' % topic) as f:
+            dict_path  = os.path.join(self.path, '%s_dictionary.json' % topic)
+            table_path = os.path.join(self.path, '%s.json' % topic)
+            with open(dict_path) as f:
                 self.dictionary[topic] = json.loads(f.read())
-            with open(self.path + '%s.json' % topic) as f0:
+            with open(table_path) as f0:
                 print("------------------------------")
                 print(topic)
                 self.lookup_table[topic] = json.loads(f0.read())

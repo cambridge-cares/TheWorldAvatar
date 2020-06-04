@@ -1,19 +1,20 @@
 # this class processes the query results obtained from wikidata
 import json
+import os.path
 from pprint import pprint
 
+from .locations import LOOKUP_TABS_DIR,SEARCH_ENGINE_DIR
 
 class LookUpTableGenerator:
 
     def __init__(self):
-        self.directory = './corpus'
+        self.directory = os.path.join(SEARCH_ENGINE_DIR,'corpus')
         self.global_list = []
         self.lookup_table = {}
         self.dictionary = []
 
-    def generate_property_lookup_table(self, topic):
-
-        with open(self.directory + '/%s_altLabel.json' % topic, errors='ignore') as f:
+    def generate_property_lookup_table(self, topic):        
+        with open(os.path.join(self.directory,'%s_altLabel.json' % topic), errors='ignore') as f:
             properties_json = json.loads(f.read()) #.encode('utf-8', 'ignore').decode('utf-8', 'ignore')
             f.close()
 
@@ -40,8 +41,8 @@ class LookUpTableGenerator:
 topics = ['physical_properties', 'chemistry_properties', 'process_properties', 'chemical_compound_entity','chemical_substance_class']
 for topic in topics:
     generator = LookUpTableGenerator()
-    generator.generate_property_lookup_table(topic)
-    with open('./lookup_tables/%s.json' % topic, 'w') as f:
+    generator.generate_property_lookup_table(topic)    
+    with open(os.path.join(LOOKUP_TABS_DIR,'%s.json' % topic), 'w') as f:
         f.write(json.dumps(generator.lookup_table))
-    with open('./lookup_tables/%s_dictionary.json' % topic, 'w') as f1:
+    with open(os.path.join(LOOKUP_TABS_DIR,'%s_dictionary.json' % topic), 'w') as f1:
         f1.write(json.dumps(generator.dictionary))
