@@ -142,7 +142,7 @@ public class ADMSAgent extends DispersionModellingAgent {
 				+ " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 				+ "}" 
 				+ "}" 
 				+ "ORDER BY DESC(?proptimeval)LIMIT 7";

@@ -3,7 +3,7 @@ package uk.ac.cam.cares.jps.dispersion.episode;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -217,6 +217,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		return map;
 	}
 
+	
 	public List<String[]> extractAvailableContext(String cityiri,double x0,double y0) {	  
 		  
 		  String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -252,13 +253,14 @@ public class WeatherAgent extends JPSHttpServlet {
 						+ "?graph j2:enumerationValue ?stnname ."
 						+ "?prop   j2:hasValue ?vprop ."
 						+ " ?vprop   j6:hasTime ?proptime ."
-						+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+
+						+ "?proptime   j6:inXSDDateTime ?proptimeval ."
 						
 						+ "}" 
 						+ "}ORDER BY DESC(?proptimeval) Limit2";
 			  
 			  List<String[]> listsgstndata = queryEndPointDataset(querydata); //it will give 30 data
-			  String timelatest=listsgstndata.get(0)[3];
+			  String timelatest=listsgstndata.get(0)[3];			  
 			  String timelatest2=listsgstndata.get(1)[3];
 			  time.add(timelatest);		
 			  time.add(timelatest2);
@@ -267,10 +269,11 @@ public class WeatherAgent extends JPSHttpServlet {
 		  System.out.println("Sorted ArrayList "
                   + "in Descending order : "
                   + time);
+
 		  List<String> time2 = time.stream().distinct().collect(Collectors.toList()); //set order to have some latest data
-		 // String timelatest=time.get(0);
 		  
 		  List<String[]> listmap=new ArrayList<String[]>();
+
 		  for(int y=0;y<time2.size();y++) {
 			  for(int x=0;x<listsgstn.size();x++) {
 				  String context= listsgstn.get(x)[0];
@@ -294,7 +297,7 @@ public class WeatherAgent extends JPSHttpServlet {
 							+ "?entity j4:observes ?prop ."
 							+ "?prop   j2:hasValue ?vprop ."
 							+ " ?vprop   j6:hasTime ?proptime ."
-							+ "?proptime   j6:inXSDDateTimeStamp \""+time2.get(y)+"\" ."				
+							+ "?proptime   j6:inXSDDateTime \""+time2.get(y)+"\"^^xsd:dateTime ."			
 							+ "}" 
 							+ "}ORDER BY DESC(?proptimeval) Limit7";
 				  List<String[]> listsgstndata = queryEndPointDataset(query); //it will give 30 data
@@ -377,18 +380,19 @@ public class WeatherAgent extends JPSHttpServlet {
 		return listmap;
 	}
 	    
-	public static String provideCurrentTime() {			//timing format should be year, month, date, hour, minute,second
 
-			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-			   LocalDateTime now = LocalDateTime.now();
-			   String com=dtf.format(now);
-			   String date=com.split("/")[2].split(" ")[0];
-			   
-			   String year=com.split("/")[0];
-				String monthdate=com.split("/")[1]+"-"+date;
-				String time=com.split("/")[2].split(" ")[1];
-				String completeformat=year+"-"+monthdate+"T"+time+"+08:00";
-				return completeformat;
+	public static String provideCurrentTime() {			//timing format should be year, month, date, hour, minute,second		   
+			DateTimeFormatter dtf = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+			   ZonedDateTime now = ZonedDateTime.now();
+			  
+			   String com=dtf.format(now);			   
+//			   String date=com.split("/")[2].split(" ")[0];
+//			   
+//			   String year=com.split("/")[0];
+//				String monthdate=com.split("/")[1]+"-"+date;
+//				String time=com.split("/")[2].split(" ")[1];
+//				String completeformat=year+"-"+monthdate+"T"+time+"+08:00";
+				return com;
 		}
 		
 	
@@ -449,7 +453,8 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 				+ "}" 
 				+ "}" 
 				+ "ORDER BY ASC(?proptimeval)";
@@ -518,7 +523,8 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." 
+
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
 				+ "}" 
 				+ "}" 
 				+ "ORDER BY ASC(?proptimeval)LIMIT1";
@@ -532,18 +538,21 @@ public class WeatherAgent extends JPSHttpServlet {
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
 				+ "WITH <" + context + ">"
 				+ "DELETE { "
 				+ "<" + propiri+ "> j2:numericalValue ?oldpropertydata ."
-				+ "<" + timeiri+ "> j6:inXSDDateTimeStamp ?olddata ."
+				+ "<" + timeiri+ "> j6:inXSDDateTime ?olddata ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + propiri+ "> j2:numericalValue \""+newpropvalue+"\"^^xsd:double ."
-				+ "<" + timeiri+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+
+				+ "<" + timeiri+ "> j6:inXSDDateTime \""+newtimestamp+"\"^^xsd:dateTime ." 
 				+ "} "
 				+ "WHERE { "
 				+ "<" + propiri+ "> j2:numericalValue ?oldpropertydata ."	
-				+ "<" + timeiri+ "> j6:inXSDDateTimeStamp ?olddata ."
+
+				+ "<" + timeiri+ "> j6:inXSDDateTime ?olddata ."
 				+ "}";
 		
 			
@@ -558,7 +567,8 @@ public class WeatherAgent extends JPSHttpServlet {
 			int d=oldcontent.size();
 			ValueFactory f=repo.getValueFactory();
 			IRI numval=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-			IRI timeval=f.createIRI("http://www.w3.org/2006/time#inXSDDateTimeStamp");
+
+			IRI timeval=f.createIRI("http://www.w3.org/2006/time#inXSDDateTime");
 			for(int x=0; x<d;x++) {
 				IRI prop1=f.createIRI(oldcontent.get(x)[0]);
 				Literal lit1=f.createLiteral(new Double(oldcontent.get(x)[1]));
@@ -583,7 +593,8 @@ public class WeatherAgent extends JPSHttpServlet {
 		ValueFactory f=repo.getValueFactory();
 		System.out.println("size of data= "+valuemapold.size());
 		IRI numval=f.createIRI("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-		IRI timeval=f.createIRI("http://www.w3.org/2006/time#inXSDDateTimeStamp");
+
+		IRI timeval=f.createIRI("http://www.w3.org/2006/time#inXSDDateTime");
 		IRI contextiri= f.createIRI(context);
 		for(int x=0; x<oldcontent.size();x++) {
 			IRI prop1=f.createIRI(oldcontent.get(x)[0]);

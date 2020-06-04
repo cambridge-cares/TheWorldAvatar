@@ -157,7 +157,7 @@ $(function(){
 ?vprop   j4:prescaledNumValue ?propval .
     ?vprop   j2:hasUnitOfMeasure ?unit .
   ?vprop   j6:hasTime ?proptime .
-  ?proptime   j6:inXSDDateTimeStamp ?proptimeval .
+  ?proptime   j6:inXSDDateTime ?proptimeval .
 }}
  ORDER BY DESC(?proptimeval) LIMIT10`;
        // stationIRI = "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001"
