@@ -4,12 +4,14 @@ import os
 import re
 
 import tarfile
+import tempfile
 from rasa.nlu.model import Interpreter
 import json
 import sys
 import warnings
 from SPARQLWrapper import SPARQLWrapper, JSON
 
+from .locations import RASA_DEFAULT_MODELS_DIR, SPARQL_TEMPLATE_PATH
 from .wiki_search_interface import WiKiSearchInterface
 
 
@@ -17,23 +19,29 @@ class WikiQuestionTypeClassifier:
 
     def __init__(self):
         self.intent_types = ['item_attribute_query']
-        with open('C:/Users/xz378_admin/PycharmProjects/JPS_Chemistry_Chatbot/SPARQL_template.json') as f:
+        with open(SPARQL_TEMPLATE_PATH) as f:
             self.templates = json.loads(f.read())
         self.serach_interface = WiKiSearchInterface()
         warnings.filterwarnings("ignore")
-        self.nlu_model_directory = '../rasa_default/models'
-        self.extract_nlu_model()  # extract trained model
-        self.interpreter = Interpreter.load('./nlu')  # load trained model
+        self.nlu_model_directory = RASA_DEFAULT_MODELS_DIR
+        # Extract the trained model to a temporary directory where we are guaranteed to have write access
+        temp_dir_path = tempfile.TemporaryDirectory().name
+        self.extract_nlu_model(temp_dir_path)
+        # Load the trained model from the temporary directory
+        model_path = os.path.join(temp_dir_path,"nlu")
+        self.interpreter = Interpreter.load(model_path)        
         print('model loaded')
 
     # TODO: move the nlu models to the WikiClassifier
-    def extract_nlu_model(self):  # extract the newest trained nlu model
+    def extract_nlu_model(self,extract_dir):
+        # Identify the newest trained nlu model
         path = self.nlu_model_directory
         files = os.listdir(path)
         paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
         file_name = max(paths, key=os.path.getctime)
+        # Extract the model to a temporary directory
         tf = tarfile.open(file_name)
-        tf.extractall()
+        tf.extractall(path=extract_dir)
 
     def fill_Sparql(self, result):
         sparql_query = ''

@@ -3,13 +3,14 @@ import urllib.parse
 import urllib.request
 from pprint import pprint
 
+from .locations import JPS_SPARQL_TEMPLATE_PATH
 from .search_interface import SearchInterface
 
 
 class JPS_query_constructor:
 
     def __init__(self):
-        with open('C:/Users/xz378_admin/PycharmProjects/JPS_Chemistry_Chatbot/JPS_SPARQL_template.json') as f:
+        with open(JPS_SPARQL_TEMPLATE_PATH) as f:
             self.template_dict = json.loads(f.read())
         self.serach_interface = SearchInterface()
 

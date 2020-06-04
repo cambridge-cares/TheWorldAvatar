@@ -1,10 +1,13 @@
 from gensim.models import LdaModel
+import os.path
+
 from nltk.stem import PorterStemmer
 
+from .locations import TOPIC_CLASSIFIERS_DIR
 
 class TopicClassifier:
     def __init__(self):
-        self.model_path = 'C:/Users/xz378_admin/PycharmProjects/JPS_Chemistry_Chatbot/UI/topic_classifier/lda.model'
+        self.model_path = os.path.join(TOPIC_CLASSIFIERS_DIR,'lda.model')
         self.lda = LdaModel.load(self.model_path)
         self.topic_dic = {1: 'jps', 2: 'jps', 0: 'wiki'}
         self.stemmer = PorterStemmer()
