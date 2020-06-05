@@ -33,6 +33,7 @@ function changeInformer(thingWillChange, informIndi){
     function WatchDog(resources){
         this.resources = resources;
         this.observers = new Map(); //observer list
+		this.timer = null
     }
 
     WatchDog.prototype = {
@@ -42,12 +43,24 @@ function changeInformer(thingWillChange, informIndi){
             this.observers.set(newObserver, {name: newObserver, receiveData: receiveData});}
            // logger.debug("register for "+this.uri);
         },
+		
+		setTimer: function(time){
+			let self  = this;
+			this.timer = setTimeout(function(){self.timer  = null;},time)
+		},
+		checkTimerCanRun: function(){
+		if(this.timer === null){
+				return true;
+			}
+			return false;
+		},
 
         informAll: function (informIndi) {// inform all observer
             const self = this;
             dataPromise = this.resources.sendData(this.hasDataRequestObserver())
             dataPromise.then(function (promisedData) {
-               // console.log(promisedData)
+				console.log('observers')
+              console.log(self.observers)
                 //console.log('informer get promised data, '+promisedData[1].length)
                 loopInform(promisedData);
             }).catch(e=>{
@@ -114,7 +127,12 @@ function changeInformer(thingWillChange, informIndi){
             if(watchDogs.has(register_name)){ //check if this file is required to be watched
                 //console.log("Ask watchdog to inform")
                 let watchDog = watchDogs.get(register_name);
-                watchDog.informAll(informIndi);
+				if(watchDog.checkTimerCanRun()){
+                watchDog.setTimer(5000);
+				watchDog.informAll(informIndi);
+				} else{
+					console.log('too freuquent update')
+				}
             } else{
 
             }

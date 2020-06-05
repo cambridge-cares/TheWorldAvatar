@@ -35,9 +35,9 @@ config.landLotNode=path.join(config.root , "kb/sgp/jurongisland/JParkLandLots.ow
 config.ontochemNode= config.crebase + '/query';
 config.ontokinNode= config.ontokinbase + '/query';
 config.ontokinRemoteNode = "http://localhost/rdf4j-server/repositories/ontokin"
-config.ontocompchemNode = "http://www.theworldavatar.com/rdf4j-server/repositories/ontocompchem"
-config.ontocompchemRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontocompchem"
-config.ontospeciesRemoteNode = "http://theworldavatar.com/rdf4j-server/repositories/ontospecieskb"
+config.ontocompchemNode = "http://localhost/rdf4j-server/repositories/ontocompchem"
+config.ontocompchemRemoteNode = "http://localhost/rdf4j-server/repositories/ontocompchem"
+config.ontospeciesRemoteNode = "http://localhost/rdf4j-server/repositories/ontospecieskb"
 //TODO: this later should be wrapped in owl file
 config.heatWasteScript = path.join(__dirname, "agents/WHR_network_optimization_trim.py")
 config.heatWasteNode = path.join(config.root, "wasteheatnetwork.owl")

@@ -131,7 +131,7 @@ owlProcessor.doConnect = function(address, level) {
                     //todo: cluster result on the fly
                 })
             }
-            if( me.linkCounter <= 0){//end condition, return
+            if( me.linkCounter <= 1){//end condition, return
                 console.log('all end, print result')
 				
                 //end buffer

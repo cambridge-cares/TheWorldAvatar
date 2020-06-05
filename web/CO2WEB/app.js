@@ -153,25 +153,15 @@ var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
 agentWatcher.init(io);
 //When any change happened to the file system
-ev.on('update', function (data) {
-    logger.debug("update event: "+" on "+data.uri+"_nodata");
-	    //let rooms = io.sockets.adapter.rooms;
-   //logger.debug(rooms[path.normalize(data.uri)].sockets);
-    //update direct clients
-	if(!('data' in data)){
-    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-    } else {
-		console.log(path.normalize(data.uri))
-		io.in(path.normalize(data.uri)+"_data").emit("update", data);}
-})
+let testId = null
+
 
 const aepWatcher = setEpWatcher();
 const epChangeEv = aepWatcher.watchEvent;
 const epInformer = aepWatcher.epChangeEmitter;
 epChangeEv.on('new', function (data) {
-    console.log('new endpoint modfication event');
+    //console.log('new endpoint modfication event');
     //todo: logic of subscription
-    console.log(data)
     io.to(path.normalize(data.endpoint)+"_endpoint").emit("new", data.data);
     
 })
@@ -224,7 +214,7 @@ io.on('connection', function(socket){
 
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
-
+   testId = socket.id
     console.log('client join');
     let sl = JSON.parse(uriSubscribeList);
     //logger.debug(sl)
@@ -244,7 +234,9 @@ socket.on('join', function (uriSubscribeList) {
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
         socket.join(diskLoc+affix);
-		      // console.log(socket.id, "joined", diskLoc+affix);
+		let rooms = Object.keys(io.sockets.adapter.rooms)
+		//console.log(rooms)
+		     // console.log(socket.id, "joined", diskLoc+affix);
 
 		
 
@@ -253,17 +245,16 @@ socket.on('join', function (uriSubscribeList) {
 
         if(uri2Sub.withData){
             var clients = io.sockets.adapter.rooms[diskLoc+affix].sockets;
-
+            
 //to get the number of clients
             var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
             logger.debug("number of clients in room: "+numClients);
             if (numClients < 2 ){//first join for data, register for data now
                 console.log("first client for this node ,register for data change")
-                bmsWatcher.register(diskLoc,"worldnodedata", true);
+                bmsWatcher.register(diskLoc,"worldnode", true);
             }
 
 
-                console.log(diskLoc);
                 literalData( function (err, initialData) {
                     //get initial by db access
                     logger.debug("send initial data");
@@ -273,8 +264,26 @@ socket.on('join', function (uriSubscribeList) {
 
         }
     })
-    logger.debug("@@@@@@@@@@@@@@@@")
-    logger.debug(io.sockets.adapter.rooms)
+
+	ev.on('update', function (data) {
+    logger.debug("update event: "+" on "+data.uri+"_nodata");
+	    //let rooms = io.sockets.adapter.rooms;
+   //logger.debug(rooms[path.normalize(data.uri)].sockets);
+    //update direct clients
+	if(!('data' in data) || data.data ===null){
+		console.log('data update for: '+data.uri)
+    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    } else {
+		//console.log('update event:'+path.normalize(data.uri)+"_data")
+		//console.log('now update');
+		//console.log('rooms')
+		let testid =path.normalize(data.uri)+"_data"
+		let rooms = Object.keys(io.sockets.adapter.rooms)
+				//console.log(rooms)
+		io.in(path.normalize(data.uri)+"_data").emit("update", data);
+		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+}
+})
 });
     socket.on('leave', function (uriSubscribeList) {
         //May be do some authorization

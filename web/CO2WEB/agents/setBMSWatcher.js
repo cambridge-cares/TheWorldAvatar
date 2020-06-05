@@ -32,7 +32,6 @@ function setBMSWatcher() {
     function informIndi(data, observer, callback) {
 
 		if(data!==null && ('data' in data)){
-			console.log('found b2 data')
 		}
         try{//all nodes are local, we use event emitter to inform file change
             watchEvent.emit('update', data);
@@ -116,7 +115,7 @@ function setBMSWatcher() {
         })
     }
     
-    //registerAll("worldnode", false);
+    registerAll("worldnode", false);
     
     
     //emits change whenever end point is changed
