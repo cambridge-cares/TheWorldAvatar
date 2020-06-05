@@ -1,15 +1,15 @@
 package uk.ac.cam.cares.jps.ship;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.TimeZone;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -17,6 +17,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -27,25 +28,80 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
-@WebServlet("/GetHKUWeatherData")
-public class HKUWeatherRetriever extends JPSHttpServlet {
+@WebServlet(urlPatterns = {"/GetHKUWeatherData","/GetHKUWeatherLatestData"})
+public class HKUWeatherRetriever extends JPSHttpServlet { //the time result still behind 16 hr??? 
 	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(HKUWeatherRetriever.class);
-     
-	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) throws IOException {
-		
-		String value = req.getParameter("query");
-		JSONObject input = new JSONObject(value);
-		
-		
-		
-//		JSONObject resultoftaking = new JSONObject();
-//		resultoftaking.put("weatherdata", requestlatestdata());
-		
-		res.getWriter().write(requestlatestdata()); 
-		System.out.println("return the result from weather agent");		
+	public static final String LATEST_PATH = "/GetHKUWeatherLatestData";
+	public static final String OLDER_PATH = "/GetHKUWeatherData";
+	
+	@Override
+	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		JSONObject responseParams = requestParams;
+		 String path = request.getServletPath();
+		 if(LATEST_PATH.equals(path)) {
+			 try {
+				String result= queryFromHKUServer(getTimeInXsdTimeStampFormat(System.currentTimeMillis()-600*1000),getTimeInXsdTimeStampFormat(System.currentTimeMillis()),"/getweatherhistory");
+				logger.info("time now= "+getTimeInXsdTimeStampFormat(System.currentTimeMillis()));
+				List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(result);
+				int size=readingFromCSV.size();
+				JSONArray weatherreading= new JSONArray();
+				for(int x=1;x<size;x++) { //header is not count
+					//4,5,6,7,8
+					
+					if(!Arrays.asList(readingFromCSV.get(x)).contains("N/A")) {
+						JSONObject weather= new JSONObject();
+						weather.put("stnname",readingFromCSV.get(x)[0]);
+						weather.put("x",readingFromCSV.get(x)[1]);
+						weather.put("y",readingFromCSV.get(x)[2]);
+						weather.put("z",readingFromCSV.get(x)[3]);
+						weather.put("OutsideAirTemperature",readingFromCSV.get(x)[4]);
+						weather.put("OutsideAirPressure",readingFromCSV.get(x)[5]);
+						weather.put("OutsideAirRelativeHumidity",readingFromCSV.get(x)[6]);
+						weather.put("OutsideWindSpeed",readingFromCSV.get(x)[7]);
+						weather.put("OutsideWindDirection",readingFromCSV.get(x)[8]);
+						weather.put("timestamp",readingFromCSV.get(x)[9]);
+						weatherreading.put(weather);
+					}
+				}
+				responseParams.put("HKweather", weatherreading);
+			 } catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+ 
+		 }else if(OLDER_PATH.equals(path)) {
+			 String result;
+			try {
+				result = requestlatestdata();
+				responseParams=new JSONObject(result);
+				System.out.println("return the result from weather agent");	
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			 
+		 }
+		return responseParams;
 	}
+     
+//	protected void doGetJPS(HttpServletRequest req, HttpServletResponse res) throws IOException {
+//		
+//		String value = req.getParameter("query");
+//		JSONObject input = new JSONObject(value);
+//		
+//		res.getWriter().write(requestlatestdata()); 
+//		System.out.println("return the result from weather agent");		
+//	}
 	
 	public void readWritedata() throws JSONException, UnsupportedEncodingException { //later changed to postgresql??
 		System.out.println("it goes to readwrite data");	
