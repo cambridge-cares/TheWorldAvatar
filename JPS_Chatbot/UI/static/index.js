@@ -114,12 +114,13 @@ function removeItemAll(arr, value) {
     console.log('col size', col_size)
     var data = new google.visualization.DataTable();
 
+	/*
     if ((rows.length == 1) && (col_size == 1))
     {
         $('#single_div').val(rows[0][0])
 
-    }
-    else{
+    } */
+    //else{
         for (col = 0; col < col_size; col++){
         data.addColumn('string', variables[col]);
         console.log('added col' + variables[col])
@@ -134,7 +135,7 @@ function removeItemAll(arr, value) {
 
 
 
-    }
+  //  }
 
 
 

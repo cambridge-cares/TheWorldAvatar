@@ -124,6 +124,9 @@ class JPS_query_constructor:
         sub_properties_arrhenius = ['ontokin:hasActivationEnergy', 'ontokin:hasActivationEnergyUnits ',
                                     'ontokin:hasPreExponentialFactor', 'ontokin:hasPreExponentialFactorUnits',
                                     'ontokin:hasTemperatureExponent', 'ontokin:hasTemperatureExponentUnits']
+
+        sub_properties_products = ['rdfs:label']
+
         attribute = ' <' + self.serach_interface.get_first_match(attribute).strip() + '> '
         print('============== attribute =============')
         print(attribute)
@@ -137,14 +140,17 @@ class JPS_query_constructor:
             propertyName = 'isReversible'
             sub_properties = []
             new_labels = ' ?%s '% propertyName
-
+        elif 'hasProduct' in attribute:
+            propertyName = 'hasProduct'
+            sub_properties = sub_properties_products
+            new_labels = ' ?%s '% propertyName
 
         sub_query = ''
         for num, p in enumerate(sub_properties, start=1):
             l = p.replace('ontokin:has', '')
-            query_line = '?%s ' % propertyName + p + ' ?' + l + ' .\n '
+            query_line = '?%s ' % propertyName + p + ' ?' + l.replace('rdfs:label', 'label') + ' .\n '
             sub_query = sub_query + query_line
-            new_labels = new_labels + ' ?' + l
+            new_labels = new_labels + ' ?' + l.replace('rdfs:label', 'label')
         print('=============== new labels ==============')
         print(new_labels)
         print('-------------- sub_query -------------')
