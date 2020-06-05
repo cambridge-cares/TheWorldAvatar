@@ -64,7 +64,13 @@ public class SlurmJobProperty {
 
 	@Value("${kg.url.to.upload.result.via.json.input}")
 	private String kgURLToUploadResultViaJsonInput;
-	
+
+	@Value("${agent.rdf4j.server.url}")
+	private String rdf4jServerUrl;
+
+	@Value("${rdf4j.repository.ontospecies}")
+	private String rdf4jRepositoryOntoSpecies;
+
 	public String getAgentClass() {
 		return agentClass;
 	}
@@ -125,6 +131,14 @@ public class SlurmJobProperty {
 		return kgURLToUploadResultViaJsonInput;
 	}
 
+	public String getRdf4jServerUrl() {
+		return rdf4jServerUrl;
+	}
+
+	public String getRdf4jRepositoryOntoSpecies() {
+		return rdf4jRepositoryOntoSpecies;
+	}
+
 	public String getExecutableFile() {
 		return executableFile;
 	}
@@ -132,6 +146,4 @@ public class SlurmJobProperty {
 	public void setExecutableFile(String executableFile) {
 		this.executableFile = executableFile;
 	}
-	
-	
 }
