@@ -322,9 +322,9 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			try {
 				JSONObject jsonforslurm = new JSONObject();
 				boolean value=true;
-				if (restart==true) {
-					value=false;
-				}
+//				if (restart==true) {//all the time must be true??
+//					value=false;
+//				}
 				long millis = System.currentTimeMillis();
 				String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
 				jsonforslurm.put("runWholeScript",value);
