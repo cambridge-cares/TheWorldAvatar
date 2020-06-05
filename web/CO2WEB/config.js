@@ -16,6 +16,8 @@ config.baseUri = "http://www.theworldavatar.com"
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
 config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
+//configDevelop();
+
 configDeploy();
 config.agentShowcaseNode = path.join(config.root , "kb/subsetWorld.owl");
 config.worldNode = path.join(config.root , "kb/TheWorld.owl");
@@ -35,7 +37,6 @@ config.landLotNode=path.join(config.root , "kb/sgp/jurongisland/JParkLandLots.ow
 config.ontochemNode= config.crebase + '/query';
 config.ontokinNode= config.ontokinbase + '/query';
 config.ontokinRemoteNode = "http://localhost/rdf4j-server/repositories/ontokin"
-config.ontocompchemNode = "http://localhost/rdf4j-server/repositories/ontocompchem"
 config.ontocompchemRemoteNode = "http://localhost/rdf4j-server/repositories/ontocompchem"
 config.ontospeciesRemoteNode = "http://localhost/rdf4j-server/repositories/ontospecieskb"
 //TODO: this later should be wrapped in owl file

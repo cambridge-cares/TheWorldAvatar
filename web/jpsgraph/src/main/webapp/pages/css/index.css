@@ -1,0 +1,74 @@
+#topBanner
+{
+    background-color: #10616C;
+}
+
+#head1
+{
+    color: white;
+}
+
+#description
+{
+    color: white;
+    width:60%;
+    margin-left: 20%;
+}
+
+div#outputFields {
+	margin-left: 15px;
+	margin-top: 30px;
+	margin-right: 15px;
+}
+
+div#inputFields {
+	margin-left: 15px;
+}
+
+div#buttonrun {
+	
+	margin-top: 30px;
+	
+}
+
+#readme-button {
+    float: right;
+    cursor: pointer;
+    color: white;
+    background: transparent;
+
+    /*position: absolute;*/
+    /*top: 55px;*/
+    /*right: 690px;*/
+    font-size: 20px;
+    width: 30px;
+
+    border: 2px solid white;
+    border-radius: 50%;
+    margin: 0px 100px 0px 0px;
+}
+
+#readme-text {
+    display: none;
+    box-sizing: border-box;
+    height: 271px;
+    width: 709px;
+    border: 2px solid black;
+    border-radius: 5px;
+    padding: 5px 5px;
+
+    position: absolute;
+    /*top: 61px;*/
+    /*right: 113px;*/
+    top: 325px;
+    left: 0;
+    right: 0;
+    margin-left: auto;
+    margin-right: auto;
+
+    background: white;
+    z-index: 1;
+
+    text-align: left;
+    overflow-y: scroll;
+}

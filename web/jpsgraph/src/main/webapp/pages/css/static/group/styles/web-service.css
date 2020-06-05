@@ -1,0 +1,30 @@
+#service-table {
+    border-spacing: 12px;
+    margin: auto;
+}
+#service-table td{
+    padding: 18px 10px 10px 60px;
+    width: 500px;
+    border: 1px solid #cccccc;
+    height: 60px;
+    font-size: 11px;
+    vertical-align: top;
+    line-height: 100%;
+    background-color: #fcfcfc;
+    background-position: 7px 10px;
+    background-repeat: no-repeat;
+}
+#service-table td:hover{
+    background-color: #E7EDDA;
+}
+#service-table td p{
+    padding-left: 2px;
+    text-align: left;
+    margin-top: 6px;
+    line-height: 120%;
+}
+
+#service-table a, #service-table a:visited {
+    font-size: 14px;
+    color: #4C6923;
+}

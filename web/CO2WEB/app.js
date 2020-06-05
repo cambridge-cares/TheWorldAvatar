@@ -36,8 +36,9 @@ var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 
-var MAU = require("./routes/runMAU")
+
 var MAUPlot = require("./routes/plotMAU")
+  var MAU = require("./routes/runMAU");
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
 var PPCO2 = require("./routes/powerplantCO2");
@@ -114,10 +115,10 @@ app.use('/b2map', b2Map)
 
 app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
-
+ app.use("/MAU", MAU);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-app.use("/MAU", MAU);
+
 
 app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
@@ -151,6 +152,25 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
+	ev.on('update', function (data) {
+    logger.debug("update event: "+" on "+data.uri+"_nodata");
+	    //let rooms = io.sockets.adapter.rooms;
+   //logger.debug(rooms[path.normalize(data.uri)].sockets);
+    //update direct clients
+	if(!('data' in data) || data.data ===null){
+		console.log('data update for: '+data.uri)
+    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    } else {
+		//console.log('update event:'+path.normalize(data.uri)+"_data")
+		//console.log('now update');
+		//console.log('rooms')
+		let testid =path.normalize(data.uri)+"_data"
+		let rooms = Object.keys(io.sockets.adapter.rooms)
+				//console.log(rooms)
+		io.in(path.normalize(data.uri)+"_data").emit("update", data);
+		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+}
+})
 agentWatcher.init(io);
 //When any change happened to the file system
 let testId = null
@@ -265,25 +285,7 @@ socket.on('join', function (uriSubscribeList) {
         }
     })
 
-	ev.on('update', function (data) {
-    logger.debug("update event: "+" on "+data.uri+"_nodata");
-	    //let rooms = io.sockets.adapter.rooms;
-   //logger.debug(rooms[path.normalize(data.uri)].sockets);
-    //update direct clients
-	if(!('data' in data) || data.data ===null){
-		console.log('data update for: '+data.uri)
-    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-    } else {
-		//console.log('update event:'+path.normalize(data.uri)+"_data")
-		//console.log('now update');
-		//console.log('rooms')
-		let testid =path.normalize(data.uri)+"_data"
-		let rooms = Object.keys(io.sockets.adapter.rooms)
-				//console.log(rooms)
-		io.in(path.normalize(data.uri)+"_data").emit("update", data);
-		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-}
-})
+
 });
     socket.on('leave', function (uriSubscribeList) {
         //May be do some authorization
