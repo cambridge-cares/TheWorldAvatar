@@ -14,7 +14,7 @@ class ADMSMapSpeedTorqueNOxSoot(object):
         # Default input values.
         self.NO_frac = 0.35
         self.NumParSizeClasses = 4
-        self.LogNorm_mu = 200.0
+        self.LogNorm_mu = 2000.0
         # controlls the width of the distribution
         self.LogNorm_sigma = 1.0
         # unpickled surrogate models

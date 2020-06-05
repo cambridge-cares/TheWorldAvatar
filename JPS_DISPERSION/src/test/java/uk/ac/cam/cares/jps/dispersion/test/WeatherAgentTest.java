@@ -2,13 +2,19 @@ package uk.ac.cam.cares.jps.dispersion.test;
 
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
+import uk.ac.cam.cares.jps.base.http.Http;
+import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -192,6 +198,124 @@ public class WeatherAgentTest extends TestCase {
 	public void xxxtestresetWeatherClaudius() {
 		JSONObject empty= new JSONObject();
 		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", empty.toString());
+	}
+	
+	public void testmakecsv() {
+		 String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+					+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+					+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+					+ "SELECT DISTINCT ?graph " 
+					+ "{ graph ?graph " 
+					+ "{ "
+					+ "?graph j2:hasAddress <"+cityiri+"> ."
+					+ "}" 
+					+ "}Limit30";	
+		List<String[]> listmap = queryFromClaudius(querygraph);
+		//System.out.println("res= "+MatrixConverter.fromArraytoCsv(listmap));
+		  List<String>time= new ArrayList<String>();
+		  for(int x=0;x<listmap.size();x++) {
+			  String context= listmap.get(x)[0];
+			  String querydata = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+						+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+						+ "SELECT DISTINCT ?stnname ?xval ?yval ?proptimeval " 
+						+ "{ graph <"+context+"> " 
+						+ "{ "
+						+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+		                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+		                + "?xent j2:hasValue ?vxent ."
+		                + "?vxent   j2:numericalValue ?xval ."
+		                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+		                + "?yent j2:hasValue ?vyent ."
+		                + "?vyent   j2:numericalValue ?yval ."
+						+ "?graph j2:enumerationValue ?stnname ."
+						+ "?prop   j2:hasValue ?vprop ."
+						+ " ?vprop   j6:hasTime ?proptime ."
+						+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+						
+						+ "}" 
+						+ "}ORDER BY DESC(?proptimeval) Limit2";
+			  
+			  List<String[]> listsgstndata = queryFromClaudius(querydata); //it will give 30 data
+			  String timelatest=listsgstndata.get(0)[3];
+			  String timelatest2=listsgstndata.get(1)[3];
+			  time.add(timelatest);		
+			  time.add(timelatest2);	
+		  }
+		  Collections.sort(time, Collections.reverseOrder()); 
+		  System.out.println("Sorted ArrayList "
+                  + "in Descending order : "
+                  + time);
+		  List<String> time2 = time.stream().distinct().collect(Collectors.toList());
+		  String timelatest=time2.get(0);
+		  String timelatest2=time2.get(1);
+		  System.out.println("time size="+time.size());
+		  System.out.println("time latest= "+timelatest);
+		  System.out.println("time latest2= "+timelatest2);
+		  
+		  List<String[]> listmapfinal=new ArrayList<String[]>();
+		  for(int y=0;y<time2.size();y++) {
+			  for(int x=0;x<listmap.size();x++) {
+				  String context= listmap.get(x)[0];
+				  String query = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+							+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+							+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+							+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+							+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+							+ "SELECT ?entity ?graph ?stnname ?xval ?yval " 
+							+ "{ graph <"+context+"> " 
+							+ "{ "
+							+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+			                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+			                + "?xent j2:hasValue ?vxent ."
+			                + "?vxent   j2:numericalValue ?xval ."
+			                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+			                + "?yent j2:hasValue ?vyent ."
+			                + "?vyent   j2:numericalValue ?yval ."
+							+ "?graph j2:hasAddress <"+cityiri+"> ."
+							+ "?graph j2:enumerationValue ?stnname ."
+							+ "?entity j4:observes ?prop ."
+							+ "?prop   j2:hasValue ?vprop ."
+							+ " ?vprop   j6:hasTime ?proptime ."
+							+ "?proptime   j6:inXSDDateTimeStamp \""+time2.get(y)+"\" ."				
+							+ "}" 
+							+ "}ORDER BY DESC(?proptimeval) Limit7";
+				  List<String[]> listsgstndata = queryFromClaudius(query); //it will give 30 data
+				  if(listsgstndata.size()==7) {
+					  String[]res= {listsgstndata.get(0)[1],listsgstndata.get(0)[2],listsgstndata.get(0)[3],listsgstndata.get(0)[4],timelatest};
+					  listmapfinal.add(res);
+				  }
+			  }
+			  if(listmapfinal.size()>0) {
+				  break;
+			  }
+			  
+		  }
+		  System.out.println("listmapfinal size= "+listmapfinal.size());
+		  String mainstniri=listmapfinal.get(0)[0];
+		  System.out.println("mainstniri= "+mainstniri);
+	}
+
+	private List<String[]> queryFromClaudius(String querygraph) {
+		//String dataPath= QueryBroker.getLocalDataPath();
+		
+		Object[] a = KnowledgeBaseClient.createRequestUrl("http://www.theworldavatar.com/jps/data/weather", null, true);
+		String requestUrl = "http://www.theworldavatar.com/jps/data/weather";
+		JSONObject joparams = (JSONObject) a[1];
+		if (joparams == null) {
+			joparams = new JSONObject();
+		}
+		joparams.put(JPSConstants.QUERY_SPARQL_QUERY, querygraph);
+		String resultfromrdf4j=Http.execute(Http.get(requestUrl, null, joparams));
+
+		//String resultfromrdf4j = KnowledgeBaseClient.query("http://localhost:8080/jps/data/airquality", null, sensorinfo);
+		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
+		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
+		return listmap;
 	}
 
 	

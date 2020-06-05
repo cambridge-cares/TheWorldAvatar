@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -216,57 +217,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		return map;
 	}
 
-	public List<String[]> extractAvailableContext(String cityiri,double x0,double y0) {
-		
-		  String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-				+ "SELECT DISTINCT ?graph ?stnname ?xval ?yval ?proptimeval " 
-				+ "{ graph ?graph " 
-				+ "{ "
-				+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
-                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
-                + "?xent j2:hasValue ?vxent ."
-                + "?vxent   j2:numericalValue ?xval ."
-                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
-                + "?yent j2:hasValue ?vyent ."
-                + "?vyent   j2:numericalValue ?yval ."
-				+ "?graph j2:hasAddress <"+cityiri+"> ."
-				+ "?graph j2:enumerationValue ?stnname ."
-				+ "?prop a j4:OutsideWindSpeed ."
-				+ "?prop   j2:hasValue ?vprop ."
-				+ " ?vprop   j6:hasTime ?proptime ."
-				+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
-				+ "?prop2 a j4:OutsideWindDirection ."
-				+ "?prop2   j2:hasValue ?vprop2 ."
-				+ " ?vprop2   j6:hasTime ?proptime2 ."
-				+ "?proptime2   j6:inXSDDateTimeStamp ?proptimeval ."
-				+ "?prop3 a j4:OutsideAirTemperature ."
-				+ "?prop3   j2:hasValue ?vprop3 ."
-				+ " ?vprop3   j6:hasTime ?proptime3 ."
-				+ "?proptime3   j6:inXSDDateTimeStamp ?proptimeval ."
-				+ "?prop4 a j4:OutsideAirPressure ."
-				+ "?prop4   j2:hasValue ?vprop4 ."
-				+ " ?vprop4   j6:hasTime ?proptime4 ."
-				+ "?proptime4   j6:inXSDDateTimeStamp ?proptimeval ."
-				+ "?prop5 a j4:OutsideAirRelativeHumidity ."
-				+ "?prop5   j2:hasValue ?vprop5 ."
-				+ " ?vprop5   j6:hasTime ?proptime5 ."
-				+ "?proptime5   j6:inXSDDateTimeStamp ?proptimeval ."
-				+ "?prop6 a j4:OutsideAirPrecipitation ."
-				+ "?prop6   j2:hasValue ?vprop6 ."
-				+ " ?vprop6   j6:hasTime ?proptime6 ."
-				+ "?proptime6   j6:inXSDDateTimeStamp ?proptimeval ."
-				+ "?prop7 a j4:OutsideAirCloudCover."
-				+ "?prop7   j2:hasValue ?vprop7 ."
-				+ " ?vprop7   j6:hasTime ?proptime7 ."
-				+ "?proptime7   j6:inXSDDateTimeStamp ?proptimeval ."
-				
-				+ "}" 
-				+ "}ORDER BY DESC(?proptimeval) Limit30";
-		  
+	public List<String[]> extractAvailableContext(String cityiri,double x0,double y0) {	  
 		  
 		  String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
@@ -304,55 +255,60 @@ public class WeatherAgent extends JPSHttpServlet {
 						+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
 						
 						+ "}" 
-						+ "}ORDER BY DESC(?proptimeval) Limit1";
+						+ "}ORDER BY DESC(?proptimeval) Limit2";
 			  
 			  List<String[]> listsgstndata = queryEndPointDataset(querydata); //it will give 30 data
 			  String timelatest=listsgstndata.get(0)[3];
-			  time.add(timelatest);			  
+			  String timelatest2=listsgstndata.get(1)[3];
+			  time.add(timelatest);		
+			  time.add(timelatest2);
 		  }
 		  Collections.sort(time, Collections.reverseOrder()); 
 		  System.out.println("Sorted ArrayList "
                   + "in Descending order : "
                   + time);
-		  String timelatest=time.get(0);
+		  List<String> time2 = time.stream().distinct().collect(Collectors.toList()); //set order to have some latest data
+		 // String timelatest=time.get(0);
 		  
 		  List<String[]> listmap=new ArrayList<String[]>();
-		  for(int x=0;x<listsgstn.size();x++) {
-			  String context= listsgstn.get(x)[0];
-			  String query = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
-						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-						+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
-						+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-						+ "SELECT ?entity ?graph ?stnname ?xval ?yval " 
-						+ "{ graph <"+context+"> " 
-						+ "{ "
-						+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
-		                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
-		                + "?xent j2:hasValue ?vxent ."
-		                + "?vxent   j2:numericalValue ?xval ."
-		                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
-		                + "?yent j2:hasValue ?vyent ."
-		                + "?vyent   j2:numericalValue ?yval ."
-						+ "?graph j2:hasAddress <"+cityiri+"> ."
-						+ "?graph j2:enumerationValue ?stnname ."
-						+ "?entity j4:observes ?prop ."
-						+ "?prop   j2:hasValue ?vprop ."
-						+ " ?vprop   j6:hasTime ?proptime ."
-						+ "?proptime   j6:inXSDDateTimeStamp \""+timelatest+"\" ."				
-						+ "}" 
-						+ "}ORDER BY DESC(?proptimeval) Limit7";
-			  List<String[]> listsgstndata = queryEndPointDataset(query); //it will give 30 data
-			  if(listsgstndata.size()==7) {
-				  String[]res= {listsgstndata.get(0)[1],listsgstndata.get(0)[2],listsgstndata.get(0)[3],listsgstndata.get(0)[4],timelatest};
-				  listmap.add(res);
+		  for(int y=0;y<time2.size();y++) {
+			  for(int x=0;x<listsgstn.size();x++) {
+				  String context= listsgstn.get(x)[0];
+				  String query = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+							+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
+							+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
+							+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+							+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+							+ "SELECT ?entity ?graph ?stnname ?xval ?yval " 
+							+ "{ graph <"+context+"> " 
+							+ "{ "
+							+ "?entity   j7:hasGISCoordinateSystem ?coordsys ."
+			                + "?coordsys   j7:hasProjectedCoordinate_x ?xent ."
+			                + "?xent j2:hasValue ?vxent ."
+			                + "?vxent   j2:numericalValue ?xval ."
+			                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
+			                + "?yent j2:hasValue ?vyent ."
+			                + "?vyent   j2:numericalValue ?yval ."
+							+ "?graph j2:hasAddress <"+cityiri+"> ."
+							+ "?graph j2:enumerationValue ?stnname ."
+							+ "?entity j4:observes ?prop ."
+							+ "?prop   j2:hasValue ?vprop ."
+							+ " ?vprop   j6:hasTime ?proptime ."
+							+ "?proptime   j6:inXSDDateTimeStamp \""+time2.get(y)+"\" ."				
+							+ "}" 
+							+ "}ORDER BY DESC(?proptimeval) Limit7";
+				  List<String[]> listsgstndata = queryEndPointDataset(query); //it will give 30 data
+				  if(listsgstndata.size()==7) {
+					  String[]res= {listsgstndata.get(0)[1],listsgstndata.get(0)[2],listsgstndata.get(0)[3],listsgstndata.get(0)[4],time2.get(y)};
+					  listmap.add(res);
+				  }
 			  }
+			  if(listmap.size()>0) {
+				  break;
+			  }
+			  
 		  }
-		  
-		  
-			
-		  
-		  
+
 		  List<String[]> listiristn = new ArrayList<String[]>();
 
 		

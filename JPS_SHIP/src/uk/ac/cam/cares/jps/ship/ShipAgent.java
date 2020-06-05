@@ -131,7 +131,7 @@ public class ShipAgent extends HttpServlet {
         }
         if (particleratevalue1 != null) {
             particleratevalue1.setPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
-                    jenaOwlModel.createTypedLiteral(totalparticleemission));
+                    jenaOwlModel.createTypedLiteral(totalparticleemission*1000)); //to be in g/s instead kg/s
         }
         //---------------------------------------------------------------------------------------------------------------------------------
 
