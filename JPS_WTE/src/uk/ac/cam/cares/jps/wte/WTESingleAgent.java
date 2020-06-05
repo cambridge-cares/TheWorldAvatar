@@ -88,9 +88,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
-			updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+			updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping, 1);
 			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
-			updateinOffsiteWT(inputoffsitedata,baseUrl);
+			updateinOffsiteWT(inputoffsitedata,baseUrl, 1);
 		 }catch (Exception e) {
 			e.printStackTrace();
 		}			 
@@ -165,9 +165,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 				double newval= Double.parseDouble(bd.toPlainString());
 				linemapping[y]=bd.toPlainString();
 				if(newval>=1) {
-					int FCname = y +1;
-					mappedonsiteiri.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-				+ FCname +".owl#OnSiteWasteTreatment-"+FCname);
+					
+					
+//					int FCname = y +1;
+//					mappedonsiteiri.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
+//				+ FCname +".owl#OnSiteWasteTreatment-"+FCname);
 					
 					
 				}
@@ -176,10 +178,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 			}
 			onsiteunitmapping.add(linemapping);	
 		}
-//		WTEKBCreator converter = new WTEKBCreator();
+		WTEKBCreator converter = new WTEKBCreator();
 		//create Onsite WTF
-//		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping,propertydata);
-//		List<String>mappedonsiteiri=converter.onsiteiri;
+		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping,propertydata);
+		mappedonsiteiri=converter.onsiteiri;
 		return mappedonsiteiri;
 	}
 	
@@ -195,15 +197,15 @@ public class WTESingleAgent extends JPSHttpServlet {
 	public List<String> updateinFCCluster(String baseUrl
 			,List<String> inputdataonsite,
 			List<String[]> inputdataoffsite,
-			List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
+			List<String[]> foodcourtmap, int indOfYear) throws Exception { //update the fc and giving selected onsite iri list
 		//both of them have row= fc amount, col represents onsite or offsite per tech
-		List<String[]>treatedwasteon=readResult(baseUrl,"year by year_Treated waste (onsite)_1.csv");
+		List<String[]>treatedwasteon=readResult(baseUrl,"year by year_Treated waste (onsite)_"+indOfYear+ ".csv");
 		//NoOfClusterx1
-		List<String[]>treatedwasteoff=readResult(baseUrl,"year by year_Treated waste (offsite)_1.csv");
+		List<String[]>treatedwasteoff=readResult(baseUrl,"year by year_Treated waste (offsite)_"+indOfYear+".csv");
 		//NoOfClusterx9
 		int colamount2=treatedwasteoff.get(0).length; // 3 wtf and 3 technologies currently
 		//determine the number of WTF
-		List<String[]> clusterOnsite = readResult(baseUrl,"year by year_Waste flow relation (onsite)_1.csv");
+		List<String[]> clusterOnsite = readResult(baseUrl,"year by year_Waste flow relation (onsite)_"+indOfYear+".csv");
 		//noOfFCActualxnoOfFC (repeated values are clusters)
 		List<String[]>sitemapping=new ArrayList<String[]>();
 		HashSet<String> clusterName =new HashSet<String>(); //temporary value until it runs
@@ -249,9 +251,12 @@ public class WTESingleAgent extends JPSHttpServlet {
 		//I should have less than 109 cluster Names at this stage and there's a difference
 		//between FC Cluster and onsite Cluster
 		
-		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
+		String sparqlInsertStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 			+ "INSERT DATA { \r\n";
+		String sparqlDeleteStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
+				+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
+					+ "DELETE WHERE { \r\n";
 		List<String> clusterWTF = new ArrayList<String>();
 		//outputdata= treated waste onsite
 		//input data onsite=onsiteiri
@@ -260,11 +265,13 @@ public class WTESingleAgent extends JPSHttpServlet {
 			String currentwtf =  sitemapping.get(d)[4];
 			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
-			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
+			StringBuffer delei = new StringBuffer();
+			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex+"_"+Integer.toString(indOfYear);
 			String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
-					+ wasteindex;
+					+ wasteindex+"_"+Integer.toString(indOfYear);
 			Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
 			b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
+			delei.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 			b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 			b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
 			b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
@@ -276,9 +283,9 @@ public class WTESingleAgent extends JPSHttpServlet {
 					+sitemapping.get(d)[1] + ".owl#FoodCourtCluster-"+sitemapping.get(d)[1] ;
 			b.append("<" + foodcourtmap.get(d)[0] + "> OCPSYST:isDirectSubsystemOf <" + fcCluster + "> . \r\n");
 			wasteindex++;
-			String sparql = sparqlStart + b.toString() + "} \r\n";
+			String sparql = sparqlInsertStart + b.toString() + "} \r\n";
 			clusterWTF.add(fcCluster);
-//			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
 		return clusterWTF;
@@ -400,22 +407,18 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @throws IOException
 	 */
 	public void updateKBForSystem(String iriofnetwork, String baseUrl, String queryupdate,List<String> onsiteiri) throws IOException {
-		List<String[]>economic=readResult(baseUrl,"Economic output.csv");
+		List<String[]>economic=readResult(baseUrl,"year by year_Economic output.csv");
 		String result = new QueryBroker().queryFile(iriofnetwork,queryupdate);
 		String[] keyswt = JenaResultSetFormatter.getKeys(result);
 		List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keyswt);
 		System.out.println("answer number= " + resultList.size());
 		OntModel model = JenaHelper.createModel();
 		model.read(iriofnetwork, null);
-		for (int ind = 1; ind < keyswt.length; ind++) {
+		for (int ind = 0; ind < keyswt.length; ind++) {
 			Individual inst = model.getIndividual(resultList.get(0)[ind]);
-			if (ind == 1) {
-				inst.setPropertyValue(getNumericalValueProperty(model),
-						model.createTypedLiteral(Double.parseDouble(economic.get(ind - 1)[0])));
-			} else {
-				inst.setPropertyValue(getNumericalValueProperty(model),
-						model.createTypedLiteral(Double.parseDouble(economic.get(ind)[0])));
-			}
+			inst.setPropertyValue(getNumericalValueProperty(model),
+			model.createTypedLiteral(Double.parseDouble(economic.get(ind)[0])));
+			
 		}
 		
 		Individual entity = model.getIndividual(resultList.get(0)[0]);
@@ -437,10 +440,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @param baseUrl String
 	 * @throws Exception
 	 */
-	public void updateinOffsiteWT(List<String[]> inputdata,String baseUrl) throws Exception {
+	public void updateinOffsiteWT(List<String[]> inputdata,String baseUrl, int indexByYear) throws Exception {
 		//assume inputdata= input offsite data
 		List<String[]>unitofoffsite=readResult(baseUrl,
-				"year by year_number of units (offsite)_1.csv");
+				"year by year_number of units (offsite)_"+indexByYear+".csv");
 		System.out.println("it goes to the offsite update");
 		//filter the arrayfirst to take only non zero values
 		List<String[]>filtered=new ArrayList<String[]>();

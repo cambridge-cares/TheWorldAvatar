@@ -378,7 +378,7 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		
 		try {
 			createBat(baseUrl);
-            notifyWatcher(requestParams, baseUrl+"/Economic output.csv",
+            notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
                     request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -596,7 +596,8 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String bat =  "matlab -nosplash -noFigureWindows -r \"try; run('"
 				+ loc + "'); catch; end; quit\"";
 		System.out.println(bat);
-        String result = CommandHelper.executeSingleCommand(baseUrl, bat);
+        CommandHelper.executeSingleCommand(baseUrl, bat);
+        CommandHelper.executeSingleCommand(baseUrl, bat);
 	}
 	/** runs the batch file. 
 	 * 
