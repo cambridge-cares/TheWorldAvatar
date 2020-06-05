@@ -50,6 +50,7 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println("name1= "+result.get(0)[1]);
 		System.out.println(result.get(1)[0]);
 		System.out.println("name2= "+result.get(1)[1]);
+		System.out.println("time= "+result.get(0)[2]);
 	}
 	
 	public void testDirectCallingWeather() {
@@ -316,6 +317,13 @@ public class WeatherAgentTest extends TestCase {
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		return listmap;
+	}
+	
+	public void testisupdate() {
+		String timelatest="2020-06-05T10:11:42.801+08:00";
+		boolean res=new WeatherAgent().isUpdateNeeded(timelatest);
+		System.out.println("need update? "+res);
+		
 	}
 
 	

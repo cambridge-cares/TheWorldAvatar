@@ -63,6 +63,11 @@ public class MetaDataAnnotator implements Prefixes {
 		String sparql = getSparqlInsert(iriTarget, null, null, iriCreatingAgent, addJPSContext, topics, null, null);
 		update(sparql);	
 	}
+	
+	public static void annotate(String iriTarget, MediaType mediaType, String iriCreatingAgent, boolean addJPSContext, List<String> topics, String creationTime) {
+		String sparql = getSparqlInsert(iriTarget, null, creationTime, iriCreatingAgent, addJPSContext, topics, null, null);
+		update(sparql);
+	}
 
 	public static String getSparqlInsert(String iriTarget, MediaType mediaType, String creationTime, String iriCreatingAgent, 
 			boolean addJPSContext, List<String> topics, List<String> prefixes, List<String> triples) {

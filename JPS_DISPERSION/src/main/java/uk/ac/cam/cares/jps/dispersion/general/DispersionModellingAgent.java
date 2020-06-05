@@ -244,6 +244,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String cityIRI = jo.getString("city");
 			String agent = jo.getString("agent");
 			String datapath = jo.getString("datapath");
+			String time = jo.getString("expectedtime");
 			
 			
 	    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
@@ -261,8 +262,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
 			List<String> topics = new ArrayList<String>();
 	    	topics.add(cityIRI);
-	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics); //annotate
-			
+	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); //annotate
 	    	out.delete();
 		}
 		return true;

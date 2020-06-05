@@ -325,10 +325,13 @@ public class EpisodeAgent extends DispersionModellingAgent {
 				if (restart==true) {
 					value=false;
 				}
+				long millis = System.currentTimeMillis();
+				String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
 				jsonforslurm.put("runWholeScript",value);
 				jsonforslurm.put("city",cityIRI);
 				jsonforslurm.put("agent",agent);
 				jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
+				jsonforslurm.put("expectedtime", executiontime);
 				setUpJob(jsonforslurm.toString(),dataPath);
 			} catch (IOException | SlurmJobException e) {
 				// TODO Auto-generated catch block
