@@ -88,14 +88,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
-			
-			List<String[]> onsiteAndFC = updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
-//				updateinFCCluster(baseUrl,fcMapping,propertydataonsite);
-//			}else {
-//				List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
-//				List<String> onsiteiriselected=updateinFC(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
-//				updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system	
-//			}						
+			updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl);
 		 }catch (Exception e) {
 			e.printStackTrace();
@@ -132,7 +126,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		return resultList;
 	}
 	/** helper function for createFC for later conversion
-	 * 
+	 * Basically gets the iris, and xy coordinates
 	 * @param resultList
 	 * @return
 	 */
@@ -198,11 +192,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 * @return
 	 * @throws Exception
 	 */
-	public List<String[]> updateinFCCluster(String baseUrl
+	public List<String> updateinFCCluster(String baseUrl
 			,List<String> inputdataonsite,
 			List<String[]> inputdataoffsite,
 			List<String[]> foodcourtmap) throws Exception { //update the fc and giving selected onsite iri list
-		List<String[]> clusterWTF=new ArrayList<String[]>();
 		//both of them have row= fc amount, col represents onsite or offsite per tech
 		List<String[]>treatedwasteon=readResult(baseUrl,"year by year_Treated waste (onsite)_1.csv");
 		//NoOfClusterx1
@@ -259,7 +252,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		String sparqlStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 			+ "INSERT DATA { \r\n";
-		
+		List<String> clusterWTF = new ArrayList<String>();
 		//outputdata= treated waste onsite
 		//input data onsite=onsiteiri
 		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
@@ -284,7 +277,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 			b.append("<" + foodcourtmap.get(d)[0] + "> OCPSYST:isDirectSubsystemOf <" + fcCluster + "> . \r\n");
 			wasteindex++;
 			String sparql = sparqlStart + b.toString() + "} \r\n";
-			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+			clusterWTF.add(fcCluster);
+//			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
 		return clusterWTF;
@@ -445,7 +439,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 	 */
 	public void updateinOffsiteWT(List<String[]> inputdata,String baseUrl) throws Exception {
 		//assume inputdata= input offsite data
-		List<String[]>unitofoffsite=readResult(baseUrl,"number of units (offsite).csv");
+		List<String[]>unitofoffsite=readResult(baseUrl,
+				"year by year_number of units (offsite)_1.csv");
 		System.out.println("it goes to the offsite update");
 		//filter the arrayfirst to take only non zero values
 		List<String[]>filtered=new ArrayList<String[]>();
@@ -480,7 +475,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				b.append("<" + currentunit + "> OW:usedInYear " + 1 + " . \r\n");
 				b.append("<" + currentunit + "> OW:amountOfUnit " + numunit + " . \r\n");
 				String sparql = sparqlStart + b.toString() + "} \r\n";
-				new QueryBroker().updateFile(filtered.get(w)[1], sparql);
+//				new QueryBroker().updateFile(filtered.get(w)[1], sparql);
 			}
 		}
 	}

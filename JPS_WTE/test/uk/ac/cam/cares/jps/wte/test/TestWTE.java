@@ -123,10 +123,10 @@ public class TestWTE extends TestCase {
 			//creates onsite WTF if indicated by the number of units (onsite).csv
 			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
 			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String[]> onsiteAndFC = at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
+			List<String> fcCluster = at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping);
 
 			at.updateinOffsiteWT(inputoffsitedata,baseUrl);
-//			updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
+//			at.updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
 //			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
 			
 		} catch (Exception e) {
