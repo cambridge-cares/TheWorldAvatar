@@ -167,7 +167,7 @@ public class Utils {
 		return false;
 	}
 	
-	protected static boolean isStatusFileOpen = false;   
+	protected static boolean isStatusFileOpen = false;
 	
 	/**
 	 * Check the status if a job is not started yet.
@@ -193,6 +193,7 @@ public class Utils {
 			}
 		}
 		statusFile.close();
+		isStatusFileOpen = false;
 		return false;
 	}
 	
