@@ -241,6 +241,8 @@ public class Workspace {
 		copyFile(new File(source),
 				new File(destination.concat(File.separator)
 						.concat(slurmScriptFileName)));
+		Utils.translateLineEndingIntoUnix(new File(destination.concat(File.separator)
+				.concat(slurmScriptFileName)));
 		return Status.JOB_SETUP_SUCCESS_MSG.getName();
 		}catch(IOException e){
 			e.printStackTrace();
