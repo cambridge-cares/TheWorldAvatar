@@ -167,6 +167,8 @@ public class Utils {
 		return false;
 	}
 	
+	protected static boolean isStatusFileOpen = false;   
+	
 	/**
 	 * Check the status if a job is not started yet.
 	 * 
@@ -175,12 +177,17 @@ public class Utils {
 	 * @throws IOException
 	 */
 	public static boolean isJobNotStarted(String statusFilePath) throws IOException{
+		if(isStatusFileOpen){
+			return false;
+		}
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		isStatusFileOpen = true;
 		String line;
 		while((line=statusFile.readLine())!=null){
 			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
 				if(line.contains(Status.STATUS_JOB_NOT_STARTED.getName())){
 					statusFile.close();
+					isStatusFileOpen = false;
 					return true;
 				}
 			}
