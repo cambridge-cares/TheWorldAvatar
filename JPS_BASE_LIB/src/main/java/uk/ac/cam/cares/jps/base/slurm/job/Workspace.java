@@ -174,6 +174,9 @@ public class Workspace {
 		try{
 		copyFile(new File(source),
 				new File(destination));
+		if(destination.endsWith(".sh")){
+			Utils.translateLineEndingIntoUnix(new File(destination));
+		}
 		return Status.JOB_SETUP_SUCCESS_MSG.getName();
 		}catch(IOException e){
 			e.printStackTrace();
