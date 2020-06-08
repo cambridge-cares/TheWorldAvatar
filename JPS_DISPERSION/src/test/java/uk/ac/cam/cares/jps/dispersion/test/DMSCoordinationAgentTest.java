@@ -58,9 +58,20 @@ public class DMSCoordinationAgentTest extends TestCase {
 		
 		//hk adms:
 
+//		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12708579.81");
+//		upcorn.put("uppery", "2547126.72");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12706653.262");
+//		lowcorn.put("lowery", "2545200.172");
+//		JSONObject joregion = new JSONObject();
+//		joregion.put("srsname","EPSG:3857");
+//		joregion.put("lowercorner",lowcorn);
+//		joregion.put("uppercorner",upcorn);
+//	hk adms2:
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12708579.81");
-		upcorn.put("uppery", "2547126.72");
+		upcorn.put("upperx", "12711879.81");
+		upcorn.put("uppery", "2550426.72");
 		JSONObject lowcorn = new JSONObject();
 		lowcorn.put("lowerx", "12706653.262");
 		lowcorn.put("lowery", "2545200.172");
@@ -68,8 +79,6 @@ public class DMSCoordinationAgentTest extends TestCase {
 		joregion.put("srsname","EPSG:3857");
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
-//	
-		
 		
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
 //		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service"); //don't use it for the moment

@@ -76,8 +76,13 @@ public class CoordinationDataCollection extends HttpServlet {
 	
 	public JSONObject executeHKDataADMS(JSONObject jo) throws ExecutionException, InterruptedException {
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12708579.81");
-		upcorn.put("uppery", "2547126.72");
+//		upcorn.put("upperx", "12708579.81");
+//		upcorn.put("uppery", "2547126.72");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12706653.262");
+//		lowcorn.put("lowery", "2545200.172");
+		upcorn.put("upperx", "12711879.81");
+		upcorn.put("uppery", "2550426.72");
 		JSONObject lowcorn = new JSONObject();
 		lowcorn.put("lowerx", "12706653.262");
 		lowcorn.put("lowery", "2545200.172");
