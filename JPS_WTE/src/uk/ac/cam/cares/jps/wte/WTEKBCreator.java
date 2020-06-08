@@ -1062,9 +1062,8 @@ public class WTEKBCreator {
 						//wtf.add(iriofwtf); should the onsite attached to the waste system??
 						String content = JenaHelper.writeToString(jenaOwlModel);
 						new QueryBroker().putOld(Prefix+wtfname+".owl", content);
+						onsiteiri.add(Prefix+wtfname+".owl#"+wtfname);
 					}
-					System.out.println(Prefix+wtfname+".owl#"+wtfname);
-					onsiteiri.add(Prefix+wtfname+".owl#"+wtfname);
 				}
 
 //				for(int d=1;d<=4;d++) { //incinerator not to be touched again which is d=4
@@ -1079,7 +1078,6 @@ public class WTEKBCreator {
 //					String content = JenaHelper.writeToString(jenaOwlModel);
 //					new QueryBroker().putOld(Prefix+wtfname+".owl", content);
 //				}
-				System.out.println("it is processed= " + flag);
 			 
 			}
 			else if(flag.contains("foodcourt")) {
@@ -1121,7 +1119,7 @@ public class WTEKBCreator {
 				System.out.println("it is processed= " + flag);
 			 
 			}
-			
+
 			else if(flag.contains("system")) { //for the waste treatment system
 				inFile = new FileInputStream(filePath);
 				in = new InputStreamReader(inFile, "UTF-8");

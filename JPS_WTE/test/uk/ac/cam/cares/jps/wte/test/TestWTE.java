@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.wte.test;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -10,16 +8,13 @@ import java.util.UUID;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.json.JSONException;
-import org.json.JSONObject;
 import org.json.JSONStringer;
 
 import junit.framework.TestCase;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.BucketHelper;
-import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioClient;
 import uk.ac.cam.cares.jps.wte.WTESingleAgent;
 import uk.ac.cam.cares.jps.wte.WastetoEnergyAgent;
@@ -121,13 +116,14 @@ public class TestWTE extends TestCase {
 			List<String[]> fcMapping = at.createFoodCourt(resu);
 			//properties of OnsiteTech
 			//creates onsite WTF if indicated by the number of units (onsite).csv
-			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
+			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
 			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String> fcCluster = at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping,1);
-
-			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
+			for (int i = 1; i <= 15; i++) {
+				List<String> fcCluster = at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping,i);
+			}
+//			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
 //			at.updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
-//			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiriselected); //for waste system				
+			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system				
 			
 		} catch (Exception e) {
 			e.printStackTrace();

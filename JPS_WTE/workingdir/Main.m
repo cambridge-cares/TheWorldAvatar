@@ -1,7 +1,8 @@
 clc
 clear
 close all
-
+cvx_solver gurobi
+cvx_save_prefs
 %% 
 %6.2 solving each year individually
 %6.1 add the below conditional option for small size problem

@@ -2,10 +2,8 @@ package uk.ac.cam.cares.jps.wte;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,12 +11,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
-import org.apache.jena.ontology.DatatypeProperty;
-import org.apache.jena.ontology.Individual;
-import org.apache.jena.ontology.ObjectProperty;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
-import org.apache.jena.rdf.model.Resource;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -596,7 +590,6 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String bat =  "matlab -nosplash -noFigureWindows -r \"try; run('"
 				+ loc + "'); catch; end; quit\"";
 		System.out.println(bat);
-        CommandHelper.executeSingleCommand(baseUrl, bat);
         CommandHelper.executeSingleCommand(baseUrl, bat);
 	}
 	/** runs the batch file. 

@@ -87,8 +87,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 			//properties of OnsiteTech
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite);
-			updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping, 1);
+			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
+			for (int i = 1; i <= 15; i++) {
+				List<String> fcCluster = updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping,1);
+			}
 			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 1);
 		 }catch (Exception e) {
@@ -151,37 +153,42 @@ public class WTESingleAgent extends JPSHttpServlet {
 		
 	public List<String> updateinOnsiteWT(List<String[]> inputdata,
 			String baseUrl,
-			List<String[]> propertydata) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
+			List<String[]> propertydata, int index) throws Exception { //creating needed onsite WTF while returning complete set of onsite iri
 		
-		List<String[]> unitofonsite=readResult(baseUrl,"year by year_number of units (onsite)_1.csv");
+		List<String[]> unitofonsite=readResult(baseUrl,"year by year_number of units (onsite)_"+index+".csv");
 		List<String[]>onsiteunitmapping=new ArrayList<String[]>();
 		List<String> mappedonsiteiri=new ArrayList<String>();
 		int size3=unitofonsite.size();
 		int colamount3=unitofonsite.get(0).length;
 		for(int x=0;x<size3;x++) { //currently 1 with one tech
-			String[]linemapping= new String[colamount3];//109 elements
-			for(int y=0;y<colamount3;y++) { 	
+			for(int y=0;y<colamount3;y++) { 
+				String[]linemapping= new String[size3];//109 elements	
 				BigDecimal bd = new BigDecimal(unitofonsite.get(x)[y]);
 				double newval= Double.parseDouble(bd.toPlainString());
-				linemapping[y]=bd.toPlainString();
 				if(newval>=1) {
+					//onsite IRIs not created!
+
+					linemapping[0]=bd.toPlainString();
+					int FCname = y +1;
+					mappedonsiteiri.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
+							+ FCname +".owl#OnSiteWasteTreatment-"+FCname);
+
+					onsiteunitmapping.add(linemapping);	
 					
-					
-//					int FCname = y +1;
-//					mappedonsiteiri.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-//				+ FCname +".owl#OnSiteWasteTreatment-"+FCname);
-					
-					
+				}else {
+					linemapping[0]="0";
+					onsiteunitmapping.add(linemapping);	
 				}
-				
+
 				
 			}
-			onsiteunitmapping.add(linemapping);	
+
 		}
 		WTEKBCreator converter = new WTEKBCreator();
 		//create Onsite WTF
 		converter.startConversion("onsitewtf",inputdata,onsiteunitmapping,propertydata);
-		mappedonsiteiri=converter.onsiteiri;
+//		mappedonsiteiri=converter.onsiteiri;
+		converter.onsiteiri = mappedonsiteiri;
 		return mappedonsiteiri;
 	}
 	
@@ -254,9 +261,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 		String sparqlInsertStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
 			+ "INSERT DATA { \r\n";
-		String sparqlDeleteStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
-				+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
-					+ "DELETE WHERE { \r\n";
 		List<String> clusterWTF = new ArrayList<String>();
 		//outputdata= treated waste onsite
 		//input data onsite=onsiteiri
@@ -265,13 +269,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 			String currentwtf =  sitemapping.get(d)[4];
 			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
-			StringBuffer delei = new StringBuffer();
 			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex+"_"+Integer.toString(indOfYear);
 			String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 					+ wasteindex+"_"+Integer.toString(indOfYear);
 			Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
 			b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
-			delei.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
 			b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
 			b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
 			b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
@@ -281,13 +283,16 @@ public class WTESingleAgent extends JPSHttpServlet {
 			b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
 			String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
 					+sitemapping.get(d)[1] + ".owl#FoodCourtCluster-"+sitemapping.get(d)[1] ;
-			b.append("<" + foodcourtmap.get(d)[0] + "> OCPSYST:isDirectSubsystemOf <" + fcCluster + "> . \r\n");
+			if (indOfYear == 1) {
+				b.append("<" + foodcourtmap.get(d)[0] + "> OCPSYST:isDirectSubsystemOf <" + fcCluster + "> . \r\n");
+			}
 			wasteindex++;
 			String sparql = sparqlInsertStart + b.toString() + "} \r\n";
 			clusterWTF.add(fcCluster);
-			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+			new QueryBroker().updateFileOLD(foodcourtmap.get(d)[0], sparql);
 
 		}
+		
 		return clusterWTF;
 	}
 	/** if dump without cluster, sparql update is updated into onsite / offsite WTF directly
@@ -478,7 +483,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				b.append("<" + currentunit + "> OW:usedInYear " + 1 + " . \r\n");
 				b.append("<" + currentunit + "> OW:amountOfUnit " + numunit + " . \r\n");
 				String sparql = sparqlStart + b.toString() + "} \r\n";
-//				new QueryBroker().updateFile(filtered.get(w)[1], sparql);
+				new QueryBroker().updateFile(filtered.get(w)[1], sparql);
 			}
 		}
 	}
