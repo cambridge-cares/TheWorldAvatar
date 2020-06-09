@@ -762,14 +762,22 @@ public class WeatherAgent extends JPSHttpServlet {
 			JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 			for (int r = 0; r < data.length(); r++) {
 				String name = data.getJSONObject(r).get("name").toString();
-				if (properties.contentEquals("OutsideAirCloudCover")) {
-					String newcloudcover = "" + Double.valueOf(cloudcover) / 100; //stored in decimal
-					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, newcloudcover,
-							completeformattime);// stored in decimal
-				}else if (properties.contentEquals("OutsideAirPressure")) {
-					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, pressure,
-							completeformattime);
+				try {
+					String mappedname=map.get(name).toString();
+					if (properties.contentEquals("OutsideAirCloudCover")) {
+						String newcloudcover = "" + Double.valueOf(cloudcover) / 100; //stored in decimal
+						new WeatherAgent().updateRepoNewMethod(mappedname, properties, newcloudcover,
+								completeformattime);// stored in decimal
+					}else if (properties.contentEquals("OutsideAirPressure")) {
+						new WeatherAgent().updateRepoNewMethod(mappedname, properties, pressure,
+								completeformattime);
+					}
+				}catch(Exception e){
+					System.out.println("new station unrecorded is found");
 				}
+				
+
+
 
 			}
 		}else if (cityIRI.toLowerCase().contains("kong")) {
@@ -777,13 +785,18 @@ public class WeatherAgent extends JPSHttpServlet {
 			JSONArray stnCollection = datasource.getJSONArray("HKweather");
 			for (int r = 0; r < stnCollection.length(); r++) {
 				String name = stnCollection.getJSONObject(r).get("stnname").toString();
-				if (properties.contentEquals("OutsideAirCloudCover")) {
-					String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
-					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, newcloudcover,
-							completeformattime);// stored in decimal
-				} else if (properties.contentEquals("OutsideAirPrecipitation")) {
-					new WeatherAgent().updateRepoNewMethod(map.get(name).toString(), properties, precipitation,
-							completeformattime);// stored in decimal
+				try {
+				String mappedname=map.get(name).toString();
+					if (properties.contentEquals("OutsideAirCloudCover")) {
+						String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
+						new WeatherAgent().updateRepoNewMethod(mappedname, properties, newcloudcover,
+								completeformattime);// stored in decimal
+					} else if (properties.contentEquals("OutsideAirPrecipitation")) {
+						new WeatherAgent().updateRepoNewMethod(mappedname, properties, precipitation,
+								completeformattime);// stored in decimal
+					}
+				}catch(Exception e){
+					System.out.println("new station unrecorded is found");
 				}
 
 			}
