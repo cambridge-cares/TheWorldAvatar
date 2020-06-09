@@ -185,8 +185,14 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		processOutputs();
 	}
 	
-	private void processOutputs()throws JPSRuntimeException {
-
+	public void processOutputs()throws JPSRuntimeException {
+        if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+			logger.info("slurmjobproperty="+slurmJobProperty.toString());
+		}
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
@@ -201,7 +207,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 					if (Utils.isJobCompleted(jobFolder)) {
 						System.out.println("job is completed");
 						if(!annotateOutputs(jobFolder)) {
-							System.out.println("output annotated");
+							System.out.println("output not annotated");
 							throw new JPSRuntimeException("annotate output fails");
 						}
 						
@@ -228,8 +234,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
  		}
     }
     
-	protected boolean annotateOutputs(File jobFolder) throws IOException {
+	public boolean annotateOutputs(File jobFolder) throws IOException {
 		System.out.println("annotate output started");
+		try {
+			
 		
 		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
 		File out= new File(zipFilePath);
@@ -262,8 +270,15 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
 			List<String> topics = new ArrayList<String>();
 	    	topics.add(cityIRI);
+	    	System.out.println("metadata annotation started");
 	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); //annotate
+	    	System.out.println("metadata annotation finished");
 	    	out.delete();
+		}
+		}catch(Exception e) {
+			logger.error(e.getMessage());
+			logger.error("DispersionModellingAgent:Output Annotating Task could not finish");
+			System.out.println("DispersionModellingAgent:Output Annotating Task could not finish");
 		}
 		return true;
 	}
