@@ -14,23 +14,21 @@ function initMap() {
     var arrUrl = window.location.pathname.split('/');
     var location = arrUrl[3];
     var center;
-    map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 10
-      });
+    map = new google.maps.Map(document.getElementById('map'));
     if (location.toLowerCase() == "singapore"){
         center = new google.maps.LatLng(1.367165198,103.801163462);
-        map.setCenter(center);
+        map.setZoom(10);
         getRelevantFolder(arrUrl[2], "Singapore");
-    } else if (location.toLowerCase() == "hong_kong"){
+    } else if (location.toLowerCase() == "hongkong"){
         center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
-        map.setCenter(center);
-        map.setZoom(13);
+        map.setZoom(16);
         getRelevantFolder(arrUrl[2], "Hong_Kong");
     }
+    map.setCenter(center);
+    
   }
 function getRelevantFolder(typeOfEmission, city){
     var locationIRI = "http://dbpedia.org/resource/"+city;
-    city = city.replace('_','');
     var agentScenario = prefix +  "/JPS_DISPERSION/" + typeOfEmission + "/results/latest";
     document.getElementById("loader").style.display = "block"; 
     //Part 1: get relevant folder
@@ -43,7 +41,6 @@ function getRelevantFolder(typeOfEmission, city){
             var info=JSON.parse(data);
             // var shipsIRI = info.ship; 
             // console.log(shipsIRI);
-            sensorIRI = info.airStationIRI; //only one is present
             querySensor(city, function (sensorData) {
                 renderSensorStations(sensorData);
             });
@@ -63,16 +60,67 @@ function renderSensorStations(sensorLocs) {
  * @param {List} lst of generators at that location
  */
 function createMarker(lst){
-    console.log(lst);
+    console.log(lst[2], lst[1]);
     var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(lst[1], lst[2].replace('/r','/')),
+        position: new google.maps.LatLng(lst[2], lst[1]),
         map: map,
         title: lst[0]
       });
     marker.addListener('click', function(){
-      console.log(lst[0]);
+        querySensorAttributes(lst[0], function (err, sensorAttributes) {
+            if (err){console.log(err)}
+            document.getElementById("loader").style.display = "block"; 
+            console.log('got sensor attributes to show');
+            console.log(sensorAttributes);
+            sensorAttributes.names= ['pollutant', 'concentration','time','allpsi','mean','max','min','individualpsi']
+            sensorAttributes.data.forEach(item=>{
+                let name = item[0].split('/');
+                name = name[name.length-1]
+                name = name.split('.owl')[0]
+                item[0] = name
+                let unit = item.splice(-1)[0]
+                let unitArr = unit.split('#')
+                unit = unitArr.splice(-1)
+                item[1] = parseFloat(item[1]).toFixed(2)+' '+unit
+                item[4] = parseFloat(item[4]).toFixed(2)+' '+unit
+                item[5] = parseFloat(item[5]).toFixed(2)+' '+unit
+                item[6] = parseFloat(item[6]).toFixed(2)+' '+unit
+                item[7] = parseFloat(item[7]).toFixed(2)
+
+            })
+            sensorAttributes.data.sort(function(a, b) {
+                var nameA = a[0].toUpperCase(); // ignore upper and lowercase
+                var nameB = b[0].toUpperCase(); // ignore upper and lowercase
+                if (nameA < nameB) {
+                    return -1;
+                }
+                if (nameA > nameB) {
+                    return 1;
+                }
+            });
+            renderAttributeTable(sensorAttributes);
+        })
     });
     markers.push(marker);
+}
+function renderAttributeTable(attrs){
+    let tableDiv = $("#sensorTable").empty();
+    let tableStr= "<table class='table'><tr>";
+    for (let tab of attrs.names){
+        tableStr+="<th>"+tab+"</th>";
+    }
+    tableStr+="</tr>";
+    for(let row of attrs.data){
+        tableStr+="<tr>"
+        for(let col of row){
+            tableStr+="<td>"+col+"</td>"
+        }
+        tableStr+="</tr>"
+    };
+    tableStr+="</table>"
+    tableDiv.append(tableStr);
+    
+    document.getElementById("loader").style.display = "none"; 
 }
 function querySensor(city, callback){
     let qstr = `
@@ -240,29 +288,6 @@ function getLegends(){
     container.style("margin", "1em");
 }
 
-/** once map is instantiated, run base scenario
- * 
- */
-// var checkExist = setInterval(function() {
-//     if ($('#map').length) {
-//         position = new google.maps.LatLng(1.367165198,103.801163462);
-//         map.setCenter(position);
-//         map.setZoom(10);
-//         var agenturl = prefix + '/JPS_WTE/WTEVisualization/createMarkers'; 
-
-//         // queryForMarkers(agenturl,createNewUrlForAgent, function(){
-//         //     InitialTransportInputs();
-//         //     InitialUnitInputs();
-//         // });
-//          heatmap = new google.maps.visualization.HeatmapLayer({
-//           data: getPoints(),
-//           map: map
-//         });
-//         heatmap.setMap(map);
-//         clearInterval(checkExist);
-//     }
-// }, 100); // check every 100ms
-
  
 /** sleep function for javascript
  * 
@@ -298,27 +323,7 @@ function clearMarkers() {
 }
 
 
-/** creates a single marker and places it on the google map
- * @param {List} lst of generators at that location
- */
-function createMarker(lst){
-    var marker = new google.maps.Marker({
-        position: new google.maps.LatLng(lst[1], lst[2]),
-        map: map,
-        title: lst[0],
-        icon: lst[3]
-      });
-    marker.addListener('click', function(){
-        var content = setMarkerMen(lst[0],
-            function (_content) {
-            console.log('content',_content);
-            infowindow.setContent(_content);
-            infowindow.setPosition(new google.maps.LatLng(lst[1], lst[2]));
-            infowindow.open(map);
-        });
-    });
-    markers.push(marker);
-}
+
 /** constructs and calls upon openWindow for foodcourts and 
  * 
  * @param {String} id iri of line
