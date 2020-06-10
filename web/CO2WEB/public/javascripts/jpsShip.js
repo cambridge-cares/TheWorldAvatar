@@ -39,8 +39,9 @@ function getRelevantFolder(typeOfEmission, city){
         //Part 2: get the relevant IRIs for ship, as well as for airStationIRIs
         $.get(agentInfo, {path:data}).done(function (data) {
             var info=JSON.parse(data);
-            // var shipsIRI = info.ship; 
-            // console.log(shipsIRI);
+            //Part 3: Handle Ships if they are there
+            var shipsIRI = info.ship.collection.items; 
+            placeShips(shipsIRI);
             querySensor(city, function (sensorData) {
                 renderSensorStations(sensorData);
             });
@@ -48,6 +49,27 @@ function getRelevantFolder(typeOfEmission, city){
         })
 
     })
+}
+function placeShips(shipsIRI){
+    for (ship of shipsIRI) {
+        console.log(ship.lat, ship.lon, ship.name);
+        var image = {
+            // This marker is 20 pixels wide by 32 pixels high.
+            url: 'https://sites.google.com/site/kmlfilescares/jsonsample/ship.png',
+            scaledSize : new google.maps.Size(10, 10),
+            // The origin for this image is (0, 0).
+          };
+        
+        var marker = new google.maps.Marker({
+            position: new google.maps.LatLng(ship.lat, ship.lon),
+            map: map,
+            title: ship.name,
+            icon: image, 
+            opacity: 0.5
+          });
+        
+          listOfIRIs.push(marker);
+      }
 }
 function renderSensorStations(sensorLocs) {
     //TODO: mock data
@@ -64,7 +86,7 @@ function createMarker(lst){
     var marker = new google.maps.Marker({
         position: new google.maps.LatLng(lst[2], lst[1]),
         map: map,
-        title: lst[0]
+        title: lst[0], 
       });
     marker.addListener('click', function(){
         querySensorAttributes(lst[0], function (err, sensorAttributes) {
