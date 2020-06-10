@@ -14,7 +14,7 @@ import java.io.File;
  */
 public enum Property {
 
-	AGENT_WORKSPACE_PARENT_DIR(com.cmclinnovations.slurm.job.Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName()),
+	AGENT_WORKSPACE_PARENT_DIR(uk.ac.cam.cares.jps.base.slurm.job.Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName()),
 	JOB_NO_OF_CORES_PREFIX("%nprocshared="),
 	JOB_MEMORY_PREFIX("%mem="),
 	JOB_MEMORY_UNITS("GB"),

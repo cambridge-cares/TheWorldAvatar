@@ -15,7 +15,8 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import com.cmclinnovations.jps.agent.quantum.calculation.DFTAgent;
 import com.cmclinnovations.jps.agent.quantum.calculation.DFTAgentException;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
+
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
 
 /**

@@ -39,12 +39,6 @@ import com.cmclinnovations.jps.kg.OntoAgentKG;
 import com.cmclinnovations.jps.kg.OntoKinKG;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.cmclinnovations.jps.upload.CompChemUpload;
-import com.cmclinnovations.slurm.job.JobSubmission;
-import com.cmclinnovations.slurm.job.SlurmJob;
-import com.cmclinnovations.slurm.job.SlurmJobException;
-import com.cmclinnovations.slurm.job.Status;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
-import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
 import com.jayway.jsonpath.JsonPath;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -52,6 +46,12 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import net.minidev.json.JSONArray;
+import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
