@@ -1,0 +1,42 @@
+.theme_list_box {
+   padding: 2px;
+    margin: 0 1em 2em 1em ;
+    border-style: solid;
+    border-width: 2px;
+    width:250px;
+   }
+
+.theme_list_box h3 {margin:1px;}
+
+.theme_list_box ul {
+	list-style-type:none;
+	margin:0;
+}
+
+.method {
+    background-color: #ffcccc;
+}
+.application {
+    background-color: #ccccff;
+}
+#methodlist {
+background-color: #ffcccc;
+    float:right;
+    border-color:#550000;
+}
+#applicationlist {
+ background-color: #ccccff;
+    float:left;
+    clear:both;
+    border-color:#000055;
+}
+#otherprojectlist {
+    float:right;
+    clear:both;
+    border-color:#555555;
+    background-color: #dddddd;
+}
+
+.themes a:hover{
+	background-color:transparent;
+}

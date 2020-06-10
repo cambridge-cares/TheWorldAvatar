@@ -15,6 +15,7 @@ const path = require('path')
 var chokidar = require('chokidar');
 var fsre = require('fs-readdir-recursive')
 const changeInformer = require('./groupChangeWatcher')
+var LiteralData = require('../agents/GetLiteralData');
 
 class Ev extends EventEmitter {}
 
@@ -29,7 +30,9 @@ function setBMSWatcher() {
     var watchEvent = new Ev(); //an eventemitter as informer
 
     function informIndi(data, observer, callback) {
-        logger.debug("inform")
+
+		if(data!==null && ('data' in data)){
+		}
         try{//all nodes are local, we use event emitter to inform file change
             watchEvent.emit('update', data);
 
@@ -48,7 +51,7 @@ function setBMSWatcher() {
         sendData: function (dataSwitch) {
             let withChangeData = {};
             let changedFilenames  ={uri:this.uri, filename : this.filename};
-    
+    let self = this;
             function getDataP() {
                 return new Promise(function (resolve, reject) {
             
@@ -56,7 +59,8 @@ function setBMSWatcher() {
                         if(err){
                             reject(err);
                         }
-                        logger.debug(data)
+						console.log('literal data')
+                        console.log(data)
                         resolve({data});
                     }, self.uri);
             

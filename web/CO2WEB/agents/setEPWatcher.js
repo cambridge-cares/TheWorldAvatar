@@ -9,8 +9,8 @@ function setEpWatcher(){
     let watchEvent = new Ev()
     
     function informSocket(data, observers, callback) {
-        console.log("inform")
-        console.log(data.length)
+        //console.log("inform")
+       // console.log(data.length)
         try{//all nodes are local, we use event emitter to inform file change
             watchEvent.emit('new', data);
             

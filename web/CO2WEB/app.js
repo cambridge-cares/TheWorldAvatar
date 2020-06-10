@@ -36,8 +36,9 @@ var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 var showCO2 = require("./routes/showCO2");
 var bmsplot= require("./routes/plotBMSCached.js");
 
-//   var MAU = require("./routes/runMAU")
+
 var MAUPlot = require("./routes/plotMAU")
+  var MAU = require("./routes/runMAU");
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
 var PPCO2 = require("./routes/powerplantCO2");
@@ -116,12 +117,13 @@ app.use('/b2map', b2Map)
 
 app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
-
+ app.use("/MAU", MAU);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
-//  app.use("/MAU", MAU); //won't get MAU to work because of java/nodejs incompat as node latest version doesn't support node-java
+
 
 app.use('/visualizeOntokinRemote',visualizeOntokinR);
+
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 
@@ -129,6 +131,8 @@ app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
+io.set('transports', ['websocket','polling']);
+
 
 /*future data change will be post to this route*/
 
@@ -150,24 +154,36 @@ app.post("/change", function (req, res) {//data change of other nodes will be po
 var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
-agentWatcher.init(io);
-//When any change happened to the file system
-ev.on('update', function (data) {
+	ev.on('update', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");
 	    //let rooms = io.sockets.adapter.rooms;
    //logger.debug(rooms[path.normalize(data.uri)].sockets);
     //update direct clients
-    io.to(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-    io.to(path.normalize(data.uri)+"_data").emit("update", data);
+	if(!('data' in data) || data.data ===null){
+		console.log('data update for: '+data.uri)
+    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    } else {
+		//console.log('update event:'+path.normalize(data.uri)+"_data")
+		//console.log('now update');
+		//console.log('rooms')
+		let testid =path.normalize(data.uri)+"_data"
+		let rooms = Object.keys(io.sockets.adapter.rooms)
+				//console.log(rooms)
+		io.in(path.normalize(data.uri)+"_data").emit("update", data);
+		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+}
 })
+agentWatcher.init(io);
+//When any change happened to the file system
+let testId = null
+
 
 const aepWatcher = setEpWatcher();
 const epChangeEv = aepWatcher.watchEvent;
 const epInformer = aepWatcher.epChangeEmitter;
 epChangeEv.on('new', function (data) {
-    console.log('new endpoint modfication event');
+    //console.log('new endpoint modfication event');
     //todo: logic of subscription
-    console.log(data)
     io.to(path.normalize(data.endpoint)+"_endpoint").emit("new", data.data);
     
 })
@@ -220,7 +236,7 @@ io.on('connection', function(socket){
 
 socket.on('join', function (uriSubscribeList) {
     //May be do some authorization
-
+   testId = socket.id
     console.log('client join');
     let sl = JSON.parse(uriSubscribeList);
     //logger.debug(sl)
@@ -240,7 +256,9 @@ socket.on('join', function (uriSubscribeList) {
         let affix = uri2Sub.withData? "_data" :"_nodata";
         diskLoc = path.normalize(diskLoc)
         socket.join(diskLoc+affix);
-		      // console.log(socket.id, "joined", diskLoc+affix);
+		let rooms = Object.keys(io.sockets.adapter.rooms)
+		//console.log(rooms)
+		     // console.log(socket.id, "joined", diskLoc+affix);
 
 		
 
@@ -249,17 +267,16 @@ socket.on('join', function (uriSubscribeList) {
 
         if(uri2Sub.withData){
             var clients = io.sockets.adapter.rooms[diskLoc+affix].sockets;
-
+            
 //to get the number of clients
             var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
             logger.debug("number of clients in room: "+numClients);
             if (numClients < 2 ){//first join for data, register for data now
-                logger.debug("first client for this node ,register for data change")
+                console.log("first client for this node ,register for data change")
                 bmsWatcher.register(diskLoc,"worldnode", true);
             }
 
 
-                console.log(diskLoc);
                 literalData( function (err, initialData) {
                     //get initial by db access
                     logger.debug("send initial data");
@@ -269,8 +286,8 @@ socket.on('join', function (uriSubscribeList) {
 
         }
     })
-    logger.debug("@@@@@@@@@@@@@@@@")
-    logger.debug(io.sockets.adapter.rooms)
+
+
 });
     socket.on('leave', function (uriSubscribeList) {
         //May be do some authorization

@@ -33,6 +33,7 @@ function changeInformer(thingWillChange, informIndi){
     function WatchDog(resources){
         this.resources = resources;
         this.observers = new Map(); //observer list
+		this.timer = null
     }
 
     WatchDog.prototype = {
@@ -42,13 +43,25 @@ function changeInformer(thingWillChange, informIndi){
             this.observers.set(newObserver, {name: newObserver, receiveData: receiveData});}
            // logger.debug("register for "+this.uri);
         },
+		
+		setTimer: function(time){
+			let self  = this;
+			this.timer = setTimeout(function(){self.timer  = null;},time)
+		},
+		checkTimerCanRun: function(){
+		if(this.timer === null){
+				return true;
+			}
+			return false;
+		},
 
         informAll: function (informIndi) {// inform all observer
             const self = this;
             dataPromise = this.resources.sendData(this.hasDataRequestObserver())
             dataPromise.then(function (promisedData) {
-                console.log(promisedData)
-                console.log('informer get promised data, '+promisedData[1].length)
+				console.log('observers')
+              console.log(self.observers)
+                //console.log('informer get promised data, '+promisedData[1].length)
                 loopInform(promisedData);
             }).catch(e=>{
                 "use strict";
@@ -62,15 +75,16 @@ function changeInformer(thingWillChange, informIndi){
                         // logger.debug("!!!!")
                         // logger.debug(observer)
                         var mobserver = observer[1].name;
-        
+						if(mobserver.includes('data'))
+        console.log('informing: '+mobserver)
                         var data = changedFilenames;
                         if(observer[1].receiveData){
                             data = withChangeData;
                         }
-                        console.log('data in informAll:'+data.length);
+                       // console.log('data in informAll:'+data.length);
                         informIndi(data, mobserver, callback);
                     }
-                    console.log(self.observers)
+                    //console.log(self.observers)
                     /*call inform on all observer*****/
                     if(self.observers.size > 0){
                       //  logger.debug("Call concat")
@@ -80,7 +94,7 @@ function changeInformer(thingWillChange, informIndi){
                                     logger.debug("Can not read changed data:" + err);
                                     return;
                                 }
-                                console.log('finish informing')
+                                //console.log('finish informing')
                                 logger.debug("finish informing")
                                 if(results){
                                     //logger.debug(JSON.stringify(results));
@@ -108,12 +122,17 @@ function changeInformer(thingWillChange, informIndi){
     
     thingWillChange
         .on('change', (register_name, stats)=>{//when dir changed
-            logger.debug('File '+ register_name+' has been changed');
+            //console.log('File '+ register_name+' has been changed');
             //logger.debug(stats)
             if(watchDogs.has(register_name)){ //check if this file is required to be watched
-                logger.debug("Ask watchdog to inform")
+                //console.log("Ask watchdog to inform")
                 let watchDog = watchDogs.get(register_name);
-                watchDog.informAll(informIndi);
+				if(watchDog.checkTimerCanRun()){
+                watchDog.setTimer(5000);
+				watchDog.informAll(informIndi);
+				} else{
+					console.log('too freuquent update')
+				}
             } else{
 
             }

@@ -657,9 +657,7 @@ getIconByType: function (type, highlight) {
                     console.log('no change');
                     infowindow.close();
                     google.maps.event.clearInstanceListeners(infowindow);
-                    
-                    infowindow.close();
-                    google.maps.event.clearInstanceListeners(infowindow);
+					infoWindow = null;
                     return;
                     }
                     console.log(modifications);
@@ -675,15 +673,13 @@ getIconByType: function (type, highlight) {
                         console.log("OUTPUT UPDATED");
                         infowindow.close();
                         google.maps.event.clearInstanceListeners(infowindow);
+						infowindow = null;
                     }, function () {//err callback
                         self.displayMsg(errMsgBox, "Can not update to server", "danger")
                         infowindow.close();
                         google.maps.event.clearInstanceListeners(infowindow);
                         infowindow=null;
                     });
-                    infowindow.close();
-                    google.maps.event.clearInstanceListeners(infowindow);
-                    infowindow  = null;
                 });
                 
             function getAttrPairFromName(name) {

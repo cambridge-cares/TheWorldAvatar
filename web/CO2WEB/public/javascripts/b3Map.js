@@ -7,8 +7,8 @@ var b3map = new PopupMap({useCluster:true,  editable: true});
 var socket = io();
 var prefix = "http://www.jparksimulator.com";
 var scenario = "base";
-
-//subscribe to socket for data change event
+socket.on('connect', () => {
+  console.log('Successfully connected!');
 socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/E-301.owl", withData:true}
     ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant3/R-301.owl", withData:true}
 ,{uri:"http://www.jparksimulator.com/kb/sgp/jurongisland/biodieselplant2/T-601002.owl", withData:true}
@@ -23,6 +23,10 @@ socket.emit("join", JSON.stringify([{uri:"http://www.jparksimulator.com/kb/sgp/j
 
 
 ]));
+  });
+
+//subscribe to socket for data change event
+
 
 let b3dm  = [
         ["V_molarF_3-1", 0],
@@ -60,6 +64,7 @@ socket.on('initial', function (idata) {
     console.log(dataMaps);
 
 });
+let timers= {};
 socket.on('update', function (udata) {//when subscribed value updated
     //need to corrspond the updated data with kept copy - by name
 
@@ -76,10 +81,16 @@ socket.on('update', function (udata) {//when subscribed value updated
                         console.log(uri);//prints uri1, then uri2
                         //console.log(b3map.getMarker(uri));
                         let mmarker = b3map.getMarker(uri);
+			
+			
                         console.log(mmarker +" line 75 ");
-                        if(mmarker){
+                        if(mmarker!== null){
+							let mtimer = timers[uri]
                             console.log('blinkety blink');
+							if(!(uri in timers) || mtimer === null ){
                             mmarker.blinkAnimation()
+							timers[uri] = setTimeout(function(){timers[uri]=null;},50000)
+							}
                         }
 
                     })
@@ -312,8 +323,7 @@ function displayMessageModal(msg) {
 
 }
 function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
-
-    var url2 = prefix+ '/jps/scenario/' + scenarioname + '/update?query=';
+var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
     urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
     url2 += encodeURIComponent(JSON.stringify(urljson)); 
     //url2 += JSON.stringify(urljson); 
@@ -333,7 +343,9 @@ function createUrlForAgent(scenarioname, agenturl, agentparams) {
     return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
 }
 
+
 function callDoSimulationNew(uris){
+	var agentUrl = prefix + '/JPS_BIODIESELPLANT3/DoModelSelection';
     var data = {};
     console.log(uris);
     var arr = uris[0].split('/');
