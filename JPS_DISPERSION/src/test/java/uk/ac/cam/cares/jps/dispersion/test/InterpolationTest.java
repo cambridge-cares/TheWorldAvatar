@@ -1,8 +1,13 @@
 package uk.ac.cam.cares.jps.dispersion.test;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.json.JSONObject;
 
@@ -114,6 +119,27 @@ public class InterpolationTest extends TestCase{
 		System.out.println(new InterpolationAgent().getLastModifiedDirectory("http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service",
 				"http://dbpedia.org/resource/Singapore"));
 	}
+	public void testtimemodif() {
+		String time=new InterpolationAgent().getLastModifiedDirectory("http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service",
+				"http://dbpedia.org/resource/Singapore")[1];
+		System.out.println("time= "+time);
+		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+		try {
+			  Date date = utcFormat.parse(time);
+			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
+			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+
+			   System.out.println("after mod=" +pstFormat.format(date));
+//			   time=pstFormat.format(date)+"+08:00";
+//			   System.out.println("time converted=");
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	public void testrearrangeGst() {
 		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
 				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","['CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2']"));

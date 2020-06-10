@@ -73,6 +73,46 @@ public class CoordinationDataCollection extends HttpServlet {
 	
 //		callAgent(jo);
 	}
+	
+	public JSONObject executeHKDataADMS(JSONObject jo) throws ExecutionException, InterruptedException {
+		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12708579.81");
+//		upcorn.put("uppery", "2547126.72");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12706653.262");
+//		lowcorn.put("lowery", "2545200.172");
+		upcorn.put("upperx", "12711879.81");
+		upcorn.put("uppery", "2550426.72");
+		JSONObject lowcorn = new JSONObject();
+		lowcorn.put("lowerx", "12706653.262");
+		lowcorn.put("lowery", "2545200.172");
+		JSONObject joregion = new JSONObject();
+		joregion.put("srsname","EPSG:3857");
+		joregion.put("lowercorner",lowcorn);
+		joregion.put("uppercorner",upcorn);
+		jo.put("region", joregion);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-001.owl#AirQualityStation-001");
+
+		return jo;
+	}
+	public JSONObject executeHKDataEPISODE(JSONObject jo) throws ExecutionException, InterruptedException {
+
+		JSONObject upcorn = new JSONObject();
+		upcorn.put("upperx", "12720578.56");
+		upcorn.put("uppery", "2562555.26");
+		JSONObject lowcorn = new JSONObject();
+		lowcorn.put("lowerx", "12694101.21");
+		lowcorn.put("lowery", "2534900.06");
+		JSONObject joregion = new JSONObject();
+		joregion.put("srsname","EPSG:3857");
+		joregion.put("lowercorner",lowcorn);
+		joregion.put("uppercorner",upcorn);
+		jo.put("region", joregion);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+		return jo;
+	}
 
 	
 	public void callAgent(JSONObject jo,JSONObject jo2) throws ExecutionException, InterruptedException {
@@ -101,6 +141,8 @@ public class CoordinationDataCollection extends HttpServlet {
 		
 		JSONObject jo = new JSONObject();
 		JSONObject jo2 = new JSONObject();
+		JSONObject jo3 = new JSONObject();
+		JSONObject jo4 = new JSONObject();
 		JSONObject inputjo = AgentCaller.readJsonParameter(req);
 		String scenarioUrl = null;
 		String scenarioName = inputjo.optString("scenarioname");
@@ -122,8 +164,11 @@ public class CoordinationDataCollection extends HttpServlet {
 		try {
 			JSONObject episode=executeSGDataEPISODE(jo2);
 			JSONObject adms=executeSGDataADMS(jo);
+			JSONObject episodeHK=executeHKDataEPISODE(jo4);
+			JSONObject admsHK=executeHKDataADMS(jo3);
 			
 			callAgent(adms,episode);
+			callAgent(admsHK,episodeHK);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

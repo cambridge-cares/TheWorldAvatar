@@ -82,8 +82,10 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		String[] directorydata = getLastModifiedDirectory(agentiri, location);
 		File dirFile = new File(directorydata[0]);
 		String directoryFolder = dirFile.getParent();
-		String directorytime=ConvertTime(directorydata[1]);
-		System.out.println("dirtime= "+directorytime);
+		Date directorytime=ConvertTime(directorydata[1]);
+		//System.out.println("dirtime= "+directorytime);
+		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 		
 		String options = requestParams.optString("options","1");//How do we select the options? 
 		String[] arrayFile = finder(directoryFolder);
@@ -104,7 +106,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		}
 		copyTemplate(baseUrl, "virtual_sensor.m");
 		requestParams.put("baseUrl", baseUrl);
-		requestParams.put("directoryTime", directorytime);
+		requestParams.put("directoryTime", pstFormat.format(directorytime));
 		//modify matlab to read 
 		
 			try {
@@ -168,23 +170,26 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		return requestParams;
 	}
 	
-	public static String ConvertTime(String current) {
+	public static Date ConvertTime(String current) {
 		DateFormat utcFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 		   utcFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		   String result=current;
+//		   String result=current;
+		   Date date=null;
 		try {
-			  Date date = utcFormat.parse(current);
-			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-
-			   System.out.println(pstFormat.format(date));
-			   result=pstFormat.format(date)+"+08:00";
-			   return result;
+			 date = utcFormat.parse(current);
+//			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+//			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+//
+//			   System.out.println(pstFormat.format(date));
+//			   result=pstFormat.format(date);
+//			   return result;
+			  return date;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return result;
+//		return result;
+		return date;
 		
 	}
 
@@ -525,8 +530,11 @@ public class InterpolationAgent  extends JPSHttpServlet {
 			return "[" + sb.toString() + "]";
 		
     }
-    public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, String newtimestamp) {
-		String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
+    public void updateRepoNewMethod(String context,String propnameclass, String scaledvalue,String prescaledvalue, Date newtimestamp) {
+		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
+    	
+    	String sensorinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
@@ -538,7 +546,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
 //				+ " ?proptime   j6:hasBeginning ?proptimestart ."
 //				+ " ?proptime   j6:hasEnd ?proptimeend ."
 //				+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
@@ -554,27 +562,28 @@ public class InterpolationAgent  extends JPSHttpServlet {
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> "
 				+ "WITH <" + context + ">"
 				+ "DELETE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime ?olddatatime ."
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ." 
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime \""+pstFormat.format(newtimestamp)+"\"^^xsd:dateTime ." 
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp \""+newtimestampend+"\" ." 
 				+ "} "
 				+ "WHERE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime ?olddatatime ."
 				//+ "<" + keyvaluemapold.get(0)[2]+ "> j6:inXSDDateTimeStamp ?olddataend ."
 				+ "}";
 		
-		//System.out.println("print sparqlupdate= "+sparqlupdate);
+		System.out.println("print sparqlupdate= "+sparqlupdate);
 			
 			KnowledgeBaseClient.update(dataseturl, null, sparqlupdate); //update the dataset	
 	}

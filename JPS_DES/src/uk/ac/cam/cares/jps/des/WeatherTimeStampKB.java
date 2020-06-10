@@ -7,6 +7,7 @@ import java.io.Reader;
 import java.net.URISyntaxException;
 import java.util.List;
 
+import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.ObjectProperty;
@@ -83,7 +84,7 @@ public class WeatherTimeStampKB { //control which location from
 		hasvalue = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue");
 		hasunit = jenaOwlModel.getObjectProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasUnitOfMeasure");
 		numval = jenaOwlModel.getDatatypeProperty("http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericalValue");
-		timexsdvalue = jenaOwlModel.getDatatypeProperty("http://www.w3.org/2006/time#inXSDDateTimeStamp");
+		timexsdvalue = jenaOwlModel.getDatatypeProperty("http://www.w3.org/2006/time#inXSDDateTime");
 		C=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius");
 		Wperm2=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#W_per_m.m");
 		mpers=jenaOwlModel.getIndividual("http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#m_per_s");
@@ -192,7 +193,7 @@ public class WeatherTimeStampKB { //control which location from
 			voutsidetemp.addProperty(hasunit, C);
 			
 			voutsidetemp.addProperty(hastime, timestamptemp);
-			timestamptemp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampvalue))); //value need to be changed later
+			timestamptemp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(timestampvalue,XSDDatatype.XSDdateTime)); //value need to be changed later
 			
 		}
 	}
@@ -240,7 +241,7 @@ public class WeatherTimeStampKB { //control which location from
 			voutsideirradiation.addProperty(hasunit, Wperm2);
 			
 			voutsideirradiation.addProperty(hastime, timestampirradiation);
-			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
+			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(timestampvalue,XSDDatatype.XSDdateTime)); //value need to be changed later
 			
 		}
 		
@@ -288,7 +289,7 @@ public class WeatherTimeStampKB { //control which location from
 			voutsidewindspeed.addProperty(hasunit, mpers);
 			
 			voutsidewindspeed.addProperty(hastime, timestampwindpseed);
-			timestampwindpseed.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
+			timestampwindpseed.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(timestampvalue,XSDDatatype.XSDdateTime)); //value need to be changed later
 			
 		}
 		
@@ -350,7 +351,7 @@ public class WeatherTimeStampKB { //control which location from
 				// for cloudcover no unit; just use decimal
 			}
 			valueofproperty.addProperty(hastime, timestamp);
-			timestamp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String (timestampvalue))); //value need to be changed later
+			timestamp.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(timestampvalue,XSDDatatype.XSDdateTime)); //value need to be changed later
 			
 		}
 		System.out.println("owl file created");
@@ -574,7 +575,7 @@ public class WeatherTimeStampKB { //control which location from
 			voutsideirradiation.addProperty(hasunit, uniq);
 			
 			voutsideirradiation.addProperty(hastime, timestampirradiation);
-			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(new String(timestampvalue))); //value need to be changed later
+			timestampirradiation.setPropertyValue(timexsdvalue, jenaOwlModel.createTypedLiteral(timestampvalue,XSDDatatype.XSDdateTime)); //value need to be changed later
 			
 		}
 	}

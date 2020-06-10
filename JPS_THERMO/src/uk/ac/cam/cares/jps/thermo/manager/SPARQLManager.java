@@ -197,11 +197,14 @@ public class SPARQLManager {
 			 * If enthalpy for a species is not available as information in knowledge graph, then method returns empty String.  
 			 */
 			if(!enthalpy.getLabel().toString().isEmpty()) {
-				
-			hrefEnthalpy = (String)temperature.getLabel().trim() + "," + (String)enthalpy.getLabel().trim();
+				String eofValue = (String)enthalpy.getLabel().trim();
+				String tokens[] = eofValue.split(" ");
+				if(tokens.length>0){
+					eofValue = tokens[0];
+				}
 			
+				hrefEnthalpy = (String)temperature.getLabel().trim() + "," + eofValue;			
 			}else {
-			
 				hrefEnthalpy="";
 			}
 			

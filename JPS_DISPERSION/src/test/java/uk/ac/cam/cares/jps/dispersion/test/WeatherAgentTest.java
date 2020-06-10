@@ -29,15 +29,15 @@ public class WeatherAgentTest extends TestCase {
 	
 	public void testextract() {
 		//for sg
-		double proclowx = Double.valueOf("11552101.832");
-		double procupx = Double.valueOf("11572101.89");
-		double proclowy = Double.valueOf("131707.739");
-		double procupy = Double.valueOf("151860.32");
+		double proclowx = Double.valueOf("11560879.832");
+		double procupx = Double.valueOf("11564077.989");
+		double proclowy = Double.valueOf("140107.739");
+		double procupy = Double.valueOf("143305.896");
 		//for hk
-//		double proclowx = Double.valueOf("12706630.262");
-//		double procupx = Double.valueOf("12708200.45");
-//		double proclowy = Double.valueOf("2545539.172");
-//		double procupy = Double.valueOf("2546850.028");
+//		double proclowx = Double.valueOf("12706653.262");
+//		double procupx = Double.valueOf("12708579.81");
+//		double proclowy = Double.valueOf("2545200.172");
+//		double procupy = Double.valueOf("2547126.72");
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
@@ -50,6 +50,7 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println("name1= "+result.get(0)[1]);
 		System.out.println(result.get(1)[0]);
 		System.out.println("name2= "+result.get(1)[1]);
+		System.out.println("time= "+result.get(0)[2]);
 	}
 	
 	public void testDirectCallingWeather() {
@@ -195,6 +196,12 @@ public class WeatherAgentTest extends TestCase {
 		new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 	}
 	
+	public void testgovdata() {
+		String weatherTemperature = WeatherAgent.getWeatherDataFromGovAPI("/v1/environment/air-temperature", null);
+		JSONObject joTemperature = new JSONObject(weatherTemperature);//in celcius
+		System.out.println(joTemperature);
+	}
+	
 	public void xxxtestresetWeatherClaudius() {
 		JSONObject empty= new JSONObject();
 		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", empty.toString());
@@ -235,7 +242,7 @@ public class WeatherAgentTest extends TestCase {
 						+ "?graph j2:enumerationValue ?stnname ."
 						+ "?prop   j2:hasValue ?vprop ."
 						+ " ?vprop   j6:hasTime ?proptime ."
-						+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+						+ "?proptime   j6:inXSDDateTime ?proptimeval ."
 						
 						+ "}" 
 						+ "}ORDER BY DESC(?proptimeval) Limit2";
@@ -281,7 +288,7 @@ public class WeatherAgentTest extends TestCase {
 							+ "?entity j4:observes ?prop ."
 							+ "?prop   j2:hasValue ?vprop ."
 							+ " ?vprop   j6:hasTime ?proptime ."
-							+ "?proptime   j6:inXSDDateTimeStamp \""+time2.get(y)+"\" ."				
+							+ "?proptime   j6:inXSDDateTime \""+time2.get(y)+"\"^^xsd:dateTime ."				
 							+ "}" 
 							+ "}ORDER BY DESC(?proptimeval) Limit7";
 				  List<String[]> listsgstndata = queryFromClaudius(query); //it will give 30 data
@@ -316,6 +323,13 @@ public class WeatherAgentTest extends TestCase {
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		return listmap;
+	}
+	
+	public void testisupdate() {
+		String timelatest="2020-06-10T11:28:47.388+08:00";
+		boolean res=new WeatherAgent().isUpdateNeeded(timelatest);
+		System.out.println("need update? "+res);
+		
 	}
 
 	
