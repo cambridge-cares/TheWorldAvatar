@@ -505,7 +505,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		
 	}
 	
-    private static String getWeatherDataFromGovAPI(String path, String json) {
+    public static String getWeatherDataFromGovAPI(String path, String json) {
         URIBuilder builder = new URIBuilder().setScheme("https").setHost("api.data.gov.sg")
                 .setPath(path);
         builder.setParameter("query", json);

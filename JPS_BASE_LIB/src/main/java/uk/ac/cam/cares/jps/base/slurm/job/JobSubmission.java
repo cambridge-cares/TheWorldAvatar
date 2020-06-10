@@ -8,7 +8,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -511,6 +510,7 @@ public class JobSubmission{
 							}
 						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
 							if(jobsRunning.size()<Property.MAX_NUMBER_OF_JOBS.getValue()){
+								System.out.println("number of jobs running= "+jobsRunning.size());
 								if(!(slurmJobProperty.getDelayBetweenConsecutiveJobs()> 0 && jobsRunning.size()>=1)){
 									runNotStartedJobs(jobFolder);
 									jobsRunning.add(jobFolder.getName());
