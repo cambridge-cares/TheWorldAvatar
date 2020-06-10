@@ -174,12 +174,31 @@ public class WeatherAgent extends JPSHttpServlet {
 				double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 				double[] centerPointConverted = CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,
 						center);
-					
+			
+		    	String stntimeinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
+						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
+						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
+						+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
+						+ "SELECT ?class ?propval ?proptimeval "
+						+ "{ GRAPH ?gr "
+						+ "{ "
+						 
+						+ "  ?entity j4:observes ?prop ." 
+						+ " ?prop a ?class ."
+						+ " ?prop   j2:hasValue ?vprop ."
+						+ " ?vprop   j2:numericalValue ?propval ." 
+						+ " ?vprop   j6:hasTime ?proptime ."
+						+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
+						+ "}" 
+						+ "}" 
+						+ "ORDER BY DESC(?proptimeval)LIMIT 1";
+		    	
+		    	 List<String[]> listtime = queryEndPointDataset(stntimeinfo);
 			
 			List<String[]> listmap = extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 			 String context=listmap.get(0)[0]; //main stn
 			 String context2=listmap.get(1)[0]; // the furthest station	 
-			 String timelatest=listmap.get(0)[2];
+			 String timelatest=listtime.get(0)[2];
 			 boolean needupdate=isUpdateNeeded(timelatest);
 			 
 			 try {
