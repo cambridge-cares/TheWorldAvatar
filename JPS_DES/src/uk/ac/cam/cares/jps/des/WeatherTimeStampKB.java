@@ -121,29 +121,29 @@ public class WeatherTimeStampKB { //control which location from
 //		int numberofstn=readingFromCSVHK.size();
 //		String locationid="HK";
 		
-		for(int d=1;d<=numberofstn;d++) {
-			String number="00"+d;
-			if(d>9&&d<100) {
-				number="0"+d;
-			}else if(d>99) {
-				number=""+d;
-			}
-			converter.startConversion(readingFromCSV,"relativehumidity",number,locationid);
-			converter.startConversion(readingFromCSV,"windspeed",number,locationid);
-			converter.startConversion(readingFromCSV,"winddirection",number,locationid);
-			converter.startConversion(readingFromCSV,"precipitation",number,locationid);
-			converter.startConversion(readingFromCSV,"temperature",number,locationid);
-			converter.startConversion(readingFromCSV,"cloudcover",number,locationid);
-			converter.startConversion(readingFromCSV,"pressure",number,locationid);
-		}
-		//converter.startConversion(readingFromCSV,"temperature","001");
+//		for(int d=1;d<=numberofstn;d++) {
+//			String number="00"+d;
+//			if(d>9&&d<100) {
+//				number="0"+d;
+//			}else if(d>99) {
+//				number=""+d;
+//			}
+//			converter.startConversion(readingFromCSV,"relativehumidity",number,locationid);
+//			converter.startConversion(readingFromCSV,"windspeed",number,locationid);
+//			converter.startConversion(readingFromCSV,"winddirection",number,locationid);
+//			converter.startConversion(readingFromCSV,"precipitation",number,locationid);
+//			converter.startConversion(readingFromCSV,"temperature",number,locationid);
+//			converter.startConversion(readingFromCSV,"cloudcover",number,locationid);
+//			converter.startConversion(readingFromCSV,"pressure",number,locationid);
+//		}
+		converter.startConversion(readingFromCSV,"temperature","015","SG");
 		//converter.startConversion(readingFromCSV,"irradiation","001");
-		//converter.startConversion(readingFromCSV,"windspeed","001");
-		//converter.startConversion(readingFromCSV,"winddirection","001");
-		//converter.startConversion(readingFromCSV,"precipitation","001");
-		//converter.startConversion(readingFromCSV,"pressure","001");
-		//converter.startConversion(readingFromCSV,"relativehumidity","001");
-		//converter.startConversion(readingFromCSV,"cloudcover","001");
+		converter.startConversion(readingFromCSV,"windspeed","015","SG");
+		converter.startConversion(readingFromCSV,"winddirection","015","SG");
+		converter.startConversion(readingFromCSV,"precipitation","015","SG");
+		converter.startConversion(readingFromCSV,"pressure","015","SG");
+		converter.startConversion(readingFromCSV,"relativehumidity","015","SG");
+		converter.startConversion(readingFromCSV,"cloudcover","015","SG");
 	}
 	
 	public void doConversiontempsensor(OntModel jenaOwlModel, String mainobjectname,String Prefix,List<String[]> readingFromCSV,String[]location) throws FileNotFoundException, URISyntaxException{
@@ -469,19 +469,27 @@ public class WeatherTimeStampKB { //control which location from
 	private String[] extractLocationofStation(String id, String refDirFile,String locationID) {
 		String []location=new String[3];
 		int index=Integer.valueOf(id)-1;
-		if(locationID.contains("SG")&&index<14) {
-		JSONObject current= new JSONObject(refDirFile);
-		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; //based on json object file because stn 24 is ignored
-		String lat1 = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
-				.getJSONObject("location").get("latitude").toString();
-		String long1 = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
-				.getJSONObject("location").get("longitude").toString();
-		String height1= current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
-				.getJSONObject("location").get("height").toString();
-		
-		location[0]=long1;
-		location[1]=lat1;
-		location[2]=height1;
+		if(locationID.contains("SG")) {
+			if(index<14) {
+				JSONObject current= new JSONObject(refDirFile);
+				int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; //based on json object file because stn 24 is ignored
+				String lat1 = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
+						.getJSONObject("location").get("latitude").toString();
+				String long1 = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
+						.getJSONObject("location").get("longitude").toString();
+				String height1= current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[index])
+						.getJSONObject("location").get("height").toString();
+				
+				location[0]=long1;
+				location[1]=lat1;
+				location[2]=height1;
+			}else if(index==14) {
+				//it is for singapore weather station taken from Accuweather data; THIS IS ARBITRARY LOCATION
+				location[0]="103.786231";
+				location[1]="1.280979";
+				location[2]="10";
+			}
+
 		}else if(locationID.contains("HK")) {
 			List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(refDirFile);
 			readingFromCSV.remove(0);//remove header

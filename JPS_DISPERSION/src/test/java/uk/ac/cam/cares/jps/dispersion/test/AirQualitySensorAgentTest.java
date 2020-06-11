@@ -128,10 +128,6 @@ public class AirQualitySensorAgentTest extends TestCase {
 
 	}
 	
-	public void xxxtestresetAirQualityClaudius() {
-		JSONObject empty= new JSONObject();
-		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", empty.toString());
-	}
 
 	public void testmakecsv() {
 //		String sensorinfo="PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 

@@ -29,20 +29,20 @@ public class WeatherAgentTest extends TestCase {
 	
 	public void testextract() {
 		//for sg
-		double proclowx = Double.valueOf("11560879.832");
-		double procupx = Double.valueOf("11564077.989");
-		double proclowy = Double.valueOf("140107.739");
-		double procupy = Double.valueOf("143305.896");
+//		double proclowx = Double.valueOf("11560879.832");
+//		double procupx = Double.valueOf("11564077.989");
+//		double proclowy = Double.valueOf("140107.739");
+//		double procupy = Double.valueOf("143305.896");
 		//for hk
-//		double proclowx = Double.valueOf("12706653.262");
-//		double procupx = Double.valueOf("12708579.81");
-//		double proclowy = Double.valueOf("2545200.172");
-//		double procupy = Double.valueOf("2547126.72");
+		double proclowx = Double.valueOf("12706653.262");
+		double procupx = Double.valueOf("12711879.81");
+		double proclowy = Double.valueOf("2545200.172");
+		double procupy = Double.valueOf("2550426.72");
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
 
-		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri2,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("xconverted="+centerPointConverted[0]);
 		System.out.println("yconverted="+centerPointConverted[1]);
 		System.out.println("size="+result.size());
@@ -202,12 +202,19 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println(joTemperature);
 	}
 	
-	public void xxxtestresetWeatherClaudius() {
-		JSONObject empty= new JSONObject();
-		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", empty.toString());
+	
+	public void xxxtestAgentCallreset() {
+		JSONObject jo = new JSONObject();
+		jo.put("location", "singapore");//or singapore or singapore_AQ
+		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-015.owl#WeatherStation-015";
+		jo.put("context", context);	
+		//context variation only in index number and country (1 sg,2 hk)
+		jo.put("name","SGAccuWeather-001");// or ="VirtualSensorEpisode-001"or=VirtualSensor-001 or="VirtualSensorHKADMS-001";
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", jo.toString());	
 	}
 	
 	public void testmakecsv() {
+		String loc=cityiri2;
 		 String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
@@ -216,7 +223,7 @@ public class WeatherAgentTest extends TestCase {
 					+ "SELECT DISTINCT ?graph " 
 					+ "{ graph ?graph " 
 					+ "{ "
-					+ "?graph j2:hasAddress <"+cityiri+"> ."
+					+ "?graph j2:hasAddress <"+loc+"> ."
 					+ "}" 
 					+ "}Limit30";	
 		List<String[]> listmap = queryFromClaudius(querygraph);
@@ -283,7 +290,7 @@ public class WeatherAgentTest extends TestCase {
 			                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
 			                + "?yent j2:hasValue ?vyent ."
 			                + "?vyent   j2:numericalValue ?yval ."
-							+ "?graph j2:hasAddress <"+cityiri+"> ."
+							+ "?graph j2:hasAddress <"+loc+"> ."
 							+ "?graph j2:enumerationValue ?stnname ."
 							+ "?entity j4:observes ?prop ."
 							+ "?prop   j2:hasValue ?vprop ."
@@ -304,7 +311,7 @@ public class WeatherAgentTest extends TestCase {
 		  }
 		  System.out.println("listmapfinal size= "+listmapfinal.size());
 		  String mainstniri=listmapfinal.get(0)[0];
-		  System.out.println("mainstniri= "+mainstniri);
+		  System.out.println("stniri 0= "+mainstniri);// (not considering the centre point closest yet)
 	}
 
 	private List<String[]> queryFromClaudius(String querygraph) {

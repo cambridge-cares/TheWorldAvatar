@@ -41,10 +41,8 @@ import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
-import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
-import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 
 @WebServlet(urlPatterns = {"/SensorWeatherAgent","/resetWeatherRepository"})
 public class WeatherAgent extends JPSHttpServlet {
@@ -70,86 +68,104 @@ public class WeatherAgent extends JPSHttpServlet {
 	    	 System.out.println("path= " + path);
 	    	 //String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);// should be outside (not looped)
 	    	if(path.contains("/resetWeatherRepository")) {
+	    		String context = requestParams.getString("context");
+	    		String name=requestParams.getString("name");
+	    		String location=requestParams.getString("location");
+	    		String number=context.split("#WeatherStation-")[1];
 	    		rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
 	    		 repo = new HTTPRepository(rdf4jServer, repositoryID);
 	    		RepositoryConnection con = repo.getConnection();
-	    		String[]location= {"singapore","hong kong","berlin","the hague"};
-	    		String cityiri= "http://dbpedia.org/resource/Singapore";
-	    		String cityiri2= "http://dbpedia.org/resource/Hong_Kong";
-	    		String cityiri3= "http://dbpedia.org/resource/The_Hague";
-	    		String cityiri4= "http://dbpedia.org/resource/Berlin";
-	    		for (String el:location){
-	    			resetRepoTrial(con,el); //currently the context is not used
-	    		}
+	    		String cityiri=null;
+//	    		String[]location= {"singapore","hong kong","berlin","the hague"};
+	    		if(location.contentEquals("singapore")) {
+			   		cityiri= "http://dbpedia.org/resource/Singapore";
+		   		}else if(location.contains("kong")) {
+		   			cityiri= "http://dbpedia.org/resource/Hong_Kong";
+		   		}else if(location.contains("berlin")) {
+		   			cityiri= "http://dbpedia.org/resource/Berlin";
+		   		}else if(location.contains("hague")) {
+		   			cityiri= "http://dbpedia.org/resource/The_Hague";
+		   		}
+	    		String[]locationarr= {location};
 	    		
-	    		String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
-	    		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; 
-	    		JSONObject current= new JSONObject(inputRef);
-	    		for(int x=1;x<=indexchosen.length;x++) {
-	    			String index="0"+x;
-	    			if(x<10) {
-	    				index="00"+x;
-	    			}
-	    			String name = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[x-1])
-	    					.get("name").toString();
-	    			String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+index+".owl#WeatherStation-"+index;
-	    			List<String>info= new ArrayList<String>();
-	    			info.add(cityiri);
-	    			info.add(name);
-	    			insertDataRepoContext(info,context);
+	    		
+	    		for (String el:locationarr){
+	    			resetRepoTrial(con,el,context,number); //currently the context is not used
 	    		}
+    			List<String>info= new ArrayList<String>();
+    			info.add(cityiri);
+    			info.add(name);
+    			insertDataRepoContext(info,context);
+	    		
+	    		
+//	    		String inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/sensor weather reference.json");
+//	    		int []indexchosen= {0,1,2,3,4,5,6,7,8,9,10,11,12,13}; 
+//	    		JSONObject current= new JSONObject(inputRef);
+//	    		for(int x=1;x<=indexchosen.length;x++) {
+//	    			String index="0"+x;
+//	    			if(x<10) {
+//	    				index="00"+x;
+//	    			}
+//	    			String name = current.getJSONObject("metadata").getJSONArray("stations").getJSONObject(indexchosen[x-1])
+//	    					.get("name").toString();
+//	    			String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//	    			List<String>info= new ArrayList<String>();
+//	    			info.add(cityiri);
+//	    			info.add(name);
+//	    			insertDataRepoContext(info,context);
+//	    		}
 	    		
 	    		
 	    		//for hongkong case
-	    		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
-	    		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
-	    		readingFromCSV.remove(0);
-	    		for(int x=1;x<=readingFromCSV.size();x++) {
-	    			String index="0"+x;
-	    			if(x<10) {
-	    				index="00"+x;
-	    			}
-	    			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
-	    			String name=readingFromCSV.get(x-1)[0];	
-	    			List<String>info= new ArrayList<String>();
-	    			info.add(cityiri2);
-	    			info.add(name);
-	    			insertDataRepoContext(info,context);
-	    		}
+//	    		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/1hrweatherhistory.csv");
+//	    		List<String[]> readingFromCSV = MatrixConverter.fromCsvToArray(inputRef);
+//	    		readingFromCSV.remove(0);
+//	    		for(int x=1;x<=readingFromCSV.size();x++) {
+//	    			String index="0"+x;
+//	    			if(x<10) {
+//	    				index="00"+x;
+//	    			}
+//	    			String context="http://www.theworldavatar.com/kb/hkg/hongkong/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//	    			String name=readingFromCSV.get(x-1)[0];	
+//	    			List<String>info= new ArrayList<String>();
+//	    			info.add(cityiri2);
+//	    			info.add(name);
+//	    			insertDataRepoContext(info,context);
+//	    		}
 	    		
 	    		//for TheHague
-	    		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/TheHagueTemplate.csv");
-	    		List<String[]> readingFromCSV2 = MatrixConverter.fromCsvToArray(inputRef);
-	    		readingFromCSV2.remove(0);
-	    		for(int x=1;x<=readingFromCSV2.size();x++) {
-	    			String index="0"+x;
-	    			if(x<10) {
-	    				index="00"+x;
-	    			}
-	    			String context="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-"+index+".owl#WeatherStation-"+index;
-	    			String name=readingFromCSV2.get(x-1)[0];	
-	    			List<String>info= new ArrayList<String>();
-	    			info.add(cityiri3);
-	    			info.add(name);
-	    			insertDataRepoContext(info,context);
-	    		}
+//	    		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/TheHagueTemplate.csv");
+//	    		List<String[]> readingFromCSV2 = MatrixConverter.fromCsvToArray(inputRef);
+//	    		readingFromCSV2.remove(0);
+//	    		for(int x=1;x<=readingFromCSV2.size();x++) {
+//	    			String index="0"+x;
+//	    			if(x<10) {
+//	    				index="00"+x;
+//	    			}
+//	    			String context="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//	    			String name=readingFromCSV2.get(x-1)[0];	
+//	    			List<String>info= new ArrayList<String>();
+//	    			info.add(cityiri3);
+//	    			info.add(name);
+//	    			insertDataRepoContext(info,context);
+//	    		}
 	    		
 	    		//for Berlin
-	    		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/BerlinTemplate.csv");
-	    		List<String[]> readingFromCSV3 = MatrixConverter.fromCsvToArray(inputRef);
-	    		readingFromCSV3.remove(0);
-	    		for(int x=1;x<=readingFromCSV3.size();x++) {
-	    			String index="0"+x;
-	    			if(x<10) {
-	    				index="00"+x;
-	    			}
-	    			String context="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-"+index+".owl#WeatherStation-"+index;
-	    			String name=readingFromCSV3.get(x-1)[0];	
-	    			List<String>info= new ArrayList<String>();
-	    			info.add(cityiri4);
-	    			info.add(name);
-	    			insertDataRepoContext(info,context);
-	    		}
+//	    		inputRef=new QueryBroker().readFileLocal(AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/BerlinTemplate.csv");
+//	    		List<String[]> readingFromCSV3 = MatrixConverter.fromCsvToArray(inputRef);
+//	    		readingFromCSV3.remove(0);
+//	    		for(int x=1;x<=readingFromCSV3.size();x++) {
+//	    			String index="0"+x;
+//	    			if(x<10) {
+//	    				index="00"+x;
+//	    			}
+//	    			String context="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-"+index+".owl#WeatherStation-"+index;
+//	    			String name=readingFromCSV3.get(x-1)[0];	
+//	    			List<String>info= new ArrayList<String>();
+//	    			info.add(cityiri4);
+//	    			info.add(name);
+//	    			insertDataRepoContext(info,context);
+//	    		}
 	    		response.put("status", "reset endpoint successful");
 	    		
 	    	}else {
@@ -686,7 +702,7 @@ public class WeatherAgent extends JPSHttpServlet {
 
 	}
 		
-	public void resetRepoTrial(RepositoryConnection con, String location) {// unused for the servlet
+	public void resetRepoTrial(RepositoryConnection con, String location,String context,String number) {// unused for the servlet
 		int stnnumber=1;
 		String index="";
 		String midfix="";
@@ -703,21 +719,22 @@ public class WeatherAgent extends JPSHttpServlet {
 			index="HK";
 			midfix="hkg/hongkong";
 		}else if(location.contains("singapore")) {
-			stnnumber=14;
+			//stnnumber=14;
+			stnnumber=1;
 			index="SG";
 			midfix="sgp/singapore";
 		}
 		for (int d = 1; d <= stnnumber; d++) {
-			String number = "00" + d;
+//			String number = "00" + d;
 			if (d > 9&& d<=99) {
-				number = "0" + d;
+//				number = "0" + d;
 			}
 			String[] filenames = { index+"CloudCoverSensor-" + number + ".owl",
 					index+"TemperatureSensor-" + number + ".owl", index+"WindSpeedSensor-" + number + ".owl",
 					index+"PrecipitationSensor-" + number + ".owl", index+"PressureSensor-" + number + ".owl",
 					index+"RelativeHumiditySensor-" + number + ".owl", index+"WindDirectionSensor-" + number + ".owl" };
-			String context = "http://www.theworldavatar.com/kb/"+midfix+"/WeatherStation-" + number
-					+ ".owl#WeatherStation-" + number;
+			//String context = "http://www.theworldavatar.com/kb/"+midfix+"/WeatherStation-" + number
+//					+ ".owl#WeatherStation-" + number;
 			System.out.println("upload files for graph");
 			for (String el : filenames) {
 				new WeatherAgent().addFiletoRepo(con, el, context,midfix);
@@ -794,11 +811,35 @@ public class WeatherAgent extends JPSHttpServlet {
 				}catch(Exception e){
 					System.out.println("new station unrecorded is found");
 				}
-				
-
-
-
 			}
+			//HERE IS FOR BACKUP ACCUWEATHER STATION
+			String name="SGAccuWeather-001";
+			String iri=map.get(name).toString();
+			if (properties.contentEquals("OutsideAirCloudCover")) {
+				String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newcloudcover,
+						completeformattime);// stored in decimal
+			} else if (properties.contentEquals("OutsideAirPrecipitation")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, precipitation,
+						completeformattime);// stored in decimal
+			}else if (properties.contentEquals("OutsideAirPressure")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, pressure,
+						completeformattime);
+			}else if (properties.contentEquals("OutsideAirTemperature")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, temperature,
+					completeformattime);
+			}else if (properties.contentEquals("OutsideAirRelativeHumidity")) {
+				String newhumidity = "" + Double.valueOf(relativehumidity) / 100; //stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newhumidity,
+						completeformattime);
+			}else if (properties.contentEquals("OutsideWindSpeed")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, windspeed,
+						completeformattime);
+			}else if (properties.contentEquals("OutsideWindDirection")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, winddirection,
+						completeformattime);
+			}
+			
 		}else if (cityIRI.toLowerCase().contains("kong")) {
 			
 			JSONArray stnCollection = datasource.getJSONArray("HKweather");
@@ -883,6 +924,11 @@ public class WeatherAgent extends JPSHttpServlet {
 	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",jowinddirection,completeformat,cityIRI);//accu
 	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPressure",jowinddirection,completeformat,cityIRI);//accu
 	    	//in accuweather the json data is needed from the data gov to update each stn written in data gov
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirTemperature",jowinddirection,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindDirection",jowinddirection,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindSpeed",jowinddirection,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirRelativeHumidity",jowinddirection,completeformat,cityIRI);//accu
+	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",jowinddirection,completeformat,cityIRI);//accu
 	  
 		}else if(cityIRI.toLowerCase().contains("kong")) {
 			JSONObject jo = new JSONObject();
@@ -944,13 +990,19 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static void main(String[]args) { //used for upload all content locally
 
 		RepositoryConnection con = repo.getConnection();
-//		String location="singapore";
+		String location="singapore";
 //		String location="hong kong";
-		String location="berlin";
+//		String location="berlin";
 //		String location="the hague";
 		WeatherAgent a=new WeatherAgent();
-		a.resetRepoTrial(con,location); //currently the context is not used
-		
+		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-015.owl#WeatherStation-015";
+		a.resetRepoTrial(con,location,context,"015"); //currently the context is not used
+		String cityiri= "http://dbpedia.org/resource/Singapore";
+		String name="SGAccuWeather-001";
+		List<String>info= new ArrayList<String>();
+		info.add(cityiri);
+		info.add(name);
+		new WeatherAgent().insertDataRepoContext(info,context);
 		String completeformat=WeatherAgent.provideCurrentTime();
 
 			System.out.println("currenttime= "+ completeformat);		
