@@ -36,23 +36,26 @@ function getRelevantFolder(typeOfEmission, city){
         console.log('requested Scenario Agent for folder: '+data);
     }).then(function(data){
         var agentInfo = prefix +  "/JPS_SHIP/GetExtraInfo";
-        //Part 2: get the relevant IRIs for ship, as well as for airStationIRIs
-        // $.get(agentInfo, {path:data}).done(function (data) {
-        //     var info=JSON.parse(data);
-        //     //Part 3: Handle Ships if they are there
-        //     var shipsIRI = info.ship.collection.items; 
-        //     placeShips(shipsIRI);
-        //     querySensor(city, function (sensorData) {
-        //         renderSensorStations(sensorData);
-        //     });
-        //     document.getElementById("loader").style.display = "none"; 
-        // })
+        // Part 2: get the relevant IRIs for ship, as well as for airStationIRIs
+        $.get(agentInfo, {path:data}).done(function (data) {
+            var info=JSON.parse(data);
+            //Part 3: Handle Ships if they are there
+            var shipsIRI = info.ship.collection.items; 
+            placeShips(shipsIRI);
+            querySensor(city, function (sensorData) {
+                renderSensorStations(sensorData);
+            });
+            document.getElementById("loader").style.display = "none"; 
+        })
         let agentInformation = prefix + "/JPS/ADMSOutputAllForShips";//"/info"
         console.log(agentInformation);
         $.get(agentInformation, {folder:data}).done(function (info) {
             setUpSlider(info.numheight, info.initialheight, info.numinterval);
             console.log(info.listofpol);
             populateDropDown(info.listofpol);
+            
+            info.x_coord.forEach(function(obj) { obj = parseFloat(obj)});
+            info.y_coord.forEach(function(obj) { obj = parseFloat(obj)});
             arrXYPollutant = [info.x_coord, info.y_coord, info.grid]; //grid = noOfPollutantx(X*Y)
             //Part 4: Concentration data
             document.getElementById("loader").style.display = "none"; 
@@ -82,16 +85,15 @@ function populateDropDown(listofpollutants){
     }
 }
 function addheatmap(){
-    map = new google.maps.Map(document.getElementById('map'));
+    // var data = getPollutantAndHeight();
     heatmap = new google.maps.visualization.HeatmapLayer({
-        data: getPollutantAndHeight(),
+        data: getPollutantAndHeight(), 
         map: map
       });
 }
 function getPollutantAndHeight(){
     var arrUrl = window.location.pathname.split('/');
     var firstProjection;
-    proj4.defs("EPSG:32648","+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs");
     if (arrUrl[3].toLowerCase()== "singapore"){
         if (arrUrl[2].toLowerCase()== "adms" ){
             firstProjection = "EPSG:3414";
@@ -105,21 +107,25 @@ function getPollutantAndHeight(){
             firstProjection = "EPSG:32650";
         }
     }
+    proj4.defs(firstProjection, "+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs");
     heightLevel = slider.value;
     let dropD= document.getElementById("locality-dropdown");
     let pollutantIndex = dropD.options[dropD.selectedIndex].value;
     let sideLength = arrXYPollutant[0].length;
-    let typeOfPollutant = arrXYPollutant[2][heightLevel][pollutantIndex];
-    console.log(typeOfPollutant)
+    var typeOfPollutant = arrXYPollutant[2][heightLevel][pollutantIndex];
+    typeOfPollutant.forEach(function(obj) { obj = parseFloat(obj)});
     //so length of Gases is a squared integer, pollutant index is an integer
     lotsOfMarkers = [];
     for (var i = 0; i < sideLength; i++) {
-        console.log(i);
         var coordinate = proj4(firstProjection).inverse([arrXYPollutant[0][i],arrXYPollutant[1][i]]);
-        var random = {location: new google.maps.LatLng(coordinate[0], coordinate[1]),
+        console.log(coordinate, typeOfPollutant[i]);
+        var random = {location: new google.maps.LatLng(coordinate[1], coordinate[0]),
         weight: typeOfPollutant[i] } ;
         lotsOfMarkers.push(random);
     }
+    let maxNum = Math.max(...typeOfPollutant);
+    let minNum = Math.min(...typeOfPollutant);
+    getLegends([maxNum, minNum])
     return lotsOfMarkers;
 }
 
@@ -129,6 +135,7 @@ output.innerHTML = slider.value;
 
 slider.oninput = function() {
     output.innerHTML = this.value;
+    addheatmap();
 }
 document.getElementById("myList").onchange = function() {
     addheatmap();
@@ -314,26 +321,16 @@ function queryProcessor(str){
     }
     return {data:results, names:names};
 }
-// select appropriate gas emission sample
-function getPoints() {
-    var size = NO2json.length;
-    for (var i = 0; i < size; i++) {
-        var random = {location: new google.maps.LatLng(NO2json[i]["X(m)"],NO2json[i]["Y(m)"]),
-        weight: NO2json[i]["NO2"] } ;
-            lotsOfMarkers.push(random);
-    }
 
-  return lotsOfMarkers;
-}
 function changeRadius(numeral) {
     heatmap.set('radius', heatmap.get('radius') ? null : numeral);
 }
-function getLegends(){
+function getLegends(maxMin){
 
     var container = d3.select("#chart");
     var colourScale = d3
         .scaleSequential(d3.interpolateRdYlGn)
-        .domain([46,0]);
+        .domain(maxMin);
     var domain = colourScale.domain();
     
     var width = 100;
