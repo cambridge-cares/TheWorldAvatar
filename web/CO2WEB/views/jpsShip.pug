@@ -59,15 +59,63 @@ block content
 		.sidenav {padding-top: 15px;}
 		.sidenav a {font-size: 18px;}
 		}
+		.slidecontainer {
+			width: 80%;
+			float:left;
+			}
+
+		.slider {
+		-webkit-appearance: none;
+		width: 100%;
+		height: 30px;
+		border-radius: 5px;
+		background: #d3d3d3;
+		outline: none;
+		opacity: 0.7;
+		-webkit-transition: .2s;
+		transition: opacity .2s;
+		}
+
+		.slider:hover {
+		opacity: 1;
+		}
+
+		.slider::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background: #4CAF50;
+		cursor: pointer;
+		}
+
+		.slider::-moz-range-thumb {
+		width: 25px;
+		height: 25px;
+		border-radius: 50%;
+		background: #4CAF50;
+		cursor: pointer;
+		}
+		locality-dropdown{
+			overflow: hidden;
+			float:left;
+			width: 20%;
+		}
 	#loader(style='display:none;')
-		
-	div#wrapper(style="width: 200px;")
-		div.overlay-panel-wrapper
+	div#wrapper2
+		.slidecontainer
+			input#myRange.slider(type='range', min='1', max='15', value='1')
+			p(style='text-align: center;')
+				span#demo(style='display: inline-block;')
+		select#locality-dropdown
+				
+	div#wrapper
+		div.overlay-panel-wrapper(style="width: 30%;")
 			div#overlay-setting-panel.panel.panel-default
 				div.panel-body.container-fluid
 					div#setting-panel-body
-						div#text-panel(style='overflow-inline:scroll;')
-							div#chart
+						div#chart
 						//- br
 						//- button#run-btn.btn.btn-primary Run Simulation
 
@@ -79,7 +127,7 @@ block content
 	script(src="/javascripts/jpsShip.js")
 	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&libraries=visualization&callback=initMap")
 	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
-	script(src='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js')
 	script(src='https://unpkg.com/d3@5.7.0/dist/d3.min.js')
 	script(src='https://unpkg.com/d3fc@14.0.27/build/d3fc.js')
+	script(src='https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.js')
 
