@@ -14,7 +14,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 + "SELECT  DISTINCT ?entity  ?name ?year ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
-+ "?V_WasteDeliveredAmount ?V_WasteDeliveredAmount_unit ?Site_of_delivery "
++ "?V_WasteDeliveredAmount ?V_WasteDeliveredAmount_unit ?Site_of_delivery ?fcCluster "
 + "WHERE {"
 + "?entity  a j1:FoodCourt ."
 + "?entity   j8:hasName ?name ." 
@@ -41,8 +41,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "FILTER( ?year <= 1)" 
 
 
-+ "}"
-+ "ORDER BY ASC(?year)";
++ "}";
 WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -439,6 +438,7 @@ output.innerHTML = slider.value;
 
 slider.oninput = function() {
   output.innerHTML = this.value;
+  yearNumber = this.value;
 }
 /** calls the creation of markers (with extra parameters) before creating the onsite WTF technology
  * 
@@ -451,8 +451,10 @@ function queryForOnsiteWT(){
     + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
     + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
     + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
-    + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }" +"}";
-     
+    + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }"
+    + "OPTIONAL{ ?entity   j2:isDirectSubsystemOf ?fcCluster }"
+     +"}";
+    var replaceString = "FILTER( ?year <= 1)" + "}" 
     FCQuery = FCQuery.replace("}", QurStr )
     queryForMarkers(agenturl,createUrlForAgent, function(){
         var agenturl = prefix + "/JPS_WTE/WTEVisualization/queryOnsite"
