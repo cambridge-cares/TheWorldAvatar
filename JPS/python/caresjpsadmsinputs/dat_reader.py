@@ -11,7 +11,10 @@ def convert_dat(filepath):
         f.close()
     content = StringIO(content) 
     data = pd.read_csv(content, delimiter=',')
+    xx = data["X(m)"][:100].values.tolist() 
+    yy = data["Y(m)"][:100].values.tolist() 
     data.sort_values(by=['X(m)', 'Y(m)'])
+    #grab all 100 of the coordinates
     pollutants = list(data.columns)[7:]  
     heights = sorted(set(list(data['Z(m)'])))
     num_heights = len(heights)
@@ -40,7 +43,7 @@ def convert_dat(filepath):
 
 
         
-    print(json.dumps({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height}))
+    print(json.dumps({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height,"x_coord": xx, "y_coord":yy}))
     with open('data.json','w') as f:
         json.dump({'grid': result, 'numheight': num_heights, 'listofpol': pollutants, 'numpol': num_pollutant, 'numinterval':num_interval, 'initialheight':initial_height},f)
 
