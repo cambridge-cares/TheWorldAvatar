@@ -24,7 +24,7 @@ block readme
 		|It is also shown the focus region for the dispersion profile computation (X lower, X upper, Y lower and Y upper values in coordinate reference system WGS 84 / Pseudo-Mercator (epsg:3857)).
 		|The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed. The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left.
 
-The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. For Hong Kong case, the terrain elevation factor is also involved in the dispersion calculation although it is still not able to be visualized that all the buildings in the visualization are projected down directly above the ground and none of them are floating
+		|The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. For Hong Kong case, the terrain elevation factor is also involved in the dispersion calculation although it is still not able to be visualized that all the buildings in the visualization are projected down directly above the ground and none of them are floating
 block description
 	
 
@@ -111,6 +111,10 @@ block content
 			float:left;
 			width: 20%;
 		}
+		#map {
+			height: 80vh;
+			width: 100%;
+		}
 	#loader(style='display:none;')
 	div#wrapper2
 		.slidecontainer
@@ -120,13 +124,11 @@ block content
 		select#locality-dropdown
 				
 	div#wrapper
-		div.overlay-panel-wrapper(style="width: 30%;")
+		div.overlay-panel-wrapper(style="width: 10%;")
 			div#overlay-setting-panel.panel.panel-default
 				div.panel-body.container-fluid
 					div#setting-panel-body
 						div#chart
-						//- br
-						//- button#run-btn.btn.btn-primary Run Simulation
 
 						   
 	div#map
