@@ -224,15 +224,22 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 					if (Utils.isJobCompleted(jobFolder)) {
 						System.out.println("job "+jobFolder.getName()+" is completed");
 						File output= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
-						if(!output.exists()||output.list().length==0) {
+						if(!annotateOutputs(jobFolder)) {
+							System.out.println("output not annotated");
+						}
+						boolean outputexist=output.exists();
+						int outputcontentexist=output.list().length;
+						boolean concfileexist=isConcentrationFileAvailable(jobFolder);
+						boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
+						if(!(outputexist
+								&& outputcontentexist!=0
+								&& concfileexist
+								&& concfilecomplete)) {
 							//edit the status file to be error termination
 							System.out.println("status completed but don't have expected output");
 							editStatusFile(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
 						}
-						if(!annotateOutputs(jobFolder)) {
-							System.out.println("output not annotated");
-							throw new JPSRuntimeException("annotate output fails");
-						}
+						
 						
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
 							logger.info("job output is processed");
@@ -247,6 +254,30 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 
 	}
 	
+	private boolean isConcentrationFileAvailable(File jobFolder) {
+		File outputconc = new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output")
+				.concat(File.separator).concat("3D_instantanous_mainconc_center.dat"));
+		if (outputconc.exists()) {
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isConcentrationFileComplete(File jobFolder) {
+		File outputconc = new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output")
+				.concat(File.separator).concat("3D_instantanous_mainconc_center.dat"));
+		try {
+			String fileContext = FileUtils.readFileToString(outputconc);
+			if(fileContext.isEmpty()) {
+				return false;
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return true;
+	}
 	public void editStatusFile(String statusFilePath) throws IOException {
 		String fileContext = FileUtils.readFileToString(new File(statusFilePath));
 		BufferedWriter writer = new BufferedWriter(new FileWriter(statusFilePath));
