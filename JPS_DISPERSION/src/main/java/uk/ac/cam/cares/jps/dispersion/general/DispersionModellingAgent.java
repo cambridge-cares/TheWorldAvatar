@@ -1,6 +1,8 @@
 package uk.ac.cam.cares.jps.dispersion.general;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -31,8 +33,11 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.slurm.job.JobStatistics;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
+import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
@@ -40,7 +45,7 @@ import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
 @Controller
 ///@WebServlet("/DispersionModellingAgent")
-@WebServlet(urlPatterns = {"/episode/dispersion","/adms/dispersion"})
+@WebServlet(urlPatterns = {"/episode/dispersion","/adms/dispersion","/job/show/statistics"})
 public class DispersionModellingAgent extends JPSHttpServlet {
 	
     /**
@@ -56,6 +61,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     private static final String DATA_KEY_CU = "cu";
 	public static final String EPISODE_PATH = "/episode/dispersion";
 	public static final String ADMS_PATH = "/adms/dispersion";
+	public static final String STATISTIC_PATH = "/job/show/statistics";
 	public static final String EX_UNKNOWN_DMAGENT = "Unknown Dispersion Modelling Agent Requested";
 
 	static JobSubmission jobSubmission;
@@ -108,6 +114,31 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			dmAgent = new ADMSAgent();
 		} else if (path.equals(EPISODE_PATH)) {
 			dmAgent = new EpisodeAgent();
+		}else if(path.equals(STATISTIC_PATH)) {
+			try {
+				System.out.println("Received a request to show statistics.\n");
+				logger.info("Received a request to show statistics.\n");
+				//Workspace workspace = new Workspace();				
+				jobSpace = Workspace.getWorkspace(jobSubmission.getWorkspaceParentPath(),
+						jobSubmission.getAgentClass());
+				JobStatistics jobStatistics = new JobStatistics(jobSpace);
+				JSONObject resp= new JSONObject();
+				resp.put("Number of jobs currently running", jobStatistics.getJobsRunning());
+				resp.put("Number of jobs successfully completed", jobStatistics.getJobsCompleted());
+				resp.put("Number of jobs completing", jobStatistics.getJobsCompleting());
+				resp.put("Number of jobs failed", jobStatistics.getJobsFailed());
+				resp.put("Number of jobs pending", jobStatistics.getJobsPending());
+				resp.put("Number of jobs preempted", jobStatistics.getJobsPreempted());
+				resp.put("Number of jobs suspended", jobStatistics.getJobsSuspended());
+				resp.put("Number of jobs stopped", jobStatistics.getJobsStopped());
+				resp.put("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated());
+				resp.put("Number of jobs to start", jobStatistics.getJobsNotStarted());
+				resp.put("Total number of jobs submitted", jobStatistics.getJobsSubmitted());
+				return resp;
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 
 		if (dmAgent != null) {
@@ -118,26 +149,12 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 
 		return responseParams;
 
-    	/*if(cityIRI.toLowerCase().contains("singapore")||cityIRI.toLowerCase().contains("kong")) {
-    		if(agent.contains("ADMS")) {
-    			s=new ADMSAgent();
-    		}else if(agent.contains("Episode")){
-    			s= new EpisodeAgent();
-    		}
-    		responseParams=s.processRequestParameters(requestParams);
-    		return responseParams;
-    	}
-    	else {
-    		s=new ADMSAgent();
-    		responseParams=s.processRequestParameters(requestParams);
-    		return responseParams;
-    	}*/
 	}
 		
 	public void createEmissionInput(String dataPath, String filename,JSONObject shipdata) {
 		
 	}
-	
+		
 	public void createEmissionInput(String entityType, String buildingInString, String plantIRI, JSONObject regionInJSON, String targetCRSName) {
 		
 	}
@@ -205,7 +222,13 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
-						System.out.println("job is completed");
+						System.out.println("job "+jobFolder.getName()+" is completed");
+						File output= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
+						if(!output.exists()||output.list().length==0) {
+							//edit the status file to be error termination
+							System.out.println("status completed but don't have expected output");
+							editStatusFile(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+						}
 						if(!annotateOutputs(jobFolder)) {
 							System.out.println("output not annotated");
 							throw new JPSRuntimeException("annotate output fails");
@@ -222,6 +245,17 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			e.printStackTrace();
 		} 
 
+	}
+	
+	public void editStatusFile(String statusFilePath) throws IOException {
+		String fileContext = FileUtils.readFileToString(new File(statusFilePath));
+		BufferedWriter writer = new BufferedWriter(new FileWriter(statusFilePath));
+		if (fileContext.contains(Status.STATUS_JOB_COMPLETED.getName())){
+			fileContext=fileContext.replaceAll(Status.STATUS_JOB_COMPLETED.getName(), Status.STATUS_JOB_ERROR_TERMINATED.getName());
+		}
+		writer.write(fileContext);
+		writer.close();
+		System.out.println("Changed From Completed to Error Termination");
 	}
 	
     public static void unzip(String zipFilePath, String destDir) {
