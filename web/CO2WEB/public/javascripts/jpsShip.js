@@ -22,9 +22,8 @@ $("#location").on("change", () => {
     const mlocation = $("#location option:selected").text();
     var center;
     var arrUrl = window.location.pathname.split('/');
-    map = new google.maps.Map(document.getElementById('map'));
     if (mlocation === "Singapore") {
-        center = new google.maps.LatLng(1.367165198,103.801163462);
+        center = new google.maps.LatLng(1.272061426648693, 103.86814522217725);
         map.setZoom(10);
         getRelevantFolder(arrUrl[2], "Singapore");
 
@@ -33,8 +32,12 @@ $("#location").on("change", () => {
         map.setZoom(16);
         getRelevantFolder(arrUrl[2], "Hong_Kong");
     }
+    // var legend = document.createElement("legend");
+    // legend.innerHTML = "<h3>Legend</h3>"; 
+    // var chart = document.createElement("chart");
+    // legend.appendChild(chart);
     map.setCenter(center);
-    
+    // map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
     
 });
 const toggleDisplay = elemId => {
@@ -68,19 +71,16 @@ document.addEventListener("click", function(evt) {
 function initMap() {
     //array of pathName
     var arrUrl = window.location.pathname.split('/');
-    // var location = arrUrl[3];
     var center;
     map = new google.maps.Map(document.getElementById('map'));
-    // if (location.toLowerCase() == "singapore"){
     center = new google.maps.LatLng(1.367165198,103.801163462);
     map.setZoom(10);
     getRelevantFolder(arrUrl[2], "Singapore");
-    // } else if (location.toLowerCase() == "hongkong"){
-    //     center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
-    //     map.setZoom(16);
-    //     getRelevantFolder(arrUrl[2], "Hong_Kong");
-    // }
     map.setCenter(center);
+    var legend = document.getElementById('legend');
+
+    map.controls[google.maps.ControlPosition.LEFT_TOP].push(legend);
+
     
   }
 function getRelevantFolder(typeOfEmission, city){
@@ -120,6 +120,7 @@ function getRelevantFolder(typeOfEmission, city){
                 y_coord.push(parseFloat(info.y_coord[i]));
             }
             arrXYPollutant = [x_coord, y_coord, info.grid]; //grid = noOfPollutantx(X*Y)
+            addheatmap();
             document.getElementById("loader").style.display = "none"; 
         })
     })
@@ -170,7 +171,8 @@ function addheatmap(){
 function getPollutantAndHeight(){
     var arrUrl = window.location.pathname.split('/');
     var firstProjection;
-    if (arrUrl[3].toLowerCase()== "singapore"){
+    const mlocation = $("#location option:selected").text();
+    if (mlocation.toLowerCase()== "singapore"){
         if (arrUrl[2].toLowerCase()== "adms" ){
             map.setZoom(15);
             firstProjection = "EPSG:3414";
@@ -261,17 +263,18 @@ function createMarker(lst){
             sensorAttributes.names= ['pollutant', 'concentration','time','allpsi','mean','max','min','individualpsi']
             sensorAttributes.data.forEach(item=>{
                 let name = item[0].split('/');
-                name = name[name.length-1]
-                name = name.split('.owl')[0]
-                item[0] = name
-                let unit = item.splice(-1)[0]
-                let unitArr = unit.split('#')
-                unit = unitArr.splice(-1)
-                item[1] = parseFloat(item[1]).toFixed(2)+' '+unit
-                item[4] = parseFloat(item[4]).toFixed(2)+' '+unit
-                item[5] = parseFloat(item[5]).toFixed(2)+' '+unit
-                item[6] = parseFloat(item[6]).toFixed(2)+' '+unit
-                item[7] = parseFloat(item[7]).toFixed(2)
+                name = name[name.length-1];
+                name = name.split('.owl')[0];
+                item[0] = name;
+                let unit = item.splice(-1)[0];
+                let unitArr = unit.split('#');
+                unit = unitArr.splice(-1);
+                item[1] = parseFloat(item[1]).toFixed(2)+' '+unit;
+                item[2] = item[2].split('.')[0];
+                item[4] = parseFloat(item[4]).toFixed(2)+' '+unit;
+                item[5] = parseFloat(item[5]).toFixed(2)+' '+unit;
+                item[6] = parseFloat(item[6]).toFixed(2)+' '+unit;
+                item[7] = parseFloat(item[7]).toFixed(2);
 
             })
             sensorAttributes.data.sort(function(a, b) {
@@ -412,7 +415,7 @@ function getLegends(maxMin){
         .domain(maxMin);
     var domain = colourScale.domain();
     
-    var width = 100;
+    var width = 80;
     var height = 500;
     var  paddedDomain = fc.extentLinear()
     .pad([0.05, 0.05])
@@ -443,8 +446,10 @@ function getLegends(maxMin){
     var axisLabel = fc
       .axisRight(yScale)
       .tickValues([...domain, (domain[1] + domain[0]) / 2,
-       (domain[1] + domain[0]) / 5, (domain[1] + domain[0]) / 5*2,
-       (domain[1] + domain[0]) / 5*3,(domain[1] + domain[0]) / 5*4 ]);
+       (domain[1] + domain[0]) / 10,(domain[1] + domain[0]) / 5,
+       (domain[1] + domain[0]) / 10*3,(domain[1] + domain[0]) / 5*2,
+       (domain[1] + domain[0]) / 5*3,(domain[1] + domain[0]) / 10*7,
+       (domain[1] + domain[0]) / 5*4 ,(domain[1] + domain[0]) / 10*9,]);
     
     var legendSvg = container.append("svg")
         .attr("height", height)
@@ -455,9 +460,9 @@ function getLegends(maxMin){
         .datum(expandedDomain)
         .call(svgBar);
     
-    var barWidth = Math.abs(legendBar.node().getBoundingClientRect().x);
+    var barWidth = Math.abs(legendBar.node().getBoundingClientRect().x)+17;
     legendSvg.append("g")
-        // .attr("transform", `translate(${barWidth})`)
+        .attr("transform", `translate(${barWidth})`)
       .datum(expandedDomain)
       .call(axisLabel)
       .select(".domain")

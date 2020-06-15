@@ -117,9 +117,16 @@ block content
 			width: 20%;
 		}
 		#map {
-			height: 90vh;
+			height: 100vh;
 			width: 100%;
 		}
+		#legend {
+			background: #fff;
+			padding: 5px;
+			margin: 5px;
+			overflow-y: auto;
+		}
+
 	#loader(style='display:none;')
 	div#wrapper2
 		select#location(name='location')
@@ -132,12 +139,9 @@ block content
 			span#demo
 		select#gasType(name='gasType')
 				
-	div#wrapper
-		div.overlay-panel-wrapper(style="width: 10%;")
-			div#overlay-setting-panel.panel.panel-default
-				div.panel-body.container-fluid
-					div#setting-panel-body
-						div#chart
+	div#legend
+		h3 Legend
+		div#chart
 
 						   
 	div#map
