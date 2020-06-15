@@ -5,6 +5,38 @@ var metaEndpoint = prefix + "/rdf4j-server/repositories/airqualitystation";
 var heatmap = null;
 var arrXYPollutant;
 
+
+var slider = document.getElementById("myRange");
+var output = document.getElementById("demo");
+output.innerHTML = slider.value;
+
+slider.onmouseup = function() { //previously oninput
+    output.innerHTML = this.value;
+    addheatmap();
+}
+$("#gasType").on("change", () => {
+    console.log("changed in Gas Pollutant");
+    addheatmap();
+});
+$("#location").on("change", () => {
+    const mlocation = $("#location option:selected").text();
+    var center;
+    var arrUrl = window.location.pathname.split('/');
+    map = new google.maps.Map(document.getElementById('map'));
+    if (mlocation === "Singapore") {
+        center = new google.maps.LatLng(1.367165198,103.801163462);
+        map.setZoom(10);
+        getRelevantFolder(arrUrl[2], "Singapore");
+
+    }else if (mlocation === "Hong Kong") {
+        center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
+        map.setZoom(16);
+        getRelevantFolder(arrUrl[2], "Hong_Kong");
+    }
+    map.setCenter(center);
+    
+    
+});
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
@@ -19,6 +51,7 @@ $("#readme-button").click(function() {
 });
 
 document.addEventListener("click", function(evt) {
+    var arrUrl = window.location.pathname.split('/');
     var readmeButtonElement = document.getElementById('readme-button'),
         readmeTextElement = document.getElementById('readme-text'),
         targetElement = evt.target;  // clicked element
@@ -35,18 +68,18 @@ document.addEventListener("click", function(evt) {
 function initMap() {
     //array of pathName
     var arrUrl = window.location.pathname.split('/');
-    var location = arrUrl[3];
+    // var location = arrUrl[3];
     var center;
     map = new google.maps.Map(document.getElementById('map'));
-    if (location.toLowerCase() == "singapore"){
-        center = new google.maps.LatLng(1.367165198,103.801163462);
-        map.setZoom(10);
-        getRelevantFolder(arrUrl[2], "Singapore");
-    } else if (location.toLowerCase() == "hongkong"){
-        center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
-        map.setZoom(16);
-        getRelevantFolder(arrUrl[2], "Hong_Kong");
-    }
+    // if (location.toLowerCase() == "singapore"){
+    center = new google.maps.LatLng(1.367165198,103.801163462);
+    map.setZoom(10);
+    getRelevantFolder(arrUrl[2], "Singapore");
+    // } else if (location.toLowerCase() == "hongkong"){
+    //     center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
+    //     map.setZoom(16);
+    //     getRelevantFolder(arrUrl[2], "Hong_Kong");
+    // }
     map.setCenter(center);
     
   }
@@ -65,14 +98,18 @@ function getRelevantFolder(typeOfEmission, city){
             //Part 3: Handle Ships if they are there
             var shipsIRI = info.ship.collection.items; 
             placeShips(shipsIRI);
+            if (city == "Hong_Kong"){
+                city = "hongkong";
+            }
             querySensor(city, function (sensorData) {
                 renderSensorStations(sensorData);
             });
-            document.getElementById("loader").style.display = "none"; 
         })
         let agentInformation = prefix + "/JPS/ADMSOutputAllForShips";//"/info"
         console.log(agentInformation);
         $.get(agentInformation, {folder:data}).done(function (info) {
+            
+            document.getElementById("loader").style.display = "block"; 
             setUpSlider(info.numheight, info.initialheight, info.numinterval);
             console.log(info.listofpol);
             populateDropDown(info.listofpol);
@@ -83,7 +120,6 @@ function getRelevantFolder(typeOfEmission, city){
                 y_coord.push(parseFloat(info.y_coord[i]));
             }
             arrXYPollutant = [x_coord, y_coord, info.grid]; //grid = noOfPollutantx(X*Y)
-            //Part 4: Concentration data
             document.getElementById("loader").style.display = "none"; 
         })
     })
@@ -95,13 +131,13 @@ function setUpSlider(numOfLevel, initHeight, numInterval){
     slider.max = initHeight + (numOfLevel-1)* numInterval;
 }
 function populateDropDown(listofpollutants){
-    let dropdown = document.getElementById('locality-dropdown');
+    let dropdown = document.getElementById('gasType');
     dropdown.length = 0;
 
-    let defaultOption = document.createElement('option');
-    defaultOption.text = 'Choose Pollutant type';
+    // let defaultOption = document.createElement('option');
+    // defaultOption.text = 'Choose Pollutant type';
 
-    dropdown.add(defaultOption);
+    // dropdown.add(defaultOption);
     dropdown.selectedIndex = 0;
     for (poll in listofpollutants){
         option = document.createElement('option');
@@ -111,7 +147,8 @@ function populateDropDown(listofpollutants){
     }
 }
 function addheatmap(){
-    // var data = getPollutantAndHeight();
+    
+    document.getElementById("loader").style.display = "block"; 
     if (heatmap){
         heatmap.setMap(null);
         heatmap = null;
@@ -120,12 +157,22 @@ function addheatmap(){
         data: getPollutantAndHeight(), 
         map: map
       });
+    var arrUrl = window.location.pathname.split('/');
+    if (arrUrl[2].toLowerCase()== "episode" ){
+        changeRadius(40);
+        map.set('maxZoom', 11);
+    }
+      document.getElementById("loader").style.display = "none"; 
 }
+/** supplies data to heatmap in terms of an array of points
+ * @returns {[*]} lotsOfMarkers
+ */
 function getPollutantAndHeight(){
     var arrUrl = window.location.pathname.split('/');
     var firstProjection;
     if (arrUrl[3].toLowerCase()== "singapore"){
         if (arrUrl[2].toLowerCase()== "adms" ){
+            map.setZoom(15);
             firstProjection = "EPSG:3414";
             proj4.defs(firstProjection,
                  "+proj=tmerc +lat_0=1.366666666666667 +lon_0=103.8333333333333 +k=1 +x_0=28001.642 +y_0=38744.572 +ellps=WGS84 +units=m +no_defs ");
@@ -135,7 +182,10 @@ function getPollutantAndHeight(){
         }
     }else{
         if (arrUrl[2].toLowerCase()== "adms" ){
+            map.setZoom(15);
             firstProjection = "EPSG:2326";
+            proj4.defs(firstProjection,
+                "+proj=tmerc +lat_0=22.31213333333334 +lon_0=114.1785555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,0.067753,-2.243649,-1.158827,-1.094246 +units=m +no_defs ");
         }else{
             firstProjection = "EPSG:32650";
             proj4.defs(firstProjection, "+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs");
@@ -143,7 +193,7 @@ function getPollutantAndHeight(){
     }
     var heightLevel = slider.value;
     var heightIndex = (heightLevel -slider.min)/slider.step;
-    let dropD= document.getElementById("locality-dropdown");
+    let dropD= document.getElementById("gasType");
     let pollutantIndex = dropD.options[dropD.selectedIndex].value;
     let sideLength = arrXYPollutant[0].length;
     var typeOfPollutant = arrXYPollutant[2][heightIndex][pollutantIndex];
@@ -164,17 +214,7 @@ function getPollutantAndHeight(){
     return lotsOfMarkers;
 }
 
-var slider = document.getElementById("myRange");
-var output = document.getElementById("demo");
-output.innerHTML = slider.value;
 
-slider.onmouseup = function() { //previously oninput
-    output.innerHTML = this.value;
-    addheatmap();
-}
-// document.getElementById("myList").onchange = function() {
-//     addheatmap();
-// };
 
 function placeShips(shipsIRI){
     for (ship of shipsIRI) {
@@ -360,11 +400,15 @@ function queryProcessor(str){
 function changeRadius(numeral) {
     heatmap.set('radius', heatmap.get('radius') ? null : numeral);
 }
+/** creates the color range legend using d3 and places it on the panel
+ * 
+ * @param {[Array]} {maxNum, minNum}
+ */
 function getLegends(maxMin){
     document.getElementById("chart").innerHTML = "";
     var container = d3.select("#chart");
     var colourScale = d3
-        .scaleSequential(d3.interpolateRdYlGn)
+        .scaleSequential(d3.interpolateRdYlGn) //from the d3 color types
         .domain(maxMin);
     var domain = colourScale.domain();
     
@@ -413,7 +457,7 @@ function getLegends(maxMin){
     
     var barWidth = Math.abs(legendBar.node().getBoundingClientRect().x);
     legendSvg.append("g")
-        .attr("transform", `translate(${barWidth})`)
+        // .attr("transform", `translate(${barWidth})`)
       .datum(expandedDomain)
       .call(axisLabel)
       .select(".domain")
@@ -430,18 +474,6 @@ function getLegends(maxMin){
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
-/**async function that would provide five minutes to complete simulation and then run callback function
- * @param {Function} callback
- */
-async function delayedCallback(callback) 
-    {
-    var dt = Date();
-    console.log("Wait for simulation to finish: "+dt);
-    await sleep(300*1000);//five minutes?
-    dt = Date();
-    console.log("Check callback "+dt);
-    callback();
-  }
 
 /** clears all markers on the page
  * 
@@ -457,90 +489,4 @@ function clearMarkers() {
 }
 
 
-
-/** constructs and calls upon openWindow for foodcourts and 
- * 
- * @param {String} id iri of line
- * @param {function} callback displays content of infowindow as set in drawLines in PopupMap
- */
-function setMarkerMen(id, callback){
-    if (id.includes("FoodCourt")){
-        typeInfo = FCQuery;
-    }else if (id.includes("OnSite")){
-        typeInfo = OnWQuery;   
-    }else{
-        typeInfo = WTQuery;
-    }
-    var promise1 = new Promise(function (resolve, reject){
-        resolve(openWindow(id, typeInfo, callback));
-    }); 
-    promise1.catch(alert);
-}
-
-/** creates new scenario through ScenarioModifier.java agent
-     * @param scenarioname the name of the scenario, be it base or specific folder 
-     * @param agenturl: GET request to Java Backend Servlet
-     * @param sparql: JSON packets or what not that the Java backend could request. 
-     * @returns modified url for future use. 
-     */
-    function createNewUrlForAgent(scenarioname, agenturl, agentparams) {
-
-        var url;
-        if ((scenarioname == null) || scenarioname == "base") {
-            url = agenturl;
-        } else {
-            agentparams['scenarioagentoperation'] = agenturl;
-            var scenariourl = prefix + '/jps/scenariomod/' + scenarioname + '/call';
-            url = scenariourl;
-        }
-
-        return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
-    }
-/** accesses parallel scenarios through these helper functions
- * @param scenarioname the name of the scenario, be it base or specific folder 
- * @param iri: iri of resource to be queried. 
- * @param sparql: the sparql update to be fired
- * @returns modified url for query
- */
-function createUrlForSparqlUpdate(scenarioname, iri, sparql) {
-
-    var url2 = prefix + '/jps/scenario/' + scenarioname + '/update?query=';
-    urljson = {"scenarioresource":iri,"sparqlupdate":sparql};
-    url2 += encodeURIComponent(JSON.stringify(urljson)); 
-    //url2 += JSON.stringify(urljson); 
-    return url2;    
-}
-/*** accesses parallel scenarios through these helper functions
- * @param scenarioname the name of the scenario, be it base or specific folder 
- * @param iri: iri of resource to be queried. 
- * @param sparql: the sparql query to be fired
- * @returns modified url for update
- */
-function createUrlForSparqlQuery(scenarioname, iri, sparql) {
-
-    var url2 = prefix + '/jps/scenario/' + scenarioname + '/query?query=';
-    urljson = {"scenarioresource":iri,"sparqlquery":sparql};
-    url2 += encodeURIComponent(JSON.stringify(urljson)); 
-    //url2 += JSON.stringify(urljson); 
-    return url2;    
-}
-/*** accesses parallel scenarios through these helper functions
- * @param scenarioname the name of the scenario, be it base or specific folder 
- * @param agenturl: GET request to Java Backend Servlet
- * @param sparql: JSON packets or what not that the Java backend could request. 
- * @returns modified url for update
- */
-function createUrlForAgent(scenarioname, agenturl, agentparams) {
-
-    var url;
-    if ((scenarioname == null) || scenarioname == "base") {
-        url = agenturl;
-    } else {
-        agentparams['scenarioagentoperation'] = agenturl;
-        var scenariourl = prefix + '/jps/scenario/' + scenarioname + '/call';
-        url = scenariourl;
-    }
-
-    return url + "?query=" + encodeURIComponent(JSON.stringify(agentparams));
-}
 

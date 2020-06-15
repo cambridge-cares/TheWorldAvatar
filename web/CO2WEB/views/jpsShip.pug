@@ -111,17 +111,26 @@ block content
 			float:left;
 			width: 20%;
 		}
+		city-dropdown{
+			overflow: hidden;
+			float:left;
+			width: 20%;
+		}
 		#map {
-			height: 80vh;
+			height: 90vh;
 			width: 100%;
 		}
 	#loader(style='display:none;')
 	div#wrapper2
+		select#location(name='location')
+			option(value='singapore', selected = '') Singapore
+			option(value='hongkong') Hong Kong
+
 		.slidecontainer
 			input#myRange.slider(type='range', min='1', max='15', value='10')
 		p(style='text-align: center; float:left;')
 			span#demo
-		select#locality-dropdown
+		select#gasType(name='gasType')
 				
 	div#wrapper
 		div.overlay-panel-wrapper(style="width: 10%;")
