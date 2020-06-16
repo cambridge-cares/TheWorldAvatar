@@ -152,6 +152,25 @@ var watcherReturn = BMSWatcher();
 var ev= watcherReturn.watchEvent;
 var bmsWatcher = watcherReturn.bmsWatcher;
 agentWatcher.init(io);
+	ev.on('update', function (data) {
+    logger.debug("update event: "+" on "+data.uri+"_nodata");
+	    //let rooms = io.sockets.adapter.rooms;
+   //logger.debug(rooms[path.normalize(data.uri)].sockets);
+    //update direct clients
+	if(!('data' in data) || data.data ===null){
+		console.log('data update for: '+data.uri)
+    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+    } else {
+		//console.log('update event:'+path.normalize(data.uri)+"_data")
+		//console.log('now update');
+		//console.log('rooms')
+		let testid =path.normalize(data.uri)+"_data"
+		let rooms = Object.keys(io.sockets.adapter.rooms)
+				//console.log(rooms)
+		io.in(path.normalize(data.uri)+"_data").emit("update", data);
+		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
+}
+})
 //When any change happened to the file system
 let testId = null
 
@@ -265,25 +284,7 @@ socket.on('join', function (uriSubscribeList) {
         }
     })
 
-	ev.on('update', function (data) {
-    logger.debug("update event: "+" on "+data.uri+"_nodata");
-	    //let rooms = io.sockets.adapter.rooms;
-   //logger.debug(rooms[path.normalize(data.uri)].sockets);
-    //update direct clients
-	if(!('data' in data) || data.data ===null){
-		console.log('data update for: '+data.uri)
-    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-    } else {
-		//console.log('update event:'+path.normalize(data.uri)+"_data")
-		//console.log('now update');
-		//console.log('rooms')
-		let testid =path.normalize(data.uri)+"_data"
-		let rooms = Object.keys(io.sockets.adapter.rooms)
-				//console.log(rooms)
-		io.in(path.normalize(data.uri)+"_data").emit("update", data);
-		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
-}
-})
+
 });
     socket.on('leave', function (uriSubscribeList) {
         //May be do some authorization
