@@ -100,7 +100,6 @@ public class ADMSOutputAllForShips extends HttpServlet {
 			// DAT / GST
             String csv = new QueryBroker().readFileLocal(outputFile);
             List<String[]> simulationResult = MatrixConverter.fromCsvToArray(csv);
-
             int startcontentindex = 7;
 
             int heightamount = (simulationResult.get(0).length - startcontentindex) / getAllPollutants(simulationResult, startcontentindex).size();//height variation level amount (e.g:0m,10m,20m,30m) currently 4
@@ -246,6 +245,13 @@ public class ADMSOutputAllForShips extends HttpServlet {
             //make the json array to replace the functionality of gstreader.py
             JSONObject ans = new JSONObject();
             JSONArray a = new JSONArray();
+            JSONArray xcoord = new JSONArray();
+            JSONArray ycoord = new JSONArray();
+            //to get the x and y coordinates in their native form, get [4,5]
+            for (int i = 1; i< simulationResult.size(); i++) {
+            	xcoord.put(Float.parseFloat(simulationResult.get(i)[4]));
+            	ycoord.put(Float.parseFloat(simulationResult.get(i)[5]));
+            }
             for (int z = 0; z < heightamount; z++) {
                 JSONArray h = new JSONArray();
                 for (int y = startcontentindex; y < startcontentindex + findUniquePol(copier, startcontentindex).size(); y++) { // index0-index 9 for 1 pollutant
@@ -263,6 +269,8 @@ public class ADMSOutputAllForShips extends HttpServlet {
             ans.put("numheight", heightamount);
             ans.put("numinterval", 10);
             ans.put("initialheight", 0);
+            ans.put("x_coord", xcoord);
+            ans.put("y_coord", ycoord);
             
 
 

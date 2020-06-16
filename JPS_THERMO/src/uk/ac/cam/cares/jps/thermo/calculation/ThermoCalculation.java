@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.thermo.calculation;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Properties;
 
 import uk.ac.cam.cares.jps.thermo.manager.PropertiesManager;
@@ -29,7 +32,10 @@ public class ThermoCalculation {
 	 */	
 	
 	 public void runThermoCalculation (String jsonInputFilePath, String jsonOutputFilePath, String enthalpyOfFormation) throws IOException {
-		 
+
+		 System.out.println("JsonInputFilePath:"+jsonInputFilePath);
+		 System.out.println("jsonOutputFilePath:"+jsonOutputFilePath);
+		 System.out.println("enthalpyOfFormation:"+enthalpyOfFormation);
 		/**
 		 * 
 		 * 
@@ -41,7 +47,10 @@ public class ThermoCalculation {
 		File outputFile = new File(jsonOutputFilePath);
 		
 		if(!outputFile.exists()) {
-			
+			if(!new File(jsonOutputFilePath.substring(0, jsonOutputFilePath.lastIndexOf("/"))).exists()){
+				new File(jsonOutputFilePath.substring(0, jsonOutputFilePath.lastIndexOf("/"))).mkdir();
+				System.out.println("Created directory:"+jsonOutputFilePath.substring(0, jsonOutputFilePath.lastIndexOf("/")));
+			}
 			outputFile.createNewFile();
 		}
 		
@@ -56,12 +65,46 @@ public class ThermoCalculation {
 		String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath(), "--href " , "\"" + enthalpyOfFormation +"\"" };
 
 		Runtime.getRuntime().exec(cmd);
-		
-		}else {
-			
-			String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath() };
-
-			Runtime.getRuntime().exec(cmd);
+		if(!(new File(jsonOutputFilePath).exists()) || isEmpty(jsonOutputFilePath)){
+			Runtime.getRuntime().exec("python "+pyscript+" -j "+inputFile.getAbsolutePath()+" --href \""+enthalpyOfFormation+"\"");			
 		}
-	}	 
+		}else {
+			String[] cmd = { "python", pyscript, "-j", inputFile.getAbsolutePath() };
+			Runtime.getRuntime().exec(cmd);
+			if(!(new File(jsonOutputFilePath).exists()) || isEmpty(jsonOutputFilePath)){
+				Runtime.getRuntime().exec("python "+pyscript+" -j "+inputFile.getAbsolutePath());
+			}
+		}
+	}
+	 
+	 /**
+	  * Checks if a file is empty.
+	  * 
+	  * @param filePath
+	  * @return
+	  * @throws IOException
+	  */
+	 private boolean isEmpty(String filePath) throws IOException{
+		 BufferedReader br = openSourceFile(filePath);
+		 String line;
+		 while((line=br.readLine())!=null){
+			 if(!line.trim().isEmpty()){
+				 return false;
+			 }
+		 }
+		 return true;
+	 }
+		/**
+		 * Creates and returns an instance of the BufferedReader class.
+		 * 
+		 * @param filePathPlusName
+		 *            the path plus name of the file being read
+		 * @return
+		 * @throws IOException
+		 */
+		public BufferedReader openSourceFile(String filePathPlusName)
+				throws IOException {
+			return new BufferedReader(new InputStreamReader(new FileInputStream(
+					filePathPlusName), "UTF-8"));
+		}
 }

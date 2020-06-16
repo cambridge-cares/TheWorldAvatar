@@ -29,20 +29,20 @@ public class WeatherAgentTest extends TestCase {
 	
 	public void testextract() {
 		//for sg
-		double proclowx = Double.valueOf("11552101.832");
-		double procupx = Double.valueOf("11572101.89");
-		double proclowy = Double.valueOf("131707.739");
-		double procupy = Double.valueOf("151860.32");
+//		double proclowx = Double.valueOf("11560879.832");
+//		double procupx = Double.valueOf("11564077.989");
+//		double proclowy = Double.valueOf("140107.739");
+//		double procupy = Double.valueOf("143305.896");
 		//for hk
-//		double proclowx = Double.valueOf("12706630.262");
-//		double procupx = Double.valueOf("12708200.45");
-//		double proclowy = Double.valueOf("2545539.172");
-//		double procupy = Double.valueOf("2546850.028");
+		double proclowx = Double.valueOf("12706653.262");
+		double procupx = Double.valueOf("12711879.81");
+		double proclowy = Double.valueOf("2545200.172");
+		double procupy = Double.valueOf("2550426.72");
 		double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 		double[] centerPointConverted = CRSTransformer.transform(CRSTransformer.EPSG_3857,CRSTransformer.EPSG_4326,
 				center);
 
-		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+		List<String[]>result=new WeatherAgent().extractAvailableContext(cityiri2,centerPointConverted[0],centerPointConverted[1]);
 		System.out.println("xconverted="+centerPointConverted[0]);
 		System.out.println("yconverted="+centerPointConverted[1]);
 		System.out.println("size="+result.size());
@@ -50,6 +50,7 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println("name1= "+result.get(0)[1]);
 		System.out.println(result.get(1)[0]);
 		System.out.println("name2= "+result.get(1)[1]);
+		System.out.println("time= "+result.get(0)[2]);
 	}
 	
 	public void testDirectCallingWeather() {
@@ -195,12 +196,25 @@ public class WeatherAgentTest extends TestCase {
 		new WeatherAgent().extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
 	}
 	
-	public void xxxtestresetWeatherClaudius() {
-		JSONObject empty= new JSONObject();
-		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", empty.toString());
+	public void testgovdata() {
+		String weatherTemperature = WeatherAgent.getWeatherDataFromGovAPI("/v1/environment/air-temperature", null);
+		JSONObject joTemperature = new JSONObject(weatherTemperature);//in celcius
+		System.out.println(joTemperature);
+	}
+	
+	
+	public void xxxtestAgentCallreset() {
+		JSONObject jo = new JSONObject();
+		jo.put("location", "singapore");//or singapore or singapore_AQ
+		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-015.owl#WeatherStation-015";
+		jo.put("context", context);	
+		//context variation only in index number and country (1 sg,2 hk)
+		jo.put("name","SGAccuWeather-001");// or ="VirtualSensorEpisode-001"or=VirtualSensor-001 or="VirtualSensorHKADMS-001";
+		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", jo.toString());	
 	}
 	
 	public void testmakecsv() {
+		String loc=cityiri2;
 		 String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
@@ -209,7 +223,7 @@ public class WeatherAgentTest extends TestCase {
 					+ "SELECT DISTINCT ?graph " 
 					+ "{ graph ?graph " 
 					+ "{ "
-					+ "?graph j2:hasAddress <"+cityiri+"> ."
+					+ "?graph j2:hasAddress <"+loc+"> ."
 					+ "}" 
 					+ "}Limit30";	
 		List<String[]> listmap = queryFromClaudius(querygraph);
@@ -235,7 +249,7 @@ public class WeatherAgentTest extends TestCase {
 						+ "?graph j2:enumerationValue ?stnname ."
 						+ "?prop   j2:hasValue ?vprop ."
 						+ " ?vprop   j6:hasTime ?proptime ."
-						+ "?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+						+ "?proptime   j6:inXSDDateTime ?proptimeval ."
 						
 						+ "}" 
 						+ "}ORDER BY DESC(?proptimeval) Limit2";
@@ -276,12 +290,12 @@ public class WeatherAgentTest extends TestCase {
 			                + "?coordsys   j7:hasProjectedCoordinate_y ?yent ."
 			                + "?yent j2:hasValue ?vyent ."
 			                + "?vyent   j2:numericalValue ?yval ."
-							+ "?graph j2:hasAddress <"+cityiri+"> ."
+							+ "?graph j2:hasAddress <"+loc+"> ."
 							+ "?graph j2:enumerationValue ?stnname ."
 							+ "?entity j4:observes ?prop ."
 							+ "?prop   j2:hasValue ?vprop ."
 							+ " ?vprop   j6:hasTime ?proptime ."
-							+ "?proptime   j6:inXSDDateTimeStamp \""+time2.get(y)+"\" ."				
+							+ "?proptime   j6:inXSDDateTime \""+time2.get(y)+"\"^^xsd:dateTime ."				
 							+ "}" 
 							+ "}ORDER BY DESC(?proptimeval) Limit7";
 				  List<String[]> listsgstndata = queryFromClaudius(query); //it will give 30 data
@@ -297,7 +311,7 @@ public class WeatherAgentTest extends TestCase {
 		  }
 		  System.out.println("listmapfinal size= "+listmapfinal.size());
 		  String mainstniri=listmapfinal.get(0)[0];
-		  System.out.println("mainstniri= "+mainstniri);
+		  System.out.println("stniri 0= "+mainstniri);// (not considering the centre point closest yet)
 	}
 
 	private List<String[]> queryFromClaudius(String querygraph) {
@@ -316,6 +330,13 @@ public class WeatherAgentTest extends TestCase {
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);
 		List<String[]> listmap = JenaResultSetFormatter.convertToListofStringArrays(resultfromrdf4j, keys);
 		return listmap;
+	}
+	
+	public void testisupdate() {
+		String timelatest="2020-06-10T11:28:47.388+08:00";
+		boolean res=new WeatherAgent().isUpdateNeeded(timelatest);
+		System.out.println("need update? "+res);
+		
 	}
 
 	

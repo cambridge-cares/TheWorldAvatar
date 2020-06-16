@@ -75,6 +75,10 @@ public class AirQualitySensorAgentTest extends TestCase {
 	 */
 	public void xxxtestAgentCallreset() {
 		JSONObject jo = new JSONObject();
+		jo.put("location", "hongkong");//or singapore or singapore_AQ
+		jo.put("context", "http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+		//context variation only in index number and country (1 sg,2 hk)
+		jo.put("name","VirtualSensorHKEpisode-001");// or ="VirtualSensorEpisode-001"or=VirtualSensor-001 or="VirtualSensorHKADMS-001";
 		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", jo.toString());	
 	}
 	
@@ -84,7 +88,7 @@ public class AirQualitySensorAgentTest extends TestCase {
 		String date="16/Apr/2020 12:00:00";
 		//Date date1=new SimpleDateFormat("yyyy-mmm-dd hh:mm:ss").parse(date);
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MMM/yyyy HH:mm:ss");
-		 DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		 DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 		//pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 		Date date1=dateFormat.parse(date);  
 		String timeformatted=pstFormat.format(date1);
@@ -124,10 +128,6 @@ public class AirQualitySensorAgentTest extends TestCase {
 
 	}
 	
-	public void xxxtestresetAirQualityClaudius() {
-		JSONObject empty= new JSONObject();
-		String resp=AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetAirQualityRepository", empty.toString());
-	}
 
 	public void testmakecsv() {
 //		String sensorinfo="PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n" + 

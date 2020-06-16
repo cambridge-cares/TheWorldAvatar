@@ -53,8 +53,8 @@ const initadms3dmap = (
 
   const position = {}
 
-  position.latitude = 1.27993// coordinatesMid[0]
-  position.longitude = 103.859//coordinatesMid[1]
+  position.latitude = coordinatesMid[0]
+  position.longitude =coordinatesMid[1]
 
   osmb.setPosition(position)
   osmb.setZoom(15.7)

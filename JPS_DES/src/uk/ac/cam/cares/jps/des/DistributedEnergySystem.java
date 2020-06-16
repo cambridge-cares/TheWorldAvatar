@@ -91,7 +91,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
  					+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
  					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" ;
+ 					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" ;
 
  			String result = new QueryBroker().queryFile(irioftemp, sensorinfo+ "ORDER BY DESC(?proptimeval) LIMIT 1");
  			String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -103,7 +103,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
  					+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
  					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" ;
+ 					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" ;
 
  			String result2 = new QueryBroker().queryFile(iriofirr, sensorinfo2+ "ORDER BY DESC(?proptimeval) LIMIT 1");
  			String[] keys2 = JenaResultSetFormatter.getKeys(result2);
@@ -115,7 +115,7 @@ public class DistributedEnergySystem extends JPSHttpServlet {
  					+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
  					+ "WHERE { ?entity a j5:F-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
  					+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
- 					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}";
+ 					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}";
 
  			String result3 = new QueryBroker().queryFile(iriofwind, sensorinfo3 + "ORDER BY DESC(?proptimeval) LIMIT 1");
  			String[] keys3 = JenaResultSetFormatter.getKeys(result3);

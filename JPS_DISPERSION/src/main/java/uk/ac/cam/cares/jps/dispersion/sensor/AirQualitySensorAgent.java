@@ -55,41 +55,34 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			rdf4jServer = "http://localhost/rdf4j-server"; //for claudius
 	   		 repo = new HTTPRepository(rdf4jServer, repositoryID);
 	   		RepositoryConnection con = repo.getConnection();
-	   		String[]location= {"singapore"};	
-//	   		String[]location= {"singapore,hongkong"};
-	   		String cityiri= "http://dbpedia.org/resource/Singapore";
-//	   		String cityiri= "http://dbpedia.org/resource/Hong_Kong";
-//				
-
-//
-//			int numbersensor=1;
-//			for(int x=1;x<=numbersensor;x++) {
-//				String index="0"+x;
-//				if(x<10) {
-//					index="00"+x;
-//				}
+	   		String cityiri=null;
+	   		String location = requestParams.optString("location", "singapore_AQ");
 	   		
-				String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+"002"+".owl#AirQualityStation-"+"002";
-//	   		String context="http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-				for (String el:location){
+	   		
+	   		if(location.contentEquals("singapore_AQ")) {
+	   			cityiri= "http://dbpedia.org/resource/Singapore";
+	   			resetAllAQMesh(location,cityiri);
+	   		}else {
+	   			String name=requestParams.getString("name");
+	   			String context = requestParams.getString("context");
+	   			if(location.contentEquals("singapore")) {
+			   		cityiri= "http://dbpedia.org/resource/Singapore";
+		   		}else if(location.contains("kong")) {
+		   			cityiri= "http://dbpedia.org/resource/Hong_Kong";
+		   		}
+	   			String[]locationarr= {location};
+				for (String el:locationarr){
 					resetRepoTrial(con,el,context);
 				}	
-				String name="VirtualSensorEpisode-001";
-//				String name="VirtualSensor-002";
-//
 				List<String>info= new ArrayList<String>();
 				info.add(cityiri);
 				info.add(name);
 				info.add("0"); //overallpsi
 //
 				insertDataRepoContext(info,context);
-	   		
-	   		//if AQMesh : go here
-//	   		String location = requestParams.optString("location", "singapore_AQ");
-//	   		String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
-//	   		resetAllAQMesh(location,cityiri);
-			response.put("status", "reset endpoint successful");
-//			}
+	   		}
+	   			response.put("status", "reset endpoint successful");
+
 		}else { //used for AQmesh only
 			
 			String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
@@ -387,11 +380,11 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		   String result=current;
 		try {
 			  Date date = utcFormat.parse(current);
-			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+			   DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX");
 			   pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 
 			   System.out.println(pstFormat.format(date));
-			   result=pstFormat.format(date)+"+08:00";
+			   result=pstFormat.format(date);
 			   return result;
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
@@ -416,7 +409,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				+ " ?prop a j4:"+propnameclass+" ."
 				+ " ?prop   j2:hasValue ?vprop ." 
 				+ " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
 				+ "}" 
 				+ "}" 
 				+ "ORDER BY ASC(?proptimeval)LIMIT1";
@@ -426,23 +419,24 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 		String sparqlupdate = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
 				+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#> "
-				+ "PREFIX j6:<http://www.w3.org/2006/time#> " 
+				+ "PREFIX j6:<http://www.w3.org/2006/time#> "
+				+ "PREFIX xsd:<http://www.w3.org/2001/XMLSchema#> " 
 				+ "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 				+ "WITH <" + context + ">"
 				+ "DELETE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime ?olddatatime ."
 				+ "} "
 				+ "INSERT {"
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue \""+scaledvalue+"\"^^xsd:double ."
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue \""+prescaledvalue+"\"^^xsd:double ."
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp \""+newtimestamp+"\" ."  
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime \""+newtimestamp+"\"^^xsd:dateTime ."  
 				+ "} "
 				+ "WHERE { "
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:scaledNumValue ?oldpropertydata ."	
 				+ "<" + keyvaluemapold.get(0)[0]+ "> j4:prescaledNumValue ?oldpropertydata2 ."	
-				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTimeStamp ?olddatatime ."
+				+ "<" + keyvaluemapold.get(0)[1]+ "> j6:inXSDDateTime ?olddatatime ."
 				+ "}";
 		
 			
@@ -524,19 +518,24 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	public static void main(String[]args) { //used for upload all content locally
 
 		RepositoryConnection con = repo.getConnection();
-		String location="singapore";
+//		String location="singapore";
+		String location="hongkong";
 		AirQualitySensorAgent a=new AirQualitySensorAgent();
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+"002"+".owl#AirQualityStation-"+"002";
+		String context="http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-"+"002"+".owl#AirQualityStation-"+"002";
+//		String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+"002"+".owl#AirQualityStation-"+"002";
 		a.resetRepoTrial(con,location,context); //currently the context is not used
 		int numbersensor=1; //should change if added by AQMesh
-		String cityiri= "http://dbpedia.org/resource/Singapore";
+//		String cityiri= "http://dbpedia.org/resource/Singapore";
+		String cityiri= "http://dbpedia.org/resource/Hong_Kong";
 		for(int x=1;x<=numbersensor;x++) {
 			String index="0"+x;
 			if(x<10) {
 				index="00"+x;
 			}
 			//String context="http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-"+index+".owl#AirQualityStation-"+index;
-			String name="VirtualSensorEpisode-001";
+//			String name="VirtualSensorEpisode-001";
+//			String name="VirtualSensorHKADMS-001";
+			String name="VirtualSensorHKEpisode-001";
 			List<String>info= new ArrayList<String>();
 			info.add(cityiri);
 			info.add(name);

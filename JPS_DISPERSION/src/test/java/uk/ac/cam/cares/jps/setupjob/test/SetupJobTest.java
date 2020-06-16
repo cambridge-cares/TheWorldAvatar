@@ -13,7 +13,7 @@ public class SetupJobTest {
 	public void testjob() {
 		JSONObject jo= new JSONObject();
 		jo.put("runWholeScript",true);
-		String datapath="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\2cb1f568-f60f-456b-a0d6-be9dbf5ca549";
+		String datapath="C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\21afbf75-1d47-407e-9569-505c684f7385";
 		try {
 			new EpisodeAgent().setUpJob(jo.toString(),datapath);
 		} catch (Exception e) {

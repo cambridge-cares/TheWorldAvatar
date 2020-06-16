@@ -292,7 +292,7 @@ public class StatisticAnalysisAgent extends JPSHttpServlet{
 					+ " ?vprop   j6:hasTime ?proptime ."
 //					+ " ?proptime   j6:hasBeginning ?proptimestart ."
 //					+ " ?proptime   j6:hasEnd ?proptimeend ."
-					+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ."
+					+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
 //					+ " ?proptimestart   j6:inXSDDateTimeStamp ?proptimestartval ." 
 //					+ " ?proptimeend   j6:inXSDDateTimeStamp ?proptimeendval ."
 					+ "}" 

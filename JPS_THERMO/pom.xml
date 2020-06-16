@@ -87,7 +87,7 @@
 		</dependency>
 		
 		<dependency>
-			<groupId>com.cmclinnovations.ontochem</groupId>
+			<groupId>com.cmclinnovations</groupId>
 			<artifactId>CMCLOntoKin</artifactId>
 			<version>0.0.1</version>
 		</dependency>
