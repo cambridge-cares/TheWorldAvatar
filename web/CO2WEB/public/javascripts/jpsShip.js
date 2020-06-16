@@ -161,7 +161,7 @@ function addheatmap(){
     var arrUrl = window.location.pathname.split('/');
     if (arrUrl[2].toLowerCase()== "episode" ){
         changeRadius(40);
-        map.set('maxZoom', 11);
+        // map.set('maxZoom', 11);
     }
       document.getElementById("loader").style.display = "none"; 
 }
@@ -199,8 +199,14 @@ function getPollutantAndHeight(){
     let pollutantIndex = dropD.options[dropD.selectedIndex].value;
     let sideLength = arrXYPollutant[0].length;
     var typeOfPollutant = arrXYPollutant[2][heightIndex][pollutantIndex];
+    const maxNum = Math.max(...typeOfPollutant); //... means [type of Pollutant interator]
+    const minNum = Math.min(...typeOfPollutant);
+    console.log(maxNum, minNum);
+    getLegends([maxNum, minNum]);
     for (var i = 0; i< typeOfPollutant.length; i++){
-        typeOfPollutant[i] = parseFloat(typeOfPollutant[i]);
+        var m = parseFloat(typeOfPollutant[i]);
+        //normalization from number to 0 - 100 = (m-rmin)/(rmax-rmin)*100
+        typeOfPollutant[i] = (m - minNum)/(maxNum-minNum)*100;
     }
     //so length of Gases is a squared integer, pollutant index is an integer
     lotsOfMarkers = [];
@@ -210,9 +216,6 @@ function getPollutantAndHeight(){
         weight: typeOfPollutant[i] } ;
         lotsOfMarkers.push(random);
     }
-    let maxNum = Math.max(...typeOfPollutant);
-    let minNum = Math.min(...typeOfPollutant);
-    getLegends([maxNum, minNum]);
     if (maxNum == 0){
         return [];
     }
@@ -421,13 +424,13 @@ function getLegends(maxMin){
         .domain(maxMin);
     var domain = colourScale.domain();
     
-    var width = 70;
+    var width = 80;
     var height = 500;
     var  paddedDomain = fc.extentLinear()
     .pad([0.05, 0.05])
     .padUnit("percent")(domain);
   var [min, max] = paddedDomain;
-  var expandedDomain = d3.range(min, max, (max - min) / height);
+  var expandedDomain = d3.range(min, max, (max - min) / 250);
     var xScale = d3
         .scaleBand()
         .domain([0, 1])
@@ -451,14 +454,18 @@ function getLegends(maxMin){
     
     var axisLabel = fc
       .axisRight(yScale)
-      .tickValues([...domain, (domain[1] + domain[0]) / 2,
-       (domain[1] + domain[0]) / 10,(domain[1] + domain[0]) / 5,
-       (domain[1] + domain[0]) / 10*3,(domain[1] + domain[0]) / 5*2,
-       (domain[1] + domain[0]) / 5*3,(domain[1] + domain[0]) / 10*7,
-       (domain[1] + domain[0]) / 5*4 ,(domain[1] + domain[0]) / 10*9,]);
-    
+      .tickValues([(domain[1] + domain[0]) / 10,(domain[1] + domain[0]) / 5,
+      (domain[1] + domain[0]) / 10*3,(domain[1] + domain[0]) / 5*2,
+      (domain[1] + domain[0]) / 2,(domain[1] + domain[0]) / 5*3,
+      (domain[1] + domain[0]) / 10*7,(domain[1] + domain[0]) / 5*4 ,
+      (domain[1] + domain[0]) / 10*9]);
+    console.log([(domain[1] + domain[0]) / 10,
+    (domain[1] + domain[0]) / 5,(domain[1] + domain[0]) / 10*3,
+    (domain[1] + domain[0]) / 5*2,(domain[1] + domain[0]) / 2,
+     (domain[1] + domain[0]) / 5*3,(domain[1] + domain[0]) / 10*7,
+     (domain[1] + domain[0]) / 5*4 ,(domain[1] + domain[0]) / 10*9]);
     var legendSvg = container.append("svg")
-        .attr("height", height)
+        .attr("height", height-10)
         .attr("width", width);
     
     var legendBar = legendSvg
