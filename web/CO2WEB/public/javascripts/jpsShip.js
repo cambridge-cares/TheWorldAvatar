@@ -160,7 +160,7 @@ function addheatmap(){
       });
     var arrUrl = window.location.pathname.split('/');
     if (arrUrl[2].toLowerCase()== "episode" ){
-        changeRadius(40);
+        changeRadius(35);
         // map.set('maxZoom', 11);
     }
       document.getElementById("loader").style.display = "none"; 
@@ -407,7 +407,7 @@ function queryProcessor(str){
 }
 
 function changeRadius(numeral) {
-    heatmap.set('radius', heatmap.get('radius') ? null : numeral);
+    heatmap.setOptions({radius: numeral});
 }
 /** creates the color range legend using d3 and places it on the panel
  * 
@@ -422,12 +422,12 @@ function getLegends(maxMin){
     var domain = colourScale.domain();
     
     var width = 80;
-    var height = 450;
+    var height = 500;
     var  paddedDomain = fc.extentLinear()
     .pad([0.05, 0.05])
     .padUnit("percent")(domain);
   var [min, max] = paddedDomain;
-  var expandedDomain = d3.range(min, max, (max - min) / 100);
+  var expandedDomain = d3.range(min, max, (max - min) / height);
     var xScale = d3
         .scaleBand()
         .domain([0, 1])
@@ -436,7 +436,7 @@ function getLegends(maxMin){
     var yScale = d3
         .scaleLinear()
         .domain(paddedDomain)
-        .range([height, 0]);
+        .range([height-1, 0]);
     
     var svgBar = fc
       .autoBandwidth(fc.seriesSvgBar())
