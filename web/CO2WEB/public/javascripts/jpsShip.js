@@ -212,7 +212,10 @@ function getPollutantAndHeight(){
     }
     let maxNum = Math.max(...typeOfPollutant);
     let minNum = Math.min(...typeOfPollutant);
-    getLegends([maxNum, minNum])
+    getLegends([maxNum, minNum]);
+    if (maxNum == 0){
+        return [];
+    }
     return lotsOfMarkers;
 }
 
@@ -409,6 +412,9 @@ function changeRadius(numeral) {
  */
 function getLegends(maxMin){
     document.getElementById("chart").innerHTML = "";
+    if (maxMin[0] == 0){
+        return;
+    }
     var container = d3.select("#chart");
     var colourScale = d3
         .scaleSequential(d3.interpolateRdYlGn) //from the d3 color types
