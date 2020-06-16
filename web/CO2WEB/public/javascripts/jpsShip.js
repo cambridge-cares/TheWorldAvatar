@@ -73,7 +73,7 @@ function initMap() {
     var arrUrl = window.location.pathname.split('/');
     var center;
     map = new google.maps.Map(document.getElementById('map'));
-    center = new google.maps.LatLng(1.367165198,103.801163462);
+    center = new google.maps.LatLng(1.272061426648693, 103.86814522217725);
     map.setZoom(10);
     getRelevantFolder(arrUrl[2], "Singapore");
     map.setCenter(center);
@@ -415,7 +415,7 @@ function getLegends(maxMin){
         .domain(maxMin);
     var domain = colourScale.domain();
     
-    var width = 80;
+    var width = 70;
     var height = 500;
     var  paddedDomain = fc.extentLinear()
     .pad([0.05, 0.05])
