@@ -415,9 +415,6 @@ function changeRadius(numeral) {
  */
 function getLegends(maxMin){
     document.getElementById("chart").innerHTML = "";
-    if (maxMin[0] == 0){
-        return;
-    }
     var container = d3.select("#chart");
     var colourScale = d3
         .scaleSequential(d3.interpolateRdYlGn) //from the d3 color types
@@ -425,12 +422,12 @@ function getLegends(maxMin){
     var domain = colourScale.domain();
     
     var width = 80;
-    var height = 500;
+    var height = 450;
     var  paddedDomain = fc.extentLinear()
     .pad([0.05, 0.05])
     .padUnit("percent")(domain);
   var [min, max] = paddedDomain;
-  var expandedDomain = d3.range(min, max, (max - min) / 250);
+  var expandedDomain = d3.range(min, max, (max - min) / 100);
     var xScale = d3
         .scaleBand()
         .domain([0, 1])
@@ -451,21 +448,21 @@ function getLegends(maxMin){
       .decorate(selection => {
         selection.selectAll("path").style("fill", d => colourScale(d));
       });
-    
     var axisLabel = fc
       .axisRight(yScale)
-      .tickValues([(domain[1] + domain[0]) / 10,(domain[1] + domain[0]) / 5,
-      (domain[1] + domain[0]) / 10*3,(domain[1] + domain[0]) / 5*2,
-      (domain[1] + domain[0]) / 2,(domain[1] + domain[0]) / 5*3,
-      (domain[1] + domain[0]) / 10*7,(domain[1] + domain[0]) / 5*4 ,
-      (domain[1] + domain[0]) / 10*9]);
-    console.log([(domain[1] + domain[0]) / 10,
-    (domain[1] + domain[0]) / 5,(domain[1] + domain[0]) / 10*3,
-    (domain[1] + domain[0]) / 5*2,(domain[1] + domain[0]) / 2,
-     (domain[1] + domain[0]) / 5*3,(domain[1] + domain[0]) / 10*7,
-     (domain[1] + domain[0]) / 5*4 ,(domain[1] + domain[0]) / 10*9]);
+      .tickValues([...domain,
+       (domain[1] - domain[0]) / 10+domain[0],(domain[1] - domain[0]) / 5+domain[0],
+       (domain[1]- domain[0]) / 10*3+domain[0],(domain[1] - domain[0]) / 5*2+domain[0],(domain[1] - domain[0]) / 2+domain[0],
+       (domain[1] - domain[0]) / 5*3+domain[0],(domain[1] - domain[0]) / 10*7+domain[0],
+       (domain[1] - domain[0]) / 5*4+domain[0] ,(domain[1]- domain[0]) / 10*9+domain[0]]);
+    console.log([...domain,
+       (domain[1] - domain[0]) / 10+domain[0],(domain[1] - domain[0]) / 5+domain[0],
+       (domain[1]- domain[0]) / 10*3+domain[0],(domain[1] - domain[0]) / 5*2+domain[0],(domain[1] - domain[0]) / 2+domain[0],
+       (domain[1] - domain[0]) / 5*3+domain[0],(domain[1] - domain[0]) / 10*7+domain[0],
+       (domain[1] - domain[0]) / 5*4+domain[0] ,(domain[1]- domain[0]) / 10*9+domain[0]]);
+    
     var legendSvg = container.append("svg")
-        .attr("height", height-10)
+        .attr("height", height)
         .attr("width", width);
     
     var legendBar = legendSvg
