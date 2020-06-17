@@ -98,13 +98,15 @@ public class gPROMS_ipgen {
 			//System.out.println(Arrays.toString(sa[1]));
 			System.out.println(sa[1]);			
 			
-//Once thte file is created, data has to be written to it
+//Once the file is created, data has to be written to it
 		  try {
 		      FileWriter myWriter = new FileWriter("Settings.input");
 		      myWriter.write("Feed__T \n");
-		      myWriter.write(sa[2]);
+		      myWriter.write(sa[1]);
 		      myWriter.write("\n");
-		      myWriter.write("step1__initial_value \n");
+		      myWriter.write("Feed__P\n");
+		      myWriter.write(sa[2]);
+		      myWriter.write("\nstep1__initial_value \n");
 		      myWriter.write("step1__final_value \n");
 		      myWriter.write("step2__initial_value \n");
 		      myWriter.write("step2__final_value \n");
