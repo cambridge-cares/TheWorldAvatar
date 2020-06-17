@@ -11,8 +11,9 @@ import com.cmclinnovations.jps.agent.configuration.EBRAgentProperty;
 import com.cmclinnovations.jps.agent.ebr.EBRAgent;
 import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
-import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
+
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 @Controller
 public class SpeciesBean extends EBRAgent{	
 
