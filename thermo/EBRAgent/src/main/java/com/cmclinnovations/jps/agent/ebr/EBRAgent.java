@@ -44,16 +44,16 @@ import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.csv.species.CSVGenerator;
 import com.cmclinnovations.jps.kg.OntoSpeciesKG;
 import com.cmclinnovations.jps.model.species.SpeciesBean;
-import com.cmclinnovations.slurm.job.JobSubmission;
-import com.cmclinnovations.slurm.job.SlurmJob;
-
-import com.cmclinnovations.slurm.job.Status;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
-import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
+
+import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 /**
  * EBR Agent is developed for setting-up and running thermodata validation<br>
