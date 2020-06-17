@@ -4,11 +4,14 @@ import java.io.File;
 import java.io.FileWriter;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import org.json.JSONObject;
 
+import uk.ac.cam.ceb.como.paper.enthalpy.utils.FrequencyUtils;
 import uk.ac.cam.ceb.como.paper.enthalpy.utils.PropertiesManager;
 /**
  * 
@@ -24,8 +27,7 @@ import uk.ac.cam.ceb.como.paper.enthalpy.utils.PropertiesManager;
  */
 public class JsonManager {
 
-	public static Properties ebrAgentProperties = PropertiesManager
-			.loadProperties(JsonManager.class.getClassLoader().getResourceAsStream("ebr.agent.properties"));
+	public static Properties ebrAgentProperties = PropertiesManager.loadProperties(JsonManager.class.getClassLoader().getResourceAsStream("ebr.agent.properties"));
 
 	static String ontospeciesServerUrl = ebrAgentProperties.getProperty("ontospecies.rdf4j.server.url").toString();
 	static String ontocompchemServerUrl = ebrAgentProperties.getProperty("ontocompchem.rdf4j.server.url").toString();
@@ -46,8 +48,13 @@ public class JsonManager {
 
 		File ebrFolder = new File(System.getProperty("user.home") + "/" + folderName);
 
+		FileWriter outputTxtFileWriter = new FileWriter(ebrFolder.getAbsolutePath() + "/" + "output.txt");
+		outputTxtFileWriter.write(System.getProperty( "line.separator" ));
+		
 		ebrFolder.mkdirs();
 
+		
+		
 		/**
 		 * Iterates through sub-folders in root folder "test_data" and creates Json file
 		 * stored in a folder that is named by using reaction type, species type (HCO)
@@ -69,6 +76,9 @@ public class JsonManager {
 				 */
 				System.out.println("reaction type: " + name.substring(name.lastIndexOf("_") + 1));
 
+				outputTxtFileWriter.write("reaction type: " + name.substring(name.lastIndexOf("_") + 1));
+				outputTxtFileWriter.write(System.getProperty("line.separator"));
+				
 				if (!f.getName().contains("ti_")) {
 
 					for (File f2 : f.listFiles()) {
@@ -77,6 +87,8 @@ public class JsonManager {
 
 							System.out.println("Upper folder name: " + f2.getName());
 							
+							outputTxtFileWriter.write("Upper folder name: " + f2.getName());
+							outputTxtFileWriter.write(System.getProperty("line.separator"));
 							
 							String[] names = f2.getName().split("-");
 							
@@ -114,22 +126,72 @@ public class JsonManager {
 
 									LinkedList<SpeciesBean> speciesBeanList = new LinkedList<SpeciesBean>();
 									
+									LinkedHashMap<String, LinkedList<SpeciesBean>> casRegIDSpeciesMap = new LinkedHashMap<String, LinkedList<SpeciesBean>>();
+									
 									for (File f4 : f3.listFiles()) {
 
 										if (f4.isDirectory()) {
 											
-											System.out.println("CAS reg ID: " + f4.getName());
-											
+										System.out.println("CAS reg ID: " + f4.getName());
+										
+										outputTxtFileWriter.write("CAS reg ID: " + f4.getName());
+										outputTxtFileWriter.write(System.getProperty("line.separator"));
+										
 											/**
 											 * 
 											 * Federated query via three repositories: ontocompchem and ontospecies on Claudius, and ontospecies on localhost.
+											 * It returns ontocompchem IRI and ontospecies IRI.
 											 * 
 											 */
-											speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpecies(f4.getName())));
-											
-											jsonBean.setReferenceSpecies(speciesBeanList);
+//										speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpecies(f4.getName())));
+										
+										/**
+										 * 
+										 * Federated query via three repositories: ontocompchem and ontospecies on Claudius, and ontospecies on localhost.
+										 * It returns level of theory, ontocompchem IRI and ontospecies IRI.
+										 * 
+										 */
+										
+										speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpeciesIRIWithLevelOfTheory(f4.getName()),outputTxtFileWriter));
+										
+										/**
+										 * linked hash map that stores cas reg id as a key and list of (level of theory, ontocomcphem IRI, ontospecies IRI).
+										 */
+										casRegIDSpeciesMap.put(f4.getName(), speciesBeanList);
+										
+//										jsonBean.setReferenceSpecies(speciesBeanList);
+										
 										}
 									}
+									
+									/**
+									 * @author NK510 (caresssd@hermes.cam.ac.uk)
+									 * 
+									 * Calculates frequency of level of theory quantity for all species under one folder.
+									 */
+									FrequencyUtils frequencyUtils = new FrequencyUtils();
+									
+									LinkedHashMap<String, Integer> frequencyMap = new LinkedHashMap<String, Integer>();
+									
+									frequencyMap.putAll(frequencyUtils.getFrequencyOfLevelOfTheory(speciesBeanList,outputTxtFileWriter));
+									
+									for(Map.Entry<String, Integer> m: frequencyMap.entrySet()) {
+										
+										System.out.println("key: " + m.getKey() + " value: " + m.getValue());
+										
+										outputTxtFileWriter.write("- - - - -  -- - - - - - - - - - - - - - -  -");
+										outputTxtFileWriter.write(System.getProperty("line.separator"));
+										outputTxtFileWriter.write("level of theory: " + m.getKey() + " frequency: " + m.getValue());
+										outputTxtFileWriter.write(System.getProperty("line.separator"));
+										
+										
+										
+									}
+
+									jsonBean.setReferenceSpecies(new FrequencyUtils().getIRI(frequencyMap, casRegIDSpeciesMap));
+									
+									
+									System.out.println();
 									
 									jsonBean.setSrcCompoundsRef(ebrAgentProperties.getProperty("srcCompoundsRef").toString().replaceAll("\"+",""));
 									jsonBean.setSrcRefPool(ebrAgentProperties.getProperty("srcRefPool").toString().replaceAll("\"+",""));
@@ -143,6 +205,7 @@ public class JsonManager {
 									jsonBean.setReactionType(name.substring(name.lastIndexOf("_") + 1));
 									
 									jsonBean.setInputZipFile(ebrAgentProperties.getProperty("inputZipFile").toString().replaceAll("\"+",""));
+									
 									/**
 									 * Reads 'process to run' from .properties file and stores it into json.
 									 */
@@ -174,12 +237,15 @@ public class JsonManager {
 									System.out.println("- - - - - - - - - - - - - - - - - - - - - - - - - - - - -");
 								}
 							}
+							
+							
 						}
 					}
 				}
-				
-				System.out.println("- - -  - -  - - - - -  - -");
+		System.out.println("- - -  - -  - - - - -  - -");
 			}
 		}
+		outputTxtFileWriter.flush();
+		outputTxtFileWriter.close();
 	}
 }

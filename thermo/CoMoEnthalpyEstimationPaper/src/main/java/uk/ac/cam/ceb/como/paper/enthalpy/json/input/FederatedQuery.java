@@ -1,5 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.json.input;
 
+import java.io.FileWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -13,17 +14,11 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class FederatedQuery {
-
 	
-	
-	
-	
-	public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontocompchemServerUrl, String ontospecieskbServerUrl, String ontospeciesServerUrls,String query) throws Exception {
-
-		LinkedList<SpeciesBean> speciesBeanLinkedList = new LinkedList<SpeciesBean>();
-		
-		
-		
+public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontocompchemServerUrl, String ontospecieskbServerUrl, String ontospeciesServerUrls,String query, FileWriter outputTxtFileWriter) throws Exception {
+	   
+	    LinkedList<SpeciesBean> speciesBeanLinkedList = new LinkedList<SpeciesBean>();
+	   
 		/**
 		 * 
 		 * @author NK510 (caresssd@hermes.cam.ac.uk)
@@ -33,8 +28,6 @@ public class FederatedQuery {
 		
 		Repository repository = FedXFactory.createSparqlFederation(Arrays.asList(ontocompchemServerUrl,ontospecieskbServerUrl,ontospeciesServerUrls));
 		
-        
-	    
 	    try {
 			
 		RepositoryConnection conn = repository.getConnection();
@@ -52,31 +45,40 @@ public class FederatedQuery {
 			
 		TupleQueryResult tqRes = tq.evaluate();
 		
-		
 		while (tqRes.hasNext()) {
 					
 		BindingSet bSet = tqRes.next();
 		
 		if((bSet.getValue("species").stringValue()!=null) && (bSet.getValue("compchemspecies").stringValue()!=null)) {
 	
-		SpeciesBean jsonBean = new SpeciesBean(bSet.getValue("compchemspecies").stringValue(),bSet.getValue("species").stringValue());
+		SpeciesBean jsonBean = new SpeciesBean(bSet.getValue("levelOfTheory").stringValue(), bSet.getValue("compchemspecies").stringValue(),bSet.getValue("species").stringValue());
+			
+//		SpeciesBean jsonBean = new SpeciesBean(bSet.getValue("compchemspecies").stringValue(),bSet.getValue("species").stringValue());
+		
 
 		/**
+		 * 
 		 * Adds only one pair of ontocomcphem species iri and ontospecies iri.
+		 * 
 		 */
-		if(speciesBeanLinkedList.size()==0) {
+//		if(speciesBeanLinkedList.size()==0) {
+		outputTxtFileWriter.write(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());
+		outputTxtFileWriter.write(System.getProperty("line.separator"));
+		System.out.println(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());	
 		
+		outputTxtFileWriter.write(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
+		outputTxtFileWriter.write(System.getProperty("line.separator"));
 		System.out.println(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
-		System.out.println(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
 		
+		outputTxtFileWriter.write(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
+		outputTxtFileWriter.write(System.getProperty("line.separator"));
+		System.out.println(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
 
 		speciesBeanLinkedList.add(jsonBean);
 		
-		}
+//		}
 		
 		}
-		
-//		System.out.println(i + ". ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue() + " , unique ontospecies : " + bSet.getValue("species").stringValue() + " , cas-reg-id:" + bSet.getValue("crid").stringValue());
 		
 		}
 		
@@ -90,7 +92,8 @@ public class FederatedQuery {
 		
 		}catch(RepositoryException e) {
 		
-			e.printStackTrace();
+		e.printStackTrace();
+		
 		}
 	    
 		repository.shutDown();	
@@ -98,5 +101,5 @@ public class FederatedQuery {
 		return speciesBeanLinkedList;
 		
 		}
-	
 }
+
