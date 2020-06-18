@@ -127,6 +127,8 @@ function getRelevantFolder(typeOfEmission, city){
             }
             arrXYPollutant = [x_coord, y_coord, info.grid]; //grid = noOfPollutantx(X*Y)
             addheatmap();
+            map.setZoom(10);
+            map.set('maxZoom', 11);
             document.getElementById("loader").style.display = "none"; 
         })
     })
