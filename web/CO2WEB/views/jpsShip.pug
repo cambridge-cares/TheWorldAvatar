@@ -17,13 +17,19 @@ block readme
 		| ?    
 	span#readme-text
 		| This agent considers the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for some emission sources (ships represented by black dots).
+		br
 		| The pollutants in the emission source are CO2, CO, NO,NO2, particulates and unburned hydrocarbon (depends on which reaction mechanism is used).
+		br
 		|The effects of the closest 25 buildings from the emission source within the selected region and real-time weather data (sourced from https://www.accuweather.com/en/sg/singapore/300597/weather-forecast/300597) on atmospheric dispersion are simulated and visualised in the dispersion profile. The weather data is updated every time the agent is executed.
+		br
 		|The user can modify the area of interest between Singapore and Hongkong by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
+		br
 		|The emission sources have emission heights of 20 m represents the height of the emission chimney tower for every ships.
+		br
 		|It is also shown the focus region for the dispersion profile computation (X lower, X upper, Y lower and Y upper values in coordinate reference system WGS 84 / Pseudo-Mercator (epsg:3857)).
+		br
 		|The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed. The dispersion profile can be viewed at a height of 0 m to 30 m by moving the slider on the left.
-
+		br
 		|The user can also choose to view the different pollutants’ dispersion profiles by selecting the listed pollutants. For Hong Kong case, the terrain elevation factor is also involved in the dispersion calculation although it is still not able to be visualized that all the buildings in the visualization are projected down directly above the ground and none of them are floating
 block description
 	
@@ -140,7 +146,12 @@ block content
 		select#gasType(name='gasType')
 				
 	div#legend
-		h3 Legend
+		h3 
+			| Legend 
+			br
+			|(ug/m
+			sup 3 
+			| )
 		div#chart
 
 						   
