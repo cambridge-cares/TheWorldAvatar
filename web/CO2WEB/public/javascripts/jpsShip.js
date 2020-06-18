@@ -1,4 +1,5 @@
-var prefix = "http://localhost:8080";
+//var prefix = "http://localhost:8080";
+var prefix = "http://www.jparksimulator.com";
 var markers = []
 var listOfIRIs = [];
 var metaEndpoint = prefix + "/rdf4j-server/repositories/airqualitystation";
@@ -25,11 +26,13 @@ $("#location").on("change", () => {
     if (mlocation === "Singapore") {
         center = new google.maps.LatLng(1.272061426648693, 103.86814522217725);
         map.setZoom(10);
+         map.set('maxZoom', 11);
         getRelevantFolder(arrUrl[2], "Singapore");
 
     }else if (mlocation === "Hong Kong") {
         center = new google.maps.LatLng(22.28911086466781,114.1491155592187);
-        map.setZoom(16);
+        map.setZoom(10);
+         map.set('maxZoom', 11);
         getRelevantFolder(arrUrl[2], "Hong_Kong");
     }
     // var legend = document.createElement("legend");
@@ -88,11 +91,14 @@ function getRelevantFolder(typeOfEmission, city){
     var agentScenario = prefix +  "/JPS_DISPERSION/" + typeOfEmission + "/results/latest";
     document.getElementById("loader").style.display = "block"; 
     //Part 1: get relevant folder
+    console.log(agentScenario);
     $.get(agentScenario, {city:locationIRI}).done(function (data) {
         console.log('requested Scenario Agent for folder: '+data);
     }).then(function(data){
+        console.log(prefix);
         var agentInfo = prefix +  "/JPS_SHIP/GetExtraInfo";
         // Part 2: get the relevant IRIs for ship, as well as for airStationIRIs
+        console.log(agentInfo)
         $.get(agentInfo, {path:data}).done(function (data) {
             var info=JSON.parse(data);
             //Part 3: Handle Ships if they are there
@@ -161,7 +167,6 @@ function addheatmap(){
     var arrUrl = window.location.pathname.split('/');
     if (arrUrl[2].toLowerCase()== "episode" ){
         changeRadius(35);
-        // map.set('maxZoom', 11);
     }
       document.getElementById("loader").style.display = "none"; 
 }
@@ -190,7 +195,7 @@ function getPollutantAndHeight(){
                 "+proj=tmerc +lat_0=22.31213333333334 +lon_0=114.1785555555556 +k=1 +x_0=836694.05 +y_0=819069.8 +ellps=intl +towgs84=-162.619,-276.959,-161.764,0.067753,-2.243649,-1.158827,-1.094246 +units=m +no_defs ");
         }else{
             firstProjection = "EPSG:32650";
-            proj4.defs(firstProjection, "+proj=utm +zone=48 +datum=WGS84 +units=m +no_defs");
+            proj4.defs(firstProjection, "+proj=utm +zone=50 +datum=WGS84 +units=m +no_defs");
         }
     }
     var heightLevel = slider.value;
