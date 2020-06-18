@@ -197,15 +197,10 @@ var checkExist = setInterval(function() {
         map.setZoom(10);
         var agenturl = prefix + '/JPS_WTE/WTEVisualization/createMarkers'; 
 
-        // queryForMarkers(agenturl,createNewUrlForAgent, function(){
-        //     InitialTransportInputs();
-        //     InitialUnitInputs();
-        // });
-         heatmap = new google.maps.visualization.HeatmapLayer({
-          data: getPoints(),
-          map: map
+        queryForMarkers(agenturl,createNewUrlForAgent, function(){
+            InitialTransportInputs();
+            InitialUnitInputs();
         });
-        heatmap.setMap(map);
         clearInterval(checkExist);
     }
 }, 100); // check every 100ms
@@ -360,7 +355,7 @@ var slider = document.getElementById("myRange");
 var output = document.getElementById("demo");
 output.innerHTML = slider.value;
 
-slider.oninput = function() {
+slider.onmouseup = function() {
   output.innerHTML = this.value;
   yearNumber = this.value;
 }
