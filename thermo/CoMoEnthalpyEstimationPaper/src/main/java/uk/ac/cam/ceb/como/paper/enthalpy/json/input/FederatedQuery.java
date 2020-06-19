@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.repository.RepositoryException;
 
 public class FederatedQuery {
 	
-public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontocompchemServerUrl, String ontospecieskbServerUrl, String ontospeciesServerUrls,String query, FileWriter outputTxtFileWriter) throws Exception {
+public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontocompchemServerUrl, String ontospecieskbServerUrl, String ontospeciesServerUrls,String query) throws Exception {
 	   
 	    LinkedList<SpeciesBean> speciesBeanLinkedList = new LinkedList<SpeciesBean>();
 	   
@@ -54,25 +54,26 @@ public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontoc
 		SpeciesBean jsonBean = new SpeciesBean(bSet.getValue("levelOfTheory").stringValue(), bSet.getValue("compchemspecies").stringValue(),bSet.getValue("species").stringValue());
 			
 //		SpeciesBean jsonBean = new SpeciesBean(bSet.getValue("compchemspecies").stringValue(),bSet.getValue("species").stringValue());
-		
 
 		/**
 		 * 
 		 * Adds only one pair of ontocomcphem species iri and ontospecies iri.
 		 * 
 		 */
-//		if(speciesBeanLinkedList.size()==0) {
-		outputTxtFileWriter.write(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());
-		outputTxtFileWriter.write(System.getProperty("line.separator"));
-		System.out.println(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());	
 		
-		outputTxtFileWriter.write(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
-		outputTxtFileWriter.write(System.getProperty("line.separator"));
-		System.out.println(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
+
+			
+//		outputTxtFileWriter.write(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());
+//		outputTxtFileWriter.write(System.getProperty("line.separator"));
+//		System.out.println(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());	
 		
-		outputTxtFileWriter.write(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
-		outputTxtFileWriter.write(System.getProperty("line.separator"));
-		System.out.println(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
+//		outputTxtFileWriter.write(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
+//		outputTxtFileWriter.write(System.getProperty("line.separator"));
+//		System.out.println(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
+		
+//		outputTxtFileWriter.write(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
+//		outputTxtFileWriter.write(System.getProperty("line.separator"));
+//		System.out.println(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
 
 		speciesBeanLinkedList.add(jsonBean);
 		

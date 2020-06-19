@@ -48,12 +48,10 @@ public class JsonManager {
 
 		File ebrFolder = new File(System.getProperty("user.home") + "/" + folderName);
 
-		FileWriter outputTxtFileWriter = new FileWriter(ebrFolder.getAbsolutePath() + "/" + "output.txt");
-		outputTxtFileWriter.write(System.getProperty( "line.separator" ));
+//		FileWriter outputTxtFileWriter = new FileWriter(ebrFolder.getAbsolutePath() + "/" + "output.txt");
+//		outputTxtFileWriter.write(System.getProperty( "line.separator" ));
 		
 		ebrFolder.mkdirs();
-
-		
 		
 		/**
 		 * Iterates through sub-folders in root folder "test_data" and creates Json file
@@ -76,8 +74,8 @@ public class JsonManager {
 				 */
 				System.out.println("reaction type: " + name.substring(name.lastIndexOf("_") + 1));
 
-				outputTxtFileWriter.write("reaction type: " + name.substring(name.lastIndexOf("_") + 1));
-				outputTxtFileWriter.write(System.getProperty("line.separator"));
+//				outputTxtFileWriter.write("reaction type: " + name.substring(name.lastIndexOf("_") + 1));
+//				outputTxtFileWriter.write(System.getProperty("line.separator"));
 				
 				if (!f.getName().contains("ti_")) {
 
@@ -87,8 +85,8 @@ public class JsonManager {
 
 							System.out.println("Upper folder name: " + f2.getName());
 							
-							outputTxtFileWriter.write("Upper folder name: " + f2.getName());
-							outputTxtFileWriter.write(System.getProperty("line.separator"));
+//							outputTxtFileWriter.write("Upper folder name: " + f2.getName());
+//							outputTxtFileWriter.write(System.getProperty("line.separator"));
 							
 							String[] names = f2.getName().split("-");
 							
@@ -123,19 +121,19 @@ public class JsonManager {
 							for (File f3 : f2.listFiles()) {
 
 								if (f3.isDirectory()) {
-
-									LinkedList<SpeciesBean> speciesBeanList = new LinkedList<SpeciesBean>();
 									
 									LinkedHashMap<String, LinkedList<SpeciesBean>> casRegIDSpeciesMap = new LinkedHashMap<String, LinkedList<SpeciesBean>>();
 									
 									for (File f4 : f3.listFiles()) {
-
-										if (f4.isDirectory()) {
-											
-										System.out.println("CAS reg ID: " + f4.getName());
 										
-										outputTxtFileWriter.write("CAS reg ID: " + f4.getName());
-										outputTxtFileWriter.write(System.getProperty("line.separator"));
+									LinkedList<SpeciesBean> speciesBeanList = new LinkedList<SpeciesBean>();
+										
+									if (f4.isDirectory()) {
+											
+
+										
+//									outputTxtFileWriter.write("CAS reg ID: " + f4.getName());
+//									outputTxtFileWriter.write(System.getProperty("line.separator"));
 										
 											/**
 											 * 
@@ -143,7 +141,7 @@ public class JsonManager {
 											 * It returns ontocompchem IRI and ontospecies IRI.
 											 * 
 											 */
-//										speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpecies(f4.getName())));
+//									speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpecies(f4.getName())));
 										
 										/**
 										 * 
@@ -152,44 +150,81 @@ public class JsonManager {
 										 * 
 										 */
 										
-										speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpeciesIRIWithLevelOfTheory(f4.getName()),outputTxtFileWriter));
-										
+//									speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpeciesIRIWithLevelOfTheory(f4.getName()),outputTxtFileWriter));
+										speciesBeanList.addAll(FederatedQuery.runFederatedSPARQLSpeciesBean(ontocompchemServerUrl, ontospeciesServerUrl, ontospeciesServerUrls,QueryString.getSpeciesIRIWithLevelOfTheory(f4.getName())));
+									
 										/**
 										 * linked hash map that stores cas reg id as a key and list of (level of theory, ontocomcphem IRI, ontospecies IRI).
 										 */
-										casRegIDSpeciesMap.put(f4.getName(), speciesBeanList);
+									casRegIDSpeciesMap.put(f4.getName(), speciesBeanList);
 										
-//										jsonBean.setReferenceSpecies(speciesBeanList);
-										
-										}
+									}
+									
 									}
 									
 									/**
+									 * 
 									 * @author NK510 (caresssd@hermes.cam.ac.uk)
 									 * 
 									 * Calculates frequency of level of theory quantity for all species under one folder.
+									 * 
 									 */
 									FrequencyUtils frequencyUtils = new FrequencyUtils();
 									
 									LinkedHashMap<String, Integer> frequencyMap = new LinkedHashMap<String, Integer>();
 									
-									frequencyMap.putAll(frequencyUtils.getFrequencyOfLevelOfTheory(speciesBeanList,outputTxtFileWriter));
 									
-									for(Map.Entry<String, Integer> m: frequencyMap.entrySet()) {
+									/**
+									 * Sorted level of theory by frequency value for all species given in one folder 'data-pre-processing'
+									 */
+									frequencyMap.putAll(frequencyUtils.getCalculationFrequencyOfLevelOfTheory(casRegIDSpeciesMap));
+									
+//									outputTxtFileWriter.write(" - - - - - - - - - json species iri - - - - - - - - - - -");
+//									outputTxtFileWriter.write(System.getProperty("line.separator"));
+									
+									/**
+									 * Select one pair of (ontocompchem IRI, ontospecies IRI) for each cas registry id and based on frequency of level of theory for all species.
+									 */
+									LinkedList<SpeciesBean> iriList = new LinkedList<SpeciesBean>();
+									
+									for(Map.Entry<String, LinkedList<SpeciesBean>> casrmap :  casRegIDSpeciesMap.entrySet()) {
 										
-										System.out.println("key: " + m.getKey() + " value: " + m.getValue());
+//										outputTxtFileWriter.write("cas reg id: " + casrmap.getKey());
+//										outputTxtFileWriter.write(System.getProperty("line.separator"));
 										
-										outputTxtFileWriter.write("- - - - -  -- - - - - - - - - - - - - - -  -");
-										outputTxtFileWriter.write(System.getProperty("line.separator"));
-										outputTxtFileWriter.write("level of theory: " + m.getKey() + " frequency: " + m.getValue());
-										outputTxtFileWriter.write(System.getProperty("line.separator"));
-										
-										
-										
-									}
 
-									jsonBean.setReferenceSpecies(new FrequencyUtils().getIRI(frequencyMap, casRegIDSpeciesMap));
+										for(Map.Entry<String, Integer> fmap: frequencyMap.entrySet()) {
+											
+										LinkedList<SpeciesBean> iri = new LinkedList<SpeciesBean>();
+										
+										for(SpeciesBean speciesB : casrmap.getValue()) {
+											
+										if(fmap.getKey().toString().equalsIgnoreCase(speciesB.getLevelOfTheory())) {
+											
+											SpeciesBean sb = new SpeciesBean(speciesB.getOntocompchemIRI(),speciesB.getOntospeciesIRI());
+											
+											iri.add(sb);
+										
+//											outputTxtFileWriter.write("- level of theory: " + speciesB.getLevelOfTheory());
+//											outputTxtFileWriter.write(System.getProperty("line.separator"));
+//											outputTxtFileWriter.write("- ontocompchem IRI: " + speciesB.getOntocompchemIRI());
+//											outputTxtFileWriter.write(System.getProperty("line.separator"));
+//											outputTxtFileWriter.write("- ontospecies IRI: " + speciesB.getOntospeciesIRI());
+//											outputTxtFileWriter.write(System.getProperty("line.separator"));
+											
+											break;
+											
+										}
+										
+										}
+										
+										iriList.addAll(iri);
+										
+										}
+										
+										}
 									
+									jsonBean.setReferenceSpecies(iriList);
 									
 									System.out.println();
 									
@@ -245,7 +280,7 @@ public class JsonManager {
 		System.out.println("- - -  - -  - - - - -  - -");
 			}
 		}
-		outputTxtFileWriter.flush();
-		outputTxtFileWriter.close();
+//		outputTxtFileWriter.flush();
+//		outputTxtFileWriter.close();
 	}
 }
