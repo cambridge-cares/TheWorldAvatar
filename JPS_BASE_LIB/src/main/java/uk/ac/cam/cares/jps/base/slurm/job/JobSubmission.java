@@ -591,6 +591,9 @@ public class JobSubmission{
 				uploadFile(jobFile.getAbsolutePath(), inputFileNameOnHPC);
 				replaceFileContent(jobFolderOnHPC, inputFileNameOnHPC);
 			}else if(!jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
+				if(jobFile.getAbsolutePath().endsWith(".sh")){
+					Utils.translateLineEndingIntoUnix(new File(jobFile.getAbsolutePath()));
+				}
 				uploadFile(jobFile.getAbsolutePath(), jobFolderOnHPC);				
 			}
 			if(jobFile.getAbsolutePath().endsWith(Property.STATUS_FILE_NAME.getPropertyName())){
