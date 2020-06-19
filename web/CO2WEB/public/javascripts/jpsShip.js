@@ -127,6 +127,12 @@ function getRelevantFolder(typeOfEmission, city){
             }
             arrXYPollutant = [x_coord, y_coord, info.grid]; //grid = noOfPollutantx(X*Y)
             addheatmap();
+            
+            if (city == "Hong_Kong"){   
+                map.set('maxZoom', 10);
+            }else{
+                map.set('maxZoom', 11);
+            }
             document.getElementById("loader").style.display = "none"; 
         })
     })
@@ -221,7 +227,7 @@ function getPollutantAndHeight(){
         weight: typeOfPollutant[i] } ;
         lotsOfMarkers.push(random);
     }
-    if (maxNum == 0){
+    if ((maxNum == 0)||(maxNum == NaN)){
         return [];
     }
     return lotsOfMarkers;
@@ -382,7 +388,11 @@ function querySensorAttributes(stationIRI, callback) {
         }}
         ORDER BY DESC(?proptimeval) LIMIT10`;
     let qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
-    console.log(qstr);
+    if (stationIRI.includes("002")){
+        let qstr = qstrT.replace('LIMIT10', 'LIMIT9');
+    }
+    // console.log(qstr);
+
     $.get({
         url:metaEndpoint,
         'Content-Type':"application/json",
@@ -420,7 +430,7 @@ function changeRadius(numeral) {
  */
 function getLegends(maxMin){
     document.getElementById("chart").innerHTML = "";
-    if (maxMin[0] == 0){
+    if ((maxMin[0] == 0)||(maxMin[0] == NaN)){
         return;
     }
     var container = d3.select("#chart");
@@ -462,7 +472,8 @@ function getLegends(maxMin){
        (domain[1] - domain[0]) / 10+domain[0],(domain[1] - domain[0]) / 5+domain[0],
        (domain[1]- domain[0]) / 10*3+domain[0],(domain[1] - domain[0]) / 5*2+domain[0],(domain[1] - domain[0]) / 2+domain[0],
        (domain[1] - domain[0]) / 5*3+domain[0],(domain[1] - domain[0]) / 10*7+domain[0],
-       (domain[1] - domain[0]) / 5*4+domain[0] ,(domain[1]- domain[0]) / 10*9+domain[0]]);
+       (domain[1] - domain[0]) / 5*4+domain[0] ,(domain[1]- domain[0]) / 10*9+domain[0]])
+       .tickFormat(d3.format(".3g"));
     console.log([...domain,
        (domain[1] - domain[0]) / 10+domain[0],(domain[1] - domain[0]) / 5+domain[0],
        (domain[1]- domain[0]) / 10*3+domain[0],(domain[1] - domain[0]) / 5*2+domain[0],(domain[1] - domain[0]) / 2+domain[0],

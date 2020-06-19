@@ -46,6 +46,10 @@ block content
 		transition: 0.5s;
 		padding-top: 60px;
 		}
+		.select{
+			padding: 2px;
+			margin: 2px;
+		}
 		.sidenav a {
 		padding: 8px 8px 8px 32px;
 		text-decoration: none;
@@ -69,53 +73,46 @@ block content
 		.sidenav a {font-size: 18px;}
 		}
 		.slidecontainer {
-			width: 80%;
+			width: 70%;
 			float:left;
+			padding: 5px;
+			margin: 5px;
 			}
 
 		.slider {
-		-webkit-appearance: none;
-		width: 100%;
-		height: 30px;
-		border-radius: 5px;
-		background: #d3d3d3;
-		outline: none;
-		opacity: 0.7;
-		-webkit-transition: .2s;
-		transition: opacity .2s;
+			-webkit-appearance: none;
+			width: 100%;
+			height: 30px;
+			border-radius: 5px;
+			background: #d3d3d3;
+			outline: none;
+			opacity: 0.7;
+			-webkit-transition: .2s;
+			transition: opacity .2s;
 		}
 
 		.slider:hover {
-		opacity: 1;
+			opacity: 1;
 		}
 
 		.slider::-webkit-slider-thumb {
-		-webkit-appearance: none;
-		appearance: none;
-		width: 25px;
-		height: 25px;
-		border-radius: 50%;
-		background: #4CAF50;
-		cursor: pointer;
+			-webkit-appearance: none;
+			appearance: none;
+			width: 25px;
+			height: 25px;
+			border-radius: 50%;
+			background: #4CAF50;
+			cursor: pointer;
 		}
 
 		.slider::-moz-range-thumb {
-		width: 25px;
-		height: 25px;
-		border-radius: 50%;
-		background: #4CAF50;
-		cursor: pointer;
+			width: 25px;
+			height: 25px;
+			border-radius: 50%;
+			background: #4CAF50;
+			cursor: pointer;
 		}
-		locality-dropdown{
-			overflow: hidden;
-			float:left;
-			width: 20%;
-		}
-		city-dropdown{
-			overflow: hidden;
-			float:left;
-			width: 20%;
-		}
+		
 		#map {
 			height: 100vh;
 			width: 100%;
@@ -129,15 +126,19 @@ block content
 
 	#loader(style='display:none;')
 	div#wrapper2
-		select#location(name='location')
-			option(value='singapore', selected = '') Singapore
-			option(value='hongkong') Hong Kong
+		p(style='text-align: center; float:left; margin-top: 15px;')
+			span#label_myRange
+			| Height 
+			span#demo
+			| (m)  
 
 		.slidecontainer
 			input#myRange.slider(type='range',value='10')
-		p(style='text-align: center; float:left;')
-			span#demo
-		select#gasType(name='gasType')
+
+		select#location(name='location', style='float:left; padding: 5px; margin-top: 10px; margin-right: 5px;')
+			option(value='singapore', selected = '') Singapore
+			option(value='hongkong') Hong Kong
+		select#gasType(name='gasType', style='float:left; padding: 5px; margin-top: 10px;')
 				
 	div#legend
 		h3 Legend
