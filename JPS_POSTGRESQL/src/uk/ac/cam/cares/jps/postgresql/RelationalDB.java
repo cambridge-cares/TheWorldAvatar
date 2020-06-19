@@ -146,6 +146,8 @@ public class RelationalDB {
             pstmt.setDouble(4, xmax);
             pstmt.setLong(5, epoch_back);
             pstmt.setLong(6, epoch_back);
+            pstmt.setLong(7, epoch_to);
+            pstmt.setLong(8, epoch_to);
             results = preparedStatementResultsToJsonArray(pstmt, true, KEY_MMSI);
         } catch (SQLException ex) {
             logger.error(ex.getMessage(), ex);
