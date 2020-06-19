@@ -35,8 +35,10 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 public class JobSubmission{
 	private Logger logger = LoggerFactory.getLogger(JobSubmission.class);	
 	private String hpcAddress;
-	private String username = "msff2";
-	private String password = getDecipheredPassword("Abcdl955_l7_l7_l7_aB");
+//	private String username = "msff2";
+//	private String password = getDecipheredPassword("Abcdl955_l7_l7_l7_aB");
+	private String username = "kp536";
+	private String password = "City_Chem2020%";
 	private int delayBeforeStart = 50;
 	private int interval = 60;
 	private String agentClass;
@@ -510,7 +512,6 @@ public class JobSubmission{
 							}
 						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
 							if(jobsRunning.size()<Property.MAX_NUMBER_OF_JOBS.getValue()){
-								System.out.println("number of jobs running= "+jobsRunning.size());
 								if(!(slurmJobProperty.getDelayBetweenConsecutiveJobs()> 0 && jobsRunning.size()>=1)){
 									runNotStartedJobs(jobFolder);
 									jobsRunning.add(jobFolder.getName());
