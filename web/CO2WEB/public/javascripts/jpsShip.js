@@ -1,4 +1,4 @@
-//var prefix = "http://localhost:8080";
+// var prefix = "http://localhost:8080";
 var prefix = "http://www.jparksimulator.com";
 var markers = []
 var listOfIRIs = [];
@@ -118,14 +118,17 @@ function getRelevantFolder(typeOfEmission, city){
             document.getElementById("loader").style.display = "block"; 
             setUpSlider(info.numheight, info.initialheight, info.numinterval);
             console.log(info.listofpol);
-            populateDropDown(info.listofpol);
+            // populateDropDown(info.listofpol);
+            populateDropDown();
             var x_coord = [];
             var y_coord = [];
             for (var i = 0; i< info.x_coord.length; i++){
                 x_coord.push(parseFloat(info.x_coord[i]));
                 y_coord.push(parseFloat(info.y_coord[i]));
             }
-            arrXYPollutant = [x_coord, y_coord, info.grid]; //grid = noOfPollutantx(X*Y)
+            //patch_Job to process info.grid
+            var infoGridNew = selectheightGrid(info.grid);
+            arrXYPollutant = [x_coord, y_coord, infoGridNew]; //grid = noOfPollutantx(X*Y)
             addheatmap();
             
             if (city == "Hong_Kong"){   
@@ -143,7 +146,44 @@ function setUpSlider(numOfLevel, initHeight, numInterval){
     slider.step = numInterval;
     slider.max = initHeight + (numOfLevel-1)* numInterval;
 }
-function populateDropDown(listofpollutants){
+function populateDropDown(){
+    let dropdown = document.getElementById('gasType');
+    dropdown.length = 0;
+    var indexes = [ "CO","HCx","NO2","NOx", "O3","SO2","PM2.5", "PM10"];
+    dropdown.selectedIndex = 0;
+    for (poll in indexes){ 
+        option = document.createElement('option');
+        option.text = indexes[poll];
+        option.value = poll; 
+        dropdown.add(option);
+    }
+}
+//realized that its heights x noOfPollutants x 100coordinates
+function selectheightGrid(gridArray){
+    var newGrid = []
+    for(var i = 0; i< 30; i++){
+        let newGridElement = selectInfoGrid(gridArray[i]);
+        newGrid.push(newGridElement);
+    }
+    return newGrid;
+}
+//patch solution passing the noOfPollutants (22) x 100 coordinates
+function selectInfoGrid(gridArray){
+    //first collate the hydrocarbons C2H6, C2H4,nC4H10,C3H6,Oxylene, and isoprene
+    //identify which rows belong to the hydrocarbons
+    var hcList = [];
+    var noList = [];
+    for(var i = 0; i< 100; i++){
+        let sumOfNO = parseFloat(gridArray[1][i])+parseFloat(gridArray[2][i]);
+        noList.push(sumOfNO);
+        let sumOfHC = parseFloat(gridArray[10][i])+parseFloat(gridArray[13][i])+parseFloat(gridArray[15][i])+
+        parseFloat(gridArray[17][i])+parseFloat(gridArray[18][i])+parseFloat(gridArray[19][i]);
+        hcList.push(sumOfHC);
+    }
+    return [gridArray[9],hcList,gridArray[2],noList,
+    gridArray[0], gridArray[7],  gridArray[20],  gridArray[21] ]
+}
+function populateDropDownOld(listofpollutants){ //to be used once sensors are re-created
     let dropdown = document.getElementById('gasType');
     dropdown.length = 0;
 
@@ -209,7 +249,7 @@ function getPollutantAndHeight(){
     let dropD= document.getElementById("gasType");
     let pollutantIndex = dropD.options[dropD.selectedIndex].value;
     let sideLength = arrXYPollutant[0].length;
-    var typeOfPollutant = arrXYPollutant[2][heightIndex][pollutantIndex];
+    var typeOfPollutant = Array.from(arrXYPollutant[2][heightIndex][pollutantIndex]);
     const maxNum = Math.max(...typeOfPollutant); //... means [type of Pollutant interator]
     const minNum = Math.min(...typeOfPollutant);
     console.log(maxNum, minNum);
@@ -367,6 +407,7 @@ function querySensor(city, callback){
 }
 
 function querySensorAttributes(stationIRI, callback) {
+    var qstr;
    let qstrT = `PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>
         PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>
         PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>
@@ -387,11 +428,12 @@ function querySensorAttributes(stationIRI, callback) {
         ?proptime   j6:inXSDDateTime ?proptimeval .
         }}
         ORDER BY DESC(?proptimeval) LIMIT10`;
-    let qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
+    
+    qstr = qstrT.replace('stationIRI', '<'+stationIRI+'>');
     if (stationIRI.includes("002")){
-        let qstr = qstrT.replace('LIMIT10', 'LIMIT9');
+        qstr = qstr.replace('LIMIT10', 'LIMIT9');
     }
-    // console.log(qstr);
+    console.log(qstr);
 
     $.get({
         url:metaEndpoint,
