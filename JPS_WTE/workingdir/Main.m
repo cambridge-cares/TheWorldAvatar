@@ -1,6 +1,7 @@
 clc
 clear
 close all
+cvx_begin
 cvx_solver gurobi
 cvx_save_prefs
 %% 
@@ -49,7 +50,7 @@ EOS=1; % Economy of scale
 
 % locaton information
 site=readmatrix('Site_xy.csv');% foodcourt
-site=site(1:9,:);% foodcourt
+%site=site(1:9,:);% foodcourt
 % % 
 %  waste=waste(:,1);% waste in tons/day
 
@@ -161,7 +162,7 @@ for t=1:15
 waste=readmatrix('Waste.csv')/1000;% waste in tons/day
 waste=waste(:,t);
 n_year=size(waste,2);
- waste=waste(1:9,:);% waste in tons/day
+%waste=waste(1:9,:);% waste in tons/day
 
 if t~=1
 Installation_cost_pre=Installation_cost_year(t-1);
@@ -592,7 +593,7 @@ end
 
 %% -------------------Output-----------------------------------------
     waste=readmatrix('Waste.csv')/1000;% waste in tons/day
-    waste=waste(1:9,:);
+%    waste=waste(1:9,:);
     
     n_year=size(waste,2);
     y_onsite_year=round(y_onsite_year);

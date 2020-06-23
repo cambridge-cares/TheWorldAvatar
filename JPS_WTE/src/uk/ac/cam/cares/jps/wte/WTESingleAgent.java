@@ -215,7 +215,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 		List<String[]> clusterOnsite = readResult(baseUrl,"year by year_Waste flow relation (onsite)_"+indOfYear+".csv");
 		//noOfFCActualxnoOfFC (repeated values are clusters)
 		List<String[]>sitemapping=new ArrayList<String[]>();
-		HashSet<String> clusterName =new HashSet<String>(); //temporary value until it runs
 		int size=clusterOnsite.size();//size = no of FC Actual
 		for(int x=0;x<size;x++) {//NoOfFC
 	        // HashSet should be 1. As HashSet contains only distinct values. 
@@ -260,6 +259,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 		
 		String sparqlInsertStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
 		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
+				+"PREFIX timeStamp:<http://www.w3.org/2006/time#> \r\n"
 			+ "INSERT DATA { \r\n";
 		List<String> clusterWTF = new ArrayList<String>();
 		//outputdata= treated waste onsite
@@ -269,7 +269,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			String currentwtf =  sitemapping.get(d)[4];
 			//Should go through each FC by number
 			StringBuffer b = new StringBuffer();
-			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex+"_"+Integer.toString(indOfYear);
+			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
 			String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
 					+ wasteindex+"_"+Integer.toString(indOfYear);
 			Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
@@ -289,7 +289,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 			wasteindex++;
 			String sparql = sparqlInsertStart + b.toString() + "} \r\n";
 			clusterWTF.add(fcCluster);
-			new QueryBroker().updateFileOLD(foodcourtmap.get(d)[0], sparql);
+			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
 
 		}
 		
