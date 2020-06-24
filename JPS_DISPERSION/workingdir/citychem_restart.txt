@@ -484,7 +484,7 @@
 0.0
 0.0
 8.0
-48.3
+56.3
 *
 * OFFSET Ozone (O3) in BCON file in ug/m^3 for callibration purpose
 0.0
