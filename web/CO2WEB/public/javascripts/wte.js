@@ -183,9 +183,15 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
  * 
  */
 var redflag = {"success":true};    
-(function PPMap(){
-    var ppMap = new PopupMap({useCluster:true});
-})();
+function initMap() {
+    //array of pathName
+    var arrUrl = window.location.pathname.split('/');
+    var center;
+    map = new google.maps.Map(document.getElementById('map'));
+    center = new google.maps.LatLng(1.367165198, 103.801163462);
+    map.setZoom(12);
+    map.setCenter(center);
+  }
 
 /** once map is instantiated, run base scenario
  * 
