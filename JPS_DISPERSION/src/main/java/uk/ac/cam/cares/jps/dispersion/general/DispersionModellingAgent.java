@@ -318,7 +318,15 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String agent = jo.getString("agent");
 			String datapath = jo.getString("datapath");
 			String time = jo.getString("expectedtime");
-			
+			if(!jo.has("airStationIRI")) {
+					if (cityIRI.toLowerCase().contains("singapore")) {
+						jo.put("airStationIRI",
+								"http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
+					} else if (cityIRI.toLowerCase().contains("kong")) {
+						jo.put("airStationIRI",
+								"http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+					}
+			}
 			
 	    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
 			String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
@@ -338,6 +346,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 	    	System.out.println("metadata annotation started");
 	    	MetaDataAnnotator.annotate(destinationUrl, null, agent, true, topics, time); //annotate
 	    	System.out.println("metadata annotation finished");
+	    	String interpolationcall = execute("/JPS_DISPERSION/InterpolationAgent/startSimulation",
+					jo.toString());
+	    	
+			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
 	    	out.delete();
 		}
 		}catch(Exception e) {

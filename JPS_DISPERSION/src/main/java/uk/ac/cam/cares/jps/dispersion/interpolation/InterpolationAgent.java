@@ -126,7 +126,7 @@ public class InterpolationAgent  extends JPSHttpServlet {
 //				 String baseUrl = requestParams.getString("baseUrl");
 //				 String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 //				 String directorytime = requestParams.getString("directoryTime");
-				 Thread.sleep(120000);
+				 Thread.sleep(60000);
 				 List<String[]> read =  readResult(baseUrl,"exp.csv");
 				 String arg = read.get(0)[0];
 				 System.out.println(arg);
