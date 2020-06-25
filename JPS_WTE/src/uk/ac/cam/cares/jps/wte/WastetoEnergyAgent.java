@@ -357,21 +357,21 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 		String path = request.getServletPath();
 		String baseUrl= requestParams.optString("baseUrl", "testFood");
 		String wasteIRI=requestParams.optString("wastenetwork", "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem");
-		String sourceUrl = JPSContext.getScenarioUrl(requestParams);
-		String sourceName = BucketHelper.getScenarioName(sourceUrl);
 		OntModel model= readModelGreedy(wasteIRI);
-		List<String[]> inputsondata = prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		List<String[]> fcMarkers = prepareCSVFC(FCQuery,"Site_xy.csv","Waste.csv", baseUrl,model); 
+		String n_cluster= requestParams.optString("n_cluster", Integer.toString(fcMarkers.size()));
+        new QueryBroker().putLocal(baseUrl + "/n_cluster.txt",n_cluster ); 
 		prepareCSVWT(WTquery,"Location.csv", baseUrl,model); 
 		prepareCSVTransport(transportQuery,"transport.csv", baseUrl,model); 
 		prepareCSVCompTECHBased(compquery,baseUrl,model);
 		prepareCSVTECHBased(WTFTechQuery,baseUrl,model,"offsite");
-		List<String[]> propertydataonsite=prepareCSVTECHBased(WTFTechOnsiteQuery,baseUrl,model,"onsite");
+		prepareCSVTECHBased(WTFTechOnsiteQuery,baseUrl,model,"onsite");
 		copyTemplate(baseUrl, "SphereDist.m");
 		copyTemplate(baseUrl, "Main.m");
 		copyTemplate(baseUrl, "D2R.m");
 		
 		try {
-			createBat(baseUrl);
+			createBat(baseUrl, n_cluster);
             notifyWatcher(requestParams, baseUrl+"/year by year_NPV.txt",
                     request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 		} catch (Exception e) {
@@ -585,8 +585,9 @@ public class WastetoEnergyAgent extends JPSHttpServlet {
 	 * @param baseUrl
 	 * @throws Exception
 	 */
-	public void createBat(String baseUrl) throws Exception {
+	public void createBat(String baseUrl, String n_cluster) throws Exception {
 		String loc = baseUrl + "\\Main.m";
+		
 		String bat =  "matlab -nosplash -noFigureWindows -r \"try; run('"
 				+ loc + "'); catch; end; quit\"";
 		System.out.println(bat);

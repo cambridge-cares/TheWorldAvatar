@@ -84,7 +84,7 @@ Unit_resource_cost=0.1; %electricity and water
 [n_tech,n_offsite]=size(n_unit_offsite_max);
 n_tech_onsite=size(Unit_capacity_onsite,1);
 n_foodcourt=size(site,1); 
-n_cluster=5;
+n_cluster= readmatrix('n_cluster.txt');
 
 revenue_year=zeros(15,1);
 Installation_cost_year=zeros(15,1);

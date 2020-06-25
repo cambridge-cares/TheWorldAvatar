@@ -106,7 +106,7 @@ public class TestWTE extends TestCase {
 		ag.copyTemplate(baseUrl, "D2R.m");
 		
 		try {
-			ag.createBat(baseUrl);
+			ag.createBat(baseUrl, "5");
 //            notifyWatcher(requestParams, baseUrl+"/number of units (onsite).csv",
 //                    request.getRequestURL().toString().replace(SIM_START_PATH, SIM_PROCESS_PATH));
 			//read for FC details
