@@ -269,20 +269,23 @@ async function completeUpdate(callback){
  * @param callback run query for Onsite afterwards
  */
 function runWTESimulation(){
-var para = {"wastenetwork":wastenetwork};
-
-var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
-var simulationurl = createUrlForAgent(scenario, agenturl, para); 
-console.log(simulationurl);
-var request = $.ajax({
-    url: simulationurl ,
-    type: 'GET',
-    contentType: 'application/json; charset=utf-8',
-    error: function(ts) {
-        alert(ts.responseText);
+    var noOfCluster = document.getElementById("noOfCluster").value;
+    if (noOfCluster == ''){
+        scenario = "9"; //auto set scenario to standard to differentiate from base
     }
+    var para = {"wastenetwork":wastenetwork, "n_cluster": noOfCluster};
+    var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
+    var simulationurl = createUrlForAgent(scenario, agenturl, para); 
+    console.log(simulationurl);
+    var request = $.ajax({
+        url: simulationurl ,
+        type: 'GET',
+        contentType: 'application/json; charset=utf-8',
+        error: function(ts) {
+            alert(ts.responseText);
+        }
     
-    });  
+        });  
     //Because simulation takes some time to run, then asynchronous watcher object is triggered next. 
     request.done(function() {
         document.getElementById("loader").style.display = "block"; 
