@@ -211,9 +211,7 @@ public class WeatherAgent extends JPSHttpServlet {
 		    	
 		    	 List<String[]> listtime = queryEndPointDataset(stntimeinfo);
 			
-			List<String[]> listmap = extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
-			 String context=listmap.get(0)[0]; //main stn
-			 String context2=listmap.get(1)[0]; // the furthest station	 
+			
 			 String timelatest=listtime.get(0)[2];
 			 boolean needupdate=isUpdateNeeded(timelatest);
 			 
@@ -228,7 +226,9 @@ public class WeatherAgent extends JPSHttpServlet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		    	
+			 List<String[]> listmap = extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
+			 String context=listmap.get(0)[0]; //main stn
+			 String context2=listmap.get(1)[0]; // the furthest station	 
 		    	JSONArray station= new JSONArray();
 		    	station.put(context);
 		    	station.put(context2);
@@ -773,138 +773,132 @@ public class WeatherAgent extends JPSHttpServlet {
 
 	}
 	
-	public void updatePropertiesFromDataAccuWeather(Map<String,String> map,String properties, JSONObject datasource,String completeformattime,String cityIRI) throws URISyntaxException {		
-		String result= getWeatherDataFromAccuweatherAPI(cityIRI);
-    	JSONObject joPr= new JSONObject(result);
-    	String precipitation="0.0"; //in mm
-    	if (joPr.has("rain")) {
-    		precipitation = joPr.getJSONObject("rain").optString("3h",joPr.getJSONObject("rain").get("1h").toString());
+	public void updatePropertiesFromDataAccuWeather(Map<String, String> map, String properties, JSONObject datasource,
+			String completeformattime, String cityIRI, String apiresult) throws URISyntaxException {
+		JSONObject joPr = new JSONObject(apiresult);
+		String precipitation = "0.0"; // in mm
+		if (joPr.has("rain")) {
+			precipitation = joPr.getJSONObject("rain").optString("3h", joPr.getJSONObject("rain").get("1h").toString());
 		}
-    	String pressure=joPr.getJSONObject("main").get("pressure").toString(); //in hPa
-    	
-    	String cloudcover=joPr.getJSONObject("clouds").get("all").toString(); //in %
-    	
-    	String windspeed=joPr.getJSONObject("wind").get("speed").toString(); // in m/s
-    	String winddirection="0.0";
-    	if(joPr.getJSONObject("wind").has("deg")) {
-    		winddirection=joPr.getJSONObject("wind").get("deg").toString();
-    	}
-    	String relativehumidity=joPr.getJSONObject("main").get("humidity").toString();
-    	String temperature=joPr.getJSONObject("main").get("temp").toString();
-    	
-    	//System.out.println("cityIRI= "+cityIRI);
-    	
+		String pressure = joPr.getJSONObject("main").get("pressure").toString(); // in hPa
+
+		String cloudcover = joPr.getJSONObject("clouds").get("all").toString(); // in %
+
+		String windspeed = joPr.getJSONObject("wind").get("speed").toString(); // in m/s
+		String winddirection = "0.0";
+		if (joPr.getJSONObject("wind").has("deg")) {
+			winddirection = joPr.getJSONObject("wind").get("deg").toString();
+		}
+		String relativehumidity = joPr.getJSONObject("main").get("humidity").toString();
+		String temperature = joPr.getJSONObject("main").get("temp").toString();
+
+		// System.out.println("cityIRI= "+cityIRI);
+
 		if (cityIRI.toLowerCase().contains("singapore")) {
 			JSONArray data = datasource.getJSONObject("metadata").getJSONArray("stations");
 			for (int r = 0; r < data.length(); r++) {
 				String name = data.getJSONObject(r).get("name").toString();
 				try {
-					String mappedname=map.get(name).toString();
+					String mappedname = map.get(name).toString();
 					if (properties.contentEquals("OutsideAirCloudCover")) {
-						String newcloudcover = "" + Double.valueOf(cloudcover) / 100; //stored in decimal
+						String newcloudcover = "" + Double.valueOf(cloudcover) / 100; // stored in decimal
 						new WeatherAgent().updateRepoNewMethod(mappedname, properties, newcloudcover,
 								completeformattime);// stored in decimal
-					}else if (properties.contentEquals("OutsideAirPressure")) {
-						new WeatherAgent().updateRepoNewMethod(mappedname, properties, pressure,
-								completeformattime);
+					} else if (properties.contentEquals("OutsideAirPressure")) {
+						new WeatherAgent().updateRepoNewMethod(mappedname, properties, pressure, completeformattime);
 					}
-				}catch(Exception e){
+				} catch (Exception e) {
 					System.out.println("new station unrecorded is found");
 				}
 			}
-			//HERE IS FOR BACKUP ACCUWEATHER STATION
-			String name="SGAccuWeather-001";
-			String iri=map.get(name).toString();
+			// HERE IS FOR BACKUP ACCUWEATHER STATION
+			String name = "SGAccuWeather-001";
+			String iri = map.get(name).toString();
 			if (properties.contentEquals("OutsideAirCloudCover")) {
-				String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
-				new WeatherAgent().updateRepoNewMethod(iri, properties, newcloudcover,
-						completeformattime);// stored in decimal
+				String newcloudcover = "" + Double.valueOf(cloudcover) / 100;// stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newcloudcover, completeformattime);// stored in
+																											// decimal
 			} else if (properties.contentEquals("OutsideAirPrecipitation")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, precipitation,
-						completeformattime);// stored in decimal
-			}else if (properties.contentEquals("OutsideAirPressure")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, pressure,
-						completeformattime);
-			}else if (properties.contentEquals("OutsideAirTemperature")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, temperature,
-					completeformattime);
-			}else if (properties.contentEquals("OutsideAirRelativeHumidity")) {
-				String newhumidity = "" + Double.valueOf(relativehumidity) / 100; //stored in decimal
-				new WeatherAgent().updateRepoNewMethod(iri, properties, newhumidity,
-						completeformattime);
-			}else if (properties.contentEquals("OutsideWindSpeed")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, windspeed,
-						completeformattime);
-			}else if (properties.contentEquals("OutsideWindDirection")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, winddirection,
-						completeformattime);
+				new WeatherAgent().updateRepoNewMethod(iri, properties, precipitation, completeformattime);// stored in
+																											// decimal
+			} else if (properties.contentEquals("OutsideAirPressure")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, pressure, completeformattime);
+			} else if (properties.contentEquals("OutsideAirTemperature")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, temperature, completeformattime);
+			} else if (properties.contentEquals("OutsideAirRelativeHumidity")) {
+				String newhumidity = "" + Double.valueOf(relativehumidity) / 100; // stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newhumidity, completeformattime);
+			} else if (properties.contentEquals("OutsideWindSpeed")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, windspeed, completeformattime);
+			} else if (properties.contentEquals("OutsideWindDirection")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, winddirection, completeformattime);
 			}
-			
-		}else if (cityIRI.toLowerCase().contains("kong")) {
-			
+
+		} else if (cityIRI.toLowerCase().contains("kong")) {
+
 			JSONArray stnCollection = datasource.getJSONArray("HKweather");
 			for (int r = 0; r < stnCollection.length(); r++) {
 				String name = stnCollection.getJSONObject(r).get("stnname").toString();
 				try {
-				String mappedname=map.get(name).toString();
+					String mappedname = map.get(name).toString();
 					if (properties.contentEquals("OutsideAirCloudCover")) {
-						String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
+						String newcloudcover = "" + Double.valueOf(cloudcover) / 100;// stored in decimal
 						new WeatherAgent().updateRepoNewMethod(mappedname, properties, newcloudcover,
 								completeformattime);// stored in decimal
 					} else if (properties.contentEquals("OutsideAirPrecipitation")) {
 						new WeatherAgent().updateRepoNewMethod(mappedname, properties, precipitation,
 								completeformattime);// stored in decimal
 					}
-				}catch(Exception e){
+				} catch (Exception e) {
 					System.out.println("new station unrecorded is found");
 				}
 
 			}
-			
-		}else {
-			String name=null;
+
+		} else {
+			String name = null;
 			if (cityIRI.toLowerCase().contains("berlin")) {
-				name ="Berlin-Alexanderplatz";
-//				iri="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-001.owl#WeatherStation-001";
-			}else if (cityIRI.toLowerCase().contains("hague")) {
-				name ="Scheveningen";
-//				iri="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-001.owl#WeatherStation-001";
+				name = "Berlin-Alexanderplatz";
+//					iri="http://www.theworldavatar.com/kb/deu/berlin/WeatherStation-001.owl#WeatherStation-001";
+			} else if (cityIRI.toLowerCase().contains("hague")) {
+				name = "Scheveningen";
+//					iri="http://www.theworldavatar.com/kb/nld/thehague/WeatherStation-001.owl#WeatherStation-001";
 			}
-			String iri=map.get(name).toString();
+			String iri = map.get(name).toString();
 			if (properties.contentEquals("OutsideAirCloudCover")) {
-				String newcloudcover= "" + Double.valueOf(cloudcover) / 100;//stored in decimal
-				new WeatherAgent().updateRepoNewMethod(iri, properties, newcloudcover,
-						completeformattime);// stored in decimal
+				String newcloudcover = "" + Double.valueOf(cloudcover) / 100;// stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newcloudcover, completeformattime);// stored in
+																											// decimal
 			} else if (properties.contentEquals("OutsideAirPrecipitation")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, precipitation,
-						completeformattime);// stored in decimal
-			}else if (properties.contentEquals("OutsideAirPressure")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, pressure,
-						completeformattime);
-			}else if (properties.contentEquals("OutsideAirTemperature")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, temperature,
-					completeformattime);
-			}else if (properties.contentEquals("OutsideAirRelativeHumidity")) {
-				String newhumidity = "" + Double.valueOf(relativehumidity) / 100; //stored in decimal
-				new WeatherAgent().updateRepoNewMethod(iri, properties, newhumidity,
-						completeformattime);
-			}else if (properties.contentEquals("OutsideWindSpeed")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, windspeed,
-						completeformattime);
-			}else if (properties.contentEquals("OutsideWindDirection")) {
-				new WeatherAgent().updateRepoNewMethod(iri, properties, winddirection,
-						completeformattime);
+				new WeatherAgent().updateRepoNewMethod(iri, properties, precipitation, completeformattime);// stored in
+																											// decimal
+			} else if (properties.contentEquals("OutsideAirPressure")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, pressure, completeformattime);
+			} else if (properties.contentEquals("OutsideAirTemperature")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, temperature, completeformattime);
+			} else if (properties.contentEquals("OutsideAirRelativeHumidity")) {
+				String newhumidity = "" + Double.valueOf(relativehumidity) / 100; // stored in decimal
+				new WeatherAgent().updateRepoNewMethod(iri, properties, newhumidity, completeformattime);
+			} else if (properties.contentEquals("OutsideWindSpeed")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, windspeed, completeformattime);
+			} else if (properties.contentEquals("OutsideWindDirection")) {
+				new WeatherAgent().updateRepoNewMethod(iri, properties, winddirection, completeformattime);
 			}
-			
+
 		}
-			
+
 	}
 
 	public void executePeriodicUpdate(String cityIRI) throws URISyntaxException {
 		String completeformat=WeatherAgent.provideCurrentTime();
 		Map<String,String>stnmap=extractMappingname();
 		if(cityIRI.toLowerCase().contains("singapore")) {
-			
+				String APIresult= "";
+				try {
+					APIresult= getWeatherDataFromAccuweatherAPI(cityIRI);
+				}catch (Exception e){
+					logger.error(e.getMessage());
+				}	
 			String weatherPrecipitation = getWeatherDataFromGovAPI("/v1/environment/rainfall", null);
 			JSONObject joPrecipitation = new JSONObject(weatherPrecipitation);//in mm
 			String weatherTemperature = getWeatherDataFromGovAPI("/v1/environment/air-temperature", null);
@@ -921,16 +915,32 @@ public class WeatherAgent extends JPSHttpServlet {
 	    	updatePropertiesFromDataGov(stnmap,"OutsideWindSpeed",jowindspeed,completeformat); 
 	    	updatePropertiesFromDataGov(stnmap,"OutsideAirRelativeHumidity",joRH,completeformat);
 	    	updatePropertiesFromDataGov(stnmap,"OutsideAirPrecipitation",joPrecipitation,completeformat);
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",jowinddirection,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPressure",jowinddirection,completeformat,cityIRI);//accu
-	    	//in accuweather the json data is needed from the data gov to update each stn written in data gov
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirTemperature",jowinddirection,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindDirection",jowinddirection,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindSpeed",jowinddirection,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirRelativeHumidity",jowinddirection,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",jowinddirection,completeformat,cityIRI);//accu
+			if (!APIresult.isEmpty()) {
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirCloudCover", jowinddirection, completeformat,
+						cityIRI, APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirPressure", jowinddirection, completeformat,
+						cityIRI, APIresult);// accu
+				// in accuweather the json data is needed from the data gov to update each stn
+				// written in data gov
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirTemperature", jowinddirection, completeformat,
+						cityIRI, APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideWindDirection", jowinddirection, completeformat,
+						cityIRI, APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideWindSpeed", jowinddirection, completeformat,
+						cityIRI, APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirRelativeHumidity", jowinddirection,
+						completeformat, cityIRI, APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirPrecipitation", jowinddirection, completeformat,
+						cityIRI, APIresult);// accu
+			}
 	  
 		}else if(cityIRI.toLowerCase().contains("kong")) {
+			String APIresult= "";
+			try {
+				APIresult= getWeatherDataFromAccuweatherAPI(cityIRI);
+			}catch (Exception e){
+				logger.error(e.getMessage());
+			}
 			JSONObject jo = new JSONObject();
 			String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/GetHKUWeatherLatestData",jo.toString());
 			JSONObject joPr = new JSONObject(result);
@@ -939,19 +949,36 @@ public class WeatherAgent extends JPSHttpServlet {
 			updatePropertiesFromHKU(stnmap,"OutsideWindSpeed",joPr,completeformat);
 			updatePropertiesFromHKU(stnmap,"OutsideWindDirection",joPr,completeformat);
         	updatePropertiesFromHKU(stnmap,"OutsideAirPressure",joPr,completeformat);//in hPa exactly the same as millibar
-        	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",joPr,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",joPr,completeformat,cityIRI);//accu
-	    	
+			if (!APIresult.isEmpty()) {
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirCloudCover", joPr, completeformat, cityIRI,
+						APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirPrecipitation", joPr, completeformat, cityIRI,
+						APIresult);// accu
+			}
 		}else {
 			JSONObject joPr = new JSONObject();
-			updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirTemperature",joPr,completeformat,cityIRI);
-			updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirRelativeHumidity",joPr,completeformat,cityIRI);
-			updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindSpeed",joPr,completeformat,cityIRI);
-			updatePropertiesFromDataAccuWeather(stnmap,"OutsideWindDirection",joPr,completeformat,cityIRI);
-			updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPressure",joPr,completeformat,cityIRI);//in hPa exactly the same as millibar
-        	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirCloudCover",joPr,completeformat,cityIRI);//accu
-	    	updatePropertiesFromDataAccuWeather(stnmap,"OutsideAirPrecipitation",joPr,completeformat,cityIRI);//accu
-	    	
+			String APIresult= "";
+			try {
+				APIresult= getWeatherDataFromAccuweatherAPI(cityIRI);
+			}catch (Exception e){
+				logger.error(e.getMessage());
+			}
+			if (!APIresult.isEmpty()) {
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirTemperature", joPr, completeformat, cityIRI,
+						APIresult);
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirRelativeHumidity", joPr, completeformat, cityIRI,
+						APIresult);
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideWindSpeed", joPr, completeformat, cityIRI,
+						APIresult);
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideWindDirection", joPr, completeformat, cityIRI,
+						APIresult);
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirPressure", joPr, completeformat, cityIRI,
+						APIresult);// in hPa exactly the same as millibar
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirCloudCover", joPr, completeformat, cityIRI,
+						APIresult);// accu
+				updatePropertiesFromDataAccuWeather(stnmap, "OutsideAirPrecipitation", joPr, completeformat, cityIRI,
+						APIresult);// accu
+			}
 		}
 	}
 	

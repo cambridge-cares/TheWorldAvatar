@@ -185,7 +185,7 @@ public class WeatherAgentTest extends TestCase {
 	}
 	
 	public void testAccuweatherAPI() throws URISyntaxException {
-		String result= WeatherAgent.getWeatherDataFromAccuweatherAPI("thehague");
+		String result= WeatherAgent.getWeatherDataFromAccuweatherAPI("hongkong");
 		System.out.println(result);
 	}
 	
