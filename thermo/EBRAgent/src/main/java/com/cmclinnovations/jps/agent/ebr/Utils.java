@@ -33,7 +33,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
-import com.cmclinnovations.slurm.job.Status;
+
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 
 public class Utils {
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);	

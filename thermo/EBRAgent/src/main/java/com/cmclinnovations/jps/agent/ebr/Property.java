@@ -12,7 +12,7 @@ package com.cmclinnovations.jps.agent.ebr;
  */
 public enum Property {
 
-	AGENT_WORKSPACE_PARENT_DIR(com.cmclinnovations.slurm.job.Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName()),
+	AGENT_WORKSPACE_PARENT_DIR(uk.ac.cam.cares.jps.base.slurm.job.Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName()),
 	EBR_EXECUTABLE("comoenthalpyestimationpaper.jar");
 	
 	private String propertyName;

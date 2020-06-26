@@ -1,17 +1,9 @@
 package com.cmclinnovations.jps.kg;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletException;
 import org.apache.log4j.Logger;
 import org.eclipse.rdf4j.IsolationLevels;
-import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.federated.FedXFactory;
 
 import org.eclipse.rdf4j.query.BindingSet;
@@ -23,10 +15,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
-
 import com.cmclinnovations.jps.agent.ebr.EBRAgent;
-import com.cmclinnovations.jps.agent.ebr.EBRAgentException;
-import com.cmclinnovations.jps.agent.ebr.Property;
 import com.cmclinnovations.jps.model.species.SpeciesBean;
 
 /**
