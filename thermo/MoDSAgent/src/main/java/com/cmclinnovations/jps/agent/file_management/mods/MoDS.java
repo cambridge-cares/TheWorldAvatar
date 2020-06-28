@@ -10,13 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 import com.cmclinnovations.jps.agent.file_management.mods.algorithms.AlgorithmS;
 import com.cmclinnovations.jps.agent.file_management.mods.cases.CaseS;
 import com.cmclinnovations.jps.agent.file_management.mods.files.FileS;
+import com.cmclinnovations.jps.agent.file_management.mods.functions.FunctionS;
 import com.cmclinnovations.jps.agent.file_management.mods.models.ModelS;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.ParameterS;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlRootElement(name = "mods")
-@XmlType(propOrder = { "algorithmS", "modelS", "caseS", "fileS", "parameterS" })
+@XmlType(propOrder = { "algorithmS", "modelS", "caseS", "fileS", "functionS", "parameterS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MoDS {
+//	@JsonProperty("xmlns")
 	@XmlAttribute(name = "xmlns")
 	private String xmlns;
 
@@ -27,7 +30,8 @@ public class MoDS {
 	public void setXmlns(String xmlns) {
 		this.xmlns = xmlns;
 	}
-
+	
+//	@JsonProperty("xmlnsXsi")
 	@XmlAttribute(name = "xmlns:xsi")
 	private String xmlnsXsi;
 
@@ -38,7 +42,8 @@ public class MoDS {
 	public void setXmlnsXsi(String xmlnsXsi) {
 		this.xmlnsXsi = xmlnsXsi;
 	}
-
+	
+//	@JsonProperty("xsiSchemaLocation")
 	@XmlAttribute(name = "xsi:schemaLocation")
 	private String xsiSchemaLocation;
 
@@ -49,7 +54,8 @@ public class MoDS {
 	public void setXsiSchemaLocation(String xsiSchemaLocation) {
 		this.xsiSchemaLocation = xsiSchemaLocation;
 	}
-
+	
+//	@JsonProperty("algorithms")
 	@XmlElement(name = "algorithms")
 	private AlgorithmS algorithmS;
 
@@ -61,6 +67,7 @@ public class MoDS {
 		this.algorithmS = algorithmS;
 	}
 
+//	@JsonProperty("models")
 	@XmlElement(name = "models")
 	private ModelS modelS;
 
@@ -72,6 +79,7 @@ public class MoDS {
 		this.modelS = modelS;
 	}
 
+//	@JsonProperty("cases")
 	@XmlElement(name = "cases")
 	private CaseS caseS;
 
@@ -83,6 +91,7 @@ public class MoDS {
 		this.caseS = caseS;
 	}
 
+//	@JsonProperty("files")
 	@XmlElement(name = "files")
 	private FileS fileS;
 
@@ -93,7 +102,19 @@ public class MoDS {
 	public void setFileS(FileS fileS) {
 		this.fileS = fileS;
 	}
+	
+	@XmlElement(name = "functions")
+	private FunctionS functionS;
+	
+	public FunctionS getFunctionS() {
+		return functionS;
+	}
+	
+	public void setFunctionS(FunctionS functionS) {
+		this.functionS = functionS;
+	}
 
+//	@JsonProperty("parameters")
 	@XmlElement(name = "parameters")
 	private ParameterS parameterS;
 

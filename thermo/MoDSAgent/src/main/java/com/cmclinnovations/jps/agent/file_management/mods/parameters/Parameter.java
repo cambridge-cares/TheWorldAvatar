@@ -10,8 +10,8 @@ import com.cmclinnovations.jps.agent.file_management.mods.cases.CaseS;
 import com.cmclinnovations.jps.agent.file_management.mods.files.FileS;
 import com.cmclinnovations.jps.agent.file_management.mods.models.ModelS;
 
-@XmlType(propOrder = { "scaling", "paramterCaseS", "parameterModelS", "parameterFileS" })
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder = { "scaling", "parameterCaseS", "parameterModelS", "parameterFileS" })
 public class Parameter {
 	@XmlAttribute
 	private String type;

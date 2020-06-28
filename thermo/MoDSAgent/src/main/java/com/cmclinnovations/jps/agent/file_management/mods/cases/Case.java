@@ -17,6 +17,17 @@ import com.cmclinnovations.jps.agent.file_management.mods.parameters.DetailS;
 //@XmlType(propOrder = { "items" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Case {
+	@XmlAttribute
+	private String name;
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
 	@XmlMixed
 	@XmlElementRef(type = ModelS.class, name = "models")
 	List<Object> items = new ArrayList<Object>();
@@ -28,16 +39,6 @@ public class Case {
 	public void setItems(List<Object> items) {
 		this.items = items;
 	}
-//	@XmlAttribute
-//	private String name;
-//
-//	public String getName() {
-//		return name;
-//	}
-//
-//	public void setName(String name) {
-//		this.name = name;
-//	}
 //
 //	@XmlElement(name = "details")
 //	private DetailS detailS;

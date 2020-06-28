@@ -11,7 +11,7 @@ import com.cmclinnovations.jps.agent.file_management.mods.parameters.DetailS;
 @XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class File {
-	@XmlAttribute
+	@XmlAttribute(name="file_name")
 	private String name;
 
 	public String getName() {

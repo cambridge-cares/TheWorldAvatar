@@ -7,6 +7,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.InitialRead;
+import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingRead;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingWrite;
 
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -31,6 +32,17 @@ public class FileS {
 
 	public void setInitialRead(InitialRead initialRead) {
 		this.initialRead = initialRead;
+	}
+	
+	@XmlElement(name = "working_read")
+	private WorkingRead workingRead;
+
+	public WorkingRead getWorkingRead() {
+		return workingRead;
+	}
+
+	public void setWorkingRead(WorkingRead workingRead) {
+		this.workingRead = workingRead;
 	}
 
 	@XmlElement(name = "working_write")
