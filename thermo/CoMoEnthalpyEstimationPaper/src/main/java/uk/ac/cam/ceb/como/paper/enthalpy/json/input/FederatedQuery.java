@@ -1,6 +1,6 @@
 package uk.ac.cam.ceb.como.paper.enthalpy.json.input;
 
-import java.io.FileWriter;
+
 import java.util.Arrays;
 import java.util.LinkedList;
 
@@ -13,8 +13,24 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 
+/**
+ * 
+ * @author NK510 Nenad Krdzavac (caresssd@hermes.cam.ac.uk
+ * @author msff2 Feroz Farazi (msff2@cam.ac.uk)
+ *
+ * Sometimes connections time out with remote repositories.
+ */
 public class FederatedQuery {
-	
+
+	/**
+	 * 
+	 * @param ontocompchemServerUrl the ontocomcphem server url
+	 * @param ontospecieskbServerUrl the ontospecieskb server url
+	 * @param ontospeciesServerUrls  the ontospecies server url
+	 * @param query the query string
+	 * @return linked list of species beans that include level of theory, ontocompchem iri, ontospecies iri.
+	 * @throws Exception
+	 */
 public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontocompchemServerUrl, String ontospecieskbServerUrl, String ontospeciesServerUrls,String query) throws Exception {
 	   
 	    LinkedList<SpeciesBean> speciesBeanLinkedList = new LinkedList<SpeciesBean>();
