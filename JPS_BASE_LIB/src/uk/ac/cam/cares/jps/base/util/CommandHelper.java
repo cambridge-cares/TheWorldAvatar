@@ -89,7 +89,7 @@ public class CommandHelper {
 		Process pr = null;
 		try {
 
-			pr = rt.exec("start "+command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
+			pr = rt.exec("open "+command, null, new File(targetFolder)); // IMPORTANT: By specifying targetFolder, all the cmds will be executed within such folder.
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
