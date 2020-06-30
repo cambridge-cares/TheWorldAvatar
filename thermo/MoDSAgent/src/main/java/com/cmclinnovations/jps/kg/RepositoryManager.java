@@ -26,7 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.cmclinnovations.jps.agent.mechanism.calibration.MoDSAgentException;
-import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 public class RepositoryManager implements IRepositoryManager {
 	static Logger logger = Logger.getLogger(RepositoryManager.class);
