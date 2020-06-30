@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cmclinnovations.slurm.job.JobSubmission;
-import com.cmclinnovations.slurm.job.SlurmJob;
-import com.cmclinnovations.slurm.job.SlurmJobException;
-import com.cmclinnovations.slurm.job.Status;
-import com.cmclinnovations.slurm.job.configuration.SlurmJobProperty;
-import com.cmclinnovations.slurm.job.configuration.SpringConfiguration;
+import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import com.cmclinnovations.jps.agent.file_management.marshallr.MoDSFileManagement;
 import com.cmclinnovations.jps.agent.mechanism.calibration.MoDSAgentException;
 import com.jcraft.jsch.JSch;
@@ -257,9 +257,11 @@ public class MoDSAgent extends HttpServlet {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
 					slurmJobProperty.getHpcAddress());
 		}
+		long timeStamp = Utils.getTimeStamp();
+		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
 		return jobSubmission.setUpJob(jsonString, 
 				new File(getClass().getClassLoader().getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), 
-				getInputFile(jsonString));
+				getInputFile(jsonString, jobFolderName), timeStamp);
 	}
 	
 	/**
@@ -270,7 +272,7 @@ public class MoDSAgent extends HttpServlet {
 	 * @throws IOException
 	 * @throws MoDSAgentException
 	 */
-	private File getInputFile(String jsonString) throws IOException, MoDSAgentException {
+	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSAgentException {
 		MoDSFileManagement fileMagt = new MoDSFileManagement();
 		
 		
@@ -306,12 +308,13 @@ public class MoDSAgent extends HttpServlet {
 	}
 	
 	/**
-	 * Creates the input files for a slurm job.
+	 * Produces a job folder name by following the schema hpcAddress_timestamp.
 	 * 
-	 * @param inputFilePath
-	 * @param jobFolder
-	 * @param 
+	 * @param hpcAddress
+	 * @param timeStamp
+	 * @return
 	 */
-	
-	
+	public String getNewJobFolderName(String hpcAddress, long timeStamp){
+		return hpcAddress.concat("_").concat("" + timeStamp);
+	}
 }
