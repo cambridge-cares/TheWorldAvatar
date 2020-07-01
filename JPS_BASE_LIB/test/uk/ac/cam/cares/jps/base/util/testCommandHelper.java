@@ -8,9 +8,10 @@ import org.junit.jupiter.api.Test;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import java.util.ArrayList;
+import static org.mockito.Mockito.*;
 
 
-class CommandHelperTest {
+class testCommandHelper {
 
 	CommandHelper commandHelper;
 	
@@ -20,10 +21,12 @@ class CommandHelperTest {
 		}
 
 	@Test
+		
 		public void testExecuteSingleCommand() {
 		String expected = "test.txttest2";
 		String actual = commandHelper.executeSingleCommand(System.getProperty("user.dir")+"/test_sample_dir", "ls");
 	    assertThrows(JPSRuntimeException.class, () ->commandHelper.executeSingleCommand("sd", "sdsds"),"Unknown exception thrown, expected JPS runtime exception");
+	    doReturn("foo").when(spy).executeSingleCommand(System.getProperty("user.dir")+"/test_sample_dir", "ls");
 		assertEquals(expected,actual,"The command was not executed correctly");
 		
 		}

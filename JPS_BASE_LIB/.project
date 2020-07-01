@@ -33,4 +33,11 @@
 		<nature>org.eclipse.jdt.core.javanature</nature>
 		<nature>org.eclipse.wst.common.project.facet.core.nature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>util</name>
+			<type>2</type>
+			<location>/Users/aravindd/git_repos/JParkSimulator-git/JPS_BASE_LIB/test/uk/ac/cam/cares/jps/base/util</location>
+		</link>
+	</linkedResources>
 </projectDescription>
