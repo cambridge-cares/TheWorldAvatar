@@ -68,17 +68,17 @@ public class MoDSFileManagement {
 				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140", 
 				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160");
 		
-		
+		String jobFolderName = "login-skylake.hpc.cam.ac.uk_1086309217579500";
 //		File experimentData = fileMagt.collectExperimentalData(experimentIRI);
 //		File inputParams = fileMagt.createKineticsInputFiles(mechanismIRI);
 //		fileMagt.createMoDSCasesFiles(mechanismIRI, reactionIRIList);
-		fileMagt.generateInputFiles(experimentIRI, mechanismIRI, reactionIRIList);
+		fileMagt.generateInputFiles(experimentIRI, mechanismIRI, reactionIRIList, jobFolderName);
 	}
 	
-	public String generateInputFiles(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException {
+	public String generateInputFiles(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String jobFolderName) throws IOException, MoDSAgentException {
 		// this whole generateInputFiles function need to be modified to made single connections between different parts of the IRIs
 		
-		String jobFolderPath = System.getProperty("user.home").concat("\\Documents").concat("\\JobFolder");
+		String jobFolderPath = System.getProperty("user.home").concat("\\Documents").concat("\\JobFolder\\").concat(jobFolderName);
 		
 		collectExperimentalData(experimentIRI, jobFolderPath);
 		createKineticsInputFiles(mechanismIRI, jobFolderPath);

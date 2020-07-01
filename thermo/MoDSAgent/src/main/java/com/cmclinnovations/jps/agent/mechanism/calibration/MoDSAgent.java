@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
+import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -302,7 +303,7 @@ public class MoDSAgent extends HttpServlet {
 				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140", 
 				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160");
 		
-		String jobFolderPath = fileMagt.generateInputFiles(experimentIRI, mechanismIRI, reactionIRIList);
+		String jobFolderPath = fileMagt.generateInputFiles(experimentIRI, mechanismIRI, reactionIRIList, jobFolderName);
 		
 		return new File(jobFolderPath);
 	}
@@ -317,4 +318,27 @@ public class MoDSAgent extends HttpServlet {
 	public String getNewJobFolderName(String hpcAddress, long timeStamp){
 		return hpcAddress.concat("_").concat("" + timeStamp);
 	}
+	
+	/**
+	 * Retrieves the timestamp part from the name of a job folder.<br>
+	 * A job folder consists of hpcAddress_timestamp, for example,<br>
+	 * from the job folder name login-skylake.hpc.cam.ac.uk_1086309217579500,<br>
+	 * this method returns 1086309217579500. This timestamp is appended to<br>
+	 * the name of the slurm input file. The corresponding Slurm script file<br>
+	 * name can be login-skylake.hpc.cam.ac.uk_1086309217579500.com.  
+	 * 
+	 * @param folder
+	 * @return
+	 */
+	public String getTimeStampPart(String folder) {
+		if (folder.contains("_")) {
+			String[] tokens = folder.split("_");
+			if (tokens.length==2 && tokens[1]!=null && StringUtils.isNumeric(tokens[1])) {
+				return tokens[1];
+			}
+		}
+		return null;
+	}
+	
+	
 }
