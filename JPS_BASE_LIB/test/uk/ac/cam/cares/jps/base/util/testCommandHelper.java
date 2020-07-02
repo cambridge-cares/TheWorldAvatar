@@ -21,7 +21,7 @@ class testCommandHelper {
 	@Test
 
 	public void testExecuteSingleCommand() {
-		String expected = "test.txttest2";
+		String expected = "Sum.javatest.txttest2";
 		String actual = null;
 		if (commandHelper.isWindows()) {
 			actual = commandHelper.executeSingleCommand(System.getProperty("user.dir") + "/test_sample_dir", "dir");
@@ -40,10 +40,15 @@ class testCommandHelper {
 		if (commandHelper.isWindows()) {
 			cmds.add("dir");
 		} else if (commandHelper.isMac()) {
-			cmds.add("ls");
+			cmds.add("java");
+			cmds.add("Sum.java");
+			cmds.add("1");
+			cmds.add("2");
+			cmds.add("3");
+			
 		}
-		String expected = "test.txttest2";
-		String actual = commandHelper.executeCommands(System.getProperty("user.dir") + "/test_sample_dir", cmds);
+		String expected = "test2/test.txt";
+		String actual = commandHelper.executeCommands(System.getProperty("user.dir") + "/test_sample_dir/", cmds);
 		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeCommands("sd", cmds),
 				"Unknown exception thrown, expected JPS runtime exception");
 		assertEquals(expected, actual, "The command was not executed correctly");
@@ -53,8 +58,7 @@ class testCommandHelper {
 	@Test
 	public void testexecuteAsyncSingleCommand() {
 		String expected = "";
-		String actual = commandHelper.executeAsyncSingleCommand(System.getProperty("user.dir") + "/test_sample_dir",
-				"test.txt");
+		String actual = commandHelper.executeAsyncSingleCommand(System.getProperty("user.dir") + "/test_sample_dir","test.txt");
 		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeAsyncSingleCommand("sd", "sdsds"),
 				"Unknown exception thrown, expected JPS runtime exception");
 		assertEquals(expected, actual, "The command was not executed correctly");

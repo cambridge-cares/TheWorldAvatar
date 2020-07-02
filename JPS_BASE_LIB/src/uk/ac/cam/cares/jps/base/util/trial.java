@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
@@ -36,8 +37,25 @@ public class trial {
 			// TODO Auto-generated catch block
 			System.out.println("crs");
 		}
-
-		System.out.println(actual);
+		ArrayList<String> commands= new ArrayList();
+		commands.add("open");
+		commands.add("-a");
+		commands.add("Pages");
+		commands.add("test.txt");
+		String[] command = commands.toArray(new String[0]);
+		for(int i=0;i<command.length;i++)    //length is the property of the array  
+			System.out.print(command[i]);  
+		Runtime rt = Runtime.getRuntime();
+		Process pr = null;
+		try {
+			pr = rt.exec(command, null, new File(System.getProperty("user.dir")+"/test_sample_dir/"));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			 
+		//System.out.println(Arrays.toString(command));
+		//System.out.println(command.length);
 
 		
 
