@@ -38,10 +38,11 @@ public class trial {
 			System.out.println("crs");
 		}
 		ArrayList<String> commands= new ArrayList();
-		commands.add("open");
-		commands.add("-a");
-		commands.add("Pages");
-		commands.add("test.txt");
+		commands.add("java");
+		commands.add("Sum.java");
+		commands.add("1");
+		commands.add("2");
+		commands.add("3");
 		String[] command = commands.toArray(new String[0]);
 		for(int i=0;i<command.length;i++)    //length is the property of the array  
 			System.out.print(command[i]);  
