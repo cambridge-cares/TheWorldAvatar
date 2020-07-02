@@ -32,21 +32,21 @@ class testCommandHelper {
 	@Test
 	public void testexecuteCommands() {
 		ArrayList<String> cmds = new ArrayList<String>();
-			cmds.add("java");
-			cmds.add("Sum.java");
-			cmds.add("1");
-			cmds.add("2");
-			cmds.add("3");
-		String expected = "test2/test.txt";
+		cmds.add("diff");
+		cmds.add("test.txt");
+		cmds.add("test2.txt");
+		String expected = "1c1< Dfds\\ No newline at end of file---> Dfdscopy\\ No newline at end of file";
 		String actual = commandHelper.executeCommands(System.getProperty("user.dir") + "/test_sample_dir/", cmds);
-		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeCommands("sd", cmds),"Unknown exception thrown, expected JPS runtime exception");
+		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeCommands("sd", cmds),
+				"Unknown exception thrown, expected JPS runtime exception");
 		assertEquals(expected, actual, "The command was not executed correctly");
 	}
 
 	@Test
 	public void testexecuteAsyncSingleCommand() {
 		String expected = "";
-		String actual = commandHelper.executeAsyncSingleCommand(System.getProperty("user.dir") + "/test_sample_dir","test.txt");
+		String actual = commandHelper.executeAsyncSingleCommand(System.getProperty("user.dir") + "/test_sample_dir",
+				"test.txt");
 		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeAsyncSingleCommand("sd", "sdsds"),
 				"Unknown exception thrown, expected JPS runtime exception");
 		assertEquals(expected, actual, "The command was not executed correctly");
