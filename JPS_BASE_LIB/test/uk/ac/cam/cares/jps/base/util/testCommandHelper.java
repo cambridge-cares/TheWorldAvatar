@@ -26,7 +26,7 @@ class testCommandHelper {
 		String expected = "test.txttest2";
 		String actual = commandHelper.executeSingleCommand(System.getProperty("user.dir")+"/test_sample_dir", "ls");
 	    assertThrows(JPSRuntimeException.class, () ->commandHelper.executeSingleCommand("sd", "sdsds"),"Unknown exception thrown, expected JPS runtime exception");
-	    doReturn("foo").when(spy).executeSingleCommand(System.getProperty("user.dir")+"/test_sample_dir", "ls");
+	    //doReturn("foo").when(spy).executeSingleCommand(System.getProperty("user.dir")+"/test_sample_dir", "ls");
 		assertEquals(expected,actual,"The command was not executed correctly");
 		
 		}
