@@ -118,9 +118,9 @@ public class TestWTE extends TestCase {
 			//creates onsite WTF if indicated by the number of units (onsite).csv
 			List<String> onsiteiricomplete=at.updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
 			List<String[]> inputoffsitedata = at.readResult(baseUrl,"n_unit_max_offsite.csv");
-			for (int i = 1; i <= 15; i++) {
-				List<String> fcCluster = at.updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping,i);
-			}
+			List<String[]> sitemapping = at.updateNewFC(baseUrl,inputoffsitedata );
+			at.updateFCHelper(sitemapping);
+			
 //			at.updateinOffsiteWT(inputoffsitedata,baseUrl,1);
 //			at.updateinFCCluster(fcMapping,baseUrl,propertydataonsite);
 			at.updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system				
@@ -141,5 +141,18 @@ public class TestWTE extends TestCase {
 		}
 		
 	}
-
+	public void testreadFC() {
+		WTESingleAgent ag = new WTESingleAgent();
+		
+		try {
+			String baseUrl = "C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\testwaste2-7b54cb42-f420-4502-ad6c-cd4690901e22\\localhost_8080\\data\\74e7d60a-0c7f-4249-835c-29aef3006579";
+			List<String[]> inputoffsitedata = ag.readResult(baseUrl,"n_unit_max_offsite.csv");
+			List<String[]> sitemapping = ag.updateNewFC(baseUrl,inputoffsitedata );
+			ag.updateFCHelper( sitemapping);
+			} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 }

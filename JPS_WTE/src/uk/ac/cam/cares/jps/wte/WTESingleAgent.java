@@ -71,6 +71,26 @@ public class WTESingleAgent extends JPSHttpServlet {
 		return jenaOwlModel.getObjectProperty(
 				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasSubsystem");
 	}
+	/** derive property that defines direct subsystem relationships as described in the ontology
+	 * 
+	 * @param jenaOwlModel (OntModel)
+	 * @return
+	 */
+	private ObjectProperty getIsDirectSubsystemOf(OntModel jenaOwlModel) {
+		return jenaOwlModel.getObjectProperty(
+				"http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#isDirectSubsystemOf");
+	}
+
+	/** derive property that defines delivery of waste
+	 * 
+	 * @param jenaOwlModel (OntModel)
+	 * @return
+	 */
+	private ObjectProperty getisDeliveredTo(OntModel jenaOwlModel) {
+		return jenaOwlModel.getObjectProperty(
+				"http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#isDeliveredTo");
+	}
+	
 	/** main function. Reads the values in and copies the templates back. 
 	 * 
 	 */
@@ -88,9 +108,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
 			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
-			for (int i = 1; i <= 15; i++) {
-				List<String> fcCluster = updateinFCCluster(baseUrl,onsiteiricomplete,inputoffsitedata,fcMapping,1);
-			}
+			List<String[]> sitemapping= updateNewFC(baseUrl,inputoffsitedata);
+			updateFCHelper(sitemapping);
 			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
 			updateinOffsiteWT(inputoffsitedata,baseUrl, 1);
 		 }catch (Exception e) {
@@ -191,110 +210,64 @@ public class WTESingleAgent extends JPSHttpServlet {
 		converter.onsiteiri = mappedonsiteiri;
 		return mappedonsiteiri;
 	}
-	
-	/** updates the Foodcourt owl file based on the value of the treated waste (onsite) CSV and treated waste (offsite) csv
-	 * This updates the waste delivered to either facility
-	 * @param baseUrl
-	 * @param inputdataonsite
-	 * @param inputdataoffsite
-	 * @param foodcourtmap
-	 * @return
-	 * @throws Exception
-	 */
-	public List<String> updateinFCCluster(String baseUrl
-			,List<String> inputdataonsite,
-			List<String[]> inputdataoffsite,
-			List<String[]> foodcourtmap, int indOfYear) throws Exception { //update the fc and giving selected onsite iri list
-		//both of them have row= fc amount, col represents onsite or offsite per tech
-		List<String[]>treatedwasteon=readResult(baseUrl,"year by year_Treated waste (onsite)_"+indOfYear+ ".csv");
-		//NoOfClusterx1
-		List<String[]>treatedwasteoff=readResult(baseUrl,"year by year_Treated waste (offsite)_"+indOfYear+".csv");
-		//NoOfClusterx9
-		int colamount2=treatedwasteoff.get(0).length; // 3 wtf and 3 technologies currently
-		//determine the number of WTF
-		List<String[]> clusterOnsite = readResult(baseUrl,"year by year_Waste flow relation (onsite)_"+indOfYear+".csv");
-		//noOfFCActualxnoOfFC (repeated values are clusters)
+	public List<String[]> updateNewFC(String baseUrl,
+			List<String[]> inputdataoffsite) throws IOException{
 		List<String[]>sitemapping=new ArrayList<String[]>();
-		int size=clusterOnsite.size();//size = no of FC Actual
-		for(int x=0;x<size;x++) {//NoOfFC
-	        // HashSet should be 1. As HashSet contains only distinct values. 
-	        HashSet<String> s = new HashSet<>(Arrays.asList(treatedwasteoff.get(x))); //because treatedwaste would be shorter
-	        if (s.size() == 1) { //if all are zero there is only one element in a unique set so onsite
-	        	int size2 = clusterOnsite.get(x).length;//determine how many FC x noOfYears(15)
-	        	for(int y=0;y<size2;y++) {//|noOfFCxnoOfYears|
-	        		String wastetransfer = treatedwasteon.get(x)[y];
-	        		//edit for now because we don't know how much FC waste gets fed in
-					if (Integer.parseInt(clusterOnsite.get(x)[y]) == 1) {//so onsite is present
-						//freak assume that we consider them a cluster even if it only has one element
-						if(Double.parseDouble(wastetransfer)>0.01) {//condition if cluster does not reveal anything
-							//add year on year later
-							//int year = y %15;
-							int FCname = y +1;
-							String currentwtf = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-									+ FCname +".owl#OnSiteWasteTreatment-"+FCname;
-							String[]linemapping= {Integer.toString(x+1),Integer.toString(FCname),wastetransfer, "1",currentwtf };
-							sitemapping.add(linemapping);
-						}
-					}
-				} //but FC Cluster can send to multiple WTF and we don't know the mapping!!!
-	        }else { 
-	        	for(int y=0;y<colamount2;y++) { //3tech*3instance
-					String wastetransfer=treatedwasteoff.get(x)[y]; //in ton/day
-					if (Integer.parseInt(clusterOnsite.get(x)[y]) > 0) { //aka it's present
-						if(Double.parseDouble(wastetransfer)>0.01) { //assuming that the presence of a cluster
-							int IndexOffsiteHeader = y % 3; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
-							// the 3rd
-							String currentoffwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
-							String[]linemapping= {Integer.toString(x),Integer.toString(y),wastetransfer, "2",currentoffwtf};
-							sitemapping.add(linemapping);		
-						}
-					}
-				}
-	        }
-			
-		}
-		//NOTE: Offsite and onsite mapping could be both present!
-		//I should have less than 109 cluster Names at this stage and there's a difference
-		//between FC Cluster and onsite Cluster
-		
-		String sparqlInsertStart = "PREFIX OW:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> \r\n" 
-		+"PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
-				+"PREFIX timeStamp:<http://www.w3.org/2006/time#> \r\n"
-			+ "INSERT DATA { \r\n";
-		List<String> clusterWTF = new ArrayList<String>();
-		//outputdata= treated waste onsite
-		//input data onsite=onsiteiri
-		for (int d = 0; d < foodcourtmap.size(); d++) {// each iri of foodcourt
-			int wasteindex = 1;
-			String currentwtf =  sitemapping.get(d)[4];
-			//Should go through each FC by number
-			StringBuffer b = new StringBuffer();
-			String currentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#WasteDeliveredAmount-" + wasteindex;
-			String valuecurrentwaste = foodcourtmap.get(d)[0].split("#")[0] + "#V_WasteDeliveredAmount-"
-					+ wasteindex+"_"+Integer.toString(indOfYear);
-			Double numfromres = Double.parseDouble(sitemapping.get(d)[2]);
-			b.append("<" + foodcourtmap.get(d)[0] + "> OW:deliverWaste <" + currentwaste + "> . \r\n");
-			b.append("<" + currentwaste + "> a OW:WasteTransfer . \r\n");
-			b.append("<" + currentwaste + "> OCPSYST:hasValue <" + valuecurrentwaste + "> . \r\n");
-			b.append("<" + valuecurrentwaste + "> a OCPSYST:ScalarValue . \r\n");
-			b.append("<" + valuecurrentwaste + "> OCPSYST:numericalValue " + numfromres + " . \r\n");
-			b.append("<" + valuecurrentwaste
-					+ "> OCPSYST:hasUnitOfMeasure <http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_day> . \r\n");
-			b.append("<" + currentwaste + "> OW:isDeliveredTo <" + currentwtf + "> . \r\n");
-			String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
-					+sitemapping.get(d)[1] + ".owl#FoodCourtCluster-"+sitemapping.get(d)[1] ;
-			if (indOfYear == 1) {
-				b.append("<" + foodcourtmap.get(d)[0] + "> OCPSYST:isDirectSubsystemOf <" + fcCluster + "> . \r\n");
+		for (int i = 1; i<= 15; i++) {
+			List<String[]> clusterOnsite = readResult(baseUrl,"year by year_Waste flow relation (onsite)_"+i+".csv");
+			List<String[]> clusterOffsite = readResult(baseUrl,"year by year_Waste flow relation (offsite)_"+i+".csv");
+			 
+			//check for onsite if cluster
+			int size=clusterOnsite.size();//size = no of FC Actual
+			for (int j = 0; j<size;j++ ) {
+				HashSet<String> s = new HashSet<>(Arrays.asList(clusterOnsite.get(j)));
+				 if (s.size() == 1) {
+					 //then it's offsite
+					int y = Arrays.asList(clusterOffsite.get(j)).indexOf("1");
+					int IndexOffsiteHeader = y % 3; // index 0,3,6 is the first wtf, 1,4,7 is the 2nd, 2,5,8 is
+					// the 3rd
+					String currentoffwtf = inputdataoffsite.get(0)[IndexOffsiteHeader];
+					String[]linemapping= {Integer.toString(j+1),Integer.toString(0),currentoffwtf,Integer.toString(i)};
+					sitemapping.add(linemapping);	
+				 }else {
+					 //otherwise onsite
+					int FCname = j + 1;
+					int y = Arrays.asList(clusterOnsite.get(j)).indexOf("1");
+					String currentwtf = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
+							+ FCname +".owl#OnSiteWasteTreatment-"+FCname;
+					String[]linemapping= {Integer.toString(FCname),Integer.toString(y+1),currentwtf,Integer.toString(i)};
+					sitemapping.add(linemapping);
+				 }
+		        
 			}
-			wasteindex++;
-			String sparql = sparqlInsertStart + b.toString() + "} \r\n";
-			clusterWTF.add(fcCluster);
-			new QueryBroker().updateFile(foodcourtmap.get(d)[0], sparql);
+		}
+		return sitemapping;
+	}
+	public void updateFCHelper( List<String[]>sitemapping) {
+		int noOfFC = sitemapping.size()/15;
+		for (int i = 1; i<= noOfFC; i++) {
+			OntModel model = JenaHelper.createModel();
+			
+			String fc = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+Integer.toString(i)+".owl";
+			model.read(fc, null);
+			for (int j = 0; j< 15; j++) {
+				String[] siteArray = sitemapping.get((i-1)+noOfFC*j);
+				String fcWaste = fc + "#V_WasteProductionOfFoodCourt-"+Integer.toString(i)+"_"+Integer.toString(j+1);
+				Individual entity = model.getIndividual(fcWaste);
+				Resource entityonsite = model.createResource(siteArray[2]);
+				entity.addProperty(getisDeliveredTo(model), entityonsite);
+				if (siteArray[1]!= "0") {
+					String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"+siteArray[1]+".owl#";
+					entity.addProperty(getIsDirectSubsystemOf(model),fcCluster);	
+				}
+				
+			}
+			String content = JenaHelper.writeToString(model);
+			new QueryBroker().putOld(fc, content);
 
 		}
-		
-		return clusterWTF;
 	}
+	
 	/** if dump without cluster, sparql update is updated into onsite / offsite WTF directly
 	 * 
 	 * @param baseUrl
