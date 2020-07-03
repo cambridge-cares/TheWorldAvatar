@@ -76,20 +76,6 @@ public static LinkedList<SpeciesBean> runFederatedSPARQLSpeciesBean(String ontoc
 		 * Adds only one pair of ontocomcphem species iri and ontospecies iri.
 		 * 
 		 */
-		
-
-			
-//		outputTxtFileWriter.write(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());
-//		outputTxtFileWriter.write(System.getProperty("line.separator"));
-//		System.out.println(" - ontocompchem species level of theory: "+ bSet.getValue("levelOfTheory").stringValue());	
-		
-//		outputTxtFileWriter.write(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
-//		outputTxtFileWriter.write(System.getProperty("line.separator"));
-//		System.out.println(" - ontocompchem species iri: "+ bSet.getValue("compchemspecies").stringValue());
-		
-//		outputTxtFileWriter.write(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
-//		outputTxtFileWriter.write(System.getProperty("line.separator"));
-//		System.out.println(" - unique ontospecies iri : " + bSet.getValue("species").stringValue());
 
 		speciesBeanLinkedList.add(jsonBean);
 		
