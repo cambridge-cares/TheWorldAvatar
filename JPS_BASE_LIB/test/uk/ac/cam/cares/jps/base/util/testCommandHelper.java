@@ -32,19 +32,19 @@ class testCommandHelper {
 	@Test
 	public void testexecuteCommands() {
 		ArrayList<String> cmds = new ArrayList<String>();
-		String expected =null;
+		String expected = null;
 		if (commandHelper.isMac()) {
-		cmds.add("diff");
-		cmds.add("test.txt");
-		cmds.add("test2.txt");
-		expected = "1c1< Dfds\\ No newline at end of file---> Dfdscopy\\ No newline at end of file";
+			cmds.add("diff");
+			cmds.add("test.txt");
+			cmds.add("test2.txt");
+			expected = "1c1< Dfds\\ No newline at end of file---> Dfdscopy\\ No newline at end of file";
 		} else if (commandHelper.isWindows()) {
 			cmds.add("fc");
 			cmds.add("test.txt");
 			cmds.add("test2.txt");
-			expected="Comparing files test.txt and TEST2.TXT***** test.txtDfds***** TEST2.TXTDfdscopy*****";
+			expected = "Comparing files test.txt and TEST2.TXT***** test.txtDfds***** TEST2.TXTDfdscopy*****";
 		}
-		
+
 		String actual = commandHelper.executeCommands(System.getProperty("user.dir") + "/test_sample_dir/", cmds);
 		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeCommands("sd", cmds),
 				"Unknown exception thrown, expected JPS runtime exception");
