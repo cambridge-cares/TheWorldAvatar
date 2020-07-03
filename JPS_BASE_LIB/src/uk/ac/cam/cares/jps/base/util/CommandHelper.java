@@ -52,7 +52,7 @@ public class CommandHelper {
 	
 	private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
 
-	
+
 	public static String executeSingleCommand(String targetFolder , String command) 
 	{  
 	 
@@ -65,8 +65,7 @@ public class CommandHelper {
 		} catch (IOException e) {
 			throw new JPSRuntimeException(e.getMessage(), e);
 		}
-		
-				 
+	 
 		BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 		String line = "";
 		String resultString = "";
