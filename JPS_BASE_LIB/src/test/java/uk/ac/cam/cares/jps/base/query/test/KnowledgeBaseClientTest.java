@@ -25,6 +25,12 @@ public class KnowledgeBaseClientTest {
 //		System.out.println(result);
 	}
 	
+	@Test
+	public void queryAllMechanismIRIs() throws Exception{
+//		String result = KnowledgeBaseClient.query("http://localhost:8080/blazegraph", "ontokin", RDFStoreType.BLAZEGRAPH, formMechanismIRIsQuery());
+//		System.out.println(result);
+	}
+	
 	/**
 	 * A SPARQL query to count the total number of mechanisms in a repository.
 	 * 
