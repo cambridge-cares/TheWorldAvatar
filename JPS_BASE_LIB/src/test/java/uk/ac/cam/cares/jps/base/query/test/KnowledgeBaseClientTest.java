@@ -18,4 +18,10 @@ public class KnowledgeBaseClientTest {
 	public void uploadOntologiesTest() throws Exception {
 //		KnowledgeBaseClient.uploadOntologies("http://localhost:8080/blazegraph", "ontokin", "C:/Users/msff2/Documents/c4e-ProciPaper/ACSOmega/OpenDataTest");
 	}
+	
+	@Test
+	public void queryNumberOfMechanisms() throws Exception{
+//		String result = KnowledgeBaseClient.query("http://localhost:8080/blazegraph", "ontokin", RDFStoreType.BLAZEGRAPH, formMechanismCountCountQuery());
+//		System.out.println(result);
+	}
 }
