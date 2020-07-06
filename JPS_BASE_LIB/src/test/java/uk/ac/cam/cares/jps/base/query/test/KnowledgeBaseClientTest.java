@@ -46,4 +46,20 @@ public class KnowledgeBaseClientTest {
 			query = query.concat("}\n");
 			return query;
 	}
+	
+	/**
+	 * A SPARQL query to retrieve the IRIs of all mechanisms in a repository.
+	 * 
+	 * @return
+	 */
+	private static String formMechanismIRIsQuery(){
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+			query = query.concat("SELECT ?x \n");
+			query = query.concat("WHERE\n");
+			query = query.concat("{\n");
+			query = query.concat("?x rdf:type ontokin:ReactionMechanism .\n");
+			query = query.concat("}\n");
+			return query;
+	}
 }
