@@ -24,4 +24,20 @@ public class KnowledgeBaseClientTest {
 //		String result = KnowledgeBaseClient.query("http://localhost:8080/blazegraph", "ontokin", RDFStoreType.BLAZEGRAPH, formMechanismCountCountQuery());
 //		System.out.println(result);
 	}
+	
+	/**
+	 * A SPARQL query to count the total number of mechanisms in a repository.
+	 * 
+	 * @return
+	 */
+	private static String formMechanismCountCountQuery(){
+		String query = "PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>\n";
+			query = query.concat("PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\n");
+			query = query.concat("SELECT (COUNT(?x) AS ?count)\n");
+			query = query.concat("WHERE\n");
+			query = query.concat("{\n");
+			query = query.concat("?x rdf:type ontokin:ReactionMechanism .\n");
+			query = query.concat("}\n");
+			return query;
+	}
 }
