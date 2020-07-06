@@ -292,6 +292,34 @@ public class KnowledgeBaseClient {
 		return false;
 	}
 	
+	/**
+	 * Uploads a single ontology file to the current repository.
+	 * 
+	 * @param endPointURL the URL of the current triple store EndPoint, e.g.<br>
+	 * http://theworldavatar.com/blazegraph and http://theworldavatar.com/rdf4j-server 
+	 * @param repositoryName the name of the current repository, e.g.<br>
+	 * ontokin and ontocompchem.
+	 * @param ontologyFilePath the absolute path to the ontology file, e.g. 
+	 * C:/path/to/the/ontology/ontokin.owl and C:/path/to/the/ontology/ABF.owl.
+	 * @throws Exception
+	 */
+	public static void uploadOntology(String endPointURL, String repositoryName, String ontologyFilePath)
+			throws Exception {
+		RemoteRepository repository = getRepository(endPointURL, repositoryName,
+				RDFStoreType.BLAZEGRAPH);
+		if (repository != null) {
+			final InputStream is = new FileInputStream(new File(ontologyFilePath));
+			try {
+				repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
+			} finally {
+				is.close();
+			}
+		} else{
+			log.info("The following repository does not exist: "+endPointURL+repositoryName);
+			log.info("Create a repository with this name and try again.");
+		}
+	}
+	
 	private static boolean hasSparqlAbility(String targetUrl) {
 		if (targetUrl == null) {
 			return false;
