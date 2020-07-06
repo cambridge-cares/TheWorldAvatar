@@ -240,7 +240,58 @@ public class KnowledgeBaseClient {
 		UpdateAction.execute(request, model);
 		JenaHelper.writeAsFile(model, requestUrl);		
 	}
-		
+	
+	/**
+	 * Creates the instance of the current repository (knowledge base) if it<br>
+	 * exists and returns it.
+	 * 
+	 * @param endPointURL the URL of the current triple store EndPoint, e.g.<br>
+	 * http://theworldavatar.com/blazegraph and http://theworldavatar.com/rdf4j-server 
+	 * @param repositoryName the name of the current repository, e.g.<br>
+	 * ontokin and ontocompchem.
+	 * @param storeType the name of knowledge storage, e.g. Blazegraph and RDF4J.
+	 */
+	public static RemoteRepository getRepository(String endPointURL, String repositoryName, RDFStoreType storeType) throws Exception{
+		RemoteRepository repository = null;
+		if(storeType.toString().equals(RDFStoreType.BLAZEGRAPH.toString())){
+			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, false);
+			if(repositoryExists(endPointURL, repositoryName, repositoryManager)){
+				repository = repositoryManager.getRepositoryForNamespace(repositoryName);
+				repositoryManager.close();
+				return repository; 
+			}
+		}
+		return repository;
+	}
+	
+	/**
+	 * Checks the availability of a repository (knowledge base) on a triple store.
+	 * 
+	 * @param endPointURL the URL of the current triple store EndPoint, e.g.<br>
+	 * http://theworldavatar.com/blazegraph and http://theworldavatar.com/rdf4j-server
+	 * @param repositoryName the name of the current repository, e.g.<br>
+	 * ontokin and ontocompchem.
+	 * @param repositoryManager an instance of the repository manager.
+	 * @return
+	 * @throws Exception
+	 */
+	private static boolean repositoryExists(String endPointURL, String repositoryName, RemoteRepositoryManager repositoryManager) throws Exception{
+		final GraphQueryResult res = repositoryManager.getRepositoryDescriptions();
+		try{
+			while(res.hasNext()){
+				final Statement stmt = res.next();
+				if (stmt.getPredicate().toString().equals(SD.KB_NAMESPACE.stringValue())) {
+					if(repositoryName.equals(stmt.getObject().stringValue())){
+						return true;
+					}
+				}
+			}
+		} finally {
+			res.close();
+		}
+		return false;
+	}
+	
 	private static boolean hasSparqlAbility(String targetUrl) {
 		if (targetUrl == null) {
 			return false;
