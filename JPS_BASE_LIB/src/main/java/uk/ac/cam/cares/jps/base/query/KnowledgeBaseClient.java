@@ -1,22 +1,41 @@
 package uk.ac.cam.cares.jps.base.query;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.Properties;
+
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+import java.util.logging.Logger;
 import org.json.JSONObject;
+import org.openrdf.model.Statement;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.rio.RDFFormat;
+
+import com.bigdata.rdf.sail.webapp.SD;
+import com.bigdata.rdf.sail.BigdataSail.Options;
+import com.bigdata.rdf.sail.webapp.client.IPreparedTupleQuery;
+import com.bigdata.rdf.sail.webapp.client.RemoteRepository;
+import com.bigdata.rdf.sail.webapp.client.RemoteRepository.AddOp;
+import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
 import uk.ac.cam.cares.jps.base.discovery.MediaType;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.http.Http;
 import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
+import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
 public class KnowledgeBaseClient {
-	
+	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
 	private static KnowledgeBaseClient instance = null;
 	
 	private static synchronized KnowledgeBaseClient getInstance() {
@@ -37,7 +56,6 @@ public class KnowledgeBaseClient {
 	public static String put(String datasetUrl, String targetUrl, String content, String contentType) {
 		
 		JPSBaseLogger.info(getInstance(), "put for datasetUrl=" + datasetUrl + ", targetUrl=" + targetUrl + ", scenarioUrl=" + JPSContext.getScenarioUrl());
-
 		Object[] a = createRequestUrl(datasetUrl, targetUrl, true);
 		
 		if (a != null) {
@@ -222,7 +240,7 @@ public class KnowledgeBaseClient {
 		UpdateAction.execute(request, model);
 		JenaHelper.writeAsFile(model, requestUrl);		
 	}
-	
+		
 	private static boolean hasSparqlAbility(String targetUrl) {
 		if (targetUrl == null) {
 			return false;
