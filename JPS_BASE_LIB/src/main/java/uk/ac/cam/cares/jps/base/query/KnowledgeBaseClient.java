@@ -320,6 +320,32 @@ public class KnowledgeBaseClient {
 		}
 	}
 	
+	/**
+	 * Uploads all ontology files available under the given folder to<br>
+	 * the current repository.
+	 * 
+	 * @param endPointURL the URL of the current triple store EndPoint, e.g.<br>
+	 * http://theworldavatar.com/blazegraph and http://theworldavatar.com/rdf4j-server 
+	 * @param repositoryName the name of the current repository, e.g.<br>
+	 * ontokin and ontocompchem.
+	 * @param ontologyDirectory the path to the folder containing a list<br>
+	 * of ontologies, e.g. C:/path/to/the/ontology_folder.
+	 * @throws Exception
+	 */
+	public static void uploadOntologies(String endPointURL, String repositoryName, String ontologyDirectory) throws Exception{
+		File dir = new File(ontologyDirectory);
+		if(dir.isDirectory()){
+			int i = 0;
+			for(File file:dir.listFiles()){
+				if(file.isFile()){
+					uploadOntology(endPointURL, repositoryName, file.getAbsolutePath());
+					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
+				}
+			}
+		}
+	}
+
+	
 	private static boolean hasSparqlAbility(String targetUrl) {
 		if (targetUrl == null) {
 			return false;
