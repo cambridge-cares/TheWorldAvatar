@@ -13,4 +13,9 @@ public class KnowledgeBaseClientTest {
 	public void uploadSingleOntologyTest() throws Exception {
 //		 KnowledgeBaseClient.uploadOntology("http://localhost:8080/blazegraph", "ontokin", "C:/Users/msff2/Documents/c4e-ProciPaper/ACSOmega/OpenData/ABF.owl");
 	}
+	
+	@Test
+	public void uploadOntologiesTest() throws Exception {
+//		KnowledgeBaseClient.uploadOntologies("http://localhost:8080/blazegraph", "ontokin", "C:/Users/msff2/Documents/c4e-ProciPaper/ACSOmega/OpenDataTest");
+	}
 }
