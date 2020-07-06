@@ -345,6 +345,33 @@ public class KnowledgeBaseClient {
 		}
 	}
 
+	/**
+	 * Performs any SPARQL query against the provided repository.
+	 * 
+	 * @param endPointURL the URL of the current triple store EndPoint, e.g.<br>
+	 * http://theworldavatar.com/blazegraph and http://theworldavatar.com/rdf4j-server 
+	 * @param repositoryName the name of the current repository, e.g.<br>
+	 * ontokin and ontocompchem.
+	 * @param storeType the name of knowledge storage, e.g. Blazegraph and RDF4J.
+	 * @param query the query that is being performed.
+	 * @return
+	 * @throws Exception
+	 */
+	public static String query(String endPointURL, String repositoryName, RDFStoreType storeType, String query) throws Exception {
+		 StringBuffer resultSet = new StringBuffer();
+		RemoteRepository repository = getRepository(endPointURL, repositoryName, storeType);
+		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(query);
+		final TupleQueryResult result = tupleQuery.evaluate();
+		try {
+			while (result.hasNext()) {
+				BindingSet bs = result.next();
+				resultSet.append(bs.toString());
+			}
+		} finally {
+			result.close();
+		}
+		return resultSet.toString();
+	}
 	
 	private static boolean hasSparqlAbility(String targetUrl) {
 		if (targetUrl == null) {
