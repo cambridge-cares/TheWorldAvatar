@@ -14,7 +14,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
 + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontotransport/OntoTransport.owl#> "
 + "SELECT  DISTINCT ?entity  ?name ?year ?V_x ?V_x_unit ?V_y ?V_y_unit ?Waste_Production ?wasteproductionunit "
-+ "?V_WasteDeliveredAmount ?V_WasteDeliveredAmount_unit ?Site_of_delivery ?fcCluster "
++ "?Site_of_delivery ?fcCluster "
 + "WHERE {"
 + "?entity  a j1:FoodCourt ."
 + "?entity   j8:hasName ?name ." 
@@ -38,7 +38,7 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "?vWP   j6:hasTime ?time ." 
 + "?time     j6:inDateTime ?vdatetime ."
 + "?vdatetime  j6:year ?year ." 
-+ "FILTER( ?year <= 1)" 
++ "FILTER( ?year = 1)" 
 
 
 + "}";
@@ -291,6 +291,10 @@ function runWTESimulation(){
         document.getElementById("loader").style.display = "block"; 
         delayedCallback(function(){
             queryForEconomicComp();
+            var QurStr =   "?vWP     j2:isDirectSubsystemOf ?fcCluster ."
+                +"?vWP     j1:isDeliveredTo  ?Site_of_delivery ."
+                +"}";
+            FCQuery = FCQuery.replace("}", QurStr );
             queryForOnsiteWT();
             document.getElementById("loader").style.display = "none";
         });
@@ -367,6 +371,9 @@ output.innerHTML = slider.value;
 slider.onmouseup = function() {
   output.innerHTML = this.value;
   yearNumber = this.value;
+  //read the value of year and recharge the query
+
+  queryForOnsiteWT();
 }
 /** calls the creation of markers (with extra parameters) before creating the onsite WTF technology
  * 
@@ -375,15 +382,7 @@ function queryForOnsiteWT(){
     clearMarkers();
     console.log(markers);
     var agenturl = prefix + "/JPS_WTE/WTEVisualization/createMarkers";
-    var QurStr =   "OPTIONAL{ ?entity  j1:deliverWaste ?DW }"
-    + "OPTIONAL{ ?DW   j2:hasValue ?vDW }"
-    + "OPTIONAL{ ?vDW   j2:numericalValue ?V_WasteDeliveredAmount }"
-    + "OPTIONAL{ ?vDW   j2:hasUnitOfMeasure ?V_WasteDeliveredAmount_unit }"
-    + "OPTIONAL{ ?DW   j1:isDeliveredTo ?Site_of_delivery }"
-    + "OPTIONAL{ ?entity   j2:isDirectSubsystemOf ?fcCluster }"
-     +"}";
-    var replaceString = "FILTER( ?year <= 1)" + "}" 
-    FCQuery = FCQuery.replace("}", QurStr )
+    
     queryForMarkers(agenturl,createUrlForAgent, function(){
         var agenturl = prefix + "/JPS_WTE/WTEVisualization/queryOnsite"
         queryForMarkers(agenturl,createUrlForAgent, function(){
@@ -645,7 +644,7 @@ function queryForMarkers(agenturl,fnCreate,  callback){
         console.log(name);
         if (name.includes("FoodCourt")){
             var icon = {
-                url: 'images/naturalgas.png',
+                url: 'images/foodcourt.png',
                 scaledSize : new google.maps.Size(50, 50),
             };
         }else if (name.includes("OnSite")){
@@ -659,7 +658,7 @@ function queryForMarkers(agenturl,fnCreate,  callback){
             listOfIRIs.push(name);  
         }else{
             var icon = {
-                url: 'images/solar.png', 
+                url: 'images/offsite.png', 
                 scaledSize : new google.maps.Size(50, 50),
             };
             listOfIRIs.push(name);  
