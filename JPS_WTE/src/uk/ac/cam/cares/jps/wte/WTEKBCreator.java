@@ -1051,7 +1051,7 @@ public class WTEKBCreator {
 			}
 			else if(flag.contains("onsitewtf")) {
 				for(int d=1;d<=outputdata.size();d++) {
-					String wtfname="OnSiteWasteTreatment-"+d; 
+					String wtfname="OnSiteWasteTreatment-"+String.format("%03d", d); ; 
 					if(Double.parseDouble(outputdata.get(d-1)[0])!=0.0) {
 						inFile = new FileInputStream(filePath);
 						in = new InputStreamReader(inFile, "UTF-8");
@@ -1094,7 +1094,7 @@ public class WTEKBCreator {
 					jenaOwlModel2.read(in, null);
 					initOWLClasses(jenaOwlModel2);
 
-					String fcname="FoodCourt-"+d; 
+					String fcname="FoodCourt-"+String.format("%03d", d); 
 				String irioffc=doConversionFC(jenaOwlModel2,Prefix, fcname,data);
 				foodcourt.add(irioffc);
 				String content = JenaHelper.writeToString(jenaOwlModel2);
@@ -1110,7 +1110,7 @@ public class WTEKBCreator {
 					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
 					jenaOwlModel.read(in, null);
 					initOWLClasses(jenaOwlModel);
-					String wtfname="WasteTreatment-"+d; 
+					String wtfname="WasteTreatment-"+String.format("%03d", d); 
 					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
 					wtf.add(iriofwtf);
 					String content = JenaHelper.writeToString(jenaOwlModel);

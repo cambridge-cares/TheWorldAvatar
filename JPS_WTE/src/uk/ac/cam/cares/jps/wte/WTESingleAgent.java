@@ -232,10 +232,10 @@ public class WTESingleAgent extends JPSHttpServlet {
 				 }else {
 					 //otherwise onsite
 					int FCname = j + 1;
-					int y = Arrays.asList(clusterOnsite.get(j)).indexOf("1");
+					int y = Arrays.asList(clusterOnsite.get(j)).indexOf("1")+1;
 					String currentwtf = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-							+ FCname +".owl#OnSiteWasteTreatment-"+FCname;
-					String[]linemapping= {Integer.toString(FCname),Integer.toString(y+1),currentwtf,Integer.toString(i)};
+							+ y +".owl#OnSiteWasteTreatment-"+y;
+					String[]linemapping= {Integer.toString(FCname),Integer.toString(y),currentwtf,Integer.toString(i)};
 					sitemapping.add(linemapping);
 				 }
 		        
@@ -257,7 +257,8 @@ public class WTESingleAgent extends JPSHttpServlet {
 				Resource entityonsite = model.createResource(siteArray[2]);
 				entity.addProperty(getisDeliveredTo(model), entityonsite);
 				if (siteArray[1]!= "0") {
-					String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"+siteArray[1]+".owl#";
+					String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
+				+siteArray[1]+".owl#"+siteArray[1];
 					entity.addProperty(getIsDirectSubsystemOf(model),fcCluster);	
 				}
 				
