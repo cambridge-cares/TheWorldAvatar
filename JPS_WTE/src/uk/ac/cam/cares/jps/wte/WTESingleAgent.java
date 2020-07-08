@@ -258,7 +258,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				entity.addProperty(getisDeliveredTo(model), entityonsite);
 				if (siteArray[1]!= "0") {
 					String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
-				+siteArray[1]+".owl#"+siteArray[1];
+				+siteArray[1]+".owl#FoodCourtCluster-"+siteArray[1];
 					entity.addProperty(getIsDirectSubsystemOf(model),fcCluster);	
 				}
 				
