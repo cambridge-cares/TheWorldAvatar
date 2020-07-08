@@ -12,6 +12,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.xml.bind.JAXBContext;
@@ -123,8 +124,8 @@ public class MoDSMarshaller extends MoDSInputsState {
 		
 		MoDSJson modsJson = new MoDSJson();
 		
-		// activa parameters
-		HashMap<String, String> activeParameter = new HashMap<String, String>();
+		// active parameters
+		LinkedHashMap<String, String> activeParameter = new LinkedHashMap<String, String>();
 		activeParameter.put("DMM3%20%2B%20O2%20%5B%3D%5D%20HO2%20%2B%20DMM3B", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[35]");
 		activeParameter.put("DMM3%20%2B%20HO2%20%5B%3D%5D%20H2O2%20%2B%20DMM3B", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[38]");
 		activeParameter.put("O2%20%2B%20DMM3B%20%3D%5D%20DMM3BO2", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[39]");
@@ -146,7 +147,7 @@ public class MoDSMarshaller extends MoDSInputsState {
 		
 		
 		// passive parameters
-		HashMap<String, String> passiveParameter = new HashMap<String, String>();
+		LinkedHashMap<String, String> passiveParameter = new LinkedHashMap<String, String>();
 		passiveParameter.put("DMM3", "//srm_inputs/mixtures[@type='composition']/composition[@name='Test-All-Fuel-Ox-Mix']/value[@species='DMM3']");
 		passiveParameter.put("O2", "//srm_inputs/mixtures[@type='composition']/composition[@name='Test-All-Fuel-Ox-Mix']/value[@species='O2']");
 		passiveParameter.put("N2", "//srm_inputs/mixtures[@type='composition']/composition[@name='Test-All-Fuel-Ox-Mix']/value[@species='N2']");
@@ -193,7 +194,7 @@ public class MoDSMarshaller extends MoDSInputsState {
 	public String collectMoDSInputsJson(MoDSJson modsJson) throws MoDSAgentException {
 		String jsonString = new String();
 		// get active parameters
-		HashMap<String, String> activeParameters = modsJson.getActiveParameter();
+		LinkedHashMap<String, String> activeParameters = modsJson.getActiveParameter();
 		String actives = new String();
 		List<String> activeList = new ArrayList<>();
 		for (String i : activeParameters.keySet()) {
@@ -201,15 +202,15 @@ public class MoDSMarshaller extends MoDSInputsState {
 			activeList.add(i);
 		}
 		// get passive parameters
-		HashMap<String, String> passiveParameters = modsJson.getPassiveParameter();
+		LinkedHashMap<String, String> passiveParameters = modsJson.getPassiveParameter();
 		// get response of the model
 		String outputResponse = modsJson.getOutputs();
 		// get list of case names
 		List<String> caseNameList = modsJson.getNameOfCases();
 		
 		// algorithms
-		HashMap<String, HashMap<String, String>> algorithms = new HashMap<String, HashMap<String, String>>();
-		HashMap<String, String> algo1 = new HashMap<String, String>();
+		LinkedHashMap<String, HashMap<String, String>> algorithms = new LinkedHashMap<String, HashMap<String, String>>();
+		LinkedHashMap<String, String> algo1 = new LinkedHashMap<String, String>();
 		algo1.put("optimisable_param_subtypes", actives.substring(1));
 		algo1.put("response_param_subtypes", "subtype_".concat(outputResponse));
 		algo1.put("algorithm_type", "Sobol");
@@ -221,7 +222,7 @@ public class MoDSMarshaller extends MoDSInputsState {
 		algo1.put("seed", "1");
 		algo1.put("output_interval", "10");
 		algo1.put("previous_algorithm", "Initial");
-		HashMap<String, String> algo2 = new HashMap<String, String>();
+		LinkedHashMap<String, String> algo2 = new LinkedHashMap<String, String>();
 		algo2.put("optimisable_param_subtypes", actives.substring(1));
 		algo2.put("response_param_subtypes", "subtype_".concat(outputResponse));
 		algo2.put("algorithm_type", "Hooke_Jeeves");
@@ -289,7 +290,7 @@ public class MoDSMarshaller extends MoDSInputsState {
 		return jsonString;
 	}
 	
-	public List<JSONObject> collectAlgorithms(HashMap<String, HashMap<String, String>> algorithms) {
+	public List<JSONObject> collectAlgorithms(LinkedHashMap<String, HashMap<String, String>> algorithms) {
 		List<JSONObject> algorithmsInJson = new ArrayList<>();
 		for (String i : algorithms.keySet()) {
 			JSONObject algoJson = new JSONObject().put("algorithm", new JSONObject().put("name", i)

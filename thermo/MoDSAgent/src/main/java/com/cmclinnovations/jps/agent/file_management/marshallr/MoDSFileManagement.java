@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -367,8 +368,8 @@ public class MoDSFileManagement {
 		File modsInputsXML = new File(filePath);
 		
 		MoDSJson modsJson = new MoDSJson();
-		// activa parameters
-		HashMap<String, String> activeParameter = new HashMap<String, String>();
+		// active parameters
+		LinkedHashMap<String, String> activeParameter = new LinkedHashMap<String, String>();
 		activeParameter.put("DMM3%20%2B%20O2%20%5B%3D%5D%20HO2%20%2B%20DMM3B", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[35]");
 		activeParameter.put("DMM3%20%2B%20HO2%20%5B%3D%5D%20H2O2%20%2B%20DMM3B", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[38]");
 		activeParameter.put("O2%20%2B%20DMM3B%20%3D%5D%20DMM3BO2", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[39]");
@@ -389,7 +390,7 @@ public class MoDSFileManagement {
 		activeParameter.put("HO2%20%2B%20CH3%20%5B%3D%5D%20O2%20%2B%20CH4", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value[176]");
 		
 		// passive parameters
-		HashMap<String, String> passiveParameter = new HashMap<String, String>();
+		LinkedHashMap<String, String> passiveParameter = new LinkedHashMap<String, String>();
 		passiveParameter.put("DMM3", "//srm_inputs/mixtures[@type='composition']/composition[@name='Test-All-Fuel-Ox-Mix']/value[@species='DMM3']");
 		passiveParameter.put("O2", "//srm_inputs/mixtures[@type='composition']/composition[@name='Test-All-Fuel-Ox-Mix']/value[@species='O2']");
 		passiveParameter.put("N2", "//srm_inputs/mixtures[@type='composition']/composition[@name='Test-All-Fuel-Ox-Mix']/value[@species='N2']");
