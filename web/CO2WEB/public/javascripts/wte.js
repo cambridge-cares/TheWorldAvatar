@@ -38,7 +38,6 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 + "?vWP   j6:hasTime ?time ." 
 + "?time     j6:inDateTime ?vdatetime ."
 + "?vdatetime  j6:year ?year ." 
-+ "FILTER( ?year = 1)" 
 
 
 + "}";
@@ -352,18 +351,21 @@ function dumpEconomic(data){
     $("#IC").text(parseFloat(data.V_InstallationCost.value).toFixed(2));
     $("#TR").text(parseFloat(data.V_TotalRevenue.value).toFixed(2));
 }
+/**
+*  Sets the map on all markers in the array.
+*/
+function setMapOnAll(map) {
+    for (var i = 0; i < markers.length; i++) {
+      markers[i].setMap(map);
+    }
+  }
 /** clears all markers on the page
  * 
  */
 function clearMarkers() {
-    if(!markers){
-        return;
-    }
-    for(marker of markers){
-        marker.setMap(null);
-        marker=null;
-    }
-}
+    setMapOnAll(null);
+    markers = [];
+  }
 var slider = document.getElementById("myRange");
 var output = document.getElementById("demo");
 output.innerHTML = slider.value;
@@ -372,7 +374,6 @@ slider.onmouseup = function() {
   output.innerHTML = this.value;
   yearNumber = this.value;
   //read the value of year and recharge the query
-
   queryForOnsiteWT();
 }
 /** calls the creation of markers (with extra parameters) before creating the onsite WTF technology
@@ -648,7 +649,7 @@ function queryForMarkers(agenturl,fnCreate,  callback){
                 scaledSize : new google.maps.Size(50, 50),
             };
         }else if (name.includes("OnSite")){
-            if (name.includes("-0")){
+            if (name.includes("-000")){
                 continue;
             }
             var icon = {
@@ -705,7 +706,8 @@ function createMarker(lst){
  */
 function setMarkerMen(id, callback){
     if (id.includes("FoodCourt")){
-        typeInfo = FCQuery;
+        addYear = "FILTER( ?year = "+slider.value+")}";
+        typeInfo = FCQuery.replace("}", addYear);
     }else if (id.includes("OnSite")){
         typeInfo = OnWQuery;   
     }else{
