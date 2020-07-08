@@ -1110,7 +1110,7 @@ public class WTEKBCreator {
 					OntModel jenaOwlModel = ModelFactory.createOntologyModel();
 					jenaOwlModel.read(in, null);
 					initOWLClasses(jenaOwlModel);
-					String wtfname="WasteTreatment-"+String.format("%03d", d); 
+					String wtfname="WasteTreatment-"+d; 
 					String iriofwtf=doConversionWTF(jenaOwlModel,Prefix, wtfname);
 					wtf.add(iriofwtf);
 					String content = JenaHelper.writeToString(jenaOwlModel);
@@ -1145,13 +1145,13 @@ public class WTEKBCreator {
 		converter.startConversion("foodcourt",null,null,null);
 		converter.startConversion("transport",null,null,null);
 		converter.startConversion("wtf",null,null,null);
-//		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
+		transportiri="http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001";
 //		for(int x=1;x<=7;x++) {
 //		foodcourt.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+x+".owl#FoodCourt-"+x);
 //		}
-//		for(int x=1;x<=4;x++) {
-//			wtf.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/WasteTreatment-"+x+".owl#WasteTreatment-"+x);
-//		}
+		for(int x=1;x<=4;x++) {
+			wtf.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/WasteTreatment-"+x+".owl#WasteTreatment-"+x);
+		}
 		converter.startConversion("system",null,null,null); //it is completed no need to be rerun again
 		
 	}

@@ -190,7 +190,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 					linemapping[0]=bd.toPlainString();
 					int FCname = y +1;
 					mappedonsiteiri.add("http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-							+ FCname +".owl#OnSiteWasteTreatment-"+FCname);
+							+String.format("%03d", FCname) +".owl#OnSiteWasteTreatment-"+String.format("%03d", FCname));
 
 					onsiteunitmapping.add(linemapping);	
 					
@@ -234,7 +234,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 					int FCname = j + 1;
 					int y = Arrays.asList(clusterOnsite.get(j)).indexOf("1")+1;
 					String currentwtf = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/OnSiteWasteTreatment-" 
-							+ y +".owl#OnSiteWasteTreatment-"+y;
+							+String.format("%03d", y) +".owl#OnSiteWasteTreatment-"+String.format("%03d", y);
 					String[]linemapping= {Integer.toString(FCname),Integer.toString(y),currentwtf,Integer.toString(i)};
 					sitemapping.add(linemapping);
 				 }
@@ -248,11 +248,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 		for (int i = 1; i<= noOfFC; i++) {
 			OntModel model = JenaHelper.createModel();
 			
-			String fc = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+Integer.toString(i)+".owl";
+			String fc = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourt-"+String.format("%03d", i)+".owl";
 			model.read(fc, null);
 			for (int j = 0; j< 15; j++) {
 				String[] siteArray = sitemapping.get((i-1)+noOfFC*j);
-				String fcWaste = fc + "#V_WasteProductionOfFoodCourt-"+Integer.toString(i)+"_"+Integer.toString(j+1);
+				String fcWaste = fc + "#V_WasteProductionOfFoodCourt-"+String.format("%03d", i)+"_"+Integer.toString(j+1);
 				Individual entity = model.getIndividual(fcWaste);
 				Resource entityonsite = model.createResource(siteArray[2]);
 				entity.addProperty(getisDeliveredTo(model), entityonsite);
