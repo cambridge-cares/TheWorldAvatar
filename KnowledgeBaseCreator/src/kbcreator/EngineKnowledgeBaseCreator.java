@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class KnowledgeBaseCreator {
+public class EngineKnowledgeBaseCreator {
 
 	public static String baseURL2 = "D:\\KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/deu/berlin/powerplants/";
 	public static String baseURL = "D:\\KBDev-git/irp3-JPS-KBDev-git/Server Ontology Configuration Root/kb/temporary/";
@@ -390,7 +390,7 @@ public class KnowledgeBaseCreator {
 	
 	public void doConversion(OntModel jenaOwlModel){
 		String filepath1 = "C:/JPS_DATA/workingdir/JPS/SRM/InputEngineML.xml";
-		KnowledgeBaseCreator xmlreader = new KnowledgeBaseCreator();
+		EngineKnowledgeBaseCreator xmlreader = new EngineKnowledgeBaseCreator();
 		hmap=xmlreader.editXML(filepath1);//read the xml and store to hashmap
 		
 		System.out.println ("testformapping= "+hmap.size());
@@ -771,7 +771,7 @@ public class KnowledgeBaseCreator {
 		
 		 String filepath1 = "C:/JPS_DATA/workingdir/JPS/SRM/InputEngineML.xml";
 		System.out.println("Starting Process");
-		KnowledgeBaseCreator converter = new KnowledgeBaseCreator();
+		EngineKnowledgeBaseCreator converter = new EngineKnowledgeBaseCreator();
 		converter.startConversion();
 		
 //		KnowledgeBaseCreator xmlreader = new KnowledgeBaseCreator();

@@ -126,10 +126,10 @@ public class CsvAnalyzer {
 
         
 	 public static void main(String[] args) throws IOException {
-		 String csvFile = "D://merging workspace/updated folder space 17119/powerplantsGEOdatabase.csv";
-		 String csvFile2 = "D://merging workspace/updated folder space 17119/powerplant_database_chuan.csv";
-		 String csvFilecombined = "D://merging workspace/updated folder space 17119/combined3.csv";
-		 String csvFilefinal = "D://merging workspace/updated folder space 17119/combined4.csv";
+		 String csvFile = "D://merging Plant Data Workspace/updated folder space 17119/powerplantsGEOdatabase.csv";
+		 String csvFile2 = "D://merging Plant Data Workspace/updated folder space 17119/powerplant_database_chuan.csv";
+		 String csvFilecombined = "D://merging Plant Data Workspace/updated folder space 17119/combined3.csv";
+		 String csvFilefinal = "D://merging Plant Data Workspace/updated folder space 17119/combined4.csv";
 		 CsvAnalyzer instance=new CsvAnalyzer();
 		 
 
