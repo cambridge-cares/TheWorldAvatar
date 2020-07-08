@@ -35,8 +35,8 @@ public class gPROMS_ipgen {
 		      e.printStackTrace();
 		    }
 //Extracting required variables from owl files
-		   String filePath = "/Users/aravindd/Downloads/debutaniser_section.owl";
-
+		  String filePath = "/Users/aravindd/Downloads/debutaniser_section.owl";
+		  
 			OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
 
 			try {
