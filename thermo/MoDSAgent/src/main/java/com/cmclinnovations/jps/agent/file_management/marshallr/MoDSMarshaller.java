@@ -54,7 +54,7 @@ import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.Option;
 
-public class MoDSMarshaller extends MoDSInputsState {
+public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	public List<String> caseNameList = new ArrayList<>();
 	private static Logger logger = LoggerFactory.getLogger(MoDSMarshaller.class);
 
@@ -1129,5 +1129,71 @@ public class MoDSMarshaller extends MoDSInputsState {
 		} else {
 			logger.error("The generated original ABox ontology file could not be deleted.");
 		}
+	}
+	
+	
+	
+	
+	public void initialise(String jobFolderName) throws IOException, MoDSAgentException {
+		init();
+		
+		// create the job folder 
+		jobFolderPath = FOLDER_ROOT.concat(FRONTSLASH).concat(FOLDER_DOCUMENTS)
+				.concat(FRONTSLASH).concat(FOLDER_JOB_FOLDER)
+				.concat(FRONTSLASH).concat(jobFolderName);
+		File jobFolder = new File(jobFolderPath);
+		if (!jobFolder.exists()) {
+			jobFolder.mkdir();
+		}
+		// create the \Temporary folder for file storage
+		folderTemporaryPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_TEMPORARY);
+		File temporary = new File(folderTemporaryPath);
+		if (!temporary.exists()) {
+			temporary.mkdir();
+		}
+		// create the \Initial folder
+		folderInitialPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_INITIAL);
+		File initial = new File(folderInitialPath);
+		if (!initial.exists()) {
+			initial.mkdir();
+		}
+		// create the \All folder
+		folderAllPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_ALL);
+		File all = new File(folderAllPath);
+		if (!all.exists()) {
+			all.mkdir();
+		}
+		// create the \Working_dir folder
+		folderWorkingDirPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_WORKING_DIR);
+		File workingDir = new File(folderWorkingDirPath);
+		if (!workingDir.exists()) {
+			workingDir.mkdir();
+		}
+	}
+
+	@Override
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException {
+		// TODO Auto-generated method stub
+		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM();
+		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
+		kineticsSRM.formFiles(exeModel);
+//		kineticsSRM.setUpMoDS();
+	}
+
+	@Override
+	public void plugInCantera() throws IOException, MoDSAgentException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void marshall() throws IOException, MoDSAgentException {
+		// TODO Auto-generated method stub
+//		setup algorithms
+		
+	}
+	
+	private void init() {
+		initMoDSInputs = new InitMoDSInputs();
 	}
 }
