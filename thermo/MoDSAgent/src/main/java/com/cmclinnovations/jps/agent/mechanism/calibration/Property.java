@@ -34,7 +34,13 @@ public enum Property {
 	PREFIX_BINDING_RAM("PREFIX ram: <http://cookingbigdata.com/linkeddata/ccinstances#>"), // double check
 	PREFIX_MSM("msm"),
 	PREFIX_RAM("ram"),
-	MODS_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>"); // double check
+	MODS_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>"), // double check
+	MODEL_KINETICS("kineticsSRM"),
+	MODEL_KINETICS_PATH("/home/jb2197/Codes_kinetics/mods-backend/Applications/MoDS/bin/runKineticsSRM.sh"),
+	MODEL_KINETICS_OUTPUT("OutputCase00001Cyc0001Info.csv"),
+	MODEL_CANTERA("canteraLFS"),
+	MODEL_CANTERA_PATH("/home/jb2197/Codes_kinetics/cantera/cantera_LFS.py"),
+	MODEL_CANTERA_OUTPUT("OutputCase00001Lfs0001Info.csv");
 	
 	private String propertyName;
 	private int value;
