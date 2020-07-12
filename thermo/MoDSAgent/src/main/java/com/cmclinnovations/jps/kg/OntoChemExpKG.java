@@ -160,13 +160,13 @@ public class OntoChemExpKG extends RepositoryManager {
 	
 	private String formEquivalenceRatioQuery(String prefixBindingOntoChemExp, String experimentIRI) {
 		String queryString = prefixBindingOntoChemExp;
-		queryString = queryString.concat("SELECT ?phi \n");
+		queryString = queryString.concat("SELECT ?Phi \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
 		queryString = queryString.concat("    ?commonProperties OntoChemExp:hasProperty ?property . \n");
 		queryString = queryString.concat("    ?property OntoChemExp:hasName ?name . \n");
 		queryString = queryString.concat("    ?property OntoChemExp:hasValue ?value . \n");
-		queryString = queryString.concat("    ?value OntoChemExp:hasVal ?phi  \n");
+		queryString = queryString.concat("    ?value OntoChemExp:hasVal ?Phi  \n");
 		queryString = queryString.concat("    FILTER regex(str(?name), \"equivalence ratio\", \"i\") \n");
 		queryString = queryString.concat("}");
 		return queryString;
@@ -175,7 +175,7 @@ public class OntoChemExpKG extends RepositoryManager {
 	private String formExperimentDataQuery(String prefixBindingOntoChemExp, String experimentIRI) {
 		String queryString = prefixBindingOntoChemExp;
 		queryString = queryString.concat(RDF);
-		queryString = queryString.concat("SELECT ?Temperature ?unitTemp ?Pressure ?unitPres ?ignitionDelay ?unitIgni \n");
+		queryString = queryString.concat("SELECT ?Temperature ?UnitTemp ?Pressure ?UnitPres ?IgnitionDelay ?UnitIgni \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasDataGroup ?dataGroup . \n");
 		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasDataPoint ?dataPoint . \n");
@@ -183,7 +183,7 @@ public class OntoChemExpKG extends RepositoryManager {
 		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasProperty ?propertyTemp . \n");
 		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasName ?nameTemp . \n");
 		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasID ?idTemp . \n");
-		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasUnits ?unitTemp . \n");
+		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasUnits ?UnitTemp . \n");
 		queryString = queryString.concat("    FILTER regex(str(?nameTemp), \"temperature\", \"i\") \n");
 		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasDataPointX ?dataPointTemp . \n");
 		queryString = queryString.concat("    ?dataPointTemp rdf:type ?typeTemp . \n");
@@ -192,7 +192,7 @@ public class OntoChemExpKG extends RepositoryManager {
 		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasProperty ?propertyPres . \n");
 		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasName ?namePres . \n");
 		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasID ?idPres . \n");
-		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasUnits ?unitPres . \n");
+		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasUnits ?UnitPres . \n");
 		queryString = queryString.concat("    FILTER regex(str(?namePres), \"pressure\", \"i\") \n");
 		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasDataPointX ?dataPointPres . \n");
 		queryString = queryString.concat("    ?dataPointPres rdf:type ?typePres . \n");
@@ -201,12 +201,12 @@ public class OntoChemExpKG extends RepositoryManager {
 		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasProperty ?propertyIgni . \n");
 		queryString = queryString.concat("    ?propertyIgni OntoChemExp:hasName ?nameIgni . \n");
 		queryString = queryString.concat("    ?propertyIgni OntoChemExp:hasID ?idIgni . \n");
-		queryString = queryString.concat("    ?propertyIgni OntoChemExp:hasUnits ?unitIgni . \n");
+		queryString = queryString.concat("    ?propertyIgni OntoChemExp:hasUnits ?UnitIgni . \n");
 		queryString = queryString.concat("    FILTER regex(str(?nameIgni), \"ignition delay\", \"i\") \n");
 		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasDataPointX ?dataPointIgni . \n");
 		queryString = queryString.concat("    ?dataPointIgni rdf:type ?typeIgni . \n");
 		queryString = queryString.concat("    FILTER regex(str(?typeIgni), str(?idIgni), \"i\") \n");
-		queryString = queryString.concat("    ?dataPointIgni OntoChemExp:hasVal ?ignitionDelay . \n");
+		queryString = queryString.concat("    ?dataPointIgni OntoChemExp:hasVal ?IgnitionDelay . \n");
 		queryString = queryString.concat("}");
 		return queryString;
 	}
