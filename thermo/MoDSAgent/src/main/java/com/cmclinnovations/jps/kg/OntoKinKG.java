@@ -2,6 +2,7 @@ package com.cmclinnovations.jps.kg;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -16,6 +17,8 @@ public class OntoKinKG extends RepositoryManager {
 	Logger logger = Logger.getLogger(OntoKinKG.class);
 	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
+	public static final String DC = "PREFIX dc: <http://purl.org/dc/elements/1.1/> \n";
+	public static final String REACTION_MECHANISM = "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> \n";
 	
 	public static void main(String[] args) throws ServletException, MoDSAgentException {
 		OntoKinKG ontoKinKG = new OntoKinKG();
@@ -39,11 +42,11 @@ public class OntoKinKG extends RepositoryManager {
 		return testResults;
 	}
 	
-	public List<String> queryReactionsToOptimise(String mechanismIRI, List<String> reactionIRIList) throws MoDSAgentException {
+	public LinkedHashMap<String, String> queryReactionsToOptimise(String mechanismIRI, List<String> reactionIRIList) throws MoDSAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
-		List<String> queriedReactionList = new ArrayList<>();
+		LinkedHashMap<String, String> queriedReactionList = new LinkedHashMap<String, String>();
 		for (String reactionIRI : reactionIRIList) {
 			if(!reactionIRI.trim().startsWith("<") && !reactionIRI.trim().endsWith(">")){
 				reactionIRI = "<".concat(reactionIRI).concat(">");
@@ -54,7 +57,7 @@ public class OntoKinKG extends RepositoryManager {
 			System.out.println(testResults);
 			System.out.println(testResults.get(1).get(0));
 			System.out.println(encodeReactionEquation(testResults.get(1).get(0)));
-			queriedReactionList.add(encodeReactionEquation(testResults.get(1).get(0)));
+			queriedReactionList.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
 		}
 		
 		return queriedReactionList;
@@ -62,7 +65,7 @@ public class OntoKinKG extends RepositoryManager {
 	
 	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSAgentException {
 		String queryString = prefixBindingOntoKin;
-		queryString = queryString.concat("PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>");
+		queryString = queryString.concat(REACTION_MECHANISM);
 		queryString = queryString.concat(RDF);
 		queryString = queryString.concat("SELECT (COUNT(?reaction) AS ?numOfReactions)");
 		queryString = queryString.concat("WHERE {");
@@ -76,8 +79,10 @@ public class OntoKinKG extends RepositoryManager {
 	
 	private String formReactionsToOptimiseQuery(String prefixBindingOntoKin, String reactionIRI) throws MoDSAgentException {
 		String queryString = prefixBindingOntoKin;
-		queryString = queryString.concat("SELECT ?reactionEquation \n");
+		queryString = queryString.concat(DC);
+		queryString = queryString.concat("SELECT ?reactionNo ?reactionEquation \n");
 		queryString = queryString.concat("WHERE {");
+		queryString = queryString.concat("    ").concat(reactionIRI).concat(" dc:identifier ?reactionNo . \n");
 		queryString = queryString.concat("    ").concat(reactionIRI).concat(" ontokin:hasEquation ?reactionEquation \n");
 		queryString = queryString.concat("}");
 		return queryString;
