@@ -68,4 +68,43 @@ public class MoDSInputsState {
 	public static WorkingWrite workingWrite;
 	
 	public static IInitMoDSInputs initMoDSInputs;
+	
+	
+	public static final String EMPTY = "";
+	public static final String HASH = "#";
+	public static final String SPACE = " ";
+	public static final String COLON = ":";
+	public static final String UNDERSCORE = "_";
+	public static final String BACKSLASH = "/";
+	public static final String HYPHEN = "-";
+	public static final String FRONTSLASH = "\\";
+	public static final String FLOAT = "float";
+	public static final String INTEGER = "integer";
+	public static final String STRING = "string";
+	
+	public static final String FOLDER_ROOT = System.getProperty("user.home");
+	public static final String FOLDER_DOCUMENTS = "Documents";
+	public static final String FOLDER_JOB_FOLDER = "JobFolder";
+	public static final String FOLDER_TEMPORARY = "Temporary";
+	public static final String FOLDER_ALL = "All";
+	public static final String FOLDER_INITIAL = "Initial";
+	public static final String FOLDER_WORKING_DIR = "Working_dir";
+	
+	public static final String FILE_MODS_PREFIX = "MoDS";
+	public static final String FILE_MODS_ACTIVE_SUFFIX = "ActiveInit.csv";
+	public static final String FILE_MODS_PASSIVE_SUFFIX = "PassiveANDOut.csv";
+	public static final String FILE_KINETICS_INPUTPARAMS = "InputParams.xml";
+	public static final String FILE_MECHANISM = "mechanism.xml";
+	public static final String FILE_MODEL_EXPDATA_SUFFIX = "Data.csv";
+	
+	
+//	public static final String MODEL_KINETICS = "kineticsSRM";
+//	public static final String MODEL_CANTERA = "canteraLFS";
+	
+	
+	public static String jobFolderPath;
+	public static String folderTemporaryPath;
+	public static String folderAllPath;
+	public static String folderInitialPath;
+	public static String folderWorkingDirPath;
 }
