@@ -32,7 +32,7 @@ DATA:
 %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s
 '''
 
-hournow= now.hour+1
+hournow= now.hour
 yearnow="%d" % now.year
 daynow="%d" % now.day
 
