@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
+	<classpathentry kind="lib" path="D:/Protege_3.4.8/protege.jar"/>
 	<classpathentry kind="lib" path="D:/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/antlr-2.7.5.jar"/>
 	<classpathentry kind="lib" path="D:/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/arq.jar"/>
 	<classpathentry kind="lib" path="D:/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/arq-extra.jar"/>
@@ -35,6 +36,6 @@
 	<classpathentry kind="lib" path="D:/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/wstx-asl-3.2.9.jar"/>
 	<classpathentry kind="lib" path="D:/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="D:/Protege_3.4.8/plugins/edu.stanford.smi.protegex.owl/xml-apis.jar"/>
-	<classpathentry kind="lib" path="D:/Protege_3.4.8/protege.jar"/>
+	<classpathentry kind="lib" path="D:/JParkSimulator-git-dev-semakau/SemPWServlet/WebContent/WEB-INF/lib/MoDS_API-j-Git-0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
