@@ -437,7 +437,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 						+ "INSERT DATA { \r\n";
 			for(int w=0;w<filtered.size();w++) {
 				StringBuffer b = new StringBuffer();
-				String currentunit = filtered.get(w)[1].split("#")[0] + "#UnitDeviceOf-" + filtered.get(w)[1].split("#")[1]+w; //w is precaution if duplicate instance
+				String currentunit = filtered.get(w)[1].split("#")[0] + "#UnitDeviceOf-" + filtered.get(w)[1].split("#")[1]+"_"+indexByYear; //w is precaution if duplicate instance
 				int numunit = Integer.valueOf(filtered.get(w)[2]);
 				//String currentwtf = inputdataonsite.get(onsiteindex);
 				//0=incineration

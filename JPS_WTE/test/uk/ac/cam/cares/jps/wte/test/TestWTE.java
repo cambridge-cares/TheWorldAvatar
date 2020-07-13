@@ -79,6 +79,7 @@ public class TestWTE extends TestCase {
 		String scenarioName = "testwaste2-"+usecaseID;
 		String json = new JSONStringer().object()
 				.key("wastenetwork").value(iriofnetwork)
+				.key("n_cluster").value("40")
 				.endObject().toString();
 		String result = new ScenarioClient().call(scenarioName, "http://localhost:8080/JPS_WTE/startsimulationCoordinationWTE", json);
 		
