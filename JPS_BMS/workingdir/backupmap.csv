@@ -1,0 +1,38 @@
+name,				nameRegex,						idRegex,						filenameTemplate,			IRITemplate,						isSIUnit,	abbrPair,	isBooleanValue,type
+OLA_RH1,			.*VAV_S7_07_RoomHumidity.*,		1,								OLA_RH_sensor%s.owl,		V_OLA_RelativeHumidity,				1,			0,			0,				5	
+OLA_RH2,			.*VAV_S7_09_RoomHumidity.*,		2,								OLA_RH_sensor%s.owl,		V_OLA_RelativeHumidity,				1,			0,			0,				5	
+OLA_RH3,			.*VAV_S7_12_RoomHumidity.*,		3,								OLA_RH_sensor%s.owl,		V_OLA_RelativeHumidity,				1,			0,			0,				5	
+OLA_RH4,			.*VAV_S7_14_RoomHumidity.*,		4,								OLA_RH_sensor%s.owl,		V_OLA_RelativeHumidity,				1,			0,			0,				5	
+OLA_RT1,			.*VAV_S7_07_RoomTemp.*,			1,								OLA_RT_sensor%s.owl,		V_OLA_Temperature,					1,			0,			0,				5	
+OLA_RT2,			.*VAV_S7_09_RoomTemp.*,			2,								OLA_RT_sensor%s.owl,		V_OLA_Temperature,					1,			0,			0,				5	
+OLA_RT3,			.*VAV_S7_12_RoomTemp.*,			3,								OLA_RT_sensor%s.owl,		V_OLA_Temperature,					1,			0,			0,				5	
+OLA_RT4,			.*VAV_S7_14_RoomTemp.*,			4,								OLA_RT_sensor%s.owl,		V_OLA_Temperature,					1,			0,			0,				5	
+Supply_Pressure,<Supply_Pressure>,[a-zA-Z][0-9]*-[0-9],MAU-%s_D12P_sensor1.owl,V_SupplyPressureD12OfMAU-%s,0,0,0,3
+VSD_Speed_Cmd,<VSD_Speed_Cmd>,[a-zA-Z][0-9]*-[0-9],MAU-Fan-%s_VSDC_sensor1.owl,V_VSDControlOfMAU-Fan-%s,0,0,0,3
+Outside_Air_Temp,<Outside_Air_Temp>,[a-zA-Z][0-9]*-[0-9],MAU-%s_OAT_sensor1.owl,V_OutsideTemperatureOfMAU-%s,0,0,0,3
+Outside_Air_Humidity,<Outside_Air_Humidity>,[a-zA-Z][0-9]*-[0-9],MAU-%s_OAH_sensor1.owl,V_OutsideRelativeHumidityOfMAU-%s,0,0,0,3
+Trip,<Trip>,[a-zA-Z][0-9]*-[0-9],MAU-Fan-%s_TripAlarm_sensor1.owl,V_TripAlarmStatOfMAU-Fan-%s,0,0,0,3
+BTU_CHWST,<BTU_CHW_Sup_Temp>,[a-zA-Z][0-9]*-[0-9],MAU-%s_CHWST_sensor1.owl,V_CHWSTemperatureP1OfMAU-%s,0,0,0,3
+BTU_CHWRT,<BTU_CHW_Ret_Temp>,[a-zA-Z][0-9]*-[0-9],MAU-%s_CHWRT_sensor1.owl,V_CHWRTemperatureP8OfMAU-%s,0,0,0,3
+RoomTemp,			<Room_Temp>,					roomItem,						%s_RT_sensor1.owl,			V_%s_Temperature,					1,			1,			0,				0
+RoomTemp_Sensor1,	<Room_Temp_Sensor_1>,			roomItem,						%s_RT_sensor1.owl,			V_%s_Temperature,					1,			1,			0,				0
+VAVRoomTemp,		.*RoomTemp.*,					VAV_[a-zA-z][0-9]_[0-9]*,		%s.owl,						V_%s_Temperature_SP,				1,			1,			0,				0
+RoomTemp_Sensor2,	<Room_Temp_Sensor_2>,			roomItem,						%s_RT_sensor2.owl,			V_%s_Temperature,					1,			1,			0,				0
+VAV_HF-FH_Door,		<VAV_E7_25_HF-FH_Door>,			 1,							HF-FH_SashOp_sensor%s.owl,		V_SashOpeningOfHF-FH,				1,			0,			0,				5
+VAV_HF-FH_Status,	<VAV_E7_25_HF-FH_Status>,		 1,							HF-FH_Stat_sensor%s.owl,		V_StatusOfHF-FH,					1,			0,			0,				5
+FH_Status,			<VAV_.*_FH[0-9]*_Status>,		-[0-9][0-9],				FH-%s_Stat_sensor1.owl,			V_StatusOfFH-%s,					1,			0,			0,				4		
+WFH_Status,			<VAV_.*_WFH-[0-9]*_Status>,		-[0-9][0-9],				WFH-%s_Stat_sensor1.owl,		V_StatusOfWFH-%s,					1,			0,			0,				2	
+RoomTempSetPoint,	<Room_Temp_Setpoint>,			[a-zA-Z][0-9]_[0-9]*,		VAV-%s.owl,						V_%s_Temperature_SP,				1,			0,			0,				6
+FH-05-sensor1.owl,	<VAV_E7_26_FH05_Status>,		5,							FH-0%s_Stat_sensor1.owl,		V_StatusOfFH-05,					1,			0,			0,				5
+FH-06-sensor1.owl,	<VAV_E7_27_FH06_Status>,		6,							FH-0%s_Stat_sensor1.owl,		V_StatusOfFH-06,					1,			0,			0,				5
+FH-07-sensor1.owl,	<VAV_E7_39_FH07_Status>,		7,							FH-0%s_Stat_sensor1.owl,		V_StatusOfFH-07,					1,			0,			0,				5
+FH-08-sensor1.owl,	<VAV_E7_40_FH08_Status>,		8,							FH-0%s_Stat_sensor1.owl,		V_StatusOfFH-08,					1,			0,			0,				5
+FH-09-sensor1.owl,	<VAV_E7_28_FH09_Status>,		9,							FH-0%s_Stat_sensor1.owl,		V_StatusOfFH-09,					1,			0,			0,				5
+HVAVHAFStat,		<VAV_S7_17_Heater Status>,		17,							HVAV-S7-%s_HAFStat_sensor1.owl,	V_HVAV-S/7-17_HeaterAirflowStatus,	1,			0,			0,				5
+HC,					<VAV_S7_17_Heater Contol>,		17,							HVAV-S7-%s_HC_sensor1.owl,		V_HVAV-S/7-17_HeaterControl,		1,			0,			0,				5
+Hstat,				<VAV_S7_17_Heater Power>,		17,							HVAV-S7-%s_Hstat_sensor1.owl,	V_HVAV-S/7-17_HeaterStatus,			1,			0,			0,				5
+HWControl24,		<VAV_S7_24_Hot_Wtr_valve_Contorl>,24,						HVAV-S7-%s_HWControl_sensor1.owl,V_HVAV-S/7-24_HotWaterControl,		1,			0,			0,				5
+HWControl25,		<VAV_S7_25_Hot_Wtr_valve_Control>,25,						HVAV-S7-%s_HWControl_sensor1.owl,V_HVAV-S/7-25_HotWaterControl,		1,			0,			0,				5
+Offcoil_Temp_Setpoint,<Offcoil_Temp_Setpoint>,[0-9]-[0-9],DDC_R_%s_1.owl,V_St-004_Temperature_SP,0,0,0,4
+Supply_Temp_Setpoint,<Supply_Temp_Setpoint>,[0-9]-[0-9],DDC_R_%s_1.owl,V_St-006_Temperature_SP,0,0,0,4
+Supply_Pressure_Setpoint,<Supply_Pressure_Setpoint>,[0-9]-[0-9],DDC_R_%s_1.owl,V_St-006_Pressure_SP,0,0,0,4

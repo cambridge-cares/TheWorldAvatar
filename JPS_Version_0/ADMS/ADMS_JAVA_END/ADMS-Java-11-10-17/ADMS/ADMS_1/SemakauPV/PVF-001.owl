@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.theworldavatar.com/PVF-001.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:p3="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+    xmlns:p1="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#"
+    xmlns:coordinate_system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+    xmlns:space_and_time_extended="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:p4="http://www.theworldavatar.com/OntoElectricalNet/EN_function.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:geometry="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#"
+    xmlns:system="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+    xmlns:p5="http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:p2="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns:EN_behavior="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+  xml:base="http://www.theworldavatar.com/PVF-001.owl#">
+  <owl:Ontology rdf:about="">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_function.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+  </owl:Ontology>
+  <owl:NamedIndividual rdf:ID="PVF-001">
+    <space_and_time_extended:hasGISCoordinateSystem>
+      <owl:NamedIndividual rdf:ID="PVF-001_CoordinateSystem">
+        <space_and_time_extended:hasProjectedCoordinate_x>
+          <owl:NamedIndividual rdf:ID="x_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+            <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+            <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+            <system:hasValue>
+              <owl:NamedIndividual rdf:ID="V_x_PVF-001">
+                <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                >1.15526690170259E7</system:numericalValue>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+              </owl:NamedIndividual>
+            </system:hasValue>
+          </owl:NamedIndividual>
+        </space_and_time_extended:hasProjectedCoordinate_x>
+        <space_and_time_extended:hasProjectedCoordinate_y>
+          <owl:NamedIndividual rdf:ID="y_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+            <system:hasValue>
+              <owl:NamedIndividual rdf:ID="V_y_PVF-001">
+                <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+                >134490.238515897</system:numericalValue>
+              </owl:NamedIndividual>
+            </system:hasValue>
+            <coordinate_system:refersToAxis rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+            <system:hasDimension rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+          </owl:NamedIndividual>
+        </space_and_time_extended:hasProjectedCoordinate_y>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+      </owl:NamedIndividual>
+    </space_and_time_extended:hasGISCoordinateSystem>
+    <EN_behavior:hasNominalVoltage>
+      <owl:NamedIndividual rdf:ID="NominalV_PVF-001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#NominalVoltage"/>
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_NominalV_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+            <system:isObservedAgainstBackdrop>
+              <owl:NamedIndividual rdf:ID="Time_SG_Value">
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >18-Aug 2017 11:10</system:numericalValue>
+              </owl:NamedIndividual>
+            </system:isObservedAgainstBackdrop>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+            >0.75</system:numericalValue>
+          </owl:NamedIndividual>
+        </system:hasValue>
+      </owl:NamedIndividual>
+    </EN_behavior:hasNominalVoltage>
+    <system:hasProperty>
+      <owl:NamedIndividual rdf:ID="EfficiencyOfPVF-001">
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="ValueOfEfficiencyOfPVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+            >0.3</system:numericalValue>
+          </owl:NamedIndividual>
+        </system:hasValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#Property"/>
+      </owl:NamedIndividual>
+    </system:hasProperty>
+    <EN_behavior:hasReactivePowerOutput>
+      <owl:NamedIndividual rdf:ID="Q_PVF-001">
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_Q_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >-0.13929956074290384</system:numericalValue>
+            <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Mvar"/>
+          </owl:NamedIndividual>
+        </system:hasValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualReactivePower"/>
+      </owl:NamedIndividual>
+    </EN_behavior:hasReactivePowerOutput>
+    <EN_behavior:hasAngle>
+      <owl:NamedIndividual rdf:ID="theta_PVF-001">
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_theta_PVF-001">
+            <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >0.10385150835086168</system:numericalValue>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#degree"/>
+          </owl:NamedIndividual>
+        </system:hasValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#Angle"/>
+      </owl:NamedIndividual>
+    </EN_behavior:hasAngle>
+    <EN_behavior:hasNominalActivePower>
+      <owl:NamedIndividual rdf:ID="Pset_PVF-001">
+        <system:isRelatedTo>
+          <owl:NamedIndividual rdf:ID="Irradiance_to_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#SolarIrradiance"/>
+            <system:hasValue>
+              <owl:NamedIndividual rdf:ID="V_Irradiance_to_PVF-001">
+                <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+                <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#W/m.m"/>
+                <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+                <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+                >383.7</system:numericalValue>
+              </owl:NamedIndividual>
+            </system:hasValue>
+          </owl:NamedIndividual>
+        </system:isRelatedTo>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#NominalActivePower"/>
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_Pset_PVF-001">
+            <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float"
+            >0.34840962</system:numericalValue>
+          </owl:NamedIndividual>
+        </system:hasValue>
+      </owl:NamedIndividual>
+    </EN_behavior:hasNominalActivePower>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl#SolarCellFarm"/>
+    <geometry:has_area>
+      <owl:NamedIndividual rdf:ID="Area_PVF-001">
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_Area_PVF-001">
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#m.m"/>
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal"
+            >3026.753364</system:numericalValue>
+          </owl:NamedIndividual>
+        </system:hasValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl#SurfaceArea"/>
+      </owl:NamedIndividual>
+    </geometry:has_area>
+    <EN_behavior:hasActualVoltage>
+      <owl:NamedIndividual rdf:ID="ActualV_PVF-001">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualVoltage"/>
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_ActualV_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kV"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >0.7500047273993519</system:numericalValue>
+            <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+          </owl:NamedIndividual>
+        </system:hasValue>
+      </owl:NamedIndividual>
+    </EN_behavior:hasActualVoltage>
+    <EN_behavior:hasActivePowerOutput>
+      <owl:NamedIndividual rdf:ID="P_PVF-001">
+        <system:hasValue>
+          <owl:NamedIndividual rdf:ID="V_P_PVF-001">
+            <rdf:type rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+            <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#string"
+            >0.3484196503487355</system:numericalValue>
+            <system:isObservedAgainstBackdrop rdf:resource="#Time_SG_Value"/>
+            <system:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+          </owl:NamedIndividual>
+        </system:hasValue>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl#ActualActivePower"/>
+      </owl:NamedIndividual>
+    </EN_behavior:hasActivePowerOutput>
+  </owl:NamedIndividual>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4.8, Build 629)  http://protege.stanford.edu -->

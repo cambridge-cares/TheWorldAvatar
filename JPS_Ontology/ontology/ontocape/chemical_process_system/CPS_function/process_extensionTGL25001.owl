@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:process="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Extension of partial model process; classification of ProcessSteps according to TGL 25001</rdfs:comment>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The following classes and relations from other ontology modules are used within 'process_extensionTGL25001':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#PhaseChange"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Mixing"/&gt;
+
+    </rdfs:comment>
+    <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl"/>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+  </owl:Ontology>
+  <owl:Class rdf:ID="PhaseChangeOfSolids">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#PhaseChange"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CyclonicSeparation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Cyclonic separation is a method of removing particles from a gas stream by means of centrifugal forces. </rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="HeatingOfGases">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Increasing the temperature of a gas</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="TemperatureChangeOfGases"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Sintering">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The heating of a mass of fine particles below the melting point, causing agglomeration to form larger particles. 
+(www.mim.com.au/glossary.html)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Adsorption">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Adsorption is the selcective transfer of molecules or fine-granular particles from a fluid (gas or liquid) to the interface of the adsorbents.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="TemperatureChangeOfSolids">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+  </owl:Class>
+  <owl:Class rdf:ID="PhaseChangeOfLiquids">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#PhaseChange"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Impregnation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of soaking a porous material with a liquid.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Spraying">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of dispersing liquid droplets in a gas phase.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Suspending">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of preparing a mixture in which fine particles are suspended in a fluid, where they are supported by buoyancy.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MechanicalCrushing">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of breaking solid material into coarse-granular pieces by applying mechanical forces</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Grinding">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of pulverizing solid material to fine-granular particles by applying mechanical forces</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Melting">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#PhaseChangeOfSolids"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phase transition from solid to the liquid.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="QuenchGranulation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fragmentation of a melt by rapid solidifaction, which causes internal stresses.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="BoilingDown">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Boiling down refers to the separation of a solution into gaseous and solid substances by evaporating the volatile components completely. </rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ConcentrationByEvaporation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">In evaporization, the vapor from a boiling liquid is removed and a more concentrated solution remains. (Geankoplis: Transport processes and unit operations)</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrodialysis">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A process which uses an electric field and two semipermeable membranes to separate dissociated species from undissociated species in a solvent. The electric field forces the dissociated ions through the membranes, while the nonpolar species remain in the solvent.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="MixingOfSolids">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The blending of different solid components to a granular mixture</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Mixing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="FoamFormation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The combination of a liquid and a gas phase to a foam.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Tabletting">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of preparing a small flat compressed cake of some powder by means of high pressure.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Briquetting">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The agglomeration of a fine-granular powder to coarse-granular pieces by mechanical pressure.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="ImpingementSeparation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Particles are separated from gas by impingement on collected bodies arrayed across the path of the gas stream.(Perry)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Humidification">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mixing of a gas and the vapor of a liquid with the formation of a new homogeneous phase.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="MixingofGases">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mixing of two ore more gases of different compositions.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Mixing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Fusion">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The merging of two or more solid components by melting.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GasCentrifugation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The separation of a mixture of gases of different densities by centrifugal force. </rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#TemperatureChangeOfGases">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Shredding">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The fragmentation of fibrous materials by the effect of tensile forces.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Distillation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Distillation is the seperation of the constituents of liquid mixture via partial vaporization of the mixture and separate recovery of vapor and residue. (Perry)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="CoolingOfLiquids">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reducing the temperature of a liquid without changing ist state of aggregation</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="TemperatureChangeOfLiquids"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="MixingOfLiquids">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The combination of two or more liquids of different composition to a homogeneous system.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Mixing"/>
+  </owl:Class>
+  <owl:Class rdf:ID="LiquidFiltration">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Liquid filtration is the separation of a liquid-solids mixture by forcing the mixture through a porous barrier which retains most of the solid particulates contained in the mixture.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="SonicGasCleaning">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Separation procedure based on the coagulation of small particles suspended in a fluid medium into larger aggregates by the action of sound waves.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="HeatingOfSolids">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#TemperatureChangeOfSolids"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Increasing the temperature of a solid without changing ist state of aggregation.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Emulsification">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The formation of a mixture of two liquids, such as oil and water, in which one of the liquids is in the form of fine droplets and is dispersed in the other.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Condensation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phase transition from gas to liquid.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="PhaseChangeOfGases"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Cutting">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fragmentation of solid material by the effect of shear forces</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="CoolingOfGases">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reducing the temperature of a gas without changing ist state of aggregation</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#TemperatureChangeOfGases"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Dissolution">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The mixing of a solid and a liquid with the formation of one new homogeneous phase (i.e. the solution).</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Electrophoresis">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Electrophoresis is the technique of separating electrically charged particles, particularly proteins, in a solution by passing an electric current through the solution. The rate of movement of the different components depends upon their charge, so that they gradually separate into bands. [neurolab.jsc.nasa.gov/glosseh.htm]</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="ElectricalGasCleaning">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The separation of dispersed particles from a gas phase by means of an electric field.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#PhaseChangeOfGases">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#PhaseChange"/>
+  </owl:Class>
+  <owl:Class rdf:ID="HeatingOfLiquids">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#TemperatureChangeOfLiquids"/>
+    </rdfs:subClassOf>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Increasing the temperature of a liquid without changing ist state of aggregation</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Abrasion">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Granulation of a solid by frictional action using an abrading medium.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Rectification">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Rectification is the separation of the constituents of a liquid mixture by successive distillations (partial vaporizations and condensations) and is obtained via the use of an integral of differential process. (Perry)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Absorption">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Absorption is the transfer of a soluble component in a gas-phase mixture into a liquid absorbent whose volatility is low under process conditions. (Perry)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="GasFiltration">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gas filtration is the separation of a gas-solids mixture by forcing the mixture through a porous barrier which retains most of the solid particulates contained in the mixture.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Centrifugation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A process of separating the lighter portions of a solution, mixture, or suspension from the heavier portions by centrifugal force.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="CoolingOfSolids">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Reducing the temperature of a solid.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#TemperatureChangeOfSolids"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Solidification">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#PhaseChangeOfLiquids"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phase transition from liquid to solid.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="HydrocyclonicSeparation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Hydrocyclonic separation is a method of removing particles from a liquid stream by means of centrifugal forces. </rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Vaporization">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#PhaseChangeOfLiquids"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phase transition from liquid to gas. </rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Extraction">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Extraction refers to both liquid-liquid extraction and leaching:
+Liquid-liquid extraction is a process for separationg components in solution by their distribution between two immiscible liquid phases. Such a process can also be simply referred to as liquid extraction or solvent extraction; however, the latter term my be confusing because it also applies to the leaching of soluble substance from a solid. (Perry's) 
+Leaching is the removal of a soluble fraction, in the form of a solution, from an insoluble, permeable solid phase with which it is associated. The separation usually involves selective dissolution. The soluble constituent may be solid or liquid (Perry's)
+    </rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Sublimation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#PhaseChangeOfSolids"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phase transition from solid to gas without passing through an intermediate liquid state.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="DiffusionSeparation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Process to separate a gas mixture into its components by means of differences in the diffusion rates of the component molecules</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="ElectromagneticCrushing">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of crushing solid material by applying electromagnetic fields that cause internal stresses.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ThermalCrushing">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The process of crushing solid material by applying temperature differences that cause internal stresses.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Fragmentation"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Compacting">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The compression of a loose, voluminous powder to a more dense, closely packed powder by mechanical pressure.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="FoamFractionation">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A method of separation in which a component of the bulk liquid is preferentially adsorbed at the liquid/vapour (L/V) interface and is removed by foaming. (IUPAC Compendium of Chemical Terminology)</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#TemperatureChangeOfLiquids">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#TemperatureChange"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Desublimation">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The phase transition from gas to solid without passing through an intermediate liquid state.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process_extensionTGL25001.owl#PhaseChangeOfGases"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Kneading">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The blending of solid and liquid components into a uniform mass, as by folding, pressing, and stretching.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Combination"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Scrubbing">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#Separation"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The separation of dispersed particels from a gas phase by suspensing or solving the particles in a liquid phase.</rdfs:comment>
+  </owl:Class>
+</rdf:RDF>

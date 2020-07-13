@@ -1,0 +1,3775 @@
+<?xml version="1.0" encoding="UTF-8"?>
+				<kml xmlns="http://www.opengis.net/kml/2.2">
+				<!-- created by GmapGIS.com -->
+				<Document>
+				<name>MynameKML file polygon </name>
+				<description>Some descrition</description>
+
+					<Style id="polyStyID_0">
+					<LineStyle>
+					<color>FF0000FF</color>
+					<width>5</width>
+					</LineStyle>
+
+					<PolyStyle>
+					<color>660088ff</color>
+					</PolyStyle> 
+					</Style>
+					<Placemark>
+					
+					
+					
+					
+				<name>/EGEN-001.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_1</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7115833,1.296516667000000000005204170,0.0
+103.7113332999999999999947958,1.296266667,0.0
+103.7115833,1.296016666999999999994795830,0.0
+103.7118333000000000000052042,1.296266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+<Placemark>
+	<name>/EGEN-002.owl/EGEN-003.owl/EGEN-004.owl/EGEN-005.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_1</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6740333,1.282283333000000000005204170,0.0
+103.6737832999999999999947958,1.282033333,0.0
+103.6740333,1.281783332999999999994795830,0.0
+103.6742833000000000000052042,1.282033333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+<Placemark>
+	<name>/EGEN-006.owl/EGEN-007.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_1</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7252,1.284350000000000000005204170,0.0
+103.7249499999999999999947958,1.2841,0.0
+103.7252,1.283849999999999999994795830,0.0
+103.7254500000000000000052042,1.2841,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+<Placemark>
+	<name>/EGEN-008.owl/EGEN-009.owl/EGEN-010.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_1</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7028,1.254400000000000000005204170,0.0
+103.7025499999999999999947958,1.25415,0.0
+103.7028,1.253899999999999999994795830,0.0
+103.7030500000000000000052042,1.25415,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+<Placemark>
+	<name>/EGEN-011.owl/EGEN-01.owl2/EGEN-013.owl/EGEN-014.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_1</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7271667,1.279733333000000000005204170,0.0
+103.7269166999999999999947958,1.279483333,0.0
+103.7271667,1.279233332999999999994795830,0.0
+103.7274167000000000000052042,1.279483333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+					
+		 
+					
+					
+	<name>/EBus-001.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7115833,1.296766667,0.0
+					103.7110833,1.296266667,0.0
+					103.7115833,1.295766667,0.0
+					103.7120833,1.296266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-002.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7259,1.281266667,0.0
+					103.7254,1.280766667,0.0
+					103.7259,1.280266667,0.0
+					103.7264,1.280766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-003.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7271667,1.279983333,0.0
+103.7266667,1.279483333,0.0
+103.7271667,1.278983333,0.0
+103.7276667,1.279483333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-004.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7284833,1.278683333,0.0
+103.72798329999999,1.278183333,0.0
+103.7284833,1.2776833330000001,0.0
+103.7289833,1.278183333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-005.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7028,1.25465,0.0
+103.7023,1.25415,0.0
+103.7028,1.2536500000000002,0.0
+103.7033,1.25415,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-006.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6740333,1.282533333,0.0
+103.6735333,1.282033333,0.0
+103.6740333,1.281533333,0.0
+103.67453330000001,1.282033333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-007.owl/EBus-010.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7189667,1.280833333,0.0
+103.7184667,1.280333333,0.0
+103.7189667,1.279833333,0.0
+103.7194667,1.280333333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-008.owl/EBus-011.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7039667,1.2685,0.0
+103.70346669999999,1.268,0.0
+103.7039667,1.2675,0.0
+103.7044667,1.268,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-009.owl/EBus-012.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6850333,1.271416667,0.0
+103.6845333,1.270916667,0.0
+103.6850333,1.270416667,0.0
+103.6855333,1.270916667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-013.owl/EBus-022.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72075,1.286116667,0.0
+103.72025,1.285616667,0.0
+103.72075,1.285116667,0.0
+103.72125,1.285616667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-014.owl/EBus-023.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7235167,1.2751333329999999,0.0
+103.7230167,1.274633333,0.0
+103.7235167,1.274133333,0.0
+103.7240167,1.274633333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-015.owl/EBus-024.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71325,1.277583333,0.0
+103.71275,1.277083333,0.0
+103.71325,1.276583333,0.0
+103.71375,1.277083333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-016.owl/EBus-025.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7169333,1.271266667,0.0
+103.71643329999999,1.270766667,0.0
+103.7169333,1.270266667,0.0
+103.7174333,1.270766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-017.owl/EBus-026.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7035667,1.26805,0.0
+103.7030667,1.26755,0.0
+103.7035667,1.26705,0.0
+103.7040667,1.26755,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-018.owl/EBus-027.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7002333,1.261516667,0.0
+103.69973329999999,1.261016667,0.0
+103.7002333,1.260516667,0.0
+103.7007333,1.261016667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-019.owl/EBus-028.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6842333,1.272233333,0.0
+103.6837333,1.271733333,0.0
+103.6842333,1.271233333,0.0
+103.6847333,1.271733333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-020.owl/EBus-029.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6823833,1.251116667,0.0
+103.6818833,1.250616667,0.0
+103.6823833,1.2501166670000001,0.0
+103.6828833,1.250616667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-021.owl/EBus-030.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6660167,1.267266667,0.0
+103.6655167,1.266766667,0.0
+103.6660167,1.266266667,0.0
+103.6665167,1.266766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-031.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7200667,1.285616667,0.0
+103.7195667,1.285116667,0.0
+103.7200667,1.284616667,0.0
+103.7205667,1.285116667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-032.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7203167,1.283683333,0.0
+103.7198167,1.283183333,0.0
+103.7203167,1.282683333,0.0
+103.7208167,1.283183333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-033.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7195,1.2832999999999999,0.0
+103.719,1.2828,0.0
+103.7195,1.2823,0.0
+103.72,1.2828,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-034.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7214667,1.2862,0.0
+103.72096669999999,1.2857,0.0
+103.7214667,1.2852000000000001,0.0
+103.7219667,1.2857,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-035.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7234333,1.286733333,0.0
+103.7229333,1.286233333,0.0
+103.7234333,1.285733333,0.0
+103.7239333,1.286233333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-036.owl/EBus-041.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7208833,1.2871,0.0
+103.7203833,1.2866,0.0
+103.7208833,1.2861,0.0
+103.7213833,1.2866,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-037.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7203333,1.2872999999999999,0.0
+103.71983329999999,1.2868,0.0
+103.7203333,1.2863,0.0
+103.7208333,1.2868,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-038.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7197833,1.290066667,0.0
+103.7192833,1.289566667,0.0
+103.7197833,1.2890666670000002,0.0
+103.7202833,1.289566667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-039.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7205167,1.289083333,0.0
+103.7200167,1.288583333,0.0
+103.7205167,1.288083333,0.0
+103.7210167,1.288583333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-040.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7208833,1.288233333,0.0
+103.7203833,1.287733333,0.0
+103.7208833,1.287233333,0.0
+103.7213833,1.287733333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-042.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71865,1.2907499999999998,0.0
+103.71815,1.29025,0.0
+103.71865,1.28975,0.0
+103.71915,1.29025,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-043.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7176,1.290266667,0.0
+103.7171,1.289766667,0.0
+103.7176,1.2892666670000001,0.0
+103.7181,1.289766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-044.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7135,1.291216667,0.0
+103.713,1.290716667,0.0
+103.7135,1.2902166670000002,0.0
+103.714,1.290716667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-045.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.70955,1.2916666669999999,0.0
+103.70904999999999,1.291166667,0.0
+103.70955,1.290666667,0.0
+103.71005,1.291166667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-046.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7111,1.290633333,0.0
+103.7106,1.290133333,0.0
+103.7111,1.289633333,0.0
+103.7116,1.290133333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-047.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7230167,1.2755999999999998,0.0
+103.7225167,1.2751,0.0
+103.7230167,1.2746,0.0
+103.7235167,1.2751,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-048.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72225,1.276433333,0.0
+103.72175,1.275933333,0.0
+103.72225,1.275433333,0.0
+103.72275,1.275933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-049.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7218333,1.276883333,0.0
+103.7213333,1.276383333,0.0
+103.7218333,1.2758833330000001,0.0
+103.7223333,1.276383333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-050.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.721,1.27765,0.0
+103.7205,1.27715,0.0
+103.721,1.27665,0.0
+103.7215,1.27715,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-051.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7189167,1.2797666669999999,0.0
+103.71841669999999,1.279266667,0.0
+103.7189167,1.278766667,0.0
+103.7194167,1.279266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-052.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71925,1.2801833329999999,0.0
+103.71875,1.279683333,0.0
+103.71925,1.279183333,0.0
+103.71975,1.279683333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-053.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.722,1.273733333,0.0
+103.72149999999999,1.273233333,0.0
+103.722,1.2727333330000001,0.0
+103.7225,1.273233333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-054.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72135,1.27305,0.0
+103.72085,1.27255,0.0
+103.72135,1.2720500000000001,0.0
+103.72185,1.27255,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-055.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72085,1.272483333,0.0
+103.72035,1.271983333,0.0
+103.72085,1.2714833330000002,0.0
+103.72135,1.271983333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-056.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7200167,1.2715999999999998,0.0
+103.7195167,1.2711,0.0
+103.7200167,1.2706,0.0
+103.7205167,1.2711,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-057.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7204333,1.27115,0.0
+103.7199333,1.27065,0.0
+103.7204333,1.2701500000000001,0.0
+103.7209333,1.27065,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-058.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7236167,1.271083333,0.0
+103.72311669999999,1.270583333,0.0
+103.7236167,1.270083333,0.0
+103.7241167,1.270583333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-059.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.724,1.274683333,0.0
+103.7235,1.274183333,0.0
+103.724,1.2736833330000001,0.0
+103.7245,1.274183333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-060.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.73005,1.276966667,0.0
+103.72955,1.276466667,0.0
+103.73005,1.275966667,0.0
+103.73055000000001,1.276466667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-061.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7347167,1.272833333,0.0
+103.7342167,1.272333333,0.0
+103.7347167,1.271833333,0.0
+103.73521670000001,1.272333333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-062.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7278333,1.280983333,0.0
+103.7273333,1.280483333,0.0
+103.7278333,1.2799833330000001,0.0
+103.7283333,1.280483333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-063.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72935,1.2794999999999999,0.0
+103.72885,1.279,0.0
+103.72935,1.2785,0.0
+103.72985,1.279,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-064.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7317167,1.279016667,0.0
+103.7312167,1.278516667,0.0
+103.7317167,1.2780166670000002,0.0
+103.73221670000001,1.278516667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-065.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72685,1.2819666669999998,0.0
+103.72635,1.281466667,0.0
+103.72685,1.280966667,0.0
+103.72735,1.281466667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-066.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71285,1.27795,0.0
+103.71235,1.27745,0.0
+103.71285,1.27695,0.0
+103.71335,1.27745,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-067.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7118167,1.2793999999999999,0.0
+103.7113167,1.2789,0.0
+103.7118167,1.2784,0.0
+103.7123167,1.2789,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-068.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71455,1.278666667,0.0
+103.71405,1.278166667,0.0
+103.71455,1.277666667,0.0
+103.71505,1.278166667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-069.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7160333,1.2783,0.0
+103.7155333,1.2778,0.0
+103.7160333,1.2773,0.0
+103.71653330000001,1.2778,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-070.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71725,1.278966667,0.0
+103.71675,1.278466667,0.0
+103.71725,1.277966667,0.0
+103.71775000000001,1.278466667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-071.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7166833,1.27975,0.0
+103.7161833,1.27925,0.0
+103.7166833,1.27875,0.0
+103.7171833,1.27925,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-072.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7138667,1.276883333,0.0
+103.7133667,1.276383333,0.0
+103.7138667,1.2758833330000001,0.0
+103.7143667,1.276383333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-073.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7134667,1.276666667,0.0
+103.7129667,1.276166667,0.0
+103.7134667,1.275666667,0.0
+103.7139667,1.276166667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-074.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7142167,1.275716667,0.0
+103.71371669999999,1.275216667,0.0
+103.7142167,1.274716667,0.0
+103.7147167,1.275216667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-075.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71645,1.2734666669999999,0.0
+103.71594999999999,1.272966667,0.0
+103.71645,1.272466667,0.0
+103.71695,1.272966667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-076.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7157,1.273783333,0.0
+103.7152,1.273283333,0.0
+103.7157,1.272783333,0.0
+103.7162,1.273283333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-077.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7150167,1.2744499999999999,0.0
+103.7145167,1.27395,0.0
+103.7150167,1.27345,0.0
+103.71551670000001,1.27395,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-078.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7120833,1.276783333,0.0
+103.7115833,1.276283333,0.0
+103.7120833,1.2757833330000001,0.0
+103.7125833,1.276283333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-079.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7113333,1.277416667,0.0
+103.7108333,1.276916667,0.0
+103.7113333,1.2764166670000001,0.0
+103.71183330000001,1.276916667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-080.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7109833,1.2762499999999999,0.0
+103.71048329999999,1.27575,0.0
+103.7109833,1.27525,0.0
+103.7114833,1.27575,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-081.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7098167,1.275266667,0.0
+103.7093167,1.274766667,0.0
+103.7098167,1.274266667,0.0
+103.7103167,1.274766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-082.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7151333,1.2717666669999999,0.0
+103.7146333,1.271266667,0.0
+103.7151333,1.270766667,0.0
+103.71563330000001,1.271266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-083.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.71015,1.273516667,0.0
+103.70965,1.273016667,0.0
+103.71015,1.272516667,0.0
+103.71065,1.273016667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-084.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7174,1.271116667,0.0
+103.7169,1.270616667,0.0
+103.7174,1.2701166670000001,0.0
+103.7179,1.270616667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-085.owl/EBus-100.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.709,1.26335,0.0
+103.7085,1.26285,0.0
+103.709,1.26235,0.0
+103.7095,1.26285,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-086.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.72735,1.2665166669999999,0.0
+103.72685,1.266016667,0.0
+103.72735,1.265516667,0.0
+103.72785,1.266016667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-087.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7275,1.266366667,0.0
+103.727,1.265866667,0.0
+103.7275,1.2653666670000001,0.0
+103.72800000000001,1.265866667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-088.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7250333,1.2673999999999999,0.0
+103.7245333,1.2669,0.0
+103.7250333,1.2664,0.0
+103.72553330000001,1.2669,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-089.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7165,1.2674666669999999,0.0
+103.716,1.266966667,0.0
+103.7165,1.266466667,0.0
+103.717,1.266966667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-090.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7154667,1.265533333,0.0
+103.71496669999999,1.265033333,0.0
+103.7154667,1.2645333330000001,0.0
+103.7159667,1.265033333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-091.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7250833,1.263866667,0.0
+103.72458329999999,1.263366667,0.0
+103.7250833,1.2628666670000002,0.0
+103.7255833,1.263366667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-092.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7247667,1.2635999999999998,0.0
+103.7242667,1.2631,0.0
+103.7247667,1.2626,0.0
+103.7252667,1.2631,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-093.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.70505,1.2697666669999998,0.0
+103.70455,1.269266667,0.0
+103.70505,1.268766667,0.0
+103.70555,1.269266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-094.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7064,1.270433333,0.0
+103.7059,1.269933333,0.0
+103.7064,1.269433333,0.0
+103.7069,1.269933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-095.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.707,1.2695999999999998,0.0
+103.70649999999999,1.2691,0.0
+103.707,1.2686,0.0
+103.7075,1.2691,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-096.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7086,1.2702833329999998,0.0
+103.7081,1.269783333,0.0
+103.7086,1.269283333,0.0
+103.7091,1.269783333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-097.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.70435,1.267616667,0.0
+103.70385,1.267116667,0.0
+103.70435,1.266616667,0.0
+103.70485000000001,1.267116667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-098.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.70345,1.265816667,0.0
+103.70295,1.265316667,0.0
+103.70345,1.264816667,0.0
+103.70395,1.265316667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-099.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7037167,1.2651333329999999,0.0
+103.7032167,1.264633333,0.0
+103.7037167,1.264133333,0.0
+103.7042167,1.264633333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-101.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7099167,1.262733333,0.0
+103.70941669999999,1.262233333,0.0
+103.7099167,1.261733333,0.0
+103.7104167,1.262233333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-102.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7107,1.262166667,0.0
+103.7102,1.261666667,0.0
+103.7107,1.2611666670000001,0.0
+103.7112,1.261666667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-103.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7013333,1.263533333,0.0
+103.7008333,1.263033333,0.0
+103.7013333,1.2625333330000001,0.0
+103.7018333,1.263033333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-104.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7022833,1.26335,0.0
+103.7017833,1.26285,0.0
+103.7022833,1.26235,0.0
+103.70278330000001,1.26285,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-105.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7020833,1.2642499999999999,0.0
+103.7015833,1.26375,0.0
+103.7020833,1.26325,0.0
+103.7025833,1.26375,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-106.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7029167,1.2641,0.0
+103.7024167,1.2636,0.0
+103.7029167,1.2631000000000001,0.0
+103.7034167,1.2636,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-107.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7022,1.265083333,0.0
+103.7017,1.264583333,0.0
+103.7022,1.264083333,0.0
+103.70270000000001,1.264583333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-108.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7009167,1.260833333,0.0
+103.70041669999999,1.260333333,0.0
+103.7009167,1.259833333,0.0
+103.7014167,1.260333333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-109.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.70175,1.2603,0.0
+103.70125,1.2598,0.0
+103.70175,1.2593,0.0
+103.70225,1.2598,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-110.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7015167,1.256966667,0.0
+103.7010167,1.256466667,0.0
+103.7015167,1.255966667,0.0
+103.7020167,1.256466667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-111.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7023333,1.25385,0.0
+103.7018333,1.25335,0.0
+103.7023333,1.25285,0.0
+103.70283330000001,1.25335,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-112.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7031833,1.25955,0.0
+103.7026833,1.25905,0.0
+103.7031833,1.25855,0.0
+103.70368330000001,1.25905,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-113.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.70395,1.2591999999999999,0.0
+103.70345,1.2587,0.0
+103.70395,1.2582,0.0
+103.70445000000001,1.2587,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-114.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7044,1.259816667,0.0
+103.7039,1.259316667,0.0
+103.7044,1.258816667,0.0
+103.70490000000001,1.259316667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-115.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7053833,1.258633333,0.0
+103.70488329999999,1.258133333,0.0
+103.7053833,1.257633333,0.0
+103.7058833,1.258133333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-116.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7065333,1.258816667,0.0
+103.7060333,1.258316667,0.0
+103.7065333,1.2578166670000002,0.0
+103.7070333,1.258316667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-117.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7066333,1.258783333,0.0
+103.70613329999999,1.258283333,0.0
+103.7066333,1.2577833330000001,0.0
+103.7071333,1.258283333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-118.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.7067667,1.2587166669999998,0.0
+103.7062667,1.258216667,0.0
+103.7067667,1.257716667,0.0
+103.7072667,1.258216667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-119.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6786167,1.266683333,0.0
+103.6781167,1.266183333,0.0
+103.6786167,1.2656833330000001,0.0
+103.67911670000001,1.266183333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-120.owl/EBus-197.owl/EBus-208.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68,1.263116667,0.0
+103.6795,1.262616667,0.0
+103.68,1.2621166670000001,0.0
+103.68050000000001,1.262616667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-121.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6994,1.260566667,0.0
+103.6989,1.260066667,0.0
+103.6994,1.259566667,0.0
+103.6999,1.260066667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-122.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6981,1.25985,0.0
+103.6976,1.25935,0.0
+103.6981,1.25885,0.0
+103.6986,1.25935,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-123.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6985167,1.259433333,0.0
+103.6980167,1.258933333,0.0
+103.6985167,1.2584333330000002,0.0
+103.6990167,1.258933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-124.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6985667,1.2551333329999999,0.0
+103.6980667,1.254633333,0.0
+103.6985667,1.254133333,0.0
+103.6990667,1.254633333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-125.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6989,1.2538833329999999,0.0
+103.69839999999999,1.253383333,0.0
+103.6989,1.252883333,0.0
+103.6994,1.253383333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-126.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6973333,1.253933333,0.0
+103.6968333,1.253433333,0.0
+103.6973333,1.252933333,0.0
+103.6978333,1.253433333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-127.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6988667,1.262433333,0.0
+103.6983667,1.261933333,0.0
+103.6988667,1.261433333,0.0
+103.6993667,1.261933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-128.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6992,1.2630333329999999,0.0
+103.6987,1.262533333,0.0
+103.6992,1.262033333,0.0
+103.6997,1.262533333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-129.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6945667,1.2603499999999999,0.0
+103.6940667,1.25985,0.0
+103.6945667,1.25935,0.0
+103.6950667,1.25985,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-130.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6982167,1.263866667,0.0
+103.6977167,1.263366667,0.0
+103.6982167,1.2628666670000002,0.0
+103.6987167,1.263366667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-131.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6971833,1.2635999999999998,0.0
+103.6966833,1.2631,0.0
+103.6971833,1.2626,0.0
+103.69768330000001,1.2631,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-132.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6950667,1.262166667,0.0
+103.6945667,1.261666667,0.0
+103.6950667,1.2611666670000001,0.0
+103.6955667,1.261666667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-133.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6946,1.2657666669999998,0.0
+103.69409999999999,1.265266667,0.0
+103.6946,1.264766667,0.0
+103.6951,1.265266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-134.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68975,1.2672333329999999,0.0
+103.68925,1.266733333,0.0
+103.68975,1.266233333,0.0
+103.69025,1.266733333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-135.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68385,1.2706166669999999,0.0
+103.68335,1.270116667,0.0
+103.68385,1.269616667,0.0
+103.68435000000001,1.270116667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-136.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6831833,1.2700833329999999,0.0
+103.6826833,1.269583333,0.0
+103.6831833,1.269083333,0.0
+103.6836833,1.269583333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-137.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6826667,1.27085,0.0
+103.6821667,1.27035,0.0
+103.6826667,1.2698500000000001,0.0
+103.6831667,1.27035,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-138.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68175,1.270233333,0.0
+103.68124999999999,1.269733333,0.0
+103.68175,1.269233333,0.0
+103.68225,1.269733333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-139.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68205,1.2691999999999999,0.0
+103.68155,1.2687,0.0
+103.68205,1.2682,0.0
+103.68255,1.2687,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-140.owl/EBus-183.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6712333,1.2687,0.0
+103.6707333,1.2682,0.0
+103.6712333,1.2677,0.0
+103.6717333,1.2682,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-141.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6783667,1.276016667,0.0
+103.6778667,1.275516667,0.0
+103.6783667,1.275016667,0.0
+103.6788667,1.275516667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-142.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6744333,1.274583333,0.0
+103.6739333,1.274083333,0.0
+103.6744333,1.2735833330000002,0.0
+103.6749333,1.274083333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-143.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.67675,1.2774333329999998,0.0
+103.67625,1.276933333,0.0
+103.67675,1.276433333,0.0
+103.67725,1.276933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-144.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6754,1.2793999999999999,0.0
+103.6749,1.2789,0.0
+103.6754,1.2784,0.0
+103.6759,1.2789,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-145.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6736833,1.2801833329999999,0.0
+103.67318329999999,1.279683333,0.0
+103.6736833,1.279183333,0.0
+103.6741833,1.279683333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-146.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6779,1.2827499999999998,0.0
+103.67739999999999,1.28225,0.0
+103.6779,1.28175,0.0
+103.6784,1.28225,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-147.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6759333,1.28335,0.0
+103.6754333,1.28285,0.0
+103.6759333,1.28235,0.0
+103.6764333,1.28285,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-148.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6795,1.2819666669999998,0.0
+103.679,1.281466667,0.0
+103.6795,1.280966667,0.0
+103.68,1.281466667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-149.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68015,1.281733333,0.0
+103.67965,1.281233333,0.0
+103.68015,1.2807333330000001,0.0
+103.68065,1.281233333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-150.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6837167,1.287833333,0.0
+103.6832167,1.287333333,0.0
+103.6837167,1.2868333330000001,0.0
+103.68421670000001,1.287333333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-151.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6846833,1.252216667,0.0
+103.6841833,1.251716667,0.0
+103.6846833,1.251216667,0.0
+103.6851833,1.251716667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-152.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6855667,1.252433333,0.0
+103.6850667,1.251933333,0.0
+103.6855667,1.251433333,0.0
+103.6860667,1.251933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-153.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6848,1.249816667,0.0
+103.6843,1.249316667,0.0
+103.6848,1.248816667,0.0
+103.6853,1.249316667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-154.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68575,1.24465,0.0
+103.68525,1.24415,0.0
+103.68575,1.2436500000000001,0.0
+103.68625,1.24415,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-155.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6867,1.2439833329999999,0.0
+103.6862,1.243483333,0.0
+103.6867,1.242983333,0.0
+103.6872,1.243483333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-156.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6860667,1.24245,0.0
+103.6855667,1.24195,0.0
+103.6860667,1.2414500000000002,0.0
+103.6865667,1.24195,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-157.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6795667,1.237233333,0.0
+103.67906669999999,1.236733333,0.0
+103.6795667,1.2362333330000002,0.0
+103.6800667,1.236733333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-158.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6801333,1.236266667,0.0
+103.67963329999999,1.235766667,0.0
+103.6801333,1.235266667,0.0
+103.6806333,1.235766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-159.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6769833,1.226433333,0.0
+103.6764833,1.225933333,0.0
+103.6769833,1.225433333,0.0
+103.6774833,1.225933333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-160.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6780167,1.2346166669999998,0.0
+103.6775167,1.234116667,0.0
+103.6780167,1.233616667,0.0
+103.6785167,1.234116667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-161.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6772833,1.23515,0.0
+103.6767833,1.23465,0.0
+103.6772833,1.23415,0.0
+103.6777833,1.23465,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-162.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6757667,1.2332999999999998,0.0
+103.6752667,1.2328,0.0
+103.6757667,1.2323,0.0
+103.6762667,1.2328,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-163.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6755333,1.234133333,0.0
+103.6750333,1.233633333,0.0
+103.6755333,1.233133333,0.0
+103.6760333,1.233633333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-164.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6741333,1.23275,0.0
+103.67363329999999,1.23225,0.0
+103.6741333,1.2317500000000001,0.0
+103.6746333,1.23225,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-165.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6747167,1.2532999999999999,0.0
+103.6742167,1.2528,0.0
+103.6747167,1.2523,0.0
+103.67521670000001,1.2528,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-166.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6755667,1.2459833329999999,0.0
+103.6750667,1.245483333,0.0
+103.6755667,1.244983333,0.0
+103.6760667,1.245483333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-167.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6759,1.2450333329999999,0.0
+103.6754,1.244533333,0.0
+103.6759,1.244033333,0.0
+103.6764,1.244533333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-168.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6733333,1.245833333,0.0
+103.6728333,1.245333333,0.0
+103.6733333,1.244833333,0.0
+103.6738333,1.245333333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-169.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.674,1.246883333,0.0
+103.6735,1.246383333,0.0
+103.674,1.245883333,0.0
+103.67450000000001,1.246383333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-170.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6645333,1.26715,0.0
+103.6640333,1.26665,0.0
+103.6645333,1.26615,0.0
+103.6650333,1.26665,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-171.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.66445,1.2661499999999999,0.0
+103.66395,1.26565,0.0
+103.66445,1.26515,0.0
+103.66495,1.26565,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-172.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6656667,1.269366667,0.0
+103.6651667,1.268866667,0.0
+103.6656667,1.268366667,0.0
+103.6661667,1.268866667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-173.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6642,1.271283333,0.0
+103.66369999999999,1.270783333,0.0
+103.6642,1.270283333,0.0
+103.6647,1.270783333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-174.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6621333,1.27185,0.0
+103.66163329999999,1.27135,0.0
+103.6621333,1.27085,0.0
+103.6626333,1.27135,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-175.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6624167,1.271,0.0
+103.66191669999999,1.2705,0.0
+103.6624167,1.27,0.0
+103.6629167,1.2705,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-176.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6613167,1.271316667,0.0
+103.6608167,1.270816667,0.0
+103.6613167,1.2703166670000001,0.0
+103.6618167,1.270816667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-177.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6641333,1.273316667,0.0
+103.6636333,1.272816667,0.0
+103.6641333,1.2723166670000001,0.0
+103.6646333,1.272816667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-178.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6671667,1.2755666669999999,0.0
+103.6666667,1.275066667,0.0
+103.6671667,1.274566667,0.0
+103.6676667,1.275066667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-179.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6700833,1.277716667,0.0
+103.6695833,1.277216667,0.0
+103.6700833,1.276716667,0.0
+103.6705833,1.277216667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-180.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6722333,1.2717,0.0
+103.6717333,1.2712,0.0
+103.6722333,1.2707000000000002,0.0
+103.6727333,1.2712,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-181.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6729833,1.27355,0.0
+103.6724833,1.27305,0.0
+103.6729833,1.27255,0.0
+103.6734833,1.27305,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-182.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.67405,1.272983333,0.0
+103.67354999999999,1.272483333,0.0
+103.67405,1.271983333,0.0
+103.67455,1.272483333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-184.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6725167,1.266916667,0.0
+103.6720167,1.266416667,0.0
+103.6725167,1.2659166670000002,0.0
+103.6730167,1.266416667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-185.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.67205,1.2631999999999999,0.0
+103.67155,1.2627,0.0
+103.67205,1.2622,0.0
+103.67255,1.2627,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-186.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6710833,1.262483333,0.0
+103.6705833,1.261983333,0.0
+103.6710833,1.2614833330000002,0.0
+103.67158330000001,1.261983333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-187.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6673,1.2666166669999999,0.0
+103.6668,1.266116667,0.0
+103.6673,1.265616667,0.0
+103.6678,1.266116667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-188.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6688333,1.2645166669999999,0.0
+103.6683333,1.264016667,0.0
+103.6688333,1.263516667,0.0
+103.6693333,1.264016667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-189.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.67125,1.2607166669999998,0.0
+103.67075,1.260216667,0.0
+103.67125,1.259716667,0.0
+103.67175,1.260216667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-190.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6724333,1.2581499999999999,0.0
+103.67193329999999,1.25765,0.0
+103.6724333,1.25715,0.0
+103.6729333,1.25765,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-191.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6691333,1.261166667,0.0
+103.6686333,1.260666667,0.0
+103.6691333,1.260166667,0.0
+103.6696333,1.260666667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-192.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6669667,1.2594999999999998,0.0
+103.6664667,1.259,0.0
+103.6669667,1.2585,0.0
+103.6674667,1.259,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-193.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.66845,1.258766667,0.0
+103.66795,1.258266667,0.0
+103.66845,1.257766667,0.0
+103.66895000000001,1.258266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-194.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6677333,1.256766667,0.0
+103.66723329999999,1.256266667,0.0
+103.6677333,1.255766667,0.0
+103.6682333,1.256266667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-195.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.66935,1.2567166669999998,0.0
+103.66884999999999,1.256216667,0.0
+103.66935,1.255716667,0.0
+103.66985,1.256216667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-196.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6690167,1.2542499999999999,0.0
+103.6685167,1.25375,0.0
+103.6690167,1.25325,0.0
+103.6695167,1.25375,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-198.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68075,1.2540499999999999,0.0
+103.68025,1.25355,0.0
+103.68075,1.25305,0.0
+103.68125,1.25355,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-199.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.68095,1.255266667,0.0
+103.68045,1.254766667,0.0
+103.68095,1.254266667,0.0
+103.68145,1.254766667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-200.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6796167,1.25745,0.0
+103.6791167,1.25695,0.0
+103.6796167,1.25645,0.0
+103.6801167,1.25695,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-201.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6790833,1.258033333,0.0
+103.6785833,1.257533333,0.0
+103.6790833,1.257033333,0.0
+103.6795833,1.257533333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-202.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6763333,1.259816667,0.0
+103.6758333,1.259316667,0.0
+103.6763333,1.258816667,0.0
+103.6768333,1.259316667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-203.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6749167,1.26205,0.0
+103.6744167,1.26155,0.0
+103.6749167,1.26105,0.0
+103.6754167,1.26155,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-204.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.67415,1.2629,0.0
+103.67365,1.2624,0.0
+103.67415,1.2619,0.0
+103.67465,1.2624,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-205.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6775167,1.260466667,0.0
+103.6770167,1.259966667,0.0
+103.6775167,1.259466667,0.0
+103.6780167,1.259966667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-206.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6778167,1.2618,0.0
+103.67731669999999,1.2613,0.0
+103.6778167,1.2608000000000001,0.0
+103.6783167,1.2613,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-207.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6792833,1.263283333,0.0
+103.67878329999999,1.262783333,0.0
+103.6792833,1.262283333,0.0
+103.6797833,1.262783333,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark><Placemark>
+	<name>/EBus-209.owl</name>
+	<description><![CDATA[This is the description]]></description>
+	<styleUrl>#polyStyID_0</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<altitudeMode>clampToGround</altitudeMode>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+					103.6843333,1.2593666669999999,0.0
+103.6838333,1.258866667,0.0
+103.6843333,1.258366667,0.0
+103.68483330000001,1.258866667,0.0
+
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+				</Document>
+				</kml>
+				

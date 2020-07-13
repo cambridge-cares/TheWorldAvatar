@@ -1,0 +1,25 @@
+[Dublin Core DL Redirect]
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/mathematical_relation/mathematical_relation.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/data_structures/binary_tree.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/system.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/meta_model.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/data_structures/array.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/mereology/mereology.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/data_structures/linked_list.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/data_structures/loop.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/data_structures/multiset.owl
+http://www.theworldavatar.com/OntoCAPE/meta_model/topology/topology.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/derived_dimensions.owl
+http://www.theworldavatar.com/OntoElectricalNet/EN_behavior.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/geometry/geometry.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/network_system.owl
+http://www.theworldavatar.com/OntoCAPE/OntoCAPE/upper_level/technical_system.owl
+http://www.theworldavatar.com/OntoElectricalNet/EN_function.owl
+http://www.theworldavatar.com/OntoElectricalNet/EN_realization.owl

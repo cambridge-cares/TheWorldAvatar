@@ -19,29 +19,32 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-
-
-
-
-
-
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -56,15 +59,22 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.WindowConstants;
 import javax.swing.border.LineBorder;
+
+//import MouseDrag.MouseDrag;
+//import queryWindow.QueryWindow;
 
 import com.esri.core.geometry.Envelope;
 import com.esri.core.geometry.MultiPoint;
 import com.esri.core.geometry.Point;
+import com.esri.core.geometry.Polygon;
 import com.esri.core.io.UserCredentials;
 import com.esri.core.map.Feature;
 import com.esri.core.map.Graphic;
+import com.esri.map.TimeAwareLayer;
+import com.esri.core.map.TimeOptions.Units;
 import com.esri.core.portal.Portal;
 import com.esri.core.portal.WebMap;
 import com.esri.core.renderer.SimpleRenderer;
@@ -81,6 +91,8 @@ import com.esri.map.GroupLayer;
 import com.esri.map.JMap;
 import com.esri.map.Layer;
 import com.esri.map.LayerEvent;
+import com.esri.map.LayerInitializeCompleteEvent;
+import com.esri.map.LayerInitializeCompleteListener;
 import com.esri.map.LayerList;
 import com.esri.map.LayerListEventListenerAdapter;
 import com.esri.map.MapEvent;
@@ -95,13 +107,14 @@ import com.esri.toolkit.overlays.HitTestEvent;
 import com.esri.toolkit.overlays.HitTestListener;
 import com.esri.toolkit.overlays.HitTestOverlay;
 import com.esri.toolkit.overlays.InfoPopupOverlay;
+import com.esri.toolkit.sliders.JTimeSlider;
+import com.esri.toolkit.sliders.JTimeSlider.TimeMode;
 import com.esri.core.symbol.PictureMarkerSymbol;
-
-
 
 
 public class JParkSim {
 	
+	//declare the variable which contains the modification of each layer, such as the color, thickness, icon
 	
 	// style of different layers
 		final static SimpleFillSymbol Landlotscolor = new SimpleFillSymbol(Color.cyan, new SimpleLineSymbol(Color.cyan, 1), SimpleFillSymbol.Style.NULL);
@@ -151,9 +164,10 @@ public class JParkSim {
 		final static SimpleFillSymbol expandercolor = new SimpleFillSymbol(new Color(219,112,147));
 		final static SimpleFillSymbol compressorcolor = new SimpleFillSymbol(Color.white);
 		final static SimpleLineSymbol steamcolor = new SimpleLineSymbol(new Color(128,0,128), 3);
+		final static PictureMarkerSymbol intersectioncolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeRotatingWhiteMarkerSymbol.png");
 		final static PictureMarkerSymbol waterpointcolor = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Animated/EnlargeGradientSymbol.png");
 		final static SimpleLineSymbol waternetworkcolor = new SimpleLineSymbol(new Color(0,0,128), 3);
-		
+		private JTimeSlider timeSlider;
 
 		
 		
@@ -162,7 +176,8 @@ public class JParkSim {
 	private JMap map;
 	//try to put new variable
 	
-	private GraphicsLayer graphicsLayer;
+	private static GraphicsLayer graphicsLayer;
+	final GraphicsLayer graphicsLayer_polygon = new GraphicsLayer();
 	
 	private MultiPoint planes;
 	
@@ -175,7 +190,8 @@ public class JParkSim {
 //	private JLayerTree jLayerTree;  //ZL-151207 add layertree
 	public static JLayeredPane contentPane;
 		
-	// initialize layers
+	
+	// initialize layers for all the arcgis feature layers
 	public static ArcGISFeatureLayer Landlotslayer;
 	public static ArcGISFeatureLayer Buildingslayer;
 	public static ArcGISFeatureLayer Storagelayer;
@@ -223,12 +239,15 @@ public class JParkSim {
 	public static ArcGISFeatureLayer steamlayer;
 	public static ArcGISFeatureLayer waterpointlayer;	
 	public static ArcGISFeatureLayer waternetworklayer;
+	public static ArcGISFeatureLayer intersectionlayer;
 	
 	
- 	public static String httpStringCSV = new String("D:/httpReq.CSV"); // (mjk, 151115) investigating structure of DataOutputStream object
- 	public static String httpStringCSV1 = new String("D:/httpReq1.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
- 	public static String httpStringCSV2 = new String("D:/httpReq2.CSV"); // (ZL-151203) investigating structure of DataOutputStream object
-	
+ 	//public static String httpStringCSV = new String("D:/httpReq.CSV");              // investigating structure of DataOutputStream object
+ 	//public static String httpStringCSV1 = new String("D:/httpReq1.CSV");            // investigating structure of DataOutputStream object
+ 	//public static String httpStringCSV2 = new String("D:/httpReq2.CSV");            // investigating structure of DataOutputStream object
+ 	public static String GIS = new String("D:/JPS_Code_Test/GIS.CSV");              // csv file to store the GIS coordinate for the unit operations
+ 	public static String PlantGIS = new String("D:/JPS_Code_Test/PlantGIS.CSV");    // csv file to store the endpoints of the polygons for chemical plant
+ 	
 	// method to render all layers in an array using a certain style (multiple layer renderer)
 	private void createRenderer(LayerList layers, ArcGISFeatureLayer[] arrayoflayers, Symbol col) {
 		for (ArcGISFeatureLayer layer : arrayoflayers) {
@@ -237,14 +256,26 @@ public class JParkSim {
 		}
 	}
 	
-	//add link for webmap graph
-	Portal portal = new Portal("http://www.arcgis.com",null);
-	  // item ID of a public map on arcgis.com with charts
-	  final String MAP_ID = "f809dccb780a4af0a506e56aaa84d084";
-	  
+	private JTimeSlider createTimeSlider(TimeAwareLayer layer) {
+	    JTimeSlider jTimeSlider = new JTimeSlider();
+	    jTimeSlider.setTitle("time animation for dispersion");
+	    jTimeSlider.addLayer(layer);
+	    jTimeSlider.setTimeMode(TimeMode.TimeExtent);
+	    jTimeSlider.setPlaybackRate(1000); // 1 second per tick
+	    jTimeSlider.setVisible(false);
+	    return jTimeSlider;
+	  }
+	
+	 private String wrap(String str) {
+		    // create a HTML string that wraps text when longer
+		    return "<html><p style='width:200px;'>" + str + "</html>";
+		  }
+	
 	  
 	
   public JParkSim() {
+	  
+	  
 	  
 	  
 	  
@@ -255,10 +286,17 @@ public class JParkSim {
     layers.add(tiledLayer); // add basemap layer
 
 
-// layer for the emission
+// dynamic map layer for the emission
 ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/emission/MapServer");
+            "http://10.25.188.100:6080/arcgis/rest/services/emission/MapServer");
                 layers.add(emissionLayer);
+                
+              //add dynamic map layer for the sensitivity bar chart
+                ArcGISDynamicMapServiceLayer dispersionLayer = new ArcGISDynamicMapServiceLayer(
+                        "http://10.25.188.100:6080/arcgis/rest/services/gasdispersion/MapServer");
+                            layers.add(dispersionLayer);
+                            
+                            ArcGISDynamicMapServiceLayer f = new ArcGISDynamicMapServiceLayer("");
     
                 
     // map centered on Jurong Island
@@ -271,7 +309,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     	}
     });
   
-    // adds layers uploaded onto ArcGIS for Developers
+    // adds layers source uploaded onto ArcGIS for Developers 
     UserCredentials user = new UserCredentials();
     user.setUserAccount("kleinelanghorstmj", "h3OBhT0gR4u2k22XZjQltp"); // Access secure feature layer service using login username and password
     Landlotslayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/ArcGIS/rest/services/Landlots/FeatureServer/0", user);
@@ -321,22 +359,24 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     steamlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/steam_interplants/FeatureServer/0", user);
     waterpointlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/waterpoint/FeatureServer/0", user);
     waternetworklayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/WaterNetwork/FeatureServer/0", user);
+    intersectionlayer = new ArcGISFeatureLayer("http://services5.arcgis.com/9i99ftvHsa6nxRGj/arcgis/rest/services/RoadIntersection/FeatureServer/0", user);
         
     
-    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3
+    // UPDATE THIS LIST whenever new layers are added: first layer is the bottom most layer *see currently known issues #3 (array containing all the feature layers)
     
 	ArcGISFeatureLayer[] completeLayerList = {Landlotslayer, Buildingslayer, Storagelayer, TLPmainlayer, Roadlayer, PowerGenlayer, UHTLineslayer, UHTSubstationlayer,
 			EHTLineslayer, EHTSubstationlayer, HTLineslayer,HTSubstation1layer,HTSubstation2layer,LTSubstation1layer,LTSubstation2layer, LoadPointslayer, BusCouplerlayer, heatercoolerlayer,
 			GasLinelayer,AirLinelayer,EnergyStreamlayer,MaterialLinelayer,TLP2layer,TLP3layer,TLP2alayer,TLP4layer,WaterLinelayer,PlantReactorlayer,Decanterlayer,Extractorlayer,
-			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer};
+			FlashDrumlayer,Mixerlayer,RadFraclayer,Exchangerlayer,pumplayer,blowerlayer,valvelayer,splitterlayer,vessellayer,filterlayer,Fluidlayer,expanderlayer,compressorlayer,steamlayer,waterpointlayer,waternetworklayer,intersectionlayer};
 
 	
-    // render layers
+    // render layers ( to show the feature layers in the map combined with the modification format declared) 
 	
     createRenderer(layers, new ArcGISFeatureLayer [] {Landlotslayer}, Landlotscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Buildingslayer}, Buildingscolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Storagelayer}, Storagecolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {Roadlayer}, Roadcolor);
+    createRenderer(layers, new ArcGISFeatureLayer [] {intersectionlayer}, intersectioncolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {PowerGenlayer}, PowerGencolor);   
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTLineslayer}, UHTLinescolor);
     createRenderer(layers, new ArcGISFeatureLayer [] {UHTSubstationlayer}, UHTSubstationcolor);
@@ -383,15 +423,78 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     //map.getLayers().add(graphlayer);
   //try to add some graphs
     
-    
+    //add dynamic map layer for the opex bar chart
     ArcGISDynamicMapServiceLayer highwayLayer = new ArcGISDynamicMapServiceLayer(
-            "http://localhost:6080/arcgis/rest/services/opex/MapServer");
+            "http://10.25.188.100:6080/arcgis/rest/services/opex/MapServer");
                 layers.add(highwayLayer);
-          
+                
+              //add dynamic map layer for the dispersion bar chart
+                ArcGISDynamicMapServiceLayer dispersionanimationLayer = new ArcGISDynamicMapServiceLayer(
+                        " 	http://10.25.188.100:6080/arcgis/rest/services/dispersion/MapServer");
+                            layers.add(dispersionanimationLayer);
+                            
+                            dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
 
+                              @Override
+                              public void layerInitializeComplete(LayerInitializeCompleteEvent e) {
+                                if (e.getID() == LayerInitializeCompleteEvent.LOCALLAYERCREATE_ERROR) {
+                                  String errMsg = "Failed to initialize due to "
+                                      + dispersionanimationLayer.getInitializationError();
+                                  JOptionPane.showMessageDialog(map, wrap(errMsg), "",
+                                      JOptionPane.ERROR_MESSAGE);
+                                }
+                              }
+                            });
+                            // create the time slider with the dynamic layer
+                        timeSlider = createTimeSlider(dispersionanimationLayer);
+
+                        // set time extent of time slider once the dynamic layer is initialized
+                        dispersionanimationLayer.addLayerInitializeCompleteListener(new LayerInitializeCompleteListener() {
+
+                          @Override
+                          public void layerInitializeComplete(LayerInitializeCompleteEvent e) {
+                            SwingUtilities.invokeLater(new Runnable() {
+                              @Override
+                              public void run() {
+                                timeSlider.setTimeExtent(dispersionanimationLayer.getTimeInfo().getTimeExtent(), 1, Units.Seconds);
+                                Calendar calendar = dispersionanimationLayer.getTimeInfo().getTimeExtent().getStartDate();
+                                timeSlider.setTimeIntervalStart(calendar);
+                                calendar.add(Calendar.SECOND,0);
+                                timeSlider.setTimeIntervalEnd(calendar);
+                                timeSlider.setVisible(true);
+                                
+                                //description.setVisible(true);
+                                //legend.setVisible(true);
+                              }
+                            });
+                          }
+                        });
+          
+              //add dynamic map layer for the sensitivity bar chart
                 ArcGISDynamicMapServiceLayer sensitivityLayer = new ArcGISDynamicMapServiceLayer(
-                        "http://localhost:6080/arcgis/rest/services/sensitivity/MapServer");
+                        "http://10.25.188.100:6080/arcgis/rest/services/sensitivity/MapServer");
                             layers.add(sensitivityLayer);
+                            
+                            final GraphicsLayer graphicsLayer2 = new GraphicsLayer();
+                            graphicsLayer2.setName("simple query graphics");
+                            map.addMapEventListener(new MapEventListenerAdapter() {
+                              @Override
+                              public void mapReady(final MapEvent arg0) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                  @Override
+                                  public void run() {
+                                    addSimpleFillGraphics(graphicsLayer2);
+                                    
+                                  }
+                                });
+                              }
+                            });
+
+                            //layers.add(graphicsLayer2);
+                            
+                            
+                            
+                          
                 
                 
     // initialize window
@@ -404,7 +507,7 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
 	// create panel to select layer to edit
     JPanel panel = new JPanel();
     panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-    panel.setSize(220, 175);
+    panel.setSize(220, 80);
     panel.setLocation(260, 10); // located near top left next to legend
     
     // command to switch the map 22/3/2016
@@ -424,11 +527,9 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     mapIds.setSelectedIndex(0);
     mapIds.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-    //JButton button = createButton();
-
-       
+          
     
-    // create text
+    // create text 
     JTextArea description = new JTextArea("Click on a feature to start editing");
     description.setFont(new Font("Verdana", Font.PLAIN, 11));
     description.setForeground(Color.WHITE);
@@ -444,11 +545,12 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     lblLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     // create dropdown selector for layer via key-value pairs
     final Map<String, ArcGISFeatureLayer> editlayer = new LinkedHashMap<>();
-    // dropdown options with key = String layer name and value = layer object
     
+    // dropdown options with key = String layer name and value = layer object (list of the feature layers that can be edited and appear in the drop down box)
     editlayer.put("Landlot", Landlotslayer);
     editlayer.put("Building", Buildingslayer);
     editlayer.put("Public Road", Roadlayer);
+    editlayer.put("Road Intersection", intersectionlayer);
     editlayer.put("Storage", Storagelayer);
     editlayer.put("Bus Coupler", BusCouplerlayer);
     editlayer.put("EHT Line", EHTLineslayer);
@@ -500,19 +602,19 @@ ArcGISDynamicMapServiceLayer emissionLayer = new ArcGISDynamicMapServiceLayer(
     cbxLayer.setAlignmentX(Component.LEFT_ALIGNMENT);
     
  // create text
-    JLabel lblLayer2 = new JLabel("feature list to query:");
-    lblLayer2.setForeground(Color.WHITE);
-    lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);    
+//    JLabel lblLayer2 = new JLabel("feature list to query:");
+ //   lblLayer2.setForeground(Color.WHITE);
+ //   lblLayer2.setAlignmentX(Component.LEFT_ALIGNMENT);    
     
  // create text
-    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
-    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
-    description3.setForeground(Color.WHITE);
-    description3.setBackground(new Color(0, 0, 0, 0));
-    description3.setEditable(false);
-    description3.setLineWrap(true);
-    description3.setWrapStyleWord(true);
-    description3.setAlignmentX(Component.LEFT_ALIGNMENT);
+//    JTextArea description3 = new JTextArea("press refresh to delete pin point marking");
+//    description3.setFont(new Font("Verdana", Font.PLAIN, 11));
+ //   description3.setForeground(Color.WHITE);
+ //   description3.setBackground(new Color(0, 0, 0, 0));
+ //   description3.setEditable(false);
+ //   description3.setLineWrap(true);
+  //  description3.setWrapStyleWord(true);
+ //   description3.setAlignmentX(Component.LEFT_ALIGNMENT);
     
     
     ArrayList<String[]> editStack = new ArrayList<String[]>();									// create a stack of edited features for PowerWorld to execute on
@@ -696,13 +798,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-
+/**
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-					httpString = new FileWriter(httpStringCSV);
+//					httpString = new FileWriter(httpStringCSV);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 
 					wr.flush();
 					wr.close();
@@ -727,7 +829,7 @@ change.setLocation(890, 45);
     });
     PWbutton.setEnabled(true);
     PWbutton.setVisible(true);
-    PWbutton.setSize(190,30);
+    PWbutton.setSize(160,30);
     PWbutton.setLocation(490, 10);
 
     
@@ -740,8 +842,8 @@ change.setLocation(890, 45);
     		OutputStreamWriter out;
     		URL url;
     		try {
-			//	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
-    			url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+			//	url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+    			url = new URL("http://172.25.182.41/PWServlet_New/"); // URL of servlet
     			
     			urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
@@ -752,7 +854,6 @@ change.setLocation(890, 45);
 				} else {
 					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
 					StringBuilder layers = new StringBuilder();
-//					StringBuilder FIDs = new StringBuilder();
 					StringBuilder OBJECTIDs = new StringBuilder();
 					StringBuilder appCallFlag = new StringBuilder();
 					for (String[] item : editStack) { // create comma separated values
@@ -785,13 +886,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-					
+/*					
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
 					httpString = new FileWriter(httpStringCSV2);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 					
 					wr.flush();
 					wr.close();
@@ -816,12 +917,12 @@ change.setLocation(890, 45);
     });
     PWPrButton.setEnabled(true);
     PWPrButton.setVisible(true);
-    PWPrButton.setSize(190,30);
-    PWPrButton.setLocation(690, 10);
+    PWPrButton.setSize(170,30);
+    PWPrButton.setLocation(660, 10);
 
     
     // Run AspenPlus button
-    JButton APbutton = new JButton("Run AspenPlus");
+    JButton APbutton = new JButton("Run BiodieselPlant-1");
     APbutton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -873,13 +974,13 @@ change.setLocation(890, 45);
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
 					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
-					
+					/**
 					FileWriter httpString = null; // (mjk, 151115) testing structure of DataOutputStream object and of wr object
-					httpString = new FileWriter(httpStringCSV1);
+//					httpString = new FileWriter(httpStringCSV1);
 					httpString.append("wr=");
 					httpString.append(outputString.toString());
 					httpString.flush();				
-					httpString.close();
+					httpString.close();*/
 
 					wr.flush();
 					wr.close();
@@ -904,12 +1005,12 @@ change.setLocation(890, 45);
     });
     APbutton.setEnabled(true);
     APbutton.setVisible(true);
-    APbutton.setSize(190,30);
+    APbutton.setSize(160,30);
     APbutton.setLocation(490, 45);    
 
 
     // Run Parameterised AspenPlus button
-    JButton APPrButton = new JButton("Run Pr APWOWHR");
+    JButton APPrButton = new JButton("Run Pr BiodieselPlant-1");
     APPrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -920,6 +1021,7 @@ change.setLocation(890, 45);
     			    			
 //    			url = new URL("http://172.25.182.41/PWServlet/");
     			url = new URL("http://172.25.182.41/APWOWHRServlet/");
+//    			url = new URL("http://caresremote1.dyndns.org/OPALRTServlet/"); 
 //	        	url = new URL("http://www.jparksimulator.com/PWServlet/"); // URL of servlet
 				urlCon = (HttpURLConnection) url.openConnection();
 				urlCon.setRequestMethod("POST");
@@ -967,30 +1069,36 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Pr APWOWHR has finished running!");
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for BiodieselPlant-1!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Pr APWOWHR again");
+								+ "\nPlease try running Pr BiodieselPlant-1 again");
 					}
 					out.close();
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-    		for (ArcGISFeatureLayer layer : completeLayerList) {
+    		/*for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
-    		}
+    		}*/
+    	heatercoolerlayer.requery();
+    	heatercoolerlayer.refresh();
+    	GasLinelayer.requery();
+    	GasLinelayer.refresh();
+    	RadFraclayer.requery();
+    	RadFraclayer.refresh();
     	}
     });
     APPrButton.setEnabled(true);
     APPrButton.setVisible(true);
-    APPrButton.setSize(190,30);
-    APPrButton.setLocation(690, 45);
+    APPrButton.setSize(170,30);
+    APPrButton.setLocation(660, 45);
     
  // Run AspenPlus model with heat recovery button
-    JButton APHrButton = new JButton("Run AP with HeatRecovery");
+    JButton APHrButton = new JButton("Run BiodieselPlant-2");
     APHrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1065,11 +1173,11 @@ change.setLocation(890, 45);
     });
     APHrButton.setEnabled(true);
     APHrButton.setVisible(true);
-    APHrButton.setSize(190,30);
-    APHrButton.setLocation(490, 115);
+    APHrButton.setSize(160,30);
+    APHrButton.setLocation(490, 80);
 
     // Run AspenPlus model with heat recovery button
-    JButton PrAPHrButton = new JButton("Run Pr APWWHR");
+    JButton PrAPHrButton = new JButton("Run Pr BiodieselPlant-2");
     PrAPHrButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1112,11 +1220,10 @@ change.setLocation(890, 45);
 					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
-					outputString.append("&");
-					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
-					outputString.append("=");
-					outputString.append(URLEncoder.encode(" ", "UTF-8"));
-					System.out.println("outputString="+outputString);
+//					outputString.append("&");
+//					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+//					outputString.append("=");
+//					outputString.append(URLEncoder.encode(" ", "UTF-8"));
 					
 					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
 					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
@@ -1125,11 +1232,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Pr APWWHR has finished running!");
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for BiodieselPlant-2!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Pr APWWHR again");
+								+ "\nPlease try running Pr BiodieselPlant-2 again");
 					}
 					out.close();
 				}
@@ -1140,15 +1247,20 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
+    		/*heatercoolerlayer.requery();
+    		heatercoolerlayer.refresh();
+    		GasLinelayer.requery();
+    		GasLinelayer.refresh();*/
+    		
     	}
     });
     PrAPHrButton.setEnabled(true);
     PrAPHrButton.setVisible(true);
-    PrAPHrButton.setSize(190,30);
-    PrAPHrButton.setLocation(690, 115);
+    PrAPHrButton.setSize(170,30);
+    PrAPHrButton.setLocation(660, 80);
     
  // Run combined AspenPlus and power world model 
-    JButton APPWButton = new JButton("Run AP + PW");
+    JButton APPWButton = new JButton("Run BiodieselPlant-3");
     APPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1222,11 +1334,11 @@ change.setLocation(890, 45);
     });
     APPWButton.setEnabled(true);
     APPWButton.setVisible(true);
-    APPWButton.setSize(190,30);
-    APPWButton.setLocation(490, 80);
+    APPWButton.setSize(160,30);
+    APPWButton.setLocation(490, 115);
     
     // Run combined parameterized AspenPlus and power world model 
-    JButton PrAPPWButton = new JButton("Run Pr AP + PW");
+    JButton PrAPPWButton = new JButton("Run Pr BiodieselPlant-3");
     PrAPPWButton.addActionListener(new ActionListener() {
     	@Override
     	public void actionPerformed(ActionEvent arg0) {
@@ -1281,11 +1393,11 @@ change.setLocation(890, 45);
 					wr.close();
 					
 					if (urlCon.getResponseCode()==200) {
-						JOptionPane.showMessageDialog(null, "Parameterized AP & PW has finished running!");
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for BiodieselPlant-3!");
 						editStack.clear(); // delete all items in editStack
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
-								+ "\nPlease try running Parameterised AP again");
+								+ "\nPlease try running Pr BiodieselPlant-3 again");
 					}
 					out.close();
 				}
@@ -1296,13 +1408,100 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
+    		/*heatercoolerlayer.requery();
+    		heatercoolerlayer.refresh();
+    		PlantReactorlayer.requery();
+    		PlantReactorlayer.refresh();
+    		MaterialLinelayer.requery();*/
+    		
+    		
     	}
-    });
+    	    });
     PrAPPWButton.setEnabled(true);
     PrAPPWButton.setVisible(true);
-    PrAPPWButton.setSize(190,30);
-    PrAPPWButton.setLocation(690, 80);
-
+    PrAPPWButton.setSize(170,30);
+    PrAPPWButton.setLocation(660, 115);
+/**
+ // Run combined parameterized AspenPlus and power world model 
+    JButton PrhydroButton = new JButton("Run Pr Hydrocracking");
+    PrhydroButton.addActionListener(new ActionListener() {
+    	@Override
+    	public void actionPerformed(ActionEvent arg0) {
+    		HttpURLConnection urlCon;
+    		OutputStreamWriter out;
+    		URL url;
+    		try {
+				url = new URL("http://172.25.182.41/PWServlet/"); // URL of servlet
+				urlCon = (HttpURLConnection) url.openConnection();
+				urlCon.setRequestMethod("POST");
+				urlCon.setDoOutput(true);
+				
+				if (editStack.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "You did not edit any features for AspenPlus!");
+				} else {
+					out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
+					StringBuilder layers = new StringBuilder();
+					StringBuilder OBJECTIDs = new StringBuilder();
+					StringBuilder appCallFlag = new StringBuilder();
+					
+					for (String[] item : editStack) { // create comma separated values
+						layers.append(item[0]);
+						layers.append(",");
+			 			OBJECTIDs.append(item[1]); // ZHOU CHANGED ITEM[2] TO ITEM[1]
+					    OBJECTIDs.append(",");
+						appCallFlag.append("PrAPHC");
+						appCallFlag.append(",");
+					}
+					StringBuilder outputString = new StringBuilder();
+					// Only URL encoded string values can be sent over a HTTP connection
+					outputString.append(URLEncoder.encode("layers", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(OBJECTIDs.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(appCallFlag.toString(), "UTF-8"));
+					outputString.append("&");
+					outputString.append(URLEncoder.encode("QueryT", "UTF-8"));
+					outputString.append("=");
+					outputString.append(URLEncoder.encode(" ", "UTF-8"));
+					System.out.println("outputString="+outputString);
+					
+					// Example of comma separated outputString is "layers=Load_Points,Load_Points,&FIDs=103,104,"
+					DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
+					wr.writeBytes(outputString.toString()); // write query string into servlet doPost() method
+					wr.flush();
+					wr.close();
+					
+					if (urlCon.getResponseCode()==200) {
+						heatercoolerlayer.requery();
+			    		heatercoolerlayer.refresh();
+			    		RadFraclayer.requery();
+			    		RadFraclayer.refresh();
+						JOptionPane.showMessageDialog(null, "I have finished evaluating new operational status for Hydrocracking!");
+						editStack.clear(); // delete all items in editStack
+					} else {
+						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
+								+ "\nPlease try running Pr Hydrocracking again");
+					}
+					out.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+    	
+    		
+    	}
+    	    });
+    PrhydroButton.setEnabled(true);
+    PrhydroButton.setVisible(true);
+    PrhydroButton.setSize(190,30);
+    PrhydroButton.setLocation(690, 150);
+    
 // Run AspenPlus model with heat recovery button ZL-20160322
     JButton PrAPOButton = new JButton("Run PrAP from OntoCAPE");
     PrAPOButton.addActionListener(new ActionListener() {
@@ -1380,7 +1579,7 @@ change.setLocation(890, 45);
     PrAPOButton.setVisible(true);
     PrAPOButton.setSize(190,30);
     PrAPOButton.setLocation(890, 10);
-//zl-20160322   
+*/
  
  // Run combined parameterized AspenPlus and power world model 
     JButton OPALRT = new JButton("Run OPAL-RT"); 
@@ -1414,6 +1613,7 @@ change.setLocation(890, 45);
 					}
 					StringBuilder outputString = new StringBuilder();
 					// Only URL encoded string values can be sent over a HTTP connection
+//					outputString.append("ping");
 					outputString.append(URLEncoder.encode("layers", "UTF-8"));
 					outputString.append("=");
 					outputString.append(URLEncoder.encode(layers.toString(), "UTF-8"));
@@ -1440,6 +1640,29 @@ change.setLocation(890, 45);
 					if (urlCon.getResponseCode()==200) {
 						JOptionPane.showMessageDialog(null, "OPALRT has finished running!");
 						editStack.clear(); // delete all items in editStack
+						try{
+							Runtime rt = Runtime.getRuntime();
+							//rt.exec("cmd /c start C:/apache-tomcat-8.0.24/webapps/ROOT/download_from_NUS/download_from_NUS.bat");
+//							System.out.println("Inputs downloaded.");
+							Process ps = rt.exec("cmd /c D:/opalrt/download_from_NUS.bat");
+							System.out.println("Downloading commenced.");
+							ps.waitFor();
+							System.out.println("Downloading finished.");
+							if(ps.exitValue()==0){
+								System.out.println("Success!");
+							}else {
+								System.out.println("failed!");
+							}
+							ps.destroy();
+							//rt.exec("cmd /c start C:/apache-tomcat-8.0.24/webapps/ROOT/transmit_files_to_NUS/send_from_NTU.bat");
+//							System.out.println("Outputs uploaded."); 
+							
+							
+							}catch (Exception e) {
+								e.printStackTrace();
+							}
+						
+						
 					} else {
 						JOptionPane.showMessageDialog(null, "An error has occurred. HTTP Error: " + urlCon.getResponseCode()
 								+ "\nPlease try again");
@@ -1449,6 +1672,12 @@ change.setLocation(890, 45);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+    		
+    		//String[] av = {"D:/opalrt/CurrentA.png"};
+    		//MouseDrag.Printing(av);
+    		
+    		
+    		
     		for (ArcGISFeatureLayer layer : completeLayerList) {
     			layer.requery();
     			layer.refresh();
@@ -1457,9 +1686,10 @@ change.setLocation(890, 45);
     });
     OPALRT.setEnabled(true);
     OPALRT.setVisible(true);
-    OPALRT.setSize(190,30);
-    OPALRT.setLocation(890, 80);    
-  
+    OPALRT.setSize(140,30);
+    OPALRT.setLocation(840, 10);    
+    
+    
     JButton refreshButton = new JButton("Refresh Map");
     refreshButton.addActionListener(new ActionListener() {
     	@Override
@@ -1468,153 +1698,36 @@ change.setLocation(890, 45);
     			layer.requery();
     			layer.refresh();
     		}
-    		graphicsLayer.removeAll();
-    		layers.remove(graphicsLayer);
+//    		graphicsLayer.removeAll();
+//    		layers.remove(graphicsLayer);
     		
     	}
     });
     refreshButton.setEnabled(true);
     refreshButton.setVisible(true);
-    refreshButton.setSize(130,30);
-    refreshButton.setLocation(1090, 10);
+    refreshButton.setSize(110,30);
+    refreshButton.setLocation(990, 10);
     
     
     graphicsLayer = new GraphicsLayer();
     graphicsLayer.setName("simple graphics");
     
     
-  //button for query (15-04-2016))
-    final JTextField querylayer = new JTextField();
-    querylayer.setAlignmentX(Component.LEFT_ALIGNMENT);
-    querylayer.setMaximumSize(new Dimension(220, 25));
-    querylayer.setEditable(true);
-    
-    final JButton queryButton = new JButton("Query Features");
-    queryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-    queryButton.setEnabled(true);
-    queryButton.addActionListener(new ActionListener() {
-      @Override
-      public void actionPerformed(ActionEvent e) {
-    	    ArrayList<String[]> editStack2 = new ArrayList<String[]>();	
-			HttpURLConnection urlCon;
-			OutputStreamWriter out;
-			InputStreamReader in;
-			URL url;
-			
-			String QueryString = null;
-			if(e.getActionCommand().equals ("Query Features"));{
-				String graphicFID = " ";
-			    String graphicOBJECTID =  " ";
-			    String appCallFlag = " ";
-				QueryString = querylayer.getText();
-				String[] newFeature = new String[] {graphicFID, graphicOBJECTID, appCallFlag, QueryString}; 
-				boolean addtoStack = true;			  		            		  
-			  	  if (addtoStack) {		
-			  		editStack2.add(newFeature);
-			  	  }
-			}
-									
-			try{
-				url = new URL("http://172.25.182.41/PWServlet/");
-//				url = new URL("http://172.25.182.41/OPARTServlet/"); // URL of servlet
-				urlCon = (HttpURLConnection) url.openConnection();
-				urlCon.setRequestMethod("POST");
-				urlCon.setDoOutput(true);				
-				out = new OutputStreamWriter(urlCon.getOutputStream(), "UTF-8");
-				
-				StringBuilder layers = new StringBuilder();
-				StringBuilder OBJECTIDs = new StringBuilder();
-				StringBuilder appCallFlag = new StringBuilder();
-				StringBuilder QueryT = new StringBuilder();
-				for (String[] item : editStack2) { 
-					layers.append(item[0]);
-					layers.append(",");
-		 			OBJECTIDs.append(item[1]); 
-				    OBJECTIDs.append(",");
-					appCallFlag.append(item[2]);
-					appCallFlag.append(",");
-					QueryT.append(querylayer.getText());
-				}
-				
-				StringBuilder outputString = new StringBuilder();
-				outputString.append(URLEncoder.encode("layers", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append(URLEncoder.encode("OBJECTIDs", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode(" ", "UTF-8"));
-				outputString.append("&");
-				outputString.append(URLEncoder.encode("appCallFlag", "UTF-8"));
-				outputString.append("=");
-				outputString.append(URLEncoder.encode("Query", "UTF-8"));
-//				outputString.append(URLEncoder.encode("OPALRT", "UTF-8"));
-				outputString.append("&");
-				outputString.append (URLEncoder.encode("QueryT", "UTF-8"));
-				outputString.append ("=");				
-				outputString.append (URLEncoder.encode(QueryT.toString(), "UTF-8"));
-				
-				DataOutputStream wr = new DataOutputStream(urlCon.getOutputStream());
-				wr.writeBytes(outputString.toString());
-				wr.flush();
-				wr.close();
-				
-				if(urlCon.getResponseCode()==200){
-
-					in = new InputStreamReader(urlCon.getInputStream());
-					final BufferedReader br = new BufferedReader(in);
-					String[] strTemp = null;
-					strTemp = br.readLine().split("\"");																			
-					br.close();
-					
-					planes = new MultiPoint();
-			        PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
-			        planeSymbol.setSize(50, 50);			         			         
-			         
-			        double[] x= new double[(strTemp.length-1)/2];
-			        for(int i=0; i<(strTemp.length-1)/2; i++){
-			        	 x[i] = Double.parseDouble(strTemp[2*i+1]);
-			         }
-			         
-			         for (int k=0 ; k<x.length/2 ; k++){ 
-			        	 planes.add(x[2*k],x[2*k+1]); 			          
-			         }
-			         
-			         Graphic gPlanes = new Graphic(planes, planeSymbol);
-			         graphicsLayer.addGraphic(gPlanes);
-			          			            			            
-					 JOptionPane.showMessageDialog(null, "Query has been successfully performed!" );
-					//editStack.clear(); 
-					
-				}
-				out.close();
-			}catch (IOException equery){
-				equery.printStackTrace();
-			}
-			layers.add(graphicsLayer);
-			
-		}
-      
-    });
-    queryButton.setSize(130, 30);
-    queryButton.setLocation(1090, 45);
-
-    
     // combine text, label and dropdown list into one panel for selecting layer to edit
-    panel.setBackground(new Color(0, 0, 0, 180));
+    panel.setBackground(new Color(0, 0, 0, 140));
     panel.add(description);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(lblLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
     panel.add(cbxLayer);
     panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.add(lblLayer2);
-    panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.add(querylayer);
-    panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.add(description3);
-    panel.add(Box.createRigidArea(new Dimension(0, 5)));
-    panel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
+//    panel.add(lblLayer2);
+//    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+//    panel.add(querylayer);
+//    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+//    panel.add(description3);
+//    panel.add(Box.createRigidArea(new Dimension(0, 5)));
+    panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     
     // create legend
     JLegend legend = new JLegend(map);
@@ -1622,6 +1735,142 @@ change.setLocation(890, 45);
     legend.setBorder(new LineBorder(new Color(205, 205, 255), 3));
     
     // initialize contentPane and add contents
+   /**
+    * add new query button for pup-up query window ZL
+    */
+    planes = new MultiPoint();  //define new planes in order to add pin points
+    PictureMarkerSymbol planeSymbol = new PictureMarkerSymbol("http://static.arcgis.com/images/Symbols/Basic/GreenShinyPin.png");
+    planeSymbol.setSize(40, 40);  //set the size of the pin points
+    
+    final javax.swing.JButton QueryButton;
+    QueryButton = new javax.swing.JButton();
+    QueryButton.setFont(new java.awt.Font(" ", 1, 12)); // NOI18N
+    QueryButton.setText("Information Query");
+    QueryButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    QueryButton.setEnabled(true);
+    QueryButton.addActionListener(new ActionListener() {
+    	
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			
+			QueryGuiNew QueryGUI = new QueryGuiNew();
+			QueryGUI.setVisible(true);
+			QueryGUI.setLocationRelativeTo(null);	 
+	        
+	        /** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+			QueryGUI.btnShowLocation.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+										
+					  BufferedReader fileReader = null;                                                   //define a file reader
+				      String line = null;
+				  	  try {
+						fileReader = new BufferedReader(new FileReader(GIS));                             //define source file
+						while ((line = fileReader.readLine()) != null) {
+					  		  String[] data = line.split(",");                                            //split the lines by comma and extract the x and y coordinates
+					  		  planes.add(Double.parseDouble(data[0]),Double.parseDouble(data[1]));	  	  //convert the coordinate from string to double format and add them to planes
+					  	  }
+					} catch (NumberFormatException | IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}	  	 	    				  	    				  	  
+			        Graphic gPlanes = new Graphic(planes, planeSymbol);
+			        graphicsLayer.addGraphic(gPlanes);                                                     //add the pin point layer
+			        layers.add(graphicsLayer);                                                             //visualize the pin pint layer
+				}
+				
+	        });
+	        
+	        /** add action listener to the "btnClear" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+			QueryGUI.btnClear.addActionListener(new ActionListener(){
+	        	public void actionPerformed(ActionEvent e) {
+	        		graphicsLayer.removeAll();
+	        		layers.remove(graphicsLayer);
+	        	}
+			});
+	          
+		}     	
+    });
+    QueryButton.setSize(140, 30);
+    QueryButton.setLocation(840, 45);
+    
+/**add new button for the plant optimization function Li ZHOU 27.08.2016*/
+    graphicsLayer_polygon.setName("simple query graphics");  //new layer for the polygon
+    final javax.swing.JButton PlantOptButton;
+    PlantOptButton = new javax.swing.JButton();
+    PlantOptButton.setFont(new java.awt.Font(" ", 1, 12)); // NOI18N
+    PlantOptButton.setText("Plant Optimization");
+    PlantOptButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+    PlantOptButton.setEnabled(true);
+    PlantOptButton.addActionListener(new ActionListener() {
+    	@Override
+		public void actionPerformed(ActionEvent e) {
+			
+    		OptimizationGUI PlantOptGUI = new OptimizationGUI();
+    		PlantOptGUI.setVisible(true);
+    		PlantOptGUI.setLocationRelativeTo(null);
+    		
+    		/** add action listener to the "clear button" on the optimization GUI --when "clear button" pressed, clear the new layer with polygon indicating the plant location*/
+    		OptimizationGUI.btnClear.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					graphicsLayer_polygon.removeAll();
+	        		layers.remove(graphicsLayer_polygon);					
+				}    			
+    		});
+    		
+    		/** add action listener to the "Show Location" button, so that when user press the button, Location of the queried entity can be shown in the map*/
+    		OptimizationGUI.btnShowPlantLocation.addActionListener(new ActionListener(){
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+										
+					  BufferedReader fileReader = null;                                             //define a file reader
+				      String line = null;
+				      Polygon polygon = new Polygon(); 
+				      ArrayList<Double> polygon_x = new ArrayList<Double>();                        //create new array list for the x coordinate
+					  ArrayList<Double> polygon_y = new ArrayList<Double>();                        //create new array list for the y coordinate
+						
+				  	  try {
+						fileReader = new BufferedReader(new FileReader(PlantGIS));                  //define source file
+						line = fileReader.readLine();                                               //skip the header
+						boolean flag = true;						
+						while ((line = fileReader.readLine()) != null) {
+					  		  String[] data = line.split(",");                                      //split the lines by comma and extract the x and y coordinates
+					  		  
+					  		  if(flag){
+					  			polygon_x.add(Double.parseDouble(data[0]));
+					  			polygon_y.add(Double.parseDouble(data[1]));	
+					  		  } 
+					  		  else if (!flag){
+					  			polygon_x.add(Double.parseDouble(data[0]));
+					  			polygon_y.add(Double.parseDouble(data[1]));	
+					  		  }
+					  		flag = false;
+					  	  }	
+					} catch (NumberFormatException | IOException e1) {
+						e1.printStackTrace();
+					}	
+				  	  
+				    polygon.startPath(polygon_x.get(0), polygon_y.get(0));
+				    polygon.lineTo(polygon_x.get(1), polygon_y.get(1));
+				    polygon.lineTo(polygon_x.get(2), polygon_y.get(2));
+				    polygon.lineTo(polygon_x.get(3), polygon_y.get(3));
+				    polygon.closePathWithLine();
+				  	SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),7, SimpleLineSymbol.Style.SOLID);
+				  	SimpleFillSymbol symbol = new SimpleFillSymbol(new Color(255, 255, 255,130), outline);
+			        Graphic graphic_polygon = new Graphic(polygon,symbol);
+			        graphicsLayer_polygon.addGraphic(graphic_polygon);
+
+			        layers.add(graphicsLayer_polygon);                                              //visualize the polygon layer
+				}
+				
+	        });
+    	}
+    });
+    PlantOptButton.setSize(140, 30);
+    PlantOptButton.setLocation(840, 80);
     
     // ZHOU add new buttons
     contentPane = new JLayeredPane();
@@ -1638,12 +1887,15 @@ change.setLocation(890, 45);
     //contentPane.add(change);
     contentPane.add(panel);
     contentPane.add(PrAPPWButton);
-    contentPane.add(PrAPOButton);
+//    contentPane.add(PrAPOButton);
     contentPane.add(PrAPHrButton);
     contentPane.add(OPALRT);
-    contentPane.add(queryButton);
+//    contentPane.add(PrhydroButton);
+    contentPane.add(QueryButton);
+    contentPane.add(PlantOptButton);
     contentPane.add(map, BorderLayout.CENTER);
     contentPane.add(legend, BorderLayout.WEST);
+    //contentPane.add(timeSlider, BorderLayout.SOUTH);
     
   
   //adding the graph here
@@ -1681,7 +1933,7 @@ change.setLocation(890, 45);
 	    final JMap jMap = new JMap();
 	        final InfoPopupOverlay popupOverlay = new InfoPopupOverlay();
 	    jMap.addMapOverlay(popupOverlay);
-	        // grab the ArcGISFeatureLayer when added to the map and associate it with the infopopup overlay
+	    // grab the ArcGISFeatureLayer when added to the map and associate it with the infopopup overlay
 	    jMap.getLayers().addLayerListEventListener(new LayerListEventListenerAdapter() {
 	            @Override
 	      public void multipleLayersAdded(LayerEvent event) {
@@ -1714,7 +1966,7 @@ change.setLocation(890, 45);
 	    });
 
 	    // create and load the web map
-	    WebMap webMap = null;
+	    /*WebMap webMap = null;
 	    try {
 	      webMap = WebMap.newInstance(MAP_ID, portal);
 	      jMap.loadWebMap(webMap);
@@ -1722,9 +1974,28 @@ change.setLocation(890, 45);
 	    } catch (Exception e) {
 	      e.printStackTrace();
 	    }
-
+*/
 	    return jMap;
 	  }
+  
+//make graphic for query
+  private void addSimpleFillGraphics(GraphicsLayer graphicsLayer2) {
+      Polygon polygon = new Polygon();
+      polygon.startPath(11541462.271, 140093.15);
+      polygon.lineTo(11541482.67, 140116.169);
+      polygon.lineTo(11541493.862, 140105.612);
+      polygon.lineTo(11541474.098, 140083.07);
+      polygon.closePathWithLine();
+
+      SimpleLineSymbol outline = new SimpleLineSymbol(new Color(0, 200, 0),
+          7, SimpleLineSymbol.Style.SOLID);
+      SimpleFillSymbol symbol = new SimpleFillSymbol(
+          new Color(255, 255, 255,130), outline);
+      Graphic graphic2 = new Graphic(polygon,symbol);
+      graphicsLayer2.addGraphic(graphic2);
+  }
+
+  
   
   /**
    * Starting point of this application.
@@ -1747,8 +2018,28 @@ change.setLocation(890, 45);
     });
  
   }
+ 
+
   
-  
+	  /** This new function add new pinpoint layers for the queryed entity
+	   * @return 
+	   * @throws IOException 
+	   * @throws NumberFormatException */ 
+	    @SuppressWarnings("resource")
+	  public void GISFeature () throws NumberFormatException, IOException {	  	
+	        
+	      BufferedReader fileReader = null;
+	      String line = null;
+	  	  fileReader = new BufferedReader(new FileReader(GIS));	  	 	    
+	  	    
+	  	  while ((line = fileReader.readLine()) != null) {
+	  		  String[] data = line.split(",");
+	  		  planes.add(Double.parseDouble(data[0]),Double.parseDouble(data[1]));	  	  
+
+	  	  }
+
+	    };
+ 
   
 }
 

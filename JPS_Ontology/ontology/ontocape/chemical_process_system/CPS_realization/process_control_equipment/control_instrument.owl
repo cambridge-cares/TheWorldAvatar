@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#" xmlns:owl="http://www.w3.org/2002/07/owl#" xmlns:pro_con_sys="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" xmlns:terms="http://purl.org/dc/terms/" xmlns:xsd="http://www.w3.org/2001/XMLSchema#" xml:base="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl">
+  <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">The ontology module 'control_instrument' provides specializations of control instruments that are applicable to process control systems.
+The following classes and relations from other ontology modules are used within 'control_instrument':
+
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ControllingInstrument"/&gt;
+&lt;owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ControllingInstrumentForEnergyStreams"&gt;
+    </rdfs:comment>
+    <terms:license>Copyright (C) [2009] [Andreas Wiesner]
+                This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
+                This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+                You should have received a copy of the GNU General Public License along with this program; if not, see &lt;http://www.gnu.org/licenses/&gt;.
+    </terms:license>
+    <owl:versionInfo rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2.0</owl:versionInfo>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl"/>
+  </owl:Ontology>
+  <owl:Class rdf:ID="ControllingInstrumentForMaterialStream">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ControllingInstrument"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControllingInstrumentForMaterialStream represents the controlling units for material streams required in the process.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="ControlValve">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForMaterialStream"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ControlValve can be used to control a material stream.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Transistor">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Transistor can be used for controlling energy streams.</rdfs:comment>
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="ControllingInstrumentForEnergyStream"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForEnergyStream">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControllingDeviceForEnergyStreams represents the controlling units for energy streams required in the process.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ControllingInstrument"/>
+  </owl:Class>
+  <owl:Class rdf:ID="GTOThyristor">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForEnergyStream"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A GTO-thyristor can be used for controlling energy streams.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Thyristor">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Thyristor can be used for controlling energy streams.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForEnergyStream"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ShutOffValve">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForMaterialStream"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ShutOffValve can be used to control a material stream.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="BallCock">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A BallCock can be used to control a material stream.</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForMaterialStream"/>
+  </owl:Class>
+  <owl:Class rdf:ID="ScrewConveyor">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForMaterialStream"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A ScrewConveyor can be used to control a material stream.</rdfs:comment>
+  </owl:Class>
+  <owl:Class rdf:ID="Relay">
+    <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system/process_control_equipment/control_instrument.owl#ControllingInstrumentForEnergyStream"/>
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">A Relay can be used for controlling energy streams.</rdfs:comment>
+  </owl:Class>
+  <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_system.owl#ControllingInstrumentForEnergyStreams">
+    <rdfs:comment rdf:datatype="http://www.w3.org/2001/XMLSchema#string">ControllingDeviceForEnergyStreams is a subclass of ControllingDevice and 
+    represents the controlling units for energy streams required in the process</rdfs:comment>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,112 @@
+<rdf:RDF
+    xmlns:j.0="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:j.1="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#"
+    xmlns:j.2="http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#"
+    xmlns:j.3="http://www.theworldavatar.com/ontology/ontoeip/upper_level/system_v1.owl#"
+    xmlns:j.4="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns="http://www.semanticweb.org/kevin/ontologies/2018/8/untitled-ontology-1852#"
+    xmlns:terms="http://purl.org/dc/terms/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:j.5="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#"
+    xmlns:j.6="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#"
+    xmlns:j.7="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:j.8="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#">
+  <owl:Ontology rdf:about="http://www.semanticweb.org/kevin/ontologies/2018/8/untitled-ontology-1852">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl"/>
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl"/>
+  </owl:Ontology>
+  <j.8:PowerPlant rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Northwest_Kabul_Power_Plant_Afghanistan">
+    <j.3:isOwnedBy>
+      <j.3:Organization rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#Owner_of_Northwest_Kabul_Power_Plant_Afghanistan">
+        <j.3:hasName>Ministry_of_Energy_and_Water_Afghanistan</j.3:hasName>
+      </j.3:Organization>
+    </j.3:isOwnedBy>
+    <j.1:hasAddress rdf:resource="http://dbpedia.org/resource/Afghanistan"/>
+    <j.4:hasGISCoordinateSystem>
+      <j.4:ProjectedCoordinateSystem rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#CoordinateSystem_of_Northwest_Kabul_Power_Plant_Afghanistan">
+        <j.4:hasProjectedCoordinate_x>
+          <j.0:StraightCoordinate rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#x_coordinate_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:hasValue>
+              <j.2:CoordinateValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_x_coordinate_of_Northwest_Kabul_Power_Plant_Afghanistan">
+                <j.1:numericalValue>69.1134</j.1:numericalValue>
+                <j.1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+              </j.2:CoordinateValue>
+            </j.1:hasValue>
+            <j.2:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+            <j.1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+          </j.0:StraightCoordinate>
+        </j.4:hasProjectedCoordinate_x>
+        <j.4:hasProjectedCoordinate_y>
+          <j.0:StraightCoordinate rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#y_coordinate_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:hasValue>
+              <j.2:CoordinateValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_y_coordinate_of_Northwest_Kabul_Power_Plant_Afghanistan">
+                <j.1:numericalValue>34.5638</j.1:numericalValue>
+                <j.1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+              </j.2:CoordinateValue>
+            </j.1:hasValue>
+            <j.2:refersToAxis rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+            <j.1:hasDimension rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+          </j.0:StraightCoordinate>
+        </j.4:hasProjectedCoordinate_y>
+      </j.4:ProjectedCoordinateSystem>
+    </j.4:hasGISCoordinateSystem>
+    <j.5:realizes>
+      <rdf:Description rdf:about="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGasGeneration">
+        <j.8:consumesPrimaryFuel rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#NaturalGas"/>
+        <j.7:hasEmission>
+          <j.7:CO2_emission rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#CO2Emission_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:hasValue>
+              <j.1:ScalarValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_CO2Emission_of_Northwest_Kabul_Power_Plant_Afghanistan">
+                <j.1:numericalValue>15.75</j.1:numericalValue>
+                <j.1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#ton_per_hr"/>
+              </j.1:ScalarValue>
+            </j.1:hasValue>
+          </j.7:CO2_emission>
+        </j.7:hasEmission>
+        <j.7:hasCosts>
+          <j.7:GenerationCosts rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#GenerationCost_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:hasValue>
+              <j.1:ScalarValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_GenerationCost_of_Northwest_Kabul_Power_Plant_Afghanistan">
+                <j.1:numericalValue>0</j.1:numericalValue>
+                <j.1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#USD_per_kW"/>
+              </j.1:ScalarValue>
+            </j.1:hasValue>
+          </j.7:GenerationCosts>
+        </j.7:hasCosts>
+        <j.8:hasAnnualGeneration>
+          <j.8:AnnualGeneration rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#AnnualGeneration_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:hasValue>
+              <j.1:ScalarValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_AnnualGeneration_of_Northwest_Kabul_Power_Plant_Afghanistan">
+                <j.1:numericalValue>191232</j.1:numericalValue>
+                <j.1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MWh"/>
+              </j.1:ScalarValue>
+            </j.1:hasValue>
+          </j.8:AnnualGeneration>
+        </j.8:hasAnnualGeneration>
+        <j.8:usesGenerationTechnology rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#OpenCycleGasTurbine"/>
+      </rdf:Description>
+    </j.5:realizes>
+    <j.6:designCapacity>
+      <j.6:DesignCapacity rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#capa_of_Northwest_Kabul_Power_Plant_Afghanistan">
+        <j.1:hasValue>
+          <j.1:ScalarValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_capa_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:numericalValue>42</j.1:numericalValue>
+            <j.1:hasUnitOfMeasure rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/SI_unit/derived_SI_units.owl#MW"/>
+          </j.1:ScalarValue>
+        </j.1:hasValue>
+      </j.6:DesignCapacity>
+    </j.6:designCapacity>
+    <j.8:hasYearOfBuilt>
+      <j.8:YearOfBuilt rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#YearOfBuilt_of_Northwest_Kabul_Power_Plant_Afghanistan">
+        <j.1:hasValue>
+          <j.1:ScalarValue rdf:about="http://www.theworldavatar.com/kb/powerplants/Northwest_Kabul_Power_Plant_Afghanistan.owl#v_YearOfBuilt_of_Northwest_Kabul_Power_Plant_Afghanistan">
+            <j.1:numericalValue>1980</j.1:numericalValue>
+          </j.1:ScalarValue>
+        </j.1:hasValue>
+      </j.8:YearOfBuilt>
+    </j.8:hasYearOfBuilt>
+  </j.8:PowerPlant>
+</rdf:RDF>

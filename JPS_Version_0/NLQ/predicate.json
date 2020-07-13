@@ -1,0 +1,1043 @@
+{
+  "head": {
+    "link": [],
+    "vars": [
+      "v"
+    ]
+  },
+  "results": {
+    "distinct": false,
+    "ordered": true,
+    "bindings": [
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Wikipage page ID"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Wikipage revision ID"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Link from a Wikipage to an external page"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "thumbnail"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "has abstract"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "location"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "owner"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "architect"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "broke ground"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "built"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "closed"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "construction cost"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "dimensions"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "expanded"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Fullname"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "general contractor"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "opened"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "operator"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "seating capacity"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "stadium name"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "surface"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "tenants"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "building start date"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "former name"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "building end date"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "opening date"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "renovated"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "tenant"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "capacity"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "main contractors"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "record attendance"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "scoreboard"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "inauguration"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "date of abandonment"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "builder"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "cost ($)"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "demolished"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Caption"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "services engineer"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "structural engineer"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "suites"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "project manager"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "after"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "before"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "title"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "years"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "bottom"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "estimated cost"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "attendance"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "date"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "height"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "width"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "goals"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "referee"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "report"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "score"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "stadium"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "Team"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "demolition date"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "auto"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "round"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "headercss"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "content"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "header"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "contentcss"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "image caption"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "address"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "chairman"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "chairman title"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "ground"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "home stadium"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "league"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "manager"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "position"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "predecessor"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "season"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "successor"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "team"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "EU-"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "g"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "GA"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "nc"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "SS"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "A"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "BC"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "bg"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "body"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "c"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "cap"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "d"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "e"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "F"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "FC"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "id"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "l"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "leftarm"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "m"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "n"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "nat"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "notes"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "p"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "pattern b"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "pattern la"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "pattern ra"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "pattern sh"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "pattern so"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "pos"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "R"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "result"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "rightarm"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "s"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "shorts"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "socks"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "stack"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "t"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "time"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "type"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "u"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "w"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "ad"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "aga"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "agf"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "al"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "aw"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "cup"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "cup1 result"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "curr"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "dfm"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "dlm"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "gf"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "hd"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "hga"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "hgf"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "hl"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "hw"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "league topscorer"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "orfc"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "qualified"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "season topscorer"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "sr"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "VC"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "NB"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "tc"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "bgcolour"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "est"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "homepage"
+        }
+      },
+      {
+        "v": {
+          "type": "literal",
+          "xml:lang": "en",
+          "value": "imagesize"
+        }
+      }
+    ]
+  }
+}

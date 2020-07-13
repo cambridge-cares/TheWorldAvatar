@@ -1,0 +1,34 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:msm="http://www.theworldavatar.com/ontology/ontoagent/MSM.owl#">
+  <msm:Service rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#Service">
+    <msm:hasOperation>
+      <msm:Operation rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#Operation_7636eedc-fe83-4636-8efb-5ea5e3c15c2f">
+        <msm:hasOutput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#MessageContent_71c335fa-0252-4a95-98cc-eaba81e8bbb7">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#MessagePart_5a6a6b1b-a867-4497-82b6-61de1da1019b">
+                <msm:hasName>elementmetadata</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://theworldavatar.com/kb/ontokin/ontokin.owl#ElementMetadata</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasOutput>
+        <msm:hasInput>
+          <msm:MessageContent rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#MessageContent_29e52b1a-e331-40a9-81aa-57bb5d57e22c">
+            <msm:hasMandatoryPart>
+              <msm:MessagePart rdf:about="http://www.theworldavatar.com/kb/agents/Service__HydrogenAgent.owl#MessagePart_84e2c9fc-08d3-4ab4-879d-32ed9560225d">
+                <msm:hasName>g09</msm:hasName>
+                <msm:isArray>false</msm:isArray>
+                <msm:hasType>http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09</msm:hasType>
+              </msm:MessagePart>
+            </msm:hasMandatoryPart>
+          </msm:MessageContent>
+        </msm:hasInput>
+        <msm:hasHttpUrl>http://www.theworldavatar.com/JPS_THERMO/calculation</msm:hasHttpUrl>
+      </msm:Operation>
+    </msm:hasOperation>
+    <msm:isComposed>false</msm:isComposed>
+  </msm:Service>
+</rdf:RDF>

@@ -1,0 +1,121 @@
+<head>
+    <!-- Plotly.js -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="liver.js"></script>
+    <link rel="stylesheet" type="text/css" href="Style.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<title>ADMS</title>
+    <style>
+        #map {
+            height: 1400px;
+            width: 100%;
+        }
+		#topBanner
+{
+    background-color: #10616C;
+}
+
+#head1
+{
+    color: white;
+}
+
+#description
+{
+    color: white;
+    width:60%;
+    margin-left: 20%;
+}
+    </style>
+
+</head>
+	<title>ADMS</title>
+ <div class="jumbotron text-center" id="topBanner">
+ <a href = "http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-researchs">
+ <img float="left" src="cam_lang_negativ1%20NEW_0.png"  >
+ </a>
+  <h1 id="head1">J-Park Simulator: Atmospheric Dispersion Modelling System</h1>
+  <p class="description">CO<sub>2</sub> emission profile from power plants on Jurong Island basing on real-time weather data which updates itself every 5 minutes</p>
+  <p class= "description">Weather data is sourced from <a style="color:white" href="http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597">http://www.accuweather.com/en/sg/singapore/300597/current-weather/300597</a></p>
+</div>
+<body>
+
+<div style="height: 1200px;width: 1900px" id="graph"><!-- Plotly chart will be drawn inside this DIV --></div>
+
+
+
+<div style="display: block">
+<div id="map" style="width: 90%; float: left"></div> <div style="font-size: 25"><div style="position: relative; top: 100px; left: 50px">Unit: ug/m<sup>3</sup></div><svg id="scale" style="float:left; height:100%; width: 10%;"></svg></div>
+
+
+
+
+</div>
+
+
+
+<script>
+
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA">
+</script>
+
+<script src="script.js"></script>
+
+
+<!--
+<script>
+    initMap();
+
+    function initMap() {
+
+
+
+        var C = {
+
+            path: "M 839,534 883,491 907,512 878,568 839,534Z",
+            fillColor: 'rgb(203, 213, 242)',
+            fillOpacity: 1,
+            anchor: new google.maps.Point(839,534),    labelOrigin: new google.maps.Point(839, 534),
+
+            strokeWeight: 0,
+            scale: 1
+        };
+
+
+
+
+        ///map#srs=4326&x=103.67884555555555&y=1.2668080555555554
+        var myLatLng = {lat: 1.2668080555555554, lng: 103.67884555555555};
+        var map = new google.maps.Map(document.getElementById('map'), {
+            center: myLatLng,
+            scrollwheel: true,
+            zoom: 15
+        });
+
+
+        // Create a map object and specify the DOM element for display.
+        // Create a marker and set its position.
+        var marker = new google.maps.Marker({
+            map: map,
+            position: myLatLng,
+            label: 'part 1',
+            icon: C
+        });
+
+        marker.addListener('click', function() {
+            alert('clicked ')
+            myFunction()
+        });
+
+    }
+
+    function myFunction() {
+        var popup = document.getElementById("myPopup");
+        popup.classList.toggle("show");
+    }
+</script>
+-->
+</body>

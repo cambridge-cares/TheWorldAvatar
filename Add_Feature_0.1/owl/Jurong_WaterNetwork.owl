@@ -1,0 +1,462 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.jparksimulator.com/WaterNetworkSystem#"
+     xml:base="http://www.jparksimulator.com/WaterNetworkSystem"
+     xmlns:space_and_time_extended="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:phase_system="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#"
+     xmlns:topology="file:/C:/OntoCAPE/meta_model/topology/topology.owl#"
+     xmlns:network_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/network_system.owl#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:chemical_process_system="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#"
+     xmlns:system="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#"
+     xmlns:material="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:terms="http://purl.org/dc/terms/"
+     xmlns:coordinate_system="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#"
+     xmlns:xml="http://www.w3.org/XML/1998/namespace"
+     xmlns:behavior="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#">
+    <owl:Ontology rdf:about="http://www.jparksimulator.com/WaterNetworkSystem">
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
+        <owl:imports rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl"/>
+    </owl:Ontology>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Annotation properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#refersToMaterial -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#refersToMaterial"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/chemical_process_system.owl#refersToGeneralizedAmount"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/material.owl#thermodynamicBehavior -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#thermodynamicBehavior"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_composition -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_composition"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_pressure -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_pressure"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_temperature -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#has_temperature"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasGISCoordinateSystem"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_x"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#hasProjectedCoordinate_y"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#refersToAxis -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/coordinate_system.owl#refersToAxis"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasInput -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/network_system.owl#hasInput"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#comprisesDirectly -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#comprisesDirectly"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasDimension -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasDimension"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasProperty"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasSubsystem"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasUnitOfMeasure -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasUnitOfMeasure"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#hasValue"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#isConnectedTo -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#isConnectedTo"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#numericalValue"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/meta_model/topology/topology.owl#hasInput -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/meta_model/topology/topology.owl#hasInput"/>
+    
+
+
+    <!-- file:/C:/OntoCAPE/meta_model/topology/topology.owl#isConnectedTo -->
+
+    <owl:AnnotationProperty rdf:about="file:/C:/OntoCAPE/meta_model/topology/topology.owl#isConnectedTo"/>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Individuals
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.jparksimulator.com/JurongIsland.owl#WaterNetworkSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/JurongIsland.owl#WaterNetworkSystem">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#CompositeSystem"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#WaterPipe_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#GeneralizedAmount_WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#GeneralizedAmount_WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#GeneralizedAmount"/>
+        <system:hasSubsystem rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#MaterialAmount_WaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#MassFractionOfWaterInWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#MassFractionOfWaterInWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#MassFraction"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#V_MassFractionOfWaterInWaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#MaterialAmount_WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#MaterialAmount_WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ContinuousMaterialAmount"/>
+        <behavior:refersToMaterial rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#Material_WaterStream_32"/>
+        <system:hasProperty rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#molarFlow_WaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#Material_WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#Material_WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/material.owl#Material"/>
+        <material:thermodynamicBehavior rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#SinglePhase_WaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#PressureOfWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#PressureOfWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Pressure"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#V_PressureOfWaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#SinglePhase_WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#SinglePhase_WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#SinglePhase"/>
+        <phase_system:has_composition rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#WaterInWaterStream_32"/>
+        <phase_system:has_pressure rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#PressureOfWaterStream_32"/>
+        <phase_system:has_temperature rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#TemperatureOfWaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#TemperatureOfWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#TemperatureOfWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Temperature"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#V_TemperatureOfWaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_1 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_1">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl#UtilityHub"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl#UtilityHub"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66_CoordinateSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66_CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66_CoordinateSystem">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#x_UtilityHub_66"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#y_UtilityHub_66"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl#UtilityHub"/>
+        <space_and_time_extended:hasGISCoordinateSystem rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67_CoordinateSystem"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67_CoordinateSystem -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67_CoordinateSystem">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time_extended.owl#GISCoordinateSystem"/>
+        <space_and_time_extended:hasProjectedCoordinate_x rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#x_UtilityHub_67"/>
+        <space_and_time_extended:hasProjectedCoordinate_y rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#y_UtilityHub_67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#V_MassFractionOfWaterInWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#V_MassFractionOfWaterInWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#V_PressureOfWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#V_PressureOfWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#bar"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#V_TemperatureOfWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#V_TemperatureOfWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#Celsius"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#V_molarFlow_WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#V_molarFlow_WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/derived_SI_units.owl#kmol/hr"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#float">1.0</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_x_UtilityHub_66 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_x_UtilityHub_66">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.15415045427E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_x_UtilityHub_67 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_x_UtilityHub_67">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.1541965977E7</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_y_UtilityHub_66 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_y_UtilityHub_66">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">140612.337717</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_y_UtilityHub_67 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_y_UtilityHub_67">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/upper_level/system.owl#ScalarValue"/>
+        <system:hasUnitOfMeasure rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/SI_unit/SI_unit.owl#m"/>
+        <system:numericalValue rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">140224.986943</system:numericalValue>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#WaterInWaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#WaterInWaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/material/phase_system/phase_system.owl#Composition"/>
+        <system:comprisesDirectly rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#MassFractionOfWaterInWaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#WaterPipe_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#WaterPipe_32">
+        <rdf:type rdf:resource="file:/C:/OntoEIP/ResourceNetwork.owl#Piping"/>
+        <network_system:hasInput rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#WaterStream_32"/>
+        <system:isConnectedTo rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66"/>
+        <topology:hasInput rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#WaterStream_32"/>
+        <topology:isConnectedTo rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_66"/>
+        <topology:isConnectedTo rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#UtilityHub_67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_function/process.owl#Utility"/>
+        <chemical_process_system:refersToGeneralizedAmount rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#GeneralizedAmount_WaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#molarFlow_WaterStream_32 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#molarFlow_WaterStream_32">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/chemical_process_system/CPS_behavior/behavior.owl#ConvectiveMolarFlowRate"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#V_molarFlow_WaterStream_32"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#x_UtilityHub_66 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#x_UtilityHub_66">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_x_UtilityHub_66"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#x_UtilityHub_67 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#x_UtilityHub_67">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#x-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_x_UtilityHub_67"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#y_UtilityHub_66 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#y_UtilityHub_66">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_y_UtilityHub_66"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.jparksimulator.com/WaterNetworkSystem#y_UtilityHub_67 -->
+
+    <owl:NamedIndividual rdf:about="http://www.jparksimulator.com/WaterNetworkSystem#y_UtilityHub_67">
+        <rdf:type rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#StraightCoordinate"/>
+        <coordinate_system:refersToAxis rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/space_and_time/space_and_time.owl#y-axis"/>
+        <system:hasDimension rdf:resource="file:/C:/OntoCAPE/OntoCAPE/supporting_concepts/physical_dimension/physical_dimension.owl#length"/>
+        <system:hasValue rdf:resource="http://www.jparksimulator.com/WaterNetworkSystem#ValueOf_y_UtilityHub_67"/>
+    </owl:NamedIndividual>
+</rdf:RDF>
+
+
+
+<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
+
