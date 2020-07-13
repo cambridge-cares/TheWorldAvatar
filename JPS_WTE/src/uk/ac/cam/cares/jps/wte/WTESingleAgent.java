@@ -107,11 +107,11 @@ public class WTESingleAgent extends JPSHttpServlet {
 			//properties of OnsiteTech
 			List<String[]> propertydataonsite = readAndDump(model, WastetoEnergyAgent.WTFTechOnsiteQuery);
 			List<String[]> inputoffsitedata = readResult(baseUrl,"n_unit_max_offsite.csv");
-			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,1);
+			List<String> onsiteiricomplete=updateinOnsiteWT(fcMapping,baseUrl,propertydataonsite,15);
 			List<String[]> sitemapping= updateNewFC(baseUrl,inputoffsitedata);
 			updateFCHelper(sitemapping);
 			updateKBForSystem(wasteIRI, baseUrl, WastetoEnergyAgent.wasteSystemOutputQuery,onsiteiricomplete); //for waste system	
-			updateinOffsiteWT(inputoffsitedata,baseUrl, 1);
+			updateinOffsiteWT(inputoffsitedata,baseUrl, 15);
 		 }catch (Exception e) {
 			e.printStackTrace();
 		}			 
@@ -256,11 +256,6 @@ public class WTESingleAgent extends JPSHttpServlet {
 				Individual entity = model.getIndividual(fcWaste);
 				Resource entityonsite = model.createResource(siteArray[2]);
 				entity.addProperty(getisDeliveredTo(model), entityonsite);
-				if (siteArray[1]!= "0") {
-					String fcCluster = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/FoodCourtCluster-"
-				+siteArray[1]+".owl#FoodCourtCluster-"+siteArray[1];
-					entity.addProperty(getIsDirectSubsystemOf(model),fcCluster);	
-				}
 				
 			}
 			String content = JenaHelper.writeToString(model);
@@ -454,7 +449,7 @@ public class WTESingleAgent extends JPSHttpServlet {
 				String techiri=resultList.get(Integer.valueOf(filtered.get(w)[0]))[1];
 				b.append("<" + techiri + "> OW:realizedByDevice <" + currentunit + "> . \r\n");
 				b.append("<" + currentunit + "> a OW:WasteTreatmentDevice . \r\n");
-				b.append("<" + currentunit + "> OW:usedInYear " + 1 + " . \r\n");
+				b.append("<" + currentunit + "> OW:usedInYear " + indexByYear + " . \r\n");
 				b.append("<" + currentunit + "> OW:amountOfUnit " + numunit + " . \r\n");
 				String sparql = sparqlStart + b.toString() + "} \r\n";
 				new QueryBroker().updateFile(filtered.get(w)[1], sparql);
