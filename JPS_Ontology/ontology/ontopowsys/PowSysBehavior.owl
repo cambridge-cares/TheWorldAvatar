@@ -10,7 +10,6 @@
     <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl">
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/tensor_quantity.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl"/>
         <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl"/>
@@ -26,6 +25,18 @@
     ///////////////////////////////////////////////////////////////////////////////////////
      -->
 
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasCharacteristic"/>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#isComprisedOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#isComprisedOf"/>
     
 
 
@@ -211,6 +222,22 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasMaximumActivePowerGenerated -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasMaximumActivePowerGenerated">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasMinimumActivePowerGenerated -->
+
+    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasMinimumActivePowerGenerated">
+        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerGenerated"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasPowerFactor -->
 
     <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasPowerFactor">
@@ -355,6 +382,12 @@
     
 
 
+    <!-- http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty -->
+
+    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ConstantProperty"/>
+    
+
+
     <!-- http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedActivePower -->
 
     <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#AbsorbedActivePower">
@@ -435,7 +468,7 @@
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#isComprisedOf"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">
@@ -947,7 +980,7 @@
         <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#PhysicalQuantity"/>
         <rdfs:subClassOf>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/meta_model/mereology/mereology.owl#isComposedOf"/>
+                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontopowsys/OntoPowSys.owl#isComprisedOf"/>
                 <owl:someValuesFrom>
                     <owl:Class>
                         <owl:intersectionOf rdf:parseType="Collection">

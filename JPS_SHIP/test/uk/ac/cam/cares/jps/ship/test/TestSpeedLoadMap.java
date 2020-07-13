@@ -10,7 +10,6 @@ import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.util.CommandHelper;
-import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 
 public class TestSpeedLoadMap extends TestCase {
@@ -22,8 +21,10 @@ public class TestSpeedLoadMap extends TestCase {
 		
 		
 			JSONObject jo = new JSONObject();
-			jo.put("speed",8.0); //ori=11
-			jo.put("type","passenger");
+//			jo.put("speed",0.1); //ori=11
+//			jo.put("type","passenger");
+			jo.put("speed",10.3); //ori=11
+			jo.put("type","cargo");
 			String result = AgentCaller.executeGetWithJsonParameter("JPS_SHIP/SLMAgent",jo.toString());
 			System.out.println("result= "+result);
 			

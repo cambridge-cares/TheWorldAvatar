@@ -28,9 +28,11 @@ const controlButtonsSetter = osmb => {
     })
   }
 }
-
+//let sensorIRIs = [{x:103.83143122477935 , y:1.2429458210894155, name:"test"}];
+//todo: add render sensor function
 const initadms3dmap = (
   list, range, osmb, location, coordinatesMid, cityiri, shipList, folder) => {
+  //TODO:add: initi render sensor
 
   for (obj of listGeoJsonAddedToOSMB) {
     obj.destroy()
@@ -52,7 +54,7 @@ const initadms3dmap = (
   const position = {}
 
   position.latitude = coordinatesMid[0]
-  position.longitude = coordinatesMid[1]
+  position.longitude =coordinatesMid[1]
 
   osmb.setPosition(position)
   osmb.setZoom(15.7)
@@ -61,8 +63,10 @@ const initadms3dmap = (
   // --- Rendering 3D building models --- //
   console.log('START')
 
+  //TODO: modify back later
   $.getJSON('/JPS/ADMSHelper',
-    {
+  //$.getJSON('/geo',
+      {
       listOfIRIs: JSON.stringify(list),
       cityiri,
     },
@@ -131,22 +135,25 @@ const initadms3dmap = (
           type: 'Polygon',
           coordinates: [//TODO:ã€€LINK THIS TO USER INPUT
             [
-              [lowLeft[0], topRight[1]],
-              [topRight[0], topRight[1]],
               [topRight[0], lowLeft[1]],
-              [lowLeft[0], lowLeft[1]],
+              [topRight[0], topRight[1]],
               [lowLeft[0], topRight[1]],
+              [lowLeft[0], lowLeft[1]],
+              [topRight[0], lowLeft[1]],
             ],
           ],
         },
       }],
   }
-
+//change back after local test: '/JPS/ADMSOutputAllForShips'
+  //local test: /result
   getContourMaps('/JPS/ADMSOutputAllForShips', folder).then(data => {
 	const dataurls = data[0]
 	const POL_LIST = data[1]
 	const POL_NUM = data[2]
 	const HEIGHT_NUM = data[3]
+	const HEIGHT_GAP=data[4]
+	const INITIAL_HEIGHT=data[5]
 	makeRadios('optionwrapper', POL_LIST, 'Select a pollutant:')
     const LEGEND_WRAPPER = 'legendwrapper'
     const SLIDER_WRAPPER = 'sliderwrapper'
@@ -195,7 +202,7 @@ const initadms3dmap = (
     makeSlider(SLIDER_WRAPPER, HEIGHT_NUM, function (event, ui) {
       if (preObj) preObj.destroy()
       idxH = ui.value
-      $('#height-show').val(idxH * 10)
+      $('#height-show').val(INITIAL_HEIGHT+idxH * HEIGHT_GAP)
       thresholds = dataurls[idxH * POL_NUM + idxSrc][1]
       color = dataurls[idxH * POL_NUM + idxSrc][2]
       image = dataurls[idxH * POL_NUM + idxSrc][0]

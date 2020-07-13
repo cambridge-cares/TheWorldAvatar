@@ -166,7 +166,8 @@ $(function(){
 
         const coordinatesMid = getMidPoint(coordinatesMin, coordinatesMax);
         
-        let agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+        //let agent = "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service";
+        let agent = "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service"; //temporary change to be consistent
         
         var query = {
         	agent, 
@@ -208,6 +209,7 @@ $(function(){
     				});
     	   	} else {
         		result =  $.getJSON('/JPS/ADMSCoordinationAgentWithoutComposition',
+//    	   		result =  $.getJSON('/JPS_DISPERSION/DMSCoordinationAgent',
         			{
 	        			query
         			});

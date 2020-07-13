@@ -84,8 +84,8 @@ public class TestNuclear extends TestCase {
 		jo.put("electricalnetwork", TestEN.ELECTRICAL_NETWORK);
 		jo.put("substitutionalgenerators", ja);
 		
-		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10updatenewload2");
-		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearoilremovedserver3");
+		//String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario10updatenewload2");
+		String scenarioUrl = BucketHelper.getScenarioUrl("testPOWSYSNuclearoilremovedserver3");
 		//JPSHttpServlet.enableScenario(scenarioUrl);	
 		
 		new ScenarioClient().setOptionCopyOnRead(scenarioUrl, true);

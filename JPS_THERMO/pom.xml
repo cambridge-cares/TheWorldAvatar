@@ -10,6 +10,20 @@
 
 	<build>
 		<sourceDirectory>src</sourceDirectory>
+	<resources>
+		<resource>
+			<directory>resource</directory>
+			<excludes>
+				<exclude>**/*.java</exclude>
+			</excludes>
+		</resource>
+				<resource>
+			<directory>sparql_query</directory>
+			<excludes>
+				<exclude>**/*.java</exclude>
+			</excludes>
+		</resource>
+	</resources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -24,6 +38,7 @@
 				<version>3.2.1</version>
 				<configuration>
 					<warSourceDirectory>WebContent</warSourceDirectory>
+					 <outputDirectory>${tomcatPath}/webapps</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -69,6 +84,12 @@
 			<groupId>org.eclipse.rdf4j</groupId>
 			<artifactId>rdf4j-runtime</artifactId>
 			<version>2.4.0-M2</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.cmclinnovations</groupId>
+			<artifactId>CMCLOntoKin</artifactId>
+			<version>0.0.1</version>
 		</dependency>
 
 		<dependency>

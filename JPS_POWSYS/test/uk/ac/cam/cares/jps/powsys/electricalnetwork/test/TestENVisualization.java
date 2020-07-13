@@ -43,7 +43,7 @@ public class TestENVisualization extends TestCase {
 		String res= a.createMarkers(model);
 		System.out.println(res);
 	}
-	public void testJPSScenario() throws IOException{
+	public void testJPSScenario() throws IOException{//temporary method. Pass value of usecaseurl according to what you have. 
 		//read the top node by using jps/scenario
 		String scenarioname =  "testPOWSYSNuclearStartSimulationAndProcessResultAgentCallForTestScenario";
 		String iri = "http://www.jparksimulator.com/kb/sgp/jurongisland/jurongislandpowernetwork/JurongIslandPowerNetwork.owl#JurongIsland_PowerNetwork";

@@ -1,0 +1,2 @@
+*	yyyy	mm	dd	hh	FF1	DD1	T25m	DT	RH%	PP_mm	Cloud	Press	FF2	DD2
+	2019	11	18	00	1.50	180	29.0	0.022	80.33	0	0.89	991.20	1.50	180

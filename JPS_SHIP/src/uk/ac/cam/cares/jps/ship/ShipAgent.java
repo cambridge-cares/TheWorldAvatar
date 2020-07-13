@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
@@ -130,7 +131,7 @@ public class ShipAgent extends HttpServlet {
         }
         if (particleratevalue1 != null) {
             particleratevalue1.setPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
-                    jenaOwlModel.createTypedLiteral(totalparticleemission));
+                    jenaOwlModel.createTypedLiteral(totalparticleemission*1000)); //to be in g/s instead kg/s
         }
         //---------------------------------------------------------------------------------------------------------------------------------
 
@@ -225,6 +226,12 @@ public class ShipAgent extends HttpServlet {
         Individual valueofspeciesemissionrate = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get("NOx") + EM_RATE);
         valueofspeciesemissionrate.setPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
                 jenaOwlModel.createTypedLiteral(NO2value + NOvalue));
+        
+        //adjust so that NO2 value is 5% of NOx (which is NO2 +NO)
+//        double NO2valueNew=0.05*(NO2value+NOvalue);
+//        Individual valueofspeciesemissionrateNO2 = jenaOwlModel.getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get("NO2") + EM_RATE);
+//        valueofspeciesemissionrateNO2.setPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL),
+//                jenaOwlModel.createTypedLiteral(NO2valueNew));
 
     }
 
@@ -243,6 +250,9 @@ public class ShipAgent extends HttpServlet {
 
         JSONObject joforrec = AgentCaller.readJsonParameter(request);
         String baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST);
+        if ((AgentLocator.isJPSRunningForTest())) {
+        	baseURL = KeyValueManager.get(IKeys.URL_SCHEME) + KeyValueManager.get(IKeys.HOST)+":"+KeyValueManager.get(IKeys.PORT);
+        }
         String shipKbURL = baseURL + KeyValueManager.get(IKeys.PATH_KNOWLEDGEBASE_SHIPS);
         String iri = null;
         String mmsi = null;

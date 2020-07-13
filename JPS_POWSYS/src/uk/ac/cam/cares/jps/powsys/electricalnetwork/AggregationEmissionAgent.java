@@ -5,10 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.DatatypeProperty;
 import org.apache.jena.ontology.Individual;
@@ -18,6 +15,7 @@ import org.apache.jena.rdf.model.Property;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
@@ -115,47 +113,74 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
 
 
     @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    protected void setLogger() {
         logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
-        super.doHttpJPS(request, response);
     }
+    Logger logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
+    
+//  protected void doGetJPS(HttpServletRequest request, HttpServletResponse response)
+//			throws ServletException, IOException {
+//		//need to use doGetJPS to return string instead of json so that base case still run completely
+//		JSONObject joforess = AgentCaller.readJsonParameter(request);
+//		String iriofnetwork=joforess.getString("electricalnetwork");
+//      JSONObject result=updateEmission(iriofnetwork);
+//      List<Object> chimneylist = result.getJSONArray("chimney").toList();
+//      List<Object> desco2list = result.getJSONArray("designemission").toList();
+//      double totalemissionactual=0.0;
+//      double totalemissiondesign=0.0;
+//      String parametername = "CO2"; //hard coded at the moment
+//      Map hmap = LocalOntologyModelManager.getSpeciesMap();
+//      OntModel jenaOwlModel = JenaHelper.createModel();
+//      for (int x=0;x<chimneylist.size();x++) {
+//      	String iriofchimney=chimneylist.get(x).toString();
+//      	System.out.println("what is iri of chimney:"+iriofchimney);
+//      	jenaOwlModel.read(iriofchimney);
+//          Individual valueofspeciesemissionrate = jenaOwlModel
+//                  .getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
+//      	Double val=valueofspeciesemissionrate.getPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL)).asLiteral().getDouble();
+//      	totalemissionactual=totalemissionactual+val;
+//      	totalemissiondesign=totalemissiondesign+Double.valueOf(desco2list.get(x).toString());
+//
+//      }
+//      JSONObject newresult= new JSONObject();
+//      newresult.put("actual",Double.toString(totalemissionactual/1000000*3600)); //from kg/s back to ton/hr
+//      newresult.put("design",Double.toString(totalemissiondesign));
+//		AgentCaller.printToResponse(newresult.toString(), response);
+//			
+//	}
+  
+  @Override
+  protected JSONObject processRequestParameters(JSONObject requestParams) {
 
-    @Override
-    protected void doHttpJPS(HttpServletRequest request, HttpServletResponse response, JSONObject reqBody) throws IOException, ServletException {
-        logger = LoggerFactory.getLogger(AggregationEmissionAgent.class);
-        super.doHttpJPS(request, response, reqBody);
-    }
+      String iriofnetwork = requestParams.getString("electricalnetwork");
+      JSONObject result=updateEmission(iriofnetwork);
+      List<Object> chimneylist = result.getJSONArray("chimney").toList();
+      List<Object> desco2list = result.getJSONArray("designemission").toList();
+      double totalemissionactual=0.0;
+      double totalemissiondesign=0.0;
+      String parametername = "CO2"; //hard coded at the moment
+      Map hmap = LocalOntologyModelManager.getSpeciesMap();
+      OntModel jenaOwlModel = JenaHelper.createModel();
+      for (int x=0;x<chimneylist.size();x++) {
+      	String iriofchimney=chimneylist.get(x).toString();
+      	System.out.println("what is iri of chimney:"+iriofchimney);
+      	jenaOwlModel.read(iriofchimney);
+          Individual valueofspeciesemissionrate = jenaOwlModel
+                  .getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
+      	Double val=valueofspeciesemissionrate.getPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL)).asLiteral().getDouble();
+      	totalemissionactual=totalemissionactual+val;
+      	totalemissiondesign=totalemissiondesign+Double.valueOf(desco2list.get(x).toString());
 
-    @Override
-    protected JSONObject processRequestParameters(JSONObject requestParams) {
-
-        String iriofnetwork = requestParams.getString("electricalnetwork");
-        JSONObject result=updateEmission(iriofnetwork);
-        List<Object> chimneylist = result.getJSONArray("chimney").toList();
-        List<Object> desco2list = result.getJSONArray("designemission").toList();
-        double totalemissionactual=0.0;
-        double totalemissiondesign=0.0;
-        String parametername = "CO2"; //hard coded at the moment
-        Map hmap = LocalOntologyModelManager.getSpeciesMap();
-        OntModel jenaOwlModel = JenaHelper.createModel();
-        for (int x=0;x<chimneylist.size();x++) {
-        	String iriofchimney=chimneylist.get(x).toString();
-        	System.out.println("what is iri of chimney:"+iriofchimney);
-        	jenaOwlModel.read(iriofchimney);
-            Individual valueofspeciesemissionrate = jenaOwlModel
-                    .getIndividual(iriofchimney.split("#")[0] + "#V_" + hmap.get(parametername) + EM_RATE);
-        	Double val=valueofspeciesemissionrate.getPropertyValue((Property) LocalOntologyModelManager.getConcept(LocalOntologyModelManager.CPT_NUMVAL)).asLiteral().getDouble();
-        	totalemissionactual=totalemissionactual+val;
-        	totalemissiondesign=totalemissiondesign+Double.valueOf(desco2list.get(x).toString());
-
-        }
-        JSONObject newresult= new JSONObject();
-        newresult.put("actual",totalemissionactual/1000000*3600); //from kg/s back to ton/hr
-        newresult.put("design",totalemissiondesign);
-        
-        
-        return newresult;
-    }
+      }
+      JSONObject newresult= new JSONObject();
+      newresult.put("actual",Double.toString(totalemissionactual/1000000*3600)); //from kg/s back to ton/hr
+      newresult.put("design",Double.toString(totalemissiondesign));
+      
+      
+      return newresult;
+  }
+    
+    
 
     public static List<String[]> provideGenlist(String iriofnetwork) {
         String gennodeInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#> "
@@ -243,7 +268,8 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
             else {
             	String plantname=plantunique.get(f).split("#")[1];
             	iriofchimney="http://www.theworldavatar.com/kb/powerplants/"+plantname+"/Chimney-001.owl#Chimney-001";
-    			String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
+            	//iriofchimney= QueryBroker.getIriPrefix() + "/powerplants/"+plantname+"/Chimney-001.owl#Chimney-001";
+            	String sparqlStart = "PREFIX OCPSYST:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> \r\n"
     					+ "INSERT DATA { \r\n";
     			StringBuffer b = new StringBuffer();
     			b.append("<" + plantunique.get(f) + "> OCPSYST:hasSubsystem <" + iriofchimney + "> . \r\n");
@@ -301,7 +327,9 @@ public class AggregationEmissionAgent extends JPSHttpServlet {
         doConversion(jenaOwlModel, iriOfChimney, emission);
         
         // save the updated model
-        LocalOntologyModelManager.saveToOwl(jenaOwlModel, iriOfChimney); // for each owl file
+        //LocalOntologyModelManager.saveToOwl(jenaOwlModel, iriOfChimney); // for each owl file
+        String content = JenaHelper.writeToString(jenaOwlModel);
+        new QueryBroker().putOld(iriOfChimney, content);
 
     }
 

@@ -1,216 +1,138 @@
-<?xml version="1.0"?>
-<rdf:RDF xmlns="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#"
-     xml:base="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl"
-     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-     xmlns:terms="http://purl.org/dc/terms/"
-     xmlns:owl="http://www.w3.org/2002/07/owl#"
-     xmlns:xml="http://www.w3.org/XML/1998/namespace"
-     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
-     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
-    <owl:Ontology rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl">
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_behavior.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_function.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_performance.owl"/>
-        <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/chemicalplants/ChemicalPlant.owl"/>
-    </owl:Ontology>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Object Properties
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#isRealizedBy -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#isRealizedBy"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSinkSet -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSinkSet">
-        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSourceSet -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSourceSet">
-        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#refersToPlant -->
-
-    <owl:ObjectProperty rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#refersToPlant">
-        <rdfs:subPropertyOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation"/>
-    </owl:ObjectProperty>
-    
-
-
-    <!-- 
-    ///////////////////////////////////////////////////////////////////////////////////////
-    //
-    // Classes
-    //
-    ///////////////////////////////////////////////////////////////////////////////////////
-     -->
-
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#EnergyNetwork -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#EnergyNetwork">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#ResourceNetwork"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#EnergySink -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#EnergySink">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#EnergySource -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#EnergySource">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#MaterialNetwork -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#MaterialNetwork">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#ResourceNetwork"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#MaterialSink -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#MaterialSink">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#MaterialSource -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#MaterialSource">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#NetworkInfrastructure -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#NetworkInfrastructure">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#System"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#ResourceNetwork -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#ResourceNetwork">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontocape/upper_level/network_system.owl#NetworkSystem"/>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#isRealizedBy"/>
-                <owl:someValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#NetworkInfrastructure"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSinkSet"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSourceSet"/>
-                <owl:allValuesFrom rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSinkSet"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-        <rdfs:subClassOf>
-            <owl:Restriction>
-                <owl:onProperty rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#hasSourceSet"/>
-                <owl:qualifiedCardinality rdf:datatype="http://www.w3.org/2001/XMLSchema#nonNegativeInteger">1</owl:qualifiedCardinality>
-                <owl:onClass rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source"/>
-            </owl:Restriction>
-        </rdfs:subClassOf>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/meta_model/data_structures/array.owl#Array"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#WaterNetwork -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#WaterNetwork">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#ResourceNetwork"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#WaterSink -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#WaterSink">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Sink"/>
-    </owl:Class>
-    
-
-
-    <!-- http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#WaterSource -->
-
-    <owl:Class rdf:about="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#WaterSource">
-        <rdfs:subClassOf rdf:resource="http://www.theworldavatar.com/ontology/ontoeip/resource_network/resource_network.owl#Source"/>
-    </owl:Class>
-</rdf:RDF>
-
-
-
-<!-- Generated by the OWL API (version 4.2.5.20160517-0735) https://github.com/owlcs/owlapi -->
-
+@prefix : <http://www.theworldavatar.com/OntoEIP/resource_network/resource_network.owl#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+
+<http://www.theworldavatar.com/OntoEIP/resource_network/resource_network.owl> a owl:Ontology ;
+	owl:imports <http://www.theworldavatar.com/OntoEIP/system_aspects/system_performance.owl> , <http://www.theworldavatar.com/OntoEIP/chemical_plant/chemical_plant.owl> , <http://www.theworldavatar.com/OntoEIP/system_aspects/system_realization.owl> , <http://www.theworldavatar.com/OntoEIP/system_aspects/system_function.owl> , <http://www.theworldavatar.com/OntoEIP/system_aspects/system_behavior.owl> .
+# 
+# 
+# #################################################################
+# #
+# #    Object Properties
+# #
+# #################################################################
+# 
+# 
+# http://www.co-ode.org/ontologies/ont.owl#hasSinkSet
+
+<http://www.co-ode.org/ontologies/ont.owl#hasSinkSet> a owl:ObjectProperty ;
+	rdfs:subPropertyOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#hasSourceSet
+
+<http://www.co-ode.org/ontologies/ont.owl#hasSourceSet> a owl:ObjectProperty ;
+	rdfs:subPropertyOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#refersToPlant
+
+<http://www.co-ode.org/ontologies/ont.owl#refersToPlant> a owl:ObjectProperty ;
+	rdfs:subPropertyOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/meta_model/fundamental_concepts/fundamental_concepts.owl#inter-objectRelation> .
+# 
+# 
+# 
+# #################################################################
+# #
+# #    Classes
+# #
+# #################################################################
+# 
+# 
+# http://www.co-ode.org/ontologies/ont.owl#EnergyNetwork
+
+<http://www.co-ode.org/ontologies/ont.owl#EnergyNetwork> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#EnergySink
+
+<http://www.co-ode.org/ontologies/ont.owl#EnergySink> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#Sink> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#EnergySource
+
+<http://www.co-ode.org/ontologies/ont.owl#EnergySource> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#Source> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#MaterialNetwork
+
+<http://www.co-ode.org/ontologies/ont.owl#MaterialNetwork> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#MaterialSink
+
+<http://www.co-ode.org/ontologies/ont.owl#MaterialSink> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#Sink> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#MaterialSource
+
+<http://www.co-ode.org/ontologies/ont.owl#MaterialSource> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#Source> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#NetworkInfrastructure
+
+<http://www.co-ode.org/ontologies/ont.owl#NetworkInfrastructure> a owl:Class ;
+	rdfs:subClassOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/system.owl#System> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork
+
+<http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> a owl:Class ;
+	rdfs:subClassOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/network_system.owl#NetworkSystem> , _:genid1 .
+
+_:genid1 a owl:Restriction ;
+	owl:onProperty <http://www.theworldavatar.com/OntoEIP/OntoCAPE/OntoCAPE/upper_level/technical_system.owl#isRealizedBy> ;
+	owl:someValuesFrom <http://www.co-ode.org/ontologies/ont.owl#NetworkInfrastructure> .
+
+<http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> rdfs:subClassOf _:genid2 .
+
+_:genid2 a owl:Restriction ;
+	owl:onProperty <http://www.co-ode.org/ontologies/ont.owl#hasSinkSet> ;
+	owl:allValuesFrom <http://www.co-ode.org/ontologies/ont.owl#Sink> .
+
+<http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> rdfs:subClassOf _:genid3 .
+
+_:genid3 a owl:Restriction ;
+	owl:onProperty <http://www.co-ode.org/ontologies/ont.owl#hasSourceSet> ;
+	owl:allValuesFrom <http://www.co-ode.org/ontologies/ont.owl#Source> .
+
+<http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> rdfs:subClassOf _:genid4 .
+
+_:genid4 a owl:Restriction ;
+	owl:onProperty <http://www.co-ode.org/ontologies/ont.owl#hasSinkSet> ;
+	owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+	owl:onClass <http://www.co-ode.org/ontologies/ont.owl#Sink> .
+
+<http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> rdfs:subClassOf _:genid5 .
+
+_:genid5 a owl:Restriction ;
+	owl:onProperty <http://www.co-ode.org/ontologies/ont.owl#hasSourceSet> ;
+	owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+	owl:onClass <http://www.co-ode.org/ontologies/ont.owl#Source> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#Sink
+
+<http://www.co-ode.org/ontologies/ont.owl#Sink> a owl:Class ;
+	rdfs:subClassOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/meta_model/data_structures/array.owl#Array> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#Source
+
+<http://www.co-ode.org/ontologies/ont.owl#Source> a owl:Class ;
+	rdfs:subClassOf <http://www.theworldavatar.com/OntoEIP/OntoCAPE/meta_model/data_structures/array.owl#Array> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#WaterNetwork
+
+<http://www.co-ode.org/ontologies/ont.owl#WaterNetwork> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#ResourceNetwork> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#WaterSink
+
+<http://www.co-ode.org/ontologies/ont.owl#WaterSink> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#Sink> .
+# 
+# http://www.co-ode.org/ontologies/ont.owl#WaterSource
+
+<http://www.co-ode.org/ontologies/ont.owl#WaterSource> a owl:Class ;
+	rdfs:subClassOf <http://www.co-ode.org/ontologies/ont.owl#Source> .
+# 
+# Generated by the OWL API (version 4.2.6.20160910-2108) https://github.com/owlcs/owlapi

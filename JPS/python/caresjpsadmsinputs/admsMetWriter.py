@@ -51,6 +51,8 @@ try:
 	if windDirection > 360:
 		windDirection = windDirection % 360
 	windSpeed = weatherData['haswind']['hasspeed']
+	if float(windSpeed) < 0.75:
+		windSpeed= 0.75
 	precitipation = weatherData['hasprecipation']['hasintensity']
 	temperature = weatherData['hasexteriortemperature']['hasvalue']
 	relativehumidity=weatherData['hashumidity']['hasvalue']
