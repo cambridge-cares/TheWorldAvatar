@@ -290,8 +290,7 @@ function runWTESimulation(){
         document.getElementById("loader").style.display = "block"; 
         delayedCallback(function(){
             queryForEconomicComp();
-            var QurStr =   "?vWP     j2:isDirectSubsystemOf ?fcCluster ."
-                +"?vWP     j1:isDeliveredTo  ?Site_of_delivery ."
+            var QurStr =  "?vWP     j1:isDeliveredTo  ?Site_of_delivery ."
                 +"}";
             FCQuery = FCQuery.replace("}", QurStr );
             queryForOnsiteWT();
@@ -754,13 +753,13 @@ function openWindow(id, typeInfo, callback){ //gen has its own openWindow cos it
             if(!pair[1]['value'].includes('.owl')) //this is for values only. 
             {
                 var inputLine = '<tr><td><label>' + pair[0]+"_" +owlName +'</label></td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] 
-                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" value="p.u." style="float: right;" disabled="disabled"></td></tr>';
+                + '" value="' + pair[1]['value'] + '" style="float: right;"></td><td><input class="input_class" disabled="disabled"></td></tr>';
                 inputsHTML = inputsHTML + inputLine;
                 nameSet.push(pair[0]);
             }else if(pair[0].includes('unit')){
                 //for units, just place below the box. 
                 //remove the last 
-                inputsHTML = inputsHTML.slice(0, -101)
+                inputsHTML = inputsHTML.slice(0, -66)
                 //add in the units 
                 var inputLine = '</td><td><input class="input_class" data-dataType="' + pair[1]['datatype'] + '" value="' + pair[1]['value'].split('#')[1] + '" style="float: right;" disabled="disabled"> </td></tr>';
                 inputsHTML = inputsHTML + inputLine;
