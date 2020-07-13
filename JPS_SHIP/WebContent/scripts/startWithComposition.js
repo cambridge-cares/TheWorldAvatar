@@ -1,7 +1,7 @@
 let osmbGlobal;
 let originRatio = 1;
-metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
-//metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
+//metaEndpoint = "http://www.theworldavatar.com/rdf4j-server/repositories/airqualitystation";
+metaEndpoint = "http://localhost:8080/rdf4j-server/repositories/airqualitystation";
 let sensorIRIs;
 
 $(function(){
