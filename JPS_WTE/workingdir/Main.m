@@ -150,7 +150,7 @@ end
                columnsum1(i) <=0+bigM*yi1(i);
             end
             sum(yi1)==n_cluster;
-            columnsum1<=4;
+            % columnsum1<=4;
 
      cvx_solver Gurobi_2;
      cvx_end 
@@ -875,8 +875,7 @@ economicoutput=[revenue_total,BenchmarkRevenue_total;Installation_cost_total,Ben
     writematrix(y_offsite_year(:,:,:,15),'year by year_waste flow relation (offsite)_15.csv');% no unit
     
     writematrix(economicoutput,'year by year_Economic output.csv');% $
-    
-    
+      
 writematrix(revenue_year,'year by year_revenue.xlsx');
 writematrix(Installation_cost_year,'year by year_Installation_cost_year');
 writematrix(CTRSt_year,'year by year_Transport');
