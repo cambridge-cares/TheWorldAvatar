@@ -20,6 +20,7 @@ import com.cmclinnovations.jps.agent.file_management.mods.parameters.Parameter;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.ParameterS;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingRead;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingWrite;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class MoDSInputsState {
 	public static MoDS mods;
@@ -69,6 +70,9 @@ public class MoDSInputsState {
 	
 	public static IInitMoDSInputs initMoDSInputs;
 	
+	public static String modsJsonString;
+	
+	public static JsonNode modsJsonNode;
 	
 	public static final String EMPTY = "";
 	public static final String HASH = "#";
@@ -96,8 +100,17 @@ public class MoDSInputsState {
 	public static final String FILE_KINETICS_INPUTPARAMS = "InputParams.xml";
 	public static final String FILE_MECHANISM = "mechanism.xml";
 	public static final String FILE_MODEL_EXPDATA_SUFFIX = "Data.csv";
+	public static final String FILE_MODS_INPUTS = "MoDS_inputs.xml";
 	
+	public static final String INITIALISATION_STRING = "DeleteAfterInitialisation";
+	public static final String INITIALISATION_STRING_ALGORITHMS = "{\"algorithm\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
+	public static final String INITIALISATION_STRING_MODELS = "{\"model\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
+	public static final String INITIALISATION_STRING_CASES = "{\"case\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
+	public static final String INITIALISATION_STRING_FILES= "{\"file\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
+	public static final String INITIALISATION_STRING_FUNCTIONS = "{\"function\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
+	public static final String INITIALISATION_STRING_PARAMETERS = "{\"parameter\": [{\"name\": \"DeleteAfterInitialisation\"}] }";	
 	
+	public static final String NAME_OXIDISER = "Fuel-Ox-Mix";
 //	public static final String MODEL_KINETICS = "kineticsSRM";
 //	public static final String MODEL_CANTERA = "canteraLFS";
 	
