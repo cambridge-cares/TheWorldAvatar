@@ -21,6 +21,7 @@ import com.cmclinnovations.jps.agent.file_management.mods.parameters.Parameter;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.ParameterS;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingRead;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingWrite;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class InitMoDSInputs extends MoDSMarshaller implements IInitMoDSInputs {
 	public void init() {
@@ -68,5 +69,9 @@ public class InitMoDSInputs extends MoDSMarshaller implements IInitMoDSInputs {
 		initialRead = new InitialRead();
 		workingRead = new WorkingRead();
 		workingWrite = new WorkingWrite();
+		
+		modsJsonString = new String();
+		
+		modsJsonNode = new ObjectMapper().createObjectNode();
 	}
 }
