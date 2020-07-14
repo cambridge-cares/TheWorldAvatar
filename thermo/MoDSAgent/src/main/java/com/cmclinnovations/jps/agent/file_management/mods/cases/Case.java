@@ -12,11 +12,14 @@ import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
 import com.cmclinnovations.jps.agent.file_management.mods.models.ModelS;
+import com.cmclinnovations.jps.agent.file_management.mods.models.SimplifiedModelS;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.DetailS;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //@XmlType(propOrder = { "items" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Case {
+	@JsonProperty("name")
 	@XmlAttribute
 	private String name;
 
@@ -28,17 +31,29 @@ public class Case {
 		this.name = name;
 	}
 	
-	@XmlMixed
-	@XmlElementRef(type = ModelS.class, name = "models")
-	List<Object> items = new ArrayList<Object>();
+	@JsonProperty("models")
+	@XmlElement(name = "models")
+	private SimplifiedModelS caseModels;
 
-	public List<Object> getItems() {
-		return items;
+	public SimplifiedModelS getCaseModels() {
+		return caseModels;
 	}
 
-	public void setItems(List<Object> items) {
-		this.items = items;
+	public void setCaseModels(SimplifiedModelS caseModels) {
+		this.caseModels = caseModels;
 	}
+	
+//	@XmlMixed
+//	@XmlElementRef(type = ModelS.class, name = "models")
+//	List<Object> items = new ArrayList<Object>();
+//
+//	public List<Object> getItems() {
+//		return items;
+//	}
+//
+//	public void setItems(List<Object> items) {
+//		this.items = items;
+//	}
 //
 //	@XmlElement(name = "details")
 //	private DetailS detailS;

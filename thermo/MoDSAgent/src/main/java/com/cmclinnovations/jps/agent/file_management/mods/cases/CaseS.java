@@ -18,5 +18,4 @@ public class CaseS {
 	public void setCase(ArrayList<Case> caseList) {
 		this.caseList = caseList;
 	}
-
 }

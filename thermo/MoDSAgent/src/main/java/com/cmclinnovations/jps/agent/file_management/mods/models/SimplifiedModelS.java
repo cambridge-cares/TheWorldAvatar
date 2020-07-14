@@ -1,27 +1,24 @@
 package com.cmclinnovations.jps.agent.file_management.mods.models;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class ModelS {
+public class SimplifiedModelS {
 	@JsonProperty("model")
 	@XmlElement(name = "model")
-	private ArrayList<Model> modelList;
+	private List<SimplifiedModel> caseModelList;
 
-	public ArrayList<Model> getModel() {
-		return modelList;
+	public List<SimplifiedModel> getCaseModelList() {
+		return caseModelList;
 	}
 
-	public void setModel(ArrayList<Model> modelList) {
-		this.modelList = modelList;
+	public void setCaseModelList(List<SimplifiedModel> caseModelList) {
+		this.caseModelList = caseModelList;
 	}
-
 }

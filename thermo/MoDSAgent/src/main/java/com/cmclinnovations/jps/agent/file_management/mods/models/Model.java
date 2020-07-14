@@ -12,10 +12,12 @@ import javax.xml.bind.annotation.XmlMixed;
 import javax.xml.bind.annotation.XmlType;
 
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.DetailS;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 //@XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Model {
+	@JsonProperty("name")
 	@XmlAttribute
 	private String name;
 
@@ -27,26 +29,51 @@ public class Model {
 		this.name = name;
 	}
 	
-	@XmlMixed
-	@XmlElementRef(type = DetailS.class, name = "details")
-	List<Object> items = new ArrayList<Object>();
+	@JsonProperty("details")
+	@XmlElement(name = "details")
+	private DetailS detailS;
 
-	public List<Object> getItems() {
-		return items;
+	public DetailS getDetailS() {
+		return detailS;
 	}
 
-	public void setItems(List<Object> items) {
-		this.items = items;
+	public void setDetailS(DetailS detailS) {
+		this.detailS = detailS;
 	}
 	
-//	@XmlElement(name = "details")
-//	private DetailS detailS;
+//	@JsonProperty("details")
+//	@XmlElementRef(type = DetailS.class, name = "details")
+//	private List<Object> items = new ArrayList<Object>();
 //
-//	public DetailS getDetailS() {
-//		return detailS;
+//	public List<Object> getItems() {
+//		return items;
 //	}
 //
-//	public void setDetailS(DetailS detailS) {
-//		this.detailS = detailS;
+//	public void setItems(List<Object> items) {
+//		this.items = items;
+//	}
+	
+//	@JsonProperty("details")
+//	@XmlElementRef(type = DetailS.class, name = "details")
+//	private DetailS items = new DetailS();
+//
+//	public DetailS getItems() {
+//		return items;
+//	}
+//
+//	public void setItems(DetailS items) {
+//		this.items = items;
+//	}
+	
+//	@JsonProperty("content")
+//	@XmlMixed
+//	private List<String> content;
+//	
+//	public List<String> getContent() {
+//		return content;
+//	}
+//	
+//	public void setContent(List<String> content) {
+//		this.content = content;
 //	}
 }
