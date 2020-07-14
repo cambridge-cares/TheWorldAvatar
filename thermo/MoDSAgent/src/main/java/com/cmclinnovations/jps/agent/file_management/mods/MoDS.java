@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @XmlType(propOrder = { "algorithmS", "modelS", "caseS", "fileS", "functionS", "parameterS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class MoDS {
-//	@JsonProperty("xmlns")
+	@JsonProperty("xmlns")
 	@XmlAttribute(name = "xmlns")
 	private String xmlns;
 
@@ -31,7 +31,7 @@ public class MoDS {
 		this.xmlns = xmlns;
 	}
 	
-//	@JsonProperty("xmlnsXsi")
+	@JsonProperty("xmlnsXsi")
 	@XmlAttribute(name = "xmlns:xsi")
 	private String xmlnsXsi;
 
@@ -43,7 +43,7 @@ public class MoDS {
 		this.xmlnsXsi = xmlnsXsi;
 	}
 	
-//	@JsonProperty("xsiSchemaLocation")
+	@JsonProperty("xsiSchemaLocation")
 	@XmlAttribute(name = "xsi:schemaLocation")
 	private String xsiSchemaLocation;
 
@@ -55,7 +55,7 @@ public class MoDS {
 		this.xsiSchemaLocation = xsiSchemaLocation;
 	}
 	
-//	@JsonProperty("algorithms")
+	@JsonProperty("algorithms")
 	@XmlElement(name = "algorithms")
 	private AlgorithmS algorithmS;
 
@@ -67,7 +67,7 @@ public class MoDS {
 		this.algorithmS = algorithmS;
 	}
 
-//	@JsonProperty("models")
+	@JsonProperty("models")
 	@XmlElement(name = "models")
 	private ModelS modelS;
 
@@ -79,7 +79,7 @@ public class MoDS {
 		this.modelS = modelS;
 	}
 
-//	@JsonProperty("cases")
+	@JsonProperty("cases")
 	@XmlElement(name = "cases")
 	private CaseS caseS;
 
@@ -91,7 +91,7 @@ public class MoDS {
 		this.caseS = caseS;
 	}
 
-//	@JsonProperty("files")
+	@JsonProperty("files")
 	@XmlElement(name = "files")
 	private FileS fileS;
 
@@ -103,6 +103,7 @@ public class MoDS {
 		this.fileS = fileS;
 	}
 	
+	@JsonProperty("functions")
 	@XmlElement(name = "functions")
 	private FunctionS functionS;
 	
@@ -114,7 +115,7 @@ public class MoDS {
 		this.functionS = functionS;
 	}
 
-//	@JsonProperty("parameters")
+	@JsonProperty("parameters")
 	@XmlElement(name = "parameters")
 	private ParameterS parameterS;
 

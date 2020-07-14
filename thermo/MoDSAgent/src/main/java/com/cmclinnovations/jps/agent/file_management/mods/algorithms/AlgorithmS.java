@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class AlgorithmS {
-//	@JsonProperty("algorithm")
+	@JsonProperty("algorithm")
 	@XmlElement(name = "algorithm")
 	private ArrayList<Algorithm> algorithmList;
 

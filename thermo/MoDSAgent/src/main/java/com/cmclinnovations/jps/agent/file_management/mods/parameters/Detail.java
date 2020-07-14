@@ -5,8 +5,11 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlValue;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Detail {
+	@JsonProperty("name")
 	@XmlAttribute
 	private String name;
 
@@ -18,6 +21,7 @@ public class Detail {
 		this.name = name;
 	}
 	
+	@JsonProperty("content")
 	@XmlValue
 	private String content;
 	

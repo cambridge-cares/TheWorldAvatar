@@ -9,9 +9,11 @@ import javax.xml.bind.annotation.XmlElement;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.InitialRead;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingRead;
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.WorkingWrite;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 public class FileS {
+	@JsonProperty("file")
 	@XmlElement(name = "file")
 	private ArrayList<File> fileList;
 
@@ -22,7 +24,8 @@ public class FileS {
 	public void setFile(ArrayList<File> fileList) {
 		this.fileList = fileList;
 	}
-
+	
+	@JsonProperty("initialRead")
 	@XmlElement(name = "initial_read")
 	private InitialRead initialRead;
 
@@ -34,6 +37,7 @@ public class FileS {
 		this.initialRead = initialRead;
 	}
 	
+	@JsonProperty("workingRead")
 	@XmlElement(name = "working_read")
 	private WorkingRead workingRead;
 
@@ -44,7 +48,8 @@ public class FileS {
 	public void setWorkingRead(WorkingRead workingRead) {
 		this.workingRead = workingRead;
 	}
-
+	
+	@JsonProperty("workingWrite")
 	@XmlElement(name = "working_write")
 	private WorkingWrite workingWrite;
 

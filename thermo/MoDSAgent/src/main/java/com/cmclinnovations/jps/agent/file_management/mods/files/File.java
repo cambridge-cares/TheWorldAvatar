@@ -7,10 +7,12 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.DetailS;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class File {
+	@JsonProperty("name")
 	@XmlAttribute(name="file_name")
 	private String name;
 
@@ -21,7 +23,8 @@ public class File {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	@JsonProperty("details")
 	@XmlElement(name = "details")
 	private DetailS detailS;
 

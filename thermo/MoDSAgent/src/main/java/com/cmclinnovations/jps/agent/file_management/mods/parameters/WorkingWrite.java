@@ -5,8 +5,12 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
+import com.cmclinnovations.jps.agent.file_management.mods.files.File;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @XmlAccessorType(XmlAccessType.FIELD)
-public class WorkingWrite {
+public class WorkingWrite extends File {
+	@JsonProperty("name")
 	@XmlAttribute(name="file_name")
 	private String fileName;
 	
@@ -18,6 +22,7 @@ public class WorkingWrite {
 		this.fileName = fileName;
 	}
 	
+	@JsonProperty("details")
 	@XmlElement(name = "details")
 	private DetailS detailS;
 
