@@ -29,6 +29,8 @@ import org.apache.log4j.Logger;
 import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
+import com.cmclinnovations.jps.agent.file_management.mods.MoDS;
+import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 import com.cmclinnovations.jps.agent.mechanism.calibration.MoDSAgentException;
 import com.cmclinnovations.jps.kg.OntoChemExpKG;
 import com.cmclinnovations.jps.kg.OntoKinKG;
@@ -41,9 +43,82 @@ public class MoDSFileManagement {
 //	public static RepositoryManager repoManager = new RepositoryManager();
 	Logger logger = Logger.getLogger(MoDSFileManagement.class);
 //	public static List<String[]> dataLines;
+	public static String jobFolderName;
+	public static List<String> activeParameters_1 = new ArrayList<>();
+	public static List<String> passiveParameters_1 = new ArrayList<>();
+	public static String outputResponse_1 = new String();
+	public static List<String> activeParameters_2 = new ArrayList<>();
+	public static List<String> passiveParameters_2 = new ArrayList<>();
+	public static String outputResponse_2 = new String();
 	
 	public static void main(String[] args) throws IOException, MoDSAgentException {
 		MoDSFileManagement fileMagt = new MoDSFileManagement();
+//		List<String> experimentIRI = Arrays.asList("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000", 
+//				"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800", 
+//				"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600");
+//		
+//		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237";
+//		List<String> reactionIRIList = Arrays.asList(
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570512_48", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570503_39", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570639_175", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570640_176", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570509_45", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570499_35", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570607_143", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570631_167", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570634_170", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570633_169", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570504_40", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570502_38", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570618_154", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570505_41", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570638_174", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570517_53", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140", 
+//				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160");
+//		
+		String jobFolderName = "login-skylake.hpc.cam.ac.uk_1086309217579500";
+		String jsonString = "not in use";
+		fileMagt.createMoDSJob(jsonString, jobFolderName);
+//		File experimentData = fileMagt.collectExperimentalData(experimentIRI);
+//		File inputParams = fileMagt.createKineticsInputFiles(mechanismIRI);
+//		fileMagt.createMoDSCasesFiles(mechanismIRI, reactionIRIList);
+//		fileMagt.generateInputFiles(experimentIRI, mechanismIRI, reactionIRIList, jobFolderName);
+	}
+	
+	
+	
+	public String generateInputFiles(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String jobFolderName) throws IOException, MoDSAgentException {
+		// this whole generateInputFiles function need to be modified to made single connections between different parts of the IRIs
+		
+		String jobFolderPath = System.getProperty("user.home").concat("\\Documents").concat("\\JobFolder\\").concat(jobFolderName);
+		
+		collectExperimentalData(experimentIRI, jobFolderPath);
+		createKineticsInputFiles(mechanismIRI, jobFolderPath);
+		createMoDSCasesFiles(mechanismIRI, reactionIRIList, jobFolderPath);
+		createMoDSInputsFile(jobFolderPath); // this part need to be further parameterised
+		
+		// the collect experimental data part should be used to form a ExecutableModel object
+//		1. get the job folder path
+//		2. collect experimental data, build and return the executableModel object
+//		3. create files needed by each executableModel -- working on kineticsSRM
+//		4. the above step returns MoDS object
+//		5. create MoDS inputs file, which takes all two objects returned from last step
+//		6. create SLURM script? or create it in the outside
+		
+		
+		
+		return jobFolderPath;
+	}
+	
+	
+	public void createMoDSJob(String jsonString, String jobFolderName) throws IOException, MoDSAgentException {
+//		List<String> ignitionDelayExpIRI = getOntoChemExpIRI(jsonString);
+//		List<String> flameSpeedExpIRI = getOntoChemExpIRI(jsonString);
+//		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
+//		List<String> reactionIRIList = getOntoKinReactionsIRI(jsonString);
+		
 		List<String> experimentIRI = Arrays.asList("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000", 
 				"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800", 
 				"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600");
@@ -69,26 +144,35 @@ public class MoDSFileManagement {
 				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140", 
 				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160");
 		
-		String jobFolderName = "login-skylake.hpc.cam.ac.uk_1086309217579500";
-//		File experimentData = fileMagt.collectExperimentalData(experimentIRI);
-//		File inputParams = fileMagt.createKineticsInputFiles(mechanismIRI);
-//		fileMagt.createMoDSCasesFiles(mechanismIRI, reactionIRIList);
-		fileMagt.generateInputFiles(experimentIRI, mechanismIRI, reactionIRIList, jobFolderName);
+		
+		
+		
+		
+		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshaller();
+		iMoDSMarshaller.initialise(jobFolderName);
+		iMoDSMarshaller.plugInKinetics(experimentIRI, mechanismIRI, reactionIRIList);
+//		iMoDSMarshaller.plugInCantera();
+		iMoDSMarshaller.marshall();// String 
+		
 	}
 	
-	public String generateInputFiles(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String jobFolderName) throws IOException, MoDSAgentException {
-		// this whole generateInputFiles function need to be modified to made single connections between different parts of the IRIs
-		
-		String jobFolderPath = System.getProperty("user.home").concat("\\Documents").concat("\\JobFolder\\").concat(jobFolderName);
-		
-		collectExperimentalData(experimentIRI, jobFolderPath);
-		createKineticsInputFiles(mechanismIRI, jobFolderPath);
-		createMoDSCasesFiles(mechanismIRI, reactionIRIList, jobFolderPath);
-		createMoDSInputsFile(jobFolderPath); // this part need to be further parameterised
-		
-		return jobFolderPath;
-	}
 	
+	
+//	tbc
+//	public void xxx(List<ExecutableModel> exeModelList, String jobFolderPath) throws IOException, MoDSAgentException {
+//		for (ExecutableModel exeModel : exeModelList) {
+//			if (exeModel.getModelName().contains("kinetics")) {
+//				ModelKineticsSRM kinetics = new ModelKineticsSRM();
+//				kinetics.formFiles(exeModel, jobFolderPath);
+//				
+//				// the above line should return MoDS object
+//			} else if (exeModel.getModelName().contains("cantera")) {
+//				
+//			} else {
+////				error
+//			}
+//		}
+//	}
 	
 	public File collectExperimentalData(List<String> experimentIRI, String jobFolderPath) throws IOException, MoDSAgentException {
 		List<List<String>> headers = new ArrayList<List<String>>();
@@ -235,8 +319,9 @@ public class MoDSFileManagement {
 		File caseFile = new File("");
 		
 		createPassiveParametersAndOutputsFile(jobFolderPath);
+		/**
 		createActiveParametersFile(mechanismIRI, reactionIRIList, jobFolderPath);
-		
+		*/
 		return caseFile;
 	}
 	
@@ -280,6 +365,7 @@ public class MoDSFileManagement {
 		return passiveParametersAndOutputs;
 	}
 	
+	/**
 	public File createActiveParametersFile(String mechanismIRI, List<String> reactionIRIList, String jobFolderPath) throws IOException, MoDSAgentException {
 //		add caseNames
 //		take equations of reactions from mechanismIRI file as header
@@ -356,7 +442,7 @@ public class MoDSFileManagement {
 //		
 		return activeParameters;
 		
-	}
+	}*/
 	
 	public File createMoDSInputsFile(String jobFolderPath) throws IOException, MoDSAgentException {
 		MoDSMarshaller modsMarshaller = new MoDSMarshaller();
@@ -421,7 +507,7 @@ public class MoDSFileManagement {
 		objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		try {
 			JsonNode jsonNode = objectMapper.readTree(jsonString);
-			modsMarshaller.formMoDSInputsFile(jsonNode, filePath);
+//			modsMarshaller.formMoDSInputsFile(jsonNode, filePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

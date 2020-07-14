@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
+import org.apache.commons.math3.stat.regression.ModelSpecificationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -49,6 +50,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
@@ -184,7 +187,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		try {
 			JsonNode jsonNode = objectMapper.readTree(jsonString);
 //			System.out.println(jsonNode);
-			modsMarshaller.formMoDSInputsFile(jsonNode, filePath);
+//			modsMarshaller.formMoDSInputsFile(jsonNode, filePath);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -275,10 +278,11 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		files.put("MODS_SIM_INITFILE_AIVarInitReadFile.csv", file4);
 		
 		// parameters
-		List<JSONObject> parameters = collectActiveParameters(activeParameters, caseNameList, caseModelList);
-		parameters.addAll(collectPassiveParameters(passiveParameters, caseNameList, caseModelList));
-		parameters.add(collectOutputParameters(outputResponse, caseNameList, caseModelList));
-        
+//		List<JSONObject> parameters = collectActiveParameters(activeParameters, caseNameList, caseModelList);
+//		parameters.addAll(collectPassiveParameters(passiveParameters, caseNameList, caseModelList));
+//		parameters.add(collectOutputParameters(outputResponse, caseNameList, caseModelList));
+//        
+		/**
 		jsonString = new JSONObject().put("mods", new JSONObject()
 				.put("algorithms", new JSONArray(collectAlgorithms(algorithms)))
 				.put("models", new JSONArray(collectModels(models)))
@@ -286,10 +290,14 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 				.put("files", new JSONArray(collectFiles(files)))
 				.put("parameters", new JSONArray(parameters)))
 				.toString();
+		*/
+		
 		
 		return jsonString;
 	}
 	
+	// to be deleted
+	/**
 	public List<JSONObject> collectAlgorithms(LinkedHashMap<String, HashMap<String, String>> algorithms) {
 		List<JSONObject> algorithmsInJson = new ArrayList<>();
 		for (String i : algorithms.keySet()) {
@@ -298,9 +306,25 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			algorithmsInJson.add(algoJson);
 		}
 		return algorithmsInJson;
+	}*/
+	
+	public void collectAlgorithms(LinkedHashMap<String, LinkedHashMap<String, String>> algorithms) throws IOException, MoDSAgentException {
+		for (String i : algorithms.keySet()) {
+			String algoJson = new JSONObject().put("name", i)
+					.put("details", collectDetails(algorithms.get(i))).toString();
+			JsonNode locatedNode = modsJsonNode.path("algorithms").path("algorithm");
+			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(algoJson));
+		}
 	}
 	
+	public void updateAlgorithms() throws IOException, MoDSAgentException {
+		
+	}
+	
+	// to be deleted 
+	/**
 	public List<JSONObject> collectModels(HashMap<String, HashMap<String, String>> models) {
+		// do operation, public void, add things to jsonnode
 		List<JSONObject> modelsInJson = new ArrayList<>();
 		for (String i : models.keySet()) {
 			JSONObject modJson = new JSONObject().put("model", new JSONObject().put("name", i)
@@ -308,9 +332,45 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			modelsInJson.add(modJson);
 		}
 		return modelsInJson;
+	}*/
+	
+	public void collectModels(LinkedHashMap<String, LinkedHashMap<String, String>> models) throws IOException, MoDSAgentException {
+		for (String i : models.keySet()) {
+			String modJson = new JSONObject().put("name", i)
+					.put("details", collectDetails(models.get(i))).toString();
+			System.out.println(modsJsonNode.path("models"));
+			System.out.println(modsJsonNode.path("models").path("model"));
+			JsonNode locatedNode = modsJsonNode.path("models").path("model");
+			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(modJson));	
+		}
 	}
 	
-	public List<JSONObject> collectCases(HashMap<String, List<String>> cases) {
+	// for test, to be deleted
+	/**
+	public void collectModelsTest(LinkedHashMap<String, LinkedHashMap<String, String>> models, JsonNode node) throws IOException, MoDSAgentException {
+		for (String i : models.keySet()) {
+			String modJson = new JSONObject().put("name", i)
+					.put("details", collectDetails(models.get(i))).toString();
+			JsonNode locatedNode = node.path("models").path("model");
+			ArrayNode addedModelNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(modJson));	
+		}
+	}*/
+	
+	
+	public JSONObject collectDetails(LinkedHashMap<String, String> details) throws IOException, MoDSAgentException {
+		JSONObject detailsInJson = new JSONObject();
+		List<JSONObject> detailArray = new ArrayList<>();
+		for (String i : details.keySet()) {
+			JSONObject detailJson = new JSONObject().put("name", i).put("content", details.get(i));
+			detailArray.add(detailJson);
+		}
+		detailsInJson.put("detail", new JSONArray(detailArray));
+		return detailsInJson;
+	}
+	
+	// to be deleted 
+	/**
+	public List<JSONObject> collectCases(LinkedHashMap<String, List<String>> cases) {
 		List<JSONObject> casesInJson = new ArrayList<>();
 		for (String i : cases.keySet()) {
 			JSONObject caseJson = new JSONObject().put("case", new JSONObject().put("name", i)
@@ -318,8 +378,30 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			casesInJson.add(caseJson);
 		}
 		return casesInJson;
+	}*/
+	
+	public void collectCases(LinkedHashMap<String, List<String>> cases) throws IOException, MoDSAgentException {
+		for (String i : cases.keySet()) {
+			String caseJson = new JSONObject().put("name", i)
+					.put("models", collectSimplifiedModels(cases.get(i))).toString();
+			JsonNode locatedNode = modsJsonNode.path("cases").path("case");
+			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(caseJson));
+		}
 	}
 	
+	public JSONObject collectSimplifiedModels(List<String> models) throws IOException, MoDSAgentException {
+		JSONObject modelsInJson = new JSONObject();
+		List<JSONObject> modelArray = new ArrayList<>();
+		for (String model : models) {
+			JSONObject modJson = new JSONObject().put("name", model);
+			modelArray.add(modJson);
+		}
+		modelsInJson.put("model", new JSONArray(modelArray));
+		return modelsInJson;
+	}
+	
+	// to be deleted
+	/**
 	public List<JSONObject> collectFiles(HashMap<String, HashMap<String, String>> files) {
 		List<JSONObject> filesInJson = new ArrayList<>();
 		for (String i : files.keySet()) {
@@ -328,8 +410,20 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			filesInJson.add(fileJson);
 		}
 		return filesInJson;
+	}*/
+	
+	public void collectFiles(LinkedHashMap<String, LinkedHashMap<String, String>> files) throws IOException, MoDSAgentException {
+		for (String i : files.keySet() ) {
+			String fileJson = new JSONObject().put("name", i)
+					.put("details", collectDetails(files.get(i))).toString();
+			JsonNode locatedNode = modsJsonNode.path("files").path("file");
+			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(fileJson));
+		}
 	}
 	
+	
+	// to be deleted
+	/**
 	public List<JSONObject> collectActiveParameters(HashMap<String, String> parameters, List<String> caseNameList, List<String> caseModelList) {
 		List<JSONObject> parametersInJson = new ArrayList<>();
 		for (String i : parameters.keySet()) {
@@ -341,8 +435,70 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			parametersInJson.add(paraJson);
 		}
 		return parametersInJson;
+	}*/
+	
+	
+	
+	
+	public void collectParameters(List<Parameter> parameters) throws IOException, MoDSAgentException {
+		for (Parameter param : parameters) {
+			String paramJson = new JSONObject()
+					.put("type", param.getType())
+					.put("subtype", param.getSubtype())
+					.put("name", param.getName())
+					.put("caseDetailSep", param.getCaseDetailSep())
+					.put("nParamsPerCase", param.getNParamsPerCase())
+					.put("preserveWhiteSpace", param.getPreserveWhiteSpace())
+					.put("scaling", param.getScaling())
+					.put("cases", collectSimplifiedCases(param.getCaseNamesList()))
+					.put("models", collectSimplifiedModels(param.getModelList()))
+					.put("files", collectParameterFiles(param.getFileHash())).toString();
+			JsonNode locatedNode = modsJsonNode.path("parameters").path("parameter");
+			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(paramJson));
+		}
 	}
 	
+	public JSONObject collectSimplifiedCases(List<String> cases) throws IOException, MoDSAgentException {
+		JSONObject casesInJson = new JSONObject();
+		List<JSONObject> caseArray = new ArrayList<>();
+		for (String cas : cases) {
+			JSONObject casJson = new JSONObject().put("name", cas);
+			caseArray.add(casJson);
+		}
+		casesInJson.put("case", new JSONArray(caseArray));
+		return casesInJson;
+	}
+	
+	public JSONObject collectParameterFiles(LinkedHashMap<String, LinkedHashMap<String, String>> files) 
+			throws IOException, MoDSAgentException {
+		JSONObject filesInJson = new JSONObject();
+		for (String i : files.keySet()) {
+			String tokens[] = i.split(" ");
+			filesInJson.put(tokens[0], new JSONObject().put("name", tokens[1])
+							.put("details", collectDetails(files.get(i))));
+		}
+		return filesInJson;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/**
 	public List<JSONObject> collectActiveParameterFiles(String parameter, String parameterPath) {
 		List<JSONObject> parameterFiles = new ArrayList<>();
 		HashMap<String, String> initFileDetails = new HashMap<String, String>();
@@ -459,7 +615,9 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		return casesInJson;
 	}
 	
-	
+	*/
+	// to be deleted
+	/**
 	public List<JSONObject> collectDetails(HashMap<String, String> details) {
 		List<JSONObject> detailsInJson = new ArrayList<>();
 		for (String i : details.keySet()) {
@@ -660,7 +818,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			items.add(detailS);
 		}
 		
-		model.setItems(items);
+//		model.setItems(items);
 		modelList.add(model);
 	}
 	
@@ -681,7 +839,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			items.add(modelS);
 		}
 		
-		caseA.setItems(items);
+//		caseA.setItems(items);
 		caseList.add(caseA);
 	}
 	
@@ -799,12 +957,12 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		
 		if (paraJN.get("cases") != null) {
 			setUpParameterCaseS(paraJN.get("cases"));
-			parameter.setCases(parameterCaseS);
+//			parameter.setCases(parameterCaseS);
 		}
 		
 		if (paraJN.get("models") != null) {
 			setUpParameterModelS(paraJN.get("models"));
-			parameter.setModels(parameterModelS);
+//			parameter.setModels(parameterModelS);
 		}
 		
 		if (paraJN.get("files") != null) {
@@ -883,7 +1041,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			items.add(detailS);
 		}
 		
-		parameterModel.setItems(items);
+//		parameterModel.setItems(items);
 		parameterModelList.add(parameterModel);
 	}
 	
@@ -904,7 +1062,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			items.add(modelS);
 		}
 		
-		parameterCase.setItems(items);
+//		parameterCase.setItems(items);
 		parameterCaseList.add(parameterCase);
 	}
 	
@@ -950,6 +1108,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		detailList.add(detail);
 	}
 
+	*/
 	
 	
 	
@@ -966,8 +1125,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	
 	
 	
-	
-	
+	/**
 	private void setUpAlgorithmS(String jsonString) throws MoDSAgentException {
 		algorithmS = new AlgorithmS();
 		algorithmList = new ArrayList<Algorithm>();
@@ -1055,9 +1213,11 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 //		for (String singleAlgorithm : listOfAlgorithm) {
 //			setUpAlgorithm(singleAlgorithm.toString());
 //		}
+	
+	/**
 		algorithmS.setAlgorithm(algorithmList);
 		mods.setAlgorithmS(algorithmS);
-	}
+	}*/
 
 	private void setUpDetailS(String jsonString) throws MoDSAgentException {
 		detailS = new DetailS();
@@ -1098,7 +1258,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	private void cleanUp(String filePath) throws MoDSAgentException {
+	private void cleanUp(String filePath) throws IOException, MoDSAgentException {
 		String fileTemp = filePath.replace(".xml", "_temp.xml");
 		String fileOrig = filePath;
 		try {
@@ -1106,7 +1266,10 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileTemp), "UTF-8"));
 			String line;
 			while ((line = br.readLine()) != null) {
-				bw.write(line.replace("modelS", "models").replace("detailS", "details").concat("\n"));
+				if (line.contains(INITIALISATION_STRING)) {
+				} else {
+					bw.write(line.concat("\n"));
+				}
 			}
 			bw.close();
 			br.close();
@@ -1117,17 +1280,17 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	private void delete(String xmlFileOrig, String xmlFileTemp) {
+	private void delete(String xmlFileOrig, String xmlFileTemp) throws IOException, MoDSAgentException {
 		File fileOriginal = new File(xmlFileOrig);
 		if (fileOriginal.delete()) {
 			fileOriginal = new File(xmlFileOrig);
 			File fileTemp = new File(xmlFileTemp);
 			if (fileTemp.renameTo(fileOriginal)) {
 			} else {
-				logger.error("The temporary ABox ontology file could not be renamed.");
+				logger.error("The temporary MoDS_inputs.xml file could not be renamed.");
 			}
 		} else {
-			logger.error("The generated original ABox ontology file could not be deleted.");
+			logger.error("The generated original MoDS_inputs.xml file could not be deleted.");
 		}
 	}
 	
@@ -1169,6 +1332,22 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		if (!workingDir.exists()) {
 			workingDir.mkdir();
 		}
+		
+		// create algorithms node
+		((ObjectNode) modsJsonNode).set("algorithms", new ObjectMapper().readTree(INITIALISATION_STRING_ALGORITHMS));
+		// create models node
+		((ObjectNode) modsJsonNode).set("models", new ObjectMapper().readTree(INITIALISATION_STRING_MODELS));
+		// create cases node
+		((ObjectNode) modsJsonNode).set("cases", new ObjectMapper().readTree(INITIALISATION_STRING_CASES));
+		// create files node
+		((ObjectNode) modsJsonNode).set("files", new ObjectMapper().readTree(INITIALISATION_STRING_FILES));
+		// create functions node
+		((ObjectNode) modsJsonNode).set("functions", new ObjectMapper().readTree(INITIALISATION_STRING_FUNCTIONS));
+		// create parameters node
+		((ObjectNode) modsJsonNode).set("parameters", new ObjectMapper().readTree(INITIALISATION_STRING_PARAMETERS));
+		
+		
+		
 	}
 
 	@Override
@@ -1177,7 +1356,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM();
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		kineticsSRM.formFiles(exeModel);
-//		kineticsSRM.setUpMoDS();
+		kineticsSRM.setUpMoDS();
 	}
 
 	@Override
@@ -1191,9 +1370,43 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		// TODO Auto-generated method stub
 //		setup algorithms
 		
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
+		
+		System.out.println(objectMapper.writeValueAsString(modsJsonNode));
+		
+		mods = objectMapper.readValue(objectMapper.writeValueAsString(modsJsonNode), MoDS.class);
+		mods.setXmlns("http://como.cheng.cam.ac.uk/MoDS");
+		mods.setXmlnsXsi("http://www.w3.org/2001/XMLSchema-instance");
+		mods.setXsiSchemaLocation("http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd");
+		saveMoDSInputsContent(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
+		cleanUp(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
 	}
 	
 	private void init() {
 		initMoDSInputs = new InitMoDSInputs();
+		initMoDSInputs.init();
 	}
+	
+	
+//	public List<JSONObject> collectModel(LinkedHashMap<String, LinkedHashMap<String, String>> model) throws IOException, MoDSAgentException {
+//		// setup model 
+//		
+//		
+//		String modelNodeString = new JSONObject().put("name", modelName)
+//				.put("details", new JSONObject().put("detail", value));
+//		JsonNode locatedNode = modsJsonNode.path("models").path("model");
+//		ArrayNode addedModelNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree("{}"))
+//		
+//		
+//		List<JSONObject> modelsInJson = new ArrayList<>();
+//		for (String i : models.keySet()) {
+//			JSONObject modJson = new JSONObject().put("model", new JSONObject().put("name", i)
+//					.put("details", new JSONArray(collectDetails(models.get(i)))));
+//			modelsInJson.add(modJson);
+//		}
+//		return modelsInJson;
+//	}
+	
+	
 }
