@@ -17,10 +17,11 @@ class testCommandHelper {
 
 	@Test
 	public void testExecuteSingleCommand() {
-		String expected = "test.txttest2test2.txt";
+		String expected = "hello.battest.txttest2test2.txt";
 		String actual = null;
 		if (commandHelper.isWindows()) {
-			actual = commandHelper.executeSingleCommand(System.getProperty("user.dir") + "/test_sample_dir", "dir");
+			actual = commandHelper.executeSingleCommand(System.getProperty("user.dir") + "/test_sample_dir/", "fc test.txt test2.txt");
+			expected = "Comparing files test.txt and TEST2.TXT***** test.txtDfds***** TEST2.TXTDfdscopy*****";
 		} else if (commandHelper.isMac()) {
 			actual = commandHelper.executeSingleCommand(System.getProperty("user.dir") + "/test_sample_dir", "ls");
 		}
@@ -55,7 +56,7 @@ class testCommandHelper {
 	public void testexecuteAsyncSingleCommand() {
 		String expected = "";
 		String actual = commandHelper.executeAsyncSingleCommand(System.getProperty("user.dir") + "/test_sample_dir",
-				"test.txt");
+				"hello.bat");
 		assertThrows(JPSRuntimeException.class, () -> commandHelper.executeAsyncSingleCommand("sd", "sdsds"),
 				"Unknown exception thrown, expected JPS runtime exception");
 		assertEquals(expected, actual, "The command was not executed correctly");
