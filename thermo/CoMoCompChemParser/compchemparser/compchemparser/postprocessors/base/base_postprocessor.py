@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class base_postprocessor(ABC):
+class BasePostprocessor(ABC):
 
     def __init__(self):
         """ init the postprocessor """

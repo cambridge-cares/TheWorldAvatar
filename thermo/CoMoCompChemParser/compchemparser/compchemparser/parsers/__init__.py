@@ -1,2 +1,1 @@
-from base_parser import base_parser
-from gaussian_parser import gaussian_parser
+from .gaussian.gaussian_parser import GaussianParser

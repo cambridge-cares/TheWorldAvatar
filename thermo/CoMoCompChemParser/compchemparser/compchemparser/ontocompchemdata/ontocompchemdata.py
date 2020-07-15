@@ -1,18 +1,16 @@
-
-
-class ontocompchemdata:
+class OntoCompChemdData:
 
     def __init__(self):
         self.log = ''
         self.data = {}
 
-    def getData(self, logfile, parser, postprocessor):
+    def getData(self, logFile, parser, postprocessor):
         """ 
            parser         - Gaussian or Molpro
            postprocessor  - Arkane at the moment
            
         """
-        self.log = logfile
+        self.log = logFile
         self.data = {}        
 
         parser.parseLog(self.log, self.data)
@@ -29,7 +27,3 @@ class ontocompchemdata:
         #    Rotational constants units
         #    Rotational constants size
         #    Atomic mass value (use Arkane isotopes module?)
-
-
-def run:
-    OntoCompChemData = ontocompchemdata()

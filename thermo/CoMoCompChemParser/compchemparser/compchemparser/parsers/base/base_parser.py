@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
-from pkg_resources import resource_string
 
-class base_parser(ABC):
+class BaseParser(ABC):
 
     def __init__(self):
         """ init the parser """
@@ -20,16 +19,16 @@ class base_parser(ABC):
             for line in logFileHandle:
                 # Search for the level of theory
                 tmp = self.getLevelOfTheory(line)
-                if tmp:
-                    LevelOfTheory = LevelOfTheory.append(tmp)
+                if tmp: 
+                    LevelOfTheory.append(tmp)
                 # Search for the spin multiplicity
-                tmp = self.getSpinMult(line)
+                tmp = self.getSpinMultiplicity(line)
                 if tmp:
-                    SpinMultiplicity = SpinMultiplicity.append(tmp)
+                    SpinMultiplicity.append(tmp)
                 # Search for the symmetry number
                 tmp = self.getSymmetryNumber(line)
                 if tmp:
-                    SymmetryNumber = SymmetryNumber.append(tmp)
+                    SymmetryNumber.append(tmp)
 
         # Assign found results to the parsedResults dictionary
         parsedResults['LevelOfTheory'] = LevelOfTheory
@@ -41,7 +40,7 @@ class base_parser(ABC):
         pass
 
     @abstractmethod
-    def getSpinMult(self,line):
+    def getSpinMultiplicity(self,line):
         pass
 
     @abstractmethod
