@@ -15,11 +15,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 public class CommandHelper {
     /* Author ZHOU XIAOCHI 2018.5.17*/
 
-
-    /**
-     * @param targetFolder target folder path you want to apply the commands upon
-     * @param args An array of commands you want to execute
-     */
+    private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
 
 
     //Since the command line commands are dependant on the OS, its imp to identify the OS.
@@ -27,38 +23,21 @@ public class CommandHelper {
 
     public static boolean isWindows() {
 
-        return (OS.indexOf("win") >= 0);
+        return (OS.contains("win"));
 
     }
 
     public static boolean isMac() {
 
-        return (OS.indexOf("mac") >= 0);
+        return (OS.contains("mac"));
 
     }
-
-    public static boolean isUnix() {
-
-        return (OS.indexOf("nix") >= 0 || OS.indexOf("nux") >= 0 || OS.indexOf("aix") > 0);
-
-    }
-
-    public static boolean isSolaris() {
-
-        return (OS.indexOf("sunos") >= 0);
-
-    }
-
-
-    private static Logger logger = LoggerFactory.getLogger(CommandHelper.class);
 
 
     public static String executeSingleCommand(String targetFolder, String command) {
         logger.info("In folder: " + targetFolder + " Excuted: " + command);
 
-        String resultString = getCommandResultString(getCommandProcess(targetFolder, command));
-
-        return resultString;
+        return getCommandResultString(getCommandProcess(targetFolder, command));
     }
 
     public static String executeCommands(String targetFolder, ArrayList<String> commands) {
@@ -77,25 +56,23 @@ public class CommandHelper {
 
 		logger.info("In folder: " + targetFolder + " Excuted: " + command);
 
-		String resultString = getCommandResultString(getAsyncCommandProcess(targetFolder, command));
-
-		return resultString;
+        return getCommandResultString(getAsyncCommandProcess(targetFolder, command));
 	}
 
     public static String getCommandResultString(Process pr) {
 
         BufferedReader bfr = new BufferedReader(new InputStreamReader(pr.getInputStream()));
-        String line = "";
-        String resultString = "";
+        String line;
+        StringBuilder resultString = new StringBuilder();
         try {
             while ((line = bfr.readLine()) != null) {
-                resultString += line;
+                resultString.append(line);
             }
         } catch (IOException e) {
             throw new JPSRuntimeException(e.getMessage(), e);
         }
 
-        return resultString;
+        return resultString.toString();
     }
 
 
