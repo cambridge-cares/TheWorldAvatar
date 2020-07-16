@@ -14,7 +14,12 @@ class OntoCompChemdData:
         self.data = {}        
 
         parser.parseLog(self.log, self.data)
+
+        self.checkParsedData()
+
         postprocessor.run(self.log, self.data)
+
+        self.checkPostProcessedData()
 
         #1 load arkane templates
         #2 create input files (streams if possible)
@@ -27,3 +32,11 @@ class OntoCompChemdData:
         #    Rotational constants units
         #    Rotational constants size
         #    Atomic mass value (use Arkane isotopes module?)
+
+    # check the parser generated keys
+    def checkParsedData(self):
+        pass
+
+    # check the postprocessor generated keys
+    def checkPostProcessedData(self):
+        pass
