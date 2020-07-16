@@ -1,0 +1,163 @@
+extends header.pug
+
+block title
+	title JPS_SHIPS 
+
+block sheets
+	link(rel="stylesheet" href='/stylesheets/mpage.css')
+	link(href='https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css', rel='stylesheet')
+
+
+block subtitle
+
+	| 2D visualization of pollutants in harbor
+	
+block readme
+	span#readme-button
+		| ?    
+	span#readme-text
+		| This agent considers the effect of surrounding buildings and weather data for simulation of atmospheric dispersion for some emission sources (ships represented by black ship symbols).
+		br
+		|The effects of real-time weather data (sourced from https://www.accuweather.com/en/sg/singapore/300597/weather-forecast/300597) on atmospheric dispersion are simulated and visualised in the dispersion profile. The weather data is updated every time the agent is executed.
+		br
+		|The user can modify the area of interest between Singapore and Hong Kong by selecting from the dropdown list and executing the simulation to determine the corresponding dispersion profile.
+		br
+		|The emission sources have emission heights of 20 m represents the height of the emission chimney tower for every ships.
+		br
+		|The selected region has to be inline with the wind direction in order for the dispersion profile to be displayed. The dispersion profile can be viewed at a height of 10 m to 590 m by moving the slider on the left.
+block description
+	
+
+
+block content
+	style.
+		body {
+		font-family: "Lato", sans-serif;
+		}
+		.sidenav {
+		height: 100%;
+		width: 0;
+		position: fixed;
+		z-index: 1;
+		top: 0;
+		left: 0;
+		background-color: #FFF;
+		overflow-x: hidden;
+		transition: 0.5s;
+		padding-top: 60px;
+		}
+		.select{
+			padding: 2px;
+			margin: 2px;
+		}
+		.sidenav a {
+		padding: 8px 8px 8px 32px;
+		text-decoration: none;
+		font-size: 25px;
+		color: #818181;
+		display: block;
+		transition: 0.3s;
+		}
+		.sidenav a:hover {
+		color: #f1f1f1;
+		}
+		.sidenav .closebtn {
+		position: absolute;
+		top: 0;
+		right: 25px;
+		font-size: 36px;
+		margin-left: 50px;
+		}
+		@media screen and (max-height: 450px) {
+		.sidenav {padding-top: 15px;}
+		.sidenav a {font-size: 18px;}
+		}
+		.slidecontainer {
+			width: 70%;
+			float:left;
+			padding: 5px;
+			margin: 5px;
+			}
+
+		.slider {
+			-webkit-appearance: none;
+			width: 100%;
+			height: 30px;
+			border-radius: 5px;
+			background: #d3d3d3;
+			outline: none;
+			opacity: 0.7;
+			-webkit-transition: .2s;
+			transition: opacity .2s;
+		}
+
+		.slider:hover {
+			opacity: 1;
+		}
+
+		.slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 25px;
+			height: 25px;
+			border-radius: 50%;
+			background: #4CAF50;
+			cursor: pointer;
+		}
+
+		.slider::-moz-range-thumb {
+			width: 25px;
+			height: 25px;
+			border-radius: 50%;
+			background: #4CAF50;
+			cursor: pointer;
+		}
+		
+		#map {
+			height: 100vh;
+			width: 100%;
+		}
+		#legend {
+			background: #fff;
+			padding: 5px;
+			margin: 5px;
+			overflow-y: auto;
+		}
+
+	#loader(style='display:none;')
+	div#wrapper2
+		p(style='text-align: center; float:left; margin-top: 15px; margin-left: 15px;')
+			span#label_myRange
+			| Height 
+			span#demo
+			| (m)  
+
+		.slidecontainer
+			input#myRange.slider(type='range',value='10')
+
+		select#location(style='float:left; padding: 5px; margin-top: 10px; margin-right: 5px;')
+			option(value='singapore', selected = '') Singapore
+			option(value='hongkong') Hong Kong
+		select#gasType( style='float:left; padding: 5px; margin-top: 10px;')
+				
+	div#legend
+		h3 
+			| Legend 
+			br
+			|(ug/m
+			sup 3 
+			| )
+		div#chart
+
+						   
+	div#map
+	div#sensorTable
+		
+	script(src="https://code.jquery.com/jquery-2.2.0.min.js")
+	script(src="/javascripts/jpsShip.js")
+	script(async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBgm3-eMQauJ_dW4Cq66Hg9aP50jpp24rA&libraries=visualization&callback=initMap")
+	script(src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js", integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS", crossorigin="anonymous")
+	script(src='https://unpkg.com/d3@5.7.0/dist/d3.min.js')
+	script(src='https://unpkg.com/d3fc@14.0.27/build/d3fc.js')
+	script(src='https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.js')
+

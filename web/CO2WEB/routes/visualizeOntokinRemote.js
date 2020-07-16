@@ -1,5 +1,5 @@
 var express = require('express');
-
+var async = require('async');
 var owlProcesser = require("../agents/fileConnection2Way.js");
 var router = express.Router();
 
@@ -15,11 +15,11 @@ let opts = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate',supQuery
 PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> 
 
 
-SELECT distinct ?uri
-    WHERE {{
+SELECT distinct ?uri ?label
+    WHERE {
     ?uri rdf:type ontocompchem:G09 .
-    }}
-
+    ?uri ontocompchem:hasUniqueSpecies  ?label.
+    } 
 `};
 
 let opts2 = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate',supQuery:
@@ -28,12 +28,21 @@ let opts2 = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate',supQuer
 PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
 PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> 
 
-SELECT distinct  ?uri
-    WHERE {{
-?s ontocompchem:hasUniqueSpecies  ?uri
-    }}
-
+SELECT distinct  ?uri 
+    WHERE {
+?s ontocompchem:hasUniqueSpecies  ?uri.
+    }
 `};
+
+let opts3 = {useSharp:true, level: 1,topnode:topNode2,viewName:'visualizeExUpdate',supQuery:
+`
+SELECT distinct  ?uri ?label
+    WHERE {
+?uri <http://www.w3.org/2000/01/rdf-schema#label> ?label
+    }`};
+
+
+
 router.get('/', function(req, res, next) {
     res.render(opts.viewName); //render the view with this value, { result: JSON.stringify(results)
 });
@@ -43,21 +52,45 @@ router.get('/links', function(req, res, next) {
     opts2['level'] = 1;
     connectionsReader.processSingle(opts).then((results)=>{
         connectionsReader.processSingle(opts2).then((results2)=>{
-
         console.log("read connections");
-        //for(let re of results){
-        //    console.log(re);
-        //}
-        //res.setHeader('Content-Type', 'application/json');
-        //res.json(results);//for testing
             results2.forEach((item)=>{item['source'] = topNode2})
-            results = results.concat(results2)
-        conns = results;
-        results.topnode = opts.topnode;
-        res.json(results); //render the view with this value
-    });
-    });
+            connectionsReader.processSingle(opts3).then((labelResult)=>{
+                let filterResult = [], co2result = [];
+                console.log('looking for labels')
+                    for (let uriItem of results2) {
+                        for(let labelItem of labelResult) {
+                            if (uriItem["target"] === labelItem["target"]) {
+                            uriItem["label"] = labelItem["label"];
+                            console.log('found label')
+                            console.log(uriItem["label"])
+                            }
+                        }
+                        for(let mechaItem of results){
+                            if (mechaItem["label"] === uriItem["target"]){//mechaItem links to co2
+                            if (uriItem["label"] === "CO2"){
+                                mechaItem["label"] ="";
+                                console.log('find co2 entity')
+                                co2result.push(mechaItem);
+                                co2result.push(uriItem);
+                                } else{
+                                mechaItem["label"] ="";
+                                filterResult.push(mechaItem);
+                                filterResult.push(uriItem);
+                            }
 
+                            }
+                        }
+
+                }
+
+               filterResult.splice(60);
+
+
+                let finalResults = filterResult.concat(results2)
+                res.json(filterResult.concat(co2result)); //render the view with this value
+            });
+    });
+    });
 });
 router.post('/linksingle', function(req, res, next) {
     console.log('body')
@@ -77,7 +110,6 @@ router.post('/linksingle', function(req, res, next) {
 
         //res.setHeader('Content-Type', 'application/json');
         //res.json(results);//for testing
-        console.log(results)
         conns = results;
 
 
@@ -96,10 +128,11 @@ let q = `
 PREFIX ontocompchem: <http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#> 
 
 SELECT distinct  ?uri
-WHERE {
-?uri ontocompchem:hasUniqueSpecies  <http://www.theworldavatar.com/kb/ontospecies/00b537ef-8b6f-3246-9a7e-edd0259c6e09.owl#00b537ef-8b6f-3246-9a7e-edd0259c6e09>
-}`
+    WHERE {{
+?s ontocompchem:hasUniqueSpecies  ?uri
+    }}`
+
 let optst = {useSharp:true, topnode:topNode,viewName:'visualizeExUpdate', supQuery:q}
-connectionsReader.processSingle(optst).then((resultst)=> {
+connectionsReader.processSingle(opts).then((resultst)=> {
 console.log(resultst)
 })

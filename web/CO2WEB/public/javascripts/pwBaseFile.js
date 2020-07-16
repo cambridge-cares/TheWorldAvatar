@@ -442,12 +442,27 @@ function displayCO2(data){
         url: kmlurl,
         type: 'GET',
         async: true,
-        contentType: 'application/json; charset=utf-8'
+        contentType: 'application/json; charset=utf-8', 
+        success: function(info, textStatus){
+            console.log(info);
+            console.log(textStatus);
+            console.log("successful execution");
+        }, 
+        fail: function (xhr, textStatus, errorThrown){
+            console.log(xhr);
+            console.log(textStatus);
+            console.log(errorThrown);
+            setTimeout(function() {
+                console.log('timeout');
+            }, 20000);
+            document.getElementById("loader").style.display = "none";
+            displayCO2(data);
+        }
     });     
     
-    request.done(function(data) {
-        console.log(data);
-        var obj0 = JSON.parse(data);
+    request.done(function(info) {
+        console.log(info);
+        var obj0 = JSON.parse(info);
         actualCarbon = parseFloat(obj0.actual);
         actualCarbonYr = actualCarbon*8760/1000000;
         wildPercentage = (actualCarbonYr/emissionValueForSingapore)*100*1000000;
@@ -566,6 +581,16 @@ function drawGenerator(data, anotherURL){
     request.fail(function(jqXHR, textStatus) {
     });
 }
+
+/** mystery of the missing kml layer. 
+ * 
+ */
+var checkExistKML = setInterval(function() {
+    if (kmlLayer != null && kmlLayer.status != "OK") {
+        refreshLayer(json);
+        clearInterval(checkExistKML);
+    }
+    }, 10000); // check every 10s
 /*** calls ENVisualization to call POWSYS from markers
  * @param data: electricalnetwork topnode iri
  */

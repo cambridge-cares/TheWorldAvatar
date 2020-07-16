@@ -279,7 +279,7 @@ var FileLinkMap = function (options) {
     bubbleMap.links = []
     bubbleMap.selected = null;
     var filteredNodes = [], filteredLinks = []
-    
+    let subscribeList = []
     
     
 
@@ -607,13 +607,18 @@ var FileLinkMap = function (options) {
     /***
     update d3 directed graph with new data
     ***/
+	bubbleMap.subscribe = function(){
+		if(subscribeList.length > 0){
+			console.log('resubscribe, list length: '+ subscribeList.length)
+        socket.emit("join", JSON.stringify(subscribeList));
+		}
+	}
     bubbleMap.update = function (links, coords, serviceUrls, retainSim) {
         coords = coords || []
         serviceUrls = serviceUrls || []
         console.log(typeof link)
         links = deepcopyObjArr(links)
         let newNodes = packNodesArr(links, [], []);
-        console.log(links)
         
         for (let link of links) {
             if (!includeLink(bubbleMap.links, link) && link.source && link.target) {
@@ -725,11 +730,12 @@ var FileLinkMap = function (options) {
         //console.log(bubbleMap.links)
 
         /*subscribe**********/
-        let subscribeList = bubbleMap.nodesArr.map(function (node) {
+        subscribeList = bubbleMap.nodesArr.map(function (node) {
             return {uri: node.url, withData: false};
         });
         
         console.log(subscribeList);
+	     
         socket.emit("join", JSON.stringify(subscribeList));
         /******************/
         
@@ -741,7 +747,6 @@ var FileLinkMap = function (options) {
         
     }
     
-
     
     bubbleMap.addnew = function (newlinks) {
         bubbleMap.update(newlinks, [], [], true)
@@ -943,6 +948,10 @@ $(window).load(function () {// when web dom ready
     
     map = FileLinkMap({});
     map.loadData(url)
+	socket.on('connect', function(){
+		console.log('reconnect socket, try subscribe again')
+		map.subscribe();
+	})
     $("#geo-search-result-panel").hide()
     
     
@@ -1310,8 +1319,8 @@ $(window).load(function () {// when web dom ready
     let preTime = Date.now();
     let rerequestTimer, allowRe = true;
     socket.on('update', function (data) {
-        console.log("Socket event!!!!!!!!!!!")
-        console.log(data)
+        //console.log("Socket event!!!!!!!!!!!")
+        //console.log(data)
         //check if time less than 1s, if true, do not do anything
         // if (Date.now() - preTime > 1000) {
         preTime = Date.now();
@@ -1331,7 +1340,7 @@ $(window).load(function () {// when web dom ready
         
         let orSize = node.attr("r");
         //console.log($('circle#FH-01.owl'));
-        console.log(data.filename)
+        //console.log(data.filename)
         
         if (simpleName in blinkTimerList) {
             return;
@@ -1354,7 +1363,7 @@ $(window).load(function () {// when web dom ready
         // this will fire for every update!!!!!! What if the update is rather frequent and is related to
         let url = window.location.href;     // Returns full URL
         
-        console.log(data)
+        //console.log(data)
         if (allowRe && data.filename == "NuclearPlants\.owl") { //
             console.log("request links again")
             $.ajax({ //ajax to get links again
