@@ -275,7 +275,7 @@ public class KnowledgeBaseClient {
 	 * @return
 	 * @throws Exception
 	 */
-	private static boolean repositoryExists(String endPointURL, String repositoryName, RemoteRepositoryManager repositoryManager) throws Exception{
+	private boolean repositoryExists(String endPointURL, String repositoryName, RemoteRepositoryManager repositoryManager) throws Exception{
 		final GraphQueryResult res = repositoryManager.getRepositoryDescriptions();
 		try{
 			while(res.hasNext()){
