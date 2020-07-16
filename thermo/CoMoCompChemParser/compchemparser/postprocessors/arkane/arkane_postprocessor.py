@@ -6,9 +6,6 @@ class ArkanePostprocessor(BasePostprocessor):
     def run(self,log,data):
         ARKANE_SPECIES_TEMPLATE = pkg_resources.resource_string(__name__, 'data/arkane_input_species_template.py')
         ARKANE_INPUT_TEMPLATE = pkg_resources.resource_string(__name__, 'data/arkane_input_template.py')
-
-
-        
         print(ARKANE_SPECIES_TEMPLATE)
         pass
         #1 load arkane templates

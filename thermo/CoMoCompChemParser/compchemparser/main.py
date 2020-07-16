@@ -10,7 +10,7 @@ def usage():
 
     """
     print(usagemsg)
-    hlp.codexit()
+    utils.codexit()
 
 # Processes the cmd arguments
 def main(argv):
