@@ -5,8 +5,8 @@ import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
-import com.cmclinnovations.slurm.job.SlurmJobException;
-import com.cmclinnovations.slurm.job.Status;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 
 import org.junit.Assert;
 
