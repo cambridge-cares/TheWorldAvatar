@@ -251,7 +251,7 @@ public class KnowledgeBaseClient {
 	 * ontokin and ontocompchem.
 	 * @param storeType the name of knowledge storage, e.g. Blazegraph and RDF4J.
 	 */
-	public static RemoteRepository getRepository(String endPointURL, String repositoryName, RDFStoreType storeType) throws Exception{
+	public RemoteRepository getRepository(String endPointURL, String repositoryName, RDFStoreType storeType) throws Exception{
 		RemoteRepository repository = null;
 		if(storeType.toString().equals(RDFStoreType.BLAZEGRAPH.toString())){
 			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, false);
@@ -303,7 +303,7 @@ public class KnowledgeBaseClient {
 	 * C:/path/to/the/ontology/ontokin.owl and C:/path/to/the/ontology/ABF.owl.
 	 * @throws Exception
 	 */
-	public static void uploadOntology(String endPointURL, String repositoryName, String ontologyFilePath)
+	public void uploadOntology(String endPointURL, String repositoryName, String ontologyFilePath)
 			throws Exception {
 		RemoteRepository repository = getRepository(endPointURL, repositoryName,
 				RDFStoreType.BLAZEGRAPH);
@@ -332,7 +332,7 @@ public class KnowledgeBaseClient {
 	 * of ontologies, e.g. C:/path/to/the/ontology_folder.
 	 * @throws Exception
 	 */
-	public static void uploadOntologies(String endPointURL, String repositoryName, String ontologyDirectory) throws Exception{
+	public void uploadOntologies(String endPointURL, String repositoryName, String ontologyDirectory) throws Exception{
 		File dir = new File(ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
@@ -357,7 +357,7 @@ public class KnowledgeBaseClient {
 	 * @return
 	 * @throws Exception
 	 */
-	public static String query(String endPointURL, String repositoryName, RDFStoreType storeType, String query) throws Exception {
+	public String query(String endPointURL, String repositoryName, RDFStoreType storeType, String query) throws Exception {
 		 StringBuffer resultSet = new StringBuffer();
 		RemoteRepository repository = getRepository(endPointURL, repositoryName, storeType);
 		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(query);
