@@ -9,7 +9,7 @@ import java.io.FileFilter;
 import java.util.HashMap;
 import java.util.Map;
 import uk.ac.cam.ceb.como.math.fourier.series.FourierSeries;
-import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.potential.approximation.fourier.DFSApproximation;
+//import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.potential.approximation.fourier.DFSApproximation;
 import uk.ac.cam.ceb.como.io.thermo.file.parser.internal_rotations.hindered.HPDirectory;
 import uk.ac.cam.ceb.como.io.thermo.file.parser.internal_rotations.hindered.HPDirectoryParser;
 import org.junit.Ignore;
@@ -38,15 +38,15 @@ public class CSVFourierSeriesIOTest {
         String dest = "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\fit.csv";
         
         Map<String, FourierSeries> series = new HashMap<String, FourierSeries>();
-        series.put("sp_species-2-1-1680-radical-0.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test02\\data\\",
-                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test02\\sp_species-2-1-1680-radical-0.g09").approximate());
-        series.put("sp_species-0036-radical-1.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test04\\data\\",
-                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test04\\sp_species-0036-radical-1.g09").approximate());
-        series.put("a-discr_freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test01\\data\\",
-                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test01\\a-discr_freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09").approximate());
-        series.put("a-discr-freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test03\\data\\",
-                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test03\\a-discr-freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09").approximate());
-        
+//        series.put("sp_species-2-1-1680-radical-0.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test02\\data\\",
+//                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test02\\sp_species-2-1-1680-radical-0.g09").approximate());
+//        series.put("sp_species-0036-radical-1.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test04\\data\\",
+//                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test04\\sp_species-0036-radical-1.g09").approximate());
+//        series.put("a-discr_freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test01\\data\\",
+//                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test01\\a-discr_freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09").approximate());
+//        series.put("a-discr-freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09", (FourierSeries) fit("W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test03\\data\\",
+//                "W:\\Data\\TTIP\\g09_hr\\i-rigid-1dhr_test\\test03\\a-discr-freq-hr-fine-m-refined-species-0890-radical-0-restricted.g09").approximate());
+//        
         CSVFourierSeriesWriter writer = new CSVFourierSeriesWriter();
         writer.setContent(series);
         writer.set(dest);
@@ -73,23 +73,23 @@ public class CSVFourierSeriesIOTest {
         return true;
     }
 
-    public DFSApproximation fit(String dir, String ref) throws Exception {
+//    public DFSApproximation fit(String dir, String ref) throws Exception {
         // general directory information
-        HPDirectory directory = new HPDirectory(new File(dir), new File(ref));
+//        HPDirectory directory = new HPDirectory(new File(dir), new File(ref));
         // parser for the defined directory
-        HPDirectoryParser dirReader = new HPD09DirParser();   //(directory, false, new ExtendedHRFileNameInterpreter(), 1.0);
-        dirReader.set(new File(dir));
-        dirReader.set(new FileFilter[]{new G09FileFilter()});
-        dirReader.setReference(new File(ref));
-        dirReader.setFileNameInterpreter(new HPFileNameInfoExtended());
+//        HPDirectoryParser dirReader = new HPD09DirParser();   //(directory, false, new ExtendedHRFileNameInterpreter(), 1.0);
+//        dirReader.set(new File(dir));
+//        dirReader.set(new FileFilter[]{new G09FileFilter()});
+//        dirReader.setReference(new File(ref));
+//        dirReader.setFileNameInterpreter(new HPFileNameInfoExtended());
         
-        dirReader.parse();
-        DiscrRotation rotation = dirReader.get().getRotation();
+//        dirReader.parse();
+//        DiscrRotation rotation = dirReader.get().getRotation();
         
 
         // create the Rotation object
 //        dirReader.createRotationObject();
 //        Rotation readRotation = directory.getRotation();
-        return new DFSApproximation(rotation, (int) (rotation.getDataSpace().size() / 2.0) + 1);
-    }
+//        return new DFSApproximation(rotation, (int) (rotation.getDataSpace().size() / 2.0) + 1);
+//    }
 }

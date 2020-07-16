@@ -16,7 +16,7 @@ import uk.ac.cam.ceb.como.math.fourier.series.onedimensional.discrete.DiscreteCl
 import uk.ac.cam.ceb.como.math.fourier.series.onedimensional.discrete.DiscreteClassicalOneDimensionalFourierSeriesCoefficientFitting;
 import uk.ac.cam.ceb.como.math.function.Function;
 import uk.ac.cam.ceb.como.math.function.FunctionCalculationException;
-import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.potential.approximation.fourier.DFSApproximation;
+//import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.potential.approximation.fourier.DFSApproximation;
 import uk.ac.cam.ceb.como.thermo.partition_function.rotation.internal.hindered.potential.discretisation.DiscrRotation;
 //import uk.ac.cam.ceb.como.thermo.partitionfunc.hr.HRSymmPartitionFunction;
 import org.junit.Test;
