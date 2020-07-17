@@ -330,14 +330,19 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			
 	    	File file = new File(destDir+"/3D_instantanous_mainconc_center.dat");
 			String destinationUrl = datapath + "/3D_instantanous_mainconc_center.dat";
+			
 	    	File file2 = new File(destDir+"/icmhour.nc");
 			String destinationUrl2 = datapath + "/icmhour.nc";
 			File file2des=new File(destinationUrl2);
 			FileUtils.copyFile(file2, file2des);
+			
 	    	File file3 = new File(destDir+"/plume_segments.dat");
 			String destinationUrl3 = datapath + "/plume_segments.dat";
 			File file3des=new File(destinationUrl3);
 			FileUtils.copyFile(file3, file3des);
+			
+			
+			
 			new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
 			//new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
 			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
