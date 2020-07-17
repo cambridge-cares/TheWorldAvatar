@@ -1,9 +1,12 @@
 package uk.ac.cam.cares.jps.dispersion.sensor;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -13,6 +16,7 @@ import java.util.TimeZone;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.ValueFactory;
@@ -20,6 +24,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.json.CDL;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -277,12 +282,12 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				.header("Authorization", currenttoken).asString().getBody();
 		
 		//Get Gas and temperature measurement data using the token
-		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/1/01")
+		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1890/1/01")
 					      .header("Accept", "application/json")
 					      .header("Authorization", currenttoken).asString().getBody();
 		JSONArray jArr = new JSONArray(responseGas);
+        
 		//System.out.println("jsonarray= "+jArr.toString());
-		ArrayList<String> list = new ArrayList<String>();
 		ArrayList<JSONObject> arrJo = new ArrayList<JSONObject>();
 		if (jArr != null) {
 			for (int i = 1; i< jArr.length(); i++) {
@@ -309,13 +314,13 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			}
 		}
 		//Get PM measurement data using the token
-		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1740/2/01/1")
+		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1890/2/01/1")
 			      .header("Accept", "application/json")
 			      .header("Authorization", currenttoken).asString().getBody();
 		Unirest.shutDown();
-		jArr = new JSONArray(responsePM);
-		for (int i = 0; i< jArr.length(); i++) {
-			JSONObject joPM = new JSONObject(jArr.get(i).toString());//{}
+		JSONArray jArr2 = new JSONArray(responsePM);
+		for (int i = 0; i< jArr2.length(); i++) {
+			JSONObject joPM = new JSONObject(jArr2.get(i).toString());//{}
 			JSONObject jo = new JSONObject();			
 			jo.put("PM1", joPM.getDouble("pm1_prescale"));
 			jo.put("PM25", joPM.getDouble("pm2_5_prescale"));
@@ -323,6 +328,20 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			//gather the json from here. 
 			jo.put("Timestamp", convertTime(joPM.getString("reading_datestamp")));
 			arrJo.add(jo);
+		}
+		try {
+			DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss");  
+			LocalDateTime now = LocalDateTime.now();  
+    		File file=new File("C:\\JPS_DATA\\workingdir\\JPS_DISPERSION\\testGas"+dtf.format(now)+".csv");
+            String csv = CDL.toString(jArr);
+			FileUtils.writeStringToFile(file, csv, "ISO-8859-1");
+			file=new File("C:\\JPS_DATA\\workingdir\\JPS_DISPERSION\\testPM"+dtf.format(now)+".csv");
+			csv = CDL.toString(jArr2);
+			FileUtils.writeStringToFile(file, csv, "ISO-8859-1");
+				
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return arrJo;
 	}
