@@ -35,6 +35,6 @@ public class MechanismDownload {
 		StreamResult outputFile = new StreamResult(new File(targetPath));
 		Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.transform(source, outputFile);
-		System.out.println("\nXML DOM Created Successfully..");
+		System.out.println("\nMechanism downloaded successfully.");
 	}
 }
