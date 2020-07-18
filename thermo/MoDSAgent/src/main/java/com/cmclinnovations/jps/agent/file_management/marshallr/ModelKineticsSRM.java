@@ -86,9 +86,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());
 		}
-		if (!headers.get(0).equals(headers.get(1)) || !headers.get(1).equals(headers.get(2))) {
-			logger.error("The heasers of all experimental data tables should be consistent.");
+		for (int i = 1; i < headers.size(); i++) {
+			if (!headers.get(i).equals(headers.get(i-1))) {
+				logger.error("The heasers of all experimental data tables should be consistent.");
+			}
 		}
+//		if (!headers.get(0).equals(headers.get(1)) || !headers.get(1).equals(headers.get(2))) {
+//			logger.error("The heasers of all experimental data tables should be consistent.");
+//		}
 		// form exp data csv file
 		List<String[]> dataLines;
 		dataLines = new ArrayList<>();
@@ -121,7 +126,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			}
 		}
 		
-		// download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
+		// TODO download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
 		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
 		MechanismDownload mechanismDownload = new MechanismDownload();
 		try {
@@ -130,7 +135,6 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
 		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
 				| TransformerException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -154,6 +158,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		expFiles.add(expDataCSV.getName());
 		expFiles.add(mechanismXML.substring(mechanismXML.lastIndexOf(FRONTSLASH)));
 		kineticsSRM.setExpFiles(expFiles);
+		
 		// set up model case names
 		kineticsSRM.setCaseNames(caseList);
 		
@@ -231,7 +236,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		// get the filePath of experimental data
 		File expData = null;
 		for (String expFilePath : expFiles) {
-			if (expFilePath.contains(FILE_MODEL_EXPDATA_SUFFIX)) {
+			if (expFilePath.contains(FILE_MODEL_EXPDATA_SUFFIX) && expFilePath.contains(modelName)) {
 				expData = new File(folderTemporaryPath.concat(FRONTSLASH+expFilePath));
 			}
 		}
@@ -269,7 +274,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		File expData = null;
 		File mechanism = null;
 		for (String expFilePath : expFiles) {
-			if (expFilePath.contains(FILE_MODEL_EXPDATA_SUFFIX)) {
+			if (expFilePath.contains(FILE_MODEL_EXPDATA_SUFFIX) && expFilePath.contains(modelName)) {
 				expData = new File(folderTemporaryPath.concat(FRONTSLASH+expFilePath));
 			} else if (expFilePath.contains(FILE_MECHANISM)) {
 				mechanism = new File(folderTemporaryPath.concat(FRONTSLASH+expFilePath));
@@ -278,15 +283,19 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		
 		// create files in the initial folder
 		List<String> allFiles = new ArrayList<>();
-		String mechanismFile = copyMechanismFile(copyOfMechanismFilePath, mechanism);
-		String inputParamsFile = createInputParamsFile(inputParamsFilePath, expData, mechanismFile);
-		allFiles.add(mechanismFile);
-		allFiles.add(inputParamsFile);
+		allFiles.add(copyMechanismFile(copyOfMechanismFilePath, mechanism));
+		allFiles.add(createInputParamsFile(inputParamsFilePath, expData));
 		
 		return allFiles;
 	}
 	
-	
+	/**
+	 * Set up all the components of executable in the MoDS input file. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSAgentException
+	 */
+	@Override
 	public void setUpMoDS() throws IOException, MoDSAgentException {
 		// set up algorithms
 		String active_subtype = new String();
@@ -351,7 +360,6 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 				if (modelFile.contains(FILE_KINETICS_INPUTPARAMS)) {
 					file.put("XML_namespace", "http://como.cheng.cam.ac.uk/srm");
 				}
-				
 			} else if (modelFile.endsWith(".csv")) {
 				file.put("file_type", "DSV");
 				file.put("delimiter", ",");
@@ -386,7 +394,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			workingWrite.put("write_function", "Set_XML_double");
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
-			fileHash.put("workingWrite "+FILE_MECHANISM, workingWrite);
+			fileHash.put("workingWrite "+FILE_KINETICS_INPUTPARAMS, workingWrite);
 			
 			param.setFileHash(fileHash);
 			parameters.add(param);
@@ -396,6 +404,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			Parameter param = new Parameter();
 			param.setType("passive_input");
 			param.setName(i);
+			param.setSubtype("subtype_"+i);
 			param.setCaseDetailSep(";");
 			param.setPreserveWhiteSpace("true");
 			param.setCaseNamesList(caseNames);
@@ -440,9 +449,11 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			param.setModelList(caseModel);
 			
 			String column = new String();
-			if (i.contains("Igni") && i.contains("Delay")) {
+			if (i.toLowerCase().contains("igni") && i.toLowerCase().contains("delay")) {
 				column = "Ignition time [ms]";
-			}
+			} else if (i.toLowerCase().contains("flame") && i.toLowerCase().contains("speed")) {
+				column = "Laminar flame speed [cm/s]";
+			} // TODO further parameterise this
 			
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
@@ -614,7 +625,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @throws IOException
 	 * @throws MoDSAgentException
 	 */
-	private String createInputParamsFile(File inputParamsFilePath, File expData, String mechName) throws IOException, MoDSAgentException {
+	private String createInputParamsFile(File inputParamsFilePath, File expData) throws IOException, MoDSAgentException {
 		// read the first case of experiment
 		String[] headerLine = null;
 		String[] firstData = null;
@@ -669,7 +680,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 										.put("value", iniPres)
 										.put("unit", iniPresUnit)))
 						.put("chemistry", new JSONObject()
-								.put("mechFile", mechName)
+								.put("mechFile", FILE_MECHANISM)
 								.put("numOfReactions", numOfReactions))
 						.put("oxidiser", oxidiser)
 						.put("ignDelayPostProcessor", new JSONObject()
@@ -686,44 +697,44 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		return inputParams.getName();
 	}
 	
-	/**
-	 * Convert a string array to a string in the format of CSV file. 
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private String convertToCSV(String[] data) {
-	    return Stream.of(data)
-	      .map(this::escapeSpecialCharacters)
-	      .collect(Collectors.joining(","));
-	}
-	
-	/**
-	 * Escape special characters when converting string array to string in the format of CSV file. 
-	 * 
-	 * @param data
-	 * @return
-	 */
-	private String escapeSpecialCharacters(String data) {
-	    String escapedData = data.replaceAll("\\R", " ");
-	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-	        data = data.replace("\"", "\"\"");
-	        escapedData = "\"" + data + "\"";
-	    }
-	    return escapedData;
-	}
-	
-	/**
-	 * Check if the given folder path exist, create one if it does not exist. 
-	 * 
-	 * @param folderPath
-	 * @throws IOException
-	 * @throws MoDSAgentException
-	 */
-	private void checkFolderPath(String folderPath) throws IOException, MoDSAgentException {
-		File folder = new File(folderPath);
-		if (!folder.exists()) {
-			folder.mkdir();
-		}
-	}
+//	/**
+//	 * Convert a string array to a string in the format of CSV file. 
+//	 * 
+//	 * @param data
+//	 * @return
+//	 */
+//	private String convertToCSV(String[] data) {
+//	    return Stream.of(data)
+//	      .map(this::escapeSpecialCharacters)
+//	      .collect(Collectors.joining(","));
+//	}
+//	
+//	/**
+//	 * Escape special characters when converting string array to string in the format of CSV file. 
+//	 * 
+//	 * @param data
+//	 * @return
+//	 */
+//	private String escapeSpecialCharacters(String data) {
+//	    String escapedData = data.replaceAll("\\R", " ");
+//	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
+//	        data = data.replace("\"", "\"\"");
+//	        escapedData = "\"" + data + "\"";
+//	    }
+//	    return escapedData;
+//	}
+//	
+//	/**
+//	 * Check if the given folder path exist, create one if it does not exist. 
+//	 * 
+//	 * @param folderPath
+//	 * @throws IOException
+//	 * @throws MoDSAgentException
+//	 */
+//	private void checkFolderPath(String folderPath) throws IOException, MoDSAgentException {
+//		File folder = new File(folderPath);
+//		if (!folder.exists()) {
+//			folder.mkdir();
+//		}
+//	}
 }
