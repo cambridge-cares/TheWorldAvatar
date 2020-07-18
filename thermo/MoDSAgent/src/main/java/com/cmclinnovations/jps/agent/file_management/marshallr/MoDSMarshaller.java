@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -317,9 +319,23 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public void updateAlgorithms() throws IOException, MoDSAgentException {
-		
+	public void updateAlgorithms(String detailLocation, String newContent) throws IOException, MoDSAgentException {
+		// TODO
+		JsonNode algoNodes = modsJsonNode.path("algorithms").path("algorithm");
+		for (JsonNode algo : algoNodes) {
+			JsonNode details = algo.path("details").path("detail");
+			for (JsonNode detail : details) {
+				if (detail.get("name").toString().toLowerCase().equalsIgnoreCase("\""+detailLocation+"\"")) {
+					String origContent = detail.get("content").toString().substring(1);
+					origContent = origContent.substring(0, origContent.length()-1);
+					String updatedContent = origContent+" "+newContent;
+					((ObjectNode) detail).put("content", updatedContent);
+				}
+			}
+		}
 	}
+	
+	
 	
 	// to be deleted 
 	/**
@@ -438,7 +454,16 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}*/
 	
 	
-	
+	public void collectFunctions(List<Function> functions) throws IOException, MoDSAgentException {
+		for (Function function : functions) {
+			String funcJson = new JSONObject()
+					.put("name", function.getName())
+					.put("usage", function.getUsage())
+					.put("details", collectDetails(function.getDetailList())).toString();
+			JsonNode locatedNode = modsJsonNode.path("functions").path("function");
+			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(funcJson));
+		}
+	}
 	
 	public void collectParameters(List<Parameter> parameters) throws IOException, MoDSAgentException {
 		for (Parameter param : parameters) {
@@ -1360,15 +1385,18 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 
 	@Override
-	public void plugInCantera() throws IOException, MoDSAgentException {
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException {
 		// TODO Auto-generated method stub
-		
+		ModelCanteraLFS canteraLFS = new ModelCanteraLFS();
+		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
+		canteraLFS.formFiles(exeModel);
+		canteraLFS.setUpMoDS();
 	}
 
 	@Override
-	public void marshall() throws IOException, MoDSAgentException {
+	public String marshall() throws IOException, MoDSAgentException {
 		// TODO Auto-generated method stub
-//		setup algorithms
+		
 		
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -1381,6 +1409,9 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		mods.setXsiSchemaLocation("http://como.cheng.cam.ac.uk/MoDS MoDS_inputs.xsd");
 		saveMoDSInputsContent(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
 		cleanUp(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
+		deleteDirectory(new File(folderTemporaryPath));
+		
+		return jobFolderPath;
 	}
 	
 	private void init() {
@@ -1388,6 +1419,57 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		initMoDSInputs.init();
 	}
 	
+	private void deleteDirectory(File directoryToBeDeleted) {
+	    File[] allContents = directoryToBeDeleted.listFiles();
+	    if (allContents != null) {
+	        for (File file : allContents) {
+	            deleteDirectory(file);
+	        }
+	    }
+	    directoryToBeDeleted.delete();
+	}
+	
+	
+	/**
+	 * Convert a string array to a string in the format of CSV file. 
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public String convertToCSV(String[] data) {
+	    return Stream.of(data)
+	      .map(this::escapeSpecialCharacters)
+	      .collect(Collectors.joining(","));
+	}
+	
+	/**
+	 * Escape special characters when converting string array to string in the format of CSV file. 
+	 * 
+	 * @param data
+	 * @return
+	 */
+	public String escapeSpecialCharacters(String data) {
+	    String escapedData = data.replaceAll("\\R", " ");
+	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
+	        data = data.replace("\"", "\"\"");
+	        escapedData = "\"" + data + "\"";
+	    }
+	    return escapedData;
+	}
+	
+	/**
+	 * Check if the given folder path exist, create one if it does not exist. 
+	 * 
+	 * @param folderPath
+	 * @throws IOException
+	 * @throws MoDSAgentException
+	 */
+	public void checkFolderPath(String folderPath) throws IOException, MoDSAgentException {
+		File folder = new File(folderPath);
+		if (!folder.exists()) {
+			folder.mkdir();
+		}
+	}
 	
 //	public List<JSONObject> collectModel(LinkedHashMap<String, LinkedHashMap<String, String>> model) throws IOException, MoDSAgentException {
 //		// setup model 
