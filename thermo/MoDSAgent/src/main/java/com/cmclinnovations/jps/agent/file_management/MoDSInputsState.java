@@ -101,6 +101,10 @@ public class MoDSInputsState {
 	public static final String FILE_MECHANISM = "mechanism.xml";
 	public static final String FILE_MODEL_EXPDATA_SUFFIX = "Data.csv";
 	public static final String FILE_MODS_INPUTS = "MoDS_inputs.xml";
+	public static final String FILE_MECHANISM_BASE = "mechanism_base.xml";
+	public static final String FILE_MECHANISM_CANTERA = "mechanism_cantera_lfs.xml";
+	public static final String FILE_MECHANISM_ELEMENT = "element_data.xml";
+	public static final String FILE_CANTERA_LFSSIMULATION = "LFS_simulation.csv";
 	
 	public static final String INITIALISATION_STRING = "DeleteAfterInitialisation";
 	public static final String INITIALISATION_STRING_ALGORITHMS = "{\"algorithm\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
