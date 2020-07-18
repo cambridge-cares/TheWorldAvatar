@@ -54,6 +54,23 @@ public class OntoChemExpKG extends RepositoryManager {
 	    }
 	}
 	
+	public DataTable formatFlameSpeedExpDataTable(String experimentIRI) throws MoDSAgentException {
+		// TODO
+		List<String> columnTitles = new ArrayList<String>();
+		List<List<String>> experimentData = new ArrayList<List<String>>();
+		
+		List<List<String>> flameSpeedData = queryFlameSpeedExpData(experimentIRI);
+		columnTitles.addAll(flameSpeedData.get(0));
+		
+		for (int i = 1; i < flameSpeedData.size(); i++) {
+			List<String> dataLine = new ArrayList<>();
+			dataLine.addAll(flameSpeedData.get(i));
+			experimentData.add(dataLine);
+		}
+		
+		return new DataTable(columnTitles, experimentData);
+	}
+	
 	public DataTable formatExperimentDataTable(String experimentIRI) throws MoDSAgentException {
 		List<String> columnTitles = new ArrayList<String>();
 		List<List<String>> experimentData = new ArrayList<List<String>>();
@@ -105,6 +122,8 @@ public class OntoChemExpKG extends RepositoryManager {
 		return new DataTable(columnTitles, experimentData);
 	}
 	
+	
+	
 	public List<List<String>> queryConcentration(String experimentIRI) throws MoDSAgentException {
 //		String molecule = null;
 		
@@ -136,6 +155,18 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formExperimentDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
+		System.out.println(queryString);
+		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		System.out.println(testResults);
+		return testResults;
+	}
+	
+	public List<List<String>> queryFlameSpeedExpData(String experimentIRI) throws MoDSAgentException {
+		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
+			experimentIRI = "<".concat(experimentIRI).concat(">");
+		}
+		String queryString = formFlameSpeedExpDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
 		System.out.println(queryString);
 		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
@@ -210,6 +241,78 @@ public class OntoChemExpKG extends RepositoryManager {
 		queryString = queryString.concat("}");
 		return queryString;
 	}
+	
+	private String formFlameSpeedExpDataQuery(String prefixBindingOntoChemExp, String experimentIRI) {
+		String queryString = prefixBindingOntoChemExp;
+		queryString = queryString.concat(RDF);
+		queryString = queryString.concat("SELECT ?Fuel ?Oxidizer ?Phi ?Temperature ?UnitTemp ?Pressure ?UnitPres ?LaminarFlameSpeed ?UnitLFS ?LFSErrors \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
+		queryString = queryString.concat("    ?commonProperties OntoChemExp:hasProperty ?propertyFuel . \n");
+		queryString = queryString.concat("    ?propertyFuel OntoChemExp:hasName \"fuel\" . \n");
+		queryString = queryString.concat("    ?propertyFuel OntoChemExp:hasValue ?valueFuel . \n");
+		queryString = queryString.concat("    ?valueFuel OntoChemExp:hasVal ?Fuel . \n");
+		
+		queryString = queryString.concat("    ?commonProperties OntoChemExp:hasProperty ?propertyOxi . \n");
+		queryString = queryString.concat("    ?propertyOxi OntoChemExp:hasName \"oxidizer\" . \n");
+		queryString = queryString.concat("    ?propertyOxi OntoChemExp:hasValue ?valueOxi . \n");
+		queryString = queryString.concat("    ?valueOxi OntoChemExp:hasVal ?Oxidizer . \n");
+		
+		queryString = queryString.concat("    ?commonProperties OntoChemExp:hasProperty ?propertyTemp . \n");
+		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasName \"temperature\" . \n");
+		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasValue ?valueTemp . \n");
+		queryString = queryString.concat("    ?valueTemp OntoChemExp:hasVal ?Temperature . \n");
+		queryString = queryString.concat("    ?propertyTemp OntoChemExp:hasUnits ?UnitTemp . \n");
+		
+		queryString = queryString.concat("    ?commonProperties OntoChemExp:hasProperty ?propertyPres . \n");
+		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasName \"pressure\" . \n");
+		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasValue ?valuePres .  \n");
+		queryString = queryString.concat("    ?valuePres OntoChemExp:hasVal ?Pressure . \n");
+		queryString = queryString.concat("    ?propertyPres OntoChemExp:hasUnits ?UnitPres . \n");
+		
+		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasDataGroup ?dataGroup . \n");
+		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasID ?dgID . \n");
+		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasDataPoint ?dataPoint . \n");
+		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasID ?dpID . \n");
+		
+		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasProperty ?propertyPhi . \n");
+		queryString = queryString.concat("    ?propertyPhi OntoChemExp:hasName ?namePhi . \n");
+		queryString = queryString.concat("    ?propertyPhi OntoChemExp:hasID ?idPhi . \n");
+		queryString = queryString.concat("    FILTER regex(str(?namePhi), \"equivalence ratio\", \"i\") \n");
+		queryString = queryString.concat("    FILTER NOT EXISTS { \n");
+		queryString = queryString.concat("       FILTER (regex(?namePhi, \"error\", \"i\")) . \n");
+		queryString = queryString.concat("    }\n");
+		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasDataPointX ?dpPhi . \n");
+		queryString = queryString.concat("    ?dpPhi rdf:type ?typePhi . \n");
+		queryString = queryString.concat("    ?dpPhi OntoChemExp:hasVal ?Phi . \n");
+		queryString = queryString.concat("    FILTER regex(str(?typePhi), str(?idPhi), \"i\") \n");
+		
+		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasProperty ?propertyLFS . \n");
+		queryString = queryString.concat("    ?propertyLFS OntoChemExp:hasName ?nameLFS . \n");
+		queryString = queryString.concat("    ?propertyLFS OntoChemExp:hasID ?idLFS . \n");
+		queryString = queryString.concat("    ?propertyLFS OntoChemExp:hasUnits ?UnitLFS . \n");
+		queryString = queryString.concat("    FILTER regex(str(?nameLFS), \"flame speed\", \"i\") \n");
+		queryString = queryString.concat("    FILTER NOT EXISTS { \n");
+		queryString = queryString.concat("        FILTER (regex(?nameLFS, \"error\", \"i\")) . \n");
+		queryString = queryString.concat("    }\n");
+		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasDataPointX ?dpLFS . \n");
+		queryString = queryString.concat("    ?dpLFS rdf:type ?typeLFS . \n");
+		queryString = queryString.concat("    ?dpLFS OntoChemExp:hasVal ?LaminarFlameSpeed . \n");
+		queryString = queryString.concat("    FILTER regex(str(?typeLFS), str(?idLFS), \"i\") \n");
+		
+		queryString = queryString.concat("    ?dataGroup OntoChemExp:hasProperty ?propertyLFSError . \n");
+		queryString = queryString.concat("    ?propertyLFSError OntoChemExp:hasName ?nameLFSError . \n");
+		queryString = queryString.concat("    ?propertyLFSError OntoChemExp:hasID ?idLFSError . \n");
+		queryString = queryString.concat("    ?propertyLFSError OntoChemExp:hasUnits ?UnitLFSError . \n");
+		queryString = queryString.concat("    FILTER regex(str(?nameLFSError), \"flame speed error\", \"i\") \n");
+		queryString = queryString.concat("    ?dataPoint OntoChemExp:hasDataPointX ?dpLFSError . \n");
+		queryString = queryString.concat("    ?dpLFSError rdf:type ?typeLFSError . \n");
+		queryString = queryString.concat("    ?dpLFSError OntoChemExp:hasVal ?LFSErrors . \n");
+		queryString = queryString.concat("    FILTER regex(str(?typeLFSError), str(?idLFSError), \"i\") \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
 	
 //	public List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString) throws MoDSAgentException {
 //		List<List<String>> processedResultList = new ArrayList<List<String>>();
