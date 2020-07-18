@@ -3,6 +3,8 @@ package com.cmclinnovations.jps.agent.file_management.marshallr;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.cmclinnovations.jps.agent.mechanism.calibration.MoDSAgentException;
 
@@ -58,4 +60,12 @@ public interface IModel {
 	 * @throws MoDSAgentException
 	 */
 	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSAgentException;
+	
+	/**
+	 * Set up all the components of executable in the MoDS input file. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSAgentException
+	 */
+	public void setUpMoDS() throws IOException, MoDSAgentException;
 }
