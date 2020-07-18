@@ -1,1 +1,0 @@
-from .ontocompchemdata import OntoCompChemdData

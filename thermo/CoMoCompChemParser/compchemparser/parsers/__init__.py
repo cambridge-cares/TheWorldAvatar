@@ -1,1 +1,0 @@
-from .gaussian.gaussian_parser import GaussianParser

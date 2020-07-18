@@ -6,7 +6,8 @@ import app
 
 def usage():
     usagemsg = """ Usage:
-    -f <log_file> -t <log_type>
+    -h
+    -f <log_file>
 
     """
     print(usagemsg)
@@ -15,7 +16,7 @@ def usage():
 # Processes the cmd arguments
 def main(argv):
     try:
-        opts, args = getopt.getopt(argv,"hf:t:",["help", "log_file", "log_type"])
+        opts, args = getopt.getopt(argv,"hf:t:",["help", "log_file"])
     except getopt.GetoptError:
         usage()
     if not opts:
@@ -28,8 +29,6 @@ def main(argv):
                 usage()
             elif opt in ("-f", "--log_file"):
                 log_file = arg
-            elif opt in ("-t", "--log_type"):
-                log_type = arg
             else:
                 print("Unhandled option")
                 usage()
@@ -37,13 +36,14 @@ def main(argv):
         # check cmd line args for errors
         if len(log_file) == 0:
             utils.dienicely("Log file name must not be blank")
-        elif os.path.isfile(os.path.join(log_file)) == False:
+        elif os.path.isfile(log_file) == False:
+            print
             utils.dienicely("File: '"+log_file+"' doesn't exist.")
-        if not app.correctLogType(log_type):
-            utils.dienicely("Unrecognised log file type.")
+        #if not app.correctLogType(log_type):
+        #    utils.dienicely("Unrecognised log file type.")
 
         # run the code
-        app.run(log_file,log_type)
+        app.run(log_file)
         print('finished!')
 
 if __name__ == "__main__":

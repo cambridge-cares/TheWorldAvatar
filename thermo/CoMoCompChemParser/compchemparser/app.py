@@ -1,23 +1,12 @@
-from parsers import GaussianParser
-from postprocessors import ArkanePostprocessor
-from ontocompchemdata import OntoCompChemdData
+from parsers.ccparser import CcParser
+from ontocompchemdata.ontocompchemdata import OntoCompChemData
 
-GAUSSIAN = "gaussian"
-#MOLPRO = 2
+def run(log_file):
+    CompChemObj = OntoCompChemData()
+    CompChemObj.setParser(CcParser())
+    CompChemObj.getData(log_file)
 
-LOG_TYPES = [GAUSSIAN]
-
-def correctLogType(log_type):
-    ans = log_type in LOG_TYPES
-    return ans
-
-def run(log_file,log_type):
-    postprocessor = ArkanePostprocessor()
-    if log_type == GAUSSIAN:
-        parser = GaussianParser()
-    else:
-        #parser = MolproParser()
-        pass
-    data = OntoCompChemdData()
-    data.getData(log_file, parser, postprocessor)
+    parser.parseLog(log_file)
     pass
+    #data = OntoCompChemdData()
+    #data.getData(log_file)
