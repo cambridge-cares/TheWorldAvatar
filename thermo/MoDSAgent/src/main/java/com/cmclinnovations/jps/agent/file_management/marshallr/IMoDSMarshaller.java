@@ -10,7 +10,7 @@ public interface IMoDSMarshaller {
 	
 	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException;
 	
-	public void plugInCantera() throws IOException, MoDSAgentException;
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException;
 	
-	public void marshall() throws IOException, MoDSAgentException;
+	public String marshall() throws IOException, MoDSAgentException;
 }
