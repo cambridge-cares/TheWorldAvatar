@@ -148,6 +148,11 @@
 			<artifactId>jps-base</artifactId>
 			<version>1.3.0</version>
 		</dependency>	
+		<dependency>
+		    <groupId>com.cmclinnovations.mods</groupId>
+		    <artifactId>MoDS_API</artifactId>
+		    <version>0.10.1</version>
+		</dependency>
 	</dependencies>
     
     <build>
