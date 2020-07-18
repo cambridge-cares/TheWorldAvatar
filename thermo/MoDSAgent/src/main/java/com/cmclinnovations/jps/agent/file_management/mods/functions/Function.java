@@ -1,16 +1,22 @@
 package com.cmclinnovations.jps.agent.file_management.mods.functions;
 
+import java.util.LinkedHashMap;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import com.cmclinnovations.jps.agent.file_management.mods.parameters.DetailS;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @XmlType(propOrder = { "detailS" })
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Function {
+	@JsonProperty("name")
 	@XmlAttribute
 	private String name;
 
@@ -21,7 +27,8 @@ public class Function {
 	public void setName(String name) {
 		this.name = name;
 	}
-
+	
+	@JsonProperty("usage")
 	@XmlAttribute(name = "usage")
 	private String usage;
 
@@ -32,7 +39,8 @@ public class Function {
 	public void setUsage(String usage) {
 		this.usage = usage;
 	}
-
+	
+	@JsonProperty("details")
 	@XmlElement(name = "details")
 	private DetailS detailS;
 
@@ -42,5 +50,17 @@ public class Function {
 
 	public void setDetailS(DetailS detailS) {
 		this.detailS = detailS;
+	}
+	
+	@JsonIgnore
+	@XmlTransient
+	private LinkedHashMap<String, String> detailList;
+
+	public LinkedHashMap<String, String> getDetailList() {
+		return detailList;
+	}
+
+	public void setDetailList(LinkedHashMap<String, String> detailList) {
+		this.detailList = detailList;
 	}
 }
