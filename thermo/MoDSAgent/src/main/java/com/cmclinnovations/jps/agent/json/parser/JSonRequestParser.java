@@ -1,5 +1,14 @@
 package com.cmclinnovations.jps.agent.json.parser;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 
 public class JSonRequestParser {
@@ -7,21 +16,60 @@ public class JSonRequestParser {
 	// {}
 
 	// OntoChemExp part
-	public static String getOntoChemExpIRI(String jsonString) {
-		return JsonPath.read(jsonString, "$.json.ontochemexpIRI");
+//	public static JSONArray getOntoChemExpIgnitionDelayIRI(String jsonString) {
+//		return JsonPath.read(jsonString, "$.json.ontochemexpIRI.ignitionDelay");
+//	}
+	
+	public static List<String> getOntoChemExpIgnitionDelayIRI(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("ontochemexpIRI").path("ignitionDelay");
+		List<String> expIRI = new ArrayList<>();
+		for (JsonNode arrayItem : locateNode) {
+			expIRI.add(arrayItem.asText());
+		}
+		
+		return expIRI;
 	}
+	
+	public static List<String> getOntoChemExpFlameSpeedIRI(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("ontochemexpIRI").path("flameSpeed");
+		List<String> expIRI = new ArrayList<>();
+		for (JsonNode arrayItem : locateNode) {
+			expIRI.add(arrayItem.asText());
+		}
+		
+		return expIRI;
+	}
+	
+	
+//	public static List<String> getOntoChemExpFlameSpeedIRI(String jsonString) {
+//		return JsonPath.read(jsonString, "$.json.ontochemexpIRI.flameSpeed");
+//	}
 	
 	// OntoKin part
 	// mechanism
-	public static String getOntoKinMechanismIRI(String jsonString) {
-		return JsonPath.read(jsonString, "$.json.ontokinIRI.mechanism");
-	}
-	// reactions
-	public static String getOntoKinReactionsIRI(String jsonString) {
-		return JsonPath.read(jsonString, "$.json.ontokinIRI.reactionList");
+//	public static String getOntoKinMechanismIRI(String jsonString) {
+//		return JsonPath.read(jsonString, "$.json.ontokinIRI.mechanism");
+//	}
+//	// reactions
+//	public static List<String> getOntoKinReactionsIRI(String jsonString) {
+//		return JsonPath.read(jsonString, "$.json.ontokinIRI.reactionList");
+//	}
+	
+	public static String getOntoKinMechanismIRI(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("ontokinIRI").path("mechanism");
+		
+		return locateNode.asText();
 	}
 	
-	
+	public static List<String> getOntoKinReactionsIRI(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("ontokinIRI").path("reactionList");
+		List<String> reactionIRI = new ArrayList<>();
+		for (JsonNode arrayItem : locateNode) {
+			reactionIRI.add(arrayItem.asText());
+		}
+		
+		return reactionIRI;
+	}
 	
 	// algorithm part
 	public static String getAlgName(String jsonString) {
