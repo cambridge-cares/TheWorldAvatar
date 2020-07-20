@@ -38,7 +38,7 @@ var bmsplot= require("./routes/plotBMSCached.js");
 
 
 var MAUPlot = require("./routes/plotMAU")
-  var MAU = require("./routes/runMAU");
+//  var MAU = require("./routes/runMAU");
 var HW =require("./routes/runHeatWasteNetworkMap")
 //var PPCO2 = require("./routes/powerplantCO2Cached");
 var PPCO2 = require("./routes/powerplantCO2");
@@ -50,6 +50,7 @@ var b2Map = require("./routes/mapB2");
 var ppalt = require("./routes/mapPPAlt");
 var parallelWorld = require('./routes/parallelWorld');
 var wteMap= require('./routes/wTEroute');
+var ontoTwinMap= require('./routes/ontoTwinUK');
 var admsEpi= require('./routes/admsEpi');
 
 var essMap = require('./routes/ess');
@@ -100,6 +101,7 @@ app.use('/ppalt', ppalt);
 app.use('/pwScenario', parallelWorld);
 app.use('/essMap', essMap);
 app.use('/wteMap', wteMap);
+app.use('/ontoTwinUK', ontoTwinMap);
 app.use('/JPS_SHIP', admsEpi);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
@@ -117,7 +119,7 @@ app.use('/b2map', b2Map)
 
 app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
- app.use("/MAU", MAU);
+// app.use("/MAU", MAU);
 app.use("/getAttrList", getAttrList);
 app.use("/getSpecAttr", getSpecAttr);
 
