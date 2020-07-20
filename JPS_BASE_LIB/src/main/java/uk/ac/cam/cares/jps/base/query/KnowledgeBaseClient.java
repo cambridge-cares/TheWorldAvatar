@@ -10,12 +10,16 @@ import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
+import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
+
 import java.util.logging.Logger;
 import org.json.JSONObject;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.resultio.TupleQueryResultFormat;
 import org.openrdf.rio.RDFFormat;
 
 import com.bigdata.rdf.sail.webapp.SD;
@@ -358,19 +362,122 @@ public class KnowledgeBaseClient {
 	 * @throws Exception
 	 */
 	public String query(String endPointURL, String repositoryName, RDFStoreType storeType, String query) throws Exception {
-		 StringBuffer resultSet = new StringBuffer();
+		StringBuilder json = new StringBuilder();
 		RemoteRepository repository = getRepository(endPointURL, repositoryName, storeType);
 		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(query);
 		final TupleQueryResult result = tupleQuery.evaluate();
+		System.out.println(result);
 		try {
-			while (result.hasNext()) {
-				BindingSet bs = result.next();
-				resultSet.append(bs.toString());
-			}
+			json = getResultInJson(json, result);	
 		} finally {
 			result.close();
 		}
-		return resultSet.toString();
+		return json.toString();
+	}
+
+	/**
+	 * Produces and returns the given result in JSON format.
+	 * 
+	 * @param json
+	 * @param result
+	 * @return
+	 */
+	private StringBuilder getResultInJson(StringBuilder json, TupleQueryResult result) {
+		json.append("{\n");
+		json.append("  \"head\" : {\n");
+		json.append("    \"vars\" : [\n");
+		try{
+		// flag to close the header variables created above and to start the results
+		boolean flag = true; 
+		// we just iterate over all solutions in the result...
+		while (result.hasNext()) {
+			BindingSet solution = result.next();
+			int count = 0;
+			int size = solution.getBindingNames().size();
+			if(flag){
+				for(String bindingName: solution.getBindingNames()){
+					json.append("      \"");
+					json.append(bindingName);
+					json.append("\"");
+					if(++count<size){
+						json.append(",");
+					}
+					json.append("\n");
+				}
+				json.append("    ]\n");
+				json.append("  },\n");
+				json.append("  \"results\" : {\n");
+				json.append("    \"bindings\" : [\n");
+				flag = false;
+			}
+			count = 0;
+			json.append("      {\n");
+			for (String bindingName : solution.getBindingNames()) {
+				json.append("        \"");
+				json.append(bindingName);
+				json.append("\" : {\n");
+				json.append("          \"value\" : ");
+				json.append(jsonifyString(solution.getValue(bindingName).toString()));
+				json.append("\n        }");
+				if(++count<size){
+					json.append(",\n");
+				}else{
+					json.append("\n");
+				}
+			}
+			json.append("      },\n");
+		}
+		json.replace(json.lastIndexOf(","), json.lastIndexOf(",")+1, "");
+		}catch(QueryEvaluationException e){
+			log.info(e.getMessage());
+		}
+		json.append("    ]\n");
+		json.append("  }\n");
+		json.append("}\n");
+		return json;
+	}
+	
+	/**
+	 * Converts a value string into its JSON equivalent.</br>
+	 * However, currently it cannot produce a valid JSON equivalent</br>
+	 * for comments.
+	 * 
+	 * @param value
+	 * @return
+	 */
+	private String jsonifyString(String value){
+		String stringType = "^^<http://www.w3.org/2001/XMLSchema#string>";
+		String integerType = "^^<http://www.w3.org/2001/XMLSchema#integer>";
+		String floatType = "^^<http://www.w3.org/2001/XMLSchema#float>";
+		if(value.contains(stringType)){
+			value = value.replace(stringType, "");
+		} else if(value.contains(integerType)){
+			value = value.replace(integerType, "");
+			value = replaceInvertedComma(value);
+		} else if(value.contains(floatType)){
+			value = value.replace(floatType, "");
+			value = replaceInvertedComma(value);
+		} else {
+			value = "\""+value+"\"";
+		}
+		return value;
+	}
+	
+	/**
+	 * Removes the start and end inverted commas from a string.
+	 * 
+	 * @param value
+	 * @param type
+	 * @return
+	 */
+	private String replaceInvertedComma(String value){
+		if(value.startsWith("\"")){
+			value = value.replaceFirst("\"", "");
+		}
+		if(value.endsWith("\"")){
+			value = value.substring(0, value.length()-1);
+		}		
+		return value;
 	}
 	
 	private static boolean hasSparqlAbility(String targetUrl) {
