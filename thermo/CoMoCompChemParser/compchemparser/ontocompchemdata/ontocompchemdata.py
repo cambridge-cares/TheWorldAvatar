@@ -1,3 +1,7 @@
+from parsers.ccgaussian_parser import CcGaussianParser
+import helpers.ccutils as ccutils
+import helpers.utils as utils
+
 class OntoCompChemData:
 
     def __init__(self):
@@ -5,19 +9,18 @@ class OntoCompChemData:
         self.parser = None
         self.data = {}
 
-    def setParser(self, parser):
-        self.parser = parser
+    def getData(self, logFile):        
+        ccpackage = ccutils.get_ccattr(logFile,"metadata","package")
 
-    def getData(self, logFile):
-        """ 
-           parser         - Gaussian or Molpro
-           postprocessor  - Arkane at the moment
-           
-        """
+        if ccpackage in ccutils.CCPACKAGES:
+            self.parser = CcGaussianParser()
+        else:
+            utils.dienicely("ERROR: Provided log fie is either incorrect or comes from an unsupported quantum chemistry package.")
+
         self.log = logFile
         self.data = {}    
 
-        self.parser.parseLog(self.log)
+        self.parser.parse(self.log)
 
         #self.checkParsedData()
 
