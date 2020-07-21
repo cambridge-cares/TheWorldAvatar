@@ -23,6 +23,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocator {
 
+    private static String JPS_CONFIG = "/conf/jps.properties";
+    private static String JPS_CONFIG_ENVIRONMENT_TEST_KEY = "test";
     private static AgentLocator instance = null;
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
@@ -169,10 +171,10 @@ public class AgentLocator {
 
         Boolean testMode = false;
         try {
-            FileInputStream inputStream = new FileInputStream(getJPSBaseDirectory() + "/conf/jps.properties");
+            FileInputStream inputStream = new FileInputStream(getJPSBaseDirectory() + JPS_CONFIG);
             Properties props = new Properties();
             props.load(inputStream);
-            String test = props.getProperty("test");
+            String test = props.getProperty(JPS_CONFIG_ENVIRONMENT_TEST_KEY);
             if (!test.isEmpty()) {
                 testMode = Boolean.valueOf(test);
             }
