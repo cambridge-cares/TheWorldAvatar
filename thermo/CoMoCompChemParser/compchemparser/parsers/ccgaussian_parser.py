@@ -3,25 +3,29 @@ import os
 import sys
 from file_read_backwards import FileReadBackwards
 import re
+import helpers.utils as utils
 import helpers.ccutils as ccutils
+import helpers.elements_data as eld
 from itertools import islice
 
 # Supported keys
 #-------------------------------------------------
 # group 1 (atoms properties)
 EMP_FORM = 'Empirical formula'
-ATOM_COUNT = 'Atom counts'
-ATOM_TYPE = 'Atom types'
-ATOM_MASS = 'Atomic masses'
-ATOM_MASS_UNIT = 'Atomic mass unit'
-ATOM_CHARGE = 'Atomic partial charges'
-ATOM_CHARGE_UNIT = 'Atomic partial charge unit'
+ATOM_TYPES = 'Atom types'
+ATOM_MASSES = 'Atomic masses'
+ATOM_MASSES_UNIT = 'Atomic mass unit'
+ATOM_CHARGES = 'Atomic partial charges'
+ATOM_CHARGES_UNIT = 'Atomic partial charge unit'
+TOTAL_MASS = 'Total mass'
+TOTAL_MASS_UNIT = 'Total mass unit'
 # group 2 (level of theory)
 METHOD = 'Method'
 BASIS_SET = 'Basis set'
 # group 3 (spin/charge)
 SPIN_MULT = 'Spin multiplicity'
 FORMAL_CHARGE = 'Formal charge'
+FORMAL_CHARGE_UNIT = 'Formal charge unit'
 # group 4 (geometry, rot properties)
 GEOM = 'Geometry'
 GEOM_TYPE = 'Geometry type'
@@ -35,6 +39,8 @@ FREQ_NR = 'Frequencies number'
 FREQ_UNIT = 'Frequencies unit'
 # group 6 (energy)
 TOTAL_ENERGY = 'Total energy'
+ELECTRONIC_ENERGY = 'Electronic energy'
+ZPE_ENERGY = 'ZPE energy'
 # group 7 (program, run date)
 PROGRAM_NAME = 'Program name'
 PROGRAM_VERSION = 'Program version'
@@ -46,12 +52,18 @@ MISC = 'Misc'
 
 # Keys used
 #-------------------------------------------------
-CCKEYS = [EMP_FORM, ATOM_COUNT, ATOM_TYPE, ATOM_MASS, ATOM_MASS_UNIT, ATOM_CHARGE, ATOM_CHARGE_UNIT, METHOD,
-          BASIS_SET, SPIN_MULT, FORMAL_CHARGE, GEOM, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR, ROT_CONST_UNIT,
-          FREQ, FREQ_NR, FREQ_UNIT, TOTAL_ENERGY, PROGRAM_NAME, PROGRAM_VERSION, RUN_DATE, MISC]
+CCKEYS = [  
+            EMP_FORM, ATOM_TYPES, ATOM_MASSES, ATOM_MASSES_UNIT,
+            ATOM_CHARGES, ATOM_CHARGES_UNIT, TOTAL_MASS_UNIT, METHOD,
+            BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
+            GEOM, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
+            ROT_CONST_UNIT, FREQ, FREQ_NR, FREQ_UNIT, ELECTRONIC_ENERGY,
+            ZPE_ENERGY, TOTAL_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
+            RUN_DATE, MISC
+        ]
 #-------------------------------------------------
 
-EXTRA_FOOTER_LINES_NR = 5
+EXTRA_FOOTER_LINES_NR = 15
 
 # regex for catching job start string
 FSPLIT_RE = re.compile(r"^\s?Entering Link 1 =")
@@ -59,10 +71,14 @@ ATOMS_RE = re.compile(r"([a-zA-Z]+)(\d+)")
 JOB_SUCCESS_RE = re.compile(r"^\s?Normal termination of Gaussian")
 FOOTER_RE = re.compile(r"^\s(1\\1\\|1\|1\|)")
 
+# unit conversion
+EV_TO_HARTREE = 0.0367493237908520
+
 class CcGaussianParser():
     def __init__(self):
         """ init the gaussian parser """
         self.parseddata = {key: None for key in CCKEYS}
+        self.cclib_data = None
 
     def parse(self,logFile):
         # 1. check for nr of jobs in a log and if more than one
@@ -174,36 +190,131 @@ class CcGaussianParser():
         self.parseddata[MISC] = footer[3].strip()
         self.parseddata[METHOD] = footer[4].strip()
         self.parseddata[BASIS_SET] = footer[5].strip()
-        self.parseddata[EMP_FORM] = footer[6].strip().split('(')[0]
-        self.parseddata[FORMAL_CHARGE] = footer[15].strip().split(',')[0]
-        self.parseddata[SPIN_MULT] = footer[15].strip().split(',')[1]
+
+        self.parseddata[EMP_FORM] = {}
+        for (at, ac) in re.findall(ATOMS_RE, footer[6].strip().split('(')[0]):
+            self.parseddata[EMP_FORM][at.upper()] = int(ac)
+
+        self.parseddata[FORMAL_CHARGE] = int(footer[15].strip().split(',')[0])
+        self.parseddata[FORMAL_CHARGE_UNIT] = 'atomic'
+        self.parseddata[SPIN_MULT] = int(footer[15].strip().split(',')[1])
         #
         rundate = footer[-1].replace('.','').split()
         self.parseddata[RUN_DATE] = ' '.join(rundate[-5:])
-        #
-        atom_types= []
-        atom_counts= []
-        for (at, ac) in re.findall(ATOMS_RE, self.parseddata[EMP_FORM]):
-             atom_types.append(at)
-             atom_counts.append(ac)
-        self.parseddata[ATOM_TYPE] = atom_types
-        self.parseddata[ATOM_COUNT] = atom_counts
 
         # extract data (if any) from extra n lines above the footer - used for
         # reading composite method total energy
         method = self.parseddata[METHOD][-1]
         for line in extra_lines:
+            if 'E(ZPE)' in line and 'E(Thermal)' in line:
+                zpe_en = line.split('=')[1]
+                zpe_en = zpe_en.split()[0].strip()
+                self.parseddata[ZPE_ENERGY] = float(zpe_en)
             if method in line and '(0 K)' in line:
                 tot_energy = line.split('=')[1]
                 tot_energy = tot_energy.split()[0].strip()
-                self.parseddata[TOTAL_ENERGY] = tot_energy
+                self.parseddata[TOTAL_ENERGY] = float(tot_energy)
+                if self.parseddata[ZPE_ENERGY]:
+                    self.parseddata[ELECTRONIC_ENERGY] = self.parseddata[TOTAL_ENERGY]-self.parseddata[ZPE_ENERGY]
                 break
 
     def parse_log_body(self,logFile):
-        data = cclib.io.ccread(logFile)
+        self.cclib_data = cclib.io.ccread(logFile)
 
-        self.parseddata[GEOM] = data.atomcoords[-1]        
-        self.parseddata[FREQ] = data.vibfreqs
-        self.parseddata[ATOM_MASS] = data.atommasses
-
+        self.set_coordinates()
+        self.set_frequencies()
+        self.set_atom_types()
+        self.set_atom_masses()
+        self.set_partial_charges()
+        self.set_ccpackage_info()
+        self.set_rotconst_info()
+        self.set_geom_type()
+        self.set_zpve()
+        self.set_energies()
         pass
+
+
+    def set_coordinates(self):
+        # read last coordinates entry from clib atomcoords
+        if hasattr(self.cclib_data,'atomcoords'):
+            self.parseddata[GEOM] = self.cclib_data.atomcoords[-1]
+
+    def set_frequencies(self):
+        # read frequencies entry from clib vibfreqs (only one set stored)
+        if hasattr(self.cclib_data,'vibfreqs'):
+            self.parseddata[FREQ] = self.cclib_data.vibfreqs
+            self.parseddata[FREQ_NR] = len(self.parseddata[FREQ])
+            self.parseddata[FREQ_UNIT] = '1/cm'
+
+    def set_atom_types(self):
+        # use cclib atomnos entry which stores the atomic number of
+        # each element to get the element type from the internal elements data table.
+        if hasattr(self.cclib_data,'atomnos'):
+            self.parseddata[ATOM_TYPES] = [eld.get_el_symbol_by_atomic_nr(x) for x in self.cclib_data.atomnos]
+
+    def set_atom_masses(self):
+        if hasattr(self.cclib_data,'atommasses'):
+            # try to read masses of elements from cclib atommasses
+            # cclib appends masses to one list, so if these are repeated in the log
+            # the list contains more entries that we need. Therefore I only read
+            # n entries from the back where n is the number of atom types that is
+            # already known
+            atwts = self.cclib_data.atommasses[-len(self.parseddata[ATOM_TYPES]):]
+            self.parseddata[ATOM_MASSES] = atwts
+            self.parseddata[ATOM_MASSES_UNIT] = 'atomic'
+            self.parseddata[TOTAL_MASS] = sum(atwts)
+            self.parseddata[TOTAL_MASS_UNIT] = 'atomic'
+        else:
+            # read masses of elements from internal elements data table
+            atwts = []
+            for at in self.parseddata[ATOM_TYPES]:
+                atwti = eld.get_el_wt_by_symbol(at)
+                if atwti > 0.0:
+                    atwts.append(atwti)
+                else:
+                    atwts = []
+                    break
+            if atwts:
+                self.parseddata[ATOM_MASSES] = atwts
+                self.parseddata[ATOM_MASSES_UNIT] = 'atomic'
+                self.parseddata[TOTAL_MASS] = sum(atwts)
+                self.parseddata[TOTAL_MASS_UNIT] = 'atomic'
+
+    def set_partial_charges(self):
+        if hasattr(self.cclib_data,'atomcharges'): 
+            self.parseddata[ATOM_CHARGES] = self.cclib_data.atomcharges
+            self.parseddata[ATOM_CHARGES_UNIT] = 'atomic'
+
+    def set_ccpackage_info(self):
+        if hasattr(self.cclib_data,'metadata'):
+            if 'package' in self.cclib_data.metadata.keys():
+                self.parseddata[PROGRAM_NAME] = self.cclib_data.metadata['package']
+            if 'package_version' in self.cclib_data.metadata.keys():
+                self.parseddata[PROGRAM_VERSION] = self.cclib_data.metadata['package_version']
+
+    def set_rotconst_info(self):
+        if self.parseddata[ATOM_MASSES] is not None and self.parseddata[GEOM].any() is not None:
+            if self.parseddata[GEOM].shape[0] > 1:
+                self.parseddata[ROT_CONST] = utils.getRotConst(self.parseddata[ATOM_MASSES],self.parseddata[GEOM])
+                self.parseddata[ROT_CONST_NR] = len(self.parseddata[ROT_CONST])
+                self.parseddata[ROT_CONST_UNIT] = 'GHz'
+
+    def set_geom_type(self):
+        if self.parseddata[GEOM].shape[0] > 1:
+            if self.parseddata[ROT_CONST_NR] > 1:
+                self.parseddata[GEOM_TYPE] = 'nonlinear'
+            else:
+                self.parseddata[GEOM_TYPE] = 'linear'
+        else:
+            self.parseddata[GEOM_TYPE] = 'atomic'
+
+    def set_zpve(self):
+        if hasattr(self.cclib_data,'zpve') and not self.parseddata[ZPE_ENERGY]:
+            self.parseddata[ZPE_ENERGY] = self.cclib_data.zpve
+
+    def set_energies(self):
+        if hasattr(self.cclib_data,'ccenergies') and not self.parseddata[TOTAL_ENERGY]:
+            self.parseddata[TOTAL_ENERGY] = self.cclib_data.ccenergies[-1] * EV_TO_HARTREE
+        elif hasattr(self.cclib_data,'scfenergies') and not self.parseddata[ELECTRONIC_ENERGY]:
+            self.parseddata[ELECTRONIC_ENERGY] = self.cclib_data.scfenergies[-1] * EV_TO_HARTREE
+            pass
