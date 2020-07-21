@@ -159,6 +159,12 @@ public class AgentLocator {
         return getSingleton().jpsBaseDirectory;
     }
 
+    /**
+     * This method is used to determine which enviroment JPS agents should operate in:
+     * development/testing or production.
+     *
+     * @return Boolean testMode
+     */
     public static boolean isJPSRunningForTest() {
 
         Boolean testMode = false;
