@@ -22,7 +22,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
 import org.apache.commons.io.output.FileWriterWithEncoding;
-import org.apache.commons.math3.stat.regression.ModelSpecificationException;
+//import org.apache.commons.math3.stat.regression.ModelSpecificationException;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -63,7 +63,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	public List<String> caseNameList = new ArrayList<>();
 	private static Logger logger = LoggerFactory.getLogger(MoDSMarshaller.class);
 
-	public static void main(String[] args) throws MoDSAgentException {
+	public static void main(String[] args) throws IOException, MoDSAgentException {
 		MoDSMarshaller modsMarshaller = new MoDSMarshaller();
 		new File(
 				"C:\\Users\\jb2197\\Documents\\c4e-jb2197-OntologyTools\\Codes\\thermochemistry\\MoDSAgent\\src\\main\\resources\\JobFolder\\Working_dir")

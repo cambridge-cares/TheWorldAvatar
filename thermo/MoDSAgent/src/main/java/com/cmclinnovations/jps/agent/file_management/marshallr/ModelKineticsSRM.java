@@ -21,6 +21,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.json.JSONObject;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -33,6 +34,8 @@ import com.cmclinnovations.jps.agent.mechanism.calibration.Property;
 import com.cmclinnovations.jps.kg.OntoChemExpKG;
 import com.cmclinnovations.jps.kg.OntoChemExpKG.DataTable;
 import com.cmclinnovations.jps.kg.OntoKinKG;
+import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
+import com.cmclinnovations.ontochem.model.exception.OntoException;
 
 public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRM.class);
@@ -137,6 +140,24 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 				| TransformerException e) {
 			e.printStackTrace();
 		}
+		
+		
+		/**
+		 * Owl converter that converts OWL to XML file
+		 */
+//		OwlConverter owlConverter = new OwlConverter();
+//		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
+//		mechanismOwlFiles.add(mechanismIRI);
+//		try {
+//			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath);
+//		} catch (OWLOntologyCreationException | OntoException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		
+		
+		
+		
 		
 		// create model instance
 		ExecutableModel kineticsSRM = new ExecutableModel();
