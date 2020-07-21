@@ -39,7 +39,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class MoDSFileManagement {
+public class MoDSFileManagement extends MoDSMarshaller {
 //	public static RepositoryManager repoManager = new RepositoryManager();
 	Logger logger = Logger.getLogger(MoDSFileManagement.class);
 //	public static List<String[]> dataLines;
@@ -127,7 +127,33 @@ public class MoDSFileManagement {
 		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
+		placeMoDSSlurmScript(jobFolderPath);
 		return jobFolderPath;
+	}
+	
+	private void placeMoDSSlurmScript(String jobFolderPath) throws IOException, MoDSAgentException {
+		// TODO
+		File sourceSlurmScript = new File(getClass().getClassLoader().getResource(FILE_MODS_SLURM_SCRIPT).getFile());
+		File modsSlurmScript = new File(jobFolderPath.concat(FRONTSLASH+FILE_MODS_SLURM_SCRIPT));
+		
+		// create the BufferedReader and BufferedWriter to read and write files
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+		
+		// copy the modsslurm_como.sh script
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceSlurmScript)));
+	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(modsSlurmScript)));
+	        String line = new String();
+	        while ((line = br.readLine()) != null) {
+	        	bw.write(line.concat("\n"));
+	        }
+	        bw.close();
+	        br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	
@@ -491,13 +517,13 @@ public class MoDSFileManagement {
 	}
 	
 	
-	private String convertToCSV(String[] data) {
+	public String convertToCSV(String[] data) {
 	    return Stream.of(data)
 	      .map(this::escapeSpecialCharacters)
 	      .collect(Collectors.joining(","));
 	}
 	
-	private String escapeSpecialCharacters(String data) {
+	public String escapeSpecialCharacters(String data) {
 	    String escapedData = data.replaceAll("\\R", " ");
 	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
 	        data = data.replace("\"", "\"\"");

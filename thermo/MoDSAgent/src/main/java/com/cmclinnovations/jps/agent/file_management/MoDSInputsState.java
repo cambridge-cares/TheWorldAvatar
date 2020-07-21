@@ -105,6 +105,7 @@ public class MoDSInputsState {
 	public static final String FILE_MECHANISM_CANTERA = "mechanism_cantera_lfs.xml";
 	public static final String FILE_MECHANISM_ELEMENT = "element_data.xml";
 	public static final String FILE_CANTERA_LFSSIMULATION = "LFS_simulation.csv";
+	public static final String FILE_MODS_SLURM_SCRIPT = "modsslurm_como.sh";
 	
 	public static final String INITIALISATION_STRING = "DeleteAfterInitialisation";
 	public static final String INITIALISATION_STRING_ALGORITHMS = "{\"algorithm\": [{\"name\": \"DeleteAfterInitialisation\"}] }";
