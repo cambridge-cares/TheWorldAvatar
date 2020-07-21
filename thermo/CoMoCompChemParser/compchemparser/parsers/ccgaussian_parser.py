@@ -11,12 +11,11 @@ from itertools import islice
 # Supported keys
 #-------------------------------------------------
 # group 1 (atoms properties)
-EMP_FORM = 'Empirical formula'
+EMP_FORMULA = 'Empirical formula'
+ATOM_COUNTS = 'Atom counts'
 ATOM_TYPES = 'Atom types'
 ATOM_MASSES = 'Atomic masses'
 ATOM_MASSES_UNIT = 'Atomic mass unit'
-ATOM_CHARGES = 'Atomic partial charges'
-ATOM_CHARGES_UNIT = 'Atomic partial charge unit'
 TOTAL_MASS = 'Total mass'
 TOTAL_MASS_UNIT = 'Total mass unit'
 # group 2 (level of theory)
@@ -28,6 +27,7 @@ FORMAL_CHARGE = 'Formal charge'
 FORMAL_CHARGE_UNIT = 'Formal charge unit'
 # group 4 (geometry, rot properties)
 GEOM = 'Geometry'
+GEOM_UNIT = 'Geometry unit'
 GEOM_TYPE = 'Geometry type'
 ROT_SYM_NR = 'Rotational symmetry number'
 ROT_CONST = 'Rotational constants'
@@ -53,10 +53,9 @@ MISC = 'Misc'
 # Keys used
 #-------------------------------------------------
 CCKEYS = [  
-            EMP_FORM, ATOM_TYPES, ATOM_MASSES, ATOM_MASSES_UNIT,
-            ATOM_CHARGES, ATOM_CHARGES_UNIT, TOTAL_MASS_UNIT, METHOD,
-            BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
-            GEOM, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
+            EMP_FORMULA, ATOM_COUNTS, ATOM_TYPES, ATOM_MASSES, ATOM_MASSES_UNIT,
+            TOTAL_MASS_UNIT, METHOD, BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
+            GEOM, GEOM_UNIT, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
             ROT_CONST_UNIT, FREQ, FREQ_NR, FREQ_UNIT, ELECTRONIC_ENERGY,
             ZPE_ENERGY, TOTAL_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
             RUN_DATE, MISC
@@ -81,158 +80,279 @@ class CcGaussianParser():
         self.cclib_data = None
 
     def parse(self,logFile):
-        # 1. check for nr of jobs in a log and if more than one
-        #    split the log into the corresponding nr of files
-        # 2. Read level of theory if possible
-        # 3. Read composite method data
-
-        split_logs = self.split_log_by_jobs(logFile)
-
-        for log in split_logs:
-            # move this check to split_logs?
-            optdone = ccutils.get_ccattr(log,attr='optdone')
-            if optdone:
-                self.parse_log_footer(log)
-                self.parse_log_body(log)
-
-    def split_log_by_jobs(self,logFile):
+        # inner functions
+        #--------------------------------
         def get_job_success(buffer):
             for line in islice(buffer, len(buffer)-10, len(buffer)):
                 if JOB_SUCCESS_RE.match(line):
                     job_success = True
                     break
             return job_success
-        # For Gaussian logs, we decided to support logs with multiple jobs in them.
-        # The code reads the Gaussian log line by line searching for the "Entering Link 1 ="
-        # string which should appear only once per job. If a second instance of that string
-        # is found, the code dumps the job content to a temp file.        
+        def split_log_by_jobs(logFile):
+            # For Gaussian logs, we decided to support logs with multiple jobs in them.
+            # The code reads the Gaussian log line by line searching for the "Entering Link 1 ="
+            # string which should appear only once per job. If a second instance of that string
+            # is found, the code dumps the job content to a temp file.        
 
-        jobs_nr = 0 # nr of found jobs
-        log_names = [] # names of created temp files to be parsed by cclib
-        job_success = False
-        buffer = [] # array to store file blocks (jobs)
+            jobs_nr = 0 # nr of found jobs
+            log_names = [] # names of created temp files to be parsed by cclib
+            job_success = False
+            buffer = [] # array to store file blocks (jobs)
 
-        # Open the log file with read only permit
-        flog = open(logFile,'r')
-        # use readline() to read the first line
-        line = flog.readline()
-        # use the read line to read further. If the file is not empty keep reading one line
-        # at a time, till the file is empty
-        while line:
-            # use realine() to read next line
-            line = flog.readline()            
+            # Open the log file with read only permit
+            flog = open(logFile,'r')
+            # use readline() to read the first line
+            line = flog.readline()
+            # use the read line to read further. If the file is not empty keep reading one line
+            # at a time, till the file is empty
+            while line:
+                # use realine() to read next line
+                line = flog.readline()            
 
-            if FSPLIT_RE.match(line):
-                # job start string found
-                jobs_nr = jobs_nr + 1
-                # only process the read content and dump it to a temp file
-                # from the second job onwoards
-                if jobs_nr > 1:
-                    # check the line for the job start string
-                    job_success = get_job_success(buffer)
-                    if job_success:
-                        # set temp file name and dump read content to it
-                        log_names.append(logFile + '_#' + str(jobs_nr))
-                        fjob_log = open(log_names[-1],'w')
-                        fjob_log.writelines(buffer[:-2])
-                        fjob_log.close()
-                    # reset the buffer
-                    buffer = []
-                    job_success = False
+                if FSPLIT_RE.match(line):
+                    # job start string found
+                    jobs_nr = jobs_nr + 1
+                    # only process the read content and dump it to a temp file
+                    # from the second job onwoards
+                    if jobs_nr > 1:
+                        # check the line for the job start string
+                        job_success = get_job_success(buffer)
+                        if job_success:
+                            # set temp file name and dump read content to it
+                            log_names.append(logFile + '_#' + str(jobs_nr))
+                            fjob_log = open(log_names[-1],'w')
+                            fjob_log.writelines(buffer[:-2])
+                            fjob_log.close()
+                        # reset the buffer
+                        buffer = []
+                        job_success = False
+                    else:
+                        buffer.append(line)
                 else:
-                    buffer.append(line)
-            else:
-                buffer.append(line)                
-        flog.close()
+                    buffer.append(line)                
+            flog.close()
 
 
-        job_success = get_job_success(buffer)
-        if jobs_nr == 1 and job_success:            
-            log_names.append(logFile)
+            job_success = get_job_success(buffer)
+            if jobs_nr == 1 and job_success:            
+                log_names.append(logFile)
 
-        return log_names
+            return log_names
+        #--------------------------------
 
+        split_logs = split_log_by_jobs(logFile)
 
-    def parse_log_footer(self,logFile):
-        def get_footer(logFile):
-            footer = ''
-            extra_lines = []
-            #
-            buffer =[]            
-            extra_lines_mode = False
-            extra_lines_cnr = 0
-    
-            with FileReadBackwards(logFile, encoding="utf-8") as frb:
-                while True:
-                    line = frb.readline()
-    
-                    if not extra_lines_mode:
-                        buffer.append(line.rstrip('\r\n'))
-                    mfooter = FOOTER_RE.match(line)
-                    if extra_lines_mode:
-                        extra_lines_cnr = extra_lines_cnr + 1
-                        extra_lines.append(line)
-                    if extra_lines_cnr >= EXTRA_FOOTER_LINES_NR-1:
-                        break
-                    if mfooter:                                      
-                        if EXTRA_FOOTER_LINES_NR > 0: extra_lines_mode = True
-    
-            buffer.reverse()
-            footer= ''.join(buffer)
+        for log in split_logs:
+            self.parse_log(log)
+
+    def parse_log(self,logFile):
+        # inner functions for parsing specific info
+        #-----------------------------------------------
+        def check_charge_spin_mult(data, cur_line, log_lines):
+            line = log_lines[cur_line]
+            if 'Charge =' in line and  'Multiplicity =' in line:
+                splt_line = line.split('=')
+                data[FORMAL_CHARGE] = int(splt_line[1].split()[0])
+                data[FORMAL_CHARGE_UNIT] = 'atomic'
+                data[SPIN_MULT] = int(splt_line[2])
+            return cur_line
+        def check_geom(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Input orientation:' in line:
+                data[GEOM] = []
+                data[ATOM_TYPES] = []
+
+                cur_line = cur_line + 2
+                line = log_lines[cur_line].strip().split()[4]
+                data[GEOM_UNIT] = line.replace('(','').replace(')','')
+
+                cur_line = cur_line + 3
+                line = log_lines[cur_line].strip()             
+                while '---' not in line:
+                    line = line.split()
+                    data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
+                    el = eld.get_el_symbol_by_atomic_nr(int(line[1].strip()))
+                    data[ATOM_TYPES].append(el)
+                    cur_line = cur_line + 1
+                    line = log_lines[cur_line].strip()
+            return cur_line
+        def check_elweights(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'AtmWgt=' in line:
+                data[ATOM_MASSES] = []
+
+                while 'Leave Link' not in line:
+                    if 'AtmWgt=' in line:
+                        line = line.split()
+                        for wt in line[1:]:
+                            data[ATOM_MASSES].append(float(wt))
+                    cur_line = cur_line + 1
+                    line = log_lines[cur_line].strip()
+                data[ATOM_MASSES_UNIT] = 'amu'
+                data[TOTAL_MASS] = sum(data[ATOM_MASSES])
+                data[TOTAL_MASS_UNIT] = 'amu'
+
+            if data[ATOM_MASSES] is None:
+                if '- Thermochemistry -' in line:
+                    data[ATOM_MASSES] = []
+                    while 'Molecular mass:' not in line:
+                        if 'Atom' in line and 'has atomic number' in line and 'and mass' in line:
+                            line = line.split('and mass')[1]
+                            data[ATOM_MASSES].append(float(line))
+                        cur_line = cur_line + 1
+                        line = log_lines[cur_line].strip()
+                    data[ATOM_MASSES_UNIT] = 'amu'
+                    data[TOTAL_MASS] = sum(data[ATOM_MASSES])
+                    data[TOTAL_MASS_UNIT] = 'amu'
+            return cur_line
+        def check_freq(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Frequencies -- ' in line:
+                data[FREQ] = []
+                data[FREQ_UNIT] = 'cm^-1'
+
+                while 'Thermochemistry' not in line:
+                    if 'Frequencies -- ' in line:
+                        line = line.split('--')[1]
+                        line = line.split()
+                        for f in line:
+                            data[FREQ].append(float(f))
+   
+                    cur_line = cur_line + 1
+                    line = log_lines[cur_line].strip()
+                data[FREQ_NR] = len(data[FREQ])
+            return cur_line
+        def check_rot_sym_nr(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Rotational symmetry number' in line:
+                line = line.split()[-1].replace('.','')
+                data[ROT_SYM_NR] = float(line)
+            return cur_line
+        def check_rot_const(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Rotational constant (' in line:
+                data[ROT_CONST] = []
+                # get unit
+                line = line.split('(')[1]
+                line = line.split(')')
+                data[ROT_CONST_UNIT] = line[0]
+
+                # get rot consts
+                line = line[1].replace(':','').split()
+                for rc in line:
+                    data[ROT_CONST].append(float(rc))
+                data[ROT_CONST_NR] = len(data[ROT_CONST])
+            return cur_line
+        def check_zpe(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Zero-point correction=' in line:
+                line = line.split('Zero-point correction=')[1]
+                line = line.split()[0]
+                data[ZPE_ENERGY] = float(line)
+            return cur_line
+        def check_E0_zpe(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Sum of electronic and zero-point Energies=' in line:
+                line = line.split('Sum of electronic and zero-point Energies=')[1]
+                line = line.split()[0]
+                data[TOTAL_ENERGY] = float(line)
+            return cur_line
+        def check_E0(data, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'SCF Done' in line:
+                line = line.split('=')[1]
+                line = line.split()[0]
+                data[ELECTRONIC_ENERGY] = float(line)
+            return cur_line      
+        def parse_footer(data, cur_line,log_lines):
+            lines_above_footer = log_lines[cur_line-EXTRA_FOOTER_LINES_NR:cur_line]
+            footer = log_lines[cur_line:]
+            footer = ''.join(footer)
             footer= footer.split('\\')
-            extra_lines.reverse()
-            return footer, extra_lines
 
-        footer, extra_lines = get_footer(logFile)
+            # extract footer data
+            data[MISC] = footer[3].strip()
+            data[METHOD] = footer[4].strip()
+            data[BASIS_SET] = footer[5].strip()
+            data[EMP_FORMULA] = footer[6].strip().split('(')[0]
+            data[ATOM_COUNTS] = {}
+            for (at, ac) in re.findall(ATOMS_RE, data[EMP_FORMULA]):
+                data[ATOM_COUNTS][at.upper()] = int(ac)
 
-        
-        # extract footer data
-        self.parseddata[MISC] = footer[3].strip()
-        self.parseddata[METHOD] = footer[4].strip()
-        self.parseddata[BASIS_SET] = footer[5].strip()
+            #charge = int(footer[15].strip().split(',')[0])
+            #spin_mult = int(footer[15].strip().split(',')[1])
+            #
+            rundate = footer[-1].replace('.','').split()
+            data[RUN_DATE] = ' '.join(rundate[-5:])
 
-        self.parseddata[EMP_FORM] = {}
-        for (at, ac) in re.findall(ATOMS_RE, footer[6].strip().split('(')[0]):
-            self.parseddata[EMP_FORM][at.upper()] = int(ac)
+            #if misc == 'Mixed'
+            for line in lines_above_footer:
+                if '(0 K)=' in line and 'Energy=' in line:
+                    line = line.split('=')[1]
+                    data[TOTAL_ENERGY] = float(line.split()[0].strip())
+                    break
 
-        self.parseddata[FORMAL_CHARGE] = int(footer[15].strip().split(',')[0])
-        self.parseddata[FORMAL_CHARGE_UNIT] = 'atomic'
-        self.parseddata[SPIN_MULT] = int(footer[15].strip().split(',')[1])
-        #
-        rundate = footer[-1].replace('.','').split()
-        self.parseddata[RUN_DATE] = ' '.join(rundate[-5:])
+            pass
+        #----------------------------------------------
 
-        # extract data (if any) from extra n lines above the footer - used for
-        # reading composite method total energy
-        method = self.parseddata[METHOD][-1]
-        for line in extra_lines:
-            if 'E(ZPE)' in line and 'E(Thermal)' in line:
-                zpe_en = line.split('=')[1]
-                zpe_en = zpe_en.split()[0].strip()
-                self.parseddata[ZPE_ENERGY] = float(zpe_en)
-            if method in line and '(0 K)' in line:
-                tot_energy = line.split('=')[1]
-                tot_energy = tot_energy.split()[0].strip()
-                self.parseddata[TOTAL_ENERGY] = float(tot_energy)
-                if self.parseddata[ZPE_ENERGY]:
-                    self.parseddata[ELECTRONIC_ENERGY] = self.parseddata[TOTAL_ENERGY]-self.parseddata[ZPE_ENERGY]
-                break
-
-    def parse_log_body(self,logFile):
+        # parse_log body
+        #----------------------------------------------
+        # run cclib first
         self.cclib_data = cclib.io.ccread(logFile)
 
-        self.set_coordinates()
-        self.set_frequencies()
-        self.set_atom_types()
-        self.set_atom_masses()
-        self.set_partial_charges()
         self.set_ccpackage_info()
-        self.set_rotconst_info()
-        self.set_geom_type()
-        self.set_zpve()
-        self.set_energies()
-        pass
 
+        # read an entire log into list
+        footer_line = -1
+        with open(logFile) as flog:
+            log_lines = flog.readlines()
+
+        # start parsing
+        cur_line = 0
+        line = log_lines[cur_line]
+        while True:
+            cur_line = check_charge_spin_mult(self.parseddata, cur_line, log_lines)
+            cur_line = check_geom(self.parseddata, cur_line, log_lines)
+            cur_line = check_freq(self.parseddata, cur_line, log_lines)
+            cur_line = check_elweights(self.parseddata, cur_line, log_lines)
+            cur_line = check_rot_sym_nr(self.parseddata, cur_line,log_lines)
+            cur_line = check_rot_const(self.parseddata, cur_line,log_lines)
+            cur_line = check_zpe(self.parseddata, cur_line,log_lines)
+            cur_line = check_E0_zpe(self.parseddata, cur_line,log_lines)
+            cur_line = check_E0(self.parseddata, cur_line,log_lines)
+
+            # check if we have reached the log footer
+            # if so, record the line number
+            mfooter = FOOTER_RE.match(line)
+            if mfooter:
+                footer_line = cur_line
+
+            cur_line = cur_line + 1
+            if cur_line >= len(log_lines):
+                break
+            line = log_lines[cur_line]
+
+        # parse the log file footer
+        if footer_line > 0:
+            parse_footer(self.parseddata,footer_line,log_lines)
+
+        self.set_geom_type()
+
+
+            #search for geom
+            #search for el types
+            #search for footer
+
+    def set_geom_type(self):
+        if self.parseddata[ROT_CONST_NR] is not None and \
+           self.parseddata[ATOM_TYPES] is not None:
+           
+            if len(self.parseddata[ATOM_TYPES]) == 1:
+                self.parseddata[GEOM_TYPE] = 'atomic'
+            elif self.parseddata[ROT_CONST_NR] == 1:
+                self.parseddata[GEOM_TYPE] = 'linear'
+            else:
+                self.parseddata[GEOM_TYPE] = 'nonlinear'
 
     def set_coordinates(self):
         # read last coordinates entry from clib atomcoords
@@ -261,9 +381,9 @@ class CcGaussianParser():
             # already known
             atwts = self.cclib_data.atommasses[-len(self.parseddata[ATOM_TYPES]):]
             self.parseddata[ATOM_MASSES] = atwts
-            self.parseddata[ATOM_MASSES_UNIT] = 'atomic'
+            self.parseddata[ATOM_MASSES_UNIT] = 'amu'
             self.parseddata[TOTAL_MASS] = sum(atwts)
-            self.parseddata[TOTAL_MASS_UNIT] = 'atomic'
+            self.parseddata[TOTAL_MASS_UNIT] = 'amu'
         else:
             # read masses of elements from internal elements data table
             atwts = []
@@ -276,9 +396,9 @@ class CcGaussianParser():
                     break
             if atwts:
                 self.parseddata[ATOM_MASSES] = atwts
-                self.parseddata[ATOM_MASSES_UNIT] = 'atomic'
+                self.parseddata[ATOM_MASSES_UNIT] = 'amu'
                 self.parseddata[TOTAL_MASS] = sum(atwts)
-                self.parseddata[TOTAL_MASS_UNIT] = 'atomic'
+                self.parseddata[TOTAL_MASS_UNIT] = 'amu'
 
     def set_partial_charges(self):
         if hasattr(self.cclib_data,'atomcharges'): 
@@ -291,22 +411,6 @@ class CcGaussianParser():
                 self.parseddata[PROGRAM_NAME] = self.cclib_data.metadata['package']
             if 'package_version' in self.cclib_data.metadata.keys():
                 self.parseddata[PROGRAM_VERSION] = self.cclib_data.metadata['package_version']
-
-    def set_rotconst_info(self):
-        if self.parseddata[ATOM_MASSES] is not None and self.parseddata[GEOM].any() is not None:
-            if self.parseddata[GEOM].shape[0] > 1:
-                self.parseddata[ROT_CONST] = utils.getRotConst(self.parseddata[ATOM_MASSES],self.parseddata[GEOM])
-                self.parseddata[ROT_CONST_NR] = len(self.parseddata[ROT_CONST])
-                self.parseddata[ROT_CONST_UNIT] = 'GHz'
-
-    def set_geom_type(self):
-        if self.parseddata[GEOM].shape[0] > 1:
-            if self.parseddata[ROT_CONST_NR] > 1:
-                self.parseddata[GEOM_TYPE] = 'nonlinear'
-            else:
-                self.parseddata[GEOM_TYPE] = 'linear'
-        else:
-            self.parseddata[GEOM_TYPE] = 'atomic'
 
     def set_zpve(self):
         if hasattr(self.cclib_data,'zpve') and not self.parseddata[ZPE_ENERGY]:
