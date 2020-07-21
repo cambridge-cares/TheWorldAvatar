@@ -29,6 +29,8 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
+
+import com.cmclinnovations.jps.agent.configuration.MoDSAgentProperty;
 import com.cmclinnovations.jps.agent.file_management.marshallr.MoDSFileManagement;
 import com.cmclinnovations.jps.agent.mechanism.calibration.MoDSAgentException;
 import com.jcraft.jsch.JSch;
@@ -54,6 +56,7 @@ public class MoDSAgent extends HttpServlet {
 	static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
+	public static MoDSAgentProperty modsAgentProperty;
 	
 	public static void main(String[] args) throws ServletException, MoDSAgentException {
 		MoDSAgent modsAgent = new MoDSAgent();
@@ -262,6 +265,12 @@ public class MoDSAgent extends HttpServlet {
 	 * @throws SlurmJobException
 	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSAgentException, SlurmJobException {
+		if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+		}
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
 					slurmJobProperty.getHpcAddress());
@@ -286,7 +295,7 @@ public class MoDSAgent extends HttpServlet {
 		
 		String jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
 		
-		return new File(jobFolderPath);
+		return Utils.getZipFile(new File(jobFolderPath).getAbsolutePath());
 	}
 	
 	/**
