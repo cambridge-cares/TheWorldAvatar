@@ -13,6 +13,7 @@ class TestGaussianParser(unittest.TestCase):
         json_ref_name = filename.replace('.log','.json')
         print("Test " + test_name+", File: "+filename)
         json_data = parser.parse(test_path+filename)[0]
+        
         #with open(test_path+json_ref_name, 'w') as outfile:
         #    json.dump(json_data, outfile)
         

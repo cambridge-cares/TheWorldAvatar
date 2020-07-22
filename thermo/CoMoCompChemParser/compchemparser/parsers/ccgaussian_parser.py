@@ -320,7 +320,6 @@ class CcGaussianParser():
                 line = line.split()[0]
                 misc[CAS_ENERGY] = float(line)
             return cur_line
-
         #---------------------------------------------
         def check_Casscf_MP2_E0(misc, cur_line,log_lines):
             line = log_lines[cur_line]
@@ -358,7 +357,6 @@ class CcGaussianParser():
         def correct_Casscf_Mp2_method(data, misc):
             if misc[CAS_MP2_ENERGY] is not None and 'CAS' not in data[METHOD]:
                 data[METHOD] = 'CASSCF MP2'
-
         #---------------------------------------------
         def parse_footer(data, misc, cur_line,log_lines):
             lines_above_footer = log_lines[cur_line-EXTRA_FOOTER_LINES_NR:cur_line]
