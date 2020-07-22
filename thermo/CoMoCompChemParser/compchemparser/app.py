@@ -1,4 +1,4 @@
-from ontocompchemdata.ontocompchemdata import OntoCompChemData
+from compchemparser.ontocompchemdata.ontocompchemdata import OntoCompChemData
 
 def run(log_file):
     CompChemObj = OntoCompChemData()

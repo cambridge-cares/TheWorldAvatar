@@ -1,8 +1,8 @@
 import sys, os
 import getopt
 import traceback
-import helpers.utils as utils
-import app
+import compchemparser.helpers.utils as utils
+from compchemparser.app import run
 
 def usage():
     usagemsg = """ Usage:
@@ -43,7 +43,7 @@ def main(argv):
         #    utils.dienicely("Unrecognised log file type.")
 
         # run the code
-        app.run(log_file)
+        run(log_file)
         print('finished!')
 
 if __name__ == "__main__":

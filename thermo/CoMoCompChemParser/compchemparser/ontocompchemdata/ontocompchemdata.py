@@ -1,13 +1,13 @@
-from parsers.ccgaussian_parser import CcGaussianParser
-import helpers.ccutils as ccutils
-import helpers.utils as utils
+from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
+import compchemparser.helpers.ccutils as ccutils
+import compchemparser.helpers.utils as utils
 
 class OntoCompChemData:
 
     def __init__(self):
         self.log = ''
         self.parser = None
-        self.data = {}
+        self.data = []
 
     def getData(self, logFile):        
         ccpackage = ccutils.get_ccattr(logFile,"metadata","package")
@@ -18,9 +18,9 @@ class OntoCompChemData:
             utils.dienicely("ERROR: Provided log fie is either incorrect or comes from an unsupported quantum chemistry package.")
 
         self.log = logFile
-        self.data = {}    
+          
 
-        self.parser.parse(self.log)
+        self.data = self.parser.parse(self.log)
 
         #self.checkParsedData()
 

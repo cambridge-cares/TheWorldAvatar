@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-import helpers.params as p
+import compchemparser.helpers.params as p
 
 def wait():
 	input("Press Enter to continue...")

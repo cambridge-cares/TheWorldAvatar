@@ -3,12 +3,14 @@ import os
 import sys
 from file_read_backwards import FileReadBackwards
 import re
-import helpers.utils as utils
-import helpers.ccutils as ccutils
-import helpers.elements_data as eld
+import compchemparser.helpers.utils as utils
+import compchemparser.helpers.ccutils as ccutils
+import compchemparser.helpers.elements_data as eld
 from itertools import islice
+import json
 
-# Supported keys
+
+# Keys/values uploaded to the KG
 #-------------------------------------------------
 # group 1 (atoms properties)
 EMP_FORMULA = 'Empirical formula'
@@ -38,28 +40,32 @@ FREQ = 'Frequencies'
 FREQ_NR = 'Frequencies number'
 FREQ_UNIT = 'Frequencies unit'
 # group 6 (energy)
-TOTAL_ENERGY = 'Total energy'
+ELECTRONIC_ZPE_ENERGY = 'Electronic + ZPE energy'
 ELECTRONIC_ENERGY = 'Electronic energy'
-ZPE_ENERGY = 'ZPE energy'
 # group 7 (program, run date)
 PROGRAM_NAME = 'Program name'
 PROGRAM_VERSION = 'Program version'
 RUN_DATE = 'Run date'
-# group 8 (misc)
+
+# Misc keys, not uploaded to the KG
+#-------------------------------------------------
 MISC = 'Misc'
+ZPE_ENERGY = 'ZPE energy'
+CASENERGY = 'CASSCF energy'
 
 #-------------------------------------------------
 
 # Keys used
 #-------------------------------------------------
-CCKEYS = [  
+CCKEYS_DATA = [  
             EMP_FORMULA, ATOM_COUNTS, ATOM_TYPES, ATOM_MASSES, ATOM_MASSES_UNIT,
             TOTAL_MASS_UNIT, METHOD, BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
             GEOM, GEOM_UNIT, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
             ROT_CONST_UNIT, FREQ, FREQ_NR, FREQ_UNIT, ELECTRONIC_ENERGY,
-            ZPE_ENERGY, TOTAL_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
-            RUN_DATE, MISC
+            ELECTRONIC_ZPE_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
+            RUN_DATE
         ]
+CCKEYS_MISC = [ZPE_ENERGY, MISC, CASENERGY]
 #-------------------------------------------------
 
 EXTRA_FOOTER_LINES_NR = 15
@@ -76,7 +82,6 @@ EV_TO_HARTREE = 0.0367493237908520
 class CcGaussianParser():
     def __init__(self):
         """ init the gaussian parser """
-        self.parseddata = {key: None for key in CCKEYS}
         self.cclib_data = None
 
     def parse(self,logFile):
@@ -102,7 +107,7 @@ class CcGaussianParser():
             # Open the log file with read only permit
             flog = open(logFile,'r')
             # use readline() to read the first line
-            line = flog.readline()
+            line = 'start'
             # use the read line to read further. If the file is not empty keep reading one line
             # at a time, till the file is empty
             while line:
@@ -119,12 +124,12 @@ class CcGaussianParser():
                         job_success = get_job_success(buffer)
                         if job_success:
                             # set temp file name and dump read content to it
-                            log_names.append(logFile + '_#' + str(jobs_nr))
+                            log_names.append(logFile + '_#' + str(jobs_nr-1))
                             fjob_log = open(log_names[-1],'w')
                             fjob_log.writelines(buffer[:-2])
                             fjob_log.close()
                         # reset the buffer
-                        buffer = []
+                        buffer = buffer[-2:]
                         job_success = False
                     else:
                         buffer.append(line)
@@ -134,20 +139,52 @@ class CcGaussianParser():
 
 
             job_success = get_job_success(buffer)
-            if jobs_nr == 1 and job_success:            
+            if jobs_nr == 1 and job_success:
                 log_names.append(logFile)
+            elif jobs_nr > 1 and job_success:
+                log_names.append(logFile + '_#' + str(jobs_nr))
+                fjob_log = open(log_names[-1],'w')
+                fjob_log.writelines(buffer)
+                fjob_log.close()
 
             return log_names
         #--------------------------------
 
+        uploaddata = []
         split_logs = split_log_by_jobs(logFile)
 
         for log in split_logs:
-            self.parse_log(log)
+            parseddata = self.parse_log(log)
+            json_data = json.dumps(parseddata)
+            uploaddata.append(json_data)
+
+            if log != logFile:
+                os.remove(log)
+        return uploaddata
+
 
     def parse_log(self,logFile):
-        # inner functions for parsing specific info
-        #-----------------------------------------------
+        #================================================
+        # inner functions for getting/setting specific info
+        #================================================
+        def set_ccpackage_info(data):
+            if hasattr(self.cclib_data,'metadata'):
+                if 'package' in self.cclib_data.metadata.keys():
+                    data[PROGRAM_NAME] = self.cclib_data.metadata['package']
+                if 'package_version' in self.cclib_data.metadata.keys():
+                    data[PROGRAM_VERSION] = self.cclib_data.metadata['package_version']
+        #---------------------------------------------
+        def set_geom_type(data):
+            if data[ROT_CONST_NR] is not None and \
+            data[ATOM_TYPES] is not None:
+            
+                if len(parseddata[ATOM_TYPES]) == 1:
+                    data[GEOM_TYPE] = 'atomic'
+                elif data[ROT_CONST_NR] == 1:
+                    data[GEOM_TYPE] = 'linear'
+                else:
+                    data[GEOM_TYPE] = 'nonlinear'
+        #---------------------------------------------
         def check_charge_spin_mult(data, cur_line, log_lines):
             line = log_lines[cur_line]
             if 'Charge =' in line and  'Multiplicity =' in line:
@@ -156,6 +193,7 @@ class CcGaussianParser():
                 data[FORMAL_CHARGE_UNIT] = 'atomic'
                 data[SPIN_MULT] = int(splt_line[2])
             return cur_line
+        #---------------------------------------------
         def check_geom(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'Input orientation:' in line:
@@ -176,6 +214,7 @@ class CcGaussianParser():
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
             return cur_line
+        #---------------------------------------------
         def check_elweights(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'AtmWgt=' in line:
@@ -205,6 +244,7 @@ class CcGaussianParser():
                     data[TOTAL_MASS] = sum(data[ATOM_MASSES])
                     data[TOTAL_MASS_UNIT] = 'amu'
             return cur_line
+        #---------------------------------------------
         def check_freq(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'Frequencies -- ' in line:
@@ -222,12 +262,14 @@ class CcGaussianParser():
                     line = log_lines[cur_line].strip()
                 data[FREQ_NR] = len(data[FREQ])
             return cur_line
+        #---------------------------------------------
         def check_rot_sym_nr(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'Rotational symmetry number' in line:
                 line = line.split()[-1].replace('.','')
                 data[ROT_SYM_NR] = float(line)
             return cur_line
+        #---------------------------------------------
         def check_rot_const(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'Rotational constant (' in line:
@@ -243,35 +285,51 @@ class CcGaussianParser():
                     data[ROT_CONST].append(float(rc))
                 data[ROT_CONST_NR] = len(data[ROT_CONST])
             return cur_line
-        def check_zpe(data, cur_line,log_lines):
+        #---------------------------------------------
+        def check_zpe(misc, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'Zero-point correction=' in line:
                 line = line.split('Zero-point correction=')[1]
                 line = line.split()[0]
-                data[ZPE_ENERGY] = float(line)
+                misc[ZPE_ENERGY] = float(line)
             return cur_line
+        #---------------------------------------------
         def check_E0_zpe(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'Sum of electronic and zero-point Energies=' in line:
                 line = line.split('Sum of electronic and zero-point Energies=')[1]
                 line = line.split()[0]
-                data[TOTAL_ENERGY] = float(line)
+                data[ELECTRONIC_ZPE_ENERGY] = float(line)
             return cur_line
+        #---------------------------------------------
         def check_E0(data, cur_line,log_lines):
             line = log_lines[cur_line]
             if 'SCF Done' in line:
                 line = line.split('=')[1]
                 line = line.split()[0]
                 data[ELECTRONIC_ENERGY] = float(line)
-            return cur_line      
-        def parse_footer(data, cur_line,log_lines):
+            return cur_line
+        #---------------------------------------------
+        def check_Casscf_E0(misc, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Do an extra-iteration for final printing.'.upper() in line.upper():
+                line = log_lines[cur_line-1]                
+                line = line.split('E=')[1].strip()
+                line = line.split()[0]
+                misc[CASENERGY] = float(line)
+            return cur_line
+        #---------------------------------------------
+        def parse_footer(data, misc, cur_line,log_lines):
             lines_above_footer = log_lines[cur_line-EXTRA_FOOTER_LINES_NR:cur_line]
             footer = log_lines[cur_line:]
             footer = ''.join(footer)
-            footer= footer.split('\\')
+            if '1|1|' in footer[0:5].strip():
+                footer= footer.split('|')
+            else:
+                footer= footer.split('\\')
 
             # extract footer data
-            data[MISC] = footer[3].strip()
+            misc[MISC] = footer[3].strip()
             data[METHOD] = footer[4].strip()
             data[BASIS_SET] = footer[5].strip()
             data[EMP_FORMULA] = footer[6].strip().split('(')[0]
@@ -289,18 +347,31 @@ class CcGaussianParser():
             for line in lines_above_footer:
                 if '(0 K)=' in line and 'Energy=' in line:
                     line = line.split('=')[1]
-                    data[TOTAL_ENERGY] = float(line.split()[0].strip())
+                    data[ELECTRONIC_ZPE_ENERGY] = float(line.split()[0].strip())
                     break
+        #---------------------------------------------
+        def resolve_energy(data, misc):
+            if not 'Mixed' in misc[MISC]:
+                if 'CCS' in data[METHOD] or 'QCI' in data[METHOD]:
+                    if hasattr(self.cclib_data,'ccenergies'):
+                        data[ELECTRONIC_ENERGY] = self.cclib_data.ccenergies[-1] * EV_TO_HARTREE
+                elif 'MP' in data[METHOD]:
+                    if hasattr(self.cclib_data,'mpenergies'): #-75.4186235436
+                        emp = self.cclib_data.mpenergies[-1][-1] * EV_TO_HARTREE
+                        data[ELECTRONIC_ENERGY] = emp
+                elif 'CASSCF' in data[METHOD]:
+                    data[ELECTRONIC_ENERGY] = misc[CASENERGY]
+        #================================================
 
-            pass
-        #----------------------------------------------
-
+        #================================================
         # parse_log body
-        #----------------------------------------------
+        #================================================
         # run cclib first
-        self.cclib_data = cclib.io.ccread(logFile)
+        parseddata = {key: None for key in CCKEYS_DATA}
+        parsedmisc = {key: None for key in CCKEYS_MISC}
 
-        self.set_ccpackage_info()
+        self.cclib_data = cclib.io.ccread(logFile)
+        set_ccpackage_info(parseddata)
 
         # read an entire log into list
         footer_line = -1
@@ -311,15 +382,16 @@ class CcGaussianParser():
         cur_line = 0
         line = log_lines[cur_line]
         while True:
-            cur_line = check_charge_spin_mult(self.parseddata, cur_line, log_lines)
-            cur_line = check_geom(self.parseddata, cur_line, log_lines)
-            cur_line = check_freq(self.parseddata, cur_line, log_lines)
-            cur_line = check_elweights(self.parseddata, cur_line, log_lines)
-            cur_line = check_rot_sym_nr(self.parseddata, cur_line,log_lines)
-            cur_line = check_rot_const(self.parseddata, cur_line,log_lines)
-            cur_line = check_zpe(self.parseddata, cur_line,log_lines)
-            cur_line = check_E0_zpe(self.parseddata, cur_line,log_lines)
-            cur_line = check_E0(self.parseddata, cur_line,log_lines)
+            cur_line = check_charge_spin_mult(parseddata, cur_line, log_lines)
+            cur_line = check_geom(parseddata, cur_line, log_lines)
+            cur_line = check_freq(parseddata, cur_line, log_lines)
+            cur_line = check_elweights(parseddata, cur_line, log_lines)
+            cur_line = check_rot_sym_nr(parseddata, cur_line,log_lines)
+            cur_line = check_rot_const(parseddata, cur_line,log_lines)
+            cur_line = check_zpe(parsedmisc, cur_line,log_lines)
+            cur_line = check_E0_zpe(parseddata, cur_line,log_lines)
+            cur_line = check_E0(parseddata, cur_line,log_lines)
+            cur_lin = check_Casscf_E0(parsedmisc, cur_line,log_lines)
 
             # check if we have reached the log footer
             # if so, record the line number
@@ -334,91 +406,9 @@ class CcGaussianParser():
 
         # parse the log file footer
         if footer_line > 0:
-            parse_footer(self.parseddata,footer_line,log_lines)
+            parse_footer(parseddata,parsedmisc,footer_line,log_lines)
 
-        self.set_geom_type()
+        set_geom_type(parseddata)
+        resolve_energy(parseddata, parsedmisc)
 
-
-            #search for geom
-            #search for el types
-            #search for footer
-
-    def set_geom_type(self):
-        if self.parseddata[ROT_CONST_NR] is not None and \
-           self.parseddata[ATOM_TYPES] is not None:
-           
-            if len(self.parseddata[ATOM_TYPES]) == 1:
-                self.parseddata[GEOM_TYPE] = 'atomic'
-            elif self.parseddata[ROT_CONST_NR] == 1:
-                self.parseddata[GEOM_TYPE] = 'linear'
-            else:
-                self.parseddata[GEOM_TYPE] = 'nonlinear'
-
-    def set_coordinates(self):
-        # read last coordinates entry from clib atomcoords
-        if hasattr(self.cclib_data,'atomcoords'):
-            self.parseddata[GEOM] = self.cclib_data.atomcoords[-1]
-
-    def set_frequencies(self):
-        # read frequencies entry from clib vibfreqs (only one set stored)
-        if hasattr(self.cclib_data,'vibfreqs'):
-            self.parseddata[FREQ] = self.cclib_data.vibfreqs
-            self.parseddata[FREQ_NR] = len(self.parseddata[FREQ])
-            self.parseddata[FREQ_UNIT] = '1/cm'
-
-    def set_atom_types(self):
-        # use cclib atomnos entry which stores the atomic number of
-        # each element to get the element type from the internal elements data table.
-        if hasattr(self.cclib_data,'atomnos'):
-            self.parseddata[ATOM_TYPES] = [eld.get_el_symbol_by_atomic_nr(x) for x in self.cclib_data.atomnos]
-
-    def set_atom_masses(self):
-        if hasattr(self.cclib_data,'atommasses'):
-            # try to read masses of elements from cclib atommasses
-            # cclib appends masses to one list, so if these are repeated in the log
-            # the list contains more entries that we need. Therefore I only read
-            # n entries from the back where n is the number of atom types that is
-            # already known
-            atwts = self.cclib_data.atommasses[-len(self.parseddata[ATOM_TYPES]):]
-            self.parseddata[ATOM_MASSES] = atwts
-            self.parseddata[ATOM_MASSES_UNIT] = 'amu'
-            self.parseddata[TOTAL_MASS] = sum(atwts)
-            self.parseddata[TOTAL_MASS_UNIT] = 'amu'
-        else:
-            # read masses of elements from internal elements data table
-            atwts = []
-            for at in self.parseddata[ATOM_TYPES]:
-                atwti = eld.get_el_wt_by_symbol(at)
-                if atwti > 0.0:
-                    atwts.append(atwti)
-                else:
-                    atwts = []
-                    break
-            if atwts:
-                self.parseddata[ATOM_MASSES] = atwts
-                self.parseddata[ATOM_MASSES_UNIT] = 'amu'
-                self.parseddata[TOTAL_MASS] = sum(atwts)
-                self.parseddata[TOTAL_MASS_UNIT] = 'amu'
-
-    def set_partial_charges(self):
-        if hasattr(self.cclib_data,'atomcharges'): 
-            self.parseddata[ATOM_CHARGES] = self.cclib_data.atomcharges
-            self.parseddata[ATOM_CHARGES_UNIT] = 'atomic'
-
-    def set_ccpackage_info(self):
-        if hasattr(self.cclib_data,'metadata'):
-            if 'package' in self.cclib_data.metadata.keys():
-                self.parseddata[PROGRAM_NAME] = self.cclib_data.metadata['package']
-            if 'package_version' in self.cclib_data.metadata.keys():
-                self.parseddata[PROGRAM_VERSION] = self.cclib_data.metadata['package_version']
-
-    def set_zpve(self):
-        if hasattr(self.cclib_data,'zpve') and not self.parseddata[ZPE_ENERGY]:
-            self.parseddata[ZPE_ENERGY] = self.cclib_data.zpve
-
-    def set_energies(self):
-        if hasattr(self.cclib_data,'ccenergies') and not self.parseddata[TOTAL_ENERGY]:
-            self.parseddata[TOTAL_ENERGY] = self.cclib_data.ccenergies[-1] * EV_TO_HARTREE
-        elif hasattr(self.cclib_data,'scfenergies') and not self.parseddata[ELECTRONIC_ENERGY]:
-            self.parseddata[ELECTRONIC_ENERGY] = self.cclib_data.scfenergies[-1] * EV_TO_HARTREE
-            pass
+        return parseddata
