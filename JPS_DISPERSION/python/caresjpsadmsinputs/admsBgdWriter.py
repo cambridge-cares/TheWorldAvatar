@@ -19,13 +19,13 @@ PM10-0
 
 UNITS:
 ppb
-ppb
 ug/m3
 ug/m3
-ppb
 ug/m3
 ug/m3
-ppb
+ug/m3
+ug/m3
+ug/m3
 ug/m3
 
 DATA:
@@ -51,14 +51,14 @@ try:
  	#bgdData = json.loads(sys.argv[2].replace('$','"'))
 	fullPath = sys.argv[1]
 	co2conc=414000
-	noxconc=60
-	no2conc=30
-	o3conc=10
-	so2conc=15.13
-	pm251conc=4
-	pm252conc=4
-	coconc=430
-	pm102conc=48.3
+	noxconc=800
+	no2conc=40
+	o3conc=100
+	so2conc=15
+	pm251conc=6
+	pm252conc=6
+	coconc=10000
+	pm102conc=8
 # 	
 # 	cloudCover = bgdData['hascloudcover']['hascloudcovervalue']
 # 	cloudCover = (float(cloudCover) / 100) * 8
