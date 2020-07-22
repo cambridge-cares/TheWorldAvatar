@@ -391,6 +391,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		
 		// set up parameters
 		List<Parameter> parameters = new ArrayList<>();
+		// constructing row
+		String row = new String();
+		for (int j = 0; j < caseNames.size(); j++) {
+			row = row.concat(";"+j);
+		}
+		row = row.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			Parameter param = new Parameter();
@@ -443,7 +449,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("column", i);
-			initialRead.put("row", "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62");
+			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
@@ -479,7 +485,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("column", i);
-			initialRead.put("row", "0;1;2;3;4;5;6;7;8;9;10;11;12;13;14;15;16;17;18;19;20;21;22;23;24;25;26;27;28;29;30;31;32;33;34;35;36;37;38;39;40;41;42;43;44;45;46;47;48;49;50;51;52;53;54;55;56;57;58;59;60;61;62");
+			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
 			initialRead.put("lb_factor", "0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8");
 			initialRead.put("ub_factor", "1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2");
