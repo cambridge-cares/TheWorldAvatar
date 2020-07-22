@@ -3,14 +3,12 @@ package uk.ac.cam.cares.jps.base.query;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.util.Properties;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
-import org.eclipse.rdf4j.query.resultio.sparqljson.SPARQLResultsJSONWriter;
 
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -19,11 +17,9 @@ import org.openrdf.query.BindingSet;
 import org.openrdf.query.GraphQueryResult;
 import org.openrdf.query.QueryEvaluationException;
 import org.openrdf.query.TupleQueryResult;
-import org.openrdf.query.resultio.TupleQueryResultFormat;
 import org.openrdf.rio.RDFFormat;
 
 import com.bigdata.rdf.sail.webapp.SD;
-import com.bigdata.rdf.sail.BigdataSail.Options;
 import com.bigdata.rdf.sail.webapp.client.IPreparedTupleQuery;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepository;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepository.AddOp;
