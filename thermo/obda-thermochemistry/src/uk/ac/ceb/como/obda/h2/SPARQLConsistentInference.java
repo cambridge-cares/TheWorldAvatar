@@ -1,3 +1,4 @@
+package uk.ac.ceb.como.obda.h2;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -17,26 +18,44 @@ import static java.util.stream.Collectors.joining;
  * 
  * @author NK510 (caresssd@hermes.cam.ac.uk)
  * 
- *         This example demonstrates performing SPARQL query under reasoning
- *         mode. It demonstrates inconsistency of sparql result where instances
- *         of books:AudioBook and books:E-Book are disjoint.
+ *         Perform SPARQL query on book database under inference mode via Book
+ *         ontology. This implementation is based on ontop example available at
+ *         https://github.com/ontop/ontop-api-examples. This example shows that
+ *         query result is consistent. In case of inconsistency, the query
+ *         result is empty.
  *
  */
-public class SPARQLInconsistentInference {
+public class SPARQLConsistentInference {
 
-	final String owlFile = "./resources/example/books/exampleBooks.owl";
-	final String obdaFile = "./resources/example/books/bk_code_audio_book_inference_inconsistency.obda";
-	final String sparqlFile = "./resources/example/books/book_id_audio_and_ebook.rq";
+	/**
+	 * Book ontology
+	 */
+	final String owlFile = "./resources/books/exampleBooks.owl";
+	/**
+	 * Mapping between Book ontology and book database
+	 */
+	final String obdaFile = "./resources/books/bk_code_audio_book_inference.obda";
+	/**
+	 * SPARQL query performed on book database via Book ontology.
+	 */
+	final String sparqlFile = "./resources/books/book_id.rq";
 
 	public static void main(String[] args) {
 		try {
-			SPARQLInconsistentInference sparqlInConsistentInference = new SPARQLInconsistentInference();
-			sparqlInConsistentInference.runSPARQLInferenceMode();
+			SPARQLConsistentInference sparqlInferenceMode = new SPARQLConsistentInference();
+			sparqlInferenceMode.runSPARQLInferenceMode();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
+	/**
+	 * 
+	 * Run SPARQL query under inference mode.
+	 * 
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * @throws Exception
+	 */
 	public void runSPARQLInferenceMode() throws Exception {
 
 		OWLOntology ontology = OWLManager.createOWLOntologyManager()
@@ -56,8 +75,12 @@ public class SPARQLInconsistentInference {
 				QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) {
 			int columnSize = rs.getColumnCount();
 			BufferedWriter bufferOutput = new BufferedWriter(
-					new FileWriter("./resources/example/sparql_inconsistent_inference_result_1.txt"));
+					new FileWriter("./resources/sparql_consistent_inference_result.txt"));
 			bufferOutput.write("reasoner.isQuestConsistent() :" + reasoner.isQuestConsistent());
+			bufferOutput.write("\n");
+			bufferOutput.write("\n");
+			bufferOutput.write("Query results: ");
+			bufferOutput.write("\n");
 			bufferOutput.write("\n");
 			while (rs.nextRow()) {
 
@@ -72,8 +95,6 @@ public class SPARQLInconsistentInference {
 
 			bufferOutput.close();
 			rs.close();
-
 		}
 	}
-
 }

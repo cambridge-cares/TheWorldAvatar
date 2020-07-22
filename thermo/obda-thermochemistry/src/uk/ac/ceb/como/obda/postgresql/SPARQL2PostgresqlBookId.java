@@ -1,3 +1,4 @@
+package uk.ac.ceb.como.obda.postgresql;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -23,25 +24,26 @@ import static java.util.stream.Collectors.joining;
  *         query result is consistent. In case of inconsistency, the query
  *         result is empty.
  *
+ *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
  */
-public class SPARQLConsistentInference {
+public class SPARQL2PostgresqlBookId {
 
 	/**
 	 * Book ontology
 	 */
-	final String owlFile = "./resources/example/books/exampleBooks.owl";
+	final String owlFile = "./resources/books/exampleBooks.owl";
 	/**
-	 * Mapping between Book ontology and book database
+	 * Mapping between exampleBooks ontology and books database stored in Postgresql.
 	 */
-	final String obdaFile = "./resources/example/books/bk_code_audio_book_inference.obda";
+	final String obdaFile = "./resources/postgresql/bk_id.obda";
 	/**
-	 * SPARQL query performed on book database via Book ontology.
+	 * SPARQL query performed on book database via exampleBooks ontology.
 	 */
-	final String sparqlFile = "./resources/example/books/book_id.rq";
+	final String sparqlFile = "./resources/books/book_id.rq";
 
 	public static void main(String[] args) {
 		try {
-			SPARQLConsistentInference sparqlInferenceMode = new SPARQLConsistentInference();
+			SPARQL2PostgresqlBookId sparqlInferenceMode = new SPARQL2PostgresqlBookId();
 			sparqlInferenceMode.runSPARQLInferenceMode();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -71,10 +73,13 @@ public class SPARQLConsistentInference {
 		try (QuestOWL reasoner = factory.createReasoner(ontology, config);
 				QuestOWLConnection conn = reasoner.getConnection();
 				QuestOWLStatement st = conn.createStatement();
-				QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) {
+				QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) 
+		{
+			
 			int columnSize = rs.getColumnCount();
+			
 			BufferedWriter bufferOutput = new BufferedWriter(
-					new FileWriter("./resources/example/sparql_consistent_inference_result.txt"));
+					new FileWriter("./resources/sparql_consistent_inference_result_postgresql_book_id.txt"));
 			bufferOutput.write("reasoner.isQuestConsistent() :" + reasoner.isQuestConsistent());
 			bufferOutput.write("\n");
 			bufferOutput.write("\n");

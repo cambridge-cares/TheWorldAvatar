@@ -1,3 +1,4 @@
+package uk.ac.ceb.como.obda.h2;
 import it.unibz.inf.ontop.sesame.RepositoryConnection;
 
 import it.unibz.inf.ontop.sesame.SesameVirtualRepo;
@@ -28,16 +29,16 @@ public class SPARQLSesame {
 	/**
 	 * Book ontology
 	 */
-	final String owlFile = "./resources/example/books/exampleBooks.owl";
+	final String owlFile = "./resources/books/exampleBooks.owl";
 	/**
 	 * Mapping between Book ontology and book database
 	 */
-	final String obdaFile = "./resources/example/books/bk_code_title.obda";
+	final String obdaFile = "./resources/books/bk_code_title.obda";
 
 	/**
 	 * SPARQL query.
 	 */
-	final String sparqlFile = "./resources/example/books/book_id_title.rq";
+	final String sparqlFile = "./resources/books/book_id_title.rq";
 
 	private BufferedReader br;
 
@@ -94,7 +95,7 @@ public class SPARQLSesame {
 			TupleQuery tq = (TupleQuery) query;
 
 			FileOutputStream resultingFile = new FileOutputStream(
-					new File("./resources/example/sparql_sesame_result.txt"));
+					new File("./resources/sparql_sesame_result.txt"));
 
 			TupleQueryResultHandler writer = new SPARQLResultsCSVWriter(resultingFile);
 

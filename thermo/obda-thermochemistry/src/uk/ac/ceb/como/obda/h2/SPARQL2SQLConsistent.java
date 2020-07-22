@@ -1,3 +1,4 @@
+package uk.ac.ceb.como.obda.h2;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -25,16 +26,16 @@ public class SPARQL2SQLConsistent {
 	/**
 	 * Book ontology (data are stored in database)
 	 */
-	final String owlFile = "./resources/example/books/exampleBooks.owl";
+	final String owlFile = "./resources/books/exampleBooks.owl";
 	/**
 	 * Mapping between Book ontology and book database
 	 */
-	final String obdaFile = "./resources/example/books/bk_code.obda";
+	final String obdaFile = "./resources/books/bk_code.obda";
 	/**
 	 * Sparql query. Result of that query should be instances of ontology class
 	 * Book.
 	 */
-	final String sparqlFile = "./resources/example/books/book_id.rq";
+	final String sparqlFile = "./resources/books/book_id.rq";
 
 	public static void main(String[] args) {
 		try {
@@ -77,7 +78,7 @@ public class SPARQL2SQLConsistent {
 		String sqlQuery = st.getUnfolding(sparqlQuery);
 
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("./resources/example/sparql_to_sql.txt"));
+			BufferedWriter out = new BufferedWriter(new FileWriter("./resources/sparql_to_sql.txt"));
 			out.write("reasoner.isConsistent() : " + reasoner.isConsistent() + "\n");
 			out.write("\n");
 			out.write("\n");
