@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.base.config;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 import java.util.StringTokenizer;
 
 import org.apache.http.HttpResponse;
@@ -21,6 +23,8 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocator {
 
+    private static String JPS_CONFIG = "/conf/jps.properties";
+    private static String JPS_CONFIG_ENVIRONMENT_TEST_KEY = "test";
     private static AgentLocator instance = null;
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
@@ -157,18 +161,28 @@ public class AgentLocator {
         return getSingleton().jpsBaseDirectory;
     }
 
+    /**
+     * This method is used to determine which enviroment JPS agents should operate in:
+     * development/testing or production.
+     *
+     * @return Boolean testMode
+     */
     public static boolean isJPSRunningForTest() {
 
-        String path = getJPSBaseDirectory();
-        if (path != null) {
-            String[] serverDirectories = new String[]{"C:/TOMCAT/webapps/JPS_BASE", "C:\\TOMCAT\\webapps\\JPS_BASE", "C:\\TOMCAT_8081_9.0.20\\webapps\\JPS_BASE", "C:/TOMCAT_8081_9.0.20/webapps/JPS_BASE"};
-            for (String current : serverDirectories) {
-                if (path.startsWith(current)) {
-                    return false;
-                }
+        Boolean testMode = false;
+        try {
+            FileInputStream inputStream = new FileInputStream(getJPSBaseDirectory() + JPS_CONFIG);
+            Properties props = new Properties();
+            props.load(inputStream);
+            String test = props.getProperty(JPS_CONFIG_ENVIRONMENT_TEST_KEY);
+            if (!test.isEmpty()) {
+                testMode = Boolean.valueOf(test);
             }
+        } catch (IOException e) {
+            throw new JPSRuntimeException(e.getMessage(), e);
         }
-        return true;
+
+        return testMode;
     }
 
     public static String getAbsolutePath(String keyForRelativePath, Object thisObject) {

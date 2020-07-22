@@ -3,7 +3,9 @@ package uk.ac.cam.cares.jps.dispersion.episode;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.net.URLDecoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -1053,17 +1055,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
 		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
 //String slurmdir=getClass().getClassLoader()
 //.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#");
-		System.out.println("slumscript="+getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#"));
-System.out.println("excecutable = "+getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath().replace("%23", "#"));
+		System.out.println("slumscript="+decodeURL(getClass().getClassLoader()
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()));
+System.out.println("excecutable = "+decodeURL(getClass().getClassLoader()
+								.getResource(slurmJobProperty.getExecutableFile()).getPath()));
 		
 		return jobSubmission.setUpJob(
-				jsonInput, new File(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#")),
+				jsonInput, new File(decodeURL(getClass().getClassLoader()
+						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath())),
 				getInputFile(datapath, jobFolderName),
-				new File(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath().replace("%23", "#")),
+				new File(decodeURL(getClass().getClassLoader()
+								.getResource(slurmJobProperty.getExecutableFile()).getPath())),
 				 timeStamp);
 	}
 	
@@ -1122,9 +1124,20 @@ System.out.println("excecutable = "+getClass().getClassLoader()
 		return zipFile;
 	
 	}
-
-
-
-
-
+	
+	/**
+	 * Takes a path that may contain one or more UTF-8 characters and decodes<br>
+	 * these to regular characters. For example, the characters %23 and %2C are<br>
+	 * decoded to hash(#) and comma (,), respectively.
+	 * 
+	 * @param path a path possibly containing encoded characters, e.g '#' is<br>
+	 * encoded as %23 and space is encoded as %20.
+	 * 
+	 * @return path containing the decoded characters, e.g. %23 is converted<br>
+	 * to '#' and %20 is converted to space.
+	 * @throws UnsupportedEncodingException
+	 */
+	String decodeURL(String path) throws UnsupportedEncodingException{
+		return URLDecoder.decode(path, "utf-8");
+	}
 }
