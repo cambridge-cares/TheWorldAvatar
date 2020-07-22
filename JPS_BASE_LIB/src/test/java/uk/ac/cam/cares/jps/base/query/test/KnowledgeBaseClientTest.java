@@ -27,9 +27,9 @@ public class KnowledgeBaseClientTest {
 	
 	@Test
 	public void queryAllMechanismIRIs() throws Exception{
-		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
-		String result = kbClient.query("http://localhost:8080/blazegraph", "ontokin", RDFStoreType.BLAZEGRAPH, formMechanismIRIsQuery());
-		System.out.println(result);
+//		KnowledgeBaseClient kbClient = new KnowledgeBaseClient();
+//		String result = kbClient.query("http://localhost:8080/blazegraph", "ontokin", RDFStoreType.BLAZEGRAPH, formMechanismIRIsQuery());
+//		System.out.println(result);
 	}
 	
 	/**
