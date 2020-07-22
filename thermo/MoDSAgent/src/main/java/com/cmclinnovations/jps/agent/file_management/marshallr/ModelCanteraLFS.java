@@ -272,6 +272,12 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		// set up parameters
 		// TODO further parameterise this
 		List<Parameter> parameters = new ArrayList<>();
+		// constructing row
+		String row = new String();
+		for (int j = 0; j < caseNames.size(); j++) {
+			row = row.concat(";"+j);
+		}
+		row = row.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			// base active parameters
@@ -336,7 +342,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("column", i);
-			initialRead.put("row", "0;1;2;3;4;5;6;7;8;9"); // TODO further parameterise this
+			initialRead.put("row", row); // TODO further parameterise this
 			initialRead.put("read_function", "Get_DSV_double");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
@@ -374,7 +380,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			LinkedHashMap<String, LinkedHashMap<String, String>> fileHash = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("column", i);
-			initialRead.put("row", "0;1;2;3;4;5;6;7;8;9");
+			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
 			initialRead.put("lb_addend", "-1.39;-1.56;-1.83;-2.00;-2.10;-2.13;-2.08;-1.95;-2.07;-1.81"); // TODO further parameterise this
 			initialRead.put("ub_addend", "1.39;1.56;1.83;2.00;2.10;2.13;2.08;1.95;2.07;1.81"); // TODO further parameterise this
@@ -507,14 +513,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		// remove the part that irrelevant to simulation
 		headerList.addAll(Arrays.asList(headerLine));
 		firstDataList.addAll(Arrays.asList(firstData));
-		for (int i = 0; i < headerLine.length; i++) {
+		for (int i = headerLine.length -1 ; i > 0; i--) {
 			if (headerLine[i].toLowerCase().contains("case name") 
 					|| headerLine[i].toLowerCase().contains("laminar")
 					|| headerLine[i].toLowerCase().contains("flame") 
 					|| headerLine[i].toLowerCase().contains("speed") 
 					|| headerLine[i].toLowerCase().contains("lfs")) {
-				headerList.remove(headerLine[i]);
-				firstDataList.remove(firstData[i]);
+				headerList.remove(i+1);
+				firstDataList.remove(i+1);
 			}
 		}
 		
