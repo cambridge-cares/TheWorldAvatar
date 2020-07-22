@@ -18,8 +18,6 @@ ATOM_COUNTS = 'Atom counts'
 ATOM_TYPES = 'Atom types'
 ATOM_MASSES = 'Atomic masses'
 ATOM_MASSES_UNIT = 'Atomic mass unit'
-TOTAL_MASS = 'Total mass'
-TOTAL_MASS_UNIT = 'Total mass unit'
 # group 2 (level of theory)
 METHOD = 'Method'
 BASIS_SET = 'Basis set'
@@ -62,7 +60,7 @@ TD_ENERGY = 'TD energy'
 #-------------------------------------------------
 CCKEYS_DATA = [  
             EMP_FORMULA, ATOM_COUNTS, ATOM_TYPES, ATOM_MASSES, ATOM_MASSES_UNIT,
-            TOTAL_MASS_UNIT, METHOD, BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
+            METHOD, BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
             GEOM, GEOM_UNIT, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
             ROT_CONST_UNIT, FREQ, FREQ_NR, FREQ_UNIT, ELECTRONIC_ENERGY,
             ELECTRONIC_ZPE_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
@@ -231,8 +229,6 @@ class CcGaussianParser():
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
                 data[ATOM_MASSES_UNIT] = 'amu'
-                data[TOTAL_MASS] = sum(data[ATOM_MASSES])
-                data[TOTAL_MASS_UNIT] = 'amu'
 
             if data[ATOM_MASSES] is None:
                 if '- Thermochemistry -' in line:
@@ -244,8 +240,6 @@ class CcGaussianParser():
                         cur_line = cur_line + 1
                         line = log_lines[cur_line].strip()
                     data[ATOM_MASSES_UNIT] = 'amu'
-                    data[TOTAL_MASS] = sum(data[ATOM_MASSES])
-                    data[TOTAL_MASS_UNIT] = 'amu'
             return cur_line
         #---------------------------------------------
         def check_freq(data, cur_line,log_lines):

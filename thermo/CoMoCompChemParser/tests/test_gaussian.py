@@ -11,16 +11,16 @@ class TestGaussianParser(unittest.TestCase):
         test_name = 'Gaussian G1 method'
         filename = 'co2_g1_g09.log'
         json_ref_name = filename.replace('.log','.json')
+
         print("Test " + test_name+", File: "+filename)
         json_data = parser.parse(test_path+filename)[0]
-        
+
         #with open(test_path+json_ref_name, 'w') as outfile:
         #    json.dump(json_data, outfile)
         
         with open(test_path+json_ref_name) as ref_file:
             ref_data = json.load(ref_file)
         self.assertEqual(json_data, ref_data)
-        print("\nFinished "+ test_name+" test")
 
     def test_cas(self):
         test_path = './tests/gaussian/cas/'
@@ -30,13 +30,13 @@ class TestGaussianParser(unittest.TestCase):
 
         print("Test " + test_name+", File: "+filename)
         json_data = parser.parse(test_path+filename)[0]
+
         #with open(test_path+json_ref_name, 'w') as outfile:
         #    json.dump(json_data, outfile)
         
         with open(test_path+json_ref_name) as ref_file:
             ref_data = json.load(ref_file)
         self.assertEqual(json_data, ref_data)
-        print("\nFinished "+ test_name+" test")
 
 if __name__ == '__main__':
     unittest.main()
