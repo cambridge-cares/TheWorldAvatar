@@ -51,7 +51,10 @@ RUN_DATE = 'Run date'
 #-------------------------------------------------
 MISC = 'Misc'
 ZPE_ENERGY = 'ZPE energy'
-CASENERGY = 'CASSCF energy'
+CAS_ENERGY = 'CASSCF energy'
+CAS_MP2_ENERGY = 'CASSCF MP2 energy'
+CI_ENERGY = 'CI energy'
+TD_ENERGY = 'TD energy'
 
 #-------------------------------------------------
 
@@ -65,7 +68,7 @@ CCKEYS_DATA = [
             ELECTRONIC_ZPE_ENERGY, PROGRAM_NAME, PROGRAM_VERSION,
             RUN_DATE
         ]
-CCKEYS_MISC = [ZPE_ENERGY, MISC, CASENERGY]
+CCKEYS_MISC = [ZPE_ENERGY, MISC, CAS_ENERGY, CAS_MP2_ENERGY, CI_ENERGY, TD_ENERGY]
 #-------------------------------------------------
 
 EXTRA_FOOTER_LINES_NR = 15
@@ -312,12 +315,50 @@ class CcGaussianParser():
         #---------------------------------------------
         def check_Casscf_E0(misc, cur_line,log_lines):
             line = log_lines[cur_line]
-            if 'Do an extra-iteration for final printing.'.upper() in line.upper():
-                line = log_lines[cur_line-1]                
+            if 'ITN=' in line and 'MaxIt=' in line and 'E=' in line and 'DE=' in line and 'Acc=' in line and 'Lan=' in line:
                 line = line.split('E=')[1].strip()
                 line = line.split()[0]
-                misc[CASENERGY] = float(line)
+                misc[CAS_ENERGY] = float(line)
             return cur_line
+
+        #---------------------------------------------
+        def check_Casscf_MP2_E0(misc, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Multireference MP2 with'.upper() in line.upper():
+                cur_line = cur_line + 1
+                line = log_lines[cur_line].strip()
+                while True:
+                    if 'E2 =' in line and 'EUMP2 =' in line:
+                        line = line.split('=')[-1].strip()
+                        line = line.replace('D','E')
+                        misc[CAS_MP2_ENERGY] = float(line)
+                        break
+                    cur_line = cur_line + 1
+                    line = log_lines[cur_line].strip()
+            return cur_line
+        #---------------------------------------------
+        def check_CI_E0(misc, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'E(CI'.upper() in line.upper():
+                if 'DE(CI'.upper() in line.upper():
+                    line = line.split(' E(CI')[1].strip()
+                    line = line.split()[1]
+                else:
+                    line = line.split('=')[1].strip()
+                misc[CI_ENERGY] = float(line)
+            return cur_line
+        #---------------------------------------------
+        def check_TD_E0(misc, cur_line,log_lines):
+            line = log_lines[cur_line]
+            if 'Total Energy, E(TD'.upper() in line.upper():
+                line = line.split('=')[1].strip()
+                misc[TD_ENERGY] = float(line)
+            return cur_line
+        #---------------------------------------------
+        def correct_Casscf_Mp2_method(data, misc):
+            if misc[CAS_MP2_ENERGY] is not None and 'CAS' not in data[METHOD]:
+                data[METHOD] = 'CASSCF MP2'
+
         #---------------------------------------------
         def parse_footer(data, misc, cur_line,log_lines):
             lines_above_footer = log_lines[cur_line-EXTRA_FOOTER_LINES_NR:cur_line]
@@ -355,12 +396,18 @@ class CcGaussianParser():
                 if 'CCS' in data[METHOD] or 'QCI' in data[METHOD]:
                     if hasattr(self.cclib_data,'ccenergies'):
                         data[ELECTRONIC_ENERGY] = self.cclib_data.ccenergies[-1] * EV_TO_HARTREE
+                elif 'CASSCF MP2' in data[METHOD] and misc[CAS_MP2_ENERGY] is not None:
+                    data[ELECTRONIC_ENERGY] = misc[CAS_MP2_ENERGY]
+                elif 'CASSCF' in data[METHOD] and misc[CAS_ENERGY] is not None:
+                    data[ELECTRONIC_ENERGY] = misc[CAS_ENERGY]
                 elif 'MP' in data[METHOD]:
                     if hasattr(self.cclib_data,'mpenergies'): #-75.4186235436
                         emp = self.cclib_data.mpenergies[-1][-1] * EV_TO_HARTREE
                         data[ELECTRONIC_ENERGY] = emp
-                elif 'CASSCF' in data[METHOD]:
-                    data[ELECTRONIC_ENERGY] = misc[CASENERGY]
+                elif 'CI' in data[METHOD] and misc[CI_ENERGY] is not None:
+                    data[ELECTRONIC_ENERGY] = misc[CI_ENERGY]
+                elif 'TD' in data[METHOD] and misc[TD_ENERGY] is not None:
+                    data[ELECTRONIC_ENERGY] = misc[TD_ENERGY]
         #================================================
 
         #================================================
@@ -391,7 +438,10 @@ class CcGaussianParser():
             cur_line = check_zpe(parsedmisc, cur_line,log_lines)
             cur_line = check_E0_zpe(parseddata, cur_line,log_lines)
             cur_line = check_E0(parseddata, cur_line,log_lines)
-            cur_lin = check_Casscf_E0(parsedmisc, cur_line,log_lines)
+            cur_line = check_CI_E0(parsedmisc, cur_line,log_lines)
+            cur_line = check_TD_E0(parsedmisc, cur_line,log_lines)
+            cur_line = check_Casscf_E0(parsedmisc, cur_line,log_lines)
+            cur_line = check_Casscf_MP2_E0(parsedmisc, cur_line,log_lines)
 
             # check if we have reached the log footer
             # if so, record the line number
@@ -408,7 +458,8 @@ class CcGaussianParser():
         if footer_line > 0:
             parse_footer(parseddata,parsedmisc,footer_line,log_lines)
 
-        set_geom_type(parseddata)
+        set_geom_type(parseddata)        
+        correct_Casscf_Mp2_method(parseddata, parsedmisc)
         resolve_energy(parseddata, parsedmisc)
 
         return parseddata
