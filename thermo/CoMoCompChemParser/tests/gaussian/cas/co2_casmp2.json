@@ -10,54 +10,49 @@
         "O"
     ],
     "Atomic masses": [
-        12.0,
-        15.99491,
-        15.99491
+        12.0107,
+        15.999491,
+        15.999491
     ],
-    "Atomic mass unit": "amu",
-    "Method": "G1",
-    "Basis set": "G1",
+    "Atomic mass unit": null,
+    "Method": "CASSCF MP2",
+    "Basis set": "6-311G(d,p)",
     "Spin multiplicity": 1,
     "Formal charge": 0,
     "Formal charge unit": "atomic",
     "Geometry": [
         [
-            -3.555363,
-            -0.513457,
+            -3.55536,
+            -0.51345,
             0.0
         ],
         [
-            -4.734007,
-            -0.521312,
+            -4.65534,
+            -0.52079,
             0.0
         ],
         [
-            -2.37672,
-            -0.505603,
+            -2.45539,
+            -0.50613,
             0.0
         ]
     ],
     "Geometry unit": "Angstroms",
     "Geometry type": "nonlinear",
-    "Rotational symmetry number": 1.0,
+    "Rotational symmetry number": null,
     "Rotational constants": [
         0.0,
-        11.3715891,
-        11.3715891
+        13.0563072,
+        13.0563072
     ],
     "Rotational constants number": 3,
     "Rotational constants unit": "GHZ",
-    "Frequencies": [
-        745.8403,
-        745.8403,
-        1518.4399,
-        2584.9202
-    ],
-    "Frequencies number": 4,
-    "Frequencies unit": "cm^-1",
-    "Electronic energy": -187.693865651,
-    "Electronic + ZPE energy": -188.361076,
+    "Frequencies": null,
+    "Frequencies number": null,
+    "Frequencies unit": null,
+    "Electronic energy": -188.23748953923,
+    "Electronic + ZPE energy": null,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
-    "Run date": "Fri Jul 17 16:47:38 2020"
+    "Run date": "Wed Jul 22 15:03:28 2020"
 }
