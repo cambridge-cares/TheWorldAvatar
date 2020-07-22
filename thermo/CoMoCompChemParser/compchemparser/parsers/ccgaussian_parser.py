@@ -269,7 +269,7 @@ class CcGaussianParser():
         #---------------------------------------------
         def check_rot_const(data, cur_line,log_lines):
             line = log_lines[cur_line]
-            if 'Rotational constant (' in line:
+            if 'Rotational constant (' in line or 'Rotational constants (' in line:
                 data[ROT_CONST] = []
                 # get unit
                 line = line.split('(')[1]
@@ -400,6 +400,13 @@ class CcGaussianParser():
                     data[ELECTRONIC_ENERGY] = misc[CI_ENERGY]
                 elif 'TD' in data[METHOD] and misc[TD_ENERGY] is not None:
                     data[ELECTRONIC_ENERGY] = misc[TD_ENERGY]
+        #---------------------------------------------
+        def resolve_atom_masses(data):
+            if data[ATOM_MASSES] is None:
+                if data[ATOM_TYPES]:
+                    data[ATOM_MASSES] = []
+                    for at in data[ATOM_TYPES]:
+                        data[ATOM_MASSES].append(eld.get_el_wt_by_symbol(at))
         #================================================
 
         #================================================
@@ -453,5 +460,6 @@ class CcGaussianParser():
         set_geom_type(parseddata)        
         correct_Casscf_Mp2_method(parseddata, parsedmisc)
         resolve_energy(parseddata, parsedmisc)
+        resolve_atom_masses(parseddata)
 
         return parseddata
