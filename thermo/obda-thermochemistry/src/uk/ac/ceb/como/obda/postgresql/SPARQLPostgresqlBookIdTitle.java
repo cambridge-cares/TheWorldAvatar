@@ -26,7 +26,7 @@ import java.io.IOException;
  *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
  *
  */
-public class SPARQLSesameBookIdTitle {
+public class SPARQLPostgresqlBookIdTitle {
 
 	/**
 	 * Book ontology
@@ -35,7 +35,7 @@ public class SPARQLSesameBookIdTitle {
 	/**
 	 * Mapping between exampleBooks ontology and books database stored in Postgresql.
 	 */
-	final String obdaFile = "./resources/postgresql/bk_code_bk_title.obda";
+	final String obdaFile = "./resources/postgresql/bk_id_bk_title.obda";
 
 	/**
 	 * SPARQL query performed on Postgresql book database via exampleBooks ontology.
@@ -48,7 +48,7 @@ public class SPARQLSesameBookIdTitle {
 
 		try {
 
-			SPARQLSesameBookIdTitle example = new SPARQLSesameBookIdTitle();
+			SPARQLPostgresqlBookIdTitle example = new SPARQLPostgresqlBookIdTitle();
 
 			example.runSPARQL();
 
@@ -58,7 +58,7 @@ public class SPARQLSesameBookIdTitle {
 	}
 
 	/**
-	 * Performs SPARQL query on Book database via Book ontology and returns as
+	 * Performs SPARQL query on Book database via exampleBooks ontology and returns as
 	 * result book id and its title.
 	 */
 	public void runSPARQL() throws Exception {
@@ -67,10 +67,12 @@ public class SPARQLSesameBookIdTitle {
 
 		/**
 		 * Create and initialize repository
+		 * 
 		 */
 		boolean existential = false;
 
 		/**
+		 * 
 		 * A type of rewriting technique.
 		 * 
 		 * Reference paper that explains tree-withness rewriting technique is
@@ -79,6 +81,7 @@ public class SPARQLSesameBookIdTitle {
 		 * Access with Databases: A Short Course. In S. Rudolph, G. Gottlob, I.
 		 * Horrocks, F. van Harmelen, editors, Summer School on Reasoning Web (Mannheim,
 		 * 30 July - 2 August), vol. 8067 of LNCS, pp. 194-229. Springer, 2013."
+		 * 
 		 */
 		String rewriting = "TreeWitness";
 
@@ -97,12 +100,12 @@ public class SPARQLSesameBookIdTitle {
 			TupleQuery tq = (TupleQuery) query;
 
 			FileOutputStream resultingFile = new FileOutputStream(
-					new File("./resources/sparql_sesame_result_postgresql_book_id_title.txt"));
+					new File("./resources/sparql_sesame_result_book_id_title_postgresql.txt"));
 
 			TupleQueryResultHandler writer = new SPARQLResultsCSVWriter(resultingFile);
 
 			/**
-			 * Stores SPARQL results into target file.
+			 * Stores SPARQL results into target txt file.
 			 */
 
 			tq.evaluate(writer);
@@ -112,6 +115,13 @@ public class SPARQLSesameBookIdTitle {
 
 	}
 
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param sparqlFile the sparql file path
+	 * @return the string that contains sparql query content
+	 * @throws IOException
+	 */
 	private String readSPARQL(String sparqlFile) throws IOException {
 
 		String queryString = "";

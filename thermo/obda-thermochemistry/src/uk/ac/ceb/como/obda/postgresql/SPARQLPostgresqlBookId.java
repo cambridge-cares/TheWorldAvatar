@@ -1,4 +1,5 @@
 package uk.ac.ceb.como.obda.postgresql;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -25,8 +26,10 @@ import static java.util.stream.Collectors.joining;
  *         result is empty.
  *
  *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
+ *
  */
-public class SPARQL2PostgresqlBookId {
+
+public class SPARQLPostgresqlBookId {
 
 	/**
 	 * Book ontology
@@ -43,7 +46,7 @@ public class SPARQL2PostgresqlBookId {
 
 	public static void main(String[] args) {
 		try {
-			SPARQL2PostgresqlBookId sparqlInferenceMode = new SPARQL2PostgresqlBookId();
+			SPARQLPostgresqlBookId sparqlInferenceMode = new SPARQLPostgresqlBookId();
 			sparqlInferenceMode.runSPARQLInferenceMode();
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -56,6 +59,7 @@ public class SPARQL2PostgresqlBookId {
 	 * 
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * @throws Exception
+	 * 
 	 */
 	public void runSPARQLInferenceMode() throws Exception {
 
@@ -79,7 +83,7 @@ public class SPARQL2PostgresqlBookId {
 			int columnSize = rs.getColumnCount();
 			
 			BufferedWriter bufferOutput = new BufferedWriter(
-					new FileWriter("./resources/sparql_consistent_inference_result_postgresql_book_id.txt"));
+					new FileWriter("./resources/sparql_consistent_inference_result_book_id_postgresql.txt"));
 			bufferOutput.write("reasoner.isQuestConsistent() :" + reasoner.isQuestConsistent());
 			bufferOutput.write("\n");
 			bufferOutput.write("\n");
@@ -93,8 +97,10 @@ public class SPARQL2PostgresqlBookId {
 					bufferOutput.write(result.toString());
 					bufferOutput.write("\n");
 
-				}
-				System.out.print("\n");
+			}
+				
+			System.out.print("\n");
+			
 			}
 
 			bufferOutput.close();

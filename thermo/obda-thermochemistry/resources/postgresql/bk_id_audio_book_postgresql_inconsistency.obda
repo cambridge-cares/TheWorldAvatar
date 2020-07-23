@@ -1,3 +1,4 @@
+
 [PrefixDeclaration]
 :   		http://meraka/moss/exampleBooks.owl#
 owl:		http://www.w3.org/2002/07/owl#
@@ -7,17 +8,16 @@ rdfs:		http://www.w3.org/2000/01/rdf-schema#
 quest:		http://obda.org/quest#
 
 [SourceDeclaration]
-sourceUri	books
+sourceUri	Books
 connectionUrl	jdbc:postgresql://localhost/books
 username	postgres
 password    admin
 driverClass	org.postgresql.Driver
 
-
 [MappingDeclaration] @collection [[
 
-mappingId	cl_Books
-target		:book/{bk_code}/ a :Book .
-source		select "bk_code" from "tb_books"
+mappingId	cl_PrintedBook
+target		:book/{bk_code}/ a :AudioBook ; a :PrintedBook.
+source		select "bk_code" from "tb_books" where "bk_type"='A'
 
 ]]

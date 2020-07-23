@@ -1,6 +1,6 @@
 PREFIX books: <http://meraka/moss/exampleBooks.owl#>
 SELECT DISTINCT ?book
 WHERE { 
-?book a books:AudioBook .
-?book a books:E-Book .  
+?book a <http://meraka/moss/exampleBooks.owl#AudioBook> .
+?book a <http://meraka/moss/exampleBooks.owl#E-Book> .  
 }

@@ -23,16 +23,17 @@ import static java.util.stream.Collectors.joining;
  */
 public class SPARQL2SQLConsistent {
 
+
 	/**
-	 * Book ontology (data are stored in database)
+	 * exampleBooks ontology file path. ddata are stored in database.
 	 */
 	final String owlFile = "./resources/books/exampleBooks.owl";
 	/**
-	 * Mapping between Book ontology and book database
+	 * Mapping between exampleBooks ontology and 'books' Postgresql database
 	 */
 	final String obdaFile = "./resources/books/bk_code.obda";
 	/**
-	 * Sparql query. Result of that query should be instances of ontology class
+	 * Sparql query file path. Result of that query should be instances of ontology class
 	 * Book.
 	 */
 	final String sparqlFile = "./resources/books/book_id.rq";
@@ -78,7 +79,8 @@ public class SPARQL2SQLConsistent {
 		String sqlQuery = st.getUnfolding(sparqlQuery);
 
 		try {
-			BufferedWriter out = new BufferedWriter(new FileWriter("./resources/sparql_to_sql.txt"));
+			BufferedWriter out = new BufferedWriter(new FileWriter("./resources/sparql_to_sql_h2.txt"));
+			
 			out.write("reasoner.isConsistent() : " + reasoner.isConsistent() + "\n");
 			out.write("\n");
 			out.write("\n");
@@ -96,4 +98,8 @@ public class SPARQL2SQLConsistent {
 
 		}
 	}
+	
+	
+	
+	
 }

@@ -95,7 +95,7 @@ public class SPARQLSesame {
 			TupleQuery tq = (TupleQuery) query;
 
 			FileOutputStream resultingFile = new FileOutputStream(
-					new File("./resources/sparql_sesame_result.txt"));
+					new File("./resources/sparql_sesame_result_h2.txt"));
 
 			TupleQueryResultHandler writer = new SPARQLResultsCSVWriter(resultingFile);
 
@@ -110,6 +110,13 @@ public class SPARQLSesame {
 
 	}
 
+	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
+	 * 
+	 * @param sparqlFile the sparql file path.
+	 * @return the string that contains sparql query content.
+	 * @throws IOException
+	 */
 	private String readSPARQL(String sparqlFile) throws IOException {
 
 		String queryString = "";

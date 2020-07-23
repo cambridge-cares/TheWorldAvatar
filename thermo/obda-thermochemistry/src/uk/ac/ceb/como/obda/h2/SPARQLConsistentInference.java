@@ -23,12 +23,14 @@ import static java.util.stream.Collectors.joining;
  *         https://github.com/ontop/ontop-api-examples. This example shows that
  *         query result is consistent. In case of inconsistency, the query
  *         result is empty.
+ *         
+ *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
  *
  */
 public class SPARQLConsistentInference {
 
 	/**
-	 * Book ontology
+	 * exampleBooks ontology
 	 */
 	final String owlFile = "./resources/books/exampleBooks.owl";
 	/**
@@ -50,10 +52,10 @@ public class SPARQLConsistentInference {
 	}
 
 	/**
+	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
 	 * Run SPARQL query under inference mode.
 	 * 
-	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * @throws Exception
 	 */
 	public void runSPARQLInferenceMode() throws Exception {
@@ -69,32 +71,40 @@ public class SPARQLConsistentInference {
 
 		String sparqlQuery = Files.lines(Paths.get(sparqlFile)).collect(joining("\n"));
 
-		try (QuestOWL reasoner = factory.createReasoner(ontology, config);
-				QuestOWLConnection conn = reasoner.getConnection();
-				QuestOWLStatement st = conn.createStatement();
-				QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) {
+		try(QuestOWL reasoner = factory.createReasoner(ontology, config);
+			QuestOWLConnection conn = reasoner.getConnection();
+			QuestOWLStatement st = conn.createStatement();
+			QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) {
+			
 			int columnSize = rs.getColumnCount();
-			BufferedWriter bufferOutput = new BufferedWriter(
-					new FileWriter("./resources/sparql_consistent_inference_result.txt"));
-			bufferOutput.write("reasoner.isQuestConsistent() :" + reasoner.isQuestConsistent());
+			
+			BufferedWriter bufferOutput = new BufferedWriter(new FileWriter("./resources/sparql_consistent_inference_result_h2.txt"));
+			
+			bufferOutput.write("reasoner.isQuestConsistent(): " + reasoner.isQuestConsistent());
+			
 			bufferOutput.write("\n");
 			bufferOutput.write("\n");
 			bufferOutput.write("Query results: ");
 			bufferOutput.write("\n");
 			bufferOutput.write("\n");
+			
 			while (rs.nextRow()) {
 
-				for (int i = 1; i <= columnSize; i++) {
-					OWLObject result = rs.getOWLObject(i);
-					bufferOutput.write(result.toString());
-					bufferOutput.write("\n");
+			for (int i = 1; i <= columnSize; i++) {
+					
+			OWLObject result = rs.getOWLObject(i);					
+			bufferOutput.write(result.toString());					
+			bufferOutput.write("\n");
 
-				}
-				System.out.print("\n");
+			}
+				
+			System.out.print("\n");
+			
 			}
 
 			bufferOutput.close();
 			rs.close();
+			
 		}
 	}
 }
