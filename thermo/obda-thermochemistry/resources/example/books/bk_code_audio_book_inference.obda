@@ -1,0 +1,22 @@
+[PrefixDeclaration]
+:   		http://meraka/moss/exampleBooks.owl#
+owl:		http://www.w3.org/2002/07/owl#
+rdf:		http://www.w3.org/1999/02/22-rdf-syntax-ns#
+xsd:		http://www.w3.org/2001/XMLSchema#
+rdfs:		http://www.w3.org/2000/01/rdf-schema#
+quest:		http://obda.org/quest#
+
+[SourceDeclaration]
+sourceUri	Books
+connectionUrl	jdbc:h2:tcp://localhost/./books;DATABASE_TO_UPPER=FALSE
+username	sa
+password    test
+driverClass	org.h2.Driver
+
+[MappingDeclaration] @collection [[
+
+mappingId	cl_AudioBook
+target		:book/{bk_code}/ a :AudioBook .
+source		select "bk_code" from "tb_books" where "bk_type"='A'
+
+]]
