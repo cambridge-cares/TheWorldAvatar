@@ -27,9 +27,6 @@ setup(
     include_package_data=True,
     # If there are data files included in your packages that need to be
     # installed, specify them here.
-    #package_data={  # Optional
-    #    'arkane': ['data/arkane_input_species_template.py','data/arkane_input_template.py'],
-    #},
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
     # `pip` to create the appropriate form of executable for the target
