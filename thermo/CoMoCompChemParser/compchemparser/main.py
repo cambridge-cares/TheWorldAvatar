@@ -1,54 +1,30 @@
 import sys, os
-import getopt
 import traceback
 import compchemparser.helpers.utils as utils
 from compchemparser.app import run
-
-def usage():
-    usagemsg = """ Usage:
-    -h
-    -f <log_file>
-
-    """
-    print(usagemsg)
-    utils.codexit()
+import argparse
 
 # Processes the cmd arguments
-def main(argv):
-    try:
-        opts, args = getopt.getopt(argv,"hf:t:",["help", "log_file"])
-    except getopt.GetoptError:
-        usage()
-    if not opts:
-        usage()
-    else:
-        log_file = ''
-        log_type = ''
-        for opt, arg in opts:
-            if opt in ("-h", "--help"):
-                usage()
-            elif opt in ("-f", "--log_file"):
-                log_file = arg
-            else:
-                print("Unhandled option")
-                usage()
+def main(args):
+    # check cmd line args for errors
+    if len(args.f) == 0:
+        utils.dienicely("Log file name must not be blank")
+    elif os.path.isfile(args.f) == False:
+        print
+        utils.dienicely("File: '"+args.f+"' doesn't exist.")
+    #if not app.correctLogType(log_type):
+    #    utils.dienicely("Unrecognised log file type.")
 
-        # check cmd line args for errors
-        if len(log_file) == 0:
-            utils.dienicely("Log file name must not be blank")
-        elif os.path.isfile(log_file) == False:
-            print
-            utils.dienicely("File: '"+log_file+"' doesn't exist.")
-        #if not app.correctLogType(log_type):
-        #    utils.dienicely("Unrecognised log file type.")
-
-        # run the code
-        run(log_file)
-        print('finished!')
+    # run the code
+    run(args.f)
+    print('finished!')
 
 if __name__ == "__main__":
+   argparser = argparse.ArgumentParser(description='Gaussian log file parser')
+   argparser.add_argument('-f', metavar='', help="path to Gaussian log file", required=True)
+   args = argparser.parse_args()
    try:
-       main(sys.argv[1:])
+       main(args)
        utils.wait()
    except:
        traceback.print_exc()
