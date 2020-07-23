@@ -644,9 +644,9 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		String iniPres = null;
 		String iniPresUnit = null;
 		ArrayList<String> species = new ArrayList<String>();
-		String ignDelayModel = "2";
+		String ignDelayModel = "4";
 		String ignDelayDeltaT = "400";
-		String ignDelaySpeciesIndex = "OH";
+		String ignDelaySpeciesIndex = "CH";
 		String ignDelayShowAll = "1";
 		String oxidiser = NAME_OXIDISER; // this name is to be further parameterised, also to be connected to MoDS_Inputs.xml
 		for (int i = 0; i < headerLine.length; i++) {
