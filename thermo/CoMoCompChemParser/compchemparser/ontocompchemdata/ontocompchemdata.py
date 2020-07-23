@@ -1,6 +1,7 @@
 from compchemparser.parsers.ccgaussian_parser import CcGaussianParser
 import compchemparser.helpers.ccutils as ccutils
 import compchemparser.helpers.utils as utils
+import json
 
 # main class for parsed data
 class OntoCompChemData:
@@ -34,3 +35,15 @@ class OntoCompChemData:
             print('    uploading json entry '+str(i+1))
             # upload call ...
             
+    def outputjson(self):
+        print('Dumping to JSON, File '+self.log)
+        for i, json_dat in enumerate(self.data):
+            if len(self.data) > 1:
+                json_name = self.log.replace('.log','#'+str(i+1)+'.json')
+            else:
+                json_name = self.log.replace('.log','.json')
+
+            # dump call ...
+            dict_data = json.loads(json_dat)
+            with open(json_name, 'w') as outfile:
+                json.dump(dict_data, outfile, indent = 4)

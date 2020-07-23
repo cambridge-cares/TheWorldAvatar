@@ -300,7 +300,7 @@ class CcGaussianParser():
                 data[FREQ] = []
                 data[FREQ_UNIT] = 'cm^-1'
 
-                while 'Thermochemistry' not in line:
+                while 'Thermochemistry' not in line and 'Zero-point correction' not in line:
                     if 'Frequencies -- ' in line:
                         line = line.split('--')[1]
                         line = line.split()
