@@ -37,8 +37,8 @@ class TestGaussianParser(unittest.TestCase):
                     ref_path = os.path.join(test_path, method, ref_name)
                     # uncomment to generate ref json file
                     #---------------------------------------------------
-                    with open(ref_path, 'w') as outfile:
-                        json.dump(test_data, outfile, indent = 4)
+                    #with open(ref_path, 'w') as outfile:
+                    #    json.dump(test_data, outfile, indent = 4)
                     #---------------------------------------------------
                     
                     with open(ref_path) as ref_file:

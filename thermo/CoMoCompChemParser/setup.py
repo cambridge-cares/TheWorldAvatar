@@ -23,7 +23,9 @@ setup(
     # Specify which Python versions you support pip install' will check this
     # and refuse to install the project if the version does not match.
     python_requires='>=3.5, <4',
-    #install_requires = []
+    install_requires=[
+    'cclib'
+    ],
     include_package_data=True,
     # If there are data files included in your packages that need to be
     # installed, specify them here.
