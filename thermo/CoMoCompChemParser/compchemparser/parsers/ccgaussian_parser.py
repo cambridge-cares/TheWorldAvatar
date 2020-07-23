@@ -185,6 +185,7 @@ class CcGaussianParser():
         #================================================
         # parse body
         #================================================
+        
         uploaddata = [] # final list that would store json data
         # split the log files if multiply jobs found
         split_logs = split_log_by_jobs(logFile)
@@ -194,12 +195,15 @@ class CcGaussianParser():
             parseddata = self.parse_log(log)
             json_data = json.dumps(parseddata)
             uploaddata.append(json_data)
-
+            #dict_data = json.loads(json_data)
+            #with open(log.replace('.log','.json'), 'w') as outfile:
+                #json.dump(dict_data, outfile, indent = 4)
             # in case of multiple jobs, remove any
             # temp logs that were created
             # do not remove the original log file
             if log != logFile:
                 os.remove(log)
+        #print(uploaddata)
         return uploaddata
 
     # main parse function
@@ -481,6 +485,7 @@ class CcGaussianParser():
             for line in lines_above_footer:
                 if '(0 K)=' in line and 'Energy=' in line:
                     line = line.split('=')[1]
+                    data[ELECTRONIC_ENERGY] = None 
                     data[ELECTRONIC_ZPE_ENERGY] = float(line.split()[0].strip())
                     break
         #---------------------------------------------

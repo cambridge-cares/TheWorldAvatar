@@ -28,6 +28,8 @@ class TestGaussianParser(unittest.TestCase):
 
                 test_data_list = parser.parse(file_path)
                 for i, test_data in enumerate(test_data_list):
+                    #This converts test_data into a dictionary from JSON 
+                    #For easy comparison and readability
                     test_data = json.loads(test_data)
 
                     if len(test_data_list) > 1:
