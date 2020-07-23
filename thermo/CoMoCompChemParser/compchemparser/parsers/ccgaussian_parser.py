@@ -76,6 +76,7 @@ FSPLIT_RE = re.compile(r"^\s?Entering Link 1 =")
 ATOMS_RE = re.compile(r"([a-zA-Z]+)(\d+)")
 JOB_SUCCESS_RE = re.compile(r"^\s?Normal termination of Gaussian")
 FOOTER_RE = re.compile(r"^\s(1\\1\\|1\|1\|)")
+ROT_CONST_RE = re.compile(r"Rotational constants? \(")
 
 # unit conversion
 EV_TO_HARTREE = 0.0367493237908520
@@ -268,8 +269,9 @@ class CcGaussianParser():
             return cur_line
         #---------------------------------------------
         def check_rot_const(data, cur_line,log_lines):
-            line = log_lines[cur_line]
-            if 'Rotational constant (' in line or 'Rotational constants (' in line:
+            line = log_lines[cur_line]            
+
+            if ROT_CONST_RE.search(line):
                 data[ROT_CONST] = []
                 # get unit
                 line = line.split('(')[1]
@@ -277,9 +279,10 @@ class CcGaussianParser():
                 data[ROT_CONST_UNIT] = line[0]
 
                 # get rot consts
-                line = line[1].replace(':','').split()
-                for rc in line:
-                    data[ROT_CONST].append(float(rc))
+                rc = line[1].replace(':','').split()
+                rc = list(dict.fromkeys(rc))
+                data[ROT_CONST] = [float(x) for x in rc if float(x) != 0]
+
                 data[ROT_CONST_NR] = len(data[ROT_CONST])
             return cur_line
         #---------------------------------------------
