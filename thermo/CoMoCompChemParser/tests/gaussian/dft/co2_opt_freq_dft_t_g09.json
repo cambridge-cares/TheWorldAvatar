@@ -4,11 +4,40 @@
         "C": 1,
         "O": 2
     },
+    "Atom types": [
+        "C",
+        "O",
+        "O"
+    ],
+    "Atomic masses": [
+        12.0107,
+        15.999491,
+        15.999491
+    ],
     "Method": "RB3LYP",
     "Basis set": "6-311G(d,p)",
     "Spin multiplicity": 1,
     "Formal charge": 0,
     "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.0,
+            0.0,
+            -4e-06
+        ],
+        [
+            0.0,
+            0.0,
+            1.100001
+        ],
+        [
+            0.0,
+            0.0,
+            -1.099998
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Geometry type": "linear",
     "Rotational constants": [
         11.7298833
     ],
