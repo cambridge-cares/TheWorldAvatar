@@ -76,7 +76,7 @@
         1.007825,
         1.007825
     ],
-    "Atomic mass unit": "amu",
+    "Atomic mass unit": "atomic",
     "Method": "UB971",
     "Basis set": "6-311+G(d,p)",
     "Spin multiplicity": 1,
@@ -357,7 +357,7 @@
     "Frequencies number": 93,
     "Frequencies unit": "cm^-1",
     "Electronic energy": -907.41568455,
-    "Electronic + ZPE energy": -907.132503,
+    "Electronic and ZPE energy": -907.132503,
     "Program name": "Gaussian",
     "Program version": "2003+E.01",
     "Run date": "Thu Apr 16 21:50:19 2009"

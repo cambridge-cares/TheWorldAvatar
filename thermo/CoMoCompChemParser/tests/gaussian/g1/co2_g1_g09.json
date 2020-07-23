@@ -14,7 +14,7 @@
         15.99491,
         15.99491
     ],
-    "Atomic mass unit": "amu",
+    "Atomic mass unit": "atomic",
     "Method": "G1",
     "Basis set": "G1",
     "Spin multiplicity": 1,
@@ -38,14 +38,12 @@
         ]
     ],
     "Geometry unit": "Angstroms",
-    "Geometry type": "nonlinear",
+    "Geometry type": "linear",
     "Rotational symmetry number": 1.0,
     "Rotational constants": [
-        0.0,
-        11.3715891,
         11.3715891
     ],
-    "Rotational constants number": 3,
+    "Rotational constants number": 1,
     "Rotational constants unit": "GHZ",
     "Frequencies": [
         745.8403,
@@ -56,7 +54,7 @@
     "Frequencies number": 4,
     "Frequencies unit": "cm^-1",
     "Electronic energy": -187.693865651,
-    "Electronic + ZPE energy": -188.361076,
+    "Electronic and ZPE energy": -188.361076,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",
     "Run date": "Fri Jul 17 16:47:38 2020"

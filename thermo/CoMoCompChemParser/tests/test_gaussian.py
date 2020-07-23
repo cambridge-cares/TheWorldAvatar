@@ -44,6 +44,7 @@ class TestGaussianParser(unittest.TestCase):
                     with open(ref_path) as ref_file:
                         ref_data = json.load(ref_file)
                     
+                    self.assertEqual(len(test_data.keys()), len(ref_data.keys()))
                     for key in test_data.keys():
                         self.assertEqual(key in ref_data.keys(), True)
                         self.assertEqual(test_data[key], ref_data[key])

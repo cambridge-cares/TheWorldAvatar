@@ -4,7 +4,6 @@ import compchemparser.helpers.utils as utils
 from compchemparser.app import run
 import argparse
 
-# Processes the cmd arguments
 def main(args):
     # check cmd line args for errors
     if len(args.f) == 0:
@@ -12,17 +11,17 @@ def main(args):
     elif os.path.isfile(args.f) == False:
         print
         utils.dienicely("File: '"+args.f+"' doesn't exist.")
-    #if not app.correctLogType(log_type):
-    #    utils.dienicely("Unrecognised log file type.")
 
     # run the code
     run(args.f)
     print('finished!')
 
 if __name__ == "__main__":
+    # Process cmd args
    argparser = argparse.ArgumentParser(description='Gaussian log file parser')
    argparser.add_argument('-f', metavar='', help="path to Gaussian log file", required=True)
    args = argparser.parse_args()
+   # try to launch the main func, in case of errors the traceback will provide details
    try:
        main(args)
        utils.wait()
