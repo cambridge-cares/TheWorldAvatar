@@ -35,7 +35,7 @@ function initMap() {
     var arrUrl = window.location.pathname.split('/');
     var center;
     map = new google.maps.Map(document.getElementById('map'));
-    center = new google.maps.LatLng(1.272061426648693, 103.86814522217725);
+    center = new google.maps.LatLng(52.4137756,-1.5849575);
     map.setZoom(10);
     map.setCenter(center);
 
