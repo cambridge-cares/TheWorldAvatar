@@ -15,6 +15,13 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -477,6 +484,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			e.printStackTrace();
 		}
 		
+		// convert the CoMo version CTML to Cantera version CTML
+		File mechanismFileCanteraCTML = new File(copyOfMechanismFilePath.getPath().replace(".xml", "_temp.xml"));
+		try {
+			convertCoMoCTMLToCanteraCTML(copyOfMechanismFilePath, mechanismFileCanteraCTML);
+		} catch (TransformerException e1) {
+			e1.printStackTrace();
+		}
+		
 		// write element data to file
 		try {
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(elementData), "UTF-8"));
@@ -536,6 +551,17 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		}
 		
 		return lfsSimulationFilePath.getName();
+	}
+	
+	private void convertCoMoCTMLToCanteraCTML(File comoCTML, File canteraCTML) throws IOException, MoDSAgentException, TransformerException {
+		TransformerFactory factory = TransformerFactory.newInstance();
+		Source xslt = new StreamSource(new File(getClass().getClassLoader().getResource("convert_kinetics_ctml_to_cantera.xslt").getPath()));
+		Transformer transformer = factory.newTransformer(xslt);
+		
+		Source como = new StreamSource(comoCTML);
+		transformer.transform(como, new StreamResult(canteraCTML));
+		
+		delete(comoCTML.getPath(), canteraCTML.getPath());
 	}
 	
 }

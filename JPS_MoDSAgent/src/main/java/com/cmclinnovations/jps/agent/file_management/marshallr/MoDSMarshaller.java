@@ -304,7 +304,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	private void delete(String xmlFileOrig, String xmlFileTemp) throws IOException, MoDSAgentException {
+	protected void delete(String xmlFileOrig, String xmlFileTemp) throws IOException, MoDSAgentException {
 		File fileOriginal = new File(xmlFileOrig);
 		if (fileOriginal.delete()) {
 			fileOriginal = new File(xmlFileOrig);
