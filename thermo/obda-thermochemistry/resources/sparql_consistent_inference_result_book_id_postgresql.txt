@@ -1,0 +1,8 @@
+reasoner.isQuestConsistent() :true
+
+Query results: 
+
+<http://meraka/moss/exampleBooks.owl#book/1/>
+<http://meraka/moss/exampleBooks.owl#book/2/>
+<http://meraka/moss/exampleBooks.owl#book/3/>
+<http://meraka/moss/exampleBooks.owl#book/4/>

@@ -76,6 +76,10 @@ public class SPARQLConsistentInference {
 			QuestOWLStatement st = conn.createStatement();
 			QuestOWLResultSet rs = st.executeTuple(sparqlQuery)) {
 			
+//			OntopOWLConnection conn = reasoner.getConnection();
+//          OntopOWLStatement st = conn.createStatement();
+//          TupleOWLResultSet rs = st.executeSelectQuery(sparqlQuery)       
+
 			int columnSize = rs.getColumnCount();
 			
 			BufferedWriter bufferOutput = new BufferedWriter(new FileWriter("./resources/sparql_consistent_inference_result_h2.txt"));
