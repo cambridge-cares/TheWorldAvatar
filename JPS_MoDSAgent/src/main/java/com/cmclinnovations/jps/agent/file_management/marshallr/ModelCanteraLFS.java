@@ -555,7 +555,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	
 	private void convertCoMoCTMLToCanteraCTML(File comoCTML, File canteraCTML) throws IOException, MoDSAgentException, TransformerException {
 		TransformerFactory factory = TransformerFactory.newInstance();
-		Source xslt = new StreamSource(new File(getClass().getClassLoader().getResource("convert_kinetics_ctml_to_cantera.xslt").getPath()));
+		Source xslt = new StreamSource(new File(getClass().getClassLoader().getResource(FILE_COMO_CANTERA_CTML).getPath()));
 		Transformer transformer = factory.newTransformer(xslt);
 		
 		Source como = new StreamSource(comoCTML);
