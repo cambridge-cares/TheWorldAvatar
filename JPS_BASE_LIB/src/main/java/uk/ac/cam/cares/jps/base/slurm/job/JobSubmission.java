@@ -475,7 +475,7 @@ public class JobSubmission{
 	 * maximum number of jobs allowed to run at a time.    
 	 * 
 	 */
-	public void monitorJobs() {
+	public void monitorJobs() throws SlurmJobException{
 		// initialising classes to read properties from the dft-agent.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -523,12 +523,16 @@ public class JobSubmission{
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		} catch(SftpException e){
 			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		} catch(JSchException e){
 			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		}
 	}
 
