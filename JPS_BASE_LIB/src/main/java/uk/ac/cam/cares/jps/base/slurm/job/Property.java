@@ -15,7 +15,6 @@ import java.io.File;
 public enum Property {
 
 	JOB_WORKSPACE_PARENT_DIR(System.getProperty("user.home")),
-	MAX_NUMBER_OF_JOBS(10),
 	CHK_POINT_FILE_EXTENSION(".chk"),
 	STATUS_FILE_NAME("status.txt"),
 	JSON_INPUT_FILE_NAME("input.json"),
