@@ -511,7 +511,7 @@ public class JobSubmission{
 								}
 							}
 						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
-							if(jobsRunning.size()<Property.MAX_NUMBER_OF_JOBS.getValue()){
+							if(jobsRunning.size()<slurmJobProperty.getMaxNumberOfHPCJobs()){
 								runNotStartedJobs(jobFolder);
 								jobsRunning.add(jobFolder.getName());
 							}else{
