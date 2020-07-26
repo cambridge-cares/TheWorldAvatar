@@ -512,7 +512,7 @@ public class JobSubmission{
 							}
 						} else if(Utils.isJobNotStarted(jobFolder) && !jobsRunning.contains(jobFolder.getName())){
 							if(jobsRunning.size()<slurmJobProperty.getMaxNumberOfHPCJobs()){
-								runNotStartedJobs(jobFolder);
+								runNotStartedJob(jobFolder);
 								jobsRunning.add(jobFolder.getName());
 							}else{
 								break;
@@ -546,7 +546,7 @@ public class JobSubmission{
 	 * @throws UnknownHostException
 	 * @throws InterruptedException
 	 */
-	private void runNotStartedJobs(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
+	private void runNotStartedJob(File jobFolder)  throws SftpException, JSchException, IOException, UnknownHostException, InterruptedException{
 		startJob(jobFolder.getName(), Arrays.asList(jobFolder.listFiles()));
 	}
 	
