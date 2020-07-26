@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 
-import java.io.File;
-
 /**
  * This enumerated list defines the name of important properties of</br>
  * Slurm jobs. Some example properties are:</br>
