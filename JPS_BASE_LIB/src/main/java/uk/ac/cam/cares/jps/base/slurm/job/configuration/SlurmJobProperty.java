@@ -71,8 +71,8 @@ public class SlurmJobProperty {
 	@Value("${rdf4j.repository.ontospecies}")
 	private String rdf4jRepositoryOntoSpecies;
 	
-	@Value("${delay.between.two.consecutive.jobs}")
-	private int delayBetweenConsecutiveJobs;
+	@Value("${max.number.of.hpc.jobs}")
+	private int maxNumberOfHPCJobs;
 	
 	public String getAgentClass() {
 		return agentClass;
@@ -150,7 +150,7 @@ public class SlurmJobProperty {
 		this.executableFile = executableFile;
 	}
 
-	public int getDelayBetweenConsecutiveJobs() {
-		return delayBetweenConsecutiveJobs;
+	public int getMaxNumberOfHPCJobs() {
+		return maxNumberOfHPCJobs;
 	}
 }
