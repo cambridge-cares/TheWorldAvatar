@@ -9,6 +9,8 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.DateFormat;
@@ -25,6 +27,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpPost;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,11 +72,10 @@ public class InterpolationAgent  extends JPSHttpServlet {
 	 */
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		String path = request.getServletPath();
 		
 	//	if (SIM_START_PATH.equals(path)) {//temporarily until we get an idea of how to read input from Front End
 		String baseUrl= QueryBroker.getLocalDataPath()+"/JPS_DIS";
-		 
+		validateInput(requestParams.toString());
 		String stationiri = requestParams.optString("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
 		String agentiri = requestParams.optString("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
 		String coordinates = readCoordinate(stationiri,agentiri);
@@ -83,7 +85,6 @@ public class InterpolationAgent  extends JPSHttpServlet {
 		File dirFile = new File(directorydata[0]);
 		String directoryFolder = dirFile.getParent();
 		Date directorytime=ConvertTime(directorydata[1]);
-		//System.out.println("dirtime= "+directorytime);
 		DateFormat pstFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 		pstFormat.setTimeZone(TimeZone.getTimeZone("GMT+8"));
 		
@@ -602,7 +603,70 @@ public class InterpolationAgent  extends JPSHttpServlet {
         String result = CommandHelper.executeSingleCommand(baseUrl, args);
         System.out.println(result);
 	}
-    
+    public static boolean isNumeric(String strNum) {
+	    if (strNum == null) {
+	        return false;
+	    }
+	    try {
+	        Integer d = Integer.parseInt(strNum);
+	    } catch (NumberFormatException nfe) {
+	    	System.out.println(nfe);
+	        throw new NumberFormatException();
+	    }
+	    return true;
+	}
+	 private static boolean isValidURL(String url) throws MalformedURLException, Exception 
+	    { 
+	        /* Try creating a valid URL */
+	        try { 
+	            new URL(url).toURI(); 
+	            return true; 
+	        } 
+	          
+	        // If there was an Exception 
+	        // while creating URL object 
+	        catch (MalformedURLException e) {
+	        	throw e;
+	        }
+	        catch (Exception e) {
+		        throw new Exception("Invalid URL exception ");
+	        } 
+	    } 
+    public void validateInput(String json) {
+
+            JSONObject args = new JSONObject(json);
+            boolean a,b,c,d;
+
+        	try {
+            if (args.has("options")) {
+            	//check if options is Numeric
+            	a = isNumeric(args.get("options").toString());
+            	
+            }
+            if (args.has("agent")) {
+					b = isValidURL(args.get("agent").toString());
+				
+            	
+            }
+            if (args.has("city")) {
+            	c = isValidURL(args.get("city").toString());
+            	
+            }
+            if (args.has("airStationIRI")) {
+            	d = isValidURL(args.get("airStationIRI").toString());
+            	
+            }
+        	} catch (MalformedURLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    }
 	private List<String[]> queryEndPointDataset(String querycontext) {
 		String resultfromrdf4j = KnowledgeBaseClient.query(dataseturl, null, querycontext);
 		String[] keys = JenaResultSetFormatter.getKeys(resultfromrdf4j);

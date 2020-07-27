@@ -10,10 +10,8 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.json.JSONObject;
-
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.dispersion.interpolation.InterpolationAgent;
 
@@ -65,34 +63,8 @@ public class InterpolationTest extends TestCase{
 	
 	}
 	
-	public void testsecondcall() {
-		JSONObject jo = new JSONObject();
-//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
-		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		jo.put("options","1");
-		jo.put("coordinates","[364638.312 131904.703 0]");
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("/JPS_DISPERSION/InterpolationAgent/continueSimulation", jo.toString());
-	}
+
 	
-	//test processRequestParameters
-	public void testAgentCallfromFrontEnd() {
-		JSONObject jo = new JSONObject();
-//		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
-		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
-		jo.put("options","1");
-		jo.put("coordinates","[364638.312 131904.703 0]");
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
-	}
-	public void testAgentCallfromFrontEndADMS() {
-		JSONObject jo = new JSONObject();
-		jo.put("agentiri","http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
-		jo.put("options","1");
-		jo.put("coordinates","[32124.80 26825.16, 0]");//reminder! They don't work with the same sort of coordinates!
-		
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/InterpolationAgent/startSimulation", jo.toString());	
-	}
 	//test determineGas
 	public void testdetermineGas() {
 		System.out.println(new InterpolationAgent()
@@ -139,9 +111,17 @@ public class InterpolationTest extends TestCase{
 			e.printStackTrace();
 		}
 	}
-	
-	public void testrearrangeGst() {
-		System.out.println(new InterpolationAgent().rearrangeGst("C:\\JPS_DATA\\workingdir\\JPS_SCENARIO\\scenario\\base\\localhost_8080\\data\\f031dc2a-a8a2-48ab-ab85-270d07e8c08a\\JPS_DIS",
-				"C:\\Users\\ongajong\\Downloads\\JPS_ADMS\\JPS_ADMS\\test.levels.gst","['CO2 CO NO2 HC NOx SO2 O3 PM2.5-0 PM2.5-1 PM2.5-2']"));
+	/**
+	 * test validInput Function
+	 */
+	public void testInput() {
+		JSONObject jo = new JSONObject();
+		jo.put("agent","http://www.theworldavatar.com/kb/agents/Service__ComposedEpisode.owl#Service");
+//		jo.put("agent","wanker");
+		jo.put("options","1");
+		jo.put("city","http://dbpedia.org/resource/Singapore");
+		jo.put("airStationIRI", "http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+		new InterpolationAgent().validateInput(jo.toString());
 	}
+	
 }
