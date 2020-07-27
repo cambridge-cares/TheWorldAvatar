@@ -86,18 +86,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
         System.out.println("---------- Dispersion Modelling Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DispersionModellingAgent episodeAgent = new DispersionModellingAgent();
-       	// the first 60 refers to the delay (in seconds) before the job scheduler
-        // starts and the second 60 refers to the interval between two consecu-
-        // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(() -> {
-			try {
-				episodeAgent.monitorJobs();
-			} catch (SlurmJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}, 30, 60, TimeUnit.SECONDS);
-		// initialising classes to read properties from the dft-agent.properites file
+		// initialising classes to read properties from the slurm-job.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -105,7 +94,19 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 			logger.info("slurmjobproperty="+slurmJobProperty.toString());
 		}
-        logger.info("---------- simulation jobs are being monitored  ----------");
+        // Here, the delay before the job scheduler starts and the interval
+        // between two consecutive executions of the scheduler are specified
+		// based on the information provided in the slurm-job.properties file.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				episodeAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(),
+				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("---------- simulation jobs are being monitored  ----------");
         System.out.println("---------- simulation jobs are being monitored  ----------");
        	
 	}
