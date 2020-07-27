@@ -335,7 +335,7 @@ public class InputParamsBuilder {
 		propertyGroup.appendChild(getProperty(doc, attribs, "0"));
 		
 		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "SimEnd", "dimension_lookup", "independent_variable", "unit", "ms")));
-		propertyGroup.appendChild(getProperty(doc, attribs, "200"));
+		propertyGroup.appendChild(getProperty(doc, attribs, "500"));
 		
 		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "SimStep", "dimension_lookup", "independent_variable_duration", "unit", "us")));
 		propertyGroup.appendChild(getProperty(doc, attribs, "1"));
@@ -2201,18 +2201,6 @@ public class InputParamsBuilder {
 		
 		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("dimension", "gas fraction", "name", "Oxidiser_Phi=1.5", "unit", "mole fraction")));
 		speciesList = generateSpecies(new ArrayList<String>(Arrays.asList("O2", "0.047619047619047616", "N2", "0.9523809523809523")));
-		mixtures.appendChild(getComposition(doc, attribs, speciesList));
-		
-		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("dimension", "gas fraction", "name", "Fuel-Ox-Mix-Phi=1", "unit", "mole fraction")));
-		speciesList = generateSpecies(new ArrayList<String>(Arrays.asList("DMM3", "0.010309278350515464", "N2", "0.9278350515463918", "O2", "0.061855670103092786")));
-		mixtures.appendChild(getComposition(doc, attribs, speciesList));
-		
-		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("dimension", "gas fraction", "name", "Fuel-Ox-Mix-Phi=0.5", "unit", "mole fraction")));
-		speciesList = generateSpecies(new ArrayList<String>(Arrays.asList("DMM3", "0.009174311926605505", "O2", "0.11009174311926606", "N2", "0.8807339449541285")));
-		mixtures.appendChild(getComposition(doc, attribs, speciesList));
-		
-		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("dimension", "gas fraction", "name", "Fuel-Ox-Mix-Phi=1.5", "unit", "mole fraction")));
-		speciesList = generateSpecies(new ArrayList<String>(Arrays.asList("DMM3", "0.011764705882352941", "N2", "0.9411764705882353", "O2", "0.047058823529411764")));
 		mixtures.appendChild(getComposition(doc, attribs, speciesList));
 		
 		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("dimension", "gas fraction", "name", oxidiser, "unit", "mole fraction")));
