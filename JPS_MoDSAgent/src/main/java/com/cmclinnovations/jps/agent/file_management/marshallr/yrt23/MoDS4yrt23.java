@@ -18,22 +18,17 @@ public class MoDS4yrt23 extends MoDSFileManagement {
 	public static void main(String[] args) throws IOException, MoDSAgentException {
 		MoDS4yrt23 fileMagt = new MoDS4yrt23();
 		
-		// for ignition delay only
-//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_dmc_yrt23_mech.json");
-//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_dmm_yrt23_mech.json");
-//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_ipa_yrt23_mech.json");
-		
 		// including flame speed
-//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_orig_mech.json");
+//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-JPS\\Data\\For_yrt23\\JsonInput\\usc_orig_mech.json");
 
 		// the owl file need to be regenerated with transport data
 		// then the updated owl file need to be uploaded to the local host
 		// then get the reaction mechanism IRI from query/sublime text lookup
 		// the mechanism IRI inside below json need to be changed
 		// the name of below json need to be changed in the folder
-		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_dmc_with_tran.json");
-//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_dmm_mech.json");
-//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-MoDSAgent\\Data\\For_yrt23\\JsonInput\\usc_ipa_mech.json");
+//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-JPS\\Data\\For_yrt23\\JsonInput\\usc_dmc_with_tran.json");
+//		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-JPS\\Data\\For_yrt23\\JsonInput\\usc_dmm_with_tran.json");
+		File jsonFile = new File("C:\\Users\\jb2197\\Documents\\c4e-jb2197-JPS\\Data\\For_yrt23\\JsonInput\\usc_ipa_with_tran.json");
 		
 		String jsonString = new String();
 		String line = new String();
@@ -58,11 +53,10 @@ public class MoDS4yrt23 extends MoDSFileManagement {
 		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshaller4yrt23();
 		iMoDSMarshaller.initialise(jobFolderName);
 		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList);
-		// comment out plugInCantera if only do ignition delay times
 		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
-		placeMoDSSlurmScript(jobFolderPath);
+//		placeMoDSSlurmScript(jobFolderPath);
 		return jobFolderPath;
 	}
 }

@@ -44,7 +44,7 @@ import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
 public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
-	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRM.class);
+	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRM4yrt23.class);
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
