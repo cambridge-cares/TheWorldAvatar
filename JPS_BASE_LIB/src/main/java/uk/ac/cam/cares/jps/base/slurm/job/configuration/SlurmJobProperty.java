@@ -73,6 +73,12 @@ public class SlurmJobProperty {
 	
 	@Value("${max.number.of.hpc.jobs}")
 	private int maxNumberOfHPCJobs;
+
+	@Value("${agent.initial.delay.to.start}")
+	private int agentInitialDelayToStartJobMonitoring;
+	
+	@Value("${agent.periodic.action.interval}")
+	private int agentPeriodicActionInterval;
 	
 	public String getAgentClass() {
 		return agentClass;
@@ -152,5 +158,13 @@ public class SlurmJobProperty {
 
 	public int getMaxNumberOfHPCJobs() {
 		return maxNumberOfHPCJobs;
+	}
+
+	public int getAgentInitialDelayToStartJobMonitoring() {
+		return agentInitialDelayToStartJobMonitoring;
+	}
+
+	public int getAgentPeriodicActionInterval() {
+		return agentPeriodicActionInterval;
 	}
 }
