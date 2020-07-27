@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.ServletException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.util.UriUtils;
 
@@ -35,11 +36,25 @@ public class OntoKinKG extends RepositoryManager {
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
 		String queryString = formNumOfReactionsQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI);
-		System.out.println(queryString);
 		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
-		System.out.println(testResults);
 		return testResults;
+	}
+	
+	public LinkedHashMap<String, String> queryAllReactions(String mechanismIRI) throws MoDSAgentException {
+		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
+			mechanismIRI = "<".concat(mechanismIRI).concat(">");
+		}
+		LinkedHashMap<String, String> queriedReactionList = new LinkedHashMap<String, String>();
+		String queryString = formAllReactionsQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI);
+		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+		for (List<String> rxn : testResults) {
+			if (StringUtils.isNumeric(rxn.get(0))) {
+				queriedReactionList.put(rxn.get(0), encodeReactionEquation(rxn.get(1)));
+			}
+		}
+		return queriedReactionList;
 	}
 	
 	public LinkedHashMap<String, String> queryReactionsToOptimise(String mechanismIRI, List<String> reactionIRIList) throws MoDSAgentException {
@@ -54,9 +69,6 @@ public class OntoKinKG extends RepositoryManager {
 			String queryString = formReactionsToOptimiseQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), reactionIRI);
 			List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
-			System.out.println(testResults);
-			System.out.println(testResults.get(1).get(0));
-			System.out.println(encodeReactionEquation(testResults.get(1).get(0)));
 			queriedReactionList.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
 		}
 		
@@ -67,12 +79,29 @@ public class OntoKinKG extends RepositoryManager {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(REACTION_MECHANISM);
 		queryString = queryString.concat(RDF);
-		queryString = queryString.concat("SELECT (COUNT(?reaction) AS ?numOfReactions)");
-		queryString = queryString.concat("WHERE {");
+		queryString = queryString.concat("SELECT (COUNT(?reaction) AS ?numOfReactions) \n");
+		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ?reaction rdf:type reaction_mechanism:ChemicalReaction . \n");
 		queryString = queryString.concat("    ?reaction ontokin:belongsToPhase ?phase . \n");
 		queryString = queryString.concat("    ?phase rdf:type ontokin:GasPhase . \n");
-		queryString = queryString.concat("    ?phase ontokin:containedIn ").concat(mechanismIRI);
+		queryString = queryString.concat("    ?phase ontokin:containedIn ").concat(mechanismIRI).concat(" \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
+	private String formAllReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSAgentException {
+		String queryString = prefixBindingOntoKin;
+		queryString = queryString.concat(REACTION_MECHANISM);
+		queryString = queryString.concat(RDF);
+		queryString = queryString.concat(DC);
+		queryString = queryString.concat("SELECT ?No ?Equation \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ?reaction rdf:type reaction_mechanism:ChemicalReaction . \n");
+		queryString = queryString.concat("    ?reaction ontokin:belongsToPhase ?phase . \n");
+		queryString = queryString.concat("    ?phase rdf:type ontokin:GasPhase . \n");
+		queryString = queryString.concat("    ?phase ontokin:containedIn ").concat(mechanismIRI).concat(" . \n");
+		queryString = queryString.concat("    ?reaction dc:identifier ?No . \n");
+		queryString = queryString.concat("    ?reaction ontokin:hasEquation ?Equation \n");
 		queryString = queryString.concat("}");
 		return queryString;
 	}
@@ -81,7 +110,7 @@ public class OntoKinKG extends RepositoryManager {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(DC);
 		queryString = queryString.concat("SELECT ?reactionNo ?reactionEquation \n");
-		queryString = queryString.concat("WHERE {");
+		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(reactionIRI).concat(" dc:identifier ?reactionNo . \n");
 		queryString = queryString.concat("    ").concat(reactionIRI).concat(" ontokin:hasEquation ?reactionEquation \n");
 		queryString = queryString.concat("}");
