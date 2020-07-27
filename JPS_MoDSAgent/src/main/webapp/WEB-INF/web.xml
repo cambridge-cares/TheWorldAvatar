@@ -11,7 +11,7 @@
   <servlet>
     <servlet-name>auto-executor</servlet-name>
     <servlet-class>
-            com.cmclinnovations.jps.agent.mechanism.calibration.MoDSAgent
+            uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgent
         </servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
