@@ -28,8 +28,14 @@ To install all libraries we are using the following command *mvn clean install -
 * Implementation relational database in Posstgresql or H2. 
 * Implementation domain ontology (classes, properties, axioms). Ontology should be expressed in [OWL2 QL](https://www.w3.org/TR/owl2-profiles/#OWL_2_QL) 
 * Implementaion mapping between ontology and database schema. This should be saved in file with *.obda* extension.
-* Implementation sparql queries.
 
+  Implementation mapping between database and ontology (Tbox) contains three parts. The first part includes prefix declaration named as *PrefixDeclaration*. Second part is named as *SourceDeclaration*. 
+  It includes information about *sourceUri*	that is name of database. The feature *connectionUrl* represents  the jdbc for the targer databases. along with  *username* and *password*  credentials for
+  accessing to the database. The *driverClass* is database driver class. Third part of the mapping is named as *MappingDeclaration*. This declaration is a collection of *source* and *target* mappings. 
+  The target mapping specifies how data from database are expressed in ontology by using signature from ontology and the vocabulary of database schema. In source mapping we use sql like language to  
+  collect data from data base that are used in target mapping.  
+
+* Implementation sparql queries.
 
 ### Authors
 

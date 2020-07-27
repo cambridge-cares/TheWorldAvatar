@@ -1,5 +1,0 @@
-book,title
-http://meraka/moss/exampleBooks.owl#book/1/,book_title_1
-http://meraka/moss/exampleBooks.owl#book/2/,book_title_2
-http://meraka/moss/exampleBooks.owl#book/3/,book_title_3
-http://meraka/moss/exampleBooks.owl#book/4/,book_title_4

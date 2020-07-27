@@ -38,7 +38,7 @@ public class SPARQLPostgresqlBookId {
 	/**
 	 * Mapping between exampleBooks ontology and books database stored in Postgresql.
 	 */
-	final String obdaFile = "./resources/postgresql/bk_id.obda";
+	final String obdaFile = "./resources/postgresql/books_all.obda";
 	/**
 	 * SPARQL query performed on book database via exampleBooks ontology.
 	 */

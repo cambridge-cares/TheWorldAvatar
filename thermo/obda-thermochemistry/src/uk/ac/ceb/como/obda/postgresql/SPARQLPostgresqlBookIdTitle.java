@@ -26,6 +26,7 @@ import java.io.IOException;
  *         This example demonstrates how to access data in 'books' Postgresql database via exampleBooks ontology.
  *
  */
+
 public class SPARQLPostgresqlBookIdTitle {
 
 	/**
@@ -35,7 +36,7 @@ public class SPARQLPostgresqlBookIdTitle {
 	/**
 	 * Mapping between exampleBooks ontology and books database stored in Postgresql.
 	 */
-	final String obdaFile = "./resources/postgresql/bk_id_bk_title.obda";
+	final String obdaFile = "./resources/postgresql/books_all.obda";
 
 	/**
 	 * SPARQL query performed on Postgresql book database via exampleBooks ontology.
