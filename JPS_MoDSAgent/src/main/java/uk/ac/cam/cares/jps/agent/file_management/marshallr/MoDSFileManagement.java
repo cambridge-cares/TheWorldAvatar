@@ -91,6 +91,7 @@ public class MoDSFileManagement extends MoDSMarshaller {
 		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
+		logger.info("The requested MoDS job was created.");
 //		placeMoDSSlurmScript(jobFolderPath);
 		return jobFolderPath;
 	}

@@ -94,6 +94,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		((ObjectNode) modsJsonNode).set("functions", new ObjectMapper().readTree(INITIALISATION_STRING_FUNCTIONS));
 		// create parameters node
 		((ObjectNode) modsJsonNode).set("parameters", new ObjectMapper().readTree(INITIALISATION_STRING_PARAMETERS));
+		
+		logger.info("MoDSMarshaller was initialised.");
 	}
 
 	@Override
@@ -103,6 +105,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		kineticsSRM.formFiles(exeModel);
 		kineticsSRM.setUpMoDS();
+		
+		logger.info("Model kineticsSRM was added to the MoDS job.");
 	}
 
 	@Override
@@ -112,6 +116,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		canteraLFS.formFiles(exeModel);
 		canteraLFS.setUpMoDS();
+		
+		logger.info("Model canteraLFS was added to the MoDS job.");
 	}
 
 	@Override
@@ -128,6 +134,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		saveMoDSInputsContent(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
 		cleanUp(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
 		deleteDirectory(new File(folderTemporaryPath));
+		
+		logger.info("MoDS input files are now in place.");
 		
 		return jobFolderPath;
 	}

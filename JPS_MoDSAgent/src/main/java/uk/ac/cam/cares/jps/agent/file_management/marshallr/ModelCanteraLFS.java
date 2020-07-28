@@ -123,6 +123,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		// set up model case names
 		canteraLFS.setCaseNames(caseList);
 		
+		
+		logger.info("Executable model canteralLFS is prepared. ");
 		return canteraLFS;
 	}
 
@@ -158,6 +160,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		modelFiles.addAll(folderAllFiles);
 		modelFiles.add(outputFile);
 		
+		logger.info("Files required by "+modelName+" is prepared. ");
+		
 		return modelFiles;
 	}
 
@@ -188,6 +192,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		initialFiles.add(initialActiveFile);
 		initialFiles.add(initialPassiveFile);
 		
+		logger.info("Folder /Initial required by "+modelName+" is prepared. ");
+		
 		return initialFiles;
 	}
 
@@ -211,6 +217,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		List<String> allFiles = new ArrayList<>();
 		allFiles.addAll(generateCanteraMechanismFile(copyOfMechanismFilePath, elementData, mechanism));
 		allFiles.add(createLFSSimulationFile(lfsSimulationFilePath, expData));
+		
+		logger.info("Folder /All required by "+modelName+" is prepared. ");
 		
 		return allFiles;
 	}
@@ -404,6 +412,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			parameters.add(param);
 		}
 		collectParameters(parameters);
+		
+		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
 	private String createActiveParametersFile(File activeParameterBaseMechanismFilePath, File mech) throws IOException, MoDSAgentException {
