@@ -123,6 +123,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		// set up model case names
 		canteraLFS.setCaseNames(caseList);
 		
+		
+		logger.info("Executable model canteralLFS is prepared. ");
 		return canteraLFS;
 	}
 
@@ -158,6 +160,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		modelFiles.addAll(folderAllFiles);
 		modelFiles.add(outputFile);
 		
+		logger.info("Files required by "+modelName+" is prepared. ");
+		
 		return modelFiles;
 	}
 
@@ -188,6 +192,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		initialFiles.add(initialActiveFile);
 		initialFiles.add(initialPassiveFile);
 		
+		logger.info("Folder /Initial required by "+modelName+" is prepared. ");
+		
 		return initialFiles;
 	}
 
@@ -211,6 +217,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		List<String> allFiles = new ArrayList<>();
 		allFiles.addAll(generateCanteraMechanismFile(copyOfMechanismFilePath, elementData, mechanism));
 		allFiles.add(createLFSSimulationFile(lfsSimulationFilePath, expData));
+		
+		logger.info("Folder /All required by "+modelName+" is prepared. ");
 		
 		return allFiles;
 	}
@@ -261,14 +269,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		List<Function> functions = new ArrayList<>();
 		for (String i : activeParameters.keySet()) {
 			Function function = new Function();
-			function.setName(activeParameters.get(i).concat("_update"));
+			function.setName("rxn_"+i.concat("_update"));
 			function.setUsage("working_write");
 			
 			LinkedHashMap<String, String> detailList = new LinkedHashMap<String, String>();
 			detailList.put("independent_variables", "multi base");
-			detailList.put("independent_param_subtypes", "subtype_"+activeParameters.get(i)+" subtype_"+activeParameters.get(i)+"_base");
+			detailList.put("independent_param_subtypes", "subtype_"+"rxn_"+i+" subtype_"+"rxn_"+i+"_base");
 			detailList.put("dependent_variable", "y");
-			detailList.put("dependent_param_subtype", "subtype_"+activeParameters.get(i)+"_lfs");
+			detailList.put("dependent_param_subtype", "subtype_"+"rxn_"+i+"_lfs");
 			detailList.put("expression", "multi*base");
 						
 			function.setDetailList(detailList);
@@ -290,8 +298,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			// base active parameters
 			Parameter baseParam = new Parameter();
 			baseParam.setType("active_input");
-			baseParam.setSubtype("subtype_"+activeParameters.get(i)+"_base");
-			baseParam.setName(activeParameters.get(i)+"_base");
+			baseParam.setSubtype("subtype_"+"rxn_"+i+"_base");
+			baseParam.setName("rxn_"+i+"_base");
 			baseParam.setPreserveWhiteSpace("true");
 			baseParam.setScaling("linear");
 			baseParam.setCaseNamesList(caseNames);
@@ -311,8 +319,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			// lfs active parameters
 			Parameter lfsParam = new Parameter();
 			lfsParam.setType("active_input");
-			lfsParam.setSubtype("subtype_"+activeParameters.get(i)+"_lfs");
-			lfsParam.setName(activeParameters.get(i)+"_lfs");
+			lfsParam.setSubtype("subtype_"+"rxn_"+i+"_lfs");
+			lfsParam.setName("rxn_"+i+"_lfs");
 			lfsParam.setPreserveWhiteSpace("true");
 			lfsParam.setScaling("linear");
 			lfsParam.setCaseNamesList(caseNames);
@@ -404,6 +412,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			parameters.add(param);
 		}
 		collectParameters(parameters);
+		
+		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
 	private String createActiveParametersFile(File activeParameterBaseMechanismFilePath, File mech) throws IOException, MoDSAgentException {

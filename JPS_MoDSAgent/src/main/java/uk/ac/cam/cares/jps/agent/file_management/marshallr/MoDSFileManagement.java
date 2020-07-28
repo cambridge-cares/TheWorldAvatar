@@ -6,6 +6,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -16,6 +17,7 @@ import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.Utils;
 
 public class MoDSFileManagement extends MoDSMarshaller {
 //	public static RepositoryManager repoManager = new RepositoryManager();
@@ -32,10 +34,48 @@ public class MoDSFileManagement extends MoDSMarshaller {
 	public static void main(String[] args) throws IOException, MoDSAgentException {
 		MoDSFileManagement fileMagt = new MoDSFileManagement();
 
-		String jobFolderName = "login-skylake.hpc.cam.ac.uk_1186309217579500";
-		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570512_48\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570503_39\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570639_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570640_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570509_45\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570499_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570607_143\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570631_167\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570634_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570633_169\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570504_40\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570502_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570618_154\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570505_41\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570638_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570517_53\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160\"],\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237\"}}}";
+		String jobFolderName = "login-skylake.hpc.cam.ac.uk_"+Utils.getTimeStamp()+"_Optimisation_MaxDtDt";
 		
+		String resultsFolder = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\SensAna\\";
+		
+//		String sens = "login-cpu.hpc.cam.ac.uk_3705638140418000_SensAna_MaxDcDt_OH"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+//		String sens = "login-cpu.hpc.cam.ac.uk_3705655429858500_SensAna_MaxDcDt_CO"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+//		String sens = "login-cpu.hpc.cam.ac.uk_3705683489571800_SensAna_Conc_CO"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+//		String sens = "login-cpu.hpc.cam.ac.uk_3705704050765200_SensAna_Conc_OH"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+//		String sens = "login-cpu.hpc.cam.ac.uk_3705731441602300_SensAna_Temp_400K"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+//		String sens = "login-cpu.hpc.cam.ac.uk_3705768273696900_SensAna_MaxDpDt"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+		String sens = "login-cpu.hpc.cam.ac.uk_3705790466069800_SensAna_MaxDtDt"+"\\SensitivityAnalysis\\SensitivityAnalysis_SelectedReactions.csv";
+		
+		File rxnFile = new File(resultsFolder+sens);
+		
+		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"reactionList\":["
+				+ fileMagt.getRxnIRIList(rxnFile)
+				+ "],\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"}}}";
+		
+//		System.out.println(jsonString);
 		fileMagt.createMoDSJob(jsonString, jobFolderName);
+	}
+	
+	
+	public String getRxnIRIList(File sensAnaResultsFile) throws IOException, MoDSAgentException {
+		String rxnIRIList = new String();
+		if (sensAnaResultsFile.isFile()) {
+			BufferedReader br = new BufferedReader(new FileReader(sensAnaResultsFile));
+			String[] header = br.readLine().split(",");
+			int iriLocate = -1;
+			for (int i = 0; i < header.length; i++) {
+				if (header[i].contains("IRI")) {
+					iriLocate = i;
+				}
+			}
+			String line = new String();
+			while ((line = br.readLine()) != null) {
+				String[] data = line.split(",");
+				rxnIRIList = rxnIRIList.concat(",\"").concat(data[iriLocate]).concat("\"");
+			}
+			br.close();
+		}
+		return rxnIRIList.substring(1);
 	}
 	
 	public String createMoDSJob(String jsonString, String jobFolderName) throws IOException, MoDSAgentException {
@@ -51,6 +91,7 @@ public class MoDSFileManagement extends MoDSMarshaller {
 		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
+		logger.info("The requested MoDS job was created.");
 //		placeMoDSSlurmScript(jobFolderPath);
 		return jobFolderPath;
 	}

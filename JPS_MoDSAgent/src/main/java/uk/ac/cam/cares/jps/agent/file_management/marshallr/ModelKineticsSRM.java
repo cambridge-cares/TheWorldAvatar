@@ -188,6 +188,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		List<List<String>> numOfReactionsResults = ontoKinKG.queryNumOfReactions(mechanismIRI);
 		numOfReactions = Integer.parseInt(numOfReactionsResults.get(1).get(0));
 		
+		logger.info("Executable model kineticsSRM is prepared. ");
 		return kineticsSRM;
 	}
 	
@@ -232,6 +233,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		modelFiles.addAll(folderAllFiles);
 		modelFiles.add(outputFile);
 		
+		logger.info("Files required by "+modelName+" is prepared. ");
+		
 		return modelFiles;
 	}
 	
@@ -270,6 +273,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		initialFiles.add(initialActiveFile);
 		initialFiles.add(initialPassiveFile);
 		
+		logger.info("Folder /Initial required by "+modelName+" is prepared. ");
 		
 		return initialFiles;
 	}
@@ -308,6 +312,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		allFiles.add(copyMechanismFile(copyOfMechanismFilePath, mechanism));
 		allFiles.add(createInputParamsFile(inputParamsFilePath, expData));
 		
+		logger.info("Folder /All required by "+modelName+" is prepared. ");
+		
 		return allFiles;
 	}
 	
@@ -322,7 +328,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		// set up algorithms
 		String active_subtype = new String();
 		for (String i : activeParameters.keySet()) {
-			active_subtype = active_subtype.concat(" subtype_"+activeParameters.get(i));
+			active_subtype = active_subtype.concat(" subtype_"+"rxn_"+i);
 		}
 		LinkedHashMap<String, LinkedHashMap<String, String>> algorithms = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 		LinkedHashMap<String, String> algoSampling = new LinkedHashMap<String, String>();
@@ -402,8 +408,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		for (String i : activeParameters.keySet()) {
 			Parameter param = new Parameter();
 			param.setType("active_input");
-			param.setName(activeParameters.get(i));
-			param.setSubtype("subtype_"+activeParameters.get(i));
+			param.setName("rxn_"+i);
+			param.setSubtype("subtype_"+"rxn_"+i);
 			param.setPreserveWhiteSpace("true");
 			param.setScaling("linear");
 			param.setCaseNamesList(caseNames);
@@ -505,6 +511,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			parameters.add(param);
 		}
 		collectParameters(parameters);
+		
+		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
 	
@@ -670,10 +678,33 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String iniPres = null;
 		String iniPresUnit = null;
 		ArrayList<String> species = new ArrayList<String>();
-		String ignDelayModel = "3";
+		
+		
+		// ignition delay, uncomment corresponding method below
 		String ignDelayDeltaT = "400";
-		String ignDelaySpeciesIndex = "CO";
 		String ignDelayShowAll = "1";
+		
+		// -Method 0. Searching for the maximum rate of temperature increase.
+		String ignDelayModel = "0";
+		String ignDelaySpeciesIndex = "AR";
+		
+		// -Method 1. Searching for the maximum rate of pressure increase.
+//		String ignDelayModel = "1";
+//		String ignDelaySpeciesIndex = "AR";
+		
+		// -Method 2. Searching for the point at which temperature increase exceeds 400 K.
+//		String ignDelayModel = "2";
+//		String ignDelaySpeciesIndex = "AR";
+		
+		// -Method 3. Searching for the maximum mole fraction of species "x".
+//		String ignDelayModel = "3";
+//		String ignDelaySpeciesIndex = "OH";
+		
+		// -Method 4. Searching for the maximum rate of increase of the mole fraction of species "x".
+//		String ignDelayModel = "4";
+//		String ignDelaySpeciesIndex = "CO";
+		
+		
 		String oxidiser = NAME_OXIDISER; // this name is to be further parameterised, also to be connected to MoDS_Inputs.xml
 		for (int i = 0; i < headerLine.length; i++) {
 			if (headerLine[i].contains("Temp")) {
@@ -725,44 +756,4 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		return inputParams.getName();
 	}
 	
-//	/**
-//	 * Convert a string array to a string in the format of CSV file. 
-//	 * 
-//	 * @param data
-//	 * @return
-//	 */
-//	private String convertToCSV(String[] data) {
-//	    return Stream.of(data)
-//	      .map(this::escapeSpecialCharacters)
-//	      .collect(Collectors.joining(","));
-//	}
-//	
-//	/**
-//	 * Escape special characters when converting string array to string in the format of CSV file. 
-//	 * 
-//	 * @param data
-//	 * @return
-//	 */
-//	private String escapeSpecialCharacters(String data) {
-//	    String escapedData = data.replaceAll("\\R", " ");
-//	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-//	        data = data.replace("\"", "\"\"");
-//	        escapedData = "\"" + data + "\"";
-//	    }
-//	    return escapedData;
-//	}
-//	
-//	/**
-//	 * Check if the given folder path exist, create one if it does not exist. 
-//	 * 
-//	 * @param folderPath
-//	 * @throws IOException
-//	 * @throws MoDSAgentException
-//	 */
-//	private void checkFolderPath(String folderPath) throws IOException, MoDSAgentException {
-//		File folder = new File(folderPath);
-//		if (!folder.exists()) {
-//			folder.mkdir();
-//		}
-//	}
 }

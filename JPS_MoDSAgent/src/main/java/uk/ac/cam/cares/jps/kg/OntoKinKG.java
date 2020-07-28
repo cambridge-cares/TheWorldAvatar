@@ -75,6 +75,19 @@ public class OntoKinKG extends RepositoryManager {
 		return queriedReactionList;
 	}
 	
+	public LinkedHashMap<String, String> queryReactionBasedOnNo(String mechanismIRI, String reactionNo) throws MoDSAgentException {
+		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
+			mechanismIRI = "<".concat(mechanismIRI).concat(">");
+		}
+		LinkedHashMap<String, String> queriedReaction = new LinkedHashMap<String, String>();
+		String queryString = formReactionBasedOnNoQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI, reactionNo);
+		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+		queriedReaction.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
+		
+		return queriedReaction;
+	}
+	
 	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSAgentException {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(REACTION_MECHANISM);
@@ -117,6 +130,23 @@ public class OntoKinKG extends RepositoryManager {
 		return queryString;
 	}
 	
+	private String formReactionBasedOnNoQuery(String prefixBindingOntoKin, String mechanismIRI, String reactionNo) throws MoDSAgentException {
+		String queryString = prefixBindingOntoKin;
+		queryString = queryString.concat(REACTION_MECHANISM);
+		queryString = queryString.concat(RDF);
+		queryString = queryString.concat(DC);
+		queryString = queryString.concat("SELECT ?Reaction ?Equation \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ?Reaction rdf:type reaction_mechanism:ChemicalReaction . \n");
+		queryString = queryString.concat("    ?Reaction ontokin:belongsToPhase ?phase . \n");
+		queryString = queryString.concat("    ?phase rdf:type ontokin:GasPhase . \n");
+		queryString = queryString.concat("    ?phase ontokin:containedIn ").concat(mechanismIRI).concat(" . \n");
+		queryString = queryString.concat("    ?Reaction dc:identifier \"").concat(reactionNo).concat("\" . \n");
+		queryString = queryString.concat("    ?Reaction ontokin:hasEquation ?Equation \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
 	private String encodeReactionEquation(String equation) {
 	    try {
 	    	equation = UriUtils.encodePath(equation, "UTF-8")
@@ -130,28 +160,5 @@ public class OntoKinKG extends RepositoryManager {
 	    }
 	    return equation;
 	}
-
 	
-	
-//	query number of reactions
-//	PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-//		PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-//		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-//
-//		SELECT (COUNT(?reaction) AS ?numOfReactions)
-//		WHERE {
-//		  ?reaction rdf:type reaction_mechanism:ChemicalReaction .
-//		  ?reaction ontokin:belongsToPhase ?phase .
-//		  ?phase rdf:type ontokin:GasPhase .
-//		  ?phase ontokin:containedIn <http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237>
-//		}
-	
-
-//	query equation of reaction
-//	PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-//
-//		SELECT ?reactionEquation
-//		WHERE {
-//		  <http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570465_1> ontokin:hasEquation ?reactionEquation
-//		}
 }

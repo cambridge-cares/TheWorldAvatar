@@ -94,6 +94,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		((ObjectNode) modsJsonNode).set("functions", new ObjectMapper().readTree(INITIALISATION_STRING_FUNCTIONS));
 		// create parameters node
 		((ObjectNode) modsJsonNode).set("parameters", new ObjectMapper().readTree(INITIALISATION_STRING_PARAMETERS));
+		
+		logger.info("MoDSMarshaller was initialised.");
 	}
 
 	@Override
@@ -103,6 +105,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		kineticsSRM.formFiles(exeModel);
 		kineticsSRM.setUpMoDS();
+		
+		logger.info("Model kineticsSRM was added to the MoDS job.");
 	}
 
 	@Override
@@ -112,6 +116,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		canteraLFS.formFiles(exeModel);
 		canteraLFS.setUpMoDS();
+		
+		logger.info("Model canteraLFS was added to the MoDS job.");
 	}
 
 	@Override
@@ -120,7 +126,6 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 		
-		System.out.println(objectMapper.writeValueAsString(modsJsonNode));
 		
 		mods = objectMapper.readValue(objectMapper.writeValueAsString(modsJsonNode), MoDS.class);
 		mods.setXmlns("http://como.cheng.cam.ac.uk/MoDS");
@@ -129,6 +134,8 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		saveMoDSInputsContent(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
 		cleanUp(folderWorkingDirPath.concat(FRONTSLASH+FILE_MODS_INPUTS));
 		deleteDirectory(new File(folderTemporaryPath));
+		
+		logger.info("MoDS input files are now in place.");
 		
 		return jobFolderPath;
 	}
@@ -167,8 +174,6 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		for (String i : models.keySet()) {
 			String modJson = new JSONObject().put("name", i)
 					.put("details", collectDetails(models.get(i))).toString();
-			System.out.println(modsJsonNode.path("models"));
-			System.out.println(modsJsonNode.path("models").path("model"));
 			JsonNode locatedNode = modsJsonNode.path("models").path("model");
 			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(modJson));	
 		}

@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
 public class SensAnaResultsProcess {
 	public static void main(String[] args) throws IOException, MoDSAgentException {
@@ -200,9 +201,19 @@ public class SensAnaResultsProcess {
 	
 	private void writeSelectedRxns(File resultsFile, LinkedHashMap<String, Double> selectedRxns) throws IOException, MoDSAgentException {
 		List<String[]> dataLines = new ArrayList<>();
+		dataLines.add(new String[] {"No", "RxnIRI", "RxnEquation", "RxnSensitivity"});
 		for (String rxn : selectedRxns.keySet()) {
+			OntoKinKG ontoKinKg = new OntoKinKG();
+			String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261";
+			LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn.substring(rxn.lastIndexOf("_")+1));
+			String iri = new String();
+			String equ = new String();
+			for (String rxnIRI : rxnIRIandEqu.keySet()) {
+				iri = rxnIRI;
+				equ = rxnIRIandEqu.get(rxnIRI);
+			}
 			
-			dataLines.add(new String[] {rxn, Double.toString(selectedRxns.get(rxn))});
+			dataLines.add(new String[] {rxn.substring(rxn.lastIndexOf("_")+1), iri, equ, Double.toString(selectedRxns.get(rxn))});
 		}
 		
 		try (PrintWriter pw = new PrintWriter(resultsFile)) {
