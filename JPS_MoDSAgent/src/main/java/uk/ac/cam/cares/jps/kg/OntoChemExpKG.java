@@ -131,10 +131,8 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formConcentrationQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		System.out.println(queryString);
 		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
-		System.out.println(testResults);
 		return testResults;
 	}
 	
@@ -143,10 +141,8 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formEquivalenceRatioQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		System.out.println(queryString);
 		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
-		System.out.println(testResults);
 		return testResults;
 	}
 	
@@ -155,10 +151,8 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formExperimentDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		System.out.println(queryString);
 		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
-		System.out.println(testResults);
 		return testResults;
 	}
 	
@@ -167,10 +161,8 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formFlameSpeedExpDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		System.out.println(queryString);
 		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
-		System.out.println(testResults);
 		return testResults;
 	}
 	

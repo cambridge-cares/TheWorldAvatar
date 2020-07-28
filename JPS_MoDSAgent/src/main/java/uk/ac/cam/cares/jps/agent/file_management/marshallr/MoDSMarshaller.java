@@ -120,7 +120,6 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
 		
-		System.out.println(objectMapper.writeValueAsString(modsJsonNode));
 		
 		mods = objectMapper.readValue(objectMapper.writeValueAsString(modsJsonNode), MoDS.class);
 		mods.setXmlns("http://como.cheng.cam.ac.uk/MoDS");
@@ -167,8 +166,6 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		for (String i : models.keySet()) {
 			String modJson = new JSONObject().put("name", i)
 					.put("details", collectDetails(models.get(i))).toString();
-			System.out.println(modsJsonNode.path("models"));
-			System.out.println(modsJsonNode.path("models").path("model"));
 			JsonNode locatedNode = modsJsonNode.path("models").path("model");
 			ArrayNode addedNode = ((ArrayNode) locatedNode).add(new ObjectMapper().readTree(modJson));	
 		}
