@@ -17,7 +17,7 @@ var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
-
+/**
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
@@ -31,10 +31,10 @@ var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntokinR= require("./routes/visualizeOntokinRemote.js");
 
 var getAttrList =require("./routes/getAttrList");
-var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
+//var getSpecAttr =require("./routes/getSpecificLiteralAttrCached");
 
 var showCO2 = require("./routes/showCO2");
-var bmsplot= require("./routes/plotBMSCached.js");
+// var bmsplot= require("./routes/plotBMSCached.js");
 
 
 var MAUPlot = require("./routes/plotMAU")
@@ -57,10 +57,11 @@ var essMap = require('./routes/ess');
 var DESPlot = require('./routes/DESPlot');
 var literalData = require('./agents/GetLiteralData');
 var getChildrenSingle = require('./routes/GetChildrenSingle');
-
+**/
 var BMSWatcher = require('./agents/setBMSWatcher');
 var agentWatcher = require('./agents/msgFace');
 let setEpWatcher = require('./agents/setEPWatcher');
+
 
 var app = express();
 var port = config.port;
@@ -87,7 +88,7 @@ app.use(bodyParser.text({ type: 'application/json' }));
 /*serve static file***/
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
-
+/**
 app.use('/getChildrenSingle',getChildrenSingle);
  app.use('/visualizeAgent', visualizeAgent);
  app.use('/visualizeWorld', visualizeWorld);
@@ -109,7 +110,7 @@ app.use('/visualizeOntoEN',visualizeOntoEN);
 app.use('/visualizeOntoChem',visualizeOntoChem);
 app.use('/visualizeOntokin',visualizeOntokin);
 
-app.use("/bmsplot", bmsplot);
+// app.use("/bmsplot", bmsplot);
 
 app.use('/ppmap', ppMap);
 app.use("/DESplot", DESPlot);
@@ -121,7 +122,7 @@ app.use("/DESplot", DESPlot);
 app.use("/mauplot", MAUPlot);
 // app.use("/MAU", MAU);
 app.use("/getAttrList", getAttrList);
-app.use("/getSpecAttr", getSpecAttr);
+// app.use("/getSpecAttr", getSpecAttr);
 
 
 app.use('/visualizeOntokinRemote',visualizeOntokinR);
