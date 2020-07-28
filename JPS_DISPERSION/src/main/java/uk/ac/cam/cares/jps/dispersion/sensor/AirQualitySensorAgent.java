@@ -92,10 +92,14 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			
 			String cityiri= requestParams.optString("cityiri", "http://dbpedia.org/resource/Singapore");
 			//right now the input is not connected yet
-			String context = uploadData(cityiri);
-			response.put("airStationIRI", context);	
+			try {
+				String context = uploadData(cityiri);
+				response.put("airStationIRI", context);	
+			}
+			catch(Exception e) {
+				e.printStackTrace();
+			}
 		}
-	
 		return response;
 	}
 	
@@ -260,13 +264,13 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	/** calls on data via REST POST request to api aqmesh
 	 * Handshake: HTTP POST request is sent first with the username and password. 
 	 * User gets back a token that lasts 120 minutes 
-	 * DO NOT RUN THIS MORE THAN ONCE A MINUTE OR WE'LL GET INTO TROUBLE! 14/5/20
 	 * User sends the token and requests for information via GET. 
 	 * First get request gets the gas concentration, 
 	 * Second get request gets particle concentration
 	 * @return ArrayList<JSONObject> that contains concentrations
+	 * @throws Exception 
 	 */
-	public ArrayList<JSONObject> getDataFromAPI() {
+	public ArrayList<JSONObject> getDataFromAPI() throws Exception {
 		//Get token information by password. Only valid for 120 min
 		HttpResponse<String> response = Unirest.post("https://api.aqmeshdata.net/api/Authenticate")
 				.header("Content-Type", "application/json")
@@ -282,11 +286,17 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 				.header("Authorization", currenttoken).asString().getBody();
 		
 		//Get Gas and temperature measurement data using the token
-		String responseGas = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1890/1/01")
+		HttpResponse<String> responseGas  = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1890/1/01")
 					      .header("Accept", "application/json")
-					      .header("Authorization", currenttoken).asString().getBody();
-		JSONArray jArr = new JSONArray(responseGas);
-        
+					      .header("Authorization", currenttoken).asString();
+		//because if response is empty, no update should take place
+        if (responseGas.getStatus() != 200) {
+        	Unirest.shutDown();
+        	System.out.println("Data not available; terminating process now. \n");
+        	throw new Exception("Response not received! ");
+        }
+
+		JSONArray jArr = new JSONArray(responseGas.getBody());
 		//System.out.println("jsonarray= "+jArr.toString());
 		ArrayList<JSONObject> arrJo = new ArrayList<JSONObject>();
 		if (jArr != null) {
@@ -314,11 +324,15 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 			}
 		}
 		//Get PM measurement data using the token
-		String responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1890/2/01/1")
+		HttpResponse<String> responsePM = Unirest.get("https://api.aqmeshdata.net/api/LocationData/Next/1890/2/01/1")
 			      .header("Accept", "application/json")
-			      .header("Authorization", currenttoken).asString().getBody();
+			      .header("Authorization", currenttoken).asString();
 		Unirest.shutDown();
-		JSONArray jArr2 = new JSONArray(responsePM);
+		if (responsePM.getStatus() != 200) {
+        	System.out.println("Data not available; terminating process now. \n");
+        	throw new Exception("Response not received! ");
+        }
+		JSONArray jArr2 = new JSONArray(responsePM.getBody());
 		for (int i = 0; i< jArr2.length(); i++) {
 			JSONObject joPM = new JSONObject(jArr2.get(i).toString());//{}
 			JSONObject jo = new JSONObject();			
@@ -349,8 +363,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	/** runs getDataFromAPI() and process the output
 	 * 
 	 * @param stationiri: the name of the station / graph/context where the owl files are stored under
+	 * @throws Exception 
 	 */
-	public void executePeriodicUpdate(String stationiri) {
+	public void executePeriodicUpdate(String stationiri) throws Exception {
 		ArrayList<JSONObject> result=getDataFromAPI();
 		int len = result.size()/2;
 		for (int x = 0; x <len; x++) { //assuming same frequency of these two.
@@ -515,7 +530,7 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	 * 1. swap getDataFromAPI()'s two API get requests from "Repeat" to "Next"
 	 * 
 	 */
-	public static String uploadData(String cityiri) {
+	public static String uploadData(String cityiri) throws Exception {
 		AirQualitySensorAgent a=new AirQualitySensorAgent();
 		List<String[]> contextlist=a.extractAvailableContext( cityiri);
 		String context=contextlist.get(0)[0];

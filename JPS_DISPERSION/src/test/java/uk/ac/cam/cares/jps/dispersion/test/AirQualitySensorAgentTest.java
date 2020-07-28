@@ -56,15 +56,16 @@ public class AirQualitySensorAgentTest extends TestCase {
 	    assertEquals(200, response.getStatus());
 	}
 	/** test to see if response is created and what is the response like
+	 * @throws Exception 
 	 * 
 	 */
-	public void xxxtestCallAPI() {
+	public void xxxtestCallAPI() throws Exception {
 		AirQualitySensorAgent ag = new AirQualitySensorAgent();
 		ArrayList<JSONObject> jo = ag.getDataFromAPI();
 		System.out.println(jo.toString());
 	}
 	
-	public void xxxtestdirect() {
+	public void xxxtestdirect()  throws Exception {
 		new AirQualitySensorAgent().executePeriodicUpdate("http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStationAQMesh-001.owl#AirQualityStationAQMesh-001");
 	}
 	
