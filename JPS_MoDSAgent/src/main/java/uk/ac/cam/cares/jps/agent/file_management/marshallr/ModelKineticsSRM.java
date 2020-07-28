@@ -48,6 +48,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private List<String> expFiles = new ArrayList<>();
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
+	private LinkedHashMap<String, String> ignDelay = new LinkedHashMap<String, String>();
 	
 	/**
 	 * Collect all information required by MoDS to execute the model kineticsSRM. 
@@ -203,6 +204,20 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 */
 	@Override
 	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException {
+		return null;
+	}
+	
+	/**
+	 * Form all files required by MoDS to execute the model kineticsSRM. This method 
+	 * replace the method in IModel. 
+	 * 
+	 * @param exeModel
+	 * @param ignDelayOption
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSAgentException
+	 */
+	public List<String> formFiles(ExecutableModel exeModel, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -214,6 +229,9 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		caseNames = exeModel.getCaseNames();
 		outputResponses = exeModel.getOutputResponses();
 		passiveParameters = exeModel.getPassiveParameters();
+		
+		// set up the ignition delay option that will be used for generating InputParams.xml file
+		ignDelay = ignDelayOption;
 		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
@@ -420,8 +438,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", activeParameters.get(i));
 			initialRead.put("row", "0");
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_abs", "1.0E-3");
-			initialRead.put("ub_abs", "1000.0");
+			initialRead.put("lb_abs", "1.0E-2");
+			initialRead.put("ub_abs", "100.0");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
 			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value["+i+"]");
@@ -683,10 +701,19 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		// ignition delay, uncomment corresponding method below
 		String ignDelayDeltaT = "400";
 		String ignDelayShowAll = "1";
+		String ignDelayModel = "2";
+		String ignDelaySpeciesIndex = "AR";
+		
+		if (ignDelay.get("method") != null) {
+			ignDelayModel = ignDelay.get("method");
+		}
+		if (ignDelay.get("species") != null) {
+			ignDelaySpeciesIndex = ignDelay.get("species");
+		}
 		
 		// -Method 0. Searching for the maximum rate of temperature increase.
-		String ignDelayModel = "0";
-		String ignDelaySpeciesIndex = "AR";
+//		String ignDelayModel = "0";
+//		String ignDelaySpeciesIndex = "AR";
 		
 		// -Method 1. Searching for the maximum rate of pressure increase.
 //		String ignDelayModel = "1";
