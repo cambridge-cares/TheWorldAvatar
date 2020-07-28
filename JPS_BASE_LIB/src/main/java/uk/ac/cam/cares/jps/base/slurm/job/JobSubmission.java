@@ -7,7 +7,9 @@ import java.io.InputStreamReader;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -55,7 +57,7 @@ public class JobSubmission{
 	static JSch jsch = new JSch();
 	
 	static int scheduledIteration = 0;
-	static List<String> jobsRunning = new ArrayList<String>();
+	static Set<String> jobsRunning = new HashSet<String>();
 	
 	public String getHpcAddress() {
 		return hpcAddress;
@@ -502,6 +504,7 @@ public class JobSubmission{
 			}
 			if(jobSpace.isDirectory()){
 				File[] jobFolders = jobSpace.listFiles();
+				updateRunningJobSet(jobFolders, jobsRunning);
 				for(File jobFolder: jobFolders){
 					if(!Utils.isJobCompleted(jobFolder)){
 						if(Utils.isJobRunning(jobFolder)){
@@ -536,6 +539,21 @@ public class JobSubmission{
 		}
 	}
 
+	/**
+	 * Inserts jobs which are currently running into the list of running jobs.
+	 * 
+	 * @param jobFolders
+	 * @param jobsRunning
+	 * @throws IOException
+	 */
+	private void updateRunningJobSet(File[] jobFolders, Set<String> jobsRunning) throws IOException{
+		for(File jobFolder: jobFolders){
+			if(Utils.isJobRunning(jobFolder)){
+				jobsRunning.add(jobFolder.getName());
+			}
+		}
+	}
+	
 	/**
 	 * Starts running Slurm jobs which were set up before. 
 	 * 
