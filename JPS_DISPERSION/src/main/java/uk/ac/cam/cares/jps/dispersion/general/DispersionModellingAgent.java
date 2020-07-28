@@ -216,7 +216,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		processOutputs();
 	}
 	
-	public void processOutputs()throws JPSRuntimeException {
+	public void processOutputs()throws SlurmJobException {
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -264,6 +264,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		} catch (IOException e) {
 			logger.error("EpisodeAgent: IOException.".concat(e.getMessage()));
 			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		} 
 
 	}
@@ -313,11 +314,17 @@ public class DispersionModellingAgent extends JPSHttpServlet {
  		}
     }
     
-	public boolean annotateOutputs(File jobFolder) throws IOException {
-		System.out.println("annotate output started");
+    /**
+     * Updates weather and air quality data and meta data in the JPS<br>
+     * knowledge-graph.   
+     * 
+     * @param jobFolder
+     * @return
+     * @throws SlurmJobException
+     */
+	public boolean annotateOutputs(File jobFolder) throws SlurmJobException {
 		try {
-			
-		
+		System.out.println("annotate output started");
 		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
 		File out= new File(zipFilePath);
 		if(out.isFile()) {
@@ -354,9 +361,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String destinationUrl3 = datapath + "/plume_segments.dat";
 			File file3des=new File(destinationUrl3);
 			FileUtils.copyFile(file3, file3des);
-			
-			
-			
+
 			new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
 			//new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
 			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
@@ -375,6 +380,8 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			logger.error(e.getMessage());
 			logger.error("DispersionModellingAgent:Output Annotating Task could not finish");
 			System.out.println("DispersionModellingAgent:Output Annotating Task could not finish");
+			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		}
 		return true;
 	}
