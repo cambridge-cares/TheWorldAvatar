@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q27108373"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "taccalonolide A"}, "x": {"type": "literal", "value": "C\u2083\u2086H\u2084\u2086O\u2081\u2084"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

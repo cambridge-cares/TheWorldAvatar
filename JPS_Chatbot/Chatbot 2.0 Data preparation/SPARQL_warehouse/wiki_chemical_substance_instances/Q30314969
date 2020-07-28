@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q27155879"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "fusarin C"}, "x": {"type": "literal", "value": "C\u2082\u2083H\u2082\u2089NO\u2087"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q1936824"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "Diethyl sulfite"}, "x": {"type": "literal", "value": "C\u2084H\u2081\u2080O\u2083S"}, "altLabel_list": {"type": "literal", "value": ""}}]}}

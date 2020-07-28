@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q422087"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "dimethylmercury"}, "x": {"type": "literal", "value": "C\u2082H\u2086Hg"}, "altLabel_list": {"type": "literal", "value": "[HgMe2]$ Dimethyl mercury"}}]}}

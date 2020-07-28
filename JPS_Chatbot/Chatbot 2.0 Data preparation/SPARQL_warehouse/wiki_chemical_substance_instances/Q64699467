@@ -1,0 +1,1 @@
+{"head": {"vars": ["item", "itemLabel", "x", "altLabel_list"]}, "results": {"bindings": [{"item": {"type": "uri", "value": "http://www.wikidata.org/entity/Q407232"}, "itemLabel": {"xml:lang": "en", "type": "literal", "value": "glyphosate"}, "x": {"type": "literal", "value": "C\u2083H\u2088NO\u2085P"}, "altLabel_list": {"type": "literal", "value": "Phosphonomethylglycine"}}]}}
