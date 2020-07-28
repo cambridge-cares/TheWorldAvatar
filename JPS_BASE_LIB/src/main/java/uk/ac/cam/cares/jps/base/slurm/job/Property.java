@@ -1,7 +1,5 @@
 package uk.ac.cam.cares.jps.base.slurm.job;
 
-import java.io.File;
-
 /**
  * This enumerated list defines the name of important properties of</br>
  * Slurm jobs. Some example properties are:</br>
@@ -15,7 +13,6 @@ import java.io.File;
 public enum Property {
 
 	JOB_WORKSPACE_PARENT_DIR(System.getProperty("user.home")),
-	MAX_NUMBER_OF_JOBS(10),
 	CHK_POINT_FILE_EXTENSION(".chk"),
 	STATUS_FILE_NAME("status.txt"),
 	JSON_INPUT_FILE_NAME("input.json"),
