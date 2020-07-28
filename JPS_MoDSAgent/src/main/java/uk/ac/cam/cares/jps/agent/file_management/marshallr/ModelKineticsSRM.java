@@ -322,7 +322,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		// set up algorithms
 		String active_subtype = new String();
 		for (String i : activeParameters.keySet()) {
-			active_subtype = active_subtype.concat(" subtype_"+activeParameters.get(i));
+			active_subtype = active_subtype.concat(" subtype_"+"rxn_"+i);
 		}
 		LinkedHashMap<String, LinkedHashMap<String, String>> algorithms = new LinkedHashMap<String, LinkedHashMap<String, String>>();
 		LinkedHashMap<String, String> algoSampling = new LinkedHashMap<String, String>();
@@ -402,8 +402,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		for (String i : activeParameters.keySet()) {
 			Parameter param = new Parameter();
 			param.setType("active_input");
-			param.setName(activeParameters.get(i));
-			param.setSubtype("subtype_"+activeParameters.get(i));
+			param.setName("rxn_"+i);
+			param.setSubtype("subtype_"+"rxn_"+i);
 			param.setPreserveWhiteSpace("true");
 			param.setScaling("linear");
 			param.setCaseNamesList(caseNames);
