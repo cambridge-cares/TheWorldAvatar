@@ -670,10 +670,33 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String iniPres = null;
 		String iniPresUnit = null;
 		ArrayList<String> species = new ArrayList<String>();
-		String ignDelayModel = "3";
+		
+		
+		// ignition delay, uncomment corresponding method below
 		String ignDelayDeltaT = "400";
-		String ignDelaySpeciesIndex = "CO";
 		String ignDelayShowAll = "1";
+		
+		// -Method 0. Searching for the maximum rate of temperature increase.
+		String ignDelayModel = "0";
+		String ignDelaySpeciesIndex = "AR";
+		
+		// -Method 1. Searching for the maximum rate of pressure increase.
+//		String ignDelayModel = "1";
+//		String ignDelaySpeciesIndex = "AR";
+		
+		// -Method 2. Searching for the point at which temperature increase exceeds 400 K.
+//		String ignDelayModel = "2";
+//		String ignDelaySpeciesIndex = "AR";
+		
+		// -Method 3. Searching for the maximum mole fraction of species "x".
+//		String ignDelayModel = "3";
+//		String ignDelaySpeciesIndex = "OH";
+		
+		// -Method 4. Searching for the maximum rate of increase of the mole fraction of species "x".
+//		String ignDelayModel = "4";
+//		String ignDelaySpeciesIndex = "CO";
+		
+		
 		String oxidiser = NAME_OXIDISER; // this name is to be further parameterised, also to be connected to MoDS_Inputs.xml
 		for (int i = 0; i < headerLine.length; i++) {
 			if (headerLine[i].contains("Temp")) {
