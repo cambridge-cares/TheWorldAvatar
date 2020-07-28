@@ -160,28 +160,5 @@ public class OntoKinKG extends RepositoryManager {
 	    }
 	    return equation;
 	}
-
 	
-	
-//	query number of reactions
-//	PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-//		PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#>
-//		PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-//
-//		SELECT (COUNT(?reaction) AS ?numOfReactions)
-//		WHERE {
-//		  ?reaction rdf:type reaction_mechanism:ChemicalReaction .
-//		  ?reaction ontokin:belongsToPhase ?phase .
-//		  ?phase rdf:type ontokin:GasPhase .
-//		  ?phase ontokin:containedIn <http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237>
-//		}
-	
-
-//	query equation of reaction
-//	PREFIX ontokin: <http://www.theworldavatar.com/kb/ontokin/ontokin.owl#>
-//
-//		SELECT ?reactionEquation
-//		WHERE {
-//		  <http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570465_1> ontokin:hasEquation ?reactionEquation
-//		}
 }

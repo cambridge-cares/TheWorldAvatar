@@ -255,8 +255,6 @@ public class RepositoryManager implements IRepositoryManager {
 			try {
 				System.out.println("QueryString:\n" + queryString);
 				TupleQuery queryResult = con.prepareTupleQuery(queryString);
-//				System.out.println(queryResult);
-//				System.out.println("test again");
 				try (TupleQueryResult result = queryResult.evaluate()) {
 					processResult(result, processedResultList);
 				} finally {
@@ -496,13 +494,9 @@ public class RepositoryManager implements IRepositoryManager {
 		// we just iterate over all solutions in the result...
 		while (result.hasNext()) {
 			BindingSet solution = result.next();
-//			System.out.println(solution);
 
 			List<String> processedResult = new ArrayList<>();
 			for (String bindingName : solution.getBindingNames()) {
-//				System.out.println(bindingName);
-//				System.out.println(solution.getValue(bindingName));
-//				System.out.println(solution.getValue(bindingName).toString());
 				processedResult.add(removeDataType(solution.getValue(bindingName).toString()));
 			}
 			processedResultList.add(processedResult);

@@ -25,14 +25,6 @@ public class OntoChemExpKG extends RepositoryManager {
 	
 	public static void main(String[] args) throws ServletException, MoDSAgentException {
 		OntoChemExpKG ontoChemExpKG = new OntoChemExpKG();
-		
-//		System.out.println("test case");
-//		System.out.println(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName());
-//		System.out.println(Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName());
-		
-//		ontoChemExpKG.queryConcentration("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
-//		ontoChemExpKG.queryEquivalenceRatio("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
-//		ontoChemExpKG.queryExperimentData("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
 		ontoChemExpKG.formatExperimentDataTable("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
 	}
 	
@@ -102,31 +94,12 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentData.add(dataLine);
 		}
 		
-//		System.out.println(experimentData);
-////		
-//		System.out.println(experimentData.size());
-//		for(int i = 0; i < n; i++) {
-//		    out[i] = in.get(i);
-//		}
-//		
-//		for (List<String> line : initialConc.subList(1, toIndex)) {
-//			while (line.get(0) != "molecule") {
-//				System.out.println(line.get(0));
-//				columnTitles.add(line.get(1));
-//			}
-//		}
-//		
-//		System.out.println(columnTitles);
-		
-		
 		return new DataTable(columnTitles, experimentData);
 	}
 	
 	
 	
 	public List<List<String>> queryConcentration(String experimentIRI) throws MoDSAgentException {
-//		String molecule = null;
-		
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
@@ -305,113 +278,4 @@ public class OntoChemExpKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	
-//	public List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString) throws MoDSAgentException {
-//		List<List<String>> processedResultList = new ArrayList<List<String>>();
-//		
-//		try {
-//			Repository repo = new HTTPRepository(serverURL, repositoryID);
-//			repo.initialize();
-//			RepositoryConnection con = repo.getConnection();
-//			
-//			try {
-//				System.out.println("QueryString:\n"+queryString);
-//				TupleQuery queryResult = con.prepareTupleQuery(queryString);
-////				System.out.println(queryResult);
-////				System.out.println("test again");
-//				try (TupleQueryResult result = queryResult.evaluate()) {
-//				processResult(result, processedResultList);
-//				} finally {
-//					repo.shutDown();
-//				}
-//			} catch (Exception e) {
-//				logger.error("Exception occurred.");
-//				e.printStackTrace();
-//				throw new MoDSAgentException("Exception occurred.");
-//			} finally {
-//				logger.info("Executed the command to close the connection to the repository.");
-//				con.close();
-//			}
-//		} catch (RDF4JException e) {
-//			logger.error("RDF4JException occurred.");
-//			e.printStackTrace();
-//			throw new MoDSAgentException("RDF4JException occurred.");
-//		}
-//		return processedResultList;
-//	}
-//	
-	
-//	/**
-//	 * Removes the OWL API dependent extra characters from the result.
-//	 * 
-//	 * @param result
-//	 * @param processedResult
-//	 */
-//	private void processResult(TupleQueryResult result, List<List<String>> processedResultList) {
-//		List<String> columnTitles = new ArrayList<>();
-//		for (String bindingName : result.getBindingNames()) {
-//			columnTitles.add(bindingName);
-//		}
-//		processedResultList.add(columnTitles);
-//		// we just iterate over all solutions in the result...
-//		while (result.hasNext()) {
-//			BindingSet solution = result.next();
-////			System.out.println(solution);
-//			
-//			List<String> processedResult = new ArrayList<>();
-//			for (String bindingName : solution.getBindingNames()) {
-////				System.out.println(bindingName);
-////				System.out.println(solution.getValue(bindingName));
-////				System.out.println(solution.getValue(bindingName).toString());
-//				processedResult.add(removeDataType(solution.getValue(bindingName).toString()));
-//			}
-//			processedResultList.add(processedResult);
-//		}
-//	}
-//	
-	
-//	/**
-//	 * Removes the following XML Schema data types from a string:</br>
-//	 * 1. string</br>
-//	 * 2. integer</br>
-//	 * 3. float</br>
-//	 * 4. double.
-//	 * 
-//	 * @param value
-//	 * @return
-//	 */
-//	private String removeDataType(String value){
-//		String stringType = "^^<http://www.w3.org/2001/XMLSchema#string>";
-//		String integerType = "^^<http://www.w3.org/2001/XMLSchema#integer>";
-//		String floatType = "^^<http://www.w3.org/2001/XMLSchema#float>";
-//		String doubleType = "^^<http://www.w3.org/2001/XMLSchema#double>";
-//		if(value.contains(stringType)){
-//			value = value.replace(stringType, "");
-//		} else if(value.contains(integerType)){
-//			value = value.replace(integerType, "");
-//			value = replaceInvertedComma(value);
-//		} else if(value.contains(floatType)){
-//			value = value.replace(floatType, "");
-//			value = replaceInvertedComma(value);
-//		} else if(value.contains(doubleType)){
-//			value = value.replace(doubleType, "");
-//			value = replaceInvertedComma(value);
-//		} else if(value.startsWith("\"") || value.endsWith("\"")){
-//			value = value.replace("\"", "");
-//		}
-//		return value;
-//	}
-//	
-//	/**
-//	 * Removes inverted commas from a string.
-//	 * 
-//	 * @param value
-//	 * @return
-//	 */
-//	private String replaceInvertedComma(String value){
-//		if(value.contains("\"")){
-//			value = value.replace("\"", "");
-//		}
-//		return value;
-//	}
 }

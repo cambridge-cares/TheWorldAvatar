@@ -756,44 +756,4 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		return inputParams.getName();
 	}
 	
-//	/**
-//	 * Convert a string array to a string in the format of CSV file. 
-//	 * 
-//	 * @param data
-//	 * @return
-//	 */
-//	private String convertToCSV(String[] data) {
-//	    return Stream.of(data)
-//	      .map(this::escapeSpecialCharacters)
-//	      .collect(Collectors.joining(","));
-//	}
-//	
-//	/**
-//	 * Escape special characters when converting string array to string in the format of CSV file. 
-//	 * 
-//	 * @param data
-//	 * @return
-//	 */
-//	private String escapeSpecialCharacters(String data) {
-//	    String escapedData = data.replaceAll("\\R", " ");
-//	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-//	        data = data.replace("\"", "\"\"");
-//	        escapedData = "\"" + data + "\"";
-//	    }
-//	    return escapedData;
-//	}
-//	
-//	/**
-//	 * Check if the given folder path exist, create one if it does not exist. 
-//	 * 
-//	 * @param folderPath
-//	 * @throws IOException
-//	 * @throws MoDSAgentException
-//	 */
-//	private void checkFolderPath(String folderPath) throws IOException, MoDSAgentException {
-//		File folder = new File(folderPath);
-//		if (!folder.exists()) {
-//			folder.mkdir();
-//		}
-//	}
 }
