@@ -255,7 +255,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 									&& concfilecomplete)) {
 								//edit the status file to be error termination
 								System.out.println("status completed but don't have expected output");
-								editStatusFile(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+								Utils.modifyStatus(jobFolder.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
 							}							
 						}
 					}
@@ -290,16 +290,6 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		}
 		
 		return true;
-	}
-	public void editStatusFile(String statusFilePath) throws IOException {
-		String fileContext = FileUtils.readFileToString(new File(statusFilePath));
-		BufferedWriter writer = new BufferedWriter(new FileWriter(statusFilePath));
-		if (fileContext.contains(Status.STATUS_JOB_COMPLETED.getName())){
-			fileContext=fileContext.replaceAll(Status.STATUS_JOB_COMPLETED.getName(), Status.STATUS_JOB_ERROR_TERMINATED.getName());
-		}
-		writer.write(fileContext);
-		writer.close();
-		System.out.println("Changed From Completed to Error Termination");
 	}
 	
     public static void unzip(String zipFilePath, String destDir) {
