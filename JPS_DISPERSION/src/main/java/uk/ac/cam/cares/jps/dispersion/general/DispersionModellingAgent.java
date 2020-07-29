@@ -363,7 +363,6 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 					jo.toString());
 	    	
 			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
-	    	out.delete();
 		}
 		}catch(Exception e) {
 			logger.error(e.getMessage());
