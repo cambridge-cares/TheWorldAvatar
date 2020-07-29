@@ -233,28 +233,31 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
-					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
+					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobErroneouslyCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
 						System.out.println("job "+jobFolder.getName()+" is completed");
-						File output= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
-						if(annotateOutputs(jobFolder)) {
+						File outputFolder= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
+						String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
+						File outputFile= new File(zipFilePath);
+						if(annotateOutputs(jobFolder, zipFilePath, outputFile)) {
 							logger.info("DispersionModellingAgent: Annotation has been completed.");
 							System.out.println("Annotation has been completed.");
 							PostProcessing.updateJobOutputStatus(jobFolder);
 						}else{
 							logger.error("DispersionModellingAgent: Annotation has not been completed.");
 							System.out.println("Annotation has not been completed.");
-							boolean outputexist=output.exists();
-							int outputcontentexist=output.list().length;
+							boolean outputexist=outputFolder.exists();
+							int outputcontentexist=outputFolder.list().length;
 							boolean concfileexist=isConcentrationFileAvailable(jobFolder);
 							boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
-							if(!(outputexist
+							if(!(outputFile.exists()
+									&& outputexist
 									&& outputcontentexist!=0
 									&& concfileexist
 									&& concfilecomplete)) {
 								//edit the status file to be error termination
 								System.out.println("status completed but don't have expected output");
 								Utils.modifyStatus(jobFolder.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
-							}							
+							}
 						}
 					}
 				}
@@ -298,11 +301,9 @@ public class DispersionModellingAgent extends JPSHttpServlet {
      * @return
      * @throws SlurmJobException
      */
-	public boolean annotateOutputs(File jobFolder) {
+	private boolean annotateOutputs(File jobFolder, String zipFilePath, File out) {
 		try {
 		System.out.println("annotate output started");
-		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
-		File out= new File(zipFilePath);
 		if(out.isFile()) {
 			String directory = jobFolder.getAbsolutePath() + "/input.json";
 			String destDir = jobFolder.getAbsolutePath() + "/output";
@@ -350,6 +351,8 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 					jo.toString());
 	    	
 			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
+		}else{
+			return false;
 		}
 		}catch(Exception e) {
 			logger.error(e.getMessage());
