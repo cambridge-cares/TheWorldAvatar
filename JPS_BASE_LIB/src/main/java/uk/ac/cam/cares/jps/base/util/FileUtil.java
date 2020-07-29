@@ -16,6 +16,8 @@ import java.nio.file.Paths;
 
 import org.apache.commons.io.IOUtils;
 
+import net.lingala.zip4j.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class FileUtil {
@@ -114,4 +116,20 @@ public class FileUtil {
 	public static BufferedWriter openBufferedWriter(String filePathPlusName) throws IOException{
 		return new BufferedWriter(new FileWriter(filePathPlusName));
 	}
+	
+	/**
+	 * Decompresses a zip file.
+	 * 
+	 * @param zipFilePath
+	 * @param destDir
+	 */
+    public static void unzip(String zipFilePath, String destDir) {
+    	 ZipFile zipFile = new ZipFile(zipFilePath);
+ 	    try {
+ 			zipFile.extractAll(destDir);
+ 		} catch (ZipException e) {
+ 			// TODO Auto-generated catch block
+ 			e.printStackTrace();
+ 		}
+    }
 } 
