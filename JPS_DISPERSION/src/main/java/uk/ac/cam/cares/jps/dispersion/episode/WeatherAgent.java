@@ -57,23 +57,25 @@ public class WeatherAgent extends JPSHttpServlet {
 	public static Repository repo = new HTTPRepository(rdf4jServer, repositoryID);
 	public static final String dataseturl=KeyValueManager.get(IKeys.DATASET_WEATHER_URL);
 	public static final String weatherRequest = "http://api.openweathermap.org/data/2.5/weather?units=metric&q=%s&appid=329f65c3f7166977f6751cff95bfcb0a";
-
-	 protected void setLogger() {
+	
+	protected void setLogger() {
 	        logger = LoggerFactory.getLogger(WeatherAgent.class);
 	    }
 	    Logger logger = LoggerFactory.getLogger(WeatherAgent.class);
 	    
 	    protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 	    	JSONObject response= new JSONObject();
-	    	String path = request.getServletPath();
-	    	System.out.println("path= " + path);
+	    	
 	    	//String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);// should be outside (not looped)
     		try {
     			validateInput(requestParams);
     		} catch (BadRequestException e) {
     			System.out.println("Weather agent request parameters invalid.");
     		}
-    		
+
+    		String path = request.getServletPath();
+	    	System.out.println("path= " + path);
+
 	    	String cityiri=requestParams.get("city").toString();
 	    	JSONObject region = requestParams.getJSONObject("region");
 			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
@@ -140,20 +142,51 @@ public class WeatherAgent extends JPSHttpServlet {
 
 			return response;
 		}
-	    	
-	private void validateInput(JSONObject input) {
-		String cityiri=input.get("city").toString();
-		JSONObject region = input.getJSONObject("region");
-		String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
-		String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
-		String upx = region.getJSONObject("uppercorner").get("upperx").toString();
-		String upy = region.getJSONObject("uppercorner").get("uppery").toString();
-		if (cityiri.isEmpty() || lowx.isEmpty() || lowy.isEmpty() ||
-				upx.isEmpty() || upy.isEmpty()) {
+
+	public void validateInput(JSONObject input) {
+		try {
+			try {
+				String cityiri=input.get("city").toString();
+				if (cityiri.isEmpty()) {
+					throw new Exception();
+				}
+			} catch (Exception e) {
+				System.out.println("Weather agent: Invalid city IRI");
+				throw new Exception();
+			}
+
+			JSONObject region = input.getJSONObject("region");
+			String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
+			String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
+			String upx = region.getJSONObject("uppercorner").get("upperx").toString();
+			String upy = region.getJSONObject("uppercorner").get("uppery").toString();
+
+			// check if provided coordinates are valid
+			try {
+				double proclowx = Double.valueOf(lowx);
+				double procupx = Double.valueOf(upx);
+				if (proclowx>=procupx) {
+					throw new Exception();
+				}
+			} catch (Exception e) {
+				System.out.println("Weather agent: Invalid x coordinates");
+				throw new Exception();
+			}
+			try {
+				double proclowy = Double.valueOf(lowy);
+				double procupy = Double.valueOf(upy);
+				if (proclowy>=procupy) {
+					throw new Exception();
+				}
+			} catch (Exception e) {
+				System.out.println("Weather agent: Invalid y coordinates");
+				throw new Exception();
+			}
+		} catch (Exception e) {
 			throw new BadRequestException();
 		}
 	}
-	    
+
 	private Map<String,String> extractMappingname(){
 		  String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 				+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#> "
