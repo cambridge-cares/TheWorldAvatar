@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.general;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,8 +21,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -43,6 +39,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
 @Controller
@@ -292,16 +289,6 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		
 		return true;
 	}
-	
-    public static void unzip(String zipFilePath, String destDir) {
-    	 ZipFile zipFile = new ZipFile(zipFilePath);
- 	    try {
- 			zipFile.extractAll(destDir);
- 		} catch (ZipException e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
-    }
     
     /**
      * Updates weather and air quality data and meta data in the JPS<br>
@@ -320,7 +307,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String directory = jobFolder.getAbsolutePath() + "/input.json";
 			String destDir = jobFolder.getAbsolutePath() + "/output";
 
-			unzip(zipFilePath, destDir);
+			FileUtil.unzip(zipFilePath, destDir);
 			File json = new File(directory);
 			String content = FileUtils.readFileToString(json);
 			JSONObject jo = new JSONObject(content);
