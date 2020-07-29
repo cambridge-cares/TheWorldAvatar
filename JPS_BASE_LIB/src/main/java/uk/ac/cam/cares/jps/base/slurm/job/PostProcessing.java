@@ -25,7 +25,7 @@ public class PostProcessing {
 	 * @throws InterruptedException
 	 */
 	public static boolean updateJobOutputStatus(File jobFolder)
-			throws JSchException, SftpException, IOException, InterruptedException {
+			throws IOException {
 			File statusFile = Utils.getStatusFile(jobFolder);
 			return updateJobOutputStatus(statusFile, Status.OUTPUT_PROCESSED.getName());
 	}
@@ -41,7 +41,7 @@ public class PostProcessing {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private static boolean updateJobOutputStatus(File statusFile, String status) throws JSchException, SftpException, IOException, InterruptedException{
+	private static boolean updateJobOutputStatus(File statusFile, String status) throws IOException{
 		if(statusFile!=null){
 			modifyOutputStatus(statusFile.getAbsolutePath(), Status.OUTPUT_PROCESSED.getName());
 			return true;
