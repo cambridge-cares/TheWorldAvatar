@@ -35,6 +35,7 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.slurm.job.JobStatistics;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
@@ -241,7 +242,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 						if(annotateOutputs(jobFolder)) {
 							logger.info("DispersionModellingAgent: Annotation has been completed.");
 							System.out.println("Annotation has been completed.");
-							
+							PostProcessing.updateJobOutputStatus(jobFolder);
 						}else{
 							logger.error("DispersionModellingAgent: Annotation has not been completed.");
 							System.out.println("Annotation has not been completed.");
