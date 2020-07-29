@@ -202,17 +202,6 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println(joTemperature);
 	}
 	
-	
-	public void xxxtestAgentCallreset() {
-		JSONObject jo = new JSONObject();
-		jo.put("location", "singapore");//or singapore or singapore_AQ
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-015.owl#WeatherStation-015";
-		jo.put("context", context);	
-		//context variation only in index number and country (1 sg,2 hk)
-		jo.put("name","SGAccuWeather-001");// or ="VirtualSensorEpisode-001"or=VirtualSensor-001 or="VirtualSensorHKADMS-001";
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", jo.toString());	
-	}
-	
 	public void testmakecsv() {
 		String loc=cityiri2;
 		 String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
