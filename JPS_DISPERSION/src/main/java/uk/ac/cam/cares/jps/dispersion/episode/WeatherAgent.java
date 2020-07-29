@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.BadRequestException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
@@ -169,6 +170,12 @@ public class WeatherAgent extends JPSHttpServlet {
 	    		response.put("status", "reset endpoint successful");
 	    		
 	    	}else {
+	    		try {
+	    			validateInput(requestParams);
+	    		} catch (BadRequestException e) {
+	    			System.out.println("Weather agent request parameters invalid.");
+	    		}
+	    		
 		    	String cityiri=requestParams.get("city").toString();
 		    	JSONObject region = requestParams.getJSONObject("region");
 				String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
@@ -239,6 +246,18 @@ public class WeatherAgent extends JPSHttpServlet {
 			return response;
 		}
 	    	
+	private void validateInput(JSONObject input) {
+		String cityiri=input.get("city").toString();
+		JSONObject region = input.getJSONObject("region");
+		String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
+		String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
+		String upx = region.getJSONObject("uppercorner").get("upperx").toString();
+		String upy = region.getJSONObject("uppercorner").get("uppery").toString();
+		if (cityiri.isEmpty() || lowx.isEmpty() || lowy.isEmpty() ||
+				upx.isEmpty() || upy.isEmpty()) {
+			throw new BadRequestException();
+		}
+	}
 	    
 	private Map<String,String> extractMappingname(){
 		  String querycontext = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
