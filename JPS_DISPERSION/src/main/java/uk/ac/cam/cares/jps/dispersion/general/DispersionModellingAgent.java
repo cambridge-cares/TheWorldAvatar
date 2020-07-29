@@ -201,7 +201,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
     }
     
     /**
-     * Calls the monitorJobs method of the Slurm_Job_API, which is in the JPS_BASE_LIB library.
+     * Calls the monitorJobs method of the Slurm Job API, which is in the JPS BASE LIB project.
      * 
      * @throws SlurmJobException
      */
@@ -235,28 +235,28 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
-					if (Utils.isJobCompleted(jobFolder)) {
+					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
 						System.out.println("job "+jobFolder.getName()+" is completed");
 						File output= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
-						if(!annotateOutputs(jobFolder)) {
-							System.out.println("output not annotated");
-						}
-						boolean outputexist=output.exists();
-						int outputcontentexist=output.list().length;
-						boolean concfileexist=isConcentrationFileAvailable(jobFolder);
-						boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
-						if(!(outputexist
-								&& outputcontentexist!=0
-								&& concfileexist
-								&& concfilecomplete)) {
-							//edit the status file to be error termination
-							System.out.println("status completed but don't have expected output");
-							editStatusFile(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
-						}
-						
-						
-						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							logger.info("job output is processed");
+						if(annotateOutputs(jobFolder)) {
+							logger.info("DispersionModellingAgent: Annotation has been completed.");
+							System.out.println("Annotation has been completed.");
+							
+						}else{
+							logger.error("DispersionModellingAgent: Annotation has not been completed.");
+							System.out.println("Annotation has not been completed.");
+							boolean outputexist=output.exists();
+							int outputcontentexist=output.list().length;
+							boolean concfileexist=isConcentrationFileAvailable(jobFolder);
+							boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
+							if(!(outputexist
+									&& outputcontentexist!=0
+									&& concfileexist
+									&& concfilecomplete)) {
+								//edit the status file to be error termination
+								System.out.println("status completed but don't have expected output");
+								editStatusFile(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+							}							
 						}
 					}
 				}
@@ -264,9 +264,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		} catch (IOException e) {
 			logger.error("EpisodeAgent: IOException.".concat(e.getMessage()));
 			e.printStackTrace();
-			throw new SlurmJobException(e.getMessage());
 		} 
-
 	}
 	
 	private boolean isConcentrationFileAvailable(File jobFolder) {
@@ -322,7 +320,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
      * @return
      * @throws SlurmJobException
      */
-	public boolean annotateOutputs(File jobFolder) throws SlurmJobException {
+	public boolean annotateOutputs(File jobFolder) {
 		try {
 		System.out.println("annotate output started");
 		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
@@ -378,10 +376,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		}
 		}catch(Exception e) {
 			logger.error(e.getMessage());
-			logger.error("DispersionModellingAgent:Output Annotating Task could not finish");
-			System.out.println("DispersionModellingAgent:Output Annotating Task could not finish");
+			logger.error("DispersionModellingAgent: Output Annotating Task could not finish");
+			System.out.println("DispersionModellingAgent: Output Annotating Task could not finish");
 			e.printStackTrace();
-			throw new SlurmJobException(e.getMessage());
+			return false;
 		}
 		return true;
 	}
