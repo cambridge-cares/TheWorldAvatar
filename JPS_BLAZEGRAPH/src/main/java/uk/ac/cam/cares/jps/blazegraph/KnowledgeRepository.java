@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.logging.Logger;
 
-import org.apache.log4j.spi.LoggerFactory;
 import org.openrdf.model.Statement;
 import org.openrdf.query.BindingSet;
 import org.openrdf.query.GraphQueryResult;
@@ -37,6 +36,88 @@ public class KnowledgeRepository {
 	private String ontologyFilePath;
 	private String ontologyDirectory;
 	private String query;
+	
+	/**
+	 * Creates the instance of the current repository (knowledge base) if it<br>
+	 * exists and returns it.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public RemoteRepository getRepository() throws Exception{
+		RemoteRepository repository = null;
+		if(this.storeType.toString().equals(RDFStoreType.BLAZEGRAPH.toString())){
+			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, false);
+			if(repositoryExists(endPointURL, repositoryName, repositoryManager)){
+				repository = repositoryManager.getRepositoryForNamespace(repositoryName);
+				repositoryManager.close();
+				return repository; 
+			}
+		}
+		return repository;
+	}
+
+	/**
+	 * Uploads a single ontology file to the current repository.
+	 * 
+	 * @throws Exception
+	 */
+	public void uploadOntology()
+			throws Exception {
+		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName,
+				RDFStoreType.BLAZEGRAPH);
+		if (repository != null) {
+			final InputStream is = new FileInputStream(new File(this.ontologyFilePath));
+			try {
+				repository.add(new AddOp(is, RDFFormat.forMIMEType("application/xml")));
+			} finally {
+				is.close();
+			}
+		} else{
+			log.info("The following repository does not exist: "+endPointURL+repositoryName);
+			log.info("Create a repository with this name and try again.");
+		}
+	}
+	
+	/**
+	 * Uploads all ontology files available under the given folder to<br>
+	 * the current repository.
+	 * 
+	 * @throws Exception
+	 */
+	public void uploadOntologies() throws Exception{
+		File dir = new File(this.ontologyDirectory);
+		if(dir.isDirectory()){
+			int i = 0;
+			for(File file:dir.listFiles()){
+				if(file.isFile()){
+					uploadOntology(this.endPointURL, this.repositoryName, file.getAbsolutePath());
+					log.info("["+ ++i+"] Uploaded "+file.getAbsolutePath());
+				}
+			}
+		}
+	}
+
+	/**
+	 * Performs any SPARQL query against the provided repository.
+	 * 
+	 * @return
+	 * @throws Exception
+	 */
+	public String query() throws Exception {
+		StringBuilder json = new StringBuilder();
+		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName, this.storeType);
+		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(query);
+		final TupleQueryResult result = tupleQuery.evaluate();
+		log.info("Query Result: "+result);
+		System.out.println("Query Result: "+result);
+		try {
+			json = getResultInJson(json, result);	
+		} finally {
+			result.close();
+		}
+		return json.toString();
+	}
 	
 	/**
 	 * Creates the instance of the current repository (knowledge base) if it<br>
