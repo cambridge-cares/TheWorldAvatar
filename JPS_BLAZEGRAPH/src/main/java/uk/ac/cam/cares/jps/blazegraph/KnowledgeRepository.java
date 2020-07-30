@@ -102,6 +102,12 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public RemoteRepository getRepository() throws Exception{
+		try{
+			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
+			checkStoreTypeDataAvailability(this.storeType);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 		RemoteRepository repository = null;
 		if(this.storeType.toString().equals(RDFStoreType.BLAZEGRAPH.toString())){
 			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, false);
@@ -119,10 +125,14 @@ public class KnowledgeRepository {
 	 * 
 	 * @throws Exception
 	 */
-	public void uploadOntology()
-			throws Exception {
-		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName,
-				RDFStoreType.BLAZEGRAPH);
+	public void uploadOntology() throws Exception {
+		try{
+			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
+			checkOntologyUploadDataAvailability(this.ontologyFilePath);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName, RDFStoreType.BLAZEGRAPH);
 		if (repository != null) {
 			final InputStream is = new FileInputStream(new File(this.ontologyFilePath));
 			try {
@@ -130,8 +140,8 @@ public class KnowledgeRepository {
 			} finally {
 				is.close();
 			}
-		} else{
-			log.info("The following repository does not exist: "+endPointURL+repositoryName);
+		} else {
+			log.info("The following repository does not exist: " + endPointURL + repositoryName);
 			log.info("Create a repository with this name and try again.");
 		}
 	}
@@ -143,6 +153,12 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public void uploadOntologies() throws Exception{
+		try{
+			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
+			checkOntologyDiretoryAvailability(this.ontologyDirectory);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 		File dir = new File(this.ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
@@ -162,9 +178,16 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public String query() throws Exception {
+		try{
+			checkRepositoryDataAvailability(this.endPointURL, this.repositoryName);
+			checkStoreTypeDataAvailability(this.storeType);
+			checkQueryAvailability(this.query);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 		StringBuilder json = new StringBuilder();
 		RemoteRepository repository = getRepository(this.endPointURL, this.repositoryName, this.storeType);
-		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(query);
+		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(this.query);
 		final TupleQueryResult result = tupleQuery.evaluate();
 		log.info("Query Result: "+result);
 		System.out.println("Query Result: "+result);
@@ -187,6 +210,12 @@ public class KnowledgeRepository {
 	 * @param storeType the name of knowledge storage, e.g. Blazegraph and RDF4J.
 	 */
 	public RemoteRepository getRepository(String endPointURL, String repositoryName, RDFStoreType storeType) throws Exception{
+		try{
+			checkRepositoryDataAvailability(endPointURL, repositoryName);
+			checkStoreTypeDataAvailability(storeType);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 		RemoteRepository repository = null;
 		if(storeType.toString().equals(RDFStoreType.BLAZEGRAPH.toString())){
 			RemoteRepositoryManager repositoryManager = new RemoteRepositoryManager(endPointURL, false);
@@ -238,10 +267,14 @@ public class KnowledgeRepository {
 	 * C:/path/to/the/ontology/ontokin.owl and C:/path/to/the/ontology/ABF.owl.
 	 * @throws Exception
 	 */
-	public void uploadOntology(String endPointURL, String repositoryName, String ontologyFilePath)
-			throws Exception {
-		RemoteRepository repository = getRepository(endPointURL, repositoryName,
-				RDFStoreType.BLAZEGRAPH);
+	public void uploadOntology(String endPointURL, String repositoryName, String ontologyFilePath) throws Exception {
+		try{
+			checkRepositoryDataAvailability(endPointURL, repositoryName);
+			checkOntologyUploadDataAvailability(ontologyFilePath);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
+		RemoteRepository repository = getRepository(endPointURL, repositoryName, RDFStoreType.BLAZEGRAPH);
 		if (repository != null) {
 			final InputStream is = new FileInputStream(new File(ontologyFilePath));
 			try {
@@ -249,8 +282,8 @@ public class KnowledgeRepository {
 			} finally {
 				is.close();
 			}
-		} else{
-			log.info("The following repository does not exist: "+endPointURL+repositoryName);
+		} else {
+			log.info("The following repository does not exist: " + endPointURL + repositoryName);
 			log.info("Create a repository with this name and try again.");
 		}
 	}
@@ -268,6 +301,12 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public void uploadOntologies(String endPointURL, String repositoryName, String ontologyDirectory) throws Exception{
+		try{
+			checkRepositoryDataAvailability(endPointURL, repositoryName);
+			checkOntologyDiretoryAvailability(ontologyDirectory);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 		File dir = new File(ontologyDirectory);
 		if(dir.isDirectory()){
 			int i = 0;
@@ -293,6 +332,13 @@ public class KnowledgeRepository {
 	 * @throws Exception
 	 */
 	public String query(String endPointURL, String repositoryName, RDFStoreType storeType, String query) throws Exception {
+		try{
+			checkRepositoryDataAvailability(endPointURL, repositoryName);
+			checkStoreTypeDataAvailability(storeType);
+			checkQueryAvailability(query);
+		}catch(Exception e){
+			throw new Exception(e.getMessage());
+		}
 		StringBuilder json = new StringBuilder();
 		RemoteRepository repository = getRepository(endPointURL, repositoryName, storeType);
 		final IPreparedTupleQuery tupleQuery = repository.prepareTupleQuery(query);
@@ -459,5 +505,90 @@ public class KnowledgeRepository {
 		this.query = query;
 	}
 	
+	/**
+	 * Checks the availability of the following data required to call the corresponding methods.
+	 * 
+	 * @param endPointURL
+	 * @param repositoryName
+	 * @throws Exception
+	 */
+	private void checkRepositoryDataAvailability(String endPointURL, String repositoryName)
+			throws Exception {
+		if (this.endPointURL == null) {
+			throw new Exception("The value of endPointURL is null.");
+		}
+		if (this.endPointURL.trim().isEmpty()) {
+			throw new Exception("The value of endPointURL is empty.");
+		}
+		if (this.repositoryName == null) {
+			throw new Exception("The value of repositoryName is null.");
+		}
+		if (this.repositoryName.isEmpty()) {
+			throw new Exception("The value of repositoryName is emptry.");
+		}
+		if (this.storeType == null) {
+			throw new Exception("The value of storeType is null.");
+		}
+	}
 	
+	/**
+	 * Checks the availability of the following data required to call the corresponding methods.
+	 * 
+	 * @param endPointURL
+	 * @param repositoryName
+	 * @throws Exception
+	 */
+	private void checkStoreTypeDataAvailability(RDFStoreType storeType) throws Exception {
+		if (this.storeType == null) {
+			throw new Exception("The value of storeType is null.");
+		}
+	}
+	
+	/**
+	 * Checks the availability of the following data required to call the corresponding methods.
+	 * 
+	 * @param ontologyFilePath
+	 * @throws Exception
+	 */
+	private void checkOntologyUploadDataAvailability(String ontologyFilePath)
+			throws Exception {
+		if (this.ontologyFilePath == null) {
+			throw new Exception("The value of ontologyFilePath is null.");
+		}
+		if (this.ontologyFilePath == null) {
+			throw new Exception("The value of ontologyFilePath is empty.");
+		}
+	}
+	
+	/**
+	 * Checks the availability of the following data required to call the corresponding methods.
+	 * 
+	 * @param ontologyDirectory
+	 * @throws Exception
+	 */
+	private void checkOntologyDiretoryAvailability(String ontologyDirectory)
+			throws Exception {
+		if (this.ontologyDirectory == null) {
+			throw new Exception("The value of ontologyDirectory is null.");
+		}
+		if (this.ontologyDirectory == null) {
+			throw new Exception("The value of ontologyDirectory is empty.");
+		}
+	}
+	
+	/**
+	 * Checks the availability of the query required to call the corresponding query methods.
+	 * 
+	 * @param query
+	 * @throws Exception
+	 */
+	private void checkQueryAvailability(String query)
+			throws Exception {
+		if (this.query == null) {
+			throw new Exception("The value of query is null.");
+		}
+		if (this.query == null) {
+			throw new Exception("The value of query is empty.");
+		}
+	}
 }
