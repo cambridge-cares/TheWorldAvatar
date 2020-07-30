@@ -38,6 +38,63 @@ public class KnowledgeRepository {
 	private String query;
 	
 	/**
+	 * The default constructor.
+	 * 
+	 */
+	public KnowledgeRepository(){
+		
+	}
+	
+	/**
+	 * Constructor defined to be able to assign data to properties that are<br> 
+	 * needed to operate on corresponding methods.
+	 * 
+	 * @param endPointURL
+	 * @param repositoryName
+	 * @param storeType
+	 */
+	public KnowledgeRepository(String endPointURL, String repositoryName, RDFStoreType storeType){
+		this.endPointURL = endPointURL;
+		this.repositoryName = repositoryName;
+		this.storeType = storeType;
+	}
+	
+	/**
+	 * Constructor defined to be able to assign data to the following properties<br> 
+	 * to operate on corresponding methods.
+	 * 
+	 * @param endPointURL
+	 * @param repositoryName
+	 * @param ontologyFilePath it is set to upload a single ontology. In the<br>
+	 * case of uploading ontologies from a directory, this can be left empty or null.
+	 * @param ontologyDirectory it is set to upload all ontologies available<br>
+	 * under a directory. In the case of uploading a single ontology from a<br>
+	 * given path, this can be left empty or null.
+	 */
+	public KnowledgeRepository(String endPointURL, String repositoryName, String ontologyFilePath, String ontologyDirectory){
+		this.endPointURL = endPointURL;
+		this.repositoryName = repositoryName;
+		this.ontologyFilePath = ontologyFilePath;
+		this.ontologyDirectory = ontologyDirectory;
+	}
+	
+	/**
+	 * Constructor defined to be able to assign data to the following properties<br> 
+	 * to operate on corresponding methods.
+	 * 
+	 * @param endPointURL
+	 * @param repositoryName
+	 * @param storeType
+	 * @param query
+	 */
+	public KnowledgeRepository(String endPointURL, String repositoryName, RDFStoreType storeType, String query){
+		this.endPointURL = endPointURL;
+		this.repositoryName = repositoryName;
+		this.storeType = storeType;
+		this.query = query;
+	}
+	
+	/**
 	 * Creates the instance of the current repository (knowledge base) if it<br>
 	 * exists and returns it.
 	 * 
