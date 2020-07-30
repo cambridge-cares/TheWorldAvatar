@@ -145,15 +145,8 @@ public class WeatherAgent extends JPSHttpServlet {
 
 	public void validateInput(JSONObject input) {
 		try {
-			try {
-				String cityiri=input.get("city").toString();
-				if (cityiri.isEmpty()) {
-					throw new Exception();
-				}
-			} catch (Exception e) {
-				System.out.println("Weather agent: Invalid city IRI");
-				throw new Exception();
-			}
+			String cityiri=input.get("city").toString();
+            // check whether it's IRI
 
 			JSONObject region = input.getJSONObject("region");
 			String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
@@ -162,26 +155,11 @@ public class WeatherAgent extends JPSHttpServlet {
 			String upy = region.getJSONObject("uppercorner").get("uppery").toString();
 
 			// check if provided coordinates are valid
-			try {
-				double proclowx = Double.valueOf(lowx);
-				double procupx = Double.valueOf(upx);
-				if (proclowx>=procupx) {
-					throw new Exception();
-				}
-			} catch (Exception e) {
-				System.out.println("Weather agent: Invalid x coordinates");
-				throw new Exception();
-			}
-			try {
-				double proclowy = Double.valueOf(lowy);
-				double procupy = Double.valueOf(upy);
-				if (proclowy>=procupy) {
-					throw new Exception();
-				}
-			} catch (Exception e) {
-				System.out.println("Weather agent: Invalid y coordinates");
-				throw new Exception();
-			}
+			Double.valueOf(lowx);
+			Double.valueOf(upx);
+			Double.valueOf(lowy);
+			Double.valueOf(upy);
+
 		} catch (Exception e) {
 			throw new BadRequestException();
 		}

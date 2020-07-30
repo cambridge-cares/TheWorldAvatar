@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.ws.rs.BadRequestException;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.json.JSONObject;
 
@@ -328,5 +330,25 @@ public class WeatherAgentTest extends TestCase {
 		
 	}
 
-	
+	public void testvalidateInput() {
+		double xmin = Double.valueOf("11552101.832");
+		double xmax = Double.valueOf("11572101.89");
+		double ymin = Double.valueOf("131707.739");
+		double ymax = Double.valueOf("151860.32");
+		JSONObject jo = new JSONObject();
+
+		JSONObject scope = new JSONObject();
+		JSONObject low = new JSONObject();
+		JSONObject up = new JSONObject();
+		up.put("upperx", xmax);
+		up.put("uppery", ymax);
+		low.put("lowerx", xmin);
+		low.put("lowery", ymin);
+		scope.put("lowercorner", low);
+		scope.put("uppercorner", up);
+//		jo.put("region",scope);
+		jo.put("city",cityiri);
+
+		assertThrows(Exception.class, () -> {new WeatherAgent().validateInput(jo);});
+	}
 }
