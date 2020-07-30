@@ -30,6 +30,14 @@ import uk.ac.cam.cares.jps.base.query.SparqlOverHttpService.RDFStoreType;
  */
 public class KnowledgeRepository {
 	Logger log = Logger.getLogger(KnowledgeRepository.class.getName());
+	
+	private String endPointURL;
+	private String repositoryName;
+	private RDFStoreType storeType;
+	private String ontologyFilePath;
+	private String ontologyDirectory;
+	private String query;
+	
 	/**
 	 * Creates the instance of the current repository (knowledge base) if it<br>
 	 * exists and returns it.
@@ -264,4 +272,54 @@ public class KnowledgeRepository {
 		}		
 		return value;
 	}
+
+	public String getEndPointURL() {
+		return endPointURL;
+	}
+
+	public void setEndPointURL(String endPointURL) {
+		this.endPointURL = endPointURL;
+	}
+
+	public String getRepositoryName() {
+		return repositoryName;
+	}
+
+	public void setRepositoryName(String repositoryName) {
+		this.repositoryName = repositoryName;
+	}
+
+	public RDFStoreType getStoreType() {
+		return storeType;
+	}
+
+	public void setStoreType(RDFStoreType storeType) {
+		this.storeType = storeType;
+	}
+
+	public String getOntologyFilePath() {
+		return ontologyFilePath;
+	}
+
+	public void setOntologyFilePath(String ontologyFilePath) {
+		this.ontologyFilePath = ontologyFilePath;
+	}
+
+	public String getOntologyDirectory() {
+		return ontologyDirectory;
+	}
+
+	public void setOntologyDirectory(String ontologyDirectory) {
+		this.ontologyDirectory = ontologyDirectory;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
+	}
+	
+	
 }
