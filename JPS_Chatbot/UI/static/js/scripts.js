@@ -3,10 +3,14 @@
     * Copyright 2013-2020 Start Bootstrap
     * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-freelancer/blob/master/LICENSE)
     */
-   $(window).load(function() {
-    google.charts.load('current', {'packages':['table']});
-  });
+	
+	$(window).on('load', function(){ 
+	
+	    google.charts.load('current', {'packages':['table']});
 
+	});
+	
+ 
 
     (function($) {
     "use strict"; // Start of use strict
