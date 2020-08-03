@@ -79,6 +79,11 @@
 			<artifactId>spring-beans</artifactId>
 			<version>3.2.9.RELEASE</version>
 		</dependency>
+		<dependency>
+    		<groupId>javax.ws.rs</groupId>
+    		<artifactId>javax.ws.rs-api</artifactId>
+    		<version>2.0</version>
+		</dependency>
 		<!-- Spring MVC for Servlet Environments (depends on spring-core, spring-beans, 
 			spring-context, spring-web) Define this if you use Spring MVC with a Servlet 
 			Container such as Apache Tomcat (org.springframework.web.servlet.*) -->
@@ -144,6 +149,13 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+		    <groupId>org.junit.jupiter</groupId>
+		    <artifactId>junit-jupiter-api</artifactId>
+		    <version>5.7.0-M1</version>
+		    <scope>test</scope>
+		</dependency>
+		
 	</dependencies>	
   
 </project>
