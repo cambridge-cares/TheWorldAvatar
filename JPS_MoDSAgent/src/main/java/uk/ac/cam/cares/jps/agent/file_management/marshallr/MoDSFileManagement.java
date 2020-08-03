@@ -72,7 +72,9 @@ public class MoDSFileManagement extends MoDSMarshaller {
 				species = "CO";
 			}
 			
-			String jobFolderName = sens.substring(sens.lastIndexOf("_SensAna")+1)+Utils.getTimeStamp();
+			String[] token = sens.split("_");
+			
+			String jobFolderName = "S1000_OptiBasedOn_"+sens.substring(sens.lastIndexOf("_SensAna")+1)+"_"+token[1];
 			String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"reactionList\":["
 					+ fileMagt.getRxnIRIList(rxnFile)
 					+ "],\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},"
