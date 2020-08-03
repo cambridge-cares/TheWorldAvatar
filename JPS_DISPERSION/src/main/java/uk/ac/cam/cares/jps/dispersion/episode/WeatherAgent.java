@@ -3,6 +3,7 @@ package uk.ac.cam.cares.jps.dispersion.episode;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -146,8 +147,10 @@ public class WeatherAgent extends JPSHttpServlet {
 	public void validateInput(JSONObject input) {
 		try {
 			String cityiri=input.get("city").toString();
-            // check whether it's IRI
-
+			
+			// check whether it's IRI
+			new URL(cityiri).toURI();
+            
 			JSONObject region = input.getJSONObject("region");
 			String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
 			String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
