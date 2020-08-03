@@ -70,6 +70,17 @@ public class Utils {
 	}
 	
 	/**
+	 * Check if a job is completed with erroneous or incomplete output.
+	 * 
+	 * @param jobFolder
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobErroneouslyCompleted(File jobFolder) throws IOException{
+		return isJobErroneouslyCompleted(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+	}
+	
+	/**
 	 * Checks if a job is still running.
 	 * 
 	 * @param jobFolder
@@ -107,6 +118,28 @@ public class Utils {
 					statusFile.close();
 					return true;
 				}
+				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Check the status if a job produced erroneous or incomplete output.
+	 * 
+	 * @param statusFilePath
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobErroneouslyCompleted(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
 				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
 					statusFile.close();
 					return true;
