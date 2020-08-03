@@ -1,4 +1,5 @@
 from compchemparser.ontocompchemdata.ontocompchemdata import OntoCompChemData
+from bz2 import __author__
 
 def run(log_file,output_json):
     # create OntoCompChemData object
@@ -8,4 +9,5 @@ def run(log_file,output_json):
     CompChemObj.getData(log_file)
     #CompChemObj.uploadToKG()
     if output_json: 
-        CompChemObj.outputjson()
+        CompChemObj.outputjson()        
+        CompChemObj.outputowl()       

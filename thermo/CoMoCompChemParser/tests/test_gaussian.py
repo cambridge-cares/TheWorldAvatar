@@ -16,8 +16,6 @@ Test_suite1 = {'g1': ['co2_g1_g09.log'],
                'mpn': ['oh_sp_mp4_g03.log']
 }
 
-
-
 class TestGaussianParser(unittest.TestCase):
 
     def test_suite1(self):
