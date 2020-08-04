@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.test;
 
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -331,24 +332,68 @@ public class WeatherAgentTest extends TestCase {
 	}
 
 	public void testvalidateInput() {
+//		Any missing/invalid inputs should trigger an exception
+		WeatherAgent wa = new WeatherAgent();
+//		Method validateInput = wa.getClass().getDeclaredMethod("validateInput",JSONObject.class);
+//		validateInput.setAccessible(true);
+
 		double xmin = Double.valueOf("11552101.832");
 		double xmax = Double.valueOf("11572101.89");
 		double ymin = Double.valueOf("131707.739");
 		double ymax = Double.valueOf("151860.32");
-		JSONObject jo = new JSONObject();
 
+//		construct empty scope object
 		JSONObject scope = new JSONObject();
 		JSONObject low = new JSONObject();
 		JSONObject up = new JSONObject();
-		up.put("upperx", xmax);
-		up.put("uppery", ymax);
-		low.put("lowerx", xmin);
-		low.put("lowery", ymin);
-		scope.put("lowercorner", low);
 		scope.put("uppercorner", up);
-//		jo.put("region",scope);
+		scope.put("lowercorner", low);
+
+//		Empty input
+		JSONObject jo = new JSONObject();
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+
+//		Add an empty region key
+		jo.put("region",scope);
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+
+//		Then test the presence of xmax,ymax,xmin,ymin
+		up.put("upperx",xmax);
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		up.put("uppery", ymax);
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		low.put("lowerx", xmin);
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		low.put("lowery", ymin);
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		
+//		Finally, test citi IRI. Mandatory inputs are all present
+		jo.put("city",cityiri);
+		assertTrue(wa.validateInput(jo));
+		
+//		Extra tests
+//		Check srsname
+		scope.put("srsname","EPSG:3857");
+		assertTrue(wa.validateInput(jo));
+		
+//		Invalid srsname
+		scope.put("srsname","abc");
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		
+//		Empty srsname is ok
+		scope.put("srsname","");
+		assertTrue(wa.validateInput(jo));
+		
+//		Invalid city IRI
+		jo.put("city","abc");
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
 		jo.put("city",cityiri);
 
-		assertThrows(Exception.class, () -> {new WeatherAgent().validateInput(jo);});
+//		Test invalid double
+		up.put("upperx","abc");
+		up.put("uppery","abc");
+		low.put("lowerx","abc");
+		low.put("lowery","abc");
+		assertThrows(Exception.class, () -> wa.validateInput(jo));
 	}
 }
