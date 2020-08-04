@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
+  xmlns:gc="http://purl.org/gc/"
   xmlns:owl="http://www.w3.org/2002/07/owl#"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
 >
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#co2_g1_g09">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
+    <ontocompchem:hasInitialization>
+      <ontocompchem:InitializationModule rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#job_module_has_initilization_module_213715.55641798646">
+        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_213715.55641798646"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </ontocompchem:InitializationModule>
+    </ontocompchem:hasInitialization>
+  </owl:Thing>
   <owl:Ontology rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#">
     <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"/>
   </owl:Ontology>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_213715.55641798646">
+    <gc:hasName>C1O2</gc:hasName>
+    <rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty"/>
+  </owl:Thing>
 </rdf:RDF>

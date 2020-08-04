@@ -19,8 +19,6 @@ class OntoCompChemData:
         self.parser = None
         # array of json objects
         self.data = []
-        
-        
 
     # routine that extracts data from a log ile
     def getData(self, logFile):
@@ -43,20 +41,7 @@ class OntoCompChemData:
         print('Uploading to KG, File '+self.log)
         for i, json_data in enumerate(self.data):
             print('    uploading json entry '+str(i+1))
-            # upload call ...    
-            
-    # Nenad Krdzavac/Angiras Menon
-    def getAtomicMasses(self):        
-        print('Generate o OWL, File '+self.log)
-        for i, json_data in enumerate(self.data):
-            #Nenad Krdzavac (caresssd@hermes.cam.ca.uk)
-            data = json.loads(json_data)
-            print('Atomic masses : ',data["Atomic masses"])
-        for i in data["Atomic masses"]:
-            print("atomic mass: ", i)
-                
-       
-            
+            # upload call ...            
         
     def outputjson(self):
         print('Dumping to JSON, File '+self.log)
@@ -88,7 +73,7 @@ class OntoCompChemData:
                 #for i in enumerate(self.data):
                 #   print(i[1])
         
-    def outputowl(self):
+    def outputowl(self,ontocompchem_graph, file_name, rnd):
         print("output owl")
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
@@ -96,54 +81,82 @@ class OntoCompChemData:
         print("dict_data",dict_data)
             
         empirical_formula = dict_data["Empirical formula"]
+        #empirical_formula_literal = Literal(empirical_formula)
+         
         program_version = dict_data["Program version"]
       
-        print("log file path: " , os.path.abspath(self.log))
-        print("file name with folder path: ", os.path.splitext(self.log))
-        print("online file name: " , Path(self.log).stem)
+         
+        #print("log file path: " , os.path.abspath(self.log))
+        #print("file name with folder path: ", os.path.splitext(self.log))
+        #print("online file name: " , Path(self.log).stem)
         
-        file_name =Path(self.log).stem        
+        #file_name =Path(self.log).stem        
         
         ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + file_name + ".owl#" 
         
         print("base uri: ", ontology_base_uri)
         
-        ontocompchemgraph = Graph()
+        #ontocompchem_graph = Graph()
         
         #Namespace definition
-        ontocompchemnamespace = Namespace("http://theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")   
-        owlnamespace = Namespace("http://www.w3.org/2002/07/owl#")
-        rdfnamespace= Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        ontocompchem_namespace = Namespace("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")   
+        owl_namespace = Namespace("http://www.w3.org/2002/07/owl#")
+        rdf_namespace= Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
+        gc_namespace=Namespace("http://purl.org/gc/")
         
-        ontocompchemgraph.bind("ontocompchem",ontocompchemnamespace)
-        ontocompchemgraph.bind("owl",owlnamespace)
-        ontocompchemgraph.bind("rdf", rdfnamespace)
+        ontocompchem_graph.bind("ontocompchem",ontocompchem_namespace)
+        ontocompchem_graph.bind("owl",owl_namespace)
+        ontocompchem_graph.bind("rdf", rdf_namespace)
+        ontocompchem_graph.bind("gc", gc_namespace)
         
-        computationModule = URIRef("http://theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#cm")
-        ontocompchemOntology = URIRef("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")
+        ontocompchem_ontology = URIRef("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")
         
-        #ontocompchem.computationalModule
+                
+        self.importontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
+        self.generate_gaussian_instance(program_version, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
+        self.generate_empirical_formula(ontocompchem_graph, ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
         
-    #   ontocompchemgraph.bind("owl",OWL.start_namespace_decl())
-    #   ontocompchemgraph.add((computationModule, RDF.type, ontocompchem.ComputationModule))
+        #printing created ontology that is an instance of OntoCompChem ontology.
+        print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
+        
+        ontocompchem_graph.serialize(destination=os.path.splitext(self.log)[0]+'.owl', format='pretty-xml')
 
+        
+    def importontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
         #import ontocompchem ontology    
-        ontocompchemgraph.add((URIRef(ontology_base_uri), RDF.type, OWL.Ontology ))
-        ontocompchemgraph.add((URIRef(ontology_base_uri), OWL.imports,ontocompchemOntology))
+        ontocompchem_graph.add((URIRef(ontology_base_uri), RDF.type, OWL.Ontology ))
+        ontocompchem_graph.add((URIRef(ontology_base_uri), OWL.imports,ontocompchem_ontology))
+    
+    def generate_gaussian_instance(self,program_version,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,r):
+        #Generates instance of calculation based on Gaussian software used. Currently we support G09 and G16
+        if program_version.startswith("2009") :
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G09))
+             
+        else: 
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G16))
         
-        #ontocompchemgraph.add((URIRef("http://theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"), RDF.type, OWL.Ontology ))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(r))))
+            
         
-        #printing created ontology that is an instance of OntoCompChem ontology.               
-        print(ontocompchemgraph.serialize(format="pretty-xml").decode("utf-8"))
+    def generate_empirical_formula(self,ontocompchem_graph,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+            
+        print("dict_data",dict_data)
+            
+        empirical_formula = dict_data["Empirical formula"]
+        empirical_formula_literal = Literal(empirical_formula)
+        #Generates graph that represents empirical formula
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_" + str(rnd)), RDF.type, ontocompchem_namespace.InitializationModule))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, gc_namespace.MoleculeProperty))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, OWL.Thing))        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), gc_namespace.hasName, empirical_formula_literal ))
+          
+             
         
-        ontocompchemgraph.serialize(destination=os.path.splitext(self.log)[0]+'.owl', format='pretty-xml')
-        
-        print()
-        
-        print("Directory Path:", __file__)
-        
-        
-   
             
         
         
