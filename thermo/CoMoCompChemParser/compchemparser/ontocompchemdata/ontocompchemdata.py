@@ -115,6 +115,8 @@ class OntoCompChemData:
         self.importontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
         self.generate_gaussian_instance(program_version, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
         self.generate_empirical_formula(ontocompchem_graph, ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
+        self.generates_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
+                
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -127,7 +129,7 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri), RDF.type, OWL.Ontology ))
         ontocompchem_graph.add((URIRef(ontology_base_uri), OWL.imports,ontocompchem_ontology))
     
-    def generate_gaussian_instance(self,program_version,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,r):
+    def generate_gaussian_instance(self,program_version,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,rnd):
         #Generates instance of calculation based on Gaussian software used. Currently we support G09 and G16
         if program_version.startswith("2009") :
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G09))
@@ -136,26 +138,56 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G16))
         
         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, OWL.Thing))
-        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(r))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(rnd))))
             
         
     def generate_empirical_formula(self,ontocompchem_graph,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
-            
-        print("dict_data",dict_data)
-            
+                  
+        #extract empirical formula 
         empirical_formula = dict_data["Empirical formula"]
-        empirical_formula_literal = Literal(empirical_formula)
+        #make space between characters
+        empirical_formula_space =' '.join(empirical_formula)
+        #make empirical formula literal
+        empirical_formula_literal = Literal(empirical_formula_space)
         #Generates graph that represents empirical formula
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_" + str(rnd)), RDF.type, ontocompchem_namespace.InitializationModule))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), RDF.type, OWL.Thing))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd))))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, gc_namespace.MoleculeProperty))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, OWL.Thing))        
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), gc_namespace.hasName, empirical_formula_literal ))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), gc_namespace.hasName, empirical_formula_literal))
           
-             
+    def generates_level_of_theory(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,rnd):
+        #Generates level of theory
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+        
+        method =  dict_data["Method"]
+        basis_set = dict_data["Basis set"]
+        
+        print("method: ", method, " , basis set: " , basis_set)
+        
+        #if method and basis set are equal then level of theory has value equal to one of them. If method and basis set are different as strings, then level of theory has value as a string that contains both method
+        # and basis set separated by "/" character. Explanation given by Angiras Menon (am2145@cam.ac.uk)
+        if method==basis_set :
+            level_of_theory = method
+        else: 
+            level_of_theory = method +"/"+basis_set 
+         
+        level_of_theory_literal = Literal(level_of_theory)          
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(rnd)), RDF.type, ontocompchem_namespace.LevelOfTheory))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(rnd)), RDF.type, gc_namespace.MethodologyFeature))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), ontocompchem_namespace.hasLevelOfTheory, level_of_theory_literal))
+        
+        
+        
+    
+                 
         
             
         
