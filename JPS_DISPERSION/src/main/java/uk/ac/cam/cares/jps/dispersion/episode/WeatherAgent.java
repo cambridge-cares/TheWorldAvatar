@@ -144,7 +144,7 @@ public class WeatherAgent extends JPSHttpServlet {
 			return response;
 		}
 
-	public void validateInput(JSONObject input) {
+	public Boolean validateInput(JSONObject input) {
 		try {
 			String cityiri=input.get("city").toString();
 			
@@ -157,14 +157,23 @@ public class WeatherAgent extends JPSHttpServlet {
 			String upx = region.getJSONObject("uppercorner").get("upperx").toString();
 			String upy = region.getJSONObject("uppercorner").get("uppery").toString();
 
-			// check if provided coordinates are valid
-			Double.valueOf(lowx);
-			Double.valueOf(upx);
-			Double.valueOf(lowy);
-			Double.valueOf(upy);
+			// check if provided coordinates are valid doubles
+			double proclowx = Double.valueOf(lowx);
+			double procupx = Double.valueOf(upx);
+			double proclowy = Double.valueOf(lowy);
+			double procupy = Double.valueOf(upy);
 
+			// validate coordinates
+			String sourceCRSName = region.optString("srsname");
+		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { 
+		    	sourceCRSName = CRSTransformer.EPSG_4326; 
+		    }
+		    
+			double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+			CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,center);
+			return true;
 		} catch (Exception e) {
-			throw new BadRequestException();
+			throw new BadRequestException(e);
 		}
 	}
 
