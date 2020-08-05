@@ -494,7 +494,7 @@ public class JobSubmission{
 				File[] jobFolders = workspaceDirectory.listFiles();
 				updateRunningJobSet(jobFolders, jobsRunning);
 				for(File jobFolder: jobFolders){
-					if(!Utils.isJobCompleted(jobFolder)){
+					if(!Utils.isJobCompleted(jobFolder, slurmJobProperty)){
 						if(Utils.isJobRunning(jobFolder)){
 							if(updateRunningJobsStatus(jobFolder)){
 								if(jobsRunning.contains(jobFolder.getName())){
