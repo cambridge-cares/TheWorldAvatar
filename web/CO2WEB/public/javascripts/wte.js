@@ -177,7 +177,18 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
     + "}";
 
 
+const toggleDisplay = elemId => {
+    let x = document.getElementById(elemId);
+    if (x.style.display !== 'block') {
+        x.style.display = 'block';
+    } else {
+        x.style.display = 'none';
+    }
+};
 
+$("#readme-button").click(function() {
+    toggleDisplay("readme-text");
+});
 /** boolean that would signal start of simulation
  * 
  */
@@ -270,7 +281,7 @@ async function completeUpdate(callback){
 function runWTESimulation(){
     var noOfCluster = document.getElementById("noOfCluster").value;
     if (noOfCluster == ''){
-        scenario = "9"; //auto set scenario to standard to differentiate from base
+        noOfCluster = "30"; 
     }
     var para = {"wastenetwork":wastenetwork, "n_cluster": noOfCluster};
     var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
