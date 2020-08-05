@@ -144,7 +144,7 @@ public class WeatherAgent extends JPSHttpServlet {
 			return response;
 		}
 
-	public Boolean validateInput(JSONObject input) {
+	private Boolean validateInput(JSONObject input) {
 		try {
 			String cityiri=input.get("city").toString();
 			
