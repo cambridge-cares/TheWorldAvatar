@@ -99,11 +99,11 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 
 	@Override
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException {
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
 		// TODO Auto-generated method stub
 		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM();
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
-		kineticsSRM.formFiles(exeModel);
+		kineticsSRM.formFiles(exeModel, ignDelayOption);
 		kineticsSRM.setUpMoDS();
 		
 		logger.info("Model kineticsSRM was added to the MoDS job.");
