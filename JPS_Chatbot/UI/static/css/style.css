@@ -47,7 +47,6 @@
   box-sizing: border-box;
 }
 
-
 html {
   font-family: sans-serif;
   line-height: 1.15;
@@ -57,6 +56,14 @@ html {
 
  footer, header, nav, section {
   display: block;
+}
+
+
+header {
+  background-image: url("../img/background.svg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
 }
 
 body {
@@ -251,6 +258,11 @@ small,
   margin-right: auto;
   margin-left: auto;
 }
+
+#search-results {
+  display: none;
+}
+
 @media (min-width: 576px) {
   .container {
     max-width: 540px;
@@ -412,6 +424,24 @@ textarea.form-control {
   border-radius: 0.5rem;
   transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+
+
+.input-div {
+  margin-top: 2.5rem;
+}
+
+.input-div h1 {
+  font-size: 250%;
+  font-weight: bolder;
+  transform: uppercase;
+}
+
+.input-group {
+  border-color: #333333;
+  border-style: solid;
+  border-radius: 0px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .btn {
     transition: none;
@@ -464,8 +494,8 @@ textarea.form-control {
 
 .btn-secondary {
   color: #fff;
-  background-color: #2c3e50;
-  border-color: #2c3e50;
+  background-color: #000;
+  border-color: #000;
 }
 .btn-secondary:hover {
   color: #fff;
@@ -612,13 +642,23 @@ textarea.form-control {
   text-decoration: none;
 }
 
+/* padding for nav items */
+.navbar-nav li {
+  padding-right: 1.5rem;
+  padding-left: 1.5rem;
+}
+
+/* padding for nav items */
+.nav-link {
+  font-size: 1.5em !important;
+}
+
 .navbar {
-  position: relative;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 1rem;
+  padding: 1rem;
 }
 .navbar .container {
   display: flex;
@@ -841,6 +881,18 @@ button.bg-primary:focus {
 
 .bg-secondary {
   background-color: #2c3e50 !important;
+}
+
+.bg-tertiary {
+  background-color: #FFC966 !important;
+}
+
+[type=search]::-webkit-search-cancel-button {
+  -webkit-appearance: auto;
+}
+
+#search-spinner {
+  display: none;
 }
 
 a.bg-secondary:hover, a.bg-secondary:focus,
@@ -1207,8 +1259,8 @@ h2 {
   }
 }
 .masthead {
-  padding-top: calc(6rem + 74px);
-  padding-bottom: 6rem;
+  padding-top: calc(rem + 74px);
+  padding-bottom: 2rem;
 }
 .masthead .masthead-heading {
   font-size: 2.75rem;
@@ -1218,9 +1270,14 @@ h2 {
   width: 15rem;
 }
 
+.masthead-heading {
+  color: black;
+  font-weight: bold;
+}
+
 @media (min-width: 992px) {
   .masthead {
-    padding-top: calc(10rem + 104px);
+    padding-top: calc(2rem + 104px);
     padding-bottom: 10rem;
   }
   .masthead .masthead-heading {
@@ -1318,4 +1375,20 @@ form .row:first-child .floating-label-form-group {
 
 .copyright {
   background-color: #1a252f;
+}
+
+
+.div-row {
+  font-family: sans-serif;
+  border: 2px solid rgb(82, 78, 78);
+  border-style: solid;
+  background-color: white;
+  margin-bottom: 30px;
+}
+
+.div-row div {
+  display: inline-block;
+  text-align: center;
+  padding: 1em;
+  width: calc(100% / 3 - (3px + 2em));
 }

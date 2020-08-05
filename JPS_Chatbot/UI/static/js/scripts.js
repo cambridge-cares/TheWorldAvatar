@@ -3,14 +3,10 @@
     * Copyright 2013-2020 Start Bootstrap
     * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-freelancer/blob/master/LICENSE)
     */
-	
-	$(window).on('load', function(){ 
-	
-	    google.charts.load('current', {'packages':['table']});
 
+	$(window).on('load', function(){
+	    google.charts.load('current', {'packages':['table']});
 	});
-	
- 
 
     (function($) {
     "use strict"; // Start of use strict
@@ -66,16 +62,24 @@
   })(jQuery);
 
 
-  // End of use strict
   function ask_question() {
-    //$('#progress_bar').show();
+    document.getElementById('search-icon').style.display = 'none';
+    document.getElementById('search-spinner').style.display = 'block';
 
-    // =========================
+    setTimeout(function(){
 
     data = '{"head": {"vars": ["oLabel", "v", "value", "unitLabel"]},"results": {"bindings": [{"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "79"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "147"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "methanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "173"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}]}}'
 
-    table_rows = process_json_result(data)
-    drawTable(table_rows)
+      table_rows = process_json_result(data)
+      drawTable(table_rows)
+
+      document.getElementById('search-spinner').style.display = 'none';
+      document.getElementById("search-results").style.display = "block";
+      document.getElementById('search-icon').style.display = '';
+
+     }, 1000);
+
+    // =========================
     //$('#progress_bar').hide();
 
 }
@@ -88,29 +92,29 @@ function process_json_result(result){
   result = JSON.parse(result)
 
   if ('results' in result){
-          bindings = result.results.bindings;
-  if (bindings.length == 0){
-      return null
-  }else
-  {
-      variables = result.head.vars
-      table = []
-      bindings.forEach(function(v){
-          let row = []
-          variables.forEach(function(k){
-              if(v[k]){
-              value = v[k].value;
-              row.push(value)
-              }
-              else{
-                 variables = removeItemAll(variables)
-              }
+    bindings = result.results.bindings;
+    if (bindings.length == 0){
+        return null
+    }else
+    {
+        variables = result.head.vars
+        table = []
+        bindings.forEach(function(v){
+            let row = []
+            variables.forEach(function(k){
+                if(v[k]){
+                value = v[k].value;
+                row.push(value)
+                }
+                else{
+                  variables = removeItemAll(variables)
+                }
 
-          })
-          table.push(row)
-      })
-      return [variables, table]
-  }
+            })
+            table.push(row)
+        })
+        return [variables, table]
+    }
   }else{
   // get a list of variables, which is the keys
   variables = Object.keys(result[0]);
@@ -123,7 +127,6 @@ function process_json_result(result){
   return [variables, table]
   }
 }
-
 
 function removeItemAll(arr, value) {
   var i = 0;
@@ -155,20 +158,103 @@ function drawTable(result_array) {
 
   } */
   //else{
-      for (col = 0; col < col_size; col++){
-      data.addColumn('string', variables[col]);
-      console.log('added col' + variables[col])
-
+  for (col = 0; col < col_size; col++)
+  {
+    data.addColumn('string', variables[col]);
+    console.log('added col' + variables[col])
   }
 
-      data.addRows(rows);
-      table_element = document.getElementById('table_div')
-      // table_element.style.color = 'black';
-      var table = new google.visualization.Table(table_element);
-      table.draw(data, {showRowNumber: true, width: '100%', height: '100%'});
+  data.addRows(rows);
+  table_element = document.getElementById('table_div')
+  // table_element.style.color = 'black';
+  var table = new google.visualization.Table(table_element);
+
+  var options =
+  {
+    showRowNumber: false,
+    width: '100%',
+    height: '100%',
+    alternatingRowStyle: false,
+    allowHtml: true,
+    cssClassNames: {
+      tableCell: 'cell',
+      headerCell: 'headerCell'
+    }
+  };
+  table.draw(data, options);
 
 
 
 //  }
 
 }
+
+function displayResults() {
+  document.getElementById('search-icon').style.display = 'none';
+  document.getElementById('search-spinner').style.display = 'block';
+
+  setTimeout(function(){
+  var myData = [
+      {
+          "result_id": "1",
+          "result_name": "ethanol",
+          "result_value": "79C",
+      },
+      {
+        "result_id": "2",
+        "result_name": "methanol",
+        "result_value": "147C",
+    },
+    {
+      "result_id": "3",
+      "result_name": "propanol",
+      "result_value": "173C",
+  },
+  ]
+
+  // EXTRACT VALUE FOR HTML HEADER.
+  // ('Book ID', 'Book Name', 'Category' and 'Price')
+  var col = [];
+  for (var i = 0; i < myData.length; i++) {
+      for (var key in myData[i]) {
+          if (col.indexOf(key) === -1) {
+              col.push(key);
+          }
+      }
+  }
+
+  var divContainer = document.getElementById("search-results");
+  divContainer.innerHTML = "";
+
+  var h = document.createElement("H1")                // Create a <h1> element
+  var t = document.createTextNode("Results");     // Create a text node
+  h.appendChild(t);
+  divContainer.appendChild(h);
+
+  // ADD JSON DATA TO THE TABLE AS ROWS.
+  for (var i = 0; i < myData.length; i++) {
+
+      var div_row = document.createElement("div");
+      div_row.classList.add('div-row');
+
+      for (var j = 0; j < col.length; j++) {
+        // Create the list item:
+        var div_inner = document.createElement('div');
+
+        // Set its contents:
+        div_inner.appendChild(document.createTextNode(myData[i][col[j]]));
+
+        // Add it to the list:
+        div_row.appendChild(div_inner);
+      }
+      divContainer.appendChild(div_row);
+  }
+
+  // FINALLY ADD THE NEWLY CREATED TABLE WITH JSON DATA TO A CONTAINER.
+
+  document.getElementById('search-spinner').style.display = 'none';
+  document.getElementById("search-results").style.display = "block";
+  document.getElementById('search-icon').style.display = '';
+
+  }, 1000);
+};

@@ -8,6 +8,12 @@
         <title>Chemistry Knowledge Graph</title>
         <!-- Favicon-->
         <link rel="icon" type="image/x-icon" href="../static/img/favicon.ico" />
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        <!-- Jquery -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <!-- Font Awesome icons (free version)-->
         <script src="https://use.fontawesome.com/releases/v5.13.0/js/all.js" crossorigin="anonymous"></script>
         <!-- Google fonts-->
@@ -18,19 +24,32 @@
     </head>
     <body id="page-top">
         <!-- Navigation-->
-        <nav class="navbar navbar-expand-lg bg-secondary text-uppercase fixed-top" id="mainNav">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark sticky-top">
             <div class="container">
-				<img src="../static/img/logo.svg" align="left" vertical-align: middle display: inline/>
-                <a class="navbar-brand js-scroll-trigger" href="#page-top">Chemistry Knowledge Graph</a>
-                <button class="navbar-toggler navbar-toggler-right text-uppercase font-weight-bold bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu
-                    <i class="fas fa-bars"></i>
+                <a class="navbar-brand" href="#">
+                    <img src="../static/img/logo.svg">
+                </a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainNav">
+                    <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
+                <div class="collapse navbar-collapse" id="mainNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item active">
+                            <a class="nav-link" href="#">Chemistry Knowledge Graph</a>
+                        </li>
+                    </ul>
+                    <!--ml-auto - pushes off navigation to the right hand side-->
                     <ul class="navbar-nav ml-auto">
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a></li>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#partners">Partners</a></li>
-                        <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#footer_section">Contact</a></li>
+                        <li class="nav-item">
+                            <a class="nav-link" href='#about'>About</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href='#partners'>Partners</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href='#footer_section'>Contact</a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -41,12 +60,13 @@
                 <!-- Masthead Avatar Image-->
                 <!--img class="masthead-avatar mb-5" src="static/img/avataaars.svg" alt="" /-->
                 <!-- Masthead Heading-->
-                <h1 class="masthead-heading mb-0">Search Chemistry Knowledge Graph</h1>
+                <h1 class="mb-2 text-dark">Search Chemistry Knowledge Graph</h1>
                 <!-- Icon Divider-->
 				<div class="input-group">
 					<div class="input-group-append">
-					  <button class="btn btn-secondary" type="button" onclick="ask_question()">
-						<i class="fa fa-search"></i>
+					  <button class="btn btn-secondary" type="button" onclick="displayResults()">
+                        <i class="fa fa-search" id="search-icon"></i>
+                        <i class="fas fa-spinner fa-spin" id="search-spinner"></i>
 					  </button>
 					</div>
 					<input type="search" class="form-control" placeholder="Type your query" list="ex-queries"/>
@@ -62,9 +82,12 @@
 						<option value="what reactions produce NO2 + O2"/>
                     </datalist>
                 </div>
-                <div id="table_div"></div>
             </div>
         </header>
+
+        <div class="container text-dark font-weight-bold mt-5" id="search-results">
+        </div>
+
         <!-- About Section-->
         <section class="page-section about" id="about">
             <div class="container">
@@ -80,7 +103,7 @@
                 <div class="row align-items-center">
                     <!-- Portfolio Item 1-->
                     <div class="col-md-6 col-lg-4 mb-5 justify-content-center">
-                        <img class="img-fluid" src="../static/img/chatbot.svg" alt="" />
+                        <img class="img-fluid" src="../static/img/chatbot.svg" alt="" width="200"/>
                     </div>
                     <div class="col-md-6 col-lg-8 mb-5 align-items-center justify-content-center">
                         <h4 class="masthead-heading mb-0">Powered By an Intelligent Natural Language Processor</h4>
@@ -89,7 +112,7 @@
                 <div class="row align-items-center">
                     <!-- Portfolio Item 2-->
                     <div class="col-md-6 col-lg-4 mb-5">
-                        <img class="img-fluid" src="../static/img/KG.svg " alt="" />
+                        <img class="img-fluid" src="../static/img/KG.svg " alt="" width="200"/>
                     </div>
                     <div class="col-md-6 col-lg-8 mb-5">
                         <h4 class="masthead-heading mb-0">Explores The Power of Cross Domain Knowledge Graphs</h4>
@@ -98,12 +121,12 @@
             </div>
         </section>
         <!-- Partners Section-->
-        <section class="page-section bg-primary text-white mb-0" id="partners">
+        <section class="page-section bg-primary mb-0" id="partners">
             <div class="container">
                 <!-- Partners Section Heading-->
-                <h2 class="page-section-heading text-center text-uppercase text-white">Partners</h2>
+                <h2 class="page-section-heading text-center text-uppercase">Partners</h2>
                 <!-- Icon Divider-->
-                <div class="divider-custom divider-light">
+                <div class="divider-custom">
                     <div class="divider-custom-line"></div>
                     <div class="divider-custom-icon"><i class="fas fa-star"></i></div>
                     <div class="divider-custom-line"></div>
