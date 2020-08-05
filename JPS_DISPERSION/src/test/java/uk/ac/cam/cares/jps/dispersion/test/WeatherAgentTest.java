@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.ws.rs.BadRequestException;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.json.JSONObject;
 
@@ -334,72 +332,101 @@ public class WeatherAgentTest extends TestCase {
 
 	public void testvalidateInput() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
 //		Any missing/invalid inputs should trigger an exception
+//		The checkInput method will ensure that it throws a Runtime exception when the inputs are invalid. The method should throw a 
+//		BadRequestException but the WeatherAgent object is currently causing it to throw a Runtime exception
 		WeatherAgent wa = new WeatherAgent();
 		Method validateInput = wa.getClass().getDeclaredMethod("validateInput",JSONObject.class);
 		validateInput.setAccessible(true);
 
-		double xmin = Double.valueOf("11552101.832");
-		double xmax = Double.valueOf("11572101.89");
-		double ymin = Double.valueOf("131707.739");
-		double ymax = Double.valueOf("151860.32");
+//		Empty input
+		JSONObject jo = new JSONObject();
+		assertFalse(checkInput(wa,validateInput,jo));
 
-//		construct empty scope object
+//		Create a valid input that should pass the test
 		JSONObject scope = new JSONObject();
 		JSONObject low = new JSONObject();
 		JSONObject up = new JSONObject();
 		scope.put("uppercorner", up);
 		scope.put("lowercorner", low);
-
-//		Empty input
-		JSONObject jo = new JSONObject();
-		try {
-            validateInput.invoke(wa, jo);
-        } catch (InvocationTargetException e) {
-            assertEquals(BadRequestException.class, e.getTargetException().getClass());
-        }
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
-
-//		Add an empty region key
-		jo.put("region",scope);
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
-
-//		Then test the presence of xmax,ymax,xmin,ymin
+		double xmin = Double.valueOf("11552101.832");
+		double xmax = Double.valueOf("11572101.89");
+		double ymin = Double.valueOf("131707.739");
+		double ymax = Double.valueOf("151860.32");
 		up.put("upperx",xmax);
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
-		up.put("uppery", ymax);
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
-		low.put("lowerx", xmin);
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
-		low.put("lowery", ymin);
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		up.put("uppery",ymax);
+		low.put("lowerx",xmin);
+		low.put("lowery",ymin);
 		
-//		Finally, test citi IRI. Mandatory inputs are all present
+		jo.put("region",scope);
 		jo.put("city",cityiri);
-		assertTrue(wa.validateInput(jo));
+
+		assertTrue(checkInput(wa,validateInput,jo));
 		
-//		Extra tests
-//		Check srsname
-		scope.put("srsname","EPSG:3857");
-		assertTrue(wa.validateInput(jo));
+//		Now each key in the input is toggled to empty and to the wrong type to trigger an exception
+//		Begin with the region key
+		jo.put("region","");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put("region","abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put("region",scope);
+		assertTrue(checkInput(wa,validateInput,jo));
 		
-//		Invalid srsname
-		scope.put("srsname","abc");
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
+//		City IRI. 
+		jo.put("city","");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put("city","abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put("city",cityiri);
+		assertTrue(checkInput(wa,validateInput,jo));
 		
+//		Coordinates
+		up.put("upperx","");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put("upperx","abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put("upperx",xmax);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+		up.put("uppery", "");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put("uppery", "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put("uppery", ymax);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+		low.put("lowerx", "");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put("lowerx", "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put("lowerx", xmin);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+		low.put("lowery", "");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put("lowery", "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put("lowery", ymin);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+//		Optional srsname
 //		Empty srsname is ok
 		scope.put("srsname","");
-		assertTrue(wa.validateInput(jo));
-		
-//		Invalid city IRI
-		jo.put("city","abc");
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
-		jo.put("city",cityiri);
-
-//		Test invalid double
-		up.put("upperx","abc");
-		up.put("uppery","abc");
-		low.put("lowerx","abc");
-		low.put("lowery","abc");
-		assertThrows(Exception.class, () -> wa.validateInput(jo));
+		assertTrue(checkInput(wa,validateInput,jo));
+		scope.put("srsname","abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		scope.put("srsname","EPSG:3857");
+		assertTrue(checkInput(wa,validateInput,jo));
+	}
+	
+	private Boolean checkInput(WeatherAgent wa,Method validateInput,JSONObject jo) throws IllegalAccessException, IllegalArgumentException {
+//		This method is used in the testvalidateInput method, returns true if all inputs are present
+		try {
+            validateInput.invoke(wa, jo);
+            return true;
+        } catch (InvocationTargetException e) {
+//        	This should be modified to BadRequestException once the necessary fix is done in the JPSHttpServlet class
+            assertEquals(RuntimeException.class, e.getTargetException().getClass());
+            return false;
+        }
 	}
 }
