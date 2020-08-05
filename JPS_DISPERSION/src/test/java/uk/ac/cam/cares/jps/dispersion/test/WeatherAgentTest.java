@@ -1,5 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.test;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -331,11 +332,11 @@ public class WeatherAgentTest extends TestCase {
 		
 	}
 
-	public void testvalidateInput() {
+	public void testvalidateInput() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
 //		Any missing/invalid inputs should trigger an exception
 		WeatherAgent wa = new WeatherAgent();
-//		Method validateInput = wa.getClass().getDeclaredMethod("validateInput",JSONObject.class);
-//		validateInput.setAccessible(true);
+		Method validateInput = wa.getClass().getDeclaredMethod("validateInput",JSONObject.class);
+		validateInput.setAccessible(true);
 
 		double xmin = Double.valueOf("11552101.832");
 		double xmax = Double.valueOf("11572101.89");
@@ -351,6 +352,11 @@ public class WeatherAgentTest extends TestCase {
 
 //		Empty input
 		JSONObject jo = new JSONObject();
+		try {
+            validateInput.invoke(wa, jo);
+        } catch (InvocationTargetException e) {
+            assertEquals(BadRequestException.class, e.getTargetException().getClass());
+        }
 		assertThrows(Exception.class, () -> wa.validateInput(jo));
 
 //		Add an empty region key
