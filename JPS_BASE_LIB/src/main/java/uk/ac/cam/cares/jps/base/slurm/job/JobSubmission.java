@@ -373,6 +373,51 @@ public class JobSubmission{
 	}
 	
 	/**
+	 * Moves the provided job folder to the folder that contains completed<br>
+	 * and post-processed jobs of the agent. 
+	 * 
+	 * @param jobId
+	 */
+	public void moveToComplete(File jobFolder) throws SlurmJobException {
+		try {
+			File destDir = getCompletedJobsDirectory();
+			FileUtils.copyDirectory(jobFolder, destDir);
+			FileUtils.deleteDirectory(jobFolder);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		    throw new SlurmJobException(slurmJobProperty.getAgentClass()+": "+e.getMessage());
+		}
+	}
+	
+	/**
+	 * Copies a source folder to a destination folder.
+	 * 
+	 * @param srcDir the source folder that is copied.
+	 * @param destDir the destination folder where the source folder is copied into.
+	 * @throws SlurmJobException
+	 */
+	public void copyDirectory(File srcDir, File destDir) throws SlurmJobException{
+		try {
+			FileUtils.copyDirectory(srcDir, destDir);
+		} catch (IOException e) {
+		    e.printStackTrace();
+		    throw new SlurmJobException(slurmJobProperty.getAgentClass()+": "+e.getMessage());
+		}		
+	}
+	
+	/**
+	 * Returns the folder where completed jobs are saved.
+	 * 
+	 * @param workspaceParentPath
+	 * @param completedPrefixedAgentClass
+	 * @return
+	 * @throws IOException
+	 */
+	public static File getCompletedJobsDirectory() throws IOException{
+		return Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentCompletedJobsSpacePrefix().concat(slurmJobProperty.getAgentClass()));
+	}
+	
+	/**
      * Shows the following statistics of Slurm jobs.</br>
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
