@@ -1,30 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
   xmlns:gc="http://purl.org/gc/"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:owl="http://www.w3.org/2002/07/owl#"
   xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 >
-  <ontocompchem:G09 rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#c2h4_opt_dft_g09">
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#c2h4_opt_dft_g09">
     <ontocompchem:hasInitialization>
-      <ontocompchem:InitializationModule rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#job_module_has_initilization_module_479365.74921500863">
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_molecule_property_479365.74921500863"/>
-        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_level_of_theory_parameter_479365.74921500863"/>
-      </ontocompchem:InitializationModule>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#job_module_has_initilization_module_702953.7320023227">
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_level_of_theory_parameter_702953.7320023227"/>
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule"/>
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_basis_set_parameter_702953.7320023227"/>
+        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_molecule_property_702953.7320023227"/>
+      </owl:Thing>
     </ontocompchem:hasInitialization>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-  </ontocompchem:G09>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
+  </owl:Thing>
   <owl:Ontology rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#">
     <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"/>
   </owl:Ontology>
-  <ontocompchem:LevelOfTheory rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_level_of_theory_parameter_479365.74921500863">
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_level_of_theory_parameter_702953.7320023227">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
     <ontocompchem:hasLevelOfTheory>RB971/6-311+G(d,p)</ontocompchem:hasLevelOfTheory>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
     <rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
-  </ontocompchem:LevelOfTheory>
-  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_molecule_property_479365.74921500863">
-    <gc:hasName>C 2 H 4</gc:hasName>
-    <rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty"/>
   </owl:Thing>
+  <gc:BasisSet rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_basis_set_parameter_702953.7320023227">
+    <gc:hasBasisSet>6-311+G(d,p)</gc:hasBasisSet>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:BasisSet>
+  <gc:MoleculeProperty rdf:about="http://theworldavatar.com/kb/ontocompchem/c2h4_opt_dft_g09/c2h4_opt_dft_g09.owl#initialization_module_has_molecule_property_702953.7320023227">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasName>C 2 H 4</gc:hasName>
+  </gc:MoleculeProperty>
 </rdf:RDF>

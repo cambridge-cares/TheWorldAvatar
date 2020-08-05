@@ -1,30 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
-  xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
-  xmlns:gc="http://purl.org/gc/"
   xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:gc="http://purl.org/gc/"
+  xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 >
-  <ontocompchem:G09 rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#co2_g1_g09">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#co2_g1_g09">
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
     <ontocompchem:hasInitialization>
-      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#job_module_has_initilization_module_653022.1450151941">
-        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_653022.1450151941"/>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#job_module_has_initilization_module_665542.2040192735">
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_basis_set_parameter_665542.2040192735"/>
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_665542.2040192735"/>
+        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_665542.2040192735"/>
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#InitializationModule"/>
-        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_653022.1450151941"/>
       </owl:Thing>
     </ontocompchem:hasInitialization>
-  </ontocompchem:G09>
+    <gc:isCalculationOn>
+      <ontocompchem:GeometryType rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_geometry_type_07b5a83d-8769-47ea-8b6f-9a13eca40893_665542.2040192735">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <ontocompchem:hasGeometryType>linear</ontocompchem:hasGeometryType>
+      </ontocompchem:GeometryType>
+    </gc:isCalculationOn>
+  </owl:Thing>
   <owl:Ontology rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#">
     <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"/>
   </owl:Ontology>
-  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_653022.1450151941">
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
-    <ontocompchem:hasLevelOfTheory>G1</ontocompchem:hasLevelOfTheory>
-    <rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
-  </owl:Thing>
-  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_653022.1450151941">
+  <gc:MoleculeProperty rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_665542.2040192735">
     <gc:hasName>C 1 O 2</gc:hasName>
-    <rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:MoleculeProperty>
+  <gc:MethodologyFeature rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_665542.2040192735">
+    <ontocompchem:hasLevelOfTheory>G1</ontocompchem:hasLevelOfTheory>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:MethodologyFeature>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_basis_set_parameter_665542.2040192735">
+    <gc:hasBasisSet>G1</gc:hasBasisSet>
+    <rdf:type rdf:resource="http://purl.org/gc/BasisSet"/>
   </owl:Thing>
 </rdf:RDF>

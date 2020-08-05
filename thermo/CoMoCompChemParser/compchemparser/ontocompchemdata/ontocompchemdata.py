@@ -8,6 +8,8 @@ from pip._vendor.six import iteritems
 from rdflib import URIRef, BNode, Literal, Graph, Namespace
 from rdflib.namespace import RDF, RDFS, OWL
 from pathlib import Path
+import random
+import uuid
 import os
 
 
@@ -67,8 +69,8 @@ class OntoCompChemData:
                 #    print("geometry: ", "[x=", atom[0],", y=",atom[1], ", z=",atom[2],"]" )
                 #print()
                 #print("Print all json key and values:")
-                #for (key, value) in iteritems(dict_data):
-                #    print("key: ", key, "value: ", value)
+                for (key, value) in iteritems(dict_data):
+                    print(" - ", key, " : ", value)
                 #print("print i:")
                 #for i in enumerate(self.data):
                 #   print(i[1])
@@ -81,10 +83,7 @@ class OntoCompChemData:
         print("dict_data",dict_data)
             
         empirical_formula = dict_data["Empirical formula"]
-        #empirical_formula_literal = Literal(empirical_formula)
-         
         program_version = dict_data["Program version"]
-      
          
         #print("log file path: " , os.path.abspath(self.log))
         #print("file name with folder path: ", os.path.splitext(self.log))
@@ -93,11 +92,7 @@ class OntoCompChemData:
         #file_name =Path(self.log).stem        
         
         ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + file_name + ".owl#" 
-        
-        print("base uri: ", ontology_base_uri)
-        
-        #ontocompchem_graph = Graph()
-        
+                
         #Namespace definition
         ontocompchem_namespace = Namespace("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")   
         owl_namespace = Namespace("http://www.w3.org/2002/07/owl#")
@@ -109,27 +104,31 @@ class OntoCompChemData:
         ontocompchem_graph.bind("rdf", rdf_namespace)
         ontocompchem_graph.bind("gc", gc_namespace)
         
-        ontocompchem_ontology = URIRef("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")
+        #ontocompchem ontology that is resolvable
+        ontocompchem_ontology = URIRef("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")        
         
-                
-        self.importontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
+        #create main ontocompchem knowledge graph (instance of ontocompchem Tbox)        
+        self.import_ontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
         self.generate_gaussian_instance(program_version, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
         self.generate_empirical_formula(ontocompchem_graph, ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
-        self.generates_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
-                
+        self.generate_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
+        self.generate_basis_set(ontocompchem_graph, ontology_base_uri, gc_namespace, rnd)
+        self.generate_geometry_type(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)        
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
         
+        #serializes into owl file
         ontocompchem_graph.serialize(destination=os.path.splitext(self.log)[0]+'.owl', format='pretty-xml')
 
         
-    def importontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
+    def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
         #import ontocompchem ontology    
         ontocompchem_graph.add((URIRef(ontology_base_uri), RDF.type, OWL.Ontology ))
         ontocompchem_graph.add((URIRef(ontology_base_uri), OWL.imports,ontocompchem_ontology))
     
     def generate_gaussian_instance(self,program_version,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,rnd):
+        
         #Generates instance of calculation based on Gaussian software used. Currently we support G09 and G16
         if program_version.startswith("2009") :
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G09))
@@ -142,6 +141,8 @@ class OntoCompChemData:
             
         
     def generate_empirical_formula(self,ontocompchem_graph,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
+        
+                
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
                   
@@ -159,7 +160,7 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, OWL.Thing))        
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), gc_namespace.hasName, empirical_formula_literal))
           
-    def generates_level_of_theory(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,rnd):
+    def generate_level_of_theory(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,rnd):
         #Generates level of theory
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
@@ -178,6 +179,7 @@ class OntoCompChemData:
          
         level_of_theory_literal = Literal(level_of_theory)          
         
+        #creating graph for level of theory quantity
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd))))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(rnd)), RDF.type, ontocompchem_namespace.LevelOfTheory))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(rnd)), RDF.type, gc_namespace.MethodologyFeature))
@@ -185,7 +187,43 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), ontocompchem_namespace.hasLevelOfTheory, level_of_theory_literal))
         
         
+    def generate_basis_set(self,ontocompchem_graph,ontology_base_uri,gc_namespace,rnd):
         
+        #Generates graph for basis set quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                  
+        basis_set = dict_data["Basis set"]
+        basis_set_literal = Literal(basis_set)
+        
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_" + str(rnd)), RDF.type, gc_namespace.BasisSet))  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd)), gc_namespace.hasBasisSet, basis_set_literal))
+        
+    def generate_geometry_type(self, ontocompchem_graph, ontology_base_uri, ontocompchem_namespace,gc_namespace, file_name, rnd):
+        
+        #generate unique string
+        uuid_geometry_type = uuid.uuid4()
+        
+        #Generates graph for geometry type quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                  
+        geometry_type= dict_data["Geometry type"]
+        geometry_type_literal = Literal(geometry_type)
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.GeometryType))  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), ontocompchem_namespace.hasGeometryType,geometry_type_literal))
+        
+        
+        
+        
+
+            
     
                  
         
