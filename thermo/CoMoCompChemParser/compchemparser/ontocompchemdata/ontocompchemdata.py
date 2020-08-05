@@ -6,11 +6,12 @@ from pip._vendor.six import iteritems
 
 #Added by Nenad Krdzavac
 from rdflib import URIRef, BNode, Literal, Graph, Namespace
-from rdflib.namespace import RDF, RDFS, OWL
+from rdflib.namespace import RDF, RDFS, OWL, XSD
 from pathlib import Path
 import random
 import uuid
 import os
+import decimal
 
 
 # main class for parsed data
@@ -69,18 +70,23 @@ class OntoCompChemData:
                 #    print("geometry: ", "[x=", atom[0],", y=",atom[1], ", z=",atom[2],"]" )
                 #print()
                 #print("Print all json key and values:")
-                for (key, value) in iteritems(dict_data):
-                    print(" - ", key, " : ", value)
+                #for (key, value) in iteritems(dict_data):
+                #    print(" - ", key, " : ", value)
                 #print("print i:")
                 #for i in enumerate(self.data):
                 #   print(i[1])
+                #frequency_string = " "
+                #for fr in dict_data["Frequencies"]:
+                #    frequency_string = frequency_string +" " + str(decimal.Decimal(fr))
+                
+                #print("frequencies: ", frequency_string  )
         
     def outputowl(self,ontocompchem_graph, file_name, rnd):
         print("output owl")
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
             
-        print("dict_data",dict_data)
+        #print("dict_data",dict_data)
             
         empirical_formula = dict_data["Empirical formula"]
         program_version = dict_data["Program version"]
@@ -114,6 +120,7 @@ class OntoCompChemData:
         self.generate_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
         self.generate_basis_set(ontocompchem_graph, ontology_base_uri, gc_namespace, rnd)
         self.generate_geometry_type(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)        
+        self.generate_frequencies(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -168,7 +175,7 @@ class OntoCompChemData:
         method =  dict_data["Method"]
         basis_set = dict_data["Basis set"]
         
-        print("method: ", method, " , basis set: " , basis_set)
+        #print("method: ", method, " , basis set: " , basis_set)
         
         #if method and basis set are equal then level of theory has value equal to one of them. If method and basis set are different as strings, then level of theory has value as a string that contains both method
         # and basis set separated by "/" character. Explanation given by Angiras Menon (am2145@cam.ac.uk)
@@ -186,7 +193,6 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), RDF.type, OWL.Thing))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), ontocompchem_namespace.hasLevelOfTheory, level_of_theory_literal))
         
-        
     def generate_basis_set(self,ontocompchem_graph,ontology_base_uri,gc_namespace,rnd):
         
         #Generates graph for basis set quantity
@@ -196,16 +202,15 @@ class OntoCompChemData:
         basis_set = dict_data["Basis set"]
         basis_set_literal = Literal(basis_set)
         
-        
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd))))
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_" + str(rnd)), RDF.type, gc_namespace.BasisSet))  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_" + str(rnd)), RDF.type, gc_namespace.BasisSet))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd)), RDF.type, OWL.Thing))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd)), gc_namespace.hasBasisSet, basis_set_literal))
         
     def generate_geometry_type(self, ontocompchem_graph, ontology_base_uri, ontocompchem_namespace,gc_namespace, file_name, rnd):
         
         #generate unique string
-        uuid_geometry_type = uuid.uuid4()
+        uuid_geometry_type = uuid.uuid3(uuid.NAMESPACE_DNS,"geometry.type")
         
         #Generates graph for geometry type quantity
         for i, json_dat in enumerate(self.data):
@@ -215,11 +220,50 @@ class OntoCompChemData:
         geometry_type_literal = Literal(geometry_type)
         
         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd))))
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.GeometryType))  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.GeometryType))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, OWL.Thing))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), ontocompchem_namespace.hasGeometryType,geometry_type_literal))
+    
+    def generate_frequencies(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,file_name,rnd):
         
+        #generate unique string
+        uuid_frequency = uuid.uuid3(uuid.NAMESPACE_DNS,"frequency")
         
+        #Generates graph for frequencies quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                
+        frequency_string = "  "
+        for fr in dict_data["Frequencies"]:
+            frequency_string = str(str(round(decimal.Decimal(fr),4))) + " " + frequency_string
+        
+        #removes empty space at the end of string
+        frequency_string = frequency_string.rstrip() 
+               
+        frequency_string_literal = Literal(frequency_string,  datatype=XSD.string)
+               
+        frequencies_size = dict_data["Frequencies number"]
+        frequencies_size_literal = Literal(frequencies_size,  datatype=XSD.string)
+        
+        frequencies_unit = dict_data["Frequencies unit"]
+        
+        #creates graph for frequencies quantity that includes frequencies value, unit and size.
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, gc_namespace.VibrationalAnalysis))  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasResult, URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, gc_namespace.Frequency))  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, OWL.Thing))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), ontocompchem_namespace.hasFrequencies, frequency_string_literal))
+        
+        #creates unit iri gc:cm-1
+        if frequencies_unit == "cm^-1":
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasUnit, URIRef(gc_namespace + "cm-1")))
+
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasVibrationCount, frequencies_size_literal))
+        
+            
         
         
 
