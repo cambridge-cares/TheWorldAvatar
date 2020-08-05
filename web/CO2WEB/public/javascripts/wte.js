@@ -1,5 +1,5 @@
 scenario = "testFW";
-prefix = "http://localhost:8080";
+prefix = "http://www.jparksimulator.com";
 markers = []
 var infowindow;
 var listOfIRIs = [];
