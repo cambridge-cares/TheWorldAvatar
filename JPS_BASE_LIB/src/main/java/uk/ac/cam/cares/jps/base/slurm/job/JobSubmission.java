@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,7 +49,6 @@ public class JobSubmission{
 	private String workspaceName;
 	private String workspaceParentPath;
 	boolean isAuthenticated;
-	private File jobSpace;
 	
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
@@ -146,10 +146,16 @@ public class JobSubmission{
 	 */
 	public JobSubmission(String agentClass, String hpcAddress){
 		this.agentClass = agentClass;
-		this.workspaceName = workspaceName;
 		this.hpcAddress = hpcAddress;
 		this.workspaceDirectory = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), agentClass);
 		this.workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
+		// initialising classes to read properties from the dft-agent.properites file
+        if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+		}
 	}
 	
 	/**
@@ -213,11 +219,10 @@ public class JobSubmission{
 	 */
 	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
-		File workspaceFolder = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), getAgentClass());
-		if(workspaceFolder == null){
+		if(workspaceDirectory == null){
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
-			return setUpSlurmJob(workspace, workspaceFolder, jsonString, slurmScript, input, timeStamp);
+			return setUpSlurmJob(workspace, workspaceDirectory, jsonString, slurmScript, input, timeStamp);
 		}
 	}
 	
@@ -235,11 +240,10 @@ public class JobSubmission{
 	 */
 	private String setUpJobOnAgentMachine(String jsonString, File slurmScript, File input, File executable, long timeStamp) throws IOException, SlurmJobException{
 		Workspace workspace = new Workspace();
-		File workspaceFolder = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), getAgentClass());
-		if(workspaceFolder == null){
+		if(workspaceDirectory == null){
 			return Status.JOB_SETUP_ERROR.getName();
 		}else{
-			return setUpSlurmJob(workspace, workspaceFolder, jsonString, slurmScript, input, executable, timeStamp);
+			return setUpSlurmJob(workspace, workspaceDirectory, jsonString, slurmScript, input, executable, timeStamp);
 		}
 	}
 	
@@ -414,10 +418,7 @@ public class JobSubmission{
 		JSONObject obj = new JSONObject(input);  
 		String formatAccepts = obj.optString("format"); // json
 		if(formatAccepts!=null && formatAccepts.toLowerCase().contains("json")){
-			Workspace workspace = new Workspace();
-			jobSpace = workspace.getWorkspace(getWorkspaceParentPath(),
-						getAgentClass());
-			JobStatistics jobStatistics = new JobStatistics(jobSpace);
+			JobStatistics jobStatistics = new JobStatistics(workspaceDirectory);
 			obj = new JSONObject();
 			obj.put("Number of jobs currently running", jobStatistics.getJobsRunning());
 			obj.put("Number of jobs successfully completed", jobStatistics.getJobsCompleted());
@@ -443,10 +444,7 @@ public class JobSubmission{
 	 * @throws IOException
 	 */
 	public String getStatistics() throws IOException{
-		Workspace workspace = new Workspace();
-		jobSpace = workspace.getWorkspace(getWorkspaceParentPath(),
-					getAgentClass());
-		JobStatistics jobStatistics = new JobStatistics(jobSpace);
+		JobStatistics jobStatistics = new JobStatistics(workspaceDirectory);
 		String statistics = jobStatistics.getHTMLHeader();
 		statistics = statistics + "<body>";
 		statistics = statistics.concat(jobStatistics.getBodydivStart());
@@ -478,17 +476,7 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() throws SlurmJobException{
-		// initialising classes to read properties from the dft-agent.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
 		scheduledIteration++;
-		Workspace workspace = new Workspace();
-		jobSpace = workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(),
-					getAgentClass());
 		try {
 			if (session == null || scheduledIteration%10==0) {
 				if(session!=null && session.isConnected()){
@@ -502,8 +490,8 @@ public class JobSubmission{
 				session.connect();
 				scheduledIteration = 0;
 			}
-			if(jobSpace.isDirectory()){
-				File[] jobFolders = jobSpace.listFiles();
+			if(workspaceDirectory.isDirectory()){
+				File[] jobFolders = workspaceDirectory.listFiles();
 				updateRunningJobSet(jobFolders, jobsRunning);
 				for(File jobFolder: jobFolders){
 					if(!Utils.isJobCompleted(jobFolder)){
@@ -699,14 +687,14 @@ public class JobSubmission{
 	
 	private String createJobFolder(String job) throws JSchException, IOException{
 		// Creates the "mkdir" (make directory) command to create the workspace/jobspace directory.
-		String command = "mkdir /home/".concat(username).concat("/").concat(jobSpace.getName());
+		String command = "mkdir /home/".concat(username).concat("/").concat(workspaceDirectory.getName());
 		// Executes the command to create the workspace/jobspace directory.
 		executeCommand(command);
 		// Creates the command to create the job directory.
-		command = "mkdir /home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
+		command = "mkdir /home/".concat(username).concat("/").concat(workspaceDirectory.getName()).concat("/").concat(job);
 		// Executes the command for creating the job directory.
 		executeCommand(command);
-		return "/home/".concat(username).concat("/").concat(jobSpace.getName()).concat("/").concat(job);
+		return "/home/".concat(username).concat("/").concat(workspaceDirectory.getName()).concat("/").concat(job);
 	}
 	
 	/**
@@ -740,12 +728,12 @@ public class JobSubmission{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
 				if(slurmJobProperty.getOutputFileExtension().trim().toLowerCase().equals(".log")){
-					downloadFile(Utils.getLogFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, jobSpace, runningJob, Status.EXTENSION_LOG_FILE.getName()));
-					updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, jobSpace, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+					downloadFile(Utils.getLogFilePathOnHPC(runningJob, getUsername(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+					updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
 				}else{
-					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, jobSpace, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
+					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, getUsername(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
 				}
-				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, getUsername(), jobSpace, getHpcAddress()));
+				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, getUsername(), workspaceDirectory, getHpcAddress()));
 				return true;
 			}
 		}
