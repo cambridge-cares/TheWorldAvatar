@@ -78,11 +78,13 @@ class OntoCompChemData:
         owl_namespace = Namespace("http://www.w3.org/2002/07/owl#")
         rdf_namespace= Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
         gc_namespace=Namespace("http://purl.org/gc/")
+        unit_namespace=Namespace("http://data.nasa.gov/qudt/owl/unit#")
         
         ontocompchem_graph.bind("ontocompchem",ontocompchem_namespace)
         ontocompchem_graph.bind("owl",owl_namespace)
         ontocompchem_graph.bind("rdf", rdf_namespace)
         ontocompchem_graph.bind("gc", gc_namespace)
+        ontocompchem_graph.bind("unit", unit_namespace)
         
         #ontocompchem ontology that is resolvable
         ontocompchem_ontology = URIRef("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")        
@@ -98,15 +100,13 @@ class OntoCompChemData:
         self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         self.generate_formal_charge(ontocompchem_graph, gc_namespace, ontology_base_uri, file_name, rnd)
-        self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-       
-        
-        
+        self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd) 
+        self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
         
-        #serializes into owl file
+        #serialize generated graph into owl file
         ontocompchem_graph.serialize(destination=os.path.splitext(self.log)[0]+'.owl', format='pretty-xml')
 
         
@@ -238,7 +238,7 @@ class OntoCompChemData:
         
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), ontocompchem_namespace.hasFrequencies, frequency_string_literal))
         
-        #creates iri for unit (gc:cm-1)
+        #creates iri for unit cm^-1 (gc:cm-1)
         if frequencies_unit == "cm^-1":
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasUnit, URIRef(gc_namespace + "cm-1")))
 
@@ -326,11 +326,46 @@ class OntoCompChemData:
         
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasProgram, program_name_literal))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasProgramVersion, program_version_literal))
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasRunDate, run_date_literal))
-                  
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasRunDate, run_date_literal))                  
     
-                 
+              
+    def generate_rotational_constants(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,unit_namespace,ontology_base_uri,file_name,rnd):
+        print("rotational constant")
         
+        #generates unique string
+        uuid_rotational_constants = uuid.uuid3(uuid.NAMESPACE_DNS,"rotaional.constants")
+        
+        #Generates graph for rotational constants quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                
+        rotational_constants_string = "  "
+        for rc in dict_data["Rotational constants"]:
+            rotational_constants_string = str(str(round(decimal.Decimal(rc),8))) + " " + rotational_constants_string
+        
+        #removes empty space at the end of string
+        rotational_constants_string = rotational_constants_string.rstrip() 
+               
+        rotational_constants_string_literal = Literal(rotational_constants_string,  datatype=XSD.string)
+               
+        rotational_constants_size = dict_data["Rotational constants number"]
+        rotational_constants_size_literal = Literal(rotational_constants_size,  datatype=XSD.string)
+        
+        rotational_constants_unit = dict_data["Rotational constants unit"]
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn,URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), RDF.type,ontocompchem_namespace.RotationalConstants))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), RDF.type, OWL.Thing))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), ontocompchem_namespace.hasRotationalConstants,rotational_constants_string_literal))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), ontocompchem_namespace.hasRotationalConstantsCount,rotational_constants_size_literal))
+        
+        if str(rotational_constants_unit) == "GHZ":
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), gc_namespace.hasUnit,URIRef(unit_namespace.GigaHertz)))
+    
+        
+        
+            
             
         
         
