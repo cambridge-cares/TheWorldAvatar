@@ -337,12 +337,9 @@ public class WeatherAgentTest extends TestCase {
 		WeatherAgent wa = new WeatherAgent();
 		Method validateInput = wa.getClass().getDeclaredMethod("validateInput",JSONObject.class);
 		validateInput.setAccessible(true);
-
-//		Empty input
-		JSONObject jo = new JSONObject();
-		assertFalse(checkInput(wa,validateInput,jo));
-
+		
 //		Create a valid input that should pass the test
+		JSONObject jo = new JSONObject();
 		JSONObject scope = new JSONObject();
 		JSONObject low = new JSONObject();
 		JSONObject up = new JSONObject();
@@ -367,10 +364,9 @@ public class WeatherAgentTest extends TestCase {
 		
 		jo.put(keyRegion,scope);
 		jo.put(keyCity,cityiri);
-
 		assertTrue(checkInput(wa,validateInput,jo));
 		
-//		Now each key in the input is toggled to empty and to the wrong type to trigger an exception
+//		Now each key in the input is removed, toggled to empty and to the wrong type to trigger an exception
 //		Begin with the region key
 		jo.remove(keyRegion);
 		assertFalse(checkInput(wa,validateInput,jo));
