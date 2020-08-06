@@ -281,6 +281,7 @@ async function completeUpdate(callback){
 function runWTESimulation(){
     var noOfCluster = document.getElementById("noOfCluster").value;
     if (noOfCluster == ''){
+        document.getElementById("noOfCluster").value = 30;
         noOfCluster = "30"; 
     }
     var para = {"wastenetwork":wastenetwork, "n_cluster": noOfCluster};
