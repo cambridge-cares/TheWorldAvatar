@@ -62,7 +62,11 @@
   })(jQuery);
 
 
+  
+
   function ask_question() {
+	  
+ 	  
     document.getElementById('search-icon').style.display = 'none';
     document.getElementById('search-spinner').style.display = 'block';
 
@@ -91,29 +95,29 @@ function process_json_result(result){
 
   result = JSON.parse(result)
 
-  if ('results' in result){
+
+  if ('results' in result){  
     bindings = result.results.bindings;
     if (bindings.length == 0){
         return null
     }else
-    {
+    
+	{
         variables = result.head.vars
         table = []
+		index_counter = 0
         bindings.forEach(function(v){
             let row = []
-            variables.forEach(function(k){
-                if(v[k]){
-                value = v[k].value;
-                row.push(value)
-                }
-                else{
-                  variables = removeItemAll(variables)
-                }
-
-            })
-            table.push(row)
+			let row_object = {}
+			index_counter++
+            row_object['result_id'] = index_counter.toString()
+			row_object['result_name'] = v['oLabel']['value']
+			row_object['result_value'] = v['v']['value']
+            table.push(row_object)
         })
-        return [variables, table]
+		
+		console.log('table', table)
+        return table
     }
   }else{
   // get a list of variables, which is the keys
@@ -124,7 +128,7 @@ function process_json_result(result){
       row = Object.values(v)
       table.push(row)
   })
-  return [variables, table]
+  return table
   }
 }
 
@@ -190,6 +194,11 @@ function drawTable(result_array) {
 }
 
 function displayResults() {
+	
+      data = '{"head": {"vars": ["oLabel", "v", "value", "unitLabel"]},"results": {"bindings": [{"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "79"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "147"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "methanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "173"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}]}}'
+ 
+  process_json_result(data)
+	
   document.getElementById('search-icon').style.display = 'none';
   document.getElementById('search-spinner').style.display = 'block';
 
