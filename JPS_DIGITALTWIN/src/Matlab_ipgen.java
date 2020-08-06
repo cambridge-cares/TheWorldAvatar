@@ -1,5 +1,30 @@
 import java.util.List;
 
+import org.apache.jena.rdf.model.RDFNode;
+import org.apache.jena.sparql.engine.binding.Binding;
+
+import java.io.File;  // Import the File class
+import java.io.IOException;  // Import the IOException class to handle errors
+import java.io.FileWriter; 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.PrintStream;
+import java.net.URI;
+import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
+import java.util.List;
+
+import com.hp.hpl.jena.ontology.OntModel;
+import com.hp.hpl.jena.ontology.OntModelSpec;
+import com.hp.hpl.jena.query.*;
+import com.hp.hpl.jena.rdf.model.Model;
+import com.hp.hpl.jena.rdf.model.ModelFactory;
+
+import com.hp.hpl.jena.rdf.model.impl.ResourceImpl;
+
 //import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 //import uk.ac.cam.cares.jps.base.query.QueryBroker;
 //import uk.ac.cam.cares.jps.base.util.MatrixConverter;
@@ -9,72 +34,82 @@ import java.util.List;
 
 public class Matlab_ipgen {
 	
-public static void main (String[] args) {
-		
-	String lotiri = "http://localhost:8080/kb/sgp/singapore/district/building/user/BO-001.owl";
-	
-	String baseURL = "/Users/gourab/Eclipse-Workspace/Output/";
-	
-	
-	Matlab_ipgen main1 = new Matlab_ipgen();
-	main1.prepareCSVLandlot(lotiri, baseURL);
-	
-	}
+	public static void main(String[] args) {
+		try {
+		      File myObj = new File("filename.txt");
+		      if (myObj.createNewFile()) {
+		        System.out.println("File created: " + myObj.getName());
+		      } else {
+		        System.out.println("File already exists.");
+		      }
+		    } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		    }
+    
 
-    public void prepareCSVLandlot(String lotiri, String baseUrl) {
-
-        /* String lotsInfo = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontoland/OntoLand.owl#> "
-                + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
-                + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/upper_level/technical_system.owl#> "
-                + "PREFIX j4:<http://www.theworldavatar.com/ontology/meta_model/topology/topology.owl#> "
-                + "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/geometry/geometry.owl#> "
-                + "PREFIX j6:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_behavior/behavior.owl#> "
-                + "PREFIX j7:<http://www.theworldavatar.com/ontology/ontocape/supporting_concepts/space_and_time/space_and_time_extended.owl#> "
-                + "PREFIX j8:<http://www.theworldavatar.com/ontology/ontocape/material/phase_system/phase_system.owl#> "
-                + "SELECT ?entity ?xvalue ?yvalue ?areavalue ?distancevalue "
-
-                + "WHERE {?entity  a  j1:Landlot  ."
-                + "?entity   j5:hasSurfaceGeometry ?sur ."
-                + "?sur   j5:has_area ?surarea ."
-                + "?surarea   j2:hasValue ?vsurarea ."
-                + "?vsurarea   j2:numericalValue ?areavalue ."
-
-                + "?entity   j7:hasGISCoordinateSystem ?coorsys ."
-                + "?coorsys   j7:hasProjectedCoordinate_x ?x ."
-                + "?x   j2:hasValue ?xval ."
-                + "?xval   j2:numericalValue ?xvalue ."
-                + "?coorsys   j7:hasProjectedCoordinate_y ?y ."
-                + "?y   j2:hasValue ?yval ."
-                + "?yval   j2:numericalValue ?yvalue ."
-
-                + "?entity   j1:hasDistanceToClosestWaterSources ?distance ."
-                + "?distance   j2:hasValue ?distval ."
-                + "?distval   j2:numericalValue ?distancevalue ."
-
-                + "}";*/
+      
+    	String filePath = "/Users/gourab/Downloads/EP_001.owl";
     	
-    	String lotsInfo = "SELECT ?s WHERE { ?s ?p ?o . } ;";
+    	OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+    	
 
-    	System.out.println(lotsInfo);
-//        QueryBroker broker = new QueryBroker();
 
-//        String result = broker.queryFile(lotiri, lotsInfo);
-//    	String[] keys = {"entity", "yvalue", "xvalue", "areavalue", "distancevalue"};
-//        List<String[]> resultList = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-        
-//        String power_output = MatrixConverter.fromArraytoCsv(resultList);
-//        System.out.println(power_output);
+		try {
+		    File file = new File(filePath);
+		    FileInputStream reader = new FileInputStream(file);
+		    model.read(reader,null);     //load the ontology model
+		} catch (Exception e) {
+		    e.printStackTrace();
+		}
+    	
+    	String sparqlQuery = "SELECT ?xap "
+    			+ "WHERE {"
+//    			+ "?s ?p ?o . "
+//    			+ " ?x a <http://www.theworldavatar.com/ontology/ontopowsys/PowSysRealization.owl#ElectricalPump> . "
+    			+ " ?xap a <http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#MaximumActivePower> . "
+//    			+ " ?vxap a <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#ScalarValue> .  "
+//    			+ " ?x <http://www.theworldavatar.com/ontology/ontopowsys/PowSysBehavior.owl#hasActivePowerAbsorbed> ?xap . "
+//    			+ " ?xap <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#hasValue> ?vxap . "
+//    			+ " ?vxap <http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#numericValue> ?aep . "
+    			+ "}";
+//   	System.out.println(sparqlQuery);
+//    	System.err.println(sparqlQuery);
+    	
+    	Query query = QueryFactory.create(sparqlQuery);
+    
+    	QueryExecution qe = QueryExecutionFactory.create(query, model);
+    	ResultSet results = qe.execSelect();
+    	
+    	while (results.hasNext()) {
+//    		System.out.println(results.next().getResource("x"));
+    		System.out.println(results.next().getResource("xap"));
+    	}
+    	
+    	qe.close();
+    	
+    	
+//    	for ( ; results.hasNext() ; )
+//        {
+//          QuerySolution soln = results.nextSolution() ;
+//          RDFNode x = (RDFNode) soln.get("s") ;       // Get a result variable by name.
+//          System.out.println(x.toString());
+//          Resource r = soln.getResource("VarR") ; // Get a result variable - must be a resource
+//          Literal l = soln.getLiteral("VarL") ;   // Get a result variable - must be a literal
+//        }
+		//ResultSetFormatter.out(System.out, results, query);			
+//		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();	
+//		ResultSetFormatter.outputAsCSV(byteArrayOutputStream,results);
+//		String s=byteArrayOutputStream.toString();
+//		System.out.println(s);
+		//List se=Arrays.asList(s.split("\\s*,\\s*|http"));
+		//System.out.println(se);
+//		String[] sa= s.split("\\r?\\n");
+		//System.out.println(Arrays.toString(sa[1]));
+//		System.out.println(sa[1]);
+    	
+    				
+	}	
+    	
 
-       // logger.info("number of queried lot entities = " + resultList.size());
-
-       /* IriMapper mapper = new IriMapper();
-        for (int i = 0; i < resultList.size(); i++) {
-            String[] current = resultList.get(i);
-            String id = "s" + (i + 1);
-            mapper.add(current[0], id, "lot");
-            current[0] = id;
-        }
-        */
-
-    }
 }
