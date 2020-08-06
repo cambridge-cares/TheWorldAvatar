@@ -1,53 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF
-  xmlns:owl="http://www.w3.org/2002/07/owl#"
-  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
   xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
   xmlns:gc="http://purl.org/gc/"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
 >
-  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#co2_g1_g09">
+  <ontocompchem:G09 rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#co2_g1_g09">
     <ontocompchem:hasInitialization>
-      <ontocompchem:InitializationModule rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#job_module_has_initilization_module_355283.98542476457">
-        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_basis_set_parameter_355283.98542476457"/>
-        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_355283.98542476457"/>
+      <ontocompchem:InitializationModule rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#job_module_has_initilization_module_150643.48339439096">
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_355283.98542476457"/>
+        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_150643.48339439096"/>
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_150643.48339439096"/>
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_basis_set_parameter_150643.48339439096"/>
       </ontocompchem:InitializationModule>
     </ontocompchem:hasInitialization>
     <gc:isCalculationOn>
-      <gc:VibrationalAnalysis rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_vibrations_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_355283.98542476457">
-        <gc:hasResult rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_vibrations_frequencies_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_355283.98542476457"/>
-        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-      </gc:VibrationalAnalysis>
-    </gc:isCalculationOn>
-    <gc:isCalculationOn>
-      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_geometry_type_fdaeecd5-2035-3a84-8874-7161078bd0c0_355283.98542476457">
-        <ontocompchem:hasGeometryType>linear</ontocompchem:hasGeometryType>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_geometry_type_fdaeecd5-2035-3a84-8874-7161078bd0c0_150643.48339439096">
         <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GeometryType"/>
+        <ontocompchem:hasGeometryType>linear</ontocompchem:hasGeometryType>
       </owl:Thing>
     </gc:isCalculationOn>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
-  </owl:Thing>
+    <gc:isCalculationOn>
+      <ontocompchem:RotationalSymmetry rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_rotational_symmetry_ef2af78c-70f9-394e-8e62-f4a5d32e719e_150643.48339439096">
+        <ontocompchem:hasRotationalSymmetryNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</ontocompchem:hasRotationalSymmetryNumber>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </ontocompchem:RotationalSymmetry>
+    </gc:isCalculationOn>
+    <gc:isCalculationOn>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_geometry_optimization_150643.48339439096">
+        <gc:hasMolecule rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_has_molecule__150643.48339439096"/>
+        <rdf:type rdf:resource="http://purl.org/gc/GeometryOptimization"/>
+      </owl:Thing>
+    </gc:isCalculationOn>
+    <gc:isCalculationOn>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_vibrations_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_150643.48339439096">
+        <gc:hasResult rdf:resource="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_vibrations_frequencies_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_150643.48339439096"/>
+        <rdf:type rdf:resource="http://purl.org/gc/VibrationalAnalysis"/>
+      </owl:Thing>
+    </gc:isCalculationOn>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </ontocompchem:G09>
   <owl:Ontology rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#">
     <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"/>
   </owl:Ontology>
-  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_vibrations_frequencies_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_355283.98542476457">
+  <gc:BasisSet rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_basis_set_parameter_150643.48339439096">
+    <gc:hasBasisSet>G1</gc:hasBasisSet>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:BasisSet>
+  <gc:Frequency rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_vibrations_frequencies_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_150643.48339439096">
     <gc:hasVibrationCount rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4</gc:hasVibrationCount>
-    <ontocompchem:hasFrequencies rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2584.9202 1518.4399 745.8403 745.8403</ontocompchem:hasFrequencies>
     <gc:hasUnit rdf:resource="http://purl.org/gc/cm-1"/>
-    <rdf:type rdf:resource="http://purl.org/gc/Frequency"/>
-  </owl:Thing>
-  <gc:MethodologyFeature rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_355283.98542476457">
+    <ontocompchem:hasFrequencies rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2584.9202 1518.4399 745.8403 745.8403</ontocompchem:hasFrequencies>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:Frequency>
+  <gc:MoleculeProperty rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_150643.48339439096">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasName>C 1 O 2</gc:hasName>
+  </gc:MoleculeProperty>
+  <ontocompchem:LevelOfTheory rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_level_of_theory_parameter_150643.48339439096">
+    <rdf:type rdf:resource="http://purl.org/gc/MethodologyFeature"/>
     <ontocompchem:hasLevelOfTheory>G1</ontocompchem:hasLevelOfTheory>
     <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
-  </gc:MethodologyFeature>
-  <gc:BasisSet rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_basis_set_parameter_355283.98542476457">
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-    <gc:hasBasisSet>G1</gc:hasBasisSet>
-  </gc:BasisSet>
-  <gc:MoleculeProperty rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#initialization_module_has_molecule_property_355283.98542476457">
-    <gc:hasName>C 1 O 2</gc:hasName>
-    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
-  </gc:MoleculeProperty>
+  </ontocompchem:LevelOfTheory>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.owl#finalization_module_has_molecule__150643.48339439096">
+    <ontocompchem:hasSpinMultiplicity rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</ontocompchem:hasSpinMultiplicity>
+    <rdf:type rdf:resource="http://purl.org/gc/Molecule"/>
+  </owl:Thing>
 </rdf:RDF>

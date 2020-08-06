@@ -70,8 +70,8 @@ class OntoCompChemData:
                 #    print("geometry: ", "[x=", atom[0],", y=",atom[1], ", z=",atom[2],"]" )
                 #print()
                 #print("Print all json key and values:")
-                #for (key, value) in iteritems(dict_data):
-                #    print(" - ", key, " : ", value)
+                for (key, value) in iteritems(dict_data):
+                    print(" - ", key, " : ", value)
                 #print("print i:")
                 #for i in enumerate(self.data):
                 #   print(i[1])
@@ -121,6 +121,8 @@ class OntoCompChemData:
         self.generate_basis_set(ontocompchem_graph, ontology_base_uri, gc_namespace, rnd)
         self.generate_geometry_type(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)        
         self.generate_frequencies(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
+        self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -257,14 +259,53 @@ class OntoCompChemData:
         
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), ontocompchem_namespace.hasFrequencies, frequency_string_literal))
         
-        #creates unit iri gc:cm-1
+        #creates iri for unit (gc:cm-1)
         if frequencies_unit == "cm^-1":
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasUnit, URIRef(gc_namespace + "cm-1")))
 
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasVibrationCount, frequencies_size_literal))
         
             
+    def generate_rotational_symmetry_number(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+        print("rotational symmetry number")
         
+         #generate unique string
+        uuid_rotational_symmetry_number = uuid.uuid3(uuid.NAMESPACE_DNS,"rotaional.symmetry.number")
+           
+        #Generates graph for rotational symmetry quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                  
+        rotational_symmetry_number= dict_data["Rotational symmetry number"]
+        rotational_symmetry_number_literal = Literal(rotational_symmetry_number,datatype=XSD.string)
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, 
+                                URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.RotationalSymmetry))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), 
+                                ontocompchem_namespace.hasRotationalSymmetryNumber,rotational_symmetry_number_literal))
+        
+    def generate_spin_multiplicity(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+           
+        #Generates graph for spin multiplicity quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                  
+        spin_multiplicity_number= dict_data["Spin multiplicity"]
+        spin_multiplicity_number_literal = Literal(spin_multiplicity_number,datatype=XSD.string)
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, 
+                                URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), gc_namespace.hasMolecule,
+                                URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd))))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd)), RDF.type, gc_namespace.Molecule))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd)), RDF.type, OWL.Thing))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
         
 
             
