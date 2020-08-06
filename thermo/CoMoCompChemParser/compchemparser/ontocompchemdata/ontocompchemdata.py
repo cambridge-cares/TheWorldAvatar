@@ -123,6 +123,7 @@ class OntoCompChemData:
         self.generate_frequencies(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
         self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_formal_charge(ontocompchem_graph, gc_namespace, ontology_base_uri, file_name, rnd)
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -266,8 +267,7 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasVibrationCount, frequencies_size_literal))
         
             
-    def generate_rotational_symmetry_number(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
-        print("rotational symmetry number")
+    def generate_rotational_symmetry_number(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):        
         
          #generate unique string
         uuid_rotational_symmetry_number = uuid.uuid3(uuid.NAMESPACE_DNS,"rotaional.symmetry.number")
@@ -295,20 +295,47 @@ class OntoCompChemData:
         spin_multiplicity_number= dict_data["Spin multiplicity"]
         spin_multiplicity_number_literal = Literal(spin_multiplicity_number,datatype=XSD.string)
         
-        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, 
-                                URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd))))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, OWL.Thing))
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), gc_namespace.hasMolecule,
-                                URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), gc_namespace.hasMolecule,URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd))))
         
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd)), RDF.type, gc_namespace.Molecule))
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd)), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, gc_namespace.Molecule))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, OWL.Thing))
         
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+"_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
         
 
-            
+    def generate_formal_charge(self, ontocompchem_graph,gc_namespace,ontology_base_uri,file_name,rnd):
+
+        #Generate graph for formal charge quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+        
+        formal_charge_value = dict_data["Formal charge"]
+        formal_charge_unit = dict_data["Formal charge unit"]
+        
+        formal_charge_value_literal = Literal(formal_charge_value)
+        
+        #ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd))))
+        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
+        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, OWL.Thing))
+        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), gc_namespace.hasMolecule, URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd))))
+        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, gc_namespace.Molecule))
+        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, OWL.Thing))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), gc_namespace.hasFormalCharge,URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd))))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), RDF.type, gc_namespace.IntegerValue))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), RDF.type, OWL.Thing))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), gc_namespace.hasValue, formal_charge_value_literal))
+        
+        if str(formal_charge_unit) == "atomic":
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), gc_namespace.hasUnit,URIRef(gc_namespace.atomicUnit)))
+        
+        
+                
     
                  
         
