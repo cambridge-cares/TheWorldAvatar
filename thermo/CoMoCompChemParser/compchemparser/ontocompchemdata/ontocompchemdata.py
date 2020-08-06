@@ -59,43 +59,17 @@ class OntoCompChemData:
             with open(json_name, 'w') as outfile:
                 json.dump(dict_data, outfile, indent = 4)
                 
-                #implemented by Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
-                #print()
-                #print('JSON content: ', dict_data)
-                #print()
-                #print('Atomic masses : ',dict_data["Atomic masses"])
-                #print('Empirical formula : ',dict_data["Empirical formula"])
-                #print('Atom counts: ', dict_data["Atom counts"])
-                #for atom in dict_data["Geometry"]:
-                #    print("geometry: ", "[x=", atom[0],", y=",atom[1], ", z=",atom[2],"]" )
-                #print()
-                #print("Print all json key and values:")
-                for (key, value) in iteritems(dict_data):
+        #printing quantities from json
+        for (key, value) in iteritems(dict_data):
                     print(" - ", key, " : ", value)
-                #print("print i:")
-                #for i in enumerate(self.data):
-                #   print(i[1])
-                #frequency_string = " "
-                #for fr in dict_data["Frequencies"]:
-                #    frequency_string = frequency_string +" " + str(decimal.Decimal(fr))
-                
-                #print("frequencies: ", frequency_string  )
-        
+                        
     def outputowl(self,ontocompchem_graph, file_name, rnd):
         print("output owl")
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
             
-        #print("dict_data",dict_data)
-            
         empirical_formula = dict_data["Empirical formula"]
-        program_version = dict_data["Program version"]
-         
-        #print("log file path: " , os.path.abspath(self.log))
-        #print("file name with folder path: ", os.path.splitext(self.log))
-        #print("online file name: " , Path(self.log).stem)
-        
-        #file_name =Path(self.log).stem        
+        program_version = dict_data["Program version"]       
         
         ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + file_name + ".owl#" 
                 
@@ -124,6 +98,10 @@ class OntoCompChemData:
         self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         self.generate_formal_charge(ontocompchem_graph, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+       
+        
+        
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -306,7 +284,7 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
         
 
-    def generate_formal_charge(self, ontocompchem_graph,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_formal_charge(self,ontocompchem_graph,gc_namespace,ontology_base_uri,file_name,rnd):
 
         #Generate graph for formal charge quantity
         for i, json_dat in enumerate(self.data):
@@ -316,13 +294,6 @@ class OntoCompChemData:
         formal_charge_unit = dict_data["Formal charge unit"]
         
         formal_charge_value_literal = Literal(formal_charge_value)
-        
-        #ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd))))
-        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
-        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, OWL.Thing))
-        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), gc_namespace.hasMolecule, URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd))))
-        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, gc_namespace.Molecule))
-        #ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, OWL.Thing))
         
         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), gc_namespace.hasFormalCharge,URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd))))
         
@@ -335,7 +306,28 @@ class OntoCompChemData:
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), gc_namespace.hasUnit,URIRef(gc_namespace.atomicUnit)))
         
         
-                
+    def generate_program_name_run_date_program_version(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+        
+        #generate graph that contains program name, program version, and run date
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+        
+        program_name = dict_data["Program name"]
+        program_version = dict_data["Program version"]
+        run_date = dict_data["Run date"]
+        
+        program_name_literal = Literal(program_name,datatype=XSD.string)
+        program_version_literal = Literal(program_version,datatype=XSD.string)
+        run_date_literal = Literal(run_date,datatype=XSD.string)
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasEnvironment,URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), RDF.type, gc_namespace.SourcePackage))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), RDF.type, OWL.Thing))
+        
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasProgram, program_name_literal))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasProgramVersion, program_version_literal))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasRunDate, run_date_literal))
+                  
     
                  
         
