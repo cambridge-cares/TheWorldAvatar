@@ -346,75 +346,98 @@ public class WeatherAgentTest extends TestCase {
 		JSONObject scope = new JSONObject();
 		JSONObject low = new JSONObject();
 		JSONObject up = new JSONObject();
-		scope.put("uppercorner", up);
-		scope.put("lowercorner", low);
+		String keyUppercorner = "uppercorner";
+		String keyLowercorner = "lowercorner";
+		String keyUpperx = "upperx";
+		String keyUppery = "uppery";
+		String keyLowerx = "lowerx";
+		String keyLowery = "lowery";
+		String keyRegion = "region";
+		String keyCity = "city";
+		scope.put(keyUppercorner, up);
+		scope.put(keyLowercorner, low);
 		double xmin = Double.valueOf("11552101.832");
 		double xmax = Double.valueOf("11572101.89");
 		double ymin = Double.valueOf("131707.739");
 		double ymax = Double.valueOf("151860.32");
-		up.put("upperx",xmax);
-		up.put("uppery",ymax);
-		low.put("lowerx",xmin);
-		low.put("lowery",ymin);
+		up.put(keyUpperx,xmax);
+		up.put(keyUppery,ymax);
+		low.put(keyLowerx,xmin);
+		low.put(keyLowery,ymin);
 		
-		jo.put("region",scope);
-		jo.put("city",cityiri);
+		jo.put(keyRegion,scope);
+		jo.put(keyCity,cityiri);
 
 		assertTrue(checkInput(wa,validateInput,jo));
 		
 //		Now each key in the input is toggled to empty and to the wrong type to trigger an exception
 //		Begin with the region key
-		jo.put("region","");
+		jo.remove(keyRegion);
 		assertFalse(checkInput(wa,validateInput,jo));
-		jo.put("region","abc");
+		jo.put(keyRegion,"");
 		assertFalse(checkInput(wa,validateInput,jo));
-		jo.put("region",scope);
+		jo.put(keyRegion,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyRegion,scope);
 		assertTrue(checkInput(wa,validateInput,jo));
 		
 //		City IRI. 
-		jo.put("city","");
+		jo.remove(keyCity);
 		assertFalse(checkInput(wa,validateInput,jo));
-		jo.put("city","abc");
+		jo.put(keyCity,"");
 		assertFalse(checkInput(wa,validateInput,jo));
-		jo.put("city",cityiri);
+		jo.put(keyCity,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyCity,cityiri);
 		assertTrue(checkInput(wa,validateInput,jo));
 		
 //		Coordinates
-		up.put("upperx","");
+		up.remove(keyUpperx);
 		assertFalse(checkInput(wa,validateInput,jo));
-		up.put("upperx","abc");
+		up.put(keyUpperx,"");
 		assertFalse(checkInput(wa,validateInput,jo));
-		up.put("upperx",xmax);
+		up.put(keyUpperx,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUpperx,xmax);
 		assertTrue(checkInput(wa,validateInput,jo));
 		
-		up.put("uppery", "");
+		up.remove(keyUppery);
 		assertFalse(checkInput(wa,validateInput,jo));
-		up.put("uppery", "abc");
+		up.put(keyUppery, "");
 		assertFalse(checkInput(wa,validateInput,jo));
-		up.put("uppery", ymax);
+		up.put(keyUppery, "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUppery, ymax);
 		assertTrue(checkInput(wa,validateInput,jo));
 		
-		low.put("lowerx", "");
+		low.remove(keyLowerx);
 		assertFalse(checkInput(wa,validateInput,jo));
-		low.put("lowerx", "abc");
+		low.put(keyLowerx, "");
 		assertFalse(checkInput(wa,validateInput,jo));
-		low.put("lowerx", xmin);
+		low.put(keyLowerx, "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowerx, xmin);
 		assertTrue(checkInput(wa,validateInput,jo));
 		
-		low.put("lowery", "");
+		low.remove(keyLowery);
 		assertFalse(checkInput(wa,validateInput,jo));
-		low.put("lowery", "abc");
+		low.put(keyLowery, "");
 		assertFalse(checkInput(wa,validateInput,jo));
-		low.put("lowery", ymin);
+		low.put(keyLowery, "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowery, ymin);
 		assertTrue(checkInput(wa,validateInput,jo));
 		
 //		Optional srsname
 //		Empty srsname is ok
-		scope.put("srsname","");
+		String keySrsname = "srsname";
+		scope.put(keySrsname,"");
 		assertTrue(checkInput(wa,validateInput,jo));
-		scope.put("srsname","abc");
+		scope.remove(keySrsname);
+		assertTrue(checkInput(wa,validateInput,jo));
+		scope.put(keySrsname,"abc");
 		assertFalse(checkInput(wa,validateInput,jo));
-		scope.put("srsname","EPSG:3857");
+		scope.put(keySrsname,"EPSG:3857");
 		assertTrue(checkInput(wa,validateInput,jo));
 	}
 	
