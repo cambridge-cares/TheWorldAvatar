@@ -191,6 +191,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		List<List<String>> numOfReactionsResults = ontoKinKG.queryNumOfReactions(mechanismIRI);
 		numOfReactions = Integer.parseInt(numOfReactionsResults.get(1).get(0));
 		
+		logger.info("Executable model kineticsSRM is prepared. ");
 		return kineticsSRM;
 	}
 	
@@ -253,6 +254,8 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		modelFiles.addAll(folderAllFiles);
 		modelFiles.add(outputFile);
 		
+		
+		logger.info("Files required by "+modelName+" is prepared. ");
 		return modelFiles;
 	}
 	
@@ -291,7 +294,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		initialFiles.add(initialActiveFile);
 		initialFiles.add(initialPassiveFile);
 		
-		
+		logger.info("Folder /Initial required by "+modelName+" is prepared. ");
 		return initialFiles;
 	}
 	
@@ -329,6 +332,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		allFiles.add(copyMechanismFile(copyOfMechanismFilePath, mechanism));
 		allFiles.add(createInputParamsFile(inputParamsFilePath, expData));
 		
+		logger.info("Folder /All required by "+modelName+" is prepared. ");
 		return allFiles;
 	}
 	
@@ -498,6 +502,8 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 			parameters.add(param);
 		}
 		collectParameters(parameters);
+		
+		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
 	
