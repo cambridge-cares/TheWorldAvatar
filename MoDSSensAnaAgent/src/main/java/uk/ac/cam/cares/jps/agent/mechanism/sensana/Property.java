@@ -1,8 +1,8 @@
-package uk.ac.cam.cares.jps.agent.mechanism.calibration;
+package uk.ac.cam.cares.jps.agent.mechanism.sensana;
 
 /**
  * This enumerated list defines the name of important properties of</br>
- * MoDSAgent. Some example properties are:</br>
+ * MoDSSensAnaAgent. Some example properties are:</br>
  * - the name of the agent class</br>
  * - the name of the workspace folder on the machine where the agent runs</br>
  * - the name of the workspace folder on HPC where MoDS runs</br>

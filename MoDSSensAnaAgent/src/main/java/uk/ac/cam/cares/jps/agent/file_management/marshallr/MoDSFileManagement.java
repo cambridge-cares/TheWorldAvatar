@@ -17,8 +17,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.Utils;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.Utils;
 
 public class MoDSFileManagement extends MoDSMarshaller {
 //	public static RepositoryManager repoManager = new RepositoryManager();
@@ -32,7 +32,7 @@ public class MoDSFileManagement extends MoDSMarshaller {
 	public static List<String> passiveParameters_2 = new ArrayList<>();
 	public static String outputResponse_2 = new String();
 	
-	public static void main(String[] args) throws IOException, MoDSAgentException {
+	public static void main(String[] args) throws IOException, MoDSSensAnaAgentException {
 		
 
 		
@@ -87,7 +87,7 @@ public class MoDSFileManagement extends MoDSMarshaller {
 	}
 	
 	
-	public String getRxnIRIList(File sensAnaResultsFile) throws IOException, MoDSAgentException {
+	public String getRxnIRIList(File sensAnaResultsFile) throws IOException, MoDSSensAnaAgentException {
 		String rxnIRIList = new String();
 		if (sensAnaResultsFile.isFile()) {
 			BufferedReader br = new BufferedReader(new FileReader(sensAnaResultsFile));
@@ -108,7 +108,7 @@ public class MoDSFileManagement extends MoDSMarshaller {
 		return rxnIRIList.substring(1);
 	}
 	
-	public String createMoDSJob(String jsonString, String jobFolderName) throws IOException, MoDSAgentException {
+	public String createMoDSJob(String jsonString, String jobFolderName) throws IOException, MoDSSensAnaAgentException {
 		
 		List<String> ignitionDelayExpIRI = JSonRequestParser.getOntoChemExpIgnitionDelayIRI(jsonString);
 		List<String> flameSpeedExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(jsonString);
@@ -129,7 +129,7 @@ public class MoDSFileManagement extends MoDSMarshaller {
 		return jobFolderPath;
 	}
 	
-	protected void placeMoDSSlurmScript(String jobFolderPath) throws IOException, MoDSAgentException {
+	protected void placeMoDSSlurmScript(String jobFolderPath) throws IOException, MoDSSensAnaAgentException {
 		// TODO
 		File sourceSlurmScript = new File(getClass().getClassLoader().getResource(FILE_MODS_SLURM_SCRIPT).getFile());
 		File modsSlurmScript = new File(jobFolderPath.concat(FRONTSLASH+FILE_MODS_SLURM_SCRIPT));

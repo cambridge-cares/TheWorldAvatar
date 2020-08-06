@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 import uk.ac.cam.cares.jps.agent.http.Request;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 
 public class OntoAgentKG {
 	/**

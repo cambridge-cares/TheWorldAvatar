@@ -28,8 +28,8 @@ import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
@@ -47,7 +47,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI,
-			List<String> reactionIRIList) throws IOException, MoDSAgentException {
+			List<String> reactionIRIList) throws IOException, MoDSSensAnaAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderTemporaryPath);
 		
@@ -129,7 +129,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	}
 
 	@Override
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException {
+	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -166,7 +166,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	}
 
 	@Override
-	public List<String> createFolderInitial(List<String> activeParameters) throws IOException, MoDSAgentException {
+	public List<String> createFolderInitial(List<String> activeParameters) throws IOException, MoDSSensAnaAgentException {
 		// set the passive parameter csv file path
 		File passiveParametersAndOutputsFilePath = new File(folderInitialPath
 				.concat(FRONTSLASH+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_PASSIVE_SUFFIX));
@@ -198,7 +198,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	}
 
 	@Override
-	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSAgentException {
+	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSSensAnaAgentException {
 		// set the mechanism file, element file and lfsSimulation file path
 		File copyOfMechanismFilePath = new File(folderAllPath.concat(FRONTSLASH+FILE_MECHANISM_CANTERA));
 		File elementData = new File(folderAllPath.concat(FRONTSLASH+FILE_MECHANISM_ELEMENT));
@@ -224,7 +224,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	}
 
 	@Override
-	public void setUpMoDS() throws IOException, MoDSAgentException {
+	public void setUpMoDS() throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		// modify algorithms with new output response to update response_param_subtypes
 		updateAlgorithms("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
@@ -416,7 +416,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
-	private String createActiveParametersFile(File activeParameterBaseMechanismFilePath, File mech) throws IOException, MoDSAgentException {
+	private String createActiveParametersFile(File activeParameterBaseMechanismFilePath, File mech) throws IOException, MoDSSensAnaAgentException {
 		// copy the mechanism file to activeParameterBaseMechanismFilePath
 		BufferedReader br = null;
 		BufferedWriter bw = null;
@@ -439,7 +439,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	}
 	
 	private String createPassiveParametersAndOutputsFile(File passiveParametersAndOutputsFilePath, 
-			File expData, List<String> caseNames) throws IOException, MoDSAgentException {
+			File expData, List<String> caseNames) throws IOException, MoDSSensAnaAgentException {
 		BufferedReader br = null;
 		BufferedWriter bw = null;
 		
@@ -470,7 +470,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		return passiveParametersAndOutputsFilePath.getName();
 	}
 	
-	private List<String> generateCanteraMechanismFile(File copyOfMechanismFilePath, File elementData, File mechanism) throws IOException, MoDSAgentException {
+	private List<String> generateCanteraMechanismFile(File copyOfMechanismFilePath, File elementData, File mechanism) throws IOException, MoDSSensAnaAgentException {
 		// create the BufferedReader and BufferedWriter to read and write files
 		BufferedReader br = null;
 		BufferedWriter bw = null;
@@ -519,7 +519,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		return mechanismFiles;
 	}
 	
-	private String createLFSSimulationFile(File lfsSimulationFilePath, File expData) throws IOException, MoDSAgentException {
+	private String createLFSSimulationFile(File lfsSimulationFilePath, File expData) throws IOException, MoDSSensAnaAgentException {
 		// read the first case of experiment
 		String[] headerLine = null;
 		String[] firstData = null;
@@ -563,7 +563,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		return lfsSimulationFilePath.getName();
 	}
 	
-	private void convertCoMoCTMLToCanteraCTML(File comoCTML, File canteraCTML) throws IOException, MoDSAgentException, TransformerException {
+	private void convertCoMoCTMLToCanteraCTML(File comoCTML, File canteraCTML) throws IOException, MoDSSensAnaAgentException, TransformerException {
 		TransformerFactory factory = TransformerFactory.newInstance();
 		Source xslt = new StreamSource(new File(getClass().getClassLoader().getResource(FILE_COMO_CANTERA_CTML).getPath()));
 		Transformer transformer = factory.newTransformer(xslt);

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 
 public interface IModel {
 	/**
@@ -17,10 +17,10 @@ public interface IModel {
 	 * @param reactionIRIList
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) 
-			throws IOException, MoDSAgentException;
+			throws IOException, MoDSSensAnaAgentException;
 	
 	/**
 	 * Form all files required by MoDS to execute the model. 
@@ -29,9 +29,9 @@ public interface IModel {
 	 * @param jobFolderPath
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException;
+	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException;
 	
 	/**
 	 * Create the files used during the 'initial read' when executing the model. 
@@ -43,9 +43,9 @@ public interface IModel {
 	 * @param expFiles
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	public List<String> createFolderInitial(List<String> activeParameters) throws IOException, MoDSAgentException ;
+	public List<String> createFolderInitial(List<String> activeParameters) throws IOException, MoDSSensAnaAgentException ;
 	
 	/**
 	 * Create the files used during the 'working write' when executing the model. 
@@ -57,15 +57,15 @@ public interface IModel {
 	 * @param expFiles
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSAgentException;
+	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSSensAnaAgentException;
 	
 	/**
 	 * Set up all the components of executable in the MoDS input file. 
 	 * 
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	public void setUpMoDS() throws IOException, MoDSAgentException;
+	public void setUpMoDS() throws IOException, MoDSSensAnaAgentException;
 }

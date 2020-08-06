@@ -36,17 +36,17 @@ import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.file_management.mods.MoDS;
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 
 public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	public List<String> caseNameList = new ArrayList<>();
 	private static Logger logger = LoggerFactory.getLogger(MoDSMarshaller.class);
 
-	public static void main(String[] args) throws IOException, MoDSAgentException {
+	public static void main(String[] args) throws IOException, MoDSSensAnaAgentException {
 		
 	}
 	
-	public void initialise(String jobFolderName) throws IOException, MoDSAgentException {
+	public void initialise(String jobFolderName) throws IOException, MoDSSensAnaAgentException {
 		init();
 		
 		// create the job folder 
@@ -99,7 +99,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 
 	@Override
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM();
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
@@ -110,7 +110,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 
 	@Override
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException {
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		ModelCanteraLFS canteraLFS = new ModelCanteraLFS();
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
@@ -121,7 +121,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 
 	@Override
-	public String marshall() throws IOException, MoDSAgentException {
+	public String marshall() throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		ObjectMapper objectMapper = new ObjectMapper();
 		objectMapper.configure(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY, true);
@@ -145,7 +145,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		initMoDSInputs.init();
 	}
 	
-	public void collectAlgorithms(LinkedHashMap<String, LinkedHashMap<String, String>> algorithms) throws IOException, MoDSAgentException {
+	public void collectAlgorithms(LinkedHashMap<String, LinkedHashMap<String, String>> algorithms) throws IOException, MoDSSensAnaAgentException {
 		for (String i : algorithms.keySet()) {
 			String algoJson = new JSONObject().put("name", i)
 					.put("details", collectDetails(algorithms.get(i))).toString();
@@ -154,7 +154,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public void updateAlgorithms(String detailLocation, String newContent) throws IOException, MoDSAgentException {
+	public void updateAlgorithms(String detailLocation, String newContent) throws IOException, MoDSSensAnaAgentException {
 		// TODO
 		JsonNode algoNodes = modsJsonNode.path("algorithms").path("algorithm");
 		for (JsonNode algo : algoNodes) {
@@ -170,7 +170,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public void collectModels(LinkedHashMap<String, LinkedHashMap<String, String>> models) throws IOException, MoDSAgentException {
+	public void collectModels(LinkedHashMap<String, LinkedHashMap<String, String>> models) throws IOException, MoDSSensAnaAgentException {
 		for (String i : models.keySet()) {
 			String modJson = new JSONObject().put("name", i)
 					.put("details", collectDetails(models.get(i))).toString();
@@ -179,7 +179,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public JSONObject collectSimplifiedModels(List<String> models) throws IOException, MoDSAgentException {
+	public JSONObject collectSimplifiedModels(List<String> models) throws IOException, MoDSSensAnaAgentException {
 		JSONObject modelsInJson = new JSONObject();
 		List<JSONObject> modelArray = new ArrayList<>();
 		for (String model : models) {
@@ -190,7 +190,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		return modelsInJson;
 	}
 	
-	public void collectCases(LinkedHashMap<String, List<String>> cases) throws IOException, MoDSAgentException {
+	public void collectCases(LinkedHashMap<String, List<String>> cases) throws IOException, MoDSSensAnaAgentException {
 		for (String i : cases.keySet()) {
 			String caseJson = new JSONObject().put("name", i)
 					.put("models", collectSimplifiedModels(cases.get(i))).toString();
@@ -199,7 +199,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public JSONObject collectSimplifiedCases(List<String> cases) throws IOException, MoDSAgentException {
+	public JSONObject collectSimplifiedCases(List<String> cases) throws IOException, MoDSSensAnaAgentException {
 		JSONObject casesInJson = new JSONObject();
 		List<JSONObject> caseArray = new ArrayList<>();
 		for (String cas : cases) {
@@ -210,7 +210,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		return casesInJson;
 	}
 	
-	public void collectFiles(LinkedHashMap<String, LinkedHashMap<String, String>> files) throws IOException, MoDSAgentException {
+	public void collectFiles(LinkedHashMap<String, LinkedHashMap<String, String>> files) throws IOException, MoDSSensAnaAgentException {
 		for (String i : files.keySet() ) {
 			String fileJson = new JSONObject().put("name", i)
 					.put("details", collectDetails(files.get(i))).toString();
@@ -219,7 +219,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public void collectFunctions(List<Function> functions) throws IOException, MoDSAgentException {
+	public void collectFunctions(List<Function> functions) throws IOException, MoDSSensAnaAgentException {
 		for (Function function : functions) {
 			String funcJson = new JSONObject()
 					.put("name", function.getName())
@@ -230,7 +230,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	public void collectParameters(List<Parameter> parameters) throws IOException, MoDSAgentException {
+	public void collectParameters(List<Parameter> parameters) throws IOException, MoDSSensAnaAgentException {
 		for (Parameter param : parameters) {
 			String paramJson = new JSONObject()
 					.put("type", param.getType())
@@ -249,7 +249,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 	
 	public JSONObject collectParameterFiles(LinkedHashMap<String, LinkedHashMap<String, String>> files) 
-			throws IOException, MoDSAgentException {
+			throws IOException, MoDSSensAnaAgentException {
 		JSONObject filesInJson = new JSONObject();
 		for (String i : files.keySet()) {
 			String tokens[] = i.split(" ");
@@ -259,7 +259,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		return filesInJson;
 	}
 	
-	public JSONObject collectDetails(LinkedHashMap<String, String> details) throws IOException, MoDSAgentException {
+	public JSONObject collectDetails(LinkedHashMap<String, String> details) throws IOException, MoDSSensAnaAgentException {
 		JSONObject detailsInJson = new JSONObject();
 		List<JSONObject> detailArray = new ArrayList<>();
 		for (String i : details.keySet()) {
@@ -270,7 +270,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		return detailsInJson;
 	}
 	
-	private void saveMoDSInputsContent(String filePath) throws MoDSAgentException {
+	private void saveMoDSInputsContent(String filePath) throws MoDSSensAnaAgentException {
 		FileWriterWithEncoding file;
 		try {
 			file = new FileWriterWithEncoding(filePath, "UTF-8");
@@ -288,7 +288,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	private void cleanUp(String filePath) throws IOException, MoDSAgentException {
+	private void cleanUp(String filePath) throws IOException, MoDSSensAnaAgentException {
 		String fileTemp = filePath.replace(".xml", "_temp.xml");
 		String fileOrig = filePath;
 		try {
@@ -310,7 +310,7 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		}
 	}
 	
-	protected void delete(String xmlFileOrig, String xmlFileTemp) throws IOException, MoDSAgentException {
+	protected void delete(String xmlFileOrig, String xmlFileTemp) throws IOException, MoDSSensAnaAgentException {
 		File fileOriginal = new File(xmlFileOrig);
 		if (fileOriginal.delete()) {
 			fileOriginal = new File(xmlFileOrig);
@@ -366,9 +366,9 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	 * 
 	 * @param folderPath
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	public void checkFolderPath(String folderPath) throws IOException, MoDSAgentException {
+	public void checkFolderPath(String folderPath) throws IOException, MoDSSensAnaAgentException {
 		File folder = new File(folderPath);
 		if (!folder.exists()) {
 			folder.mkdir();

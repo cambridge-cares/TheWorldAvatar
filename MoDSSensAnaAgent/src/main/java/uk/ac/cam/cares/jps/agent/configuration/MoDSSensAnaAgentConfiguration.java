@@ -7,7 +7,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 @Configuration
 @ComponentScan
-public class MoDSAgentConfiguration {
+public class MoDSSensAnaAgentConfiguration {
 	
 	@Bean
 	public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {

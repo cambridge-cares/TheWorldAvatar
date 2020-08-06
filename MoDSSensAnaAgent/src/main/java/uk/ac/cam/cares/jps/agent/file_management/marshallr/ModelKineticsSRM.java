@@ -32,8 +32,8 @@ import com.cmclinnovations.ontochem.model.exception.OntoException;
 import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
@@ -70,11 +70,11 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param reactionIRIList
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) 
-			throws IOException, MoDSAgentException {
+			throws IOException, MoDSSensAnaAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderTemporaryPath);
 		
@@ -200,10 +200,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param jobFolderPath
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	@Override
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException {
+	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException {
 		return null;
 	}
 	
@@ -215,9 +215,9 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param ignDelayOption
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	public List<String> formFiles(ExecutableModel exeModel, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
+	public List<String> formFiles(ExecutableModel exeModel, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSSensAnaAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -266,10 +266,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param expFiles
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	@Override
-	public List<String> createFolderInitial(List<String> processedActiveParam) throws IOException, MoDSAgentException {
+	public List<String> createFolderInitial(List<String> processedActiveParam) throws IOException, MoDSSensAnaAgentException {
 		// set the active parameter csv file and passive parameter csv file path
 		File activeParameterFilePath = new File(folderInitialPath
 				.concat(FRONTSLASH+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX));
@@ -306,10 +306,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param expFiles
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	@Override
-	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSAgentException {
+	public List<String> createFolderAll(List<String> processedActiveParam) throws IOException, MoDSSensAnaAgentException {
 		// set the mechanism file and inputParams.xml file path
 		File copyOfMechanismFilePath = new File(folderAllPath.concat(FRONTSLASH+FILE_MECHANISM));
 		File inputParamsFilePath = new File(folderAllPath.concat(FRONTSLASH+FILE_KINETICS_INPUTPARAMS));
@@ -339,10 +339,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * Set up all the components of executable in the MoDS input file. 
 	 * 
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	@Override
-	public void setUpMoDS() throws IOException, MoDSAgentException {
+	public void setUpMoDS() throws IOException, MoDSSensAnaAgentException {
 		// set up algorithms
 		String active_subtype = new String();
 		for (String i : activeParameters.keySet()) {
@@ -545,10 +545,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param caseNames
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	private String createActiveParametersFile(File activeParameterFilePath, List<String> processedActiveParam, File expData, 
-			List<String> caseNames) throws IOException, MoDSAgentException {
+			List<String> caseNames) throws IOException, MoDSSensAnaAgentException {
 		
 		
 		// construct the title of columns
@@ -602,10 +602,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param caseNames
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
 	private String createPassiveParametersAndOutputsFile(File passiveParametersAndOutputsFilePath, File expData, 
-			List<String> caseNames) throws IOException, MoDSAgentException {
+			List<String> caseNames) throws IOException, MoDSSensAnaAgentException {
 		// create the BufferedReader and BufferedWriter to read and write files
 		// add the caseNames to the start of each line of experimental data file
 		BufferedReader br = null;
@@ -645,9 +645,9 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param copyOfMechanism
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	private String copyMechanismFile(File copyOfMechanismFilePath, File mechanism) throws IOException, MoDSAgentException {
+	private String copyMechanismFile(File copyOfMechanismFilePath, File mechanism) throws IOException, MoDSSensAnaAgentException {
 		// create the BufferedReader and BufferedWriter to read and write files
 		BufferedReader br = null;
 		BufferedWriter bw = null;
@@ -677,9 +677,9 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	 * @param mechName
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSSensAnaAgentException
 	 */
-	private String createInputParamsFile(File inputParamsFilePath, File expData) throws IOException, MoDSAgentException {
+	private String createInputParamsFile(File inputParamsFilePath, File expData) throws IOException, MoDSSensAnaAgentException {
 		// read the first case of experiment
 		String[] headerLine = null;
 		String[] firstData = null;

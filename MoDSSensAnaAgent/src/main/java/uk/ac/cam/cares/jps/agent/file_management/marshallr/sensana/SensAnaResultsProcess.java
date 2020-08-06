@@ -16,11 +16,11 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
 public class SensAnaResultsProcess {
-	public static void main(String[] args) throws IOException, MoDSAgentException {
+	public static void main(String[] args) throws IOException, MoDSSensAnaAgentException {
 		
 		String resultsFolder = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\SensAna\\";
 		
@@ -73,7 +73,7 @@ public class SensAnaResultsProcess {
 //		csv.show();
 	}
 	
-	public void processResults(String jobFolderPath, Integer topN) throws IOException, MoDSAgentException {
+	public void processResults(String jobFolderPath, Integer topN) throws IOException, MoDSSensAnaAgentException {
 		String simResults = jobFolderPath+"\\SensitivityAnalysis\\SensitivityAnalysis_subtype_IgnitionDelay.csv";
 		String sensAnaResults = jobFolderPath+"\\SensitivityAnalysis\\SensitivityAnalysis_Sensitivities.csv";
 		String deriResults = jobFolderPath+"\\SensitivityAnalysis\\SensitivityAnalysis_Derivatives.csv";
@@ -99,7 +99,7 @@ public class SensAnaResultsProcess {
 		System.out.println("Sensitivity analysis results have been processed successfully. \n");
 	}
 	
-	private LinkedHashMap<Integer, String> identifyCases(File simFile) throws IOException, MoDSAgentException {
+	private LinkedHashMap<Integer, String> identifyCases(File simFile) throws IOException, MoDSSensAnaAgentException {
 		// read the list of cases and simulation results with original parameters
 		String[] casesList = null;
 		String[] simResults = null;
@@ -122,7 +122,7 @@ public class SensAnaResultsProcess {
 		return successCases;
 	}
 	
-	private LinkedHashMap<Integer, String> getSensParameters(File deriFile) throws IOException, MoDSAgentException {
+	private LinkedHashMap<Integer, String> getSensParameters(File deriFile) throws IOException, MoDSSensAnaAgentException {
 		LinkedHashMap<Integer, String> activeParameters = new LinkedHashMap<Integer, String>();
 		if (deriFile.isFile()) {
 			BufferedReader br = new BufferedReader(new FileReader(deriFile));
@@ -140,7 +140,7 @@ public class SensAnaResultsProcess {
 		return activeParameters;
 	}
 	
-	private LinkedHashMap<String, Double> computeSensForRxns(LinkedHashMap<Integer, String> successCases, LinkedHashMap<Integer, String> activeParameters, File sensAnaFile) throws IOException, MoDSAgentException {
+	private LinkedHashMap<String, Double> computeSensForRxns(LinkedHashMap<Integer, String> successCases, LinkedHashMap<Integer, String> activeParameters, File sensAnaFile) throws IOException, MoDSSensAnaAgentException {
 		LinkedHashMap<String, Double> sensTableForRxns = new LinkedHashMap<String, Double>();
 		if (sensAnaFile.isFile()) {
 			BufferedReader br = new BufferedReader(new FileReader(sensAnaFile));
@@ -165,7 +165,7 @@ public class SensAnaResultsProcess {
 		return sensTableForRxns;
 	}
 	
-	private LinkedHashMap<String, Double> getTopNRxns(Map<String, Double> allRxns, Integer topN) throws IOException, MoDSAgentException {
+	private LinkedHashMap<String, Double> getTopNRxns(Map<String, Double> allRxns, Integer topN) throws IOException, MoDSSensAnaAgentException {
 		// sort all reactions based on its sensitivity values
 		LinkedHashMap<String, Double> sortedRxns = sortRxnSens(allRxns);
 		
@@ -179,7 +179,7 @@ public class SensAnaResultsProcess {
 		return topNRxns;
 	}
 	
-	private LinkedHashMap<String, Double> sortRxnSens(Map<String, Double> allRxns) throws IOException, MoDSAgentException {
+	private LinkedHashMap<String, Double> sortRxnSens(Map<String, Double> allRxns) throws IOException, MoDSSensAnaAgentException {
 		// get the list of reactions based on the map of key and value
 		List<Entry<String, Double>> listOfRxns = new LinkedList<Entry<String, Double>>(allRxns.entrySet());
 		
@@ -199,7 +199,7 @@ public class SensAnaResultsProcess {
 		return rxnsInOrder;
 	}
 	
-	private void writeSelectedRxns(File resultsFile, LinkedHashMap<String, Double> selectedRxns) throws IOException, MoDSAgentException {
+	private void writeSelectedRxns(File resultsFile, LinkedHashMap<String, Double> selectedRxns) throws IOException, MoDSSensAnaAgentException {
 		List<String[]> dataLines = new ArrayList<>();
 		dataLines.add(new String[] {"No", "RxnIRI", "RxnEquation", "RxnSensitivity"});
 		for (String rxn : selectedRxns.keySet()) {

@@ -1,4 +1,4 @@
-package uk.ac.cam.cares.jps.agent.mechanism.calibration;
+package uk.ac.cam.cares.jps.agent.mechanism.sensana;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

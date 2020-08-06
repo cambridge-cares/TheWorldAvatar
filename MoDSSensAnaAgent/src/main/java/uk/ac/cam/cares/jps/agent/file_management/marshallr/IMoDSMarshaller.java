@@ -4,14 +4,14 @@ import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 
 public interface IMoDSMarshaller {
-	public void initialise(String jobFolderName) throws IOException, MoDSAgentException;
+	public void initialise(String jobFolderName) throws IOException, MoDSSensAnaAgentException;
 	
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException;
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSSensAnaAgentException;
 	
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException;
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSSensAnaAgentException;
 	
-	public String marshall() throws IOException, MoDSAgentException;
+	public String marshall() throws IOException, MoDSSensAnaAgentException;
 }
