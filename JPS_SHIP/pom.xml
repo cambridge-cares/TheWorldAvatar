@@ -74,6 +74,7 @@
                     <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>${tomcatPath}/webapps</outputDirectory>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <webXml>WebContent\WEB-INF\web.xml</webXml>
                     <webappDirectory>WebContent</webappDirectory>
                 </configuration>
             </plugin>

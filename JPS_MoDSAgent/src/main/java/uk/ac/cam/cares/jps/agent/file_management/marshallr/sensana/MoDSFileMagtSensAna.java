@@ -2,6 +2,7 @@ package uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.IMoDSMarshaller;
@@ -25,10 +26,13 @@ public class MoDSFileMagtSensAna extends MoDSFileManagement {
 		List<String> ignitionDelayExpIRI = JSonRequestParser.getOntoChemExpIgnitionDelayIRI(jsonString);
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		List<String> reactionIRIList = new ArrayList<>(); // not in use, just for the arg place
+		LinkedHashMap<String, String> ignDelayOption = new LinkedHashMap<String, String>();
+		ignDelayOption.put("method", JSonRequestParser.getIgnDelayMethod(jsonString));
+		ignDelayOption.put("species", JSonRequestParser.getIgnDelaySpecies(jsonString));
 		
 		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshallerSensAna();
 		iMoDSMarshaller.initialise(jobFolderName);
-		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList);
+		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, ignDelayOption);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
 		return jobFolderPath;

@@ -68,83 +68,81 @@ public class WeatherAgent extends JPSHttpServlet {
 	    	JSONObject response= new JSONObject();
 	    	
 	    	//String dataseturl = KeyValueManager.get(IKeys.DATASET_WEATHER_URL);// should be outside (not looped)
-    		try {
-    			validateInput(requestParams);
-    		} catch (BadRequestException e) {
-    			System.out.println("Weather agent request parameters invalid.");
-    		}
+    		if(validateInput(requestParams)) {
 
-    		String path = request.getServletPath();
-	    	System.out.println("path= " + path);
+				String path = request.getServletPath();
+				System.out.println("path= " + path);
 
-	    	String cityiri=requestParams.get("city").toString();
-	    	JSONObject region = requestParams.getJSONObject("region");
-			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
-		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
-		    	sourceCRSName = CRSTransformer.EPSG_4326; 
-		    }
-			String lowx = region.getJSONObject("lowercorner")
-					.get("lowerx").toString();
-			String lowy = region.getJSONObject("lowercorner")
-					.get("lowery").toString();
-			String upx = region.getJSONObject("uppercorner")
-					.get("upperx").toString();
-			String upy = region.getJSONObject("uppercorner")
-					.get("uppery").toString();
-			double proclowx = Double.valueOf(lowx);
-			double procupx = Double.valueOf(upx);
-			double proclowy = Double.valueOf(lowy);
-			double procupy = Double.valueOf(upy);
-			double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
-			double[] centerPointConverted = CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,
-					center);
-		
-	    	String stntimeinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
-					+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
-					+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
-					+ "PREFIX j6:<http://www.w3.org/2006/time#>" 
-					+ "SELECT ?class ?propval ?proptimeval "
-					+ "{ GRAPH ?gr "
-					+ "{ "
-					 
-					+ "  ?entity j4:observes ?prop ." 
-					+ " ?prop a ?class ."
-					+ " ?prop   j2:hasValue ?vprop ."
-					+ " ?vprop   j2:numericalValue ?propval ." 
-					+ " ?vprop   j6:hasTime ?proptime ."
-					+ " ?proptime   j6:inXSDDateTime ?proptimeval ." 
-					+ "}" 
-					+ "}" 
-					+ "ORDER BY DESC(?proptimeval)LIMIT 1";
-	    	
-	    	 List<String[]> listtime = queryEndPointDataset(stntimeinfo);
-			
-			 String timelatest=listtime.get(0)[2];
-			 boolean needupdate=isUpdateNeeded(timelatest);
-			 
-			try {
-				if(needupdate==true) {
-					executePeriodicUpdate("singapore");
-					executePeriodicUpdate("kong");
-					executePeriodicUpdate("hague");
-					executePeriodicUpdate("berlin");
+				String cityiri = requestParams.get("city").toString();
+				JSONObject region = requestParams.getJSONObject("region");
+				String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
+				if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+					sourceCRSName = CRSTransformer.EPSG_4326;
 				}
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				 e.printStackTrace();
+				String lowx = region.getJSONObject("lowercorner")
+						.get("lowerx").toString();
+				String lowy = region.getJSONObject("lowercorner")
+						.get("lowery").toString();
+				String upx = region.getJSONObject("uppercorner")
+						.get("upperx").toString();
+				String upy = region.getJSONObject("uppercorner")
+						.get("uppery").toString();
+				double proclowx = Double.valueOf(lowx);
+				double procupx = Double.valueOf(upx);
+				double proclowy = Double.valueOf(lowy);
+				double procupy = Double.valueOf(upy);
+				double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+				double[] centerPointConverted = CRSTransformer.transform(sourceCRSName, CRSTransformer.EPSG_4326,
+						center);
+
+				String stntimeinfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>"
+						+ "PREFIX j4:<http://www.theworldavatar.com/ontology/ontosensor/OntoSensor.owl#>"
+						+ "PREFIX j5:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/process_control_equipment/measuring_instrument.owl#>"
+						+ "PREFIX j6:<http://www.w3.org/2006/time#>"
+						+ "SELECT ?class ?propval ?proptimeval "
+						+ "{ GRAPH ?gr "
+						+ "{ "
+
+						+ "  ?entity j4:observes ?prop ."
+						+ " ?prop a ?class ."
+						+ " ?prop   j2:hasValue ?vprop ."
+						+ " ?vprop   j2:numericalValue ?propval ."
+						+ " ?vprop   j6:hasTime ?proptime ."
+						+ " ?proptime   j6:inXSDDateTime ?proptimeval ."
+						+ "}"
+						+ "}"
+						+ "ORDER BY DESC(?proptimeval)LIMIT 1";
+
+				List<String[]> listtime = queryEndPointDataset(stntimeinfo);
+
+				String timelatest = listtime.get(0)[2];
+				boolean needupdate = isUpdateNeeded(timelatest);
+
+				try {
+					if (needupdate == true) {
+						executePeriodicUpdate("singapore");
+						executePeriodicUpdate("kong");
+						executePeriodicUpdate("hague");
+						executePeriodicUpdate("berlin");
+					}
+				} catch (URISyntaxException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<String[]> listmap = extractAvailableContext(cityiri, centerPointConverted[0], centerPointConverted[1]);
+				String context = listmap.get(0)[0]; //main stn
+				String context2 = listmap.get(1)[0]; // the furthest station
+				JSONArray station = new JSONArray();
+				station.put(context);
+				station.put(context2);
+				response.put("stationiri", station);
 			}
-			List<String[]> listmap = extractAvailableContext(cityiri,centerPointConverted[0],centerPointConverted[1]);
-			String context=listmap.get(0)[0]; //main stn
-			String context2=listmap.get(1)[0]; // the furthest station	 
-		    JSONArray station= new JSONArray();
-		    station.put(context);
-		    station.put(context2);
-		    response.put("stationiri",station);	
 
 			return response;
 		}
 
-	private Boolean validateInput(JSONObject input) {
+	private boolean validateInput(JSONObject input) {
+		boolean valid = false;
 		try {
 			String cityiri=input.get("city").toString();
 			
@@ -171,10 +169,12 @@ public class WeatherAgent extends JPSHttpServlet {
 		    
 			double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
 			CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,center);
-			return true;
+			valid = true;
 		} catch (Exception e) {
 			throw new BadRequestException(e);
 		}
+
+		return valid;
 	}
 
 	private Map<String,String> extractMappingname(){
