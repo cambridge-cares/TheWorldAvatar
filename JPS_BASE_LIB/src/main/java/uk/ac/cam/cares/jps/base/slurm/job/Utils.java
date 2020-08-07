@@ -545,26 +545,33 @@ public class Utils{
 	 * @param jobFolder the folder that contains a job
 	 * @param slurmJobProperty
 	 */
-	public static void moveToComplete(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException {
+	public static void moveToComplete(File jobFolder, SlurmJobProperty slurmJobProperty) {
 		try {
-			File destDir = getCompletedJobsDirectory(slurmJobProperty);
-			FileUtils.copyDirectory(jobFolder, destDir);
-			FileUtils.deleteDirectory(jobFolder);
+			File destDir = getCompletedJobsDirectory(jobFolder, slurmJobProperty);
+			if(destDir!=null){
+				FileUtils.copyDirectory(jobFolder, destDir);
+				FileUtils.deleteDirectory(jobFolder);
+			}
 		} catch (IOException e) {
 		    e.printStackTrace();
-		    throw new IOException(e.getMessage());
 		}
 	}
 	
 	/**
 	 * Returns the folder where completed jobs are saved.
 	 * 
-	 * @param workspaceParentPath
-	 * @param completedPrefixedAgentClass
+	 * @param jobFolder
+	 * @param slurmJobProperty
 	 * @return
 	 * @throws IOException
 	 */
-	public static File getCompletedJobsDirectory(SlurmJobProperty slurmJobProperty) throws IOException{
-		return Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentCompletedJobsSpacePrefix().concat(slurmJobProperty.getAgentClass()));
+	public static File getCompletedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		String completedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
+		workspace = new File(completedJobsDirectory);
+		if(workspace.mkdirs()){
+			return workspace;
+		}
+		return null;
 	}
 }
