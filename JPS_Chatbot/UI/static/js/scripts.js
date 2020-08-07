@@ -62,8 +62,6 @@
   })(jQuery);
 
 
-
-
   function ask_question() {
 
 
@@ -72,17 +70,13 @@
 
     // =========================
     msg = $('#input-field').val();
-    $('#input-field').val(null);
+    //$('#input-field').val(null);
     // =========================
     msg = msg.replace(/[/+]/g, 'add_sign')
 
-    $.get("https://kg.cmclinnovations.com/test?question=" + msg, function( data ) {
+    $.get("http://127.0.0.1:5000/test?question=" + msg, function( data ) {
       displayResults(data)
     });
-
-    document.getElementById('search-spinner').style.display = 'none';
-    document.getElementById("search-results").style.display = "block";
-    document.getElementById('search-icon').style.display = '';
 
 }
 
@@ -192,12 +186,7 @@ function drawTable(result_array) {
 }
 
 function displayResults(myData) {
-
-
   myData = process_json_result(myData)
-
-  document.getElementById('search-icon').style.display = 'none';
-  document.getElementById('search-spinner').style.display = 'block';
 
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')

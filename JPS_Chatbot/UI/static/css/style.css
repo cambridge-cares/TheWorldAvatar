@@ -1388,7 +1388,8 @@ form .row:first-child .floating-label-form-group {
 
 .div-row div {
   display: inline-block;
-  text-align: center;
+  text-align: left;
   padding: 1em;
   width: calc(100% / 3 - (3px + 2em));
+  overflow-wrap: break-word;
 }
