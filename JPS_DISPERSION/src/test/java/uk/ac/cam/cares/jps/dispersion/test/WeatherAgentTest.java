@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.BadRequestException;
+
 import org.json.JSONObject;
 
 import junit.framework.TestCase;
@@ -444,7 +446,7 @@ public class WeatherAgentTest extends TestCase {
             return true;
         } catch (InvocationTargetException e) {
 //        	This should be modified to BadRequestException once the necessary fix is done in the JPSHttpServlet class
-            assertEquals(RuntimeException.class, e.getTargetException().getClass());
+            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
             return false;
         }
 	}
