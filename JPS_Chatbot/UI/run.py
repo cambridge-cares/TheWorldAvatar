@@ -18,7 +18,7 @@ bot = Chatbot()
 app = Flask(__name__)
 @app.route('/')
 def hello_world():
-    return render_template('index.html')
+    return render_template('index_dln22.html')
 
 @app.route('/test')
 def go():

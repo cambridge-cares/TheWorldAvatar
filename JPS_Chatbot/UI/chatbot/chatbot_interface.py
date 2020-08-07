@@ -7,7 +7,7 @@ from pprint import pprint
 from .JPS_query_constructor import JPS_query_constructor
 from .jps_fallback_classifier import JPSQuestionClassifier
 from .topic_classifier import TopicClassifier
-from rasa_nlu.model import Interpreter
+#from rasa_nlu.model import Interpreter
 from .wiki_fallback_classifier import WikiQuestionTypeClassifier
 import json
 import sys

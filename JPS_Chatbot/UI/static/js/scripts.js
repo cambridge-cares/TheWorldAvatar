@@ -62,29 +62,27 @@
   })(jQuery);
 
 
-  
+
 
   function ask_question() {
-	  
- 	  
+
+
     document.getElementById('search-icon').style.display = 'none';
     document.getElementById('search-spinner').style.display = 'block';
 
-    setTimeout(function(){
-
-    data = '{"head": {"vars": ["oLabel", "v", "value", "unitLabel"]},"results": {"bindings": [{"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "79"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "147"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "methanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "173"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}]}}'
-
-      table_rows = process_json_result(data)
-      drawTable(table_rows)
-
-      document.getElementById('search-spinner').style.display = 'none';
-      document.getElementById("search-results").style.display = "block";
-      document.getElementById('search-icon').style.display = '';
-
-     }, 1000);
-
     // =========================
-    //$('#progress_bar').hide();
+    msg = $('#input-field').val();
+    $('#input-field').val(null);
+    // =========================
+    msg = msg.replace(/[/+]/g, 'add_sign')
+
+    $.get("https://kg.cmclinnovations.com/test?question=" + msg, function( data ) {
+      displayResults(data)
+    });
+
+    document.getElementById('search-spinner').style.display = 'none';
+    document.getElementById("search-results").style.display = "block";
+    document.getElementById('search-icon').style.display = '';
 
 }
 
@@ -96,12 +94,12 @@ function process_json_result(result){
   result = JSON.parse(result)
 
 
-  if ('results' in result){  
+  if ('results' in result){
     bindings = result.results.bindings;
     if (bindings.length == 0){
         return null
     }else
-    
+
 	{
         variables = result.head.vars
         table = []
@@ -115,7 +113,7 @@ function process_json_result(result){
 			row_object['result_value'] = v['v']['value']
             table.push(row_object)
         })
-		
+
 		console.log('table', table)
         return table
     }
@@ -193,33 +191,13 @@ function drawTable(result_array) {
 
 }
 
-function displayResults() {
-	
-      data = '{"head": {"vars": ["oLabel", "v", "value", "unitLabel"]},"results": {"bindings": [{"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "79"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "147"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "methanol"}}, {"v": {"datatype": "http://www.w3.org/2001/XMLSchema#decimal", "type": "literal", "value": "173"}, "oLabel": {"xml:lang": "en", "type": "literal", "value": "ethanol"}}]}}'
- 
-  process_json_result(data)
-	
+function displayResults(myData) {
+
+
+  myData = process_json_result(myData)
+
   document.getElementById('search-icon').style.display = 'none';
   document.getElementById('search-spinner').style.display = 'block';
-
-  setTimeout(function(){
-  var myData = [
-      {
-          "result_id": "1",
-          "result_name": "ethanol",
-          "result_value": "79C",
-      },
-      {
-        "result_id": "2",
-        "result_name": "methanol",
-        "result_value": "147C",
-    },
-    {
-      "result_id": "3",
-      "result_name": "propanol",
-      "result_value": "173C",
-  },
-  ]
 
   // EXTRACT VALUE FOR HTML HEADER.
   // ('Book ID', 'Book Name', 'Category' and 'Price')
@@ -265,5 +243,5 @@ function displayResults() {
   document.getElementById("search-results").style.display = "block";
   document.getElementById('search-icon').style.display = '';
 
-  }, 1000);
+
 };

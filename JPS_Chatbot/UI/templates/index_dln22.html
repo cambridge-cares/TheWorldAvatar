@@ -64,12 +64,12 @@
                 <!-- Icon Divider-->
 				<div class="input-group">
 					<div class="input-group-append">
-					  <button class="btn btn-secondary" type="button" onclick="displayResults()">
+					  <button class="btn btn-secondary" type="button" onclick="ask_question()">
                         <i class="fa fa-search" id="search-icon"></i>
                         <i class="fas fa-spinner fa-spin" id="search-spinner"></i>
 					  </button>
 					</div>
-					<input type="search" class="form-control" placeholder="Type your query" list="ex-queries"/>
+					<input type="search" class="form-control" placeholder="Type your query" list="ex-queries" id="input-field"/>
 					<datalist id="ex-queries">
 						<option value="what are the boiling points of all alkanol"/>
 						<option value="what are the structures all aromatic hydrocarbon"/>
