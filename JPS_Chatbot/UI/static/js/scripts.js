@@ -74,7 +74,7 @@
     // =========================
     msg = msg.replace(/[/+]/g, 'add_sign')
 
-    $.get("http://127.0.0.1:5000/test?question=" + msg, function( data ) {
+    $.get("https://kg.cmclinnovations.com/test?question=" + msg, function( data ) {
       displayResults(data)
     });
 
