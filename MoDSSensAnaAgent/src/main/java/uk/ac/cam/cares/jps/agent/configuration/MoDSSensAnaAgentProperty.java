@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
  *
  */
 @Configuration
-@PropertySource("classpath:mods-agent.properties")
+@PropertySource("classpath:modssensana-agent.properties")
 public class MoDSSensAnaAgentProperty {
 	
 }
