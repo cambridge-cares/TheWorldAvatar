@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
@@ -42,7 +43,7 @@ public class MoDSAgent extends HttpServlet {
 	private Logger logger = LoggerFactory.getLogger(MoDSAgent.class);
 	String server = "login-cpu.hpc.cam.ac.uk";
 	String username = "jb2197";
-	String password = ";";
+	String password = new String();
 	boolean isAuthenticated;
 	private File jobSpace;
 	
@@ -56,11 +57,12 @@ public class MoDSAgent extends HttpServlet {
 	static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
+	public static ApplicationContext applicationContextMoDSAgent;
 	public static MoDSAgentProperty modsAgentProperty;
 	
 	public static void main(String[] args) throws ServletException, MoDSAgentException {
 		MoDSAgent modsAgent = new MoDSAgent();
-//		modsAgent.init();
+		modsAgent.init();
 		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570512_48\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570503_39\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570639_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570640_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570509_45\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570499_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570607_143\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570631_167\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570634_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570633_169\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570504_40\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570502_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570618_154\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570505_41\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570638_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570517_53\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160\"],\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237\"}}}";
 		try {
 			modsAgent.query(input);
@@ -151,6 +153,12 @@ public class MoDSAgent extends HttpServlet {
 		if (slurmJobProperty == null) {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 		}
+		if (applicationContextMoDSAgent == null) {
+			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSAgentConfiguration.class);
+		}
+		if (modsAgentProperty == null) {
+			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSAgentProperty.class);
+		}
 		logger.info("---------- Calibration jobs are being monitored  ----------");
 		System.out.println("---------- Calibration jobs are being monitored  ----------");
 	}
@@ -159,8 +167,14 @@ public class MoDSAgent extends HttpServlet {
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
-		jobSubmission.monitorJobs();
-		processOutputs();
+		try {
+			jobSubmission.monitorJobs();
+		} catch (SlurmJobException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		// enable process outputs later on
+//		processOutputs();
 	}
 	
 	/**
@@ -170,8 +184,20 @@ public class MoDSAgent extends HttpServlet {
 	 * 
 	 */
 	private void processOutputs() {
+		if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+		}
 		if (jobSubmission==null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+		}
+		if (applicationContextMoDSAgent == null) {
+			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSAgentConfiguration.class);
+		}
+		if (modsAgentProperty == null) {
+			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSAgentProperty.class);
 		}
 		jobSpace = jobSubmission.getWorkspaceDirectory();
 		try {
@@ -265,12 +291,12 @@ public class MoDSAgent extends HttpServlet {
 	 * @throws SlurmJobException
 	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSAgentException, SlurmJobException {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
+//		if (applicationContext == null) {
+//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+//		}
+//		if (slurmJobProperty == null) {
+//			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+//		}
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
 					slurmJobProperty.getHpcAddress());

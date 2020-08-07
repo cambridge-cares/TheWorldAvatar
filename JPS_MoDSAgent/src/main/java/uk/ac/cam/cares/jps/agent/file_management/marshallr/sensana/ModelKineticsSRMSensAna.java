@@ -53,6 +53,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	private List<String> expFiles = new ArrayList<>();
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
+	private LinkedHashMap<String, String> ignDelay = new LinkedHashMap<String, String>();
 	
 	/**
 	 * Collect all information required by MoDS to execute the model kineticsSRM. 
@@ -204,6 +205,21 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	 */
 	@Override
 	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException {
+		return null;
+	}
+	
+	
+	/**
+	 * Form all files required by MoDS to execute the model kineticsSRM. This method 
+	 * replace the method in IModel. 
+	 * 
+	 * @param exeModel
+	 * @param ignDelayOption
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSAgentException
+	 */
+	public List<String> formFiles(ExecutableModel exeModel, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -215,6 +231,9 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		caseNames = exeModel.getCaseNames();
 		outputResponses = exeModel.getOutputResponses();
 		passiveParameters = exeModel.getPassiveParameters();
+		
+		// set up the ignition delay option that will be used for generating InputParams.xml file
+		ignDelay = ignDelayOption;
 		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
@@ -649,10 +668,19 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		// ignition delay, uncomment corresponding method below
 		String ignDelayDeltaT = "400";
 		String ignDelayShowAll = "1";
+		String ignDelayModel = "2";
+		String ignDelaySpeciesIndex = "AR";
+		
+		if (ignDelay.get("method") != null) {
+			ignDelayModel = ignDelay.get("method");
+		}
+		if (ignDelay.get("species") != null) {
+			ignDelaySpeciesIndex = ignDelay.get("species");
+		}
 		
 		// -Method 0. Searching for the maximum rate of temperature increase.
-		String ignDelayModel = "0";
-		String ignDelaySpeciesIndex = "AR";
+//		String ignDelayModel = "0";
+//		String ignDelaySpeciesIndex = "AR";
 		
 		// -Method 1. Searching for the maximum rate of pressure increase.
 //		String ignDelayModel = "1";

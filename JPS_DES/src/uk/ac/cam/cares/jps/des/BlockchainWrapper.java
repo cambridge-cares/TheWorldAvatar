@@ -45,6 +45,7 @@ public class BlockchainWrapper extends JPSHttpServlet{
 			result = calculateTrade(jo);
 			System.out.println("result from BlockchainHash " + result.toString());
 			graData.put("txHash", result.get("txHash"));
+			graData.put("sandr", result.get("sandr"));
 			
 		
 		} catch (Exception e) {

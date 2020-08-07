@@ -367,6 +367,9 @@ public class AirQualitySensorAgent extends JPSHttpServlet {
 	 */
 	public void executePeriodicUpdate(String stationiri) throws Exception {
 		ArrayList<JSONObject> result=getDataFromAPI();
+		if (result.isEmpty()) {
+			throw new Exception("Results empty; no result returned from API");
+		}
 		int len = result.size()/2;
 		for (int x = 0; x <len; x++) { //assuming same frequency of these two.
 			try {
