@@ -11,6 +11,7 @@ def run(log_file,output_json):
     r = random.uniform(100000,1000000)
     
     file_name= Path(log_file).stem
+    
     #create ontocompchem graph
     ontocompchem_graph = Graph()
     # create OntoCompChemData object

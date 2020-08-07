@@ -12,6 +12,7 @@ import random
 import uuid
 import os
 import decimal
+from symbol import atom
 
 
 # main class for parsed data
@@ -58,13 +59,35 @@ class OntoCompChemData:
             dict_data = json.loads(json_dat)
             with open(json_name, 'w') as outfile:
                 json.dump(dict_data, outfile, indent = 4)
-                
+        
+        #implemented by Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+        #print()
+        #print('JSON content: ', dict_data)
+        #print()
+        #print('Atomic masses : ',dict_data["Atomic masses"])
+        #print('Empirical formula : ',dict_data["Empirical formula"])
+        #print('Atom counts: ', dict_data["Atom counts"])
+        #for atom in dict_data["Geometry"]:
+        #print("geometry: ", "[x=", atom[0],", y=",atom[1], ", z=",atom[2],"]" )
+        #print()
+        #print("Print all json key and values:")
+        #for (key, value) in iteritems(dict_data):
+        #     print(" - ", key, " : ", value)
+        #print("print i:")
+        #for i in enumerate(self.data):
+        #print(i[1])
+                        
         #printing quantities from json
         for (key, value) in iteritems(dict_data):
-                    print(" - ", key, " : ", value)
+                 print(" - ", key, " : ", value)
+        
+        #for (key,value) in iteritems(dict_data["Atom counts"]):
+        #         print(key, " - ", value)
+                   
                         
     def outputowl(self,ontocompchem_graph, file_name, rnd):
-        print("output owl")
+        
+        print("output owl: ")
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
             
@@ -79,7 +102,9 @@ class OntoCompChemData:
         rdf_namespace= Namespace("http://www.w3.org/1999/02/22-rdf-syntax-ns#")
         gc_namespace=Namespace("http://purl.org/gc/")
         unit_namespace=Namespace("http://data.nasa.gov/qudt/owl/unit#")
+        table_namespace=Namespace("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#")
         
+        ontocompchem_graph.bind("table",table_namespace)
         ontocompchem_graph.bind("ontocompchem",ontocompchem_namespace)
         ontocompchem_graph.bind("owl",owl_namespace)
         ontocompchem_graph.bind("rdf", rdf_namespace)
@@ -89,28 +114,36 @@ class OntoCompChemData:
         #ontocompchem ontology that is resolvable
         ontocompchem_ontology = URIRef("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")        
         
-        #create main ontocompchem knowledge graph (instance of ontocompchem Tbox)        
-        self.import_ontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
-        self.generate_gaussian_instance(program_version, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
-        self.generate_empirical_formula(ontocompchem_graph, ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
-        self.generate_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
-        self.generate_basis_set(ontocompchem_graph, ontology_base_uri, gc_namespace, rnd)
-        self.generate_geometry_type(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)        
-        self.generate_frequencies(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
-        self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-        self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-        self.generate_formal_charge(ontocompchem_graph, gc_namespace, ontology_base_uri, file_name, rnd)
-        self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd) 
-        self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
+        #create ontocompchem knowledge graph by generating owl file
+        self.create_ontocompchem_graph(ontocompchem_graph, ontology_base_uri, ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, rnd)
         
         #printing created ontology that is an instance of OntoCompChem ontology.
         print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
         
         #serialize generated graph into owl file
         ontocompchem_graph.serialize(destination=os.path.splitext(self.log)[0]+'.owl', format='pretty-xml')
+    
+    def create_ontocompchem_graph(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,rnd):
 
+        #create main ontocompchem knowledge graph (instance of ontocompchem Tbox)        
+        self.import_ontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
+        self.generate_gaussian_instance(program_version, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
+        self.generate_empirical_formula(ontocompchem_graph, ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
+        self.generate_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
+        self.generate_basis_set(ontocompchem_graph, ontology_base_uri, gc_namespace, rnd)
+        self.generate_geometry_type(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
+        self.generate_frequencies(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
+        self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_formal_charge(ontocompchem_graph, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_geometry_atomic_masses(ontocompchem_graph, ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
+        
+        
         
     def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
+        
         #import ontocompchem ontology    
         ontocompchem_graph.add((URIRef(ontology_base_uri), RDF.type, OWL.Ontology ))
         ontocompchem_graph.add((URIRef(ontology_base_uri), OWL.imports,ontocompchem_ontology))
@@ -129,7 +162,6 @@ class OntoCompChemData:
             
         
     def generate_empirical_formula(self,ontocompchem_graph,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
-        
                 
         for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
@@ -155,8 +187,6 @@ class OntoCompChemData:
         
         method =  dict_data["Method"]
         basis_set = dict_data["Basis set"]
-        
-        #print("method: ", method, " , basis set: " , basis_set)
         
         #if method and basis set are equal then level of theory has value equal to one of them. If method and basis set are different as strings, then level of theory has value as a string that contains both method
         # and basis set separated by "/" character. Explanation given by Angiras Menon (am2145@cam.ac.uk)
@@ -330,7 +360,6 @@ class OntoCompChemData:
     
               
     def generate_rotational_constants(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,unit_namespace,ontology_base_uri,file_name,rnd):
-        print("rotational constant")
         
         #generates unique string
         uuid_rotational_constants = uuid.uuid3(uuid.NAMESPACE_DNS,"rotaional.constants")
@@ -364,7 +393,67 @@ class OntoCompChemData:
             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), gc_namespace.hasUnit,URIRef(unit_namespace.GigaHertz)))
     
         
+    def generate_geometry_atomic_masses(self,ontocompchem_graph,ontocompchem_namespace,table_namespace,ontology_base_uri,file_name,gc_namespace,rnd):
         
+        #generates unique string
+        uuid_geometry_atomic_mass = uuid.uuid3(uuid.NAMESPACE_DNS,"geometry.atomic.mass")
+        
+        #Generates graph for geometry, atomic masses, and atom types quantities
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+        
+        atomic_mass_unit = dict_data["Atomic mass unit"]
+        
+        atom_iterator = 0; 
+        for akey in dict_data["Atom types"]:                 
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), gc_namespace.hasAtom, URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,OWL.Thing))
+                 
+                 #Generate atom element
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(akey))))
+                 ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(akey)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
+                 ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(akey)),RDF.type,OWL.Thing))
+                                  
+                 #generate atomic mass
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasMass,URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Atomic masses"][atom_iterator])))
+                 
+                 if atomic_mass_unit == "atomic": 
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Dalton")))
+                 
+                 
+                 
+                 for gkey in dict_data["Geometry"][atom_iterator]:
+                     #generate coordinate X
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateX,URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][0])))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
+                     
+                     #generate coordinate Y
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateY,URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][1])))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
+                     
+                     #generate coordinate Z
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateZ,URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][2])))    
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
+                     
+                 atom_iterator = atom_iterator +1    
+                     
+                 
+                     
+                     
+                     
             
             
         
