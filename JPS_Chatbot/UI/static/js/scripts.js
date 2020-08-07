@@ -113,12 +113,16 @@ function process_json_result(result){
     }
   }else{
   // get a list of variables, which is the keys
-  variables = Object.keys(result[0]);
-  table = []
+  variables = Object.keys(result[0]);  
   console.log('variables', variables)
+  index_counter = 0
   result.forEach(function(v){
       row = Object.values(v)
-      table.push(row)
+	  let row_obj = {}
+	  row_obj['result_id'] = index_counter.toString()
+	  row_obj['result_name'] = v
+	  row_obj['result_value'] = row
+      table.push(row_obj)
   })
   return table
   }
