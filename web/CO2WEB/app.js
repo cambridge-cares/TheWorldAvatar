@@ -2,12 +2,12 @@
  * app main
  * @type {*}
  */
-var log4js = require('log4js');
+var log4js = require('log4js'); // log4js is a Java-based logging utility or framwork
 log4js.configure({
   appenders: { defaultLogger: { type: 'file', filename: 'C:/jps/temp/logs/js-server.log' } },
   categories: { default: { appenders: ['defaultLogger'], level: 'error' } }
 });
-var logger = log4js.getLogger('defaultLogger');
+var logger = log4js.getLogger('defaultLogger'); // 'defaultLogger' is a loggerCategory
 logger.level = 'debug';
 
 var express = require('express');
@@ -21,7 +21,7 @@ var config = require("./config.js");
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
 var visualizeSemakau =require("./routes/visualizeSemakau.js");
-var visualizeJurong =require("./routes/visualizeJurong.js");
+
 var visualizeOntoEN = require("./routes/visualizeOntoEN.js");
 var visualizeOntoChem = require("./routes/visualizeOntoChem.js");
 var visualizeAgent = require("./routes/visualizeAgent.js");
@@ -50,7 +50,7 @@ var b2Map = require("./routes/mapB2");
 var ppalt = require("./routes/mapPPAlt");
 var parallelWorld = require('./routes/parallelWorld');
 var wteMap= require('./routes/wTEroute');
-var ontoTwinMap= require('./routes/ontoTwinUK');
+
 var admsEpi= require('./routes/admsEpi');
 
 var essMap = require('./routes/ess');
@@ -58,8 +58,12 @@ var DESPlot = require('./routes/DESPlot');
 var literalData = require('./agents/GetLiteralData');
 var getChildrenSingle = require('./routes/GetChildrenSingle');
 **/
+var ppMap = require('./routes/mapPowerPlant');
+var visualizeJurong =require("./routes/visualizeJurong.js");
+var visualizeWorld =require("./routes/visualizeWorld.js");
+var ontoTwinMap= require('./routes/ontoTwinUK');
 var BMSWatcher = require('./agents/setBMSWatcher');
-var agentWatcher = require('./agents/msgFace');
+// var agentWatcher = require('./agents/msgFace');
 let setEpWatcher = require('./agents/setEPWatcher');
 
 
@@ -94,7 +98,7 @@ app.use('/getChildrenSingle',getChildrenSingle);
  app.use('/visualizeWorld', visualizeWorld);
  app.use('/visualizeBMS', visualizeBMS);
  app.use('/visualizeSemakau', visualizeSemakau);
- app.use('/visualizeJurong', visualizeJurong);
+ 
 
 app.use('/PowerPlantCO2',  PPCO2);
 app.use('/semakaumap', semakauMap);
@@ -102,7 +106,7 @@ app.use('/ppalt', ppalt);
 app.use('/pwScenario', parallelWorld);
 app.use('/essMap', essMap);
 app.use('/wteMap', wteMap);
-app.use('/ontoTwinUK', ontoTwinMap);
+
 app.use('/JPS_SHIP', admsEpi);
 
 app.use('/JurongIsland.owl/showCO2', showCO2);
@@ -129,8 +133,10 @@ app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
 
 /*posting to dataObserve to get orginal data & register for future data change*/
-
-
+app.use('/ontoTwinUK', ontoTwinMap);
+app.use('/visualizeJurong', visualizeJurong);
+app.use('/visualizeWorld', visualizeWorld);
+app.use('/ppmap', ppMap);
 
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
@@ -176,6 +182,8 @@ var bmsWatcher = watcherReturn.bmsWatcher;
 		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
 }
 })
+
+/**
 agentWatcher.init(io);
 	ev.on('update', function (data) {
     logger.debug("update event: "+" on "+data.uri+"_nodata");
@@ -196,6 +204,7 @@ agentWatcher.init(io);
 		    io.in(path.normalize(data.uri)+"_nodata").emit("update", {uri:data.uri, filename:data.filename});
 }
 })
+**/
 //When any change happened to the file system
 let testId = null
 
