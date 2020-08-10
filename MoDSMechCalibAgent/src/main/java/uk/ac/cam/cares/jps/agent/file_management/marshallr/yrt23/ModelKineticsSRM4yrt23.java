@@ -38,6 +38,7 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ModelKineticsSRM;
 import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
@@ -54,7 +55,24 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 	private List<String> expFiles = new ArrayList<>();
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
-	private LinkedHashMap<String, String> ignDelay = new LinkedHashMap<String, String>();
+	private String ignDelayMethod = "4";
+	private String ignDelaySpecies = "CH";
+	
+	public String getIgnDelayMethod() {
+		return ignDelayMethod;
+	}
+
+	public void setIgnDelayMethod(String ignDelayMethod) {
+		this.ignDelayMethod = ignDelayMethod;
+	}
+
+	public String getIgnDelaySpecies() {
+		return ignDelaySpecies;
+	}
+
+	public void setIgnDelaySpecies(String ignDelaySpecies) {
+		this.ignDelaySpecies = ignDelaySpecies;
+	}
 	
 	/**
 	 * Collect all information required by MoDS to execute the model kineticsSRM. 
@@ -197,20 +215,6 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 	}
 	
 	/**
-	 * Form all files required by MoDS to execute the model kineticsSRM. 
-	 * 
-	 * @param exeModel
-	 * @param jobFolderPath
-	 * @return
-	 * @throws IOException
-	 * @throws MoDSAgentException
-	 */
-	@Override
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException {
-		return null;
-	}
-	
-	/**
 	 * Form all files required by MoDS to execute the model kineticsSRM. This method 
 	 * replace the method in IModel. 
 	 * 
@@ -220,7 +224,8 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 	 * @throws IOException
 	 * @throws MoDSAgentException
 	 */
-	public List<String> formFiles(ExecutableModel exeModel, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
+	@Override
+	public List<String> formFiles(ExecutableModel exeModel, String otherOptions) throws IOException, MoDSAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -234,7 +239,14 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		passiveParameters = exeModel.getPassiveParameters();
 		
 		// set up the ignition delay option that will be used for generating InputParams.xml file
-		ignDelay = ignDelayOption;
+		String method = JSonRequestParser.getIgnDelayMethod(otherOptions);
+		if (method != null) {
+			setIgnDelayMethod(method);
+		}
+		String species = JSonRequestParser.getIgnDelaySpecies(otherOptions);
+		if (species != null) {
+			setIgnDelaySpecies(species);
+		}
 		
 //		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
@@ -663,17 +675,14 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		String iniPres = null;
 		String iniPresUnit = null;
 		ArrayList<String> species = new ArrayList<String>();
-		String ignDelayModel = "4";
-		String ignDelayDeltaT = "400";
-		String ignDelaySpeciesIndex = "CH";
-		String ignDelayShowAll = "1";
 		
-		if (ignDelay.get("method") != null) {
-			ignDelayModel = ignDelay.get("method");
-		}
-		if (ignDelay.get("species") != null) {
-			ignDelaySpeciesIndex = ignDelay.get("species");
-		}
+		
+		// ignition delay, uncomment corresponding method below
+		String ignDelayDeltaT = "400";
+		String ignDelayShowAll = "1";
+		String ignDelayModel = getIgnDelayMethod();
+		String ignDelaySpeciesIndex = getIgnDelaySpecies();
+		
 		
 		String oxidiser = NAME_OXIDISER; // this name is to be further parameterised, also to be connected to MoDS_Inputs.xml
 		for (int i = 0; i < headerLine.length; i++) {
