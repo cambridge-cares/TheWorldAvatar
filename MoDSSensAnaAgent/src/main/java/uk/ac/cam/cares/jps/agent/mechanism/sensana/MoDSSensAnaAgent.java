@@ -196,7 +196,6 @@ public class MoDSSensAnaAgent extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// enable process outputs later on
 		processOutputs();
 	}
 	
