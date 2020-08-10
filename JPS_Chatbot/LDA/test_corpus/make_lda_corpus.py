@@ -1,6 +1,7 @@
 import json, re
 
 
+ontologies =  ['ontocompchem', 'ontokin', 'ontospecies', 'wiki']
 def process_puncutation(string):
     # Load the regular expression library
 
@@ -12,16 +13,12 @@ def process_puncutation(string):
     return string_temp
 
 arrays = []
-for i in range(4):
-    f_name = 'topic_%s' % str(i + 1)
+for o in ontologies:
+    f_name = '%s_corpus' % o
     with open(f_name) as f:
-        content = f.read()
-        content = process_puncutation(content)
-
-        array = content.split(' ')
-        print(array)
-        print('--------------')
-        arrays.append(array)
+        content = json.loads(f.read())
+        content = [process_puncutation(x) for x in content]
+        arrays.append(content)
 
 with open('corpus', 'w') as f:
     f.write(json.dumps(arrays))

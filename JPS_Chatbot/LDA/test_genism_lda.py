@@ -45,11 +45,12 @@ bigram_mod = gensim.models.phrases.Phraser(bigram)
 trigram_mod = gensim.models.phrases.Phraser(trigram)
 
 # See trigram example
-print(trigram_mod[bigram_mod[data_words[0]]])
+# print(trigram_mod[bigram_mod[data_words[0]]])
 
 nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
 
 stemmer = PorterStemmer()
+
 
 def remove_stopwords(texts):
     return [[word for word in simple_preprocess(str(doc)) if word not in stop_words] for doc in texts]
@@ -69,6 +70,7 @@ def lemmatization(texts, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV']):
     for sent in texts:
         doc = nlp(" ".join(sent))
         texts_out.append([token.lemma_ for token in doc if token.pos_ in allowed_postags])
+        # texts_out.append([token.lemma_ for token in doc])
     return texts_out
 
 
@@ -83,9 +85,6 @@ data_words_bigrams = make_bigrams(data_words_nostops)
 
 # Do lemmatization keeping only noun, adj, vb, adv
 data_lemmatized = lemmatization(data_words_bigrams, allowed_postags=['NOUN', 'ADJ', 'VERB', 'ADV'])
-
-print(data_lemmatized[:1])
-
 # Create Dictionary
 id2word = corpora.Dictionary(data_lemmatized)
 
@@ -103,22 +102,31 @@ lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                             num_topics=4,
                                             random_state=20,
                                             update_every=1,
-                                            chunksize=10,
-                                            passes=2000,
+                                            chunksize=100,
+                                            passes=1000,
                                             alpha='auto',
                                             per_word_topics=True)
 
-pprint(lda_model.print_topics())
+pprint(lda_model.print_topics(num_words= 15))
 doc_lda = lda_model[corpus]
 
+
 # Compute Perplexity
-question = 'what reaction has ch4 as a reactant'
-# question = 'which computer is the device that operation mos'
+# question = 'what reaction has ch4 as a reactant'
+question = 'what is the heat capacity of h2o2'
+# question = 'what do you know about china'
 
-question = [w for w in question.split(' ')]
-
-print(question)
-bow = lda_model.id2word.doc2bow(question)
-result = lda_model.get_document_topics(bow)
-
-print(result)
+cmd = ''
+while cmd is not 'stop':
+    cmd = input('type in the question\t\t')
+    question = [cmd.split(' ')]
+    # print('========== make bigrams ==========')
+    # print(make_bigrams(question))
+    # print('==================================')
+    question = lemmatization(make_bigrams(question))
+    # print(question)
+    # print('==================================')
+    question = question[0]
+    bow = lda_model.id2word.doc2bow(question)
+    result = lda_model.get_document_topics(bow)
+    print(result)

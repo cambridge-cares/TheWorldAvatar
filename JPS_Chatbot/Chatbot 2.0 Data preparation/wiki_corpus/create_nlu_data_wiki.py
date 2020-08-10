@@ -11,6 +11,13 @@ c_labels = labels[0]
 i_labels = labels[1]
 p_labels = labels[2]
 
+print('number of c_labels', len(c_labels))
+print('number of p_labels', len(p_labels))
+
+with open('wiki_corpus_lda', 'w') as f:
+    labels = c_labels + p_labels#
+    f.write(json.dumps(labels))
+
 # generate different types of questions ... 
 
 # batch_restriction_query e.g. give me the [flash point](attribute) of all the [fossil fuels](class)
@@ -27,6 +34,8 @@ question_pool = ['what is', 'show me the', 'show the', 'list the', 'whats the', 
 # to identify the grammatic structure of the attribute and generate the questions in the proper form 
 
 # e.g. What is xxx(instance) 
+    
+
 
 
 def parse_attribute(p_label, c_or_i_label, type):
