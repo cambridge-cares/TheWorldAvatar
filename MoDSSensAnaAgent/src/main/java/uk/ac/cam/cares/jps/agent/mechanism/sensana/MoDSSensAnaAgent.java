@@ -1,7 +1,15 @@
 package uk.ac.cam.cares.jps.agent.mechanism.sensana;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +35,8 @@ import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana.MoDSFileMagtSensAna;
+import uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana.SensAnaResultsProcess;
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
@@ -35,6 +45,10 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -63,6 +77,14 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	
 	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
 		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
+		
+//		try {
+//			modsSensAnaAgent.selectSensRxns(new File("C:\\Users\\jb2197\\MoDSSensAnaAgent_4639325665088300\\login-skylake.hpc.cam.ac.uk_4639325666472100"));
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		modsSensAnaAgent.init();
 //		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570512_48\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570503_39\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570639_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570640_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570509_45\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570499_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570607_143\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570631_167\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570634_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570633_169\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570504_40\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570502_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570618_154\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570505_41\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570638_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570517_53\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160\"],\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237\"}}}";
 //		try {
@@ -139,8 +161,8 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	 * @throws MoDSSensAnaAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("---------- Mechanism Calibration Agent has started ----------");
-		System.out.println("---------- Mechanism Calibration Agent has started ----------");
+		logger.info("---------- Sensitivity Analysis Agent has started ----------");
+		System.out.println("---------- Sensitivity Analysis Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		MoDSSensAnaAgent modsAgent = new MoDSSensAnaAgent();
 		// the first 30 refers to the delay (in seconds) before the job scheduler
@@ -160,8 +182,8 @@ public class MoDSSensAnaAgent extends HttpServlet {
 		if (modsAgentProperty == null) {
 			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSSensAnaAgentProperty.class);
 		}
-		logger.info("---------- Calibration jobs are being monitored  ----------");
-		System.out.println("---------- Calibration jobs are being monitored  ----------");
+		logger.info("---------- SensAna jobs are being monitored  ----------");
+		System.out.println("---------- SensAna jobs are being monitored  ----------");
 	}
 	
 	private void monitorJobs() {
@@ -175,7 +197,7 @@ public class MoDSSensAnaAgent extends HttpServlet {
 			e.printStackTrace();
 		}
 		// enable process outputs later on
-//		processOutputs();
+		processOutputs();
 	}
 	
 	/**
@@ -207,21 +229,23 @@ public class MoDSSensAnaAgent extends HttpServlet {
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							//updateJobOutputStatus(jobFolder);
+							selectSensRxns(jobFolder);
+							updateJobOutputStatus(jobFolder);
 						}
 					}
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (SftpException e) {
+			e.printStackTrace();
+		} catch (JSchException e) {
+			e.printStackTrace();
+		} catch (MoDSSensAnaAgentException e) {
+			e.printStackTrace();
 		}
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		} catch (SftpException e) {
-//			e.printStackTrace();
-//		} catch (JSchException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	/**
@@ -234,10 +258,59 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	private boolean updateJpbOutputStatus(File jobFolder) throws JSchException, SftpException, IOException, InterruptedException {
+	private boolean updateJobOutputStatus(File jobFolder) throws JSchException, SftpException, IOException, InterruptedException {
 		File statusFile = Utils.getStatusFile(jobFolder);
 		return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
+	
+	public void selectSensRxns(File jobFolder) throws IOException, MoDSSensAnaAgentException {
+		File outputFile = new File(jobFolder.getAbsolutePath());
+		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(slurmJobProperty.getOutputFileExtension());
+		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName());
+		Utils.unzipFile(zipFilePath, destDir);
+		
+		String jsonString = readJsonInput(new File(jobFolder.getAbsolutePath()
+				.concat(File.separator)
+				.concat(slurmJobProperty.getJsonInputFileName())
+				.concat(slurmJobProperty.getJsonFileExtension())));
+		
+		JsonNode inputNode = new ObjectMapper().readTree(jsonString);
+		Integer topN = JSonRequestParser.getTopNForRxns(jsonString);
+		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
+		SensAnaResultsProcess sensAnaRePro = new SensAnaResultsProcess();
+		List<String> selectedRxns = sensAnaRePro.processResults(destDir, mechanismIRI, topN);
+		
+		updateJsonForCalib(inputNode, selectedRxns, destDir.concat(File.separator).concat("modifiedInput.json"));
+		
+		System.out.println("Sensitivity analysis results were successfully processed.");
+	}
+	
+	private String readJsonInput(File input) throws IOException, MoDSSensAnaAgentException {
+		String jsonString = new String();
+		BufferedReader br = null;
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
+		String line = new String();
+		while ((line = br.readLine()) != null) {
+			jsonString = jsonString.concat(line);
+		}
+		br.close();
+		return jsonString;
+	}
+	
+	private void updateJsonForCalib(JsonNode inputNode, List<String> selectedRxns, String output) throws IOException, MoDSSensAnaAgentException {
+		JsonNode locateNode = inputNode.path("json").path("ontokinIRI");
+		String rxns = new String();
+		for (String rxn : selectedRxns) {
+			rxns = rxns.concat(", \"").concat(rxn).concat("\"");
+		}
+		ObjectNode addedNode = ((ObjectNode) locateNode).set("reactionList", new ObjectMapper().readTree("["+rxns.substring(1)+"]"));
+
+		BufferedWriter bw = null;
+		bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(new File(output))));
+		bw.write(inputNode.toString());
+		bw.close();
+	}
+	
 	
 	/**
 	 * Updates the latest status of the running jobs. 
