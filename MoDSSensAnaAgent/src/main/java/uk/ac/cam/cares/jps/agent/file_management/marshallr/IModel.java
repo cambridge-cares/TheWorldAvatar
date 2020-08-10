@@ -31,7 +31,7 @@ public interface IModel {
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
 	 */
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException;
+	public List<String> formFiles(ExecutableModel exeModel, String otherOptions) throws IOException, MoDSSensAnaAgentException;
 	
 	/**
 	 * Create the files used during the 'initial read' when executing the model. 

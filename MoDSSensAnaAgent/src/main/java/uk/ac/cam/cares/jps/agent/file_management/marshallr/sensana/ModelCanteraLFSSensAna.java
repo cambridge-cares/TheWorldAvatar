@@ -132,7 +132,7 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	}
 
 	@Override
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException {
+	public List<String> formFiles(ExecutableModel exeModel, String otherOptions) throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);

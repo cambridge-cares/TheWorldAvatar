@@ -12,6 +12,9 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Utils;
 
 public class MoDSFileMagtSensAna extends MoDSFileManagement {
+	
+	
+	
 	public static void main(String[] args) throws IOException, MoDSSensAnaAgentException {
 		MoDSFileMagtSensAna fileMagt = new MoDSFileMagtSensAna();
 		
@@ -27,14 +30,11 @@ public class MoDSFileMagtSensAna extends MoDSFileManagement {
 		List<String> flameSpeedExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(jsonString);
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		List<String> reactionIRIList = new ArrayList<>(); // not in use, just for the arg place
-		LinkedHashMap<String, String> ignDelayOption = new LinkedHashMap<String, String>();
-		ignDelayOption.put("method", JSonRequestParser.getIgnDelayMethod(jsonString));
-		ignDelayOption.put("species", JSonRequestParser.getIgnDelaySpecies(jsonString));
 		
 		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshallerSensAna();
 		iMoDSMarshaller.initialise(jobFolderName);
-		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, ignDelayOption);
-		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
+		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, jsonString);
+		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList, jsonString);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
 		return jobFolderPath;

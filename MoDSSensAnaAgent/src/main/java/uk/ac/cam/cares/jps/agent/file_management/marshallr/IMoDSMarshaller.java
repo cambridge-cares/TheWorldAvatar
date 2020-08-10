@@ -9,9 +9,9 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 public interface IMoDSMarshaller {
 	public void initialise(String jobFolderName) throws IOException, MoDSSensAnaAgentException;
 	
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSSensAnaAgentException;
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSSensAnaAgentException;
 	
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSSensAnaAgentException;
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSSensAnaAgentException;
 	
 	public String marshall() throws IOException, MoDSSensAnaAgentException;
 }

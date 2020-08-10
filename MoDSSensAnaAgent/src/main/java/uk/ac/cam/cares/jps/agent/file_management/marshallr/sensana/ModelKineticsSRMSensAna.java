@@ -37,6 +37,7 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechanismDownload;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
@@ -53,8 +54,34 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	private List<String> expFiles = new ArrayList<>();
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
-	private LinkedHashMap<String, String> ignDelay = new LinkedHashMap<String, String>();
+	private String ignDelayMethod = "2";
+	private String ignDelaySpecies = "AR";
+	private String relPerturbation = "0.01";
 	
+	public String getIgnDelayMethod() {
+		return ignDelayMethod;
+	}
+
+	public void setIgnDelayMethod(String ignDelayMethod) {
+		this.ignDelayMethod = ignDelayMethod;
+	}
+
+	public String getIgnDelaySpecies() {
+		return ignDelaySpecies;
+	}
+
+	public void setIgnDelaySpecies(String ignDelaySpecies) {
+		this.ignDelaySpecies = ignDelaySpecies;
+	}
+
+	public String getRelPerturbation() {
+		return relPerturbation;
+	}
+
+	public void setRelPerturbation(String relPerturbation) {
+		this.relPerturbation = relPerturbation;
+	}
+
 	/**
 	 * Collect all information required by MoDS to execute the model kineticsSRM. 
 	 * The information required: 
@@ -195,20 +222,20 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		return kineticsSRM;
 	}
 	
-	/**
-	 * Form all files required by MoDS to execute the model kineticsSRM. 
-	 * 
-	 * @param exeModel
-	 * @param jobFolderPath
-	 * @return
-	 * @throws IOException
-	 * @throws MoDSSensAnaAgentException
-	 */
-	@Override
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException {
-		return null;
-	}
-	
+//	/**
+//	 * Form all files required by MoDS to execute the model kineticsSRM. 
+//	 * 
+//	 * @param exeModel
+//	 * @param jobFolderPath
+//	 * @return
+//	 * @throws IOException
+//	 * @throws MoDSSensAnaAgentException
+//	 */
+//	@Override
+//	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSSensAnaAgentException {
+//		return null;
+//	}
+//	
 	
 	/**
 	 * Form all files required by MoDS to execute the model kineticsSRM. This method 
@@ -220,7 +247,8 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
 	 */
-	public List<String> formFiles(ExecutableModel exeModel, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSSensAnaAgentException {
+	@Override
+	public List<String> formFiles(ExecutableModel exeModel, String otherOptions) throws IOException, MoDSSensAnaAgentException {
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -234,7 +262,20 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		passiveParameters = exeModel.getPassiveParameters();
 		
 		// set up the ignition delay option that will be used for generating InputParams.xml file
-		ignDelay = ignDelayOption;
+		String method = JSonRequestParser.getIgnDelayMethod(otherOptions);
+		if (method != null) {
+			setIgnDelayMethod(method);
+		}
+		String species = JSonRequestParser.getIgnDelaySpecies(otherOptions);
+		if (species != null) {
+			setIgnDelaySpecies(species);
+		}
+		
+		// set up relative perturbation for sens ana
+		String relPer = JSonRequestParser.getRelPerturb(otherOptions);
+		if (relPer != null) {
+			setRelPerturbation(relPer);	
+		}
 		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
@@ -356,7 +397,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		algoSensAna.put("algorithm_type", "Run");
 		algoSensAna.put("n_run", "0");
 		algoSensAna.put("sensitivity_analysis", "true");
-		algoSensAna.put("relative_perturbation", "0.01");
+		algoSensAna.put("relative_perturbation", getRelPerturbation());
 		
 		algorithms.put("SensitivityAnalysis", algoSensAna);
 		collectAlgorithms(algorithms);
@@ -674,15 +715,8 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		// ignition delay, uncomment corresponding method below
 		String ignDelayDeltaT = "400";
 		String ignDelayShowAll = "1";
-		String ignDelayModel = "2";
-		String ignDelaySpeciesIndex = "AR";
-		
-		if (ignDelay.get("method") != null) {
-			ignDelayModel = ignDelay.get("method");
-		}
-		if (ignDelay.get("species") != null) {
-			ignDelaySpeciesIndex = ignDelay.get("species");
-		}
+		String ignDelayModel = getIgnDelayMethod();
+		String ignDelaySpeciesIndex = getIgnDelaySpecies();
 		
 		// -Method 0. Searching for the maximum rate of temperature increase.
 //		String ignDelayModel = "0";

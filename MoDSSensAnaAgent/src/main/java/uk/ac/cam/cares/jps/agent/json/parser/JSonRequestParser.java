@@ -71,6 +71,12 @@ public class JSonRequestParser {
 		return Integer.parseInt(locateNode.asText());
 	}
 	
+	public static String getRelPerturb(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensAna").path("relPerturbation");
+		
+		return locateNode.asText();
+	}
+	
 	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");

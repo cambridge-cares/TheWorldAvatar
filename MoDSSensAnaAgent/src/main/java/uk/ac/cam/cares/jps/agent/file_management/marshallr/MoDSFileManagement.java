@@ -114,14 +114,11 @@ public class MoDSFileManagement extends MoDSMarshaller {
 		List<String> flameSpeedExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(jsonString);
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
-		LinkedHashMap<String, String> ignDelayOption = new LinkedHashMap<String, String>();
-		ignDelayOption.put("method", JSonRequestParser.getIgnDelayMethod(jsonString));
-		ignDelayOption.put("species", JSonRequestParser.getIgnDelaySpecies(jsonString));
 		
 		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshaller();
 		iMoDSMarshaller.initialise(jobFolderName);
-		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, ignDelayOption);
-		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
+		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, jsonString);
+		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList, jsonString);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
 		logger.info("The requested MoDS job was created.");

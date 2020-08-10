@@ -99,22 +99,22 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 	}
 
 	@Override
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSSensAnaAgentException {
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		ModelKineticsSRM kineticsSRM = new ModelKineticsSRM();
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
-		kineticsSRM.formFiles(exeModel, ignDelayOption);
+		kineticsSRM.formFiles(exeModel, otherOptions);
 		kineticsSRM.setUpMoDS();
 		
 		logger.info("Model kineticsSRM was added to the MoDS job.");
 	}
 
 	@Override
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSSensAnaAgentException {
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSSensAnaAgentException {
 		// TODO Auto-generated method stub
 		ModelCanteraLFS canteraLFS = new ModelCanteraLFS();
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
-		canteraLFS.formFiles(exeModel);
+		canteraLFS.formFiles(exeModel, otherOptions);
 		canteraLFS.setUpMoDS();
 		
 		logger.info("Model canteraLFS was added to the MoDS job.");
