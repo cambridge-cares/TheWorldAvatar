@@ -71,10 +71,11 @@ var app = express();
 var port = config.port;
 process.env.UV_THREADPOOL_SIZE = 128;
 
-
 app.set('view engine', 'pug');
 app.use(httplogger('dev'));
 app.use((req, res, next) => {
+    logger.debug("res.header");
+
   res.header('Access-Control-Allow-Origin', '*');
   next();
 });
