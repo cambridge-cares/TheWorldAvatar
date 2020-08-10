@@ -140,6 +140,7 @@ class OntoCompChemData:
         self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
         self.generate_geometry_atomic_masses(ontocompchem_graph, ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
         self.generate_atom_count(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+        self.generate_electronic_and_zpe_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         
         
         
@@ -483,8 +484,35 @@ class OntoCompChemData:
         
         
          
-    def generate_electronic_and_zpe_energy(self):
-        print("generate electronic and zpe energy")
+    def generate_electronic_and_zpe_energy(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):      
+        
+        #generates unique string
+        uuid_electronic_and_zpe_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"electronic.and.zpe.energy")
+        
+        #Generate graph for electronic and zpe energy quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+        
+        electronic_and_zpe_energy = dict_data["Electronic and ZPE energy"]
+        
+        if electronic_and_zpe_energy is not None:
+             electronic_and_zpe_energy_literal=Literal(electronic_and_zpe_energy)
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, ontocompchem_namespace.ElectronicAndZPEEnergy))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, gc_namespace.FloatValue))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
+        
+                               
+        
+        
+        
+        
+        
+        
                      
             
             
