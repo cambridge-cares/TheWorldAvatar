@@ -65,6 +65,24 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getFlameSpdTranModel(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("flameSpeedOption").path("tranModel");
+		
+		return locateNode.asText();
+	}
+	
+	public static Integer getTopNForRxns(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensAna").path("topN");
+		
+		return Integer.parseInt(locateNode.asText());
+	}
+	
+	public static String getRelPerturb(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensAna").path("relPerturbation");
+		
+		return locateNode.asText();
+	}
+	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");
 //	}

@@ -31,7 +31,7 @@ public interface IModel {
 	 * @throws IOException
 	 * @throws MoDSAgentException
 	 */
-	public List<String> formFiles(ExecutableModel exeModel) throws IOException, MoDSAgentException;
+	public List<String> formFiles(ExecutableModel exeModel, String otherOptions) throws IOException, MoDSAgentException;
 	
 	/**
 	 * Create the files used during the 'initial read' when executing the model. 

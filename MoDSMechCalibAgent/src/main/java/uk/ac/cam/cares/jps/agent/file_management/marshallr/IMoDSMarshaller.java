@@ -9,9 +9,9 @@ import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
 public interface IMoDSMarshaller {
 	public void initialise(String jobFolderName) throws IOException, MoDSAgentException;
 	
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException;
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSAgentException;
 	
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException;
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSAgentException;
 	
 	public String marshall() throws IOException, MoDSAgentException;
 }

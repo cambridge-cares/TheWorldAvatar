@@ -50,14 +50,11 @@ public class MoDS4yrt23 extends MoDSFileManagement {
 		List<String> flameSpeedExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(jsonString);
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		List<String> reactionIRIList = new ArrayList<>(); // not in use, just for the arg place
-		LinkedHashMap<String, String> ignDelayOption = new LinkedHashMap<String, String>();
-		ignDelayOption.put("method", JSonRequestParser.getIgnDelayMethod(jsonString));
-		ignDelayOption.put("species", JSonRequestParser.getIgnDelaySpecies(jsonString));
 		
 		IMoDSMarshaller iMoDSMarshaller = new MoDSMarshaller4yrt23();
 		iMoDSMarshaller.initialise(jobFolderName);
-		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, ignDelayOption);
-		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList);
+		iMoDSMarshaller.plugInKinetics(ignitionDelayExpIRI, mechanismIRI, reactionIRIList, jsonString);
+		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList, jsonString);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
 //		placeMoDSSlurmScript(jobFolderPath);

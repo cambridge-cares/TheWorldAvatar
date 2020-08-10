@@ -12,20 +12,20 @@ import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
 
 public class MoDSMarshaller4yrt23 extends MoDSMarshaller {
 	@Override
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, LinkedHashMap<String, String> ignDelayOption) throws IOException, MoDSAgentException {
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSAgentException {
 		// TODO Auto-generated method stub
 		ModelKineticsSRM4yrt23 kineticsSRM = new ModelKineticsSRM4yrt23();
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
-		kineticsSRM.formFiles(exeModel, ignDelayOption);
+		kineticsSRM.formFiles(exeModel, otherOptions);
 		kineticsSRM.setUpMoDS();
 	}
 
 	@Override
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList) throws IOException, MoDSAgentException {
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSAgentException {
 		// TODO Auto-generated method stub
 		ModelCanteraLFS4yrt23 canteraLFS = new ModelCanteraLFS4yrt23();
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
-		canteraLFS.formFiles(exeModel);
+		canteraLFS.formFiles(exeModel, otherOptions);
 		canteraLFS.setUpMoDS();
 	}
 }
