@@ -354,7 +354,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoSampling.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		algoSampling.put("algorithm_type", "Sobol");
 //		algoSampling.put("model_name", "exe");
-		algoSampling.put("objective_function", "NormalisedSumOfSquares");
+		algoSampling.put("objective_function", "SumOfSquares");
 		algoSampling.put("output_by_case", "false");
 		algoSampling.put("output_values", "true");
 		algoSampling.put("n_points", "1000");
@@ -366,7 +366,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		algoCalibration.put("algorithm_type", "Hooke_Jeeves");
 //		algoCalibration.put("model_name", "exe");
-		algoCalibration.put("objective_function", "NormalisedSumOfSquares");
+		algoCalibration.put("objective_function", "SumOfSquares");
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
 		algoCalibration.put("n_iters", "400");
