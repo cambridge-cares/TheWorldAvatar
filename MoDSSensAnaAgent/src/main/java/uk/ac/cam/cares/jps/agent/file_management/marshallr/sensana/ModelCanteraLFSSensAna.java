@@ -30,6 +30,7 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.IModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
@@ -46,6 +47,15 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	private List<String> expFiles = new ArrayList<>();
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
+	private String tranModel = "mix-average";
+	
+	public String getTranModel() {
+		return tranModel;
+	}
+
+	public void setTranModel(String tranModel) {
+		this.tranModel = tranModel;
+	}
 
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI,
@@ -146,6 +156,12 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 		outputResponses = exeModel.getOutputResponses();
 		passiveParameters = exeModel.getPassiveParameters();
 		
+		// set up the tranModel
+		String tran = JSonRequestParser.getFlameSpdTranModel(otherOptions);
+		if (tran != null) {
+			setTranModel(tran);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -242,7 +258,11 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 		LinkedHashMap<String, String> model = new LinkedHashMap<String, String>();
 		model.put("executable_name", Property.MODEL_CANTERA_EXE.getPropertyName());
 		model.put("working_directory", "");
-		model.put("args", Property.MODEL_CANTERA_ARGS.getPropertyName()+" "+FILE_CANTERA_LFSSIMULATION); // TODO further parameterise this
+		if (getTranModel().toLowerCase().contains("average") || getTranModel().toLowerCase().contains("mix") || getTranModel().toLowerCase().contains("1")) {
+			model.put("args", Property.MODEL_CANTERA_MIX_AVERAGE_OPT.getPropertyName()+" "+FILE_CANTERA_LFSSIMULATION); // TODO further parameterise this
+		} else if (getTranModel().toLowerCase().contains("multi") || getTranModel().toLowerCase().contains("2")) {
+			model.put("args", Property.MODEL_CANTERA_MULTI_OPT.getPropertyName()+" "+FILE_CANTERA_LFSSIMULATION);
+		}
 		models.put(modelName, model);
 		collectModels(models);
 		

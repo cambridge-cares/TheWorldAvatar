@@ -40,8 +40,8 @@ public enum Property {
 	MODEL_KINETICS_OUTPUT("OutputCase00001Cyc0001Info.csv"),
 	MODEL_CANTERA("canteraLFS"),
 	MODEL_CANTERA_EXE("python"),
-	MODEL_CANTERA_ARGS("/home/jb2197/Codes_kinetics/cantera/cantera_LFS.py"),
-	MODEL_CANTERA_MIX_AVERAGE_ARGS("/home/jb2197/Codes_kinetics/cantera/cantera_LFS_mix_average.py"),
+	MODEL_CANTERA_MULTI_OPT("/home/jb2197/Codes_kinetics/cantera/cantera_LFS_multi.py"),
+	MODEL_CANTERA_MIX_AVERAGE_OPT("/home/jb2197/Codes_kinetics/cantera/cantera_LFS_mix_average.py"),
 	MODEL_CANTERA_OUTPUT("OutputCase00001Lfs0001Info.csv");
 	
 	private String propertyName;

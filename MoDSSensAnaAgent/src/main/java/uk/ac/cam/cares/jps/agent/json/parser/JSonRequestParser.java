@@ -65,6 +65,12 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getFlameSpdTranModel(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("flameSpeedOption").path("tranModel");
+		
+		return locateNode.asText();
+	}
+	
 	public static Integer getTopNForRxns(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensAna").path("topN");
 		
