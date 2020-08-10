@@ -139,6 +139,7 @@ class OntoCompChemData:
         self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
         self.generate_geometry_atomic_masses(ontocompchem_graph, ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
+        self.generate_atom_count(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
         
         
         
@@ -452,7 +453,38 @@ class OntoCompChemData:
                      
                  
                      
-                     
+    def generate_atom_count(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+        
+        #generates unique string
+        uuid_atom_count = uuid.uuid3(uuid.NAMESPACE_DNS,"atom.count")
+        
+        #Generate graph for atom counts quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+        
+        atomic_mass_unit = dict_data["Atom counts"]
+        
+        for key, value in atomic_mass_unit.items():
+            number_of_atoms = Literal(value,datatype=XSD.string)            
+            ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(rnd))))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd))))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd)), RDF.type,gc_namespace.MoleculeProperty))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd)), RDF.type, OWL.Thing))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd)), gc_namespace.hasMolecule, URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Molecule))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasNumberOfAtoms,number_of_atoms))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasAtom,URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
+            ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(key))))
+            ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(key)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
+            ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(key)),RDF.type,OWL.Thing))
+        
+        
+         
+    def generate_electronic_and_zpe_energy(self):
+        print("generate electronic and zpe energy")
                      
             
             
