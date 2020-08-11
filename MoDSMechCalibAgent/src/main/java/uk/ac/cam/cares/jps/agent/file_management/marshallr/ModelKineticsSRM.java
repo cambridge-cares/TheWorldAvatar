@@ -428,12 +428,18 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		
 		// set up parameters
 		List<Parameter> parameters = new ArrayList<>();
-		// constructing row
+		// constructing row, lbAddend, and ubAddend
 		String row = new String();
+		String lbAddend = new String();
+		String ubAddend = new String();
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
+			lbAddend = lbAddend.concat(";-"+Math.sqrt(caseNames.size()));
+			ubAddend = ubAddend.concat(";"+Math.sqrt(caseNames.size()));
 		}
 		row = row.substring(1);
+		lbAddend = lbAddend.substring(1);
+		ubAddend = ubAddend.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			Parameter param = new Parameter();
@@ -450,8 +456,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", activeParameters.get(i));
 			initialRead.put("row", "0");
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_abs", "1.0E-2");
-			initialRead.put("ub_abs", "100.0");
+			initialRead.put("lb_abs", "1.0E-3");
+			initialRead.put("ub_abs", "1000.0");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
 			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value["+i+"]");
@@ -524,10 +530,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", i);
 			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_factor", "0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8;0.8");
-			initialRead.put("ub_factor", "1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2;1.2");
-			initialRead.put("lb_addend", "-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0;-0.0");
-			initialRead.put("ub_addend", "0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0;0.0");
+			initialRead.put("lb_addend", lbAddend);
+			initialRead.put("ub_addend", ubAddend);
 			
 			LinkedHashMap<String, String> workingRead = new LinkedHashMap<String, String>();
 			workingRead.put("column", column);

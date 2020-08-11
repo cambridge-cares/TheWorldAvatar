@@ -307,12 +307,18 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		// set up parameters
 		// TODO further parameterise this
 		List<Parameter> parameters = new ArrayList<>();
-		// constructing row
+		// constructing row, lbAddend, and ubAddend
 		String row = new String();
+		String lbAddend = new String();
+		String ubAddend = new String();
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
+			lbAddend = lbAddend.concat(";-"+Math.sqrt(caseNames.size()));
+			ubAddend = ubAddend.concat(";"+Math.sqrt(caseNames.size()));
 		}
 		row = row.substring(1);
+		lbAddend = lbAddend.substring(1);
+		ubAddend = ubAddend.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			// base active parameters
@@ -417,8 +423,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			initialRead.put("column", i);
 			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_addend", "-1.39;-1.56;-1.83;-2.00;-2.10;-2.13;-2.08;-1.95;-2.07;-1.81"); // TODO further parameterise this
-			initialRead.put("ub_addend", "1.39;1.56;1.83;2.00;2.10;2.13;2.08;1.95;2.07;1.81"); // TODO further parameterise this
+			initialRead.put("lb_addend", lbAddend);
+			initialRead.put("ub_addend", ubAddend);
 			
 			LinkedHashMap<String, String> workingRead = new LinkedHashMap<String, String>();
 			workingRead.put("column", column);
