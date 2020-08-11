@@ -54,7 +54,7 @@ public class MoDSAgent extends HttpServlet {
 	static List<String> jobsRunning = new ArrayList<>();
 	
 	SlurmJob slurmJob = new SlurmJob();
-	static JobSubmission jobSubmission;
+	public static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
 	public static ApplicationContext applicationContextMoDSAgent;
@@ -141,11 +141,7 @@ public class MoDSAgent extends HttpServlet {
 		logger.info("---------- Mechanism Calibration Agent has started ----------");
 		System.out.println("---------- Mechanism Calibration Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		MoDSAgent modsAgent = new MoDSAgent();
-		// the first 30 refers to the delay (in seconds) before the job scheduler
-		// starts and the second 60 refers to the interval between two consecutive
-		// executions of the scheduler.
-		executorService.scheduleAtFixedRate(modsAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
+		MoDSAgent modsMechCalibAgent = new MoDSAgent();
 		// initialising classes to read properties from the mods-agent.properties file
 		if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -159,11 +155,23 @@ public class MoDSAgent extends HttpServlet {
 		if (modsAgentProperty == null) {
 			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSAgentProperty.class);
 		}
+		// the first 30 refers to the delay (in seconds) before the job scheduler
+		// starts and the second 60 refers to the interval between two consecutive
+		// executions of the scheduler.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				modsMechCalibAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				e.printStackTrace();
+			}
+		}, 
+				slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(), 
+				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
 		logger.info("---------- Calibration jobs are being monitored  ----------");
 		System.out.println("---------- Calibration jobs are being monitored  ----------");
 	}
 	
-	private void monitorJobs() {
+	private void monitorJobs() throws SlurmJobException {
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
@@ -291,12 +299,12 @@ public class MoDSAgent extends HttpServlet {
 	 * @throws SlurmJobException
 	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSAgentException, SlurmJobException {
-//		if (applicationContext == null) {
-//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-//		}
-//		if (slurmJobProperty == null) {
-//			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-//		}
+		if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
+		if (slurmJobProperty == null) {
+			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
+		}
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
 					slurmJobProperty.getHpcAddress());
