@@ -1,10 +1,15 @@
 const routerFact = require("./routerFact/mapRouterFactCached");
-var getAltPPcoordi = require('../agents/ReadAltPPCoordi');
+var getEngPPcoordi = require('../agents/getEnglandPPcoordinates');
 var express= require('express')
 var router = express.Router()
+
+router = routerFact(router, getEngPPcoordi, {title:"UK Digital Twin", subtitle:"UK power plant map"}, "ontoTwinUK"); //reference to the view pug, not the js file found in \javascripts
+
+/**
  router = routerFact(router, (cb)=> cb(null, {})
  , {title:"UK OntoTwin", subtitle:"UK OntoTwin"}, "ontoTwinUK"); //reference to the pug, not the js file found in \javascripts
 
+/**
 router.post("/simulation", (req, res, next)=>{
     if(!req.body) {
         console.log("Can not find req body")
@@ -21,7 +26,6 @@ router.post("/simulation", (req, res, next)=>{
 
     }
 
-
-
 })
+**/
 module.exports = router;
