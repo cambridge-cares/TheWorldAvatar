@@ -15,11 +15,11 @@ def run(log_file,output_json):
     #create ontocompchem graph
     ontocompchem_graph = Graph()
     # create OntoCompChemData object
-    CompChemObj = OntoCompChemData()    
+    CompChemObj = OntoCompChemData()
     # parse the log, and once done upload data to KG
     # the upload function needs to be defined in the OntoCompChemData class
     CompChemObj.getData(log_file)
     #CompChemObj.uploadToKG()
     if output_json: 
-        CompChemObj.outputjson()        
-        CompChemObj.outputowl(ontocompchem_graph,file_name, r)       
+         CompChemObj.outputjson()        
+         CompChemObj.outputowl(ontocompchem_graph,file_name, r)       
