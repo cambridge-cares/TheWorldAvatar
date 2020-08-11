@@ -51,9 +51,11 @@ class OntoCompChemData:
         print('Dumping to JSON, File '+self.log)
         for i, json_dat in enumerate(self.data):
             if len(self.data) > 1:
-                json_name = self.log.replace('.log','#'+str(i+1)+'.json')
+            #    json_name = self.log.replace('.log','#'+str(i+1)+'.json')
+                 json_name = self.log + '#' + str(i+1)+'.json'
             else:
-                json_name = self.log.replace('.log','.json')
+            #    json_name = self.log.replace('.log','.json')
+                 json_name = self.log + '.json'
 
             # dump call ...
             dict_data = json.loads(json_dat)
@@ -121,8 +123,7 @@ class OntoCompChemData:
          self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
          self.generate_geometry_atomic_masses(ontocompchem_graph, ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
          self.generate_atom_count(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_electronic_and_zpe_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_files_iri()
+         self.generate_electronic_and_zpe_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)         
         
     def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
         
@@ -481,9 +482,6 @@ class OntoCompChemData:
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key))))
                      ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
                      ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,OWL.Thing))
-            
-        
-        
          
     def generate_electronic_and_zpe_energy(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):      
         
@@ -508,7 +506,8 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
                  
-        
+    
+            
     
         
              
