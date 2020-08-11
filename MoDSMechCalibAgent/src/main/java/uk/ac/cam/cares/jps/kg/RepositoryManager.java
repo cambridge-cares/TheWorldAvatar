@@ -25,7 +25,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 public class RepositoryManager implements IRepositoryManager {
@@ -158,7 +158,7 @@ public class RepositoryManager implements IRepositoryManager {
 	 */
 
 	public List<String> queryRepositoryExperimentalData(String serverURL, String repositoryID, String queryString)
-			throws OntoException, MoDSAgentException {
+			throws OntoException, MoDSMechCalibAgentException {
 		List<String> results = new ArrayList<>();
 		try {
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
@@ -244,7 +244,7 @@ public class RepositoryManager implements IRepositoryManager {
 	}
 
 	public List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString)
-			throws MoDSAgentException {
+			throws MoDSMechCalibAgentException {
 		List<List<String>> processedResultList = new ArrayList<List<String>>();
 
 		try {
@@ -263,7 +263,7 @@ public class RepositoryManager implements IRepositoryManager {
 			} catch (Exception e) {
 				logger.error("Exception occurred.");
 				e.printStackTrace();
-				throw new MoDSAgentException("Exception occurred.");
+				throw new MoDSMechCalibAgentException("Exception occurred.");
 			} finally {
 				logger.info("Executed the command to close the connection to the repository.");
 				con.close();
@@ -271,7 +271,7 @@ public class RepositoryManager implements IRepositoryManager {
 		} catch (RDF4JException e) {
 			logger.error("RDF4JException occurred.");
 			e.printStackTrace();
-			throw new MoDSAgentException("RDF4JException occurred.");
+			throw new MoDSMechCalibAgentException("RDF4JException occurred.");
 		}
 		return processedResultList;
 	}

@@ -12,11 +12,11 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.IMoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 
 public class MoDS4yrt23 extends MoDSFileManagement {
 	
-	public static void main(String[] args) throws IOException, MoDSAgentException {
+	public static void main(String[] args) throws IOException, MoDSMechCalibAgentException {
 		MoDS4yrt23 fileMagt = new MoDS4yrt23();
 		
 		// including flame speed
@@ -44,7 +44,7 @@ public class MoDS4yrt23 extends MoDSFileManagement {
 	}
 	
 	@Override
-	public String createMoDSJob(String jsonString, String jobFolderName) throws IOException, MoDSAgentException {
+	public String createMoDSJob(String jsonString, String jobFolderName) throws IOException, MoDSMechCalibAgentException {
 		
 		List<String> ignitionDelayExpIRI = JSonRequestParser.getOntoChemExpIgnitionDelayIRI(jsonString);
 		List<String> flameSpeedExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(jsonString);

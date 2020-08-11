@@ -11,7 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.util.UriUtils;
 
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
 
 public class OntoKinKG extends RepositoryManager {
@@ -21,7 +21,7 @@ public class OntoKinKG extends RepositoryManager {
 	public static final String DC = "PREFIX dc: <http://purl.org/dc/elements/1.1/> \n";
 	public static final String REACTION_MECHANISM = "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> \n";
 	
-	public static void main(String[] args) throws ServletException, MoDSAgentException {
+	public static void main(String[] args) throws ServletException, MoDSMechCalibAgentException {
 		OntoKinKG ontoKinKG = new OntoKinKG();
 		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237";
 		ontoKinKG.queryNumOfReactions(mechanismIRI);
@@ -31,7 +31,7 @@ public class OntoKinKG extends RepositoryManager {
 	/**
 	 * Reads the 
 	 */
-	public List<List<String>> queryNumOfReactions(String mechanismIRI) throws MoDSAgentException {
+	public List<List<String>> queryNumOfReactions(String mechanismIRI) throws MoDSMechCalibAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
@@ -41,7 +41,7 @@ public class OntoKinKG extends RepositoryManager {
 		return testResults;
 	}
 	
-	public LinkedHashMap<String, String> queryAllReactions(String mechanismIRI) throws MoDSAgentException {
+	public LinkedHashMap<String, String> queryAllReactions(String mechanismIRI) throws MoDSMechCalibAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
@@ -57,7 +57,7 @@ public class OntoKinKG extends RepositoryManager {
 		return queriedReactionList;
 	}
 	
-	public LinkedHashMap<String, String> queryReactionsToOptimise(String mechanismIRI, List<String> reactionIRIList) throws MoDSAgentException {
+	public LinkedHashMap<String, String> queryReactionsToOptimise(String mechanismIRI, List<String> reactionIRIList) throws MoDSMechCalibAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
@@ -75,7 +75,7 @@ public class OntoKinKG extends RepositoryManager {
 		return queriedReactionList;
 	}
 	
-	public LinkedHashMap<String, String> queryReactionBasedOnNo(String mechanismIRI, String reactionNo) throws MoDSAgentException {
+	public LinkedHashMap<String, String> queryReactionBasedOnNo(String mechanismIRI, String reactionNo) throws MoDSMechCalibAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
@@ -88,7 +88,7 @@ public class OntoKinKG extends RepositoryManager {
 		return queriedReaction;
 	}
 	
-	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSAgentException {
+	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSMechCalibAgentException {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(REACTION_MECHANISM);
 		queryString = queryString.concat(RDF);
@@ -102,7 +102,7 @@ public class OntoKinKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	private String formAllReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSAgentException {
+	private String formAllReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSMechCalibAgentException {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(REACTION_MECHANISM);
 		queryString = queryString.concat(RDF);
@@ -119,7 +119,7 @@ public class OntoKinKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	private String formReactionsToOptimiseQuery(String prefixBindingOntoKin, String reactionIRI) throws MoDSAgentException {
+	private String formReactionsToOptimiseQuery(String prefixBindingOntoKin, String reactionIRI) throws MoDSMechCalibAgentException {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(DC);
 		queryString = queryString.concat("SELECT ?reactionNo ?reactionEquation \n");
@@ -130,7 +130,7 @@ public class OntoKinKG extends RepositoryManager {
 		return queryString;
 	}
 	
-	private String formReactionBasedOnNoQuery(String prefixBindingOntoKin, String mechanismIRI, String reactionNo) throws MoDSAgentException {
+	private String formReactionBasedOnNoQuery(String prefixBindingOntoKin, String mechanismIRI, String reactionNo) throws MoDSMechCalibAgentException {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(REACTION_MECHANISM);
 		queryString = queryString.concat(RDF);

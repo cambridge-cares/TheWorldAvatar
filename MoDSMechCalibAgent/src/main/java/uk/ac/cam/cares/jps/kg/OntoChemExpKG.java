@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
 
 public class OntoChemExpKG extends RepositoryManager {
@@ -23,7 +23,7 @@ public class OntoChemExpKG extends RepositoryManager {
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
 	
 	
-	public static void main(String[] args) throws ServletException, MoDSAgentException {
+	public static void main(String[] args) throws ServletException, MoDSMechCalibAgentException {
 		OntoChemExpKG ontoChemExpKG = new OntoChemExpKG();
 		ontoChemExpKG.formatExperimentDataTable("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
 	}
@@ -46,7 +46,7 @@ public class OntoChemExpKG extends RepositoryManager {
 	    }
 	}
 	
-	public DataTable formatFlameSpeedExpDataTable(String experimentIRI) throws MoDSAgentException {
+	public DataTable formatFlameSpeedExpDataTable(String experimentIRI) throws MoDSMechCalibAgentException {
 		// TODO
 		List<String> columnTitles = new ArrayList<String>();
 		List<List<String>> experimentData = new ArrayList<List<String>>();
@@ -63,7 +63,7 @@ public class OntoChemExpKG extends RepositoryManager {
 		return new DataTable(columnTitles, experimentData);
 	}
 	
-	public DataTable formatExperimentDataTable(String experimentIRI) throws MoDSAgentException {
+	public DataTable formatExperimentDataTable(String experimentIRI) throws MoDSMechCalibAgentException {
 		List<String> columnTitles = new ArrayList<String>();
 		List<List<String>> experimentData = new ArrayList<List<String>>();
 		
@@ -99,7 +99,7 @@ public class OntoChemExpKG extends RepositoryManager {
 	
 	
 	
-	public List<List<String>> queryConcentration(String experimentIRI) throws MoDSAgentException {
+	public List<List<String>> queryConcentration(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
@@ -109,7 +109,7 @@ public class OntoChemExpKG extends RepositoryManager {
 		return testResults;
 	}
 	
-	public List<List<String>> queryEquivalenceRatio(String experimentIRI) throws MoDSAgentException {
+	public List<List<String>> queryEquivalenceRatio(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
@@ -119,7 +119,7 @@ public class OntoChemExpKG extends RepositoryManager {
 		return testResults;
 	}
 	
-	public List<List<String>> queryExperimentData(String experimentIRI) throws MoDSAgentException {
+	public List<List<String>> queryExperimentData(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
@@ -129,7 +129,7 @@ public class OntoChemExpKG extends RepositoryManager {
 		return testResults;
 	}
 	
-	public List<List<String>> queryFlameSpeedExpData(String experimentIRI) throws MoDSAgentException {
+	public List<List<String>> queryFlameSpeedExpData(String experimentIRI) throws MoDSMechCalibAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}

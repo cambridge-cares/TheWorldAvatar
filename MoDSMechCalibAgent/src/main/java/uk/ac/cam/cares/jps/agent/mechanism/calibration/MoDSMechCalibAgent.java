@@ -23,10 +23,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import uk.ac.cam.cares.jps.agent.configuration.MoDSAgentConfiguration;
-import uk.ac.cam.cares.jps.agent.configuration.MoDSAgentProperty;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentConfiguration;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -39,8 +39,8 @@ import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
-public class MoDSAgent extends HttpServlet {
-	private Logger logger = LoggerFactory.getLogger(MoDSAgent.class);
+public class MoDSMechCalibAgent extends HttpServlet {
+	private Logger logger = LoggerFactory.getLogger(MoDSMechCalibAgent.class);
 	String server = "login-cpu.hpc.cam.ac.uk";
 	String username = "jb2197";
 	String password = new String();
@@ -58,14 +58,14 @@ public class MoDSAgent extends HttpServlet {
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
 	public static ApplicationContext applicationContextMoDSAgent;
-	public static MoDSAgentProperty modsAgentProperty;
+	public static MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
 	
-	public static void main(String[] args) throws ServletException, MoDSAgentException {
-		MoDSAgent modsAgent = new MoDSAgent();
-		modsAgent.init();
+	public static void main(String[] args) throws ServletException, MoDSMechCalibAgentException {
+		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
+		modsMechCalibAgent.init();
 		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570512_48\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570503_39\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570639_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570640_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570509_45\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570499_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570607_143\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570631_167\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570634_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570633_169\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570504_40\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570502_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570618_154\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570505_41\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570638_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570517_53\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160\"],\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237\"}}}";
 		try {
-			modsAgent.query(input);
+			modsMechCalibAgent.query(input);
 			
 		} catch (IOException | SlurmJobException e) {
 			// TODO Auto-generated catch block
@@ -82,7 +82,7 @@ public class MoDSAgent extends HttpServlet {
 	 */
 	@RequestMapping(value="/job/request", method = RequestMethod.GET)
 	@ResponseBody
-	public String query(@RequestParam String input) throws IOException, MoDSAgentException, SlurmJobException {
+	public String query(@RequestParam String input) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		System.out.println("received query:\n"+input);
 		logger.info("received query:\n"+input);
 		return setUpJob(input);
@@ -101,7 +101,7 @@ public class MoDSAgent extends HttpServlet {
 	 */
 	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
 	@ResponseBody
-	public String produceStatistics(@RequestParam String input) throws IOException, MoDSAgentException {
+	public String produceStatistics(@RequestParam String input) throws IOException, MoDSMechCalibAgentException {
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
 		if (jobSubmission==null) {
@@ -123,7 +123,7 @@ public class MoDSAgent extends HttpServlet {
 	
 	@RequestMapping(value="/job/show/statistics",method = RequestMethod.GET)
 	@ResponseBody
-	public String showStatistics() throws IOException, MoDSAgentException {
+	public String showStatistics() throws IOException, MoDSMechCalibAgentException {
 		System.out.println("Received a request to show statistics.\n");
 		logger.info("Received a request to show statistics.\n");
 		if (jobSubmission==null) {
@@ -135,13 +135,13 @@ public class MoDSAgent extends HttpServlet {
 	/**
 	 * Starts the scheduler to monitor calibration jobs.
 	 * 
-	 * @throws MoDSAgentException
+	 * @throws MoDSMechCalibAgentException
 	 */
 	public void init() throws ServletException {
 		logger.info("---------- Mechanism Calibration Agent has started ----------");
 		System.out.println("---------- Mechanism Calibration Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		MoDSAgent modsMechCalibAgent = new MoDSAgent();
+		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
 		// initialising classes to read properties from the mods-agent.properties file
 		if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -150,10 +150,10 @@ public class MoDSAgent extends HttpServlet {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 		}
 		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSAgentConfiguration.class);
+			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSMechCalibAgentConfiguration.class);
 		}
-		if (modsAgentProperty == null) {
-			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSAgentProperty.class);
+		if (modsMechCalibAgentProperty == null) {
+			modsMechCalibAgentProperty = applicationContextMoDSAgent.getBean(MoDSMechCalibAgentProperty.class);
 		}
 		// the first 30 refers to the delay (in seconds) before the job scheduler
 		// starts and the second 60 refers to the interval between two consecutive
@@ -202,10 +202,10 @@ public class MoDSAgent extends HttpServlet {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
 		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSAgentConfiguration.class);
+			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSMechCalibAgentConfiguration.class);
 		}
-		if (modsAgentProperty == null) {
-			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSAgentProperty.class);
+		if (modsMechCalibAgentProperty == null) {
+			modsMechCalibAgentProperty = applicationContextMoDSAgent.getBean(MoDSMechCalibAgentProperty.class);
 		}
 		jobSpace = jobSubmission.getWorkspaceDirectory();
 		try {
@@ -279,10 +279,10 @@ public class MoDSAgent extends HttpServlet {
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSMechCalibAgentException
 	 * @throws SlurmJobException
 	 */
-	public String setUpJob(String jsonString) throws IOException, MoDSAgentException, SlurmJobException {
+	public String setUpJob(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
 		obj.put("message", message);
@@ -295,10 +295,10 @@ public class MoDSAgent extends HttpServlet {
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSMechCalibAgentException
 	 * @throws SlurmJobException
 	 */
-	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSAgentException, SlurmJobException {
+	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -322,9 +322,9 @@ public class MoDSAgent extends HttpServlet {
 	 * @param jsonString
 	 * @return
 	 * @throws IOException
-	 * @throws MoDSAgentException
+	 * @throws MoDSMechCalibAgentException
 	 */
-	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSAgentException {
+	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSMechCalibAgentException {
 		MoDSFileManagement fileMagt = new MoDSFileManagement();
 		
 		String jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);

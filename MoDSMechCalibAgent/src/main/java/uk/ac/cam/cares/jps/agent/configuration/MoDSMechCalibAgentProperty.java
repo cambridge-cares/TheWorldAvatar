@@ -14,6 +14,6 @@ import org.springframework.context.annotation.PropertySource;
  */
 @Configuration
 @PropertySource("classpath:mods-agent.properties")
-public class MoDSAgentProperty {
+public class MoDSMechCalibAgentProperty {
 	
 }

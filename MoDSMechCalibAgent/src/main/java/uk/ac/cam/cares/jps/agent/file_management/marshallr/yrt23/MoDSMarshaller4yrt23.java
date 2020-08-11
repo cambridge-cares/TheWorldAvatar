@@ -8,11 +8,11 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.ExecutableModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ModelCanteraLFS;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ModelKineticsSRM;
-import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSAgentException;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 
 public class MoDSMarshaller4yrt23 extends MoDSMarshaller {
 	@Override
-	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSAgentException {
+	public void plugInKinetics(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSMechCalibAgentException {
 		// TODO Auto-generated method stub
 		ModelKineticsSRM4yrt23 kineticsSRM = new ModelKineticsSRM4yrt23();
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
@@ -21,7 +21,7 @@ public class MoDSMarshaller4yrt23 extends MoDSMarshaller {
 	}
 
 	@Override
-	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSAgentException {
+	public void plugInCantera(List<String> experimentIRI, String mechanismIRI, List<String> reactionIRIList, String otherOptions) throws IOException, MoDSMechCalibAgentException {
 		// TODO Auto-generated method stub
 		ModelCanteraLFS4yrt23 canteraLFS = new ModelCanteraLFS4yrt23();
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);

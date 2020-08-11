@@ -23,7 +23,7 @@ public class MechanismDownload {
 	
 	public static void main(String[] args) throws MalformedURLException, SAXException, IOException, ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
 		MechanismDownload mechanismDownload = new MechanismDownload();
-		mechanismDownload.obtainMechanism("http://www.theworldavatar.com/data/ontokin/pode_mechanism_testing/mechanism.xml", "C:\\Users\\jb2197\\Documents\\c4e-jb2197-OntologyTools\\Codes\\thermochemistry\\MoDSAgent\\src\\main\\resources\\JobFolder\\All\\chemical_mechanism.xml");
+		mechanismDownload.obtainMechanism("http://www.theworldavatar.com/data/ontokin/pode_mechanism_testing/mechanism.xml", "C:\\Users\\jb2197\\Documents\\c4e-jb2197-OntologyTools\\Codes\\thermochemistry\\MoDSMechCalibAgent\\src\\main\\resources\\JobFolder\\All\\chemical_mechanism.xml");
 	}
 	
 	public void obtainMechanism(String url, String targetPath) throws MalformedURLException, SAXException, IOException, ParserConfigurationException, TransformerFactoryConfigurationError, TransformerException {
