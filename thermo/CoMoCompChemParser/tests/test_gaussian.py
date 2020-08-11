@@ -34,9 +34,12 @@ class TestGaussianParser(unittest.TestCase):
                     test_data = json.loads(test_data)
 
                     if len(test_data_list) > 1:
-                        ref_name = log_file.replace('.log','#'+str(i+1)+'.json')
+                     #   ref_name = log_file.replace('.log','#'+str(i+1)+'.json')
+                         ref_name = log_file + '#' + str(i+1)+'.json'
                     else:
-                        ref_name = log_file.replace('.log','.json')
+                        #ref_name = log_file.replace('.log','.json')
+                        ref_name = log_file + '.json'
+                        
                     ref_path = os.path.join(test_path, method, ref_name)
                     # uncomment to generate ref json file
                     #---------------------------------------------------
