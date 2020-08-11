@@ -1,0 +1,55 @@
+{
+  "name": "co2web",
+  "version": "0.9.2",
+  "private": true,
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "./node_modules/.bin/mocha"
+  },
+  "dependencies": {
+    "async": "^2.3.0",
+    "body-parser": "^1.18.3",
+    "bootstrap": "^3.3.7",
+    "chai": "^3.5.0",
+    "chokidar": "^3.4.1",
+    "cookie-parser": "~1.4.3",
+    "csv": "^3.1.0",
+    "csv-parser": "^2.3.2",
+    "debug": "^2.6.9",
+    "event-stream": "^3.3.4",
+    "express": "^4.16.3",
+    "fs-readdir-recursive": "^1.1.0",
+    "is-string": "^1.0.4",
+    "libxmljs": "^0.19.7",
+    "log4js": "^3.0.6",
+    "mocha": "^3.2.0",
+    "morgan": "^1.9.1",
+    "nock": "^9.0.13",
+    "node-xml-stream": "^1.0.2",
+    "proj4": "^2.4.3",
+    "pug": "^2.0.0-beta11",
+    "rabbitmq-node": "^0.5.0",
+    "rdflib": "^0.15.0",
+    "rdfstore": "^0.9.17",
+    "readdirp": "^2.1.0",
+    "redis": "^2.8.0",
+    "request": "^2.88.0",
+    "safe-buffer": "^5.1.2",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.1.1",
+    "string-to-stream": "^3.0.1",
+    "uuid": "^8.3.0",
+    "node-gyp": "0.12.0"
+  },
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch  Script",
+      "program": "\\app.js",
+      "runtimeArgs": [
+        "--max-old-space-size=4096"
+      ]
+    }
+  ]
+}
