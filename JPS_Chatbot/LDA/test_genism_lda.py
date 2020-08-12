@@ -100,14 +100,14 @@ print(corpus[:1])
 lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                             id2word=id2word,
                                             num_topics=4,
-                                            random_state=20,
+                                            random_state=100,
                                             update_every=1,
-                                            chunksize=100,
-                                            passes=1000,
+                                            chunksize=10,
+                                            passes=2000,
                                             alpha='auto',
                                             per_word_topics=True)
 
-pprint(lda_model.print_topics(num_words= 15))
+pprint(lda_model.print_topics(num_words= 10))
 doc_lda = lda_model[corpus]
 
 
