@@ -2,7 +2,7 @@
 var prefix = "http://www.jparksimulator.com";
 var markers = []
 
-const toggleDisplay = elemId => {
+var toggleDisplayf = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
         x.style.display = 'block';
@@ -12,7 +12,7 @@ const toggleDisplay = elemId => {
 };
 
 $("#readme-button").click(function() {
-    toggleDisplay("readme-text");
+    toggleDisplayf("readme-text");
 });
 
 document.addEventListener("click", function(evt) {
@@ -30,6 +30,16 @@ document.addEventListener("click", function(evt) {
     }
 });//first call to initMap. Determine center of map by url
 
+const center = {lat:52.4137756,lng:-1.5849575};
+
+(function PPMap(){
+		
+    var ppMap = new PopupMap({useCluster:true, center:center});
+})();
+
+
+
+/**
 function initMap() {
     //array of pathName
     var arrUrl = window.location.pathname.split('/');
@@ -40,4 +50,4 @@ function initMap() {
     map.setCenter(center);
 
     
-  }
+  }**/

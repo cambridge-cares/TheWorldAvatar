@@ -17,6 +17,8 @@ var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
+var getAttrList =require("./routes/getAttrList");
+
 /**
 var visualizeWorld =require("./routes/visualizeWorld.js");
 var visualizeBMS =require("./routes/visualizeBms.js");
@@ -133,6 +135,8 @@ app.use('/visualizeOntokinRemote',visualizeOntokinR);
 
 
 /*posting to dataObserve to get orginal data & register for future data change*/
+app.use("/getAttrList", getAttrList);
+
 app.use('/ontoTwinUK', ontoTwinMap);
 app.use('/visualizeJurong', visualizeJurong);
 app.use('/visualizeWorld', visualizeWorld);
