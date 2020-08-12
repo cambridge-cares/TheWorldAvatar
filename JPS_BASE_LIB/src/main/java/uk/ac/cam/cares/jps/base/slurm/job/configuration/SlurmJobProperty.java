@@ -23,6 +23,9 @@ public class SlurmJobProperty {
 	@Value("${agent.work.space.prefix}")
 	private String agentWorkspacePrefix;
 
+	@Value("${agent.completed.job.space.prefix}")
+	private String agentCompletedJobsSpacePrefix;
+	
 	@Value("${hpc.address}")
 	private String hpcAddress;
 
@@ -86,6 +89,10 @@ public class SlurmJobProperty {
 
 	public String getAgentWorkspacePrefix() {
 		return agentWorkspacePrefix;
+	}
+	
+	public String getAgentCompletedJobsSpacePrefix() {
+		return agentCompletedJobsSpacePrefix;
 	}
 
 	public String getHpcAddress() {
