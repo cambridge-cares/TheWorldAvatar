@@ -46,7 +46,7 @@ import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 
-@WebServlet(urlPatterns = {"/SensorWeatherAgent","/resetWeatherRepository"})
+@WebServlet(urlPatterns = {"/SensorWeatherAgent"})
 public class WeatherAgent extends JPSHttpServlet {
 
 	/**
