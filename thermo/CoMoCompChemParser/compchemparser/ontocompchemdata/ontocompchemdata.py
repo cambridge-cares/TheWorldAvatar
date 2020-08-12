@@ -124,7 +124,9 @@ class OntoCompChemData:
          self.generate_geometry_atomic_masses(ontocompchem_graph, ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
          self.generate_atom_count(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_electronic_and_zpe_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)         
-        
+         self.generate_scf_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         
+         
     def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
         
          #import ontocompchem ontology    
@@ -133,15 +135,21 @@ class OntoCompChemData:
     
     def generate_gaussian_instance(self,program_version,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,rnd):
         
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                  
+         #extract empirical formula 
+        empirical_formula = dict_data["Empirical formula"]
+         
          #Generates instance of calculation based on Gaussian software used. Currently we support G09 and G16
-         if program_version.startswith("2009") :
+        if program_version.startswith("2009") :
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G09))
              
-         else: 
+        else: 
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, ontocompchem_namespace.G16))
         
-         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, OWL.Thing))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(rnd))))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+"_"+str(rnd))))
             
         
     def generate_empirical_formula(self,ontocompchem_graph,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
@@ -156,20 +164,21 @@ class OntoCompChemData:
          #make empirical formula literal
          empirical_formula_literal = Literal(empirical_formula)
          #Generates graph that represents empirical formula
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_" + str(rnd)), RDF.type, ontocompchem_namespace.InitializationModule))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), RDF.type, OWL.Thing))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd))))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, gc_namespace.MoleculeProperty))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), RDF.type, OWL.Thing))        
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(rnd)), gc_namespace.hasName, empirical_formula_literal))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+"_" + str(rnd)), RDF.type, ontocompchem_namespace.InitializationModule))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+"_"+ str(rnd)), RDF.type, OWL.Thing))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(empirical_formula)+ "_"+str(rnd))))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.MoleculeProperty))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasName, empirical_formula_literal))
           
     def generate_level_of_theory(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,rnd):
          #Generates level of theory
          for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
-        
+                  
          if "Method" in dict_data:
              method =  dict_data["Method"]
+             empirical_formula = dict_data["Empirical formula"]
              
              #[am2145@cam.ac.uk]: Generally speaking, I don' t think it is possible to run a Gaussian job without providing the method, so I would expect that method is present somewhere in any successfully run job.
              if "Basis set" in dict_data:
@@ -188,11 +197,11 @@ class OntoCompChemData:
                   level_of_theory_literal = Literal(level_of_theory)
                   
              #creating graph for level of theory quantity
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(rnd)), RDF.type, ontocompchem_namespace.LevelOfTheory))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(rnd)), RDF.type, gc_namespace.MethodologyFeature))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), RDF.type, OWL.Thing))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(rnd)), ontocompchem_namespace.hasLevelOfTheory, level_of_theory_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(empirical_formula)+ "_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(empirical_formula)+ "_"+str(rnd)), RDF.type, ontocompchem_namespace.LevelOfTheory))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_" + str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.MethodologyFeature))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasLevelOfTheory, level_of_theory_literal))
         
     def generate_basis_set(self,ontocompchem_graph,ontology_base_uri,gc_namespace,rnd):
         
@@ -203,10 +212,11 @@ class OntoCompChemData:
          if "Basis set" in dict_data:
              basis_set = dict_data["Basis set"]
              basis_set_literal = Literal(basis_set)
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_" + str(rnd)), RDF.type, gc_namespace.BasisSet))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd)), RDF.type, OWL.Thing))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(rnd)), gc_namespace.hasBasisSet, basis_set_literal))
+             empirical_formula = dict_data["Empirical formula"]
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+ str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasParameter, URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+str(empirical_formula)+ "_"+ str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_" + str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.BasisSet))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasBasisSet, basis_set_literal))
         
     def generate_geometry_type(self, ontocompchem_graph, ontology_base_uri, ontocompchem_namespace,gc_namespace, file_name, rnd):
         
@@ -220,10 +230,11 @@ class OntoCompChemData:
          if "Geometry type" in dict_data:
              geometry_type= dict_data["Geometry type"]
              geometry_type_literal = Literal(geometry_type)
-             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.GeometryType))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, OWL.Thing))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(uuid_geometry_type)+"_"+str(rnd)), ontocompchem_namespace.hasGeometryType,geometry_type_literal))
+             empirical_formula = dict_data["Empirical formula"]
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(empirical_formula)+ "_"+str(uuid_geometry_type)+"_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(empirical_formula)+ "_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.GeometryType))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(empirical_formula)+ "_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(empirical_formula)+ "_"+str(uuid_geometry_type)+"_"+str(rnd)), ontocompchem_namespace.hasGeometryType,geometry_type_literal))
     
     def generate_frequencies(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,file_name,rnd):
         
@@ -236,7 +247,7 @@ class OntoCompChemData:
                 
          
          if "Frequencies" in dict_data :
-             print("Frequencies exist")
+             empirical_formula = dict_data["Empirical formula"]
              frequency_string = "  "
              for fr in dict_data["Frequencies"]:
                  frequency_string = str(str(round(decimal.Decimal(fr),4))) + " " + frequency_string
@@ -252,20 +263,20 @@ class OntoCompChemData:
              frequencies_unit = dict_data["Frequencies unit"]
         
              #creates graph for frequencies quantity that includes frequencies value, unit and size.
-             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, gc_namespace.VibrationalAnalysis))  
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, OWL.Thing))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasResult, URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, gc_namespace.Frequency))  
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, gc_namespace.VibrationalAnalysis))  
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasResult, URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, gc_namespace.Frequency))  
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), RDF.type, OWL.Thing))
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), ontocompchem_namespace.hasFrequencies, frequency_string_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), ontocompchem_namespace.hasFrequencies, frequency_string_literal))
         
              #creates iri for unit cm^-1 (gc:cm-1)
              if frequencies_unit == "cm^-1":
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasUnit, URIRef(gc_namespace + "cm-1")))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasUnit, URIRef(gc_namespace + "cm-1")))
 
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasVibrationCount, frequencies_size_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasVibrationCount, frequencies_size_literal))
         
             
     def generate_rotational_symmetry_number(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):        
@@ -277,16 +288,16 @@ class OntoCompChemData:
          for i, json_dat in enumerate(self.data):
                   dict_data = json.loads(json_dat)
                   
-         if "Rotational symmetry number" in dict_data :          
+         if "Rotational symmetry number" in dict_data :  
+             empirical_formula = dict_data["Empirical formula"]        
              rotational_symmetry_number= dict_data["Rotational symmetry number"]
              rotational_symmetry_number_literal = Literal(rotational_symmetry_number,datatype=XSD.string)
         
              ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, 
-                                 URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.RotationalSymmetry))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, OWL.Thing))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), 
-                                 ontocompchem_namespace.hasRotationalSymmetryNumber,rotational_symmetry_number_literal))
+                                 URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(empirical_formula)+ "_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(empirical_formula)+ "_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.RotationalSymmetry))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(empirical_formula)+ "_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(empirical_formula)+ "_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)),ontocompchem_namespace.hasRotationalSymmetryNumber,rotational_symmetry_number_literal))
         
     def generate_spin_multiplicity(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
            
@@ -297,16 +308,17 @@ class OntoCompChemData:
          if "Spin multiplicity" in dict_data :
              spin_multiplicity_number= dict_data["Spin multiplicity"]
              spin_multiplicity_number_literal = Literal(spin_multiplicity_number,datatype=XSD.string)
+             empirical_formula = dict_data["Empirical formula"]
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), RDF.type, OWL.Thing))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(rnd)), gc_namespace.hasMolecule,URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.GeometryOptimization))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_optimization_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasMolecule,URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd))))
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, gc_namespace.Molecule))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.Molecule))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
         
 
     def generate_formal_charge(self,ontocompchem_graph,gc_namespace,ontology_base_uri,file_name,rnd):
@@ -318,18 +330,19 @@ class OntoCompChemData:
          if "Formal charge" in dict_data:
              formal_charge_value = dict_data["Formal charge"]
              formal_charge_unit = dict_data["Formal charge unit"]
+             empirical_formula = dict_data["Empirical formula"]
         
              formal_charge_value_literal = Literal(formal_charge_value)
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), gc_namespace.hasFormalCharge,URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasFormalCharge,URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(empirical_formula)+ "_"+str(rnd))))
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), RDF.type, gc_namespace.IntegerValue))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.IntegerValue))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), gc_namespace.hasValue, formal_charge_value_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasValue, formal_charge_value_literal))
         
              if str(formal_charge_unit) == "atomic":
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(rnd)), gc_namespace.hasUnit,URIRef(gc_namespace.atomicUnit)))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasUnit,URIRef(gc_namespace.atomicUnit)))
         
         
     def generate_program_name_run_date_program_version(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
@@ -341,18 +354,19 @@ class OntoCompChemData:
          program_name = dict_data["Program name"]
          program_version = dict_data["Program version"]
          run_date = dict_data["Run date"]
+         empirical_formula = dict_data["Empirical formula"]
         
          program_name_literal = Literal(program_name,datatype=XSD.string)
          program_version_literal = Literal(program_version,datatype=XSD.string)
          run_date_literal = Literal(run_date,datatype=XSD.string)
         
-         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasEnvironment,URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd))))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), RDF.type, gc_namespace.SourcePackage))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), RDF.type, OWL.Thing))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasEnvironment,URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd))))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.SourcePackage))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
         
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasProgram, program_name_literal))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasProgramVersion, program_version_literal))
-         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(rnd)), ontocompchem_namespace.hasRunDate, run_date_literal))                  
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasProgram, program_name_literal))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasProgramVersion, program_version_literal))
+         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasRunDate, run_date_literal))                  
     
               
     def generate_rotational_constants(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,unit_namespace,ontology_base_uri,file_name,rnd):
@@ -365,6 +379,7 @@ class OntoCompChemData:
                   dict_data = json.loads(json_dat)
         
          if "Rotational constants" in dict_data:
+             empirical_formula = dict_data["Empirical formula"]
              rotational_constants_string = "  "
              for rc in dict_data["Rotational constants"]:
                  rotational_constants_string = str(str(round(decimal.Decimal(rc),8))) + " " + rotational_constants_string
@@ -379,15 +394,15 @@ class OntoCompChemData:
         
              rotational_constants_unit = dict_data["Rotational constants unit"]
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn,URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd))))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), RDF.type,ontocompchem_namespace.RotationalConstants))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), RDF.type, OWL.Thing))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn,URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd))))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd)), RDF.type,ontocompchem_namespace.RotationalConstants))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd)), RDF.type, OWL.Thing))
         
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), ontocompchem_namespace.hasRotationalConstants,rotational_constants_string_literal))
-             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), ontocompchem_namespace.hasRotationalConstantsCount,rotational_constants_size_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd)), ontocompchem_namespace.hasRotationalConstants,rotational_constants_string_literal))
+             ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd)), ontocompchem_namespace.hasRotationalConstantsCount,rotational_constants_size_literal))
         
              if str(rotational_constants_unit) == "GHZ":
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(uuid_rotational_constants)+"_"+str(rnd)), gc_namespace.hasUnit,URIRef(unit_namespace.GigaHertz)))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd)), gc_namespace.hasUnit,URIRef(unit_namespace.GigaHertz)))
     
         
     def generate_geometry_atomic_masses(self,ontocompchem_graph,ontocompchem_namespace,table_namespace,ontology_base_uri,file_name,gc_namespace,rnd):
@@ -403,51 +418,52 @@ class OntoCompChemData:
  
          atom_iterator = 0;
          if "Atom types" in dict_data:
-            for akey in dict_data["Atom types"]:                 
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(rnd)), gc_namespace.hasAtom, URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,OWL.Thing))
+             empirical_formula = dict_data["Empirical formula"]
+             for akey in dict_data["Atom types"]:                 
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasAtom, URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,OWL.Thing))
                  
                  #Generate atom element
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey))))
                  ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
                  ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey)),RDF.type,OWL.Thing))
                  
                  if "Atomic masses" in dict_data:                 
                      #generate atomic mass
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasMass,URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Atomic masses"][atom_iterator])))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasMass,URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Atomic masses"][atom_iterator])))
                      
                  if "Atomic mass unit" in dict_data:    
                      atomic_mass_unit = dict_data["Atomic mass unit"]             
                      if atomic_mass_unit == "atomic": 
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Dalton")))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_mass_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Dalton")))
                  
                  
                  if "Geometry" in dict_data:
                      for gkey in dict_data["Geometry"][atom_iterator]:
                          #generate coordinate X
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateX,URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][0])))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateX,URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][0])))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_x3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
                      
                          #generate coordinate Y
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateY,URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][1])))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateY,URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][1])))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_y3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
                      
                          #generate coordinate Z
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateZ,URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][2])))    
-                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasAtomCoordinateZ,URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd))))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,gc_namespace.FloatValue))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),RDF.type,OWL.Thing))
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasValue,Literal(dict_data["Geometry"][atom_iterator][2])))    
+                         ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_coordinate_z3_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Angstrom")))
                      
                  atom_iterator = atom_iterator +1    
                      
@@ -464,22 +480,23 @@ class OntoCompChemData:
         
          if "Atom counts" in dict_data:
              atom_count = dict_data["Atom counts"]
+             empirical_formula = dict_data["Empirical formula"]
         
              if atom_count is not None:
                  for key, value in atom_count.items():
                      number_of_atoms = Literal(value,datatype=XSD.string)
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(rnd))))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd))))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd)), RDF.type,gc_namespace.MoleculeProperty))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd)), RDF.type, OWL.Thing))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(rnd)), gc_namespace.hasMolecule, URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Molecule))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasNumberOfAtoms,number_of_atoms))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasAtom,URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+ "_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasMoleculeProperty, URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(empirical_formula)+ "_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type,gc_namespace.MoleculeProperty))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasMolecule, URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Molecule))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasNumberOfAtoms,number_of_atoms))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasAtom,URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key))))
                      ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
                      ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,OWL.Thing))
          
@@ -494,20 +511,40 @@ class OntoCompChemData:
                   
          if "Electronic and ZPE energy" in dict_data:
              electronic_and_zpe_energy = dict_data["Electronic and ZPE energy"]
+             empirical_formula = dict_data["Empirical formula"]
         
              if electronic_and_zpe_energy is not None:
                  electronic_and_zpe_energy_literal=Literal(electronic_and_zpe_energy)
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, ontocompchem_namespace.ElectronicAndZPEEnergy))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, gc_namespace.FloatValue))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(uuid_electronic_and_zpe_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, ontocompchem_namespace.ElectronicAndZPEEnergy))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, gc_namespace.FloatValue))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
                  
-    
-            
+    def generate_scf_energy(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+        
+        #generates unique string
+        uuid_scf_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"scf.energy")
+        
+         #Generate graph for electronic energy quantity
+        for i, json_dat in enumerate(self.data):
+                  dict_data = json.loads(json_dat)
+                  
+        if "Electronic energy" in dict_data:
+                 scf_energy = dict_data["Electronic energy"]    
+                 scf_energy_literal=Literal(scf_energy)
+                 empirical_formula = dict_data["Empirical formula"]
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, ontocompchem_namespace.ScfEnergy))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, gc_namespace.FloatValue))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), gc_namespace.hasValue, scf_energy_literal))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))         
     
         
              
