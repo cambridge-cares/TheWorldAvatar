@@ -69,11 +69,13 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	static List<String> jobsRunning = new ArrayList<>();
 	
 	SlurmJob slurmJob = new SlurmJob();
-	static JobSubmission jobSubmission;
+	public static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContext;
 	public static SlurmJobProperty slurmJobProperty;
 	public static ApplicationContext applicationContextMoDSAgent;
 	public static MoDSSensAnaAgentProperty modsAgentProperty;
+	
+	
 	
 	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
 		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
@@ -168,11 +170,7 @@ public class MoDSSensAnaAgent extends HttpServlet {
 		logger.info("---------- Sensitivity Analysis Agent has started ----------");
 		System.out.println("---------- Sensitivity Analysis Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-		MoDSSensAnaAgent modsAgent = new MoDSSensAnaAgent();
-		// the first 30 refers to the delay (in seconds) before the job scheduler
-		// starts and the second 60 refers to the interval between two consecutive
-		// executions of the scheduler.
-		executorService.scheduleAtFixedRate(modsAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
+		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
 		// initialising classes to read properties from the mods-agent.properties file
 		if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -186,11 +184,23 @@ public class MoDSSensAnaAgent extends HttpServlet {
 		if (modsAgentProperty == null) {
 			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSSensAnaAgentProperty.class);
 		}
+		// the first 30 refers to the delay (in seconds) before the job scheduler
+		// starts and the second 60 refers to the interval between two consecutive
+		// executions of the scheduler.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				modsSensAnaAgent.monitorJobs();
+			} catch (SlurmJobException e) 
+			{e.printStackTrace();
+			}
+		}, 
+				slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(), 
+				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
 		logger.info("---------- SensAna jobs are being monitored  ----------");
 		System.out.println("---------- SensAna jobs are being monitored  ----------");
 	}
 	
-	private void monitorJobs() {
+	private void monitorJobs() throws SlurmJobException {
 		if (jobSubmission == null) {
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
