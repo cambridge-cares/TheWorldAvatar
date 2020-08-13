@@ -45,6 +45,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
+import com.fasterxml.jackson.core.json.JsonReadContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -288,10 +289,14 @@ public class MoDSSensAnaAgent extends HttpServlet {
 				.concat(slurmJobProperty.getJsonFileExtension())));
 		
 		JsonNode inputNode = new ObjectMapper().readTree(jsonString);
-		Integer topN = JSonRequestParser.getTopNForRxns(jsonString);
+		String topN = JSonRequestParser.getTopNForRxns(jsonString);
+		if (topN != null && !topN.isEmpty()) {
+		} else {
+			topN = "10";
+		}
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		SensAnaResultsProcess sensAnaRePro = new SensAnaResultsProcess();
-		List<String> selectedRxns = sensAnaRePro.processResults(destDir, mechanismIRI, topN);
+		List<String> selectedRxns = sensAnaRePro.processResults(destDir, mechanismIRI, Integer.parseInt(topN));
 		
 		updateJsonForCalib(inputNode, selectedRxns, destDir.concat(File.separator).concat("modifiedInput.json"));
 		

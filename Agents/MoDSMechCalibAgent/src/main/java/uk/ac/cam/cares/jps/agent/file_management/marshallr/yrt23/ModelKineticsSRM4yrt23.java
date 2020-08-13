@@ -240,11 +240,11 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		
 		// set up the ignition delay option that will be used for generating InputParams.xml file
 		String method = JSonRequestParser.getIgnDelayMethod(otherOptions);
-		if (method != null) {
+		if (method != null && !method.isEmpty()) {
 			setIgnDelayMethod(method);
 		}
 		String species = JSonRequestParser.getIgnDelaySpecies(otherOptions);
-		if (species != null) {
+		if (species != null && !species.isEmpty()) {
 			setIgnDelaySpecies(species);
 		}
 		

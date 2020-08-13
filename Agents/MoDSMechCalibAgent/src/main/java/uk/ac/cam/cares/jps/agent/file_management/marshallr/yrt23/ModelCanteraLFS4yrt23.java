@@ -157,7 +157,7 @@ public class ModelCanteraLFS4yrt23 extends MoDSMarshaller implements IModel {
 		
 		// set up the tranModel
 		String tran = JSonRequestParser.getFlameSpdTranModel(otherOptions);
-		if (tran != null) {
+		if (tran != null && !tran.isEmpty()) {
 			setTranModel(tran);
 		}
 		
