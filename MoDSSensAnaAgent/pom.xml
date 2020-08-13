@@ -14,7 +14,6 @@
 		<!-- <rdf4j.version>2.4.2</rdf4j.version> -->
 		<rdf4j.version>2.0</rdf4j.version>
 		<jackson-core.version>2.11.1</jackson-core.version>
-    	<spark.version>2.4.6</spark.version>
 	</properties>
 
 
@@ -168,18 +167,6 @@
 			<artifactId>CMCLOntoKin</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-core -->
-		<dependency>
-			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-core_2.11</artifactId>
-			<version>${spark.version}</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
-		<dependency>
-			<groupId>org.apache.spark</groupId>
-			<artifactId>spark-sql_2.11</artifactId>
-			<version>${spark.version}</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
 	    <dependency>
 	        <groupId>com.fasterxml.jackson.core</groupId>
@@ -205,20 +192,10 @@
 		    <artifactId>jackson-module-scala_2.11</artifactId>
 		    <version>${jackson-core.version}</version>
 		</dependency>
-		
-		<dependency>
-		    <groupId>com.google.guava</groupId>
-		    <artifactId>guava</artifactId>
-		    <version>29.0-jre</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-common -->
-		<!-- <dependency> <groupId>org.apache.hadoop</groupId> <artifactId>hadoop-common</artifactId> 
-			<version>2.9.2</version> </dependency> -->
 	</dependencies>
 
 	<build>
-		<finalName>MoDSAgent</finalName>
+		<finalName>MoDSSensAnaAgent</finalName>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -244,31 +221,6 @@
 					</connectors>
 				</configuration>
 			</plugin>
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-shade-plugin</artifactId>
-			    <version>3.1.0</version>
-			    <executions>
-			        <execution>
-			            <phase>package</phase>
-			            <goals>
-			                <goal>shade</goal>
-			            </goals>
-			            <configuration>
-			                <relocations>
-			                    <relocation>
-			                        <pattern>com.fasterxml.jackson</pattern>
-			                        <shadedPattern>noc.com.fasterxml.jackson</shadedPattern>
-			                    </relocation>
-			                    <relocation>
-			                        <pattern>com.google.guava</pattern>
-			                        <shadedPattern>noc.com.google.guava</shadedPattern>
-			                    </relocation>
-			                </relocations>
-			            </configuration>
-			        </execution>
-			    </executions>
-		    </plugin>
 		</plugins>
 	</build>
 
