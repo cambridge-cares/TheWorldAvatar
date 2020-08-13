@@ -185,14 +185,23 @@ PopupMap.prototype = {
 /**
  * init Google map
  */
+ setCenter:function(latlng){
+this.googleMap.setCenter(latlng);	
+	
+ },
     initMap: function () {
         var self = this;
         console.log("init map:" + self.curPath)
         //initiate map, set center on Jurong
-        var jurong ={lat: 1.2624421, lng: 103.7007045};
+		        var jurong ={lat: 1.2624421, lng: 103.7007045};
+		if(this.center){
+			var mcenter = this.center;
+		} else{
+			mcenter = jurong;
+		}
         this.googleMap = new google.maps.Map(document.getElementById('map'), {
             zoom: 14,
-            center: jurong, 
+            center: mcenter, 
             
         });
     map = this.googleMap;

@@ -36,8 +36,8 @@ function getEnglandPPcoordinates(callback) {
             let coordList = [];
             for(line of result){
                 let uri = line['powerPlantIRI'];//here in the[] is your name in query represents uri
-                let lat = line['numericalValue_x'];//here in the[] is your name in query represents latitute
-                let lng = line['numericalValue_y'];//here in the[] is your name in query represents latitute
+                let lat = line['numericalValue_y'];//here in the[] is your name in query represents latitute
+                let lng = line['numericalValue_x'];//here in the[] is your name in query represents latitute
                 coordList.push({uri: uri, location :{lat: parseFloat(lat), lng:parseFloat(lng)}});
             }
 
