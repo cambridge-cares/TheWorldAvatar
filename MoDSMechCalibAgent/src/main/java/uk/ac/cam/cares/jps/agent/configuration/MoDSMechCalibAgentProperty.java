@@ -13,7 +13,7 @@ import org.springframework.context.annotation.PropertySource;
  *
  */
 @Configuration
-@PropertySource("classpath:mods-agent.properties")
+@PropertySource("classpath:modsmechcalib-agent.properties")
 public class MoDSMechCalibAgentProperty {
 	
 }
