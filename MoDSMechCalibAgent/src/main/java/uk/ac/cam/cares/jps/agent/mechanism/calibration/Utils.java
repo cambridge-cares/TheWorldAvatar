@@ -17,6 +17,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import org.slf4j.Logger;
@@ -246,5 +247,53 @@ public class Utils {
 		
 		return zipFile;
 	}
+	
+	public static void unzipFile(String zipFilePath, String destDir) {
+		File dir = new File(destDir);
+		// create output directory if it doesn't exist
+		if (!dir.exists()) {
+			dir.mkdirs();
+		}
+		FileInputStream fis;
+		// buffer for read and write data to file
+		byte[] buffer = new byte[1024];
+		try {
+			fis = new FileInputStream(zipFilePath);
+			ZipInputStream zis = new ZipInputStream(fis);
+			ZipEntry ze = zis.getNextEntry();
+			while (ze != null) {
+				try {
+					String fileName = ze.getName();
+					File newFile = new File(destDir + File.separator + fileName);
+//					System.out.println("Unzipping to " + newFile.getAbsolutePath());
+					// create directories for sub directories in zip
+					new File(newFile.getParent()).mkdirs();
+					if (ze.isDirectory()) // check if this is a diectory or file
+					{
+						newFile.mkdirs();
+					} else {
+						FileOutputStream fos = new FileOutputStream(newFile);
+						int len;
+						while ((len = zis.read(buffer)) > 0) {
+							fos.write(buffer, 0, len);
+						}
+						fos.close();
+					}
+					// close this ZipEntry
+					zis.closeEntry();
+				} catch (Exception e) {
+					System.err.println(e.getMessage());
+				}
+				ze = zis.getNextEntry();
+			}
+			// close last ZipEntry
+			zis.closeEntry();
+			zis.close();
+			fis.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	
 }

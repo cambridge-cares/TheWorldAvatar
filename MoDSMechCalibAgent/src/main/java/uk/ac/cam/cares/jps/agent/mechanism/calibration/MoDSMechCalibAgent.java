@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.agent.mechanism.calibration;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +28,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
+import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechCalibOutputProcess;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
@@ -34,6 +39,8 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
@@ -181,8 +188,7 @@ public class MoDSMechCalibAgent extends HttpServlet {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// enable process outputs later on
-//		processOutputs();
+		processOutputs();
 	}
 	
 	/**
@@ -214,21 +220,23 @@ public class MoDSMechCalibAgent extends HttpServlet {
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							//updateJobOutputStatus(jobFolder);
+							updateCalibMech(jobFolder);
+							updateJpbOutputStatus(jobFolder);
 						}
 					}
 				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (SftpException e) {
+			e.printStackTrace();
+		} catch (JSchException e) {
+			e.printStackTrace();
+		} catch (MoDSMechCalibAgentException e) {
+			e.printStackTrace();
 		}
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		} catch (SftpException e) {
-//			e.printStackTrace();
-//		} catch (JSchException e) {
-//			e.printStackTrace();
-//		}
 	}
 	
 	/**
@@ -244,6 +252,38 @@ public class MoDSMechCalibAgent extends HttpServlet {
 	private boolean updateJpbOutputStatus(File jobFolder) throws JSchException, SftpException, IOException, InterruptedException {
 		File statusFile = Utils.getStatusFile(jobFolder);
 		return updateJobOutputStatus(jobFolder.getName(), statusFile);
+	}
+	
+	public void updateCalibMech(File jobFolder) throws IOException, MoDSMechCalibAgentException {
+		File outputFile = new File(jobFolder.getAbsolutePath());
+		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(slurmJobProperty.getOutputFileExtension());
+		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName());
+		Utils.unzipFile(zipFilePath, destDir);
+		
+		String jsonString = readJsonInput(new File(jobFolder.getAbsolutePath()
+				.concat(File.separator)
+				.concat(slurmJobProperty.getJsonInputFileName())
+				.concat(slurmJobProperty.getJsonFileExtension())));
+		
+		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
+		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
+		
+		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
+		mechCalibPro.processResults(destDir, mechanismIRI, reactionIRIList, String.valueOf(Utils.getTimeStamp()));
+		
+		System.out.println("Mechanism calibration results were successfully processed.");
+	}
+	
+	private String readJsonInput(File input) throws IOException, MoDSMechCalibAgentException {
+		String jsonString = new String();
+		BufferedReader br = null;
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
+		String line = new String();
+		while ((line = br.readLine()) != null) {
+			jsonString = jsonString.concat(line);
+		}
+		br.close();
+		return jsonString;
 	}
 	
 	/**

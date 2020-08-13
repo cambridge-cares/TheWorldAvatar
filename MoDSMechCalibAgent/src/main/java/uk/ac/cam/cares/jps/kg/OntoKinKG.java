@@ -88,6 +88,24 @@ public class OntoKinKG extends RepositoryManager {
 		return queriedReaction;
 	}
 	
+	public LinkedHashMap<String, String> queryRxnPreExpFactor(String mechanismIRI, List<String> reactionIRIList) throws MoDSMechCalibAgentException {
+		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
+			mechanismIRI = "<".concat(mechanismIRI).concat(">");
+		}
+		LinkedHashMap<String, String> queriedReactionList = new LinkedHashMap<String, String>();
+		for (String reactionIRI : reactionIRIList) {
+			if(!reactionIRI.trim().startsWith("<") && !reactionIRI.trim().endsWith(">")){
+				reactionIRI = "<".concat(reactionIRI).concat(">");
+			}
+			String queryString = formRxnPreExpFactorQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), reactionIRI);
+			List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+			queriedReactionList.put(testResults.get(1).get(0), testResults.get(1).get(1));
+		}
+		
+		return queriedReactionList;
+	} 
+	
 	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSMechCalibAgentException {
 		String queryString = prefixBindingOntoKin;
 		queryString = queryString.concat(REACTION_MECHANISM);
@@ -143,6 +161,20 @@ public class OntoKinKG extends RepositoryManager {
 		queryString = queryString.concat("    ?phase ontokin:containedIn ").concat(mechanismIRI).concat(" . \n");
 		queryString = queryString.concat("    ?Reaction dc:identifier \"").concat(reactionNo).concat("\" . \n");
 		queryString = queryString.concat("    ?Reaction ontokin:hasEquation ?Equation \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
+	private String formRxnPreExpFactorQuery(String prefixBindingOntoKin, String reactionIRI) throws MoDSMechCalibAgentException {
+		String queryString = prefixBindingOntoKin;
+		queryString = queryString.concat(DC);
+		queryString = queryString.concat("SELECT ?ReactionNo ?PreExpFactor \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ").concat(reactionIRI).concat(" dc:identifier ?ReactionNo . \n");
+		queryString = queryString.concat("    ").concat(reactionIRI).concat(" ontokin:hasArrheniusCoefficient ?arrhCoef . \n");
+		queryString = queryString.concat("    ").concat("?arrhCoef ontokin:hasPreExponentialFactor ?preE . \n");
+		queryString = queryString.concat("    ").concat("?arrhCoef ontokin:hasPreExponentialFactorUnits ?preEU \n");
+		queryString = queryString.concat("    ").concat("    BIND(CONCAT(?preE, \"_\", ?preEU) AS ?PreExpFactor) \n");
 		queryString = queryString.concat("}");
 		return queryString;
 	}

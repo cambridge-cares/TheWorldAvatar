@@ -39,7 +39,7 @@ public class RepositoryManager implements IRepositoryManager {
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
 
 	private static String ONTOCHEMEXP_TBOX_IRI;
-	private static String ONTOCHEMEXP_KB_URL;
+	private static String ONTOCHEMEXP_KB_URL = "http://www.theworldavatar.com/kb/ontokin/";
 	private static String ONTOCHEMEXP_ABOX_FILE_PATH;
 
 	public static ApplicationContext applicationContext;

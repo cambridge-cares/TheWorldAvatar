@@ -20,7 +20,7 @@ public enum Property {
 	SPECIES_CHARGE_ZERO("0"), // maybe not be used
 	SPECIES_MULTIPLICITY("1"), // maybe not be used
 	RDF4J_SERVER_URL_FOR_LOCALHOST("http://localhost:8080/rdf4j-server/"),
-	
+	RDF4J_ONTOKIN_KB_URL("http://www.theworldavatar.com/kb/ontokin/"),
 	FUSAKI_URL_FOR_WORLD_AVATAR("http://www.theworldavatar.com/damecoolquestion/agents/query?query="), // maybe need to tailor
 	RDF4J_ONTOSPECIES_REPOSITORY_ID("ontospecies"), // change to ontochemexp
 	RDF4J_ONTOCHEMEXP_REPOSITORY_ID("ontochemexp"),
