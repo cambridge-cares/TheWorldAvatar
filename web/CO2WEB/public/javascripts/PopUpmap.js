@@ -3,6 +3,9 @@
  */
 
 //part no written by me-----------------------------------------------------------------------------------//
+
+var infowindow = null;
+
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
@@ -200,7 +203,7 @@ this.googleMap.setCenter(latlng);
 			mcenter = jurong;
 		}
         this.googleMap = new google.maps.Map(document.getElementById('map'), {
-            zoom: 14,
+            zoom: 7,
             center: mcenter, 
             
         });
@@ -212,7 +215,7 @@ this.googleMap.setCenter(latlng);
         async: true,
         success: function (pps) {
             console.log('check status of ajax')
-            self.updateMarkers(pps);
+            self.updateMarkers(pps, pps);
         },
         error: function () {
             console.log("Can not get location")
@@ -378,7 +381,6 @@ definedPopUpAttrPair: map of attributes to appear in popups for markers
         self.clearMarkers();
         //Update display
         self.coordinates = pps;
-        console.log(pps);
         self.setMarkers(pps, definedPopUpAttrPair);
         if (self.useCluster) {
             self.setCluster();
@@ -427,27 +429,34 @@ getIconByType: function (type, highlight) {
      * @returns {string}
      */
     formatContent: function (attrPairs, uri) {
-
-        let thead = "<table id='table"+uri+"' class='table-attr'>";
-        attrPairs.forEach((pair) => {
-            if (this.editable) {
-                thead += "<tr><td>" + pair.name + "</td><td><input id='" + uri + "#" + pair.name + "' type='text' value='" + pair.value + "'>" + "</td><td>" + pair.unit + "</td></tr>";
-
+        let thead = "<table id='table" + uri + "' class='table-attr'>";
+        thead += "<tr><th style=\"text-align:center\">Attribute</th><th style=\"text-align:center\">Value</th></tr>";
+        $.each(attrPairs, function (key, value) {
+            if (key == 'location') {
+                $.each(value, function (key2, value2) {
+                    thead += "<tr><td style=\"text-align:center\">" + key2 + "</td><td style=\"text-align:center\">" + value2 + "</td></tr>";
+                });
+            } else if (key == 'uri') {
+                let res = value.split("#");
+                console.log(res[0]);
+                console.log(res[1]);
+                console.log(res.length);
+                if (res.length === 2) {
+                    thead += "<tr><td style=\"text-align:center\">name</td><td style=\"text-align:center\">" + res[1] + "</td></tr>";
+                } else {
+                    thead += "<tr><td style=\"text-align:center\">uri</td><td style=\"text-align:center\">" + value + "</td></tr>";
+                }
             } else {
-                thead += "<tr><td>" + pair.name + "</td><td>" + pair.value + "</td></tr>";
+                thead += "<tr><td style=\"text-align:center\">" + key + "</td><td style=\"text-align:center\">" + value + "</td></tr>";
             }
-        })
-
+        });
         thead += "</table>";
         if (this.editable) {//add a submit button and a msg box
             let id = "btn" + uri;
             thead += "<button id='" + id + "' class='btn btn-default'>Submit</button>";
             thead += "<p id='err-msg-panel-" + uri + "'></p>";
         }
-
-        // console.log(thead)
         return thead;
-
     },
     /**
      * Set markers and bind event for each marker
@@ -475,9 +484,9 @@ getIconByType: function (type, highlight) {
             
             
             
-            console.log("drawing type: " + icon)
+            /*console.log("drawing type: " + icon)
             console.log("Drawing for "+muri+" at N"+pp.location.lat)
-            console.log("Drawing for "+muri+" at E"+pp.location.lng)
+            console.log("Drawing for "+muri+" at E"+pp.location.lng)*/
 
             let marker = new google.maps.Marker({
                 position: {lat: pp.location.lat, lng: pp.location.lng},
@@ -548,8 +557,9 @@ getIconByType: function (type, highlight) {
 
                 marker.timer = setTimeout(function () {
                     if (!marker.sglclickPrevent) {
-                        if(attrPairs){
-                            self.formatPopup(attrPairs[muri], muri, marker)
+                        if (pp) {
+                            var attributeArray = { uri: pp['uri'], location: pp['location'] };
+                            self.formatPopup(attributeArray, pp['uri'], marker);
                         } else {
                             self.openEditablePopupNet(muri, marker);
                         }
@@ -600,7 +610,8 @@ getIconByType: function (type, highlight) {
      */
     openEditablePopupNet: function(muri, marker) {
         var self = this;
-        //grabs 
+        console.log('test');
+        //grabs
         $.ajax({
             url: window.location.origin + "/getAttrList",
             method: "POST",
@@ -619,18 +630,20 @@ getIconByType: function (type, highlight) {
     muri: uri of marker as id
     marker: the marker object
     ***/
-    formatPopup : function (attrPairs, muri, marker) {
+    formatPopup: function (attributeArray, muri, marker) {
         const self = this;
-
-        let infowindow = new google.maps.InfoWindow({
-            content: self.formatContent(attrPairs, muri)
+        if (infowindow != null) {
+            infowindow.close();
+        }
+        infowindow = new google.maps.InfoWindow({
+            content: self.formatContent(attributeArray, muri)
         });
         if (self.editable) {//only define click handler when this map is editable
             google.maps.event.addListener(infowindow, 'domready',  function (){
                 let submitId = "#" + jq("btn" + muri);
                 let errMsgBox = $("#" + jq("err-msg-panel-" + muri));
                 let infobox = $("#"+jq("table"+muri))
-                let mattrs = attrPairs
+                let mattrs = attributeArray
                 let modifications = {};
 
 
