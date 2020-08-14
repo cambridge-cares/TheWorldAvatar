@@ -1,10 +1,14 @@
 package uk.ac.cam.cares.jps.dispersion.test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONObject;
 
@@ -202,17 +206,6 @@ public class WeatherAgentTest extends TestCase {
 		System.out.println(joTemperature);
 	}
 	
-	
-	public void xxxtestAgentCallreset() {
-		JSONObject jo = new JSONObject();
-		jo.put("location", "singapore");//or singapore or singapore_AQ
-		String context="http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-015.owl#WeatherStation-015";
-		jo.put("context", context);	
-		//context variation only in index number and country (1 sg,2 hk)
-		jo.put("name","SGAccuWeather-001");// or ="VirtualSensorEpisode-001"or=VirtualSensor-001 or="VirtualSensorHKADMS-001";
-		String resultStart = AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/resetWeatherRepository", jo.toString());	
-	}
-	
 	public void testmakecsv() {
 		String loc=cityiri2;
 		 String querygraph = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
@@ -339,5 +332,122 @@ public class WeatherAgentTest extends TestCase {
 		
 	}
 
+	public void testvalidateInput() throws NoSuchMethodException, SecurityException, IllegalAccessException, IllegalArgumentException {
+//		Any missing/invalid inputs should trigger an exception
+//		The checkInput method will ensure that it throws a Runtime exception when the inputs are invalid. The method should throw a 
+//		BadRequestException but the WeatherAgent object is currently causing it to throw a Runtime exception
+		WeatherAgent wa = new WeatherAgent();
+		Method validateInput = wa.getClass().getDeclaredMethod("validateInput",JSONObject.class);
+		validateInput.setAccessible(true);
+		
+//		Create a valid input that should pass the test
+		JSONObject jo = new JSONObject();
+		JSONObject scope = new JSONObject();
+		JSONObject low = new JSONObject();
+		JSONObject up = new JSONObject();
+		String keyUppercorner = "uppercorner";
+		String keyLowercorner = "lowercorner";
+		String keyUpperx = "upperx";
+		String keyUppery = "uppery";
+		String keyLowerx = "lowerx";
+		String keyLowery = "lowery";
+		String keyRegion = "region";
+		String keyCity = "city";
+		scope.put(keyUppercorner, up);
+		scope.put(keyLowercorner, low);
+		double xmin = Double.valueOf("11552101.832");
+		double xmax = Double.valueOf("11572101.89");
+		double ymin = Double.valueOf("131707.739");
+		double ymax = Double.valueOf("151860.32");
+		up.put(keyUpperx,xmax);
+		up.put(keyUppery,ymax);
+		low.put(keyLowerx,xmin);
+		low.put(keyLowery,ymin);
+		
+		jo.put(keyRegion,scope);
+		jo.put(keyCity,cityiri);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+//		Now each key in the input is removed, toggled to empty and to the wrong type to trigger an exception
+//		Begin with the region key
+		jo.remove(keyRegion);
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyRegion,"");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyRegion,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyRegion,scope);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+//		City IRI. 
+		jo.remove(keyCity);
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyCity,"");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyCity,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		jo.put(keyCity,cityiri);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+//		Coordinates
+		up.remove(keyUpperx);
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUpperx,"");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUpperx,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUpperx,xmax);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+		up.remove(keyUppery);
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUppery, "");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUppery, "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		up.put(keyUppery, ymax);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+		low.remove(keyLowerx);
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowerx, "");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowerx, "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowerx, xmin);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+		low.remove(keyLowery);
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowery, "");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowery, "abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		low.put(keyLowery, ymin);
+		assertTrue(checkInput(wa,validateInput,jo));
+		
+//		Optional srsname
+//		Empty srsname is ok
+		String keySrsname = "srsname";
+		scope.put(keySrsname,"");
+		assertTrue(checkInput(wa,validateInput,jo));
+		scope.remove(keySrsname);
+		assertTrue(checkInput(wa,validateInput,jo));
+		scope.put(keySrsname,"abc");
+		assertFalse(checkInput(wa,validateInput,jo));
+		scope.put(keySrsname,"EPSG:3857");
+		assertTrue(checkInput(wa,validateInput,jo));
+	}
 	
+	private Boolean checkInput(WeatherAgent wa,Method validateInput,JSONObject jo) throws IllegalAccessException, IllegalArgumentException {
+//		This method is used in the testvalidateInput method, returns true if all inputs are present
+		try {
+            validateInput.invoke(wa, jo);
+            return true;
+        } catch (InvocationTargetException e) {
+//        	This should be modified to BadRequestException once the necessary fix is done in the JPSHttpServlet class
+            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
+            return false;
+        }
+	}
 }

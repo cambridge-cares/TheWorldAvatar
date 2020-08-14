@@ -23,6 +23,9 @@ public class SlurmJobProperty {
 	@Value("${agent.work.space.prefix}")
 	private String agentWorkspacePrefix;
 
+	@Value("${agent.completed.job.space.prefix}")
+	private String agentCompletedJobsSpacePrefix;
+	
 	@Value("${hpc.address}")
 	private String hpcAddress;
 
@@ -71,8 +74,14 @@ public class SlurmJobProperty {
 	@Value("${rdf4j.repository.ontospecies}")
 	private String rdf4jRepositoryOntoSpecies;
 	
-	@Value("${delay.between.two.consecutive.jobs}")
-	private int delayBetweenConsecutiveJobs;
+	@Value("${max.number.of.hpc.jobs}")
+	private int maxNumberOfHPCJobs;
+
+	@Value("${agent.initial.delay.to.start}")
+	private int agentInitialDelayToStartJobMonitoring;
+	
+	@Value("${agent.periodic.action.interval}")
+	private int agentPeriodicActionInterval;
 	
 	public String getAgentClass() {
 		return agentClass;
@@ -80,6 +89,10 @@ public class SlurmJobProperty {
 
 	public String getAgentWorkspacePrefix() {
 		return agentWorkspacePrefix;
+	}
+	
+	public String getAgentCompletedJobsSpacePrefix() {
+		return agentCompletedJobsSpacePrefix;
 	}
 
 	public String getHpcAddress() {
@@ -150,7 +163,15 @@ public class SlurmJobProperty {
 		this.executableFile = executableFile;
 	}
 
-	public int getDelayBetweenConsecutiveJobs() {
-		return delayBetweenConsecutiveJobs;
+	public int getMaxNumberOfHPCJobs() {
+		return maxNumberOfHPCJobs;
+	}
+
+	public int getAgentInitialDelayToStartJobMonitoring() {
+		return agentInitialDelayToStartJobMonitoring;
+	}
+
+	public int getAgentPeriodicActionInterval() {
+		return agentPeriodicActionInterval;
 	}
 }

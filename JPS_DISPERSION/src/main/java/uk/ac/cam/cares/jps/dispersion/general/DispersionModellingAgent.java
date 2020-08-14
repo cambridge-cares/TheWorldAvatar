@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.dispersion.general;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -23,8 +21,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Controller;
 
-import net.lingala.zip4j.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.IKeys;
 import uk.ac.cam.cares.jps.base.config.KeyValueManager;
@@ -35,12 +31,15 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import uk.ac.cam.cares.jps.base.slurm.job.JobStatistics;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
+import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
+import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
 @Controller
@@ -85,11 +84,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
         System.out.println("---------- Dispersion Modelling Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DispersionModellingAgent episodeAgent = new DispersionModellingAgent();
-       	// the first 60 refers to the delay (in seconds) before the job scheduler
-        // starts and the second 60 refers to the interval between two consecu-
-        // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(episodeAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
-		// initialising classes to read properties from the dft-agent.properites file
+		// initialising classes to read properties from the slurm-job.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -97,7 +92,19 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
 			logger.info("slurmjobproperty="+slurmJobProperty.toString());
 		}
-        logger.info("---------- simulation jobs are being monitored  ----------");
+        // Here, the delay before the job scheduler starts and the interval
+        // between two consecutive executions of the scheduler are specified
+		// based on the information provided in the slurm-job.properties file.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				episodeAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(),
+				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("---------- simulation jobs are being monitored  ----------");
         System.out.println("---------- simulation jobs are being monitored  ----------");
        	
 	}
@@ -191,7 +198,12 @@ public class DispersionModellingAgent extends JPSHttpServlet {
         return coordinates;
     }
     
-	private void monitorJobs(){
+    /**
+     * Calls the monitorJobs method of the Slurm Job API, which is in the JPS BASE LIB project.
+     * 
+     * @throws SlurmJobException
+     */
+	private void monitorJobs() throws SlurmJobException{
 		System.out.println("monitor job starts");
 		if(jobSubmission==null){
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
@@ -202,7 +214,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		processOutputs();
 	}
 	
-	public void processOutputs()throws JPSRuntimeException {
+	public void processOutputs() {
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
 		}
@@ -221,28 +233,32 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			if (jobSpace.isDirectory()) {
 				File[] jobFolders = jobSpace.listFiles();
 				for (File jobFolder : jobFolders) {
-					if (Utils.isJobCompleted(jobFolder)) {
+					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobErroneouslyCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
 						System.out.println("job "+jobFolder.getName()+" is completed");
-						File output= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
-						if(!annotateOutputs(jobFolder)) {
-							System.out.println("output not annotated");
-						}
-						boolean outputexist=output.exists();
-						int outputcontentexist=output.list().length;
-						boolean concfileexist=isConcentrationFileAvailable(jobFolder);
-						boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
-						if(!(outputexist
-								&& outputcontentexist!=0
-								&& concfileexist
-								&& concfilecomplete)) {
-							//edit the status file to be error termination
-							System.out.println("status completed but don't have expected output");
-							editStatusFile(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
-						}
-						
-						
-						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							logger.info("job output is processed");
+						File outputFolder= new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output"));
+						String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
+						File outputFile= new File(zipFilePath);
+						if(annotateOutputs(jobFolder, zipFilePath, outputFile)) {
+							logger.info("DispersionModellingAgent: Annotation has been completed.");
+							System.out.println("Annotation has been completed.");
+							PostProcessing.updateJobOutputStatus(jobFolder);
+						} else{
+							logger.error("DispersionModellingAgent: Annotation has not been completed.");
+							System.out.println("Annotation has not been completed.");
+							boolean outputexist=outputFolder.exists();
+							int outputcontentexist=outputFolder.list().length;
+							boolean concfileexist=isConcentrationFileAvailable(jobFolder);
+							boolean concfilecomplete=isConcentrationFileComplete(jobFolder);
+							if(!(outputexist
+									&& outputcontentexist!=0
+									&& concfileexist
+									&& concfilecomplete)) {
+								//edit the status file to be error termination
+								System.out.println("Status completed but don't have the expected output.");
+								Utils.modifyStatus(jobFolder.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							} else{
+								PostProcessing.updateJobOutputStatus(jobFolder);
+							}
 						}
 					}
 				}
@@ -250,8 +266,10 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		} catch (IOException e) {
 			logger.error("EpisodeAgent: IOException.".concat(e.getMessage()));
 			e.printStackTrace();
-		} 
-
+		} catch(SlurmJobException e){
+			logger.error("EpisodeAgent: ".concat(e.getMessage()));
+			e.printStackTrace();
+		}
 	}
 	
 	private boolean isConcentrationFileAvailable(File jobFolder) {
@@ -278,39 +296,23 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		
 		return true;
 	}
-	public void editStatusFile(String statusFilePath) throws IOException {
-		String fileContext = FileUtils.readFileToString(new File(statusFilePath));
-		BufferedWriter writer = new BufferedWriter(new FileWriter(statusFilePath));
-		if (fileContext.contains(Status.STATUS_JOB_COMPLETED.getName())){
-			fileContext=fileContext.replaceAll(Status.STATUS_JOB_COMPLETED.getName(), Status.STATUS_JOB_ERROR_TERMINATED.getName());
-		}
-		writer.write(fileContext);
-		writer.close();
-		System.out.println("Changed From Completed to Error Termination");
-	}
-	
-    public static void unzip(String zipFilePath, String destDir) {
-    	 ZipFile zipFile = new ZipFile(zipFilePath);
- 	    try {
- 			zipFile.extractAll(destDir);
- 		} catch (ZipException e) {
- 			// TODO Auto-generated catch block
- 			e.printStackTrace();
- 		}
-    }
     
-	public boolean annotateOutputs(File jobFolder) throws IOException {
-		System.out.println("annotate output started");
+    /**
+     * Updates weather and air quality data and meta data in the JPS<br>
+     * knowledge-graph.   
+     * 
+     * @param jobFolder
+     * @return
+     * @throws SlurmJobException
+     */
+	private boolean annotateOutputs(File jobFolder, String zipFilePath, File out) throws SlurmJobException {
 		try {
-			
-		
-		String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
-		File out= new File(zipFilePath);
+		System.out.println("annotate output started");
 		if(out.isFile()) {
 			String directory = jobFolder.getAbsolutePath() + "/input.json";
 			String destDir = jobFolder.getAbsolutePath() + "/output";
 
-			unzip(zipFilePath, destDir);
+			FileUtil.unzip(zipFilePath, destDir);
 			File json = new File(directory);
 			String content = FileUtils.readFileToString(json);
 			JSONObject jo = new JSONObject(content);
@@ -340,9 +342,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 			String destinationUrl3 = datapath + "/plume_segments.dat";
 			File file3des=new File(destinationUrl3);
 			FileUtils.copyFile(file3, file3des);
-			
-			
-			
+
 			new QueryBroker().putLocal(destinationUrl, file); //put to scenario folder
 			//new QueryBroker().putLocal(destinationUrl2, file2); //put to scenario folder
 			//new QueryBroker().putLocal(destinationUrl3, file3); //put to scenario folder
@@ -355,12 +355,15 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 					jo.toString());
 	    	
 			String statisticcall = execute("/JPS_DISPERSION/StatisticAnalysis", jo.toString());
-	    	out.delete();
+		}else{
+			return false;
 		}
 		}catch(Exception e) {
 			logger.error(e.getMessage());
-			logger.error("DispersionModellingAgent:Output Annotating Task could not finish");
-			System.out.println("DispersionModellingAgent:Output Annotating Task could not finish");
+			logger.error("DispersionModellingAgent: Output Annotating Task could not finish");
+			System.out.println("DispersionModellingAgent: Output Annotating Task could not finish");
+			e.printStackTrace();
+			throw new SlurmJobException(e.getMessage());
 		}
 		return true;
 	}
