@@ -26,4 +26,7 @@ public class GetTrainingDocsAgent extends JPSHttpServlet{
         logger = LoggerFactory.getLogger(GetTrainingDocsAgent.class);
     }
 	
+	//TODO:scrapy crawl quotes
+	//TODO: raw commandline, not python
+	
 }

@@ -53,7 +53,7 @@ public class DataLinker extends JPSHttpServlet {
 		// read alignment
 		String afileIRI = "";
 		try {
-			afileIRI = jo.getString("alignmentIRI");
+			//afileIRI = jo.getString("alignmentIRI");
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -77,8 +77,6 @@ public class DataLinker extends JPSHttpServlet {
 			e.printStackTrace();
 		}
 		return result;
-
-		//TODO: return must e json array
 		//logger.info("optimization result = " + result);
 	}
 
@@ -86,7 +84,7 @@ public class DataLinker extends JPSHttpServlet {
 	
 
 	
-	
+	//TODO: merge this function into ALignment Helper
 	public List<String[]> provideAlignedInstanceList(String iriOfAlignmentFile,String threshold) {
 		String queryStr = "PREFIX alignment: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
 				+ "SELECT ?entity1 ?entity2 " 

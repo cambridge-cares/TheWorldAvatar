@@ -17,6 +17,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
+import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 @WebServlet(urlPatterns = { "/topicModelAgent" })
@@ -39,7 +40,8 @@ public class TopicModelAgent extends JPSHttpServlet{
         
         //TODO:check if agent locator can find this script
 		try {
-			String result = PythonHelper.callPython("modelTopic.py", corpusLocation, dictionaryLocation, documentsLocation, modelLocation, this);
+			String[] params = {corpusLocation, dictionaryLocation, documentsLocation, modelLocation}; 
+			String[] result = AsyncPythonHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
 		System.out.println(result);
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block

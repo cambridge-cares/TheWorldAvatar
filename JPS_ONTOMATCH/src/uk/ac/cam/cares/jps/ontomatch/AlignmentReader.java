@@ -20,6 +20,7 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
+
 @WebServlet(urlPatterns = { "/alignment" })
 public class AlignmentReader extends JPSHttpServlet {
     
@@ -52,65 +53,21 @@ public class AlignmentReader extends JPSHttpServlet {
 		System.out.println("reading alignment from  " + afileIRI);
 		//get a list of matched IRIs where 
 		//add to destination
-		JSONArray instances2Equal = provideAlignedInstanceListAsJSONArray(stubIRI, threshold);
+		JSONArray instances2Equal;
+
 		JSONObject result = new JSONObject();
 		try {
+			instances2Equal = AlignmentHelper.readAlignmentFileAsJSONArray(stubIRI, threshold);
 			result.put("alignmentlist", instances2Equal);
 			System.out.print("read parameter result: ");
 			System.out.println(result.toString());
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
 	}
 
-
-	
-
-	
-	
-	public JSONArray provideAlignedInstanceListAsJSONArray(String iriOfAlignmentFile,String threshold) {
-		String queryStr = "PREFIX alignment: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
-				+ "SELECT ?entity1 ?entity2 " 
-				//+ "WHERE {?a ?p ?o."
-
-				+ "WHERE {?cell alignment:entity1 ?entity1."
-				+ "?cell  alignment:entity2 ?entity2 ."
-				+"?cell alignment:measure ?measure."
-
-				+ "FILTER (?measure >= "+threshold +" ) " //filtering gen 001 as it is slackbus
-				+ "}";
-		System.out.println(queryStr);
-		JSONArray resArr = new JSONArray();
-		List<String[]> resultListfromquery = null;
-		try {
-			OntModel model = JenaHelper.createModel(iriOfAlignmentFile);
-			ResultSet resultSet = JenaHelper.query(model, queryStr);
-			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
-			String[] keys = JenaResultSetFormatter.getKeys(result);
-			resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-	        System.out.println("reading alignment:");
-			System.out.println(resultListfromquery.toString());
-			for(String[] paras:resultListfromquery) {
-				JSONObject resObj = new JSONObject();
-				for(int idx = 0; idx<keys.length; idx++) {
-					resObj.put(keys[idx], paras[idx]);
-				}
-				resArr.put(resObj);
-				System.out.println(resObj);
-			}
-
-			
-		}
-		catch(Exception e) {
-            StringWriter sw = new StringWriter();
-            e.printStackTrace(new PrintWriter(sw));
-            String exceptionAsString = sw.toString();
-			logger.error(exceptionAsString);
-		}
-		return resArr;
-	}
 		
 
 
