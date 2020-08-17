@@ -1,0 +1,23 @@
+doctype html
+html
+head
+    block title
+    block sheets
+    link(rel="stylesheet" href='/stylesheets/header.css')
+    link(rel='stylesheet' href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css")
+
+
+body
+    div(class="jumbotron text-center" id="topBanner")
+        div(class="col-md-4")
+            a(href = "http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-researchs")
+                img(float="left" src="/images/cam_lang_negativ1 NEW_0.png"  href = "http://www.cares.cam.ac.uk/node/101")
+        div(class="col-md-4")
+            h1(id="head1") J-Park Simulator:&nbsp;
+            h1(id="subt")
+                block subtitle
+            p(id="description")
+                block description
+        div(class="col-md-4")
+            block readme
+    block content
