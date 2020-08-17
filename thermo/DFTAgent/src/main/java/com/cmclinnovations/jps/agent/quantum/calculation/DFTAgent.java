@@ -160,7 +160,14 @@ public class DFTAgent extends HttpServlet{
        	// the first 60 refers to the delay (in seconds) before the job scheduler
         // starts and the second 60 refers to the interval between two consecu-
         // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(dftAgent::monitorJobs, 30, 60, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(() -> {
+			try {
+				dftAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the dft-agent.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -179,7 +186,7 @@ public class DFTAgent extends HttpServlet{
        	
 	}
 	
-	private void monitorJobs(){
+	private void monitorJobs() throws SlurmJobException{
 		if(jobSubmission==null){
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
 		}
