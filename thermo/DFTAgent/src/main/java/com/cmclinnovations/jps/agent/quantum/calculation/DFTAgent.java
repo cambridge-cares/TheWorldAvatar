@@ -157,17 +157,6 @@ public class DFTAgent extends HttpServlet{
         System.out.println("---------- Quantum Calculation Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         DFTAgent dftAgent = new DFTAgent();
-       	// the first 60 refers to the delay (in seconds) before the job scheduler
-        // starts and the second 60 refers to the interval between two consecu-
-        // tive executions of the scheduler.
-        executorService.scheduleAtFixedRate(() -> {
-			try {
-				dftAgent.monitorJobs();
-			} catch (SlurmJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}, 30, 60, TimeUnit.SECONDS);
 		// initialising classes to read properties from the dft-agent.properites file
         if (applicationContext == null) {
 			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
@@ -181,7 +170,21 @@ public class DFTAgent extends HttpServlet{
 		if (dftAgentProperty == null) {
 			dftAgentProperty = applicationContextDFTAgent.getBean(DFTAgentProperty.class);
 		}
-        logger.info("---------- Quantum jobs are being monitored  ----------");
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
+		executorService.scheduleAtFixedRate(() -> {
+			try {
+				dftAgent.monitorJobs();
+			} catch (SlurmJobException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}, slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(),
+				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("---------- Quantum jobs are being monitored  ----------");
         System.out.println("---------- Quantum jobs are being monitored  ----------");
        	
 	}
