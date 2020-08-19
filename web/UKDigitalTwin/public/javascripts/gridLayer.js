@@ -10,13 +10,7 @@ var colorMap = ['#99f', '#f99', '#9f9', '#f9f', '#39f'];
 
 
 
-function initMapOverlay() {
-    var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 14,
-        center: { lat: 50.8223711, lng: -0.1373639 }
-    });
-
-
+function initMapOverlay(map, lines) {
     console.log('lines', lines);
     var infowindow = new google.maps.InfoWindow({
         content: '<h2>Sup!</h2>'

@@ -3,8 +3,12 @@
  */
 
 //part no written by me-----------------------------------------------------------------------------------//
-
 var infowindow = null;
+var globalKMLEventinfoWindowHtml;
+var selectedId;
+
+var colorMap = ['#99f', '#f99', '#9f9', '#f9f', '#39f'];
+
 
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
@@ -208,6 +212,7 @@ this.googleMap.setCenter(latlng);
             
         });
     map = this.googleMap;
+    initMapOverlay(map, lines);
     console.log("request to " + self.curPath + "/coordinates")
     $.ajax({
         url: self.curPath + "/coordinates",
@@ -886,3 +891,4 @@ console.log(myid)
 return myid.replace(/(:|\.|\[|\]|,|=|@|\/)/g, "\\$1");
 
 }
+

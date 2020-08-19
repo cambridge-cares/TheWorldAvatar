@@ -36,7 +36,7 @@ const center = {lat:52.4137756,lng:-1.5849575};
 
 (function PPMap(){
 		
-    var ppMap = new PopupMap({useCluster:true, center:center});
+   var ppMap = new PopupMap({useCluster:true, center:center});
 })();
 
 
