@@ -5,7 +5,6 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -18,7 +17,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
+
 import org.slf4j.LoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONObject;
@@ -28,7 +30,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cmclinnovations.jps.agent.configuration.DFTAgentConfiguration;
@@ -46,6 +47,8 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import net.minidev.json.JSONArray;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -61,11 +64,11 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
  *
  */
 @Controller
-public class DFTAgent extends HttpServlet{
+@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
+public class DFTAgent extends JPSAgent{
+	private static final long serialVersionUID = -8669607645910441935L;
 	private Logger logger = LoggerFactory.getLogger(DFTAgent.class);	
 	String server = "login-skylake.hpc.cam.ac.uk";
-	String username = "msff2";
-	String password = "Abcdl955_l7_l7_l7_aB";
 	boolean isAuthenticated;
 	private File jobSpace;
 	
@@ -82,27 +85,13 @@ public class DFTAgent extends HttpServlet{
 	public static ApplicationContext applicationContextDFTAgent;
 	public static DFTAgentProperty dftAgentProperty;
 	
+	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to DFT Agent";
 	
 	public static void main(String[] args) throws ServletException, DFTAgentException{
 		DFTAgent dftAgent = new DFTAgent();
 		dftAgent.init();
 	}
-	
-	/**
-     * Allows to perform a SPARQL query of any complexity.</br>
-     * It returns the results in JSON format.
-     * 
-     * @param input the JSON input to set up and run a quantum job.
-     * @return a message if the job was set up successfully or failed. 
-     */
-	@RequestMapping(value="/job/request", method = RequestMethod.GET)
-    @ResponseBody
-    public String query(@RequestParam String input) throws IOException, DFTAgentException, SlurmJobException{
-		System.out.println("received query:\n"+input);
-		logger.info("received query:\n"+input);
-		return setUpJob(input);
-    }
-	
 	
 	/**
      * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
@@ -115,9 +104,7 @@ public class DFTAgent extends HttpServlet{
      * @param input the JSON string specifying the return data format, e.g. JSON.
      * @return the statistics in JSON format if requested. 
      */
-	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
-    @ResponseBody
-    public String produceStatistics(@RequestParam String input) throws IOException, DFTAgentException{
+    public JSONObject produceStatistics(String input) throws IOException, DFTAgentException{
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
 		if(jobSubmission==null){
@@ -127,7 +114,10 @@ public class DFTAgent extends HttpServlet{
     }
 	
 	/**
-     * Shows the following statistics of quantum jobs processed by DFT Agent.</br>
+     * Shows the following statistics of quantum jobs processed by DFT Agent.<br>
+     * This method covers the show statics URL that is not included in the<br>
+     * list of URL patterns.
+     * 
      * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -136,7 +126,7 @@ public class DFTAgent extends HttpServlet{
      * 
      * @return the statistics in HTML format. 
      */
-	@RequestMapping(value="/job/show/statistics", method = RequestMethod.GET)
+	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH, method = RequestMethod.GET)
     @ResponseBody
     public String showStatistics() throws IOException, DFTAgentException{
 		System.out.println("Received a request to show statistics.\n");
@@ -148,7 +138,7 @@ public class DFTAgent extends HttpServlet{
     }
 	
 	/**
-	 * Starts the scheduler to monitor quantum jobs.
+	 * Starts the asynchronous scheduler to monitor quantum jobs.
 	 * 
 	 * @throws DFTAgentException
 	 */
@@ -189,6 +179,55 @@ public class DFTAgent extends HttpServlet{
        	
 	}
 	
+	/**
+	 * Receives requests that match with the URL patterns listed in the<br>
+	 * annotations of this class.
+	 * 
+	 */
+    @Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		String path = request.getServletPath();
+    	DFTAgent dftAgent = new DFTAgent();
+    	System.out.println("A request has been received..............................");
+		if(path.equals(Property.JOB_REQUEST_PATH)) {
+			try{
+				validateInput(requestParams);
+			}catch(BadRequestException e){
+				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
+			}
+			try{
+			   return dftAgent.setUpJob(requestParams.toString());
+			}catch(SlurmJobException | IOException | DFTAgentException e){
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
+			try {
+				return dftAgent.produceStatistics(requestParams.toString());
+			} catch (IOException | DFTAgentException e) {
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else {
+			System.out.println("Unknown request");
+			throw new JPSRuntimeException(UNKNOWN_REQUEST);
+		}
+	}
+    
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+    	String speciesIRI = JSonRequestParser.getSpeciesIRI(requestParams.toString());
+    	if(speciesIRI == null || speciesIRI.trim().isEmpty()){
+    		throw new BadRequestException(Property.JOB_SETUP_SPECIES_IRI_MISSING.getPropertyName());
+    	}
+    	String levelOfTheory = JSonRequestParser.getLevelOfTheory(requestParams.toString());
+    	if(levelOfTheory == null || levelOfTheory.trim().isEmpty()){
+    		throw new BadRequestException(Property.JOB_SETUP_LEVEL_OF_THEORY_MISSING.getPropertyName());
+    	}
+        return true;
+    }
+    
 	private void monitorJobs() throws SlurmJobException{
 		if(jobSubmission==null){
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
@@ -418,7 +457,7 @@ public class DFTAgent extends HttpServlet{
 		String httpRequest = dftAgentProperty.getThermoAgentHttpRequestFirstPart().concat(URLEncoder.encode(json.toString(), "UTF-8"));
 		int limit = 5;
 		String result = "";
-		for(int i = 1; i<=5; i++){
+		for(int i = 1; i<=limit; i++){
 			try{
 				result = performHTTPRequest(httpRequest);
 				break;
@@ -461,11 +500,11 @@ public class DFTAgent extends HttpServlet{
 	 * @throws IOException
 	 * @throws DFTAgentException
 	 */
-	public String setUpJob(String jsonString) throws IOException, DFTAgentException, SlurmJobException{
+	public JSONObject setUpJob(String jsonString) throws IOException, DFTAgentException, SlurmJobException{
         	String message = setUpJobOnAgentMachine(jsonString);
 			JSONObject obj = new JSONObject();
 			obj.put("message", message);
-        	return obj.toString();
+        	return obj;
     }
 	
 	/**
@@ -501,12 +540,12 @@ public class DFTAgent extends HttpServlet{
 	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, DFTAgentException{
 		OntoSpeciesKG oskg = new OntoSpeciesKG(); 
     	String speciesIRI = JSonRequestParser.getSpeciesIRI(jsonInput);
-    	if(speciesIRI == null && speciesIRI.trim().isEmpty()){
-    		throw new DFTAgentException(Status.JOB_SETUP_SPECIES_IRI_MISSING.getName());
+    	if(speciesIRI == null || speciesIRI.trim().isEmpty()){
+    		throw new DFTAgentException(Property.JOB_SETUP_SPECIES_IRI_MISSING.getPropertyName());
     	}
 		String speciesGeometry = oskg.querySpeciesGeometry(speciesIRI, slurmJobProperty);
-		if(speciesGeometry == null && speciesGeometry.trim().isEmpty()){
-			throw new DFTAgentException(Status.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getName());
+		if(speciesGeometry == null || speciesGeometry.trim().isEmpty()){
+			throw new DFTAgentException(Property.JOB_SETUP_SPECIES_GEOMETRY_ERROR.getPropertyName());
     	}
 		String inputFilePath = getInputFilePath();
 		String inputFileMsg = createInputFile(inputFilePath, jobFolderName, speciesGeometry, jsonInput);
