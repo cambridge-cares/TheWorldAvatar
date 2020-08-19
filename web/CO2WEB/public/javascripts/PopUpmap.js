@@ -721,7 +721,7 @@ getIconByType: function (type, highlight) {
     setCluster: function () {
         this.markerCluster = new MarkerClusterer(this.googleMap, Object.values(this.markers),
             {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
-                ,maxZoom:18
+                ,maxZoom:2000
             });
     },
 

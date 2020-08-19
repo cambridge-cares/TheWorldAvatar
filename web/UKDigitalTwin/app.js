@@ -19,7 +19,8 @@ var util = require('util');
 var config = require("./config.js");
 var getAttrList =require("./routes/getAttrList");
 var ppMap = require('./routes/mapPowerPlant');
-var ontoTwinMap= require('./routes/ontoTwinUK');
+var UKontoTwinMap = require('./routes/ontoTwinUK');
+// var parallelWorld = require('./routes/parallelWorld');
 
 var app = express();
 var port = config.port;
@@ -50,7 +51,7 @@ app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}))
 
 /*posting to dataObserve to get orginal data & register for future data change*/
 app.use("/getAttrList", getAttrList);
-app.use('/ontoTwinUK', ontoTwinMap);
+app.use('/ontoTwinUK', UKontoTwinMap);
 app.use('/ppmap', ppMap);
 
 var http = require('http').createServer(app);
