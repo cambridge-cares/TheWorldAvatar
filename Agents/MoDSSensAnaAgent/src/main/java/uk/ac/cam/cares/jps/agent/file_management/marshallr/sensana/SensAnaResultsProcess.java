@@ -106,7 +106,7 @@ public class SensAnaResultsProcess {
 		String responseResults = jobFolderPath+"SensitivityAnalysis\\SensitivityAnalysis_"+response+".csv";
 		String sensAnaResults = jobFolderPath+"SensitivityAnalysis\\SensitivityAnalysis_Sensitivities.csv";
 		String deriResults = jobFolderPath+"SensitivityAnalysis\\SensitivityAnalysis_Derivatives.csv";
-		String rxnOutputResults = jobFolderPath+"SensitivityAnalysis\\SensitivityAnalysis_SelectedRxns_"+response+".csv";
+		String rxnOutputResults = jobFolderPath+"SensitivityAnalysis_SelectedRxns_"+response+".csv";
 		
 		// take input, process, then write results to output file
 		// determine the cases that to be used for reaction selection
