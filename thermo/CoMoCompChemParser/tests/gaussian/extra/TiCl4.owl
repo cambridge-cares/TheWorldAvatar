@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF
+  xmlns:gc="http://purl.org/gc/"
+  xmlns:ontocompchem="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#"
+  xmlns:table="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"
+  xmlns:owl="http://www.w3.org/2002/07/owl#"
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#TiCl4">
+    <ontocompchem:hasInitialization>
+      <ontocompchem:InitializationModule rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#job_module_has_initilization_module_Cl4Ti1_789085.7600870044">
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_level_of_theory_parameter_Cl4Ti1_789085.7600870044"/>
+        <gc:hasParameter rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_basis_set_parameter_Cl4Ti1_789085.7600870044"/>
+        <gc:hasMoleculeProperty rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_molecule_property_Cl4Ti1_789085.7600870044"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </ontocompchem:InitializationModule>
+    </ontocompchem:hasInitialization>
+    <gc:isCalculationOn>
+      <gc:VibrationalAnalysis rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_vibrations_Cl4Ti1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_789085.7600870044">
+        <gc:hasResult rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_vibrations_frequencies_Cl4Ti1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_789085.7600870044"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:VibrationalAnalysis>
+    </gc:isCalculationOn>
+    <gc:isCalculationOn>
+      <ontocompchem:ScfEnergy rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_scf_energy_Cl4Ti1_dbb0518a-18e9-3b85-99bc-8a38879462de789085.7600870044">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasElectronicEnergy rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_scf_energy_value_Cl4Ti1_dbb0518a-18e9-3b85-99bc-8a38879462de789085.7600870044"/>
+      </ontocompchem:ScfEnergy>
+    </gc:isCalculationOn>
+    <gc:isCalculationOn>
+      <ontocompchem:RotationalSymmetry rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_rotational_symmetry_Cl4Ti1_ef2af78c-70f9-394e-8e62-f4a5d32e719e_789085.7600870044">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <ontocompchem:hasRotationalSymmetryNumber rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.0</ontocompchem:hasRotationalSymmetryNumber>
+      </ontocompchem:RotationalSymmetry>
+    </gc:isCalculationOn>
+    <ontocompchem:hasEnvironment>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#job_module_has_environment_module_Cl4Ti1_789085.7600870044">
+        <ontocompchem:hasProgram rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Gaussian</ontocompchem:hasProgram>
+        <ontocompchem:hasRunDate rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Wed Feb 11 16:51:20 2015</ontocompchem:hasRunDate>
+        <gc:hasOutputFile rdf:resource="http://theworldavatar.com/kb/ontocompchem/gaussian/extra/TiCl4.owl"/>
+        <ontocompchem:hasProgramVersion rdf:datatype="http://www.w3.org/2001/XMLSchema#string">2009+D.01</ontocompchem:hasProgramVersion>
+        <gc:hasOutputFile rdf:resource="http://theworldavatar.com/kb/ontocompchem/gaussian/extra/TiCl4.g09"/>
+        <rdf:type rdf:resource="http://purl.org/gc/SourcePackage"/>
+      </owl:Thing>
+    </ontocompchem:hasEnvironment>
+    <gc:isCalculationOn>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_geometry_type_Cl4Ti1_fdaeecd5-2035-3a84-8874-7161078bd0c0_789085.7600870044">
+        <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#GeometryType"/>
+        <ontocompchem:hasGeometryType>nonlinear</ontocompchem:hasGeometryType>
+      </owl:Thing>
+    </gc:isCalculationOn>
+    <gc:isCalculationOn>
+      <ontocompchem:RotationalConstants rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_rotational_constants_Cl4Ti1_82d4edb1-9b4a-348e-b496-3c1470b1dbda_789085.7600870044">
+        <ontocompchem:hasRotationalConstants rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1.14483000 1.14487000 1.14488000</ontocompchem:hasRotationalConstants>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#GigaHertz"/>
+        <ontocompchem:hasRotationalConstantsCount rdf:datatype="http://www.w3.org/2001/XMLSchema#string">3</ontocompchem:hasRotationalConstantsCount>
+      </ontocompchem:RotationalConstants>
+    </gc:isCalculationOn>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#G09"/>
+    <gc:isCalculationOn>
+      <gc:GeometryOptimization rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_geometry_optimization_Cl4Ti1_789085.7600870044">
+        <gc:hasMolecule rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_molecule_Cl4Ti1_789085.7600870044"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:GeometryOptimization>
+    </gc:isCalculationOn>
+    <gc:isCalculationOn>
+      <ontocompchem:ElectronicAndZPEEnergy rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_electronic_and_zpe_energy_Cl4Ti1_0d8efdfd-b852-36aa-9389-cba8fac293fd789085.7600870044">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasElectronicEnergy rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_electronic_and_zpe_energy_value_Cl4Ti1_0d8efdfd-b852-36aa-9389-cba8fac293fd789085.7600870044"/>
+      </ontocompchem:ElectronicAndZPEEnergy>
+    </gc:isCalculationOn>
+  </owl:Thing>
+  <owl:Ontology rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#">
+    <owl:imports rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl"/>
+  </owl:Ontology>
+  <gc:Atom rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#has_atom_Cl4Ti1_CL4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_789085.7600870044">
+    <gc:isElement>
+      <table:Element rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable#CL">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </table:Element>
+    </gc:isElement>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:Atom>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_electronic_and_zpe_energy_value_Cl4Ti1_0d8efdfd-b852-36aa-9389-cba8fac293fd789085.7600870044">
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-2690.305605</gc:hasValue>
+    <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Hartree"/>
+    <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+  </owl:Thing>
+  <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.28966</gc:hasValue>
+    <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:FloatValue>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_molecule_formal_charge_Cl4Ti1_789085.7600870044">
+    <gc:hasUnit rdf:resource="http://purl.org/gc/atomicUnit"/>
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</gc:hasValue>
+    <rdf:type rdf:resource="http://purl.org/gc/IntegerValue"/>
+  </owl:Thing>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_basis_set_parameter_Cl4Ti1_789085.7600870044">
+    <gc:hasBasisSet>6-311+G(d,p)</gc:hasBasisSet>
+    <rdf:type rdf:resource="http://purl.org/gc/BasisSet"/>
+  </owl:Thing>
+  <gc:Atom rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasAtomCoordinateX>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_x3_Cl4Ti1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-2.44155</gc:hasValue>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateX>
+    <gc:hasAtomCoordinateZ>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.88072</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+      </owl:Thing>
+    </gc:hasAtomCoordinateZ>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasAtomCoordinateY>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_y3_Cl4Ti1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.30134</gc:hasValue>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateY>
+    <gc:hasMass>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_mass_Cl4Ti1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.9688527</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+        <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+      </owl:Thing>
+    </gc:hasMass>
+    <gc:isElement rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#CL"/>
+  </gc:Atom>
+  <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_x3_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.07915</gc:hasValue>
+    <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:FloatValue>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_mass_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+    <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.9688527</gc:hasValue>
+  </owl:Thing>
+  <gc:Molecule rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_molecule_Cl4Ti1_TI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_789085.7600870044">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasNumberOfAtoms rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</gc:hasNumberOfAtoms>
+    <gc:hasAtom>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#has_atom_Cl4Ti1_TI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_789085.7600870044">
+        <gc:isElement rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#TI"/>
+        <rdf:type rdf:resource="http://purl.org/gc/Atom"/>
+      </owl:Thing>
+    </gc:hasAtom>
+  </gc:Molecule>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_TI1_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <rdf:type rdf:resource="http://purl.org/gc/Atom"/>
+    <gc:hasAtomCoordinateY>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_y3_Cl4Ti1_TI1_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.14582</gc:hasValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateY>
+    <gc:hasMass>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_mass_Cl4Ti1_TI1_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">47.9479467</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+      </gc:FloatValue>
+    </gc:hasMass>
+    <gc:hasAtomCoordinateZ>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_TI1_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.13755</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+      </owl:Thing>
+    </gc:hasAtomCoordinateZ>
+    <gc:isElement>
+      <owl:Thing rdf:about="http://www.daml.org/2003/01/periodictable/PeriodicTable#TI">
+        <rdf:type rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element"/>
+      </owl:Thing>
+    </gc:isElement>
+    <gc:hasAtomCoordinateX>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_x3_Cl4Ti1_TI1_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-0.90475</gc:hasValue>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateX>
+  </owl:Thing>
+  <gc:Frequency rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_vibrations_frequencies_Cl4Ti1_c4a89a2b-e690-3cb0-a6ee-20176b7f4d63_789085.7600870044">
+    <gc:hasUnit rdf:resource="http://purl.org/gc/cm-1"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasVibrationCount rdf:datatype="http://www.w3.org/2001/XMLSchema#string">9</gc:hasVibrationCount>
+    <ontocompchem:hasFrequencies rdf:datatype="http://www.w3.org/2001/XMLSchema#string">496.3119 496.2470 496.0853 385.5930 133.6283 133.5847 133.5656 113.5948 113.5631</ontocompchem:hasFrequencies>
+  </gc:Frequency>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_molecule_property_Cl4Ti1_789085.7600870044">
+    <gc:hasName>Cl4Ti1</gc:hasName>
+    <gc:hasMolecule>
+      <gc:Molecule rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_molecule_Cl4Ti1_CL4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_789085.7600870044">
+        <gc:hasAtom rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#has_atom_Cl4Ti1_CL4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_789085.7600870044"/>
+        <gc:hasNumberOfAtoms rdf:datatype="http://www.w3.org/2001/XMLSchema#string">4</gc:hasNumberOfAtoms>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:Molecule>
+    </gc:hasMolecule>
+    <gc:hasMolecule rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_molecule_Cl4Ti1_TI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_789085.7600870044"/>
+    <rdf:type rdf:resource="http://purl.org/gc/MoleculeProperty"/>
+  </owl:Thing>
+  <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.71222</gc:hasValue>
+    <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:FloatValue>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL3_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:isElement rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#CL"/>
+    <gc:hasAtomCoordinateY>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_y3_Cl4Ti1_CL3_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.49734</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+      </owl:Thing>
+    </gc:hasAtomCoordinateY>
+    <rdf:type rdf:resource="http://purl.org/gc/Atom"/>
+    <gc:hasAtomCoordinateZ>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_CL3_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.00851</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateZ>
+    <gc:hasMass>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_mass_Cl4Ti1_CL3_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.9688527</gc:hasValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+      </gc:FloatValue>
+    </gc:hasMass>
+    <gc:hasAtomCoordinateX>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_x3_Cl4Ti1_CL3_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.56107</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateX>
+  </owl:Thing>
+  <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_scf_energy_value_Cl4Ti1_dbb0518a-18e9-3b85-99bc-8a38879462de789085.7600870044">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-2690.31130539</gc:hasValue>
+    <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Hartree"/>
+  </gc:FloatValue>
+  <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasAtomCoordinateZ rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <gc:hasAtomCoordinateX rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_x3_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <gc:isElement rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#CL"/>
+    <gc:hasAtomCoordinateY>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_y3_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.16904</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateY>
+    <gc:hasMass>
+      <owl:Thing rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_mass_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">34.9688527</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Dalton"/>
+        <rdf:type rdf:resource="http://purl.org/gc/FloatValue"/>
+      </owl:Thing>
+    </gc:hasMass>
+    <rdf:type rdf:resource="http://purl.org/gc/Atom"/>
+  </owl:Thing>
+  <gc:Atom rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+    <gc:hasAtomCoordinateZ rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_z3_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <gc:isElement rdf:resource="http://www.daml.org/2003/01/periodictable/PeriodicTable#CL"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasAtomCoordinateY>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_y3_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.04628</gc:hasValue>
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateY>
+    <gc:hasMass rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_mass_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <gc:hasAtomCoordinateX>
+      <gc:FloatValue rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_coordinate_x3_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044">
+        <gc:hasUnit rdf:resource="http://data.nasa.gov/qudt/owl/unit#Angstrom"/>
+        <gc:hasValue rdf:datatype="http://www.w3.org/2001/XMLSchema#double">-1.81756</gc:hasValue>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+      </gc:FloatValue>
+    </gc:hasAtomCoordinateX>
+  </gc:Atom>
+  <ontocompchem:OutputSource rdf:about="http://theworldavatar.com/kb/ontocompchem/gaussian/extra/TiCl4.g09">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </ontocompchem:OutputSource>
+  <gc:Molecule rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_molecule_Cl4Ti1_789085.7600870044">
+    <gc:hasAtom rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <ontocompchem:hasSpinMultiplicity rdf:datatype="http://www.w3.org/2001/XMLSchema#string">1</ontocompchem:hasSpinMultiplicity>
+    <gc:hasAtom rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL2_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <gc:hasAtom rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL4_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+    <gc:hasFormalCharge rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_molecule_formal_charge_Cl4Ti1_789085.7600870044"/>
+    <gc:hasAtom rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_CL3_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+    <gc:hasAtom rdf:resource="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#finalization_module_has_atom_Cl4Ti1_TI1_a3c43724-3174-323f-857b-70c6ef3e6f8e_789085.7600870044"/>
+  </gc:Molecule>
+  <gc:MethodologyFeature rdf:about="http://theworldavatar.com/kb/ontocompchem/TiCl4/TiCl4.owl#initialization_module_has_level_of_theory_parameter_Cl4Ti1_789085.7600870044">
+    <ontocompchem:hasLevelOfTheory>RB971/6-311+G(d,p)</ontocompchem:hasLevelOfTheory>
+    <rdf:type rdf:resource="http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#LevelOfTheory"/>
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </gc:MethodologyFeature>
+  <ontocompchem:OutputSource rdf:about="http://theworldavatar.com/kb/ontocompchem/gaussian/extra/TiCl4.owl">
+    <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#Thing"/>
+  </ontocompchem:OutputSource>
+</rdf:RDF>

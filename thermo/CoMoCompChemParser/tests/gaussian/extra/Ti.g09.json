@@ -1,0 +1,31 @@
+{
+    "Empirical formula": "Ti1",
+    "Atom counts": {
+        "TI": 1
+    },
+    "Atom types": [
+        "TI"
+    ],
+    "Atomic masses": [
+        47.9479467
+    ],
+    "Atomic mass unit": "atomic",
+    "Method": "UB971",
+    "Basis set": "6-311+G(d,p)",
+    "Spin multiplicity": 3,
+    "Formal charge": 0,
+    "Formal charge unit": "atomic",
+    "Geometry": [
+        [
+            0.0,
+            0.0,
+            0.0
+        ]
+    ],
+    "Geometry unit": "Angstroms",
+    "Electronic energy": -849.242836753,
+    "Electronic and ZPE energy": -849.242837,
+    "Program name": "Gaussian",
+    "Program version": "2009+D.01",
+    "Run date": "Sat Feb 7 23:40:54 2015"
+}
