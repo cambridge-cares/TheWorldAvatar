@@ -26,30 +26,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class BaseOntologyModelManager {
 
-    private static final String IRI_BASE = "http://www.theworldavatar.com";
+    private static final String IRI_BASE = KeyValueMap.getInstance().get("IRI_BASE");
     protected static final String IRI_KB = IRI_BASE + "/kb/";
     private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
-    static final String ABSDIR_ROOT = "C://TOMCAT/webapps/ROOT";
+    static final String ABSDIR_ROOT = KeyValueMap.getInstance().get("ABSDIR_ROOT");;
     private static final String ABSDIR_KB = ABSDIR_ROOT + "/kb/";
     //protected static final String ABSDIR_ROOT_TEST = "/home/arek/IdeaProjects/JParkSimulator-git/JPS_SHIP";
 //   protected static final String ABSDIR_ROOT_TEST = "C://Users/KADIT01/TOMCAT/webapps/ROOT";
-  protected static final String ABSDIR_ROOT_TEST =  "C://Users/ongajong/TOMCAT/webapps/ROOT";
+  protected static final String ABSDIR_ROOT_TEST =  KeyValueMap.getInstance().get("ABSDIR_ROOT_TEST");
     private static final String ABSDIR_KB_TEST = ABSDIR_ROOT_TEST + "/kb/";
-    private static final String IRI_BASE_TEST = "http://localhost:8080";
+    private static final String IRI_BASE_TEST = KeyValueMap.getInstance().get("IRI_BASE_TEST");
     protected static final String IRI_KB_TEST = IRI_BASE_TEST + "/kb/";
 
     static ConcurrentHashMap<String, Resource> conceptMap = new ConcurrentHashMap<>();
     static OntModel baseEntityModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
     private static Logger logger = LoggerFactory.getLogger(BaseOntologyModelManager.class);
-
+    
     public void contextDestroyed(ServletContextEvent sce) {
         baseEntityModel.close();
     }
-
+    
     protected static OntModel createModelFromString(String content) {
         byte[] contentBytes = content.getBytes(StandardCharsets.UTF_8);
         OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM);
