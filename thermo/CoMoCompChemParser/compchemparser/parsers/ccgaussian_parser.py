@@ -102,6 +102,7 @@ class CcGaussianParser():
         def get_job_success(buffer):
             # inspect the last 10 lines from the job to see
             # if it has terminated normally
+            job_success = False
             for line in islice(buffer, len(buffer)-10, len(buffer)):
                 if JOB_SUCCESS_RE.match(line):
                     job_success = True
