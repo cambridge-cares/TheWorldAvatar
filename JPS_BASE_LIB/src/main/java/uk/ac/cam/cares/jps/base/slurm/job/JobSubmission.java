@@ -11,7 +11,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -411,10 +410,10 @@ public class JobSubmission{
 	 * @param input in json format containing the format in which the result</br> 
 	 * should be codified, e.g. json. An example input file will look like</br>
 	 * as follows:{"format":"json"}
-	 * @return a string containing statistics in the user requested format.
+	 * @return a JSONObject containing statistics in the user requested format.
 	 * @throws IOException
 	 */
-	public String getStatistics(String input) throws IOException{
+	public JSONObject getStatistics(String input) throws IOException{
 		JSONObject obj = new JSONObject(input);  
 		String formatAccepts = obj.optString("format"); // json
 		if(formatAccepts!=null && formatAccepts.toLowerCase().contains("json")){
@@ -431,11 +430,9 @@ public class JobSubmission{
 			obj.put("Number of jobs terminated with an error", jobStatistics.getJobsErrorTerminated());
 			obj.put("Number of jobs to start", jobStatistics.getJobsNotStarted());
 			obj.put("Total number of jobs submitted", jobStatistics.getJobsSubmitted());
-			return obj.toString(); 
 		}
-		return new JSONObject().toString();
+		return obj;
 	}
-
 	
 	/**
 	 * Produces the statistics about Slurm jobs.
