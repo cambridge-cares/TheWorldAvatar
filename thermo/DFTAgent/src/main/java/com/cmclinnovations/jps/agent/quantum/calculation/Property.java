@@ -34,7 +34,15 @@ public enum Property {
 	DFT_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>"),
 	ONTOCOMPCHEM_KB_IRI("http://www.theworldavatar.com/kb/ontocompchem/"),
 	JSON_INPUT_REF_SPECIES("referenceSpecies"),
-	JSON_INPUT_UNIQUE_SPECIES_IRI("uniqueSpeciesIRI");
+	JSON_INPUT_UNIQUE_SPECIES_IRI("uniqueSpeciesIRI"),
+	JOB_SETUP_SPECIES_GEOMETRY_ERROR("The geometry of species could not be downloaded from the IRI provided."),
+	JOB_SETUP_SPECIES_IRI_MISSING("The species IRI is not provided."),
+	JOB_SETUP_LEVEL_OF_THEORY_MISSING("Level of theory is not provided.");
+	
+	
+    public static final String JOB_REQUEST_PATH = "/job/request";
+    public static final String JOB_STATISTICS_PATH = "/job/statistics";
+    public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
 	
 	private String propertyName;
 	private int value;
