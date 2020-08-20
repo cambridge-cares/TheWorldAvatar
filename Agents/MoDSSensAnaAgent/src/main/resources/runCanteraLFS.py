@@ -44,11 +44,6 @@ caseName = fuel + "_" + str(temperature) + "K" + str(pressure) + "Pa" + "_" + st
 # Setup the width of the solution grid in m (internal points selected by solver)
 width = 0.1
 
-## Setup parameters for criteria refine
-#ratio = 2.3
-#slope = 0.04
-#curve = 0.4
-
 # Import mechanism
 gas = ct.Solution(mechanismPath)
 
@@ -62,10 +57,12 @@ flame.inlet.mdot = gas.DP[0]*50*0.01
 
 # First flame: 
 flame.energy_enabled = False
-flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
+flame.set_refine_criteria(ratio = 10.0, slope = 1, curve = 1)
 flame.set_max_jac_age(50, 50)
 flame.set_time_step(5.e-06, [10, 20, 80]) #s
-flame.max_time_step_count = 2000
+flame.max_time_step_count = 4000
+flame.solve(0)
+flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
 flame.solve(0)
 # Second flame and so on ...: 
 flame.energy_enabled = True
@@ -86,6 +83,8 @@ flame.solve(0)
 flame.set_refine_criteria(ratio = 2.0, slope = 0.05, curve = 0.05, prune = 0.01)
 flame.solve(0)
 # Fourth flame and so on ...
+flame.set_refine_criteria(ratio = 2.0, slope = 0.03, curve = 0.03, prune = 0.01)
+flame.solve(0)
 flame.set_refine_criteria(ratio = 2.0, slope = 0.02, curve = 0.02, prune = 0.01)
 flame.solve(0)
 
