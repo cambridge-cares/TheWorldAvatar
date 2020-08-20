@@ -223,130 +223,130 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	
 	 
 	    @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams) {
-	    	JSONObject responseParams=new JSONObject();
-	    	
-			JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
-			JSONObject region = requestParams.getJSONObject("region");
-			JSONObject shipdata=requestParams.getJSONObject("ship");
-			String dataPath = QueryBroker.getLocalDataPath()+"/input";
-			String cityIRI = requestParams.getString("city"); //later to be used for annotation??
-			String agent=requestParams.getString("agent");
-			String airstn=requestParams.getString("airStationIRI");
-			String extrainfo=requestParams.toString();
-			new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
-			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
-		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
-		    	sourceCRSName = CRSTransformer.EPSG_4326; 
-		    }
-		    List<String>srtm=new ArrayList<String>();
-			if(cityIRI.toLowerCase().contains("singapore")) {
-				epsgInUTM="48";
-				epsgActive="32648";
-				gmttimedifference="-8";
-				srtm.add("N01E103.tif");
-				srtm.add("N01E104.tif");
-				copyTemplate(dataPath, "N01E103.hgt");
-				copyTemplate(dataPath, "N01E104.hgt");
-			}
-			else if(cityIRI.toLowerCase().contains("kong")) {
-				epsgInUTM="50";
-				epsgActive="32650";
-				gmttimedifference="-8";
-				srtm.add("N22E114.tif");
+    protected JSONObject processRequestParameters(JSONObject requestParams) {
+        JSONObject responseParams=new JSONObject();
 
-				copyTemplate(dataPath, "N22E114.hgt");
-			}
-			
-			List<String>stniri=new ArrayList<String>();
-//			stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
-//			stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
-			stniri.add(stnIRI.getString(0));
-			stniri.add(stnIRI.getString(1));
-			
-			double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
-			double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
-			double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
-			double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
-			
-			//check if it's the first run or not
-			String olddatapath=getPreviousHourDatapath(agent,cityIRI);
-			if(!olddatapath.contains("empty")) {
-				restart=true;
-				File file = new File( olddatapath+ "/output/icmhour.nc");
-				File file3des=new File(dataPath + "/icmhour.nc");
-				File file2 = new File( olddatapath+ "/output/plume_segments.dat");
-				File file2des=new File(dataPath + "/plume_segments.dat");
-				try {
-					FileUtils.copyFile(file, file3des);
-					FileUtils.copyFile(file2, file2des);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				//new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
+        if (validateInput(requestParams)) {
+            JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
+            JSONObject region = requestParams.getJSONObject("region");
+            JSONObject shipdata=requestParams.getJSONObject("ship");
+            String dataPath = QueryBroker.getLocalDataPath()+"/input";
+            String cityIRI = requestParams.getString("city"); //later to be used for annotation??
+            String agent=requestParams.getString("agent");
+            String airstn=requestParams.getString("airStationIRI");
+            String extrainfo=requestParams.toString();
+            new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
+            String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
+            if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+                sourceCRSName = CRSTransformer.EPSG_4326; 
+            }
+            List<String>srtm=new ArrayList<String>();
+            if(cityIRI.toLowerCase().contains("singapore")) {
+                epsgInUTM="48";
+                epsgActive="32648";
+                gmttimedifference="-8";
+                srtm.add("N01E103.tif");
+                srtm.add("N01E104.tif");
+                copyTemplate(dataPath, "N01E103.hgt");
+                copyTemplate(dataPath, "N01E104.hgt");
+            }
+            else if(cityIRI.toLowerCase().contains("kong")) {
+                epsgInUTM="50";
+                epsgActive="32650";
+                gmttimedifference="-8";
+                srtm.add("N22E114.tif");
 
+                copyTemplate(dataPath, "N22E114.hgt");
+            }
 
-				
-				//new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
-			}
-			
-			System.out.println("sourcecoordinate= "+sourceCRSName);
-			System.out.println("lowerx="+lowx);
-			System.out.println("upperx="+upx);
-			System.out.println("lowery="+lowy);
-			System.out.println("uppery="+upy);
-			System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
-			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
-			createEmissionInput(dataPath, "points.csv",shipdata);
-			createEmissionInput(dataPath, "lines.csv",shipdata);
-			try { //for control file
-				createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
-				createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
-				createControlWeatherORCityChemFile(region, dataPath, "citychem_restart.txt",stniri);
-				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_LSE.inp");
-				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_PSE.inp");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			createReceptorFile(region,dataPath,"receptor_input.txt");
-			createWeatherInput(dataPath,"mcwind_input.txt",stniri);
-			
-			//zip all the input file created
-			File inputfile=null;
-			try {
-				inputfile=getZipFile(dataPath);
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            List<String>stniri=new ArrayList<String>();
+//          stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
+//          stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+            stniri.add(stnIRI.getString(0));
+            stniri.add(stnIRI.getString(1));
 
-			try {
-				JSONObject jsonforslurm = new JSONObject();
-				boolean value=true;
-//				if (restart==true) {//all the time must be true??
-//					value=false;
-//				}
-				long millis = System.currentTimeMillis();
-				String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
-				jsonforslurm.put("runWholeScript",value);
-				jsonforslurm.put("city",cityIRI);
-				jsonforslurm.put("agent",agent);
-				jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
-				jsonforslurm.put("expectedtime", executiontime);
-				jsonforslurm.put("airStationIRI", airstn);
-				setUpJob(jsonforslurm.toString(),dataPath);
-			} catch (IOException | SlurmJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
+            double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
+            double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
+            double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
 
-			responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
-			return responseParams;
-		}
-    
+            //check if it's the first run or not
+            String olddatapath=getPreviousHourDatapath(agent,cityIRI);
+            if(!olddatapath.contains("empty")) {
+                restart=true;
+                File file = new File( olddatapath+ "/output/icmhour.nc");
+                File file3des=new File(dataPath + "/icmhour.nc");
+                File file2 = new File( olddatapath+ "/output/plume_segments.dat");
+                File file2des=new File(dataPath + "/plume_segments.dat");
+                try {
+                    FileUtils.copyFile(file, file3des);
+                    FileUtils.copyFile(file2, file2des);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                //new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
+
+                //new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
+            }
+
+            System.out.println("sourcecoordinate= "+sourceCRSName);
+            System.out.println("lowerx="+lowx);
+            System.out.println("upperx="+upx);
+            System.out.println("lowery="+lowy);
+            System.out.println("uppery="+upy);
+            System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
+            region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
+            createEmissionInput(dataPath, "points.csv",shipdata);
+            createEmissionInput(dataPath, "lines.csv",shipdata);
+            try { //for control file
+                createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
+                createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
+                createControlWeatherORCityChemFile(region, dataPath, "citychem_restart.txt",stniri);
+                createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_LSE.inp");
+                createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_PSE.inp");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            createReceptorFile(region,dataPath,"receptor_input.txt");
+            createWeatherInput(dataPath,"mcwind_input.txt",stniri);
+
+            //zip all the input file created
+            File inputfile=null;
+            try {
+                inputfile=getZipFile(dataPath);
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jsonforslurm = new JSONObject();
+                boolean value=true;
+//              if (restart==true) {//all the time must be true??
+//                  value=false;
+//              }
+                long millis = System.currentTimeMillis();
+                String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
+                jsonforslurm.put("runWholeScript",value);
+                jsonforslurm.put("city",cityIRI);
+                jsonforslurm.put("agent",agent);
+                jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
+                jsonforslurm.put("expectedtime", executiontime);
+                jsonforslurm.put("airStationIRI", airstn);
+                setUpJob(jsonforslurm.toString(),dataPath);
+            } catch (IOException | SlurmJobException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
+        }
+        return responseParams;
+    }
+
     private boolean validateInput(JSONObject input) {
         boolean valid = false;
             try {
