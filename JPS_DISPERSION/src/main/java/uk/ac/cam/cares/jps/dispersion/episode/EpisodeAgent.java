@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -20,6 +21,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
@@ -345,6 +347,52 @@ public class EpisodeAgent extends DispersionModellingAgent {
 			return responseParams;
 		}
     
+    private boolean validateInput(JSONObject input) {
+        boolean valid = false;
+            try {
+                JSONArray stnIRI=input.getJSONArray("stationiri");
+                if(stnIRI.length() < 2) {
+                    System.out.println("Number of weather stations:" + stnIRI.length());
+                    System.out.println("Episode agent: At least 2 weather stations are required.");
+                    throw new Exception();
+                }
+                // at the moment it will always give two stations, in principle episode can use more than 2 stations
+                for(int x=0;x<stnIRI.length();x++) {
+                    // check if it's a valid URL
+                    new URL(stnIRI.getString(x)).toURI();
+                }
+                JSONObject region = input.getJSONObject("region");
+                String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
+                String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
+                String upx = region.getJSONObject("uppercorner").get("upperx").toString();
+                String upy = region.getJSONObject("uppercorner").get("uppery").toString();
+
+                // check if provided coordinates are valid doubles
+                double proclowx = Double.valueOf(lowx);
+                double procupx = Double.valueOf(upx);
+                double proclowy = Double.valueOf(lowy);
+                double procupy = Double.valueOf(upy);
+
+                String cityIRI = input.getString("city");
+                new URL(cityIRI).toURI();
+                String agent=input.getString("agent");
+                new URL(agent).toURI();
+                String airstn=input.getString("airStationIRI");
+                new URL(airstn).toURI();
+                String sourceCRSName = region.optString("srsname"); 
+                if ((sourceCRSName == null) || sourceCRSName.isEmpty()) {
+                    sourceCRSName = CRSTransformer.EPSG_4326; 
+                }
+                // the following two lines are used to verify that the CRS name is valid
+                // todo: create a function to validate coordinate system
+                double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
+                CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,center);
+            } catch (Exception e) {
+                throw new BadRequestException(e);
+        }
+        return valid;
+    }
+
     @Override
 	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
 		 List<String[]> resultquery = new ArrayList<String[]>();
