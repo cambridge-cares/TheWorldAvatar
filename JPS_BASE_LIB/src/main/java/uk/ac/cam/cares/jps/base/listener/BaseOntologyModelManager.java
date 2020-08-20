@@ -30,7 +30,7 @@ import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class BaseOntologyModelManager {
-
+    //Change local variables in src/main/resources/config.properties
     private static final String IRI_BASE = KeyValueMap.getInstance().get("IRI_BASE");
     protected static final String IRI_KB = IRI_BASE + "/kb/";
     private static final String EX_SAVE_OWL =  "Saving OWL failed: ";
