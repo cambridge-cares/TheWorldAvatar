@@ -454,7 +454,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("ub_abs", "100.0");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
-			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value["+i+"]");
+			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRate_A_Modifiers']/value[@index='"+i+"']");
 			workingWrite.put("write_function", "Set_XML_double");
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);

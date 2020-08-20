@@ -461,7 +461,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 			initialRead.put("read_function", "Get_DSV_double");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
-			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value["+i+"]");
+			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRate_A_Modifiers']/value[@index='"+i+"']");
 			workingWrite.put("write_function", "Set_XML_double");
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
