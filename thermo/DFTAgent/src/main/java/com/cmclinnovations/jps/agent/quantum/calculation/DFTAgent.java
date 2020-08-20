@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
@@ -58,9 +59,9 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 /**
  * Quantum Calculation Agent developed for setting-up and running quantum
- * jobs at increasing levels of theory.   
+ * jobs at a level of theory.   
  * 
- * @author msff2
+ * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
 @Controller
@@ -180,8 +181,8 @@ public class DFTAgent extends JPSAgent{
 	}
 	
 	/**
-	 * Receives requests that match with the URL patterns listed in the<br>
-	 * annotations of this class.
+	 * Receives and processes HTTP requests that match with the URL patterns<br>
+	 * listed in the annotations of this class.
 	 * 
 	 */
     @Override
@@ -212,6 +213,10 @@ public class DFTAgent extends JPSAgent{
 		}
 	}
     
+    /**
+     * Validates input parameters specific to DFT Agent to decide whether<br>
+     * the job set up request can be served.
+     */
     @Override
     public boolean validateInput(JSONObject requestParams) throws BadRequestException {
         if (requestParams.isEmpty()) {
@@ -228,6 +233,11 @@ public class DFTAgent extends JPSAgent{
         return true;
     }
     
+    /**
+     * Monitors already set up jobs.
+     * 
+     * @throws SlurmJobException
+     */
 	private void monitorJobs() throws SlurmJobException{
 		if(jobSubmission==null){
 			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
