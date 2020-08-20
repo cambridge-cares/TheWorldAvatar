@@ -438,7 +438,10 @@ getIconByType: function (type, highlight) {
         thead += "<tr><th style=\"text-align:center\">Attribute</th><th style=\"text-align:center\">Value</th></tr>";
         $.each(attrPairs, function (key, value) {
             if (key == 'location') {
+                console.log('key is:' + key);
                 $.each(value, function (key2, value2) {
+                    console.log('key2 is:' + key2);
+                    console.log('value2 is:' + value2);
                     thead += "<tr><td style=\"text-align:center\">" + key2 + "</td><td style=\"text-align:center\">" + value2 + "</td></tr>";
                 });
             } else if (key == 'uri') {

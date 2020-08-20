@@ -17,8 +17,8 @@ var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
-var getAttrList =require("./routes/getAttrList");
-var ppMap = require('./routes/mapPowerPlant');
+// var getAttrList =require("./routes/getAttrList");
+// var ppMap = require('./routes/mapPowerPlant');
 var UKontoTwinMap = require('./routes/ontoTwinUK');
 // var parallelWorld = require('./routes/parallelWorld');
 
@@ -50,9 +50,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
 /*posting to dataObserve to get orginal data & register for future data change*/
-app.use("/getAttrList", getAttrList);
+// app.use("/getAttrList", getAttrList);
 app.use('/ontoTwinUK', UKontoTwinMap);
-app.use('/ppmap', ppMap);
+// app.use('/ppmap', ppMap);
 
 var http = require('http').createServer(app);
 var io = require('socket.io')(http);
