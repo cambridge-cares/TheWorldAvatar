@@ -1,5 +1,5 @@
-const epQueryer = require("./epQueryWrapper");
-const config = require('../config');
+const epQueryer = require("../../agents/epQueryWrapper");
+const config = require('../../config');
 const aQueryer = Object.create(epQueryer);
 
 var powerPlantIRIList = getpowerPlantIRI();

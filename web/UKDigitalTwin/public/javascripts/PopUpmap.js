@@ -436,7 +436,8 @@ getIconByType: function (type, highlight) {
     formatContent: function (attrPairs, uri) {
         let thead = "<table id='table" + uri + "' class='table-attr'>";
         thead += "<tr><th style=\"text-align:center\">Attribute</th><th style=\"text-align:center\">Value</th></tr>";
-        $.each(attrPairs, function (key, value) {
+        let allAttrPairs = getPowerPlantAttr(getPowerPlantAttrQueryStr(uri));
+        $.each(allAttrPairs, function (key, value) {
             if (key == 'location') {
                 console.log('key is:' + key);
                 $.each(value, function (key2, value2) {
