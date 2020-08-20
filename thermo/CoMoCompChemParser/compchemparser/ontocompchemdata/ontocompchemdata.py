@@ -40,7 +40,7 @@ class OntoCompChemData:
         # set and parse the log
         self.log = logFile
         self.data = self.parser.parse(self.log)
-
+        
 
     # to be implemented by Nenad/Angiras
     def uploadToKG(self):
@@ -51,6 +51,7 @@ class OntoCompChemData:
 
     def outputjson(self):
         print('Dumping to JSON, File '+self.log)
+        i =1
         for i, json_dat in enumerate(self.data):
             if len(self.data) > 1:
             #    json_name = self.log.replace('.log','#'+str(i+1)+'.json')
@@ -63,23 +64,30 @@ class OntoCompChemData:
             dict_data = json.loads(json_dat)
             with open(json_name, 'w') as outfile:
                 json.dump(dict_data, outfile, indent = 4)
-
+                        
+            r = random.uniform(100000,1000000)
+            file_name= Path(self.log).stem
+            ontocompchem_graph = Graph()
+            
+            self.outputowl(ontocompchem_graph, dict_data, file_name, r,i)
+            
             for (key, value) in iteritems(dict_data):
                 print(" - ", key, " : ", value)
+                    
+             
 
-    def outputowl(self,ontocompchem_graph, file_name, rnd):
+    def outputowl(self,ontocompchem_graph, dict_data,file_name, rnd,i):
 
         print("output owl: ")
 
-        for i, json_dat in enumerate(self.data):
-            dict_data = json.loads(json_dat)
+        #for i, json_dat in enumerate(self.data):
+        #    dict_data = json.loads(json_dat)
 
         empirical_formula = dict_data["Empirical formula"]
         program_version = dict_data["Program version"]
 
         ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + file_name + ".owl#"
         source_base_uri =  "http://theworldavatar.com/kb/ontocompchem/"
-
 
         """Namespace definition"""
         ontocompchem_namespace = Namespace("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")
@@ -101,7 +109,7 @@ class OntoCompChemData:
 
 
         '''Create ontocompchem knowledge graph by generating owl file.'''
-        self.create_ontocompchem_graph(ontocompchem_graph, ontology_base_uri, source_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, rnd)
+        self.create_ontocompchem_graph(ontocompchem_graph, dict_data, ontology_base_uri, source_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, rnd)
 
         '''Printing created ontology that is an instance of OntoCompChem ontology.'''
         #print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -113,7 +121,8 @@ class OntoCompChemData:
         '''File path to Gaussian calculation.'''
         g_path = str(os.path.abspath(self.log))
 
-        owl_path = os.path.splitext(g_path)[0]+".owl"
+        owl_path = os.path.splitext(g_path)[0]+str(i)+".owl"
+        i = i+1
 
         print("owl_path: " , owl_path)
 
@@ -123,39 +132,38 @@ class OntoCompChemData:
         f.close()
 
 
-    def create_ontocompchem_graph(self,ontocompchem_graph,ontology_base_uri,source_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,rnd):
+    def create_ontocompchem_graph(self,ontocompchem_graph, dict_data, ontology_base_uri,source_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,rnd):
 
          '''Create main ontocompchem knowledge graph (instance of ontocompchem Tbox)'''
          self.import_ontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
-         self.generate_gaussian_instance(program_version, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
-         self.generate_empirical_formula(ontocompchem_graph, ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
-         self.generate_level_of_theory(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
-         self.generate_basis_set(ontocompchem_graph, ontology_base_uri, gc_namespace, rnd)
-         self.generate_geometry_type(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
-         self.generate_frequencies(ontocompchem_graph, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
-         self.generate_rotational_symmetry_number(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_spin_multiplicity(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_formal_charge(ontocompchem_graph, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_program_name_run_date_program_version(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_rotational_constants(ontocompchem_graph, ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_geometry_atomic_masses(ontocompchem_graph, ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
-         self.generate_atom_count(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_electronic_and_zpe_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_scf_energy(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_file_iri(ontocompchem_graph, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_base_uri, file_name, rnd)
+         self.generate_gaussian_instance(program_version, dict_data, ontocompchem_graph, ontology_base_uri, file_name, ontocompchem_namespace,rnd)
+         self.generate_empirical_formula(ontocompchem_graph, dict_data,ontology_base_uri, gc_namespace, ontocompchem_namespace,rnd)
+         self.generate_level_of_theory(ontocompchem_graph, dict_data,ontology_base_uri, ontocompchem_namespace, gc_namespace, rnd)
+         self.generate_basis_set(ontocompchem_graph, dict_data,ontology_base_uri, gc_namespace, rnd)
+         self.generate_geometry_type(ontocompchem_graph, dict_data, ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
+         self.generate_frequencies(ontocompchem_graph,  dict_data,ontology_base_uri, ontocompchem_namespace, gc_namespace, file_name, rnd)
+         self.generate_rotational_symmetry_number(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_spin_multiplicity(ontocompchem_graph, dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_formal_charge(ontocompchem_graph, dict_data, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_program_name_run_date_program_version(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_rotational_constants(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, unit_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_geometry_atomic_masses(ontocompchem_graph,  dict_data,ontocompchem_namespace, table_namespace, ontology_base_uri, file_name, gc_namespace, rnd)
+         self.generate_atom_count(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_electronic_and_zpe_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_scf_energy(ontocompchem_graph, dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
+         self.generate_file_iri(ontocompchem_graph,  dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_base_uri, file_name, rnd)
 
 
     def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
-
 
          '''Import ontocompchem ontology'''
          ontocompchem_graph.add((URIRef(ontology_base_uri), RDF.type, OWL.Ontology ))
          ontocompchem_graph.add((URIRef(ontology_base_uri), OWL.imports,ontocompchem_ontology))
 
-    def generate_gaussian_instance(self,program_version,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,rnd):
+    def generate_gaussian_instance(self,program_version,dict_data,ontocompchem_graph,ontology_base_uri, file_name,ontocompchem_namespace,rnd):
 
-        for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+#        for i, json_dat in enumerate(self.data):
+#                  dict_data = json.loads(json_dat)
 
 
         '''Extract empirical formula '''
@@ -173,10 +181,10 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasInitialization, URIRef(ontology_base_uri+"job_module_has_initilization_module_"+str(empirical_formula)+"_"+str(rnd))))
 
 
-    def generate_empirical_formula(self,ontocompchem_graph,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
+    def generate_empirical_formula(self,ontocompchem_graph,dict_data,ontology_base_uri,gc_namespace,ontocompchem_namespace,rnd):
 
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          '''Extract empirical formula .'''
          empirical_formula = dict_data["Empirical formula"]
@@ -192,10 +200,10 @@ class OntoCompChemData:
          ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
          ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_property_"+ str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasName, empirical_formula_literal))
 
-    def generate_level_of_theory(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,rnd):
+    def generate_level_of_theory(self,ontocompchem_graph,dict_data,ontology_base_uri,ontocompchem_namespace,gc_namespace,rnd):
          '''Generates level of theory.'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Method" in dict_data:
              method =  dict_data["Method"]
@@ -224,11 +232,11 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
              ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_level_of_theory_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasLevelOfTheory, level_of_theory_literal))
 
-    def generate_basis_set(self,ontocompchem_graph,ontology_base_uri,gc_namespace,rnd):
+    def generate_basis_set(self,ontocompchem_graph,dict_data,ontology_base_uri,gc_namespace,rnd):
 
          '''Generates graph for basis set quantity.'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Basis set" in dict_data:
              basis_set = dict_data["Basis set"]
@@ -239,14 +247,14 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
              ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_basis_set_parameter_"+ str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasBasisSet, basis_set_literal))
 
-    def generate_geometry_type(self, ontocompchem_graph, ontology_base_uri, ontocompchem_namespace,gc_namespace, file_name, rnd):
+    def generate_geometry_type(self, ontocompchem_graph, dict_data, ontology_base_uri, ontocompchem_namespace,gc_namespace, file_name, rnd):
 
          '''Generate unique string.'''
          uuid_geometry_type = uuid.uuid3(uuid.NAMESPACE_DNS,"geometry.type")
 
          '''Generates graph for geometry type quantity.'''
-         for i, json_dat in enumerate(self.data):
-                 dict_data = json.loads(json_dat)
+         #for i, json_dat in enumerate(self.data):
+         #        dict_data = json.loads(json_dat)
 
          if "Geometry type" in dict_data:
              geometry_type= dict_data["Geometry type"]
@@ -257,14 +265,14 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(empirical_formula)+ "_"+str(uuid_geometry_type)+"_"+str(rnd)), RDF.type, OWL.Thing))
              ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_geometry_type_"+str(empirical_formula)+ "_"+str(uuid_geometry_type)+"_"+str(rnd)), ontocompchem_namespace.hasGeometryType,geometry_type_literal))
 
-    def generate_frequencies(self,ontocompchem_graph,ontology_base_uri,ontocompchem_namespace,gc_namespace,file_name,rnd):
+    def generate_frequencies(self,ontocompchem_graph, dict_data,ontology_base_uri,ontocompchem_namespace,gc_namespace,file_name,rnd):
 
          '''Generate unique string.'''
          uuid_frequency = uuid.uuid3(uuid.NAMESPACE_DNS,"frequency")
 
          '''Generates graph for frequencies quantity.'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
 
          if "Frequencies" in dict_data :
@@ -300,14 +308,14 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_vibrations_frequencies_"+str(empirical_formula)+ "_"+str(uuid_frequency)+"_"+str(rnd)), gc_namespace.hasVibrationCount, frequencies_size_literal))
 
 
-    def generate_rotational_symmetry_number(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_rotational_symmetry_number(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''Generate unique string'''
          uuid_rotational_symmetry_number = uuid.uuid3(uuid.NAMESPACE_DNS,"rotaional.symmetry.number")
 
          '''Generates graph for rotational symmetry quantity'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Rotational symmetry number" in dict_data :
              empirical_formula = dict_data["Empirical formula"]
@@ -320,11 +328,11 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(empirical_formula)+ "_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)), RDF.type, OWL.Thing))
              ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_symmetry_"+str(empirical_formula)+ "_"+str(uuid_rotational_symmetry_number)+"_"+str(rnd)),ontocompchem_namespace.hasRotationalSymmetryNumber,rotational_symmetry_number_literal))
 
-    def generate_spin_multiplicity(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_spin_multiplicity(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''Generates graph for spin multiplicity quantity'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Spin multiplicity" in dict_data :
              spin_multiplicity_number= dict_data["Spin multiplicity"]
@@ -342,11 +350,11 @@ class OntoCompChemData:
              ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_"+str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasSpinMultiplicity, spin_multiplicity_number_literal))
 
 
-    def generate_formal_charge(self,ontocompchem_graph,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_formal_charge(self,ontocompchem_graph, dict_data, gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''Generate graph for formal charge quantity'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Formal charge" in dict_data:
              formal_charge_value = dict_data["Formal charge"]
@@ -366,11 +374,11 @@ class OntoCompChemData:
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_molecule_formal_charge_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasUnit,URIRef(gc_namespace.atomicUnit)))
 
 
-    def generate_program_name_run_date_program_version(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_program_name_run_date_program_version(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generate graph that contains program name, program version, and run date'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          program_name = dict_data["Program name"]
          program_version = dict_data["Program version"]
@@ -390,14 +398,14 @@ class OntoCompChemData:
          ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), ontocompchem_namespace.hasRunDate, run_date_literal))
 
 
-    def generate_rotational_constants(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,unit_namespace,ontology_base_uri,file_name,rnd):
+    def generate_rotational_constants(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,unit_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_rotational_constants = uuid.uuid3(uuid.NAMESPACE_DNS,"rotaional.constants")
 
          '''Generates graph for rotational constants quantity'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Rotational constants" in dict_data:
              empirical_formula = dict_data["Empirical formula"]
@@ -426,14 +434,14 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_rotational_constants_"+str(empirical_formula)+ "_"+str(uuid_rotational_constants)+"_"+str(rnd)), gc_namespace.hasUnit,URIRef(unit_namespace.GigaHertz)))
 
 
-    def generate_geometry_atomic_masses(self,ontocompchem_graph,ontocompchem_namespace,table_namespace,ontology_base_uri,file_name,gc_namespace,rnd):
+    def generate_geometry_atomic_masses(self,ontocompchem_graph, dict_data,ontocompchem_namespace,table_namespace,ontology_base_uri,file_name,gc_namespace,rnd):
 
          '''Generates unique string'''
          uuid_geometry_atomic_mass = uuid.uuid3(uuid.NAMESPACE_DNS,"geometry.atomic.mass")
 
          '''Generates graph for geometry, atomic masses, and atom types quantities'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
 
 
@@ -490,14 +498,14 @@ class OntoCompChemData:
 
 
 
-    def generate_atom_count(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_atom_count(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_atom_count = uuid.uuid3(uuid.NAMESPACE_DNS,"atom.count")
 
          '''Generate graph for atom counts quantity'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Atom counts" in dict_data:
              atom_count = dict_data["Atom counts"]
@@ -521,14 +529,14 @@ class OntoCompChemData:
                      ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
                      ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,OWL.Thing))
 
-    def generate_electronic_and_zpe_energy(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_electronic_and_zpe_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
          '''generates unique string'''
          uuid_electronic_and_zpe_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"electronic.and.zpe.energy")
 
          '''Generate graph for electronic and zpe energy quantity'''
-         for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        # for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
          if "Electronic and ZPE energy" in dict_data:
              electronic_and_zpe_energy = dict_data["Electronic and ZPE energy"]
@@ -545,14 +553,14 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
-    def generate_scf_energy(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
+    def generate_scf_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
         '''generates unique string'''
         uuid_scf_energy = uuid.uuid3(uuid.NAMESPACE_DNS,"scf.energy")
 
         '''Generate graph for scf energy quantity'''
-        for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        #for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
 
         if "Electronic energy" in dict_data:
                  scf_energy = dict_data["Electronic energy"]
@@ -568,11 +576,12 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
 
-    def generate_file_iri(self,ontocompchem_graph,ontocompchem_namespace,gc_namespace,ontology_base_uri,source_base_uri,file_name,rnd):
+    def generate_file_iri(self,ontocompchem_graph,  dict_data, ontocompchem_namespace,gc_namespace,ontology_base_uri,source_base_uri,file_name,rnd):
 
         '''Generate graph for output sources ".g09", ".log", ".g16", ".owl" '''
-        for i, json_dat in enumerate(self.data):
-                  dict_data = json.loads(json_dat)
+        #for i, json_dat in enumerate(self.data):
+        #          dict_data = json.loads(json_dat)
+                  
         empirical_formula = dict_data["Empirical formula"]
         ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), ontocompchem_namespace.hasEnvironment,URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd))))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.SourcePackage))
