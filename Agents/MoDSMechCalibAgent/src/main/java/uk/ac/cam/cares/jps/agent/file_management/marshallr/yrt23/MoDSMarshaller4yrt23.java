@@ -18,6 +18,7 @@ public class MoDSMarshaller4yrt23 extends MoDSMarshaller {
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		kineticsSRM.formFiles(exeModel, otherOptions);
 		kineticsSRM.setUpMoDS();
+		kineticsSRM.placeScript();
 	}
 
 	@Override
@@ -27,5 +28,6 @@ public class MoDSMarshaller4yrt23 extends MoDSMarshaller {
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		canteraLFS.formFiles(exeModel, otherOptions);
 		canteraLFS.setUpMoDS();
+		canteraLFS.placeScript();
 	}
 }

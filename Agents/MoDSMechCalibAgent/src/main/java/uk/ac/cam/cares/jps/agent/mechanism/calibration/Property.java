@@ -36,10 +36,13 @@ public enum Property {
 	PREFIX_RAM("ram"),
 	MODS_AGENT_IRI("<http://www.theworldavatar.com/kb/agents/Service__DFT.owl#Service>"), // double check
 	MODEL_KINETICS("kineticsSRM"),
-	MODEL_KINETICS_EXE("/home/jb2197/Codes_kinetics/mods-backend/Applications/MoDS/bin/runKineticsSRM.sh"),
+	MODEL_KINETICS_EXE("../../../../runKineticsSRM.sh"),
+	MODEL_KINETICS_SCRIPT("runKineticsSRM.sh"),
 	MODEL_KINETICS_OUTPUT("OutputCase00001Cyc0001Info.csv"),
 	MODEL_CANTERA("canteraLFS"),
 	MODEL_CANTERA_EXE("python"),
+	MODEL_CANTERA_SCRIPT("runCanteraLFS.py"),
+	MODEL_CANTERA_ARG("../../../../runCanteraLFS.py"),
 	MODEL_CANTERA_MULTI_OPT("/home/jb2197/Codes_kinetics/cantera/cantera_LFS_multi.py"),
 	MODEL_CANTERA_MIX_AVERAGE_OPT("/home/jb2197/Codes_kinetics/cantera/cantera_LFS_mix_average.py"),
 	MODEL_CANTERA_OUTPUT("OutputCase00001Lfs0001Info.csv");

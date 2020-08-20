@@ -553,7 +553,35 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
-	
+	/**
+	 * Set up the simulation script required for the model to execute. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	@Override
+	public void placeScript() throws IOException, MoDSMechCalibAgentException {
+		File srcScript = new File(getClass().getClassLoader().getResource(Property.MODEL_KINETICS_SCRIPT.getPropertyName()).getFile());
+		File jobScript = new File(jobFolderPath.concat(FRONTSLASH+FILE_KINETICSSRM_SCRIPT));
+		
+		// create the BufferedReader and BufferedWriter to read and write files
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+		
+		// copy the runKineticsSRM.sh script
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(srcScript)));
+	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(jobScript)));
+	        String line = new String();
+	        while ((line = br.readLine()) != null) {
+	        	bw.write(line.concat("\n"));
+	        }
+	        bw.close();
+	        br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 	/**

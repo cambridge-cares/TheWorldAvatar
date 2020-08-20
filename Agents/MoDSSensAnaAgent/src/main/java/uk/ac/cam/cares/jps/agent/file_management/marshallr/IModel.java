@@ -68,4 +68,12 @@ public interface IModel {
 	 * @throws MoDSSensAnaAgentException
 	 */
 	public void setUpMoDS() throws IOException, MoDSSensAnaAgentException;
+	
+	/**
+	 * Set up the simulation script required for the model to execute. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	public void placeScript() throws IOException, MoDSSensAnaAgentException;
 }

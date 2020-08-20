@@ -21,6 +21,7 @@ public class MoDSMarshallerSensAna extends MoDSMarshaller {
 		ExecutableModel exeModel = kineticsSRM.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		kineticsSRM.formFiles(exeModel, otherOptions);
 		kineticsSRM.setUpMoDS();
+		kineticsSRM.placeScript();
 		
 		logger.info("Model kineticsSRM was added to the MoDS job.");
 	}
@@ -32,6 +33,7 @@ public class MoDSMarshallerSensAna extends MoDSMarshaller {
 		ExecutableModel exeModel = canteraLFS.formExecutableModel(experimentIRI, mechanismIRI, reactionIRIList);
 		canteraLFS.formFiles(exeModel, otherOptions);
 		canteraLFS.setUpMoDS();
+		canteraLFS.placeScript();
 		
 		logger.info("Model canteraLFS was added to the MoDS job.");
 	}
