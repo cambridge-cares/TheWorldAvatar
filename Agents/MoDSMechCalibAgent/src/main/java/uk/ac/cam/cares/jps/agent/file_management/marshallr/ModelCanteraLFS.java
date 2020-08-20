@@ -26,6 +26,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.primitives.Doubles;
+
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
@@ -45,6 +47,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	private List<String> expFiles = new ArrayList<>();
 	private List<String> modelFiles = new ArrayList<>();
 	private List<String> caseNames = new ArrayList<>();
+	private List<String> outputErrs = new ArrayList<>();
+	
 	private String tranModel = "mix-average";
 	
 	public String getTranModel() {
@@ -79,6 +83,13 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 				logger.error("The heasers of all experimental data tables should be consistent.");
 			}
 		}
+		// get the index of err
+		int errIdx = -1;
+		for (int inx = 0; inx < headers.get(0).size(); inx++) {
+			if (headers.get(0).get(inx).toLowerCase().contains("err")) {
+				errIdx = inx;
+			}
+		}
 		// form exp data csv file
 		List<String[]> dataLines;
 		dataLines = new ArrayList<>();
@@ -90,6 +101,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			// generate the list of cases
 			caseList.add(Property.MODEL_CANTERA.getPropertyName().concat("_case_"+i));
 			i += 1;
+			// get the list of outputErrs
+			outputErrs.add(dataSingleLine.get(errIdx));
 		}
 		File expDataCSV = new File(folderTemporaryPath.concat(FRONTSLASH).concat(Property.MODEL_CANTERA.getPropertyName().concat(UNDERSCORE+FILE_MODEL_EXPDATA_SUFFIX)));
 		try (PrintWriter pw = new PrintWriter(expDataCSV)) {
@@ -164,7 +177,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			processedActiveParam.add(activeParameters.get(activeParamNo));
 		}
 		
-		// create list to store all files used/produced when executing kineticsSRM model
+		// create list to store all files used/produced when executing canteraLFS model
 		// get the name of files in the initial folder
 		List<String> folderInitialFiles = createFolderInitial(processedActiveParam);
 		// get the name of files in the all folder
@@ -307,18 +320,25 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		// set up parameters
 		// TODO further parameterise this
 		List<Parameter> parameters = new ArrayList<>();
-		// constructing row, lbAddend, and ubAddend
-		String row = new String();
-		String lbAddend = new String();
-		String ubAddend = new String();
+		// constructing row, lbAbs, and ubAbs
+		String row = "";
+		String lbAbs = "";
+		String ubAbs = "";
+		double sqrtN = Math.sqrt(caseNames.size());
+		List<Double> lb_abs = new ArrayList<>();
+		List<Double> ub_abs = new ArrayList<>();
+		for (int idx = 0; idx < caseNames.size(); idx++) {
+			lb_abs.add(-1*Double.parseDouble(outputErrs.get(idx))*sqrtN);
+			ub_abs.add(Double.parseDouble(outputErrs.get(idx))*sqrtN);
+		}
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
-			lbAddend = lbAddend.concat(";-"+Math.sqrt(caseNames.size()));
-			ubAddend = ubAddend.concat(";"+Math.sqrt(caseNames.size()));
+			lbAbs = lbAbs.concat(";"+lb_abs.get(j));
+			ubAbs = ubAbs.concat(";"+ub_abs.get(j));
 		}
 		row = row.substring(1);
-		lbAddend = lbAddend.substring(1);
-		ubAddend = ubAddend.substring(1);
+		lbAbs = lbAbs.substring(1);
+		ubAbs = ubAbs.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			// base active parameters
@@ -423,8 +443,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			initialRead.put("column", i);
 			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_addend", lbAddend);
-			initialRead.put("ub_addend", ubAddend);
+			initialRead.put("lb_abs", lbAbs);
+			initialRead.put("ub_abs", ubAbs);
 			
 			LinkedHashMap<String, String> workingRead = new LinkedHashMap<String, String>();
 			workingRead.put("column", column);

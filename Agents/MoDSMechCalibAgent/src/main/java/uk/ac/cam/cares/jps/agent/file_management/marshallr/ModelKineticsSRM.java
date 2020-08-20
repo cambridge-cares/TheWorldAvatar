@@ -428,18 +428,22 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		
 		// set up parameters
 		List<Parameter> parameters = new ArrayList<>();
-		// constructing row, lbAddend, and ubAddend
-		String row = new String();
-		String lbAddend = new String();
-		String ubAddend = new String();
+		// constructing row, lbFactor, and ubFactor
+		String row = "";
+		String lbFactor = "";
+		String ubFactor = "";
+		double sqrtN = Math.sqrt(caseNames.size());
+		double errFrac = 0.20;
+		double lb_fac = (1-errFrac)*sqrtN;
+		double ub_fac = (1+errFrac)*sqrtN;
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
-			lbAddend = lbAddend.concat(";-"+Math.sqrt(caseNames.size()));
-			ubAddend = ubAddend.concat(";"+Math.sqrt(caseNames.size()));
+			lbFactor = lbFactor.concat(";"+lb_fac);
+			ubFactor = ubFactor.concat(";"+ub_fac);
 		}
 		row = row.substring(1);
-		lbAddend = lbAddend.substring(1);
-		ubAddend = ubAddend.substring(1);
+		lbFactor = lbFactor.substring(1);
+		ubFactor = ubFactor.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			Parameter param = new Parameter();
@@ -530,8 +534,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", i);
 			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_addend", lbAddend);
-			initialRead.put("ub_addend", ubAddend);
+			initialRead.put("lb_factor", lbFactor);
+			initialRead.put("ub_factor", ubFactor);
 			
 			LinkedHashMap<String, String> workingRead = new LinkedHashMap<String, String>();
 			workingRead.put("column", column);
