@@ -51,7 +51,7 @@ class OntoCompChemData:
 
     def outputjson(self):
         print('Dumping to JSON, File '+self.log)
-        k =1
+        k=1
         for i, json_dat in enumerate(self.data):
             if len(self.data) > 1:
             #    json_name = self.log.replace('.log','#'+str(i+1)+'.json')
@@ -64,16 +64,16 @@ class OntoCompChemData:
             dict_data = json.loads(json_dat)
             with open(json_name, 'w') as outfile:
                 json.dump(dict_data, outfile, indent = 4)
-                        
+                
+            ''' Generates knowledge graph as owl file for each generated josn file '''
             r = random.uniform(100000,1000000)
             file_name= Path(self.log).stem
             ontocompchem_graph = Graph()
             
-            self.outputowl(ontocompchem_graph, dict_data, file_name, r,k)
-            
+            self.outputowl(ontocompchem_graph, dict_data, file_name, r, k)
+            k = k+1
             for (key, value) in iteritems(dict_data):
                 print(" - ", key, " : ", value)
-                    
              
 
     def outputowl(self,ontocompchem_graph, dict_data,file_name, rnd,k):
@@ -120,9 +120,13 @@ class OntoCompChemData:
 
         '''File path to Gaussian calculation.'''
         g_path = str(os.path.abspath(self.log))
-
-        owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
-        k = k+1
+        
+        ''' Check the number of jobs found in log file'''
+        
+        if len(self.data) > 1:
+            owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
+        else:
+            owl_path = os.path.splitext(g_path)[0]+".owl"
 
         print("owl_path: " , owl_path)
 
@@ -442,8 +446,6 @@ class OntoCompChemData:
          '''Generates graph for geometry, atomic masses, and atom types quantities'''
         # for i, json_dat in enumerate(self.data):
         #          dict_data = json.loads(json_dat)
-
-
 
          atom_iterator = 0;
          if "Atom types" in dict_data:
