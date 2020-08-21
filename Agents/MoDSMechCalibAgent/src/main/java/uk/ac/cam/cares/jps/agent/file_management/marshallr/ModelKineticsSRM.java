@@ -382,7 +382,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
 		algoCalibration.put("n_iters", "400");
-		algoCalibration.put("n_initial_points", "1");
+		algoCalibration.put("n_initial_points", "10");
 		algoCalibration.put("constrained", "true");
 		algoCalibration.put("rho", "0.2");
 		algoCalibration.put("rho_factor", "0.5");
