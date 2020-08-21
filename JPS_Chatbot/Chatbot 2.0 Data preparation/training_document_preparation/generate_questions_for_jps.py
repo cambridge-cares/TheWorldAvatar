@@ -15,6 +15,8 @@ ontocompchem_address = 'http://www.theworldavatar.com/ontology/ontocompchem/onto
 g = rdflib.Graph()
 g.parse(ontocompchem_address)
 onto = get_ontology("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl")
+from anytree import Node, RenderTree
+from anytree.exporter import DotExporter
 
 # make an analysis on the content of ontocompchem, focusing on the class hierarchy
 #
@@ -53,23 +55,36 @@ for class_uri in all_classes:
 # ================= find all the subclasses of those root classes =======
 print('========================= subclasses =============================')
 
-
 # extract a hierarchy tree recursively.
+# the hierarchy looks like
+# [{'CalculationConcept': {'MethodologyFeature': {'XXX': None, 'YYY': None}}}] where XXX has no subclass
+
+
+super_root = Node("OntoCompChem")
+
+root_node_list = [Node(root_uri, parent=super_root) for root_uri in root_classes]
+
+
+# DotExporter(super_root).to_picture("./super_root.png")
 
 
 def find_sub_classes(target_root_classes):
-    for root_uri in target_root_classes:
+    for root_node in target_root_classes:
+        root_uri = root_node.name
+
         qres = g.query(
             """SELECT DISTINCT ?sub_class 
                WHERE {
                   ?sub_class rdfs:subClassOf   <%s>. 
                }""" % root_uri)
-        sub_classes_list = []
-        print('================ a batch ===========')
+        sub_nodes_list = []
         for binding in qres:
             sub_class_uri = str(binding['sub_class'])
-            sub_classes_list.append(sub_class_uri)
-            print(sub_class_uri, 'of', root_uri)
-        find_sub_classes(sub_classes_list)
+            sub_node = Node(sub_class_uri, parent=root_node)
+            sub_nodes_list.append(sub_node)
+        find_sub_classes(sub_nodes_list)
 
-find_sub_classes(root_classes)
+
+find_sub_classes(root_node_list)
+for pre, fill, node in RenderTree(super_root):
+    print("%s%s" % (pre, node.name))
