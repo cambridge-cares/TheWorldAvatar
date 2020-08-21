@@ -103,7 +103,9 @@ class CcGaussianParser():
             # inspect the last 10 lines from the job to see
             # if it has terminated normally
             job_success = False
-            for line in islice(buffer, len(buffer)-10, len(buffer)):
+            start_slice = len(buffer)-EXTRA_FOOTER_LINES_NR
+            if start_slice < 0: start_slice = 0
+            for line in islice(buffer, start_slice, len(buffer)):
                 if JOB_SUCCESS_RE.match(line):
                     job_success = True
                     break
