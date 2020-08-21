@@ -57,7 +57,7 @@ TD_ENERGY = 'TD energy'
 
 # collate keys to be uploaded to the kg into a single list
 #-------------------------------------------------
-CCKEYS_DATA = [  
+CCKEYS_DATA = [
             EMP_FORMULA, ATOM_COUNTS, ATOM_TYPES, ATOM_MASSES, ATOM_MASSES_UNIT,
             METHOD, BASIS_SET, SPIN_MULT, FORMAL_CHARGE, FORMAL_CHARGE_UNIT,
             GEOM, GEOM_UNIT, GEOM_TYPE, ROT_SYM_NR, ROT_CONST, ROT_CONST_NR,
@@ -133,7 +133,7 @@ class CcGaussianParser():
             # at a time, till the file is empty
             while line:
                 # use realine() to read file line by line
-                line = flog.readline()            
+                line = flog.readline()
 
                 if FSPLIT_RE.match(line):
                     # job start string found
@@ -145,6 +145,7 @@ class CcGaussianParser():
                     if jobs_nr > 1:
                         # check if the found job was successful
                         job_success = get_job_success(buffer)
+                        print('    PARSER_INFO: Found job '+str(jobs_nr-1)+', job success: '+str(job_success))
                         if job_success:
                             # set temp file name and dump read content to it
                             log_names.append(logFile + '_#' + str(jobs_nr-1))
@@ -158,7 +159,7 @@ class CcGaussianParser():
                     else:
                         buffer.append(line)
                 else:
-                    buffer.append(line)                
+                    buffer.append(line)
             flog.close()
 
             # after the above loop the buffer should contain the last job.
@@ -166,19 +167,24 @@ class CcGaussianParser():
             # or indeed the last job from a linked log
             # we need to again test for its success
             job_success = get_job_success(buffer)
-            if jobs_nr == 1 and job_success:
+            if jobs_nr == 0:
+                print('    PARSER_INFO: No valid jobs found.')
+            elif jobs_nr == 1:
+                print('    PARSER_INFO: Found job '+str(jobs_nr)+', job success: '+str(job_success))
                 # if the jobs number was one, this is a non linked log
                 # so there is no need in writing it again to a temp file
                 # just add the log name as is to the final log_names list
-                log_names.append(logFile)
-            elif jobs_nr > 1 and job_success:
+                if job_success: log_names.append(logFile)
+            elif jobs_nr > 1:
+                print('    PARSER_INFO: Found job '+str(jobs_nr)+', job success: '+str(job_success))
                 # this is the last job from a linked log
                 # write this job to a temp file and append its name
                 # to the log_names list
-                log_names.append(logFile + '_#' + str(jobs_nr))
-                fjob_log = open(log_names[-1],'w')
-                fjob_log.writelines(buffer)
-                fjob_log.close()
+                if job_success:
+                    log_names.append(logFile + '_#' + str(jobs_nr))
+                    fjob_log = open(log_names[-1],'w')
+                    fjob_log.writelines(buffer)
+                    fjob_log.close()
 
             return log_names
         #================================================
@@ -186,7 +192,7 @@ class CcGaussianParser():
         #================================================
         # parse body
         #================================================
-        
+
         uploaddata = [] # final list that would store json data
         # split the log files if multiply jobs found
         split_logs = split_log_by_jobs(logFile)
@@ -224,7 +230,7 @@ class CcGaussianParser():
             # sets geometry type based on nr of atoms and rot constants in a molecule
             if data[ROT_CONST_NR] is not None and \
             data[ATOM_TYPES] is not None:
-            
+
                 if len(parseddata[ATOM_TYPES]) == 1:
                     data[GEOM_TYPE] = 'atomic'
                 elif data[ROT_CONST_NR] == 1:
@@ -254,7 +260,7 @@ class CcGaussianParser():
                 data[GEOM_UNIT] = line.replace('(','').replace(')','')
 
                 cur_line = cur_line + 3
-                line = log_lines[cur_line].strip()             
+                line = log_lines[cur_line].strip()
                 while '---' not in line:
                     line = line.split()
                     data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
@@ -271,7 +277,7 @@ class CcGaussianParser():
                 data[GEOM_UNIT] = line.replace('(','').replace(')','')
 
                 cur_line = cur_line + 3
-                line = log_lines[cur_line].strip()             
+                line = log_lines[cur_line].strip()
                 while '---' not in line:
                     line = line.split()
                     data[GEOM].append([float(line[3]), float(line[4]), float(line[5])])
@@ -324,7 +330,7 @@ class CcGaussianParser():
                         line = line.split()
                         for f in line:
                             data[FREQ].append(float(f))
-   
+
                     cur_line = cur_line + 1
                     line = log_lines[cur_line].strip()
                 data[FREQ_NR] = len(data[FREQ])
@@ -341,7 +347,7 @@ class CcGaussianParser():
         def check_rot_const(data, cur_line,log_lines):
             # tries to extract rotational constants from a log file line
             # it removes duplicated rot constants and rot constants that are zero
-            line = log_lines[cur_line]            
+            line = log_lines[cur_line]
 
             if ROT_CONST_RE.search(line):
                 data[ROT_CONST] = []
@@ -503,7 +509,7 @@ class CcGaussianParser():
             for line in lines_above_footer:
                 if '(0 K)=' in line and 'Energy=' in line:
                     line = line.split('=')[1]
-                    data[ELECTRONIC_ENERGY] = None 
+                    data[ELECTRONIC_ENERGY] = None
                     data[ELECTRONIC_ZPE_ENERGY] = float(line.split()[0].strip())
                     break
         #---------------------------------------------
