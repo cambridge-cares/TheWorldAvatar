@@ -51,7 +51,7 @@ class OntoCompChemData:
 
     def outputjson(self):
         print('Dumping to JSON, File '+self.log)
-        i =1
+        k =1
         for i, json_dat in enumerate(self.data):
             if len(self.data) > 1:
             #    json_name = self.log.replace('.log','#'+str(i+1)+'.json')
@@ -69,14 +69,14 @@ class OntoCompChemData:
             file_name= Path(self.log).stem
             ontocompchem_graph = Graph()
             
-            self.outputowl(ontocompchem_graph, dict_data, file_name, r,i)
+            self.outputowl(ontocompchem_graph, dict_data, file_name, r,k)
             
             for (key, value) in iteritems(dict_data):
                 print(" - ", key, " : ", value)
                     
              
 
-    def outputowl(self,ontocompchem_graph, dict_data,file_name, rnd,i):
+    def outputowl(self,ontocompchem_graph, dict_data,file_name, rnd,k):
 
         print("output owl: ")
 
@@ -121,8 +121,8 @@ class OntoCompChemData:
         '''File path to Gaussian calculation.'''
         g_path = str(os.path.abspath(self.log))
 
-        owl_path = os.path.splitext(g_path)[0]+str(i)+".owl"
-        i = i+1
+        owl_path = os.path.splitext(g_path)[0]+"#"+str(i)+".owl"
+        k = k+1
 
         print("owl_path: " , owl_path)
 

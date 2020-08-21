@@ -33,10 +33,12 @@ class TestGaussianParser(unittest.TestCase):
     def test_suite1(self):
         
         test_path = os.path.join(THIS_DIR, 'gaussian')
+        
+        print("test_path: ", test_path)
 
         for method, logs in Test_suite1.items():
             for log_file in logs:
-                test_name = 'Gaussian '+method
+                test_name = 'Gaussian '+ method
                 file_path = os.path.join(test_path, method, log_file)
                 
                 print("Test " + test_name+", File: "+ log_file)
@@ -57,7 +59,7 @@ class TestGaussianParser(unittest.TestCase):
                         #ref_name = log_file.replace('.log','.json')
                         ref_name = log_file + '.json'
                         #print("ref_name (json): ", ref_name)
-                          
+                        
                         
                     ref_path = os.path.join(test_path, method, ref_name)
                     
