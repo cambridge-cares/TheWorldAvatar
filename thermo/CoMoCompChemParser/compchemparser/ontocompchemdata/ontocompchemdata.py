@@ -121,7 +121,7 @@ class OntoCompChemData:
         '''File path to Gaussian calculation.'''
         g_path = str(os.path.abspath(self.log))
 
-        owl_path = os.path.splitext(g_path)[0]+"#"+str(i)+".owl"
+        owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
         k = k+1
 
         print("owl_path: " , owl_path)
