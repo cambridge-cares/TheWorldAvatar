@@ -57,7 +57,6 @@ public class MoDS4yrt23 extends MoDSFileManagement {
 		iMoDSMarshaller.plugInCantera(flameSpeedExpIRI, mechanismIRI, reactionIRIList, jsonString);
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
-//		placeMoDSSlurmScript(jobFolderPath);
 		return jobFolderPath;
 	}
 }

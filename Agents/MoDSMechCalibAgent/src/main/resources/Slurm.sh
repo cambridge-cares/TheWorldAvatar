@@ -8,7 +8,8 @@
 #SBATCH -A COMO-SL2-CPU
 #SBATCH --mem=64000
 #SBATCH --time=96:00:00
-#SBATCH --ntasks=16
+#SBATCH --nodes=10
+#SBATCH --ntasks-per-node=16
 #SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)  
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
 #SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
@@ -36,6 +37,7 @@ mv *.zip input.zip
 unzip input.zip
 cp -r $SLURM_JOB_NAME/* . 
 rm -rf $SLURM_JOB_NAME/
+chmod +x *.sh
 
 # Execute the simulation
 MODS_MPI=/home/jb2197/Codes_kinetics/mods-backend/outputs/Release/bin/MoDS_mpi

@@ -122,32 +122,6 @@ public class MoDSFileManagement extends MoDSMarshaller {
 		String jobFolderPath = iMoDSMarshaller.marshall();
 		
 		logger.info("The requested MoDS job was created.");
-//		placeMoDSSlurmScript(jobFolderPath);
 		return jobFolderPath;
-	}
-	
-	protected void placeMoDSSlurmScript(String jobFolderPath) throws IOException, MoDSSensAnaAgentException {
-		// TODO
-		File sourceSlurmScript = new File(getClass().getClassLoader().getResource(FILE_MODS_SLURM_SCRIPT).getFile());
-		File modsSlurmScript = new File(jobFolderPath.concat(FRONTSLASH+FILE_MODS_SLURM_SCRIPT));
-		
-		// create the BufferedReader and BufferedWriter to read and write files
-		BufferedReader br = null;
-		BufferedWriter bw = null;
-		
-		// copy the modsslurm_como.sh script
-		try {
-			br = new BufferedReader(new InputStreamReader(new FileInputStream(sourceSlurmScript)));
-	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(modsSlurmScript)));
-	        String line = new String();
-	        while ((line = br.readLine()) != null) {
-	        	bw.write(line.concat("\n"));
-	        }
-	        bw.close();
-	        br.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 	}
 }

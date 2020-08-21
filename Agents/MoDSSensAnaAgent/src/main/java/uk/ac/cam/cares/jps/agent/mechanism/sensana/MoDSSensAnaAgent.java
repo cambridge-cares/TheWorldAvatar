@@ -88,19 +88,16 @@ public class MoDSSensAnaAgent extends HttpServlet {
 //			e.printStackTrace();
 //		}
 		
-		modsSensAnaAgent.init();
+//		modsSensAnaAgent.init();
 		
-//		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},"
-//				+ "\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},"
-//				+ "\"mods\":{\"ignDelayOption\":{\"method\":\"3\", \"species\":\"CO\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"20\", \"relPerturbation\":\"0.02\"}}"
-//				+ "}}";
-//		try {
-//			modsSensAnaAgent.query(input);
-//			
-//		} catch (IOException | SlurmJobException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},\"mods\":{\"ignDelayOption\":{\"method\":\"1\", \"species\":\"AR\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"10\", \"relPerturbation\":\"1e-3\"}}}}";
+		try {
+			modsSensAnaAgent.query(input);
+			
+		} catch (IOException | SlurmJobException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
