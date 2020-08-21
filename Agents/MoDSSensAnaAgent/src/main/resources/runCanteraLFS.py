@@ -2,12 +2,23 @@
 
 import cantera as ct
 import pandas as pd
-import sys
+import argparse
 import os
 ct.suppress_thermo_warnings()
 
+parser = argparse.ArgumentParser(description='Simulate laminar flame speed')
+parser.add_argument('-d', '--dataPath', type=str, metavar='', required=True, help='File path for simulation settings')
+parser.add_argument('-t', '--tranModel', type=str, metavar='', required=True, help='Transport model for simulation, mix or multi')
+parser.add_argument('-v', '--verbose', type=int, metavar='', help='Verbose level of solution, from 0 to 5')
+args = parser.parse_args()
+
 # Read argument
-dataPath = sys.argv[1]
+dataPath = args.dataPath
+tranModel = args.tranModel
+if args.verbose:
+    verbose = args.verbose
+else:
+    verbose = 0
 
 # Read flame speed data
 flameData = pd.read_csv(dataPath)
@@ -61,32 +72,36 @@ flame.set_refine_criteria(ratio = 10.0, slope = 1, curve = 1)
 flame.set_max_jac_age(50, 50)
 flame.set_time_step(5.e-06, [10, 20, 80]) #s
 flame.max_time_step_count = 4000
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
-flame.solve(0)
+flame.solve(verbose)
 # Second flame and so on ...: 
 flame.energy_enabled = True
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 7.0, slope = 0.85, curve = 1)
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 7.0, slope = 0.75, curve = 0.75)
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 6.0, slope = 0.75, curve = 0.75)
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 5.0, slope = 0.5, curve = 0.5)
-flame.solve(0)
+flame.solve(verbose)
 # Third flame and so on ...:
 flame.set_refine_criteria(ratio = 5.0, slope = 0.3, curve = 0.3)
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 3.0, slope = 0.1, curve = 0.1)
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 2.0, slope = 0.05, curve = 0.05, prune = 0.01)
-flame.solve(0)
+flame.solve(verbose)
 # Fourth flame and so on ...
 flame.set_refine_criteria(ratio = 2.0, slope = 0.03, curve = 0.03, prune = 0.01)
-flame.solve(0)
+flame.solve(verbose)
 flame.set_refine_criteria(ratio = 2.0, slope = 0.02, curve = 0.02, prune = 0.01)
-flame.solve(0)
+flame.solve(verbose)
+
+if ('multi' in tranModel) or ('Multi' in tranModel):
+    flame.transport_model = 'Multi'
+	flame.solve(verbose)
 
 ## Simulate laminar flame speed
 #gas = ct.Solution(mechanismPath)
