@@ -174,4 +174,88 @@ public class SlurmJobProperty {
 	public int getAgentPeriodicActionInterval() {
 		return agentPeriodicActionInterval;
 	}
+
+	public void setAgentClass(String agentClass) {
+		this.agentClass = agentClass;
+	}
+
+	public void setAgentWorkspacePrefix(String agentWorkspacePrefix) {
+		this.agentWorkspacePrefix = agentWorkspacePrefix;
+	}
+
+	public void setAgentCompletedJobsSpacePrefix(String agentCompletedJobsSpacePrefix) {
+		this.agentCompletedJobsSpacePrefix = agentCompletedJobsSpacePrefix;
+	}
+
+	public void setHpcAddress(String hpcAddress) {
+		this.hpcAddress = hpcAddress;
+	}
+
+	public void setAgentHostAddress(String agentHostAddress) {
+		this.agentHostAddress = agentHostAddress;
+	}
+
+	public void setInputFileName(String inputFileName) {
+		this.inputFileName = inputFileName;
+	}
+
+	public void setInputFileExtension(String inputFileExtension) {
+		this.inputFileExtension = inputFileExtension;
+	}
+
+	public void setCheckPointFileExtension(String checkPointFileExtension) {
+		this.checkPointFileExtension = checkPointFileExtension;
+	}
+
+	public void setJsonFileExtension(String jsonFileExtension) {
+		this.jsonFileExtension = jsonFileExtension;
+	}
+
+	public void setJsonInputFileName(String jsonInputFileName) {
+		this.jsonInputFileName = jsonInputFileName;
+	}
+
+	public void setSlurmScriptFileName(String slurmScriptFileName) {
+		this.slurmScriptFileName = slurmScriptFileName;
+	}
+
+	public void setJobPreprintDirective(String jobPreprintDirective) {
+		this.jobPreprintDirective = jobPreprintDirective;
+	}
+
+	public void setOutputFileName(String outputFileName) {
+		this.outputFileName = outputFileName;
+	}
+
+	public void setOutputFileExtension(String outputFileExtension) {
+		this.outputFileExtension = outputFileExtension;
+	}
+
+	public void setAgentHostingServerOperatingSystem(String agentHostingServerOperatingSystem) {
+		this.agentHostingServerOperatingSystem = agentHostingServerOperatingSystem;
+	}
+
+	public void setKgURLToUploadResultViaJsonInput(String kgURLToUploadResultViaJsonInput) {
+		this.kgURLToUploadResultViaJsonInput = kgURLToUploadResultViaJsonInput;
+	}
+
+	public void setRdf4jServerUrl(String rdf4jServerUrl) {
+		this.rdf4jServerUrl = rdf4jServerUrl;
+	}
+
+	public void setRdf4jRepositoryOntoSpecies(String rdf4jRepositoryOntoSpecies) {
+		this.rdf4jRepositoryOntoSpecies = rdf4jRepositoryOntoSpecies;
+	}
+
+	public void setMaxNumberOfHPCJobs(int maxNumberOfHPCJobs) {
+		this.maxNumberOfHPCJobs = maxNumberOfHPCJobs;
+	}
+
+	public void setAgentInitialDelayToStartJobMonitoring(int agentInitialDelayToStartJobMonitoring) {
+		this.agentInitialDelayToStartJobMonitoring = agentInitialDelayToStartJobMonitoring;
+	}
+
+	public void setAgentPeriodicActionInterval(int agentPeriodicActionInterval) {
+		this.agentPeriodicActionInterval = agentPeriodicActionInterval;
+	}
 }

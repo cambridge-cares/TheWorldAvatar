@@ -1,8 +1,6 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
@@ -43,6 +41,7 @@ public class KeyValueMap {
 	private void init() {
 		
 		String path = AgentLocator.getJPSBaseDirectory();
+		
 		boolean runningForTest = AgentLocator.isJPSRunningForTest();
 		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		try {
@@ -70,12 +69,7 @@ public class KeyValueMap {
 	}
 	
 	private void loadProperties(String propertyFile) throws IOException {
-	    //check if the file exists on the file system in string
-		File tmpDir = new File(propertyFile);
-		boolean fileExists = tmpDir.exists();
-		if (!fileExists) {
-			throw new FileNotFoundException(propertyFile + " is not found. ");
-		}
+	    
 		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
 		
 		FileInputStream inputStream = new FileInputStream(propertyFile);
