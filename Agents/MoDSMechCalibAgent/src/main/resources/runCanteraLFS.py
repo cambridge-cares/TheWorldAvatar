@@ -101,7 +101,7 @@ flame.solve(verbose)
 
 if ('multi' in tranModel) or ('Multi' in tranModel):
     flame.transport_model = 'Multi'
-	flame.solve(verbose)
+    flame.solve(verbose)
 
 ## Simulate laminar flame speed
 #gas = ct.Solution(mechanismPath)
