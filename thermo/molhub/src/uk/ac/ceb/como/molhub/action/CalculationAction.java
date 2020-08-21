@@ -130,12 +130,12 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 				Runtime.getRuntime().exec(cmd);
 				
-				
 			}
 			
 		}
 		
 		/**
+		 * 
 		 * @author nk510
 		 * <p>Removes all data from session's map after finishing thermo calculations.</p>
 		 * 
@@ -143,7 +143,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		
 		for (Map.Entry<String, Object> entry : session.entrySet()) {
 		     
-		        session.remove(entry.getKey());
+        session.remove(entry.getKey());
+        
 		}
 		
 		addActionMessage("Calculations successfully completed.");
