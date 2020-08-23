@@ -258,15 +258,6 @@ public class WeatherAgent extends JPSHttpServlet {
 							+ "}" 
 							+ "}ORDER BY DESC(?proptimeval) Limit7";
 				List<String[]> listsgstndata = queryEndPointDataset(query);
-				if(listsgstndata.size()>7) {
-					System.out.println("more than 7 data?");
-				}
-				if(listsgstndata.size()==0) {
-					System.out.println("Empty?");
-				}
-				if(listsgstndata.size()<7) {
-					System.out.println("less than 7?");
-				}
 				if(listsgstndata.size()==7) {
 					String[]res= {listsgstndata.get(0)[1],listsgstndata.get(0)[2],listsgstndata.get(0)[3],listsgstndata.get(0)[4],time2.get(y)};
 					listmap.add(res);
