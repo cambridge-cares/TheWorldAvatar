@@ -1,7 +1,7 @@
 intents:
   - item_attribute_query
   - batch_restriction_query
-  - what_ever
+  - batch_restriction_query_numerical
 
 responses:
   
@@ -28,6 +28,8 @@ entities:
   - entity
   - attribute
   - class
+  - comparison
+  - numerical_value
 
 session_config:
   session_expiration_time: 60

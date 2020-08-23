@@ -177,18 +177,34 @@ def generate_type_1_questions():
 
 
 def generate_type_3_questions():
-    superlative_words_pool = ['>', '<', 'under', 'over', 'higher than', 'lower than', 'more than', 'less than',
+    type_3_questions = []
+    superlative_words_pool = ['larger_than', 'smaller_than', 'under', 'over', 'higher than', 'lower than', 'more than', 'less than',
                               'smaller than', 'bigger than']
     type_3_questions = []
+    # e.g. find all the acids with molecular weight more than 100
+    mid_words_pool = ['with', 'that have', 'having', 'of']
+    template = '%s [%s](class) %s [%s](attribute) [%s](comparison) [%s](numerical_value)' # wh_word, class, mid_word, property ,superlative_word, numerical_value
 
     for i in range(0, size_of_trainning):
-        numerical_value = random.choice([random.randint(), random.random()])
+        numerical_value = random.choices([random.randint(-1000, 1000), random.random()],weights=(75, 25), k=1)[0]
         c_label = (random.choice(c_labels))
         p_label = (random.choice(p_labels))
         wh_word = (random.choice(question_pool))
+        mid_word = random.choice(mid_words_pool)
         superlative_word = random.choice(superlative_words_pool)
-
         # e.g. find all the alkenes with molecular weight more than 200
+        question = template % (wh_word, c_label, mid_word, p_label, superlative_word, numerical_value)
+        type_3_questions.append(question)
+        print(question)
+
+    with open('type_3_questions', 'wb') as f:
+        content = '## intent: batch_restriction_query_numerical\n'
+        for q in type_3_questions:
+            line = '- ' + q + '\n'
+            content = content + line
+
+        f.write(content.encode('utf-8'))
+        f.close()
 
 
 def merge_files():
@@ -200,16 +216,23 @@ def merge_files():
     with open('type_2_questions') as fp:
         data2 = fp.read()
 
+
+            # Reading data from file3
+    with open('type_3_questions') as fp:
+            data3 = fp.read()
+
         # Merging 2 files
     # To add the data of file2 
     # from next line 
     data += "\n"
     data += data2
+    data += data3
 
-    with open('nlu.md', 'w') as fp:
+    with open('nlu_08_22.md', 'w') as fp:
         fp.write(data)
 
 
 generate_type_1_questions()
 generate_type_2_questions()
+generate_type_3_questions()
 merge_files()
