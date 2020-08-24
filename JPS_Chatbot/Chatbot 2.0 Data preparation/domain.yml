@@ -2,6 +2,7 @@ intents:
   - item_attribute_query
   - batch_restriction_query
   - batch_restriction_query_numerical
+  - batch_restriction_query_numerical_and_attribute
 
 responses:
   

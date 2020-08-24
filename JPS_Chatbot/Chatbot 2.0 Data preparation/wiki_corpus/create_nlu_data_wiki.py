@@ -1,6 +1,7 @@
 import json, re, time, random
 import nltk
 from nltk.stem import PorterStemmer
+from datetime import date
 
 ps = PorterStemmer()
 
@@ -15,7 +16,7 @@ print('number of c_labels', len(c_labels))
 print('number of p_labels', len(p_labels))
 
 with open('wiki_corpus_lda', 'w') as f:
-    labels = c_labels + p_labels#
+    labels = c_labels + p_labels  #
     f.write(json.dumps(labels))
 
 # generate different types of questions ... 
@@ -34,8 +35,6 @@ question_pool = ['what is', 'show me the', 'show the', 'list the', 'whats the', 
 # to identify the grammatic structure of the attribute and generate the questions in the proper form 
 
 # e.g. What is xxx(instance) 
-    
-
 
 
 def parse_attribute(p_label, c_or_i_label, type):
@@ -81,28 +80,28 @@ def parse_attribute(p_label, c_or_i_label, type):
     elif tag_chain == 'MD VB':
         question_template = 'what does [%s](%s) [%s](attribute)' % (c_or_i_label, type, p_label)
 
-    elif tag_chain == 'VBN IN NN' or tag_chain == 'VBN IN NNS' or tag_chain== 'VBN IN NNP':
+    elif tag_chain == 'VBN IN NN' or tag_chain == 'VBN IN NNS' or tag_chain == 'VBN IN NNP':
         # e.g. described at webpage -> which webpage is xxx described at / at what webpage is xxx described ...
         verb = text[0]
         prep = text[1]
         noun = text[2]
         wh_word = random.choice(['which', 'what'])
         opt_1 = '%s [%s](attribute) is %s(%s) [%s %s](attribute)' % (wh_word, noun, c_or_i_label, type, verb, prep)
-        opt_2 = '[%s](attribute) %s [%s](attribute) is %s(%s) [%s](attribute) ' % (prep, wh_word, noun, c_or_i_label, type, verb)
+        opt_2 = '[%s](attribute) %s [%s](attribute) is %s(%s) [%s](attribute) ' % (
+            prep, wh_word, noun, c_or_i_label, type, verb)
         question_template = random.choice([opt_1, opt_2])
 
 
     elif tag_chain == 'NN IN':
         # e.g. activator of -> xxx is the activator of what / what is xxx an activator of
         article = random.choice(['the', 'a'])
-        opt_1 = '[%s](%s) is %s [%s](attribute) what' % (c_or_i_label, type,article, p_label)
+        opt_1 = '[%s](%s) is %s [%s](attribute) what' % (c_or_i_label, type, article, p_label)
         opt_2 = 'what is [%s](%s) %s [%s](attribute)' % (c_or_i_label, type, article, p_label)
         question_template = random.choice([opt_1, opt_2])
 
 
 
     # TODO: make type 4 question: xxx is the activator of which xxx , which xxx is yyy an activator of ?
-
 
     else:  # the general_case, we category anything else into this question type, what is the a(attribute) of b (class/instance)
 
@@ -176,24 +175,28 @@ def generate_type_1_questions():
         f.close()
 
 
+superlative_words_pool = ['larger_than', 'smaller_than', 'under', 'over', 'higher than', 'lower than', 'more than',
+                          'less than',
+                          'smaller than', 'bigger than']
+mid_words_pool = ['with', 'that have', 'having', 'of']
+
+def generate_random_numerical_value():
+    numerical_value = random.choices([random.randint(-1000, 1000), random.random()], weights=(75, 25), k=1)[0]
+    return numerical_value
+
 def generate_type_3_questions():
     type_3_questions = []
-    superlative_words_pool = ['larger_than', 'smaller_than', 'under', 'over', 'higher than', 'lower than', 'more than', 'less than',
-                              'smaller than', 'bigger than']
-    type_3_questions = []
     # e.g. find all the acids with molecular weight more than 100
-    mid_words_pool = ['with', 'that have', 'having', 'of']
-    template = '%s [%s](class) %s [%s](attribute) [%s](comparison) [%s](numerical_value)' # wh_word, class, mid_word, property ,superlative_word, numerical_value
+    template = '%s [%s](class) %s [%s](attribute) [%s](comparison) [%s](numerical_value)'  # wh_word, class, mid_word, property ,superlative_word, numerical_value
 
     for i in range(0, size_of_trainning):
-        numerical_value = random.choices([random.randint(-1000, 1000), random.random()],weights=(75, 25), k=1)[0]
         c_label = (random.choice(c_labels))
         p_label = (random.choice(p_labels))
         wh_word = (random.choice(question_pool))
         mid_word = random.choice(mid_words_pool)
         superlative_word = random.choice(superlative_words_pool)
         # e.g. find all the alkenes with molecular weight more than 200
-        question = template % (wh_word, c_label, mid_word, p_label, superlative_word, numerical_value)
+        question = template % (wh_word, c_label, mid_word, p_label, superlative_word, generate_random_numerical_value())
         type_3_questions.append(question)
         print(question)
 
@@ -207,6 +210,32 @@ def generate_type_3_questions():
         f.close()
 
 
+def generate_type_4_questions():
+    type_4_questions = []
+    # gold_question = 'what is the pka of all the acids with a molecular weight over 200'
+    template = '%s [%s](attribute) of [%s](class) %s [%s](attribute) [%s](comparison) [%s](numerical_value)'
+    # wh_word, attribute, class, mid_word, attribute, comparison, number
+    for i in range(0, size_of_trainning):
+        c_label = (random.choice(c_labels))
+        p_label_1 = (random.choice(p_labels))
+        p_label_2 = (random.choice(p_labels))
+        wh_word = (random.choice(question_pool))
+        mid_word = random.choice(mid_words_pool)
+        superlative_word = random.choice(superlative_words_pool)
+        question = template % (wh_word, p_label_1, c_label, mid_word, p_label_2, superlative_word ,generate_random_numerical_value())
+        type_4_questions.append(question)
+
+    with open('type_4_questions', 'wb') as f:
+        content = '## intent: batch_restriction_query_numerical_and_attribute\n'
+        for q in type_4_questions:
+            line = '- ' + q + '\n'
+            content = content + line
+
+        f.write(content.encode('utf-8'))
+        f.close()
+
+
+
 def merge_files():
     # Reading data from file1 
     with open('type_1_questions') as fp:
@@ -216,23 +245,26 @@ def merge_files():
     with open('type_2_questions') as fp:
         data2 = fp.read()
 
-
-            # Reading data from file3
+        # Reading data from file3
     with open('type_3_questions') as fp:
-            data3 = fp.read()
+        data3 = fp.read()
 
+    with open('type_4_questions') as fp:
+        data4 = fp.read()
         # Merging 2 files
     # To add the data of file2 
     # from next line 
     data += "\n"
     data += data2
     data += data3
+    data += data4
 
-    with open('nlu_08_22.md', 'w') as fp:
+    with open('nlu_%s.md' % str(date.today()), 'w') as fp:
         fp.write(data)
 
 
 generate_type_1_questions()
 generate_type_2_questions()
 generate_type_3_questions()
+generate_type_4_questions()
 merge_files()

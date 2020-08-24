@@ -1,3 +1,4 @@
-print(instance_dictionary['carbon dioxide'])
-print(instance_dictionary['CO2'])
-print(instance_dictionary['zinc acetate'])
+from search_engine.SearchEngine import SearchEngine
+search_engine = SearchEngine()
+search_engine.find_matches_from_wiki('standard enthalpy', mode='property')
+

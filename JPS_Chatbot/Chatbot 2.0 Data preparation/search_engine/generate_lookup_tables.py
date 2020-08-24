@@ -77,7 +77,8 @@ def process_instances():
     # check whether there is any repetition.
     # print([item for item, count in collections.Counter(all_labels_instances).items() if count > 1])
     # pprint(instance_dictionary)
-    return instance_dictionary, set(all_labels_instances)
+    return {'dict': instance_dictionary, 'list':list(set(all_labels_instances))}
+
 
 #     return {'class': class_object, 'property': property_object, 'instance': instances_object}
 def process_classes():
@@ -97,7 +98,7 @@ def process_classes():
     # pprint(class_dictionary)
     # print(class_dictionary['acid'])
 
-    return class_dictionary, set(all_labels_classes)
+    return {'dict': class_dictionary, 'list': list(set(all_labels_classes))}
 
 
 def process_properties():
@@ -125,12 +126,14 @@ def process_properties():
     # pprint(process_properties())
     print(property_dictionary['heat capacity'])
     print(property_dictionary['boiling point'])
-    return property_dictionary, set(all_labels_properties)
+    return {'dict': property_dictionary, 'list': list(set(all_labels_properties))}
 
 
-process_instances()
-process_classes()
-process_properties()
+final_dictionary = {'class': process_classes(), 'entity': process_instances(), 'attribute': process_properties()}
+
+with open('wiki_dictionary', 'w') as f:
+    f.write(json.dumps(final_dictionary))
+
 # instances have
 #                    item.value   :  the uri
 #              altLabel_list.value:  the alt_labels
