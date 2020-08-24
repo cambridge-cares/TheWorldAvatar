@@ -461,7 +461,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 			initialRead.put("read_function", "Get_DSV_double");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
-			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value["+i+"]");
+			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRate_A_Modifiers']/value[@index='"+i+"']");
 			workingWrite.put("write_function", "Set_XML_double");
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
@@ -547,8 +547,35 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
-	
-	
+	/**
+	 * Set up the simulation script required for the model to execute. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	@Override
+	public void placeScript() throws IOException, MoDSSensAnaAgentException {
+		File srcScript = new File(getClass().getClassLoader().getResource(Property.MODEL_KINETICS_SCRIPT.getPropertyName()).getFile());
+		File jobScript = new File(jobFolderPath.concat(FRONTSLASH+FILE_KINETICSSRM_SCRIPT));
+		
+		// create the BufferedReader and BufferedWriter to read and write files
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+		
+		// copy the runKineticsSRM.sh script
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(srcScript)));
+	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(jobScript)));
+	        String line = new String();
+	        while ((line = br.readLine()) != null) {
+	        	bw.write(line.concat("\n"));
+	        }
+	        bw.close();
+	        br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * Create case file that contains the active parameters used by executable kineticsSRM. 

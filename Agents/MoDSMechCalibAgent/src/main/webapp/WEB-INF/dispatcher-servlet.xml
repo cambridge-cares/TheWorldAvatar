@@ -12,7 +12,7 @@
 
     <!-- Configures the @Controller programming DashboardModel -->
     <mvc:annotation-driven/>
-    <context:component-scan base-package="uk.ac.cam.cares.jps.agent.quantum.calculation"/>
+    <context:component-scan base-package="uk.ac.cam.cares.jps.agent.mechanism.calibration"/>
     <context:property-placeholder location="classpath:/jps-*.properties"/>
 
     <!-- the mvc resources tag does the magic -->

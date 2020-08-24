@@ -382,7 +382,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
 		algoCalibration.put("n_iters", "400");
-		algoCalibration.put("n_initial_points", "1");
+		algoCalibration.put("n_initial_points", "10");
 		algoCalibration.put("constrained", "true");
 		algoCalibration.put("rho", "0.2");
 		algoCalibration.put("rho_factor", "0.5");
@@ -428,18 +428,22 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		
 		// set up parameters
 		List<Parameter> parameters = new ArrayList<>();
-		// constructing row, lbAddend, and ubAddend
-		String row = new String();
-		String lbAddend = new String();
-		String ubAddend = new String();
+		// constructing row, lbFactor, and ubFactor
+		String row = "";
+		String lbFactor = "";
+		String ubFactor = "";
+		double sqrtN = Math.sqrt(caseNames.size());
+		double errFrac = 0.20;
+		double lb_fac = (1-errFrac)*sqrtN;
+		double ub_fac = (1+errFrac)*sqrtN;
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
-			lbAddend = lbAddend.concat(";-"+Math.sqrt(caseNames.size()));
-			ubAddend = ubAddend.concat(";"+Math.sqrt(caseNames.size()));
+			lbFactor = lbFactor.concat(";"+lb_fac);
+			ubFactor = ubFactor.concat(";"+ub_fac);
 		}
 		row = row.substring(1);
-		lbAddend = lbAddend.substring(1);
-		ubAddend = ubAddend.substring(1);
+		lbFactor = lbFactor.substring(1);
+		ubFactor = ubFactor.substring(1);
 		// active parameters
 		for (String i : activeParameters.keySet()) {
 			Parameter param = new Parameter();
@@ -460,7 +464,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("ub_abs", "1000.0");
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
-			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRateMultipliers']/value["+i+"]");
+			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRate_A_Modifiers']/value[@index='"+i+"']");
 			workingWrite.put("write_function", "Set_XML_double");
 			
 			fileHash.put("initialRead "+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_ACTIVE_SUFFIX, initialRead);
@@ -530,8 +534,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", i);
 			initialRead.put("row", row);
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_addend", lbAddend);
-			initialRead.put("ub_addend", ubAddend);
+			initialRead.put("lb_factor", lbFactor);
+			initialRead.put("ub_factor", ubFactor);
 			
 			LinkedHashMap<String, String> workingRead = new LinkedHashMap<String, String>();
 			workingRead.put("column", column);
@@ -549,7 +553,35 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		logger.info("Information related to "+modelName+" in MoDS_inputs XML file is collected. ");
 	}
 	
-	
+	/**
+	 * Set up the simulation script required for the model to execute. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	@Override
+	public void placeScript() throws IOException, MoDSMechCalibAgentException {
+		File srcScript = new File(getClass().getClassLoader().getResource(Property.MODEL_KINETICS_SCRIPT.getPropertyName()).getFile());
+		File jobScript = new File(jobFolderPath.concat(FRONTSLASH+FILE_KINETICSSRM_SCRIPT));
+		
+		// create the BufferedReader and BufferedWriter to read and write files
+		BufferedReader br = null;
+		BufferedWriter bw = null;
+		
+		// copy the runKineticsSRM.sh script
+		try {
+			br = new BufferedReader(new InputStreamReader(new FileInputStream(srcScript)));
+	        bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(jobScript)));
+	        String line = new String();
+	        while ((line = br.readLine()) != null) {
+	        	bw.write(line.concat("\n"));
+	        }
+	        bw.close();
+	        br.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	
 	/**

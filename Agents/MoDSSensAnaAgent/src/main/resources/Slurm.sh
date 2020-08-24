@@ -36,6 +36,7 @@ mv *.zip input.zip
 unzip input.zip
 cp -r $SLURM_JOB_NAME/* . 
 rm -rf $SLURM_JOB_NAME/
+chmod +x *.sh
 
 # Execute the simulation
 MODS_MPI=/home/jb2197/Codes_kinetics/mods-backend/outputs/Release/bin/MoDS_mpi
