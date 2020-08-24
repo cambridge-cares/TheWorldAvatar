@@ -2,7 +2,6 @@ import json
 from fuzzywuzzy import fuzz
 
 
-
 class SearchEngine:
     def __init__(self):
         self.file_path = './wiki_dictionary'

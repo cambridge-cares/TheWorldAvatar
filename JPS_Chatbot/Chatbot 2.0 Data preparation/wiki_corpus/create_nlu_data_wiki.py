@@ -176,8 +176,8 @@ def generate_type_1_questions():
 
 
 superlative_words_pool = ['larger_than', 'smaller_than', 'under', 'over', 'higher than', 'lower than', 'more than',
-                          'less than',
-                          'smaller than', 'bigger than']
+                          'less than','above', 'beneath','fewer'
+                          'smaller than', 'bigger than', 'broader']
 mid_words_pool = ['with', 'that have', 'having', 'of']
 
 def generate_random_numerical_value():

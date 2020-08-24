@@ -22,8 +22,8 @@ class InterpretationParser:
     def __init__(self):
 
         extract_nlu_model()
-        self.stopwords = nltk.corpus.stopwords.words('english')
-        self.stopwords.append('all')
+        self.stopwords = ['all', 'the']
+        # self.stopwords.append('all')
         self.interpreter = Interpreter.load('../models/nlu')
 
         self.entity_intent_map = {'item_attribute_query': {'attribute': None, 'entity': None},
@@ -55,16 +55,15 @@ class InterpretationParser:
         for entity in entities:
             entity_type = entity['entity']
             term = entity['value'].lower()
-            if term.strip().lower() in self.stopwords and not (entity_type == 'comparison'):
-                pass
-            else:
-                slot = obj[entity_type]
-                if type(slot) is list:
-                    obj[entity_type].append(term)
-                    # more than one term should present ...
-                else:
-                    obj[entity_type] = term
 
+            slot = obj[entity_type]
+            if type(slot) is list:
+                obj[entity_type].append(term)
+                # more than one term should present ...
+            else:
+                obj[entity_type] = term
+        print('============ the interpretation results ==========')
+        pprint(obj)
         return {'type': intent, 'entities': obj}
 
 # interpretation_parse = InterpretationParser()
