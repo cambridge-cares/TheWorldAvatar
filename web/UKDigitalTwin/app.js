@@ -17,10 +17,9 @@ var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
-// var getAttrList =require("./routes/getAttrList");
+ var getUKPPAttrList =require("./routes/getUKPPAttrList");
 // var ppMap = require('./routes/mapPowerPlant');
 var UKontoTwinMap = require('./routes/ontoTwinUK');
-// var parallelWorld = require('./routes/parallelWorld');
 
 var app = express();
 var port = config.port;
@@ -50,7 +49,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
 /*posting to dataObserve to get orginal data & register for future data change*/
-// app.use("/getAttrList", getAttrList);
+app.use("/getUKPPAttrList", getUKPPAttrList);
 app.use('/ontoTwinUK', UKontoTwinMap);
 // app.use('/ppmap', ppMap);
 

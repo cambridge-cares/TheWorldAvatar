@@ -20,16 +20,6 @@ WHERE
 ?value_y_coordinate  system:numericalValue ?numericalValue_y . 
 }`;
 
-
-/**
-const queryStr = `PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-SELECT * where
-{?uri rdf:type <http://dummy>.
-?uri <http://x> ?lat.
-  ?uri <http://y> ?lng.
-}`;
-**/
-
 function getEnglandPPcoordinates(callback) {
     aQueryer.queryPromise(queryStr, config.localRDF4j) // the config.localRDF4j is the address of the endpoint
         .then((result)=>{
@@ -48,12 +38,3 @@ function getEnglandPPcoordinates(callback) {
 
 }
 module.exports= getEnglandPPcoordinates;
-
-/**
-//return {uri: uri, location :{lat: parseFloat(item[uri].y), lng:parseFloat(item[uri].x)}}
-getEnglandPPcoordinates((err, result)=>{
-    if(err) console.log(err);
-    console.log(result);
-
-})
-**/

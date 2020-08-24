@@ -1,41 +1,11 @@
-const epQueryer = require("../../agents/epQueryWrapper");
-const config = require('../../config');
+const epQueryer = require("./epQueryWrapper");
+const config = require('../config');
 const aQueryer = Object.create(epQueryer);
 
-/** 
-var powerPlantIRIList = getpowerPlantIRI();
-var powerPlantAttrQueryStr = ``;
-var powerPlantAttr = [];
 
-for (i = 0; i < powerPlantIRIList.length; i++) {
-    powerPlantAttrQueryStr = getPowerPlantAttrQueryStr(powerPlantIRIList[i]);
-    powerPlantAttr = getPowerPlantAttr(powerPlantAttrQueryStr);
-}
-
-
-
-// Retrieve the powerPlantIRI from RDF4j triple store
-function getpowerPlantIRI() {
-    let powerPlantIRIList = [];
-    let queryStrPowerPlantIRI = `PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
-    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-    SELECT DISTINCT ?powerPlantIRI
-    WHERE
-    {
-    ?powerPlantIRI rdf:type powerplant:PowerPlant .
-    }`;
-    aQueryer.queryPromise(queryStrPowerPlantIRI, config.localRDF4j) // the config.localRDF4j is the address of the endpoint
-        .then((result) => {
-            for (line of result) {
-                powerPlantIRIList.push(line);
-            }
-        });
-    return powerPlantIRIList;
-}
-*/
 
 // Construct the query string
-function getPowerPlantAttrQueryStr(powerPlantIRI) {
+function queryStrUKPowerPlant(powerPlantIRI, callback) {
     let queryStrPowerPlantAttr = `PREFIX powerplant: <http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX coordinate: <http://www.theworldavatar.com/ontology/ontocape/upper_level/coordinate_system.owl#>
@@ -47,7 +17,7 @@ PREFIX system_v1: <http://www.theworldavatar.com/ontology/ontoeip/upper_level/sy
 PREFIX system_realization: <http://www.theworldavatar.com/ontology/ontoeip/system_aspects/system_realization.owl#>
 SELECT DISTINCT ?GPS_x ?GPS_y ?gty ?pft ?gt ?vag ?uag ?vco2 ?uco2 ?owned_company ?Built_year ?Country ?value_of_Designed_Capacity ?unit_of_Designed_Capacity
 WHERE
-{` +  
+{` +
 
         powerPlantIRI + ` space_and_time_extended: hasGISCoordinateSystem ?CoordinateSystem .
 ?CoordinateSystem  space_and_time_extended: hasProjectedCoordinate_x ? x_coordinate.
@@ -78,23 +48,25 @@ WHERE
 
         powerPlantIRI + ` powerplant:hasYearOfBuilt ?hasYear .
 ?hasYear system:hasValue ?value_year . 
-?value_year system:numericalValue ?Built_year .` + 
+?value_year system:numericalValue ?Built_year .` +
 
-        powerPlantIRI + ` system:hasAddress ?Country .` + 
+        powerPlantIRI + ` system:hasAddress ?Country .` +
 
         powerPlantIRI + ` system_realization:designCapacity ?Capacity .
 ?Capacity system:hasValue ?Capacity_value .
 ?Capacity_value system:numericalValue ?value_of_Designed_Capacity .
 ?Capacity_value system:hasUnitOfMeasure ?unit_of_Designed_Capacity .
 }`;
-    return queryStrPowerPlantAttr;     
+
+    callback(queryStrPowerPlantAttr);
+    // return queryStrPowerPlantAttr;
 }
 
 
 // Ruturn the query results
-function getPowerPlantAttr(powerPlantquery) {
+function queryAttrUKPowerPlant(queryStr) {
     let powerPlantAttrList = [];
-    aQueryer.queryPromise(powerPlantquery, config.localRDF4j) // the config.localRDF4j is the address of the endpoint
+    aQueryer.queryPromise(queryStr, config.localRDF4j) // the config.localRDF4j is the address of the endpoint
         .then((result) => {
             for (line of result) {
                 let latitute = line['GPS_y'];
@@ -117,6 +89,39 @@ function getPowerPlantAttr(powerPlantquery) {
 
 
         });
- 
+
     return powerPlantAttrList;
 }
+
+module.exports = queryStrUKPowerPlant(powerPlantIRI, queryAttrUKPowerPlant);
+/**
+var powerPlantIRIList = getpowerPlantIRI();
+var powerPlantAttrQueryStr = ``;
+var powerPlantAttr = [];
+
+for (i = 0; i < powerPlantIRIList.length; i++) {
+    powerPlantAttrQueryStr = getPowerPlantAttrQueryStr(powerPlantIRIList[i]);
+    powerPlantAttr = getPowerPlantAttr(powerPlantAttrQueryStr);
+}
+
+
+
+// Retrieve the powerPlantIRI from RDF4j triple store
+function getpowerPlantIRI() {
+    let powerPlantIRIList = [];
+    let queryStrPowerPlantIRI = `PREFIX powerplant:<http://www.theworldavatar.com/ontology/ontoeip/powerplants/PowerPlant.owl#>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    SELECT DISTINCT ?powerPlantIRI
+    WHERE
+    {
+    ?powerPlantIRI rdf:type powerplant:PowerPlant .
+    }`;
+    aQueryer.queryPromise(queryStrPowerPlantIRI, config.localRDF4j) // the config.localRDF4j is the address of the endpoint
+        .then((result) => {
+            for (line of result) {
+                powerPlantIRIList.push(line);
+            }
+        });
+    return powerPlantIRIList;
+}
+*/
