@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.base.config;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
