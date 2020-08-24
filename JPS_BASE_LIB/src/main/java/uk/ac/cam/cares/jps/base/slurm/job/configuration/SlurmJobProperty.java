@@ -25,6 +25,9 @@ public class SlurmJobProperty {
 
 	@Value("${agent.completed.job.space.prefix}")
 	private String agentCompletedJobsSpacePrefix;
+
+	@Value("${agent.failed.job.space.prefix}")
+	private String agentFailedJobsSpacePrefix;
 	
 	@Value("${hpc.address}")
 	private String hpcAddress;
@@ -257,5 +260,13 @@ public class SlurmJobProperty {
 
 	public void setAgentPeriodicActionInterval(int agentPeriodicActionInterval) {
 		this.agentPeriodicActionInterval = agentPeriodicActionInterval;
+	}
+
+	public String getAgentFailedJobsSpacePrefix() {
+		return agentFailedJobsSpacePrefix;
+	}
+
+	public void setAgentFailedJobsSpacePrefix(String agentFailedJobsSpacePrefix) {
+		this.agentFailedJobsSpacePrefix = agentFailedJobsSpacePrefix;
 	}
 }
