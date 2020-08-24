@@ -18,7 +18,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -39,6 +42,8 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana.MoDSFileMagtS
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.sensana.SensAnaResultsProcess;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -57,7 +62,9 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Controller
-public class MoDSSensAnaAgent extends HttpServlet {
+@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
+public class MoDSSensAnaAgent extends JPSAgent {
+	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSSensAnaAgent.class);
 	String server = "login-cpu.hpc.cam.ac.uk";
 	String username = "jb2197";
@@ -78,7 +85,8 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	public static ApplicationContext applicationContextMoDSAgent;
 	public static MoDSSensAnaAgentProperty modsAgentProperty;
 	
-	
+	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSSensAna Agent";
 	
 	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
 		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
@@ -93,32 +101,70 @@ public class MoDSSensAnaAgent extends HttpServlet {
 //		modsSensAnaAgent.init();
 		
 		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},\"mods\":{\"ignDelayOption\":{\"method\":\"1\", \"species\":\"AR\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"10\", \"relPerturbation\":\"1e-3\"}}}}";
-		try {
-			modsSensAnaAgent.query(input);
-			
-		} catch (IOException | SlurmJobException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	}
+	
+	/**
+	 * Receives requests that match with the URL patterns listed in the<br>
+	 * annotations of this class. 
+	 */
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		String path = request.getServletPath();
+		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
+		System.out.println("A request has been received..............................");
+		if (path.equals(Property.JOB_REQUEST_PATH)) {
+			try {
+				validateInput(requestParams);
+			} catch (BadRequestException e) {
+				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
+			}
+			try {
+				return modsSensAnaAgent.setUpJob(requestParams.toString());
+			} catch (IOException | MoDSSensAnaAgentException | SlurmJobException e) {
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
+			try {
+				return modsSensAnaAgent.produceStatistics(requestParams.toString());
+			} catch (IOException | MoDSSensAnaAgentException e) {
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else {
+			System.out.println("Unknown request");
+			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
 	}
 	
-	/**
-	 * Allows to perform a SPARQL query of any complexity. 
-	 * It returns the resutls in JSON format. 
-	 * 
-	 * @param input the JSON input to set up and run a calibration job. 
-	 * @return a message if the job was set up successfully or failed.
-	 */
-	@RequestMapping(value="/job/request", method = RequestMethod.GET)
-	@ResponseBody
-	public String query(@RequestParam String input) throws IOException, MoDSSensAnaAgentException, SlurmJobException {
-		System.out.println("received query:\n"+input);
-		logger.info("received query:\n"+input);
-		return setUpJob(input);
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+		try {
+			String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(requestParams.toString());
+			if (mechanismIRI == null || mechanismIRI.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_MECHANISM_IRI_MISSING.getPropertyName());
+			}
+			
+			List<String> ignExpIRI = JSonRequestParser.getOntoChemExpIgnitionDelayIRI(requestParams.toString());
+			List<String> flsExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(requestParams.toString());
+			if ((ignExpIRI == null || ignExpIRI.isEmpty()) 
+					&& (flsExpIRI == null || flsExpIRI.isEmpty())) {
+				throw new BadRequestException(Property.JOB_SETUP_EXPERIMENT_IRI_MISSING.getPropertyName());
+			}
+			
+			String relPertur = JSonRequestParser.getRelPerturb(requestParams.toString());
+			if (relPertur == null || relPertur.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_RELATIVE_PERTURBATION_MISSING.getPropertyName());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
 	/**
-	 * Shows the following statistics of calibration jobs processed by MoDS Agent.
+	 * Shows the following statistics of sensitivity analysis jobs processed by MoDS Agent.
 	 * - Total number of jobs submitted
 	 * - Total number of jobs currently running
 	 * - Total number of jobs successfully completed
@@ -128,9 +174,7 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	 * @param input the JSON string specifying the return data format, e.g., JSON.
 	 * @return the statistics in JSON format if requested.
 	 */
-	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
-	@ResponseBody
-	public String produceStatistics(@RequestParam String input) throws IOException, MoDSSensAnaAgentException {
+	public JSONObject produceStatistics(@RequestParam String input) throws IOException, MoDSSensAnaAgentException {
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
 		if (jobSubmission==null) {
@@ -140,7 +184,10 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	}
 	
 	/**
-	 * Shows the following statistics of quantum jobs processed by MoDS Agent.
+	 * Shows the following statistics of sensitivity analysis jobs processed by MoDS Agent. <br>
+	 * This method covers the show statics URL that is not included in the <br>
+	 * list of URL patterns.
+	 * 
 	 * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -150,7 +197,7 @@ public class MoDSSensAnaAgent extends HttpServlet {
      * @return the statistics in HTML format.
 	 */
 	
-	@RequestMapping(value="/job/show/statistics",method = RequestMethod.GET)
+	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, MoDSSensAnaAgentException {
 		System.out.println("Received a request to show statistics.\n");
@@ -162,7 +209,7 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	}
 	
 	/**
-	 * Starts the scheduler to monitor calibration jobs.
+	 * Starts the asynchronous scheduler to monitor sensitivity analysis jobs.
 	 * 
 	 * @throws MoDSSensAnaAgentException
 	 */
@@ -365,11 +412,11 @@ public class MoDSSensAnaAgent extends HttpServlet {
 	 * @throws MoDSSensAnaAgentException
 	 * @throws SlurmJobException
 	 */
-	public String setUpJob(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException {
+	public JSONObject setUpJob(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
 		obj.put("message", message);
-		return obj.toString();
+		return obj;
 	}
 	
 	/**
