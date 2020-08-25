@@ -387,6 +387,7 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 // todo: create a function to validate coordinate system
                 double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
                 CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,center);
+                valid = true;
             } catch (Exception e) {
                 throw new BadRequestException(e);
         }
