@@ -170,7 +170,9 @@ public class Utils{
 				}
 				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
 					statusFile.close();
-					moveToFailedJobsFolder(jobFolder, slurmJobProperty);
+					if(isJobPostProcessed(jobFolder, statusFilePath)){
+						moveToFailedJobsFolder(jobFolder, slurmJobProperty);
+					}
 					return true;
 				}
 			}
