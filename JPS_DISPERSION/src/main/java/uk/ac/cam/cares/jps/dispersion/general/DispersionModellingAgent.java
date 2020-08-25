@@ -43,7 +43,6 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 import uk.ac.cam.cares.jps.dispersion.episode.EpisodeAgent;
 
 @Controller
-///@WebServlet("/DispersionModellingAgent")
 @WebServlet(urlPatterns = {"/episode/dispersion","/adms/dispersion","/job/show/statistics"})
 public class DispersionModellingAgent extends JPSHttpServlet {
 	
@@ -280,31 +279,6 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 		}
 	}
 	
-	private boolean isConcentrationFileAvailable(File jobFolder) {
-		File outputconc = new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output")
-				.concat(File.separator).concat("3D_instantanous_mainconc_center.dat"));
-		if (outputconc.exists()) {
-			return true;
-		}
-		return false;
-	}
-	
-	private boolean isConcentrationFileComplete(File jobFolder) {
-		File outputconc = new File(jobFolder.getAbsolutePath().concat(File.separator).concat("output")
-				.concat(File.separator).concat("3D_instantanous_mainconc_center.dat"));
-		try {
-			String fileContext = FileUtils.readFileToString(outputconc);
-			if(fileContext.isEmpty()) {
-				return false;
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return true;
-	}
-    
 	/**
      * Updates weather and air quality data and meta data in the JPS<br>
      * knowledge-graph.   
