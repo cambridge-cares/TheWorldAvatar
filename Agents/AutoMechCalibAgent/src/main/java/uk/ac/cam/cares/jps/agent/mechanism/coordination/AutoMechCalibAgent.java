@@ -48,7 +48,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Controller
-@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
+@WebServlet(urlPatterns = {Property.JOB_COORDINATION_PATH})
 public class AutoMechCalibAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(AutoMechCalibAgent.class);
@@ -85,22 +85,23 @@ public class AutoMechCalibAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		AutoMechCalibAgent modsMechCalibAgent = new AutoMechCalibAgent();
+		AutoMechCalibAgent autoMechCalibAgent = new AutoMechCalibAgent();
 		System.out.println("A request has been received..............................");
-		if (path.equals(Property.JOB_REQUEST_PATH)) {
+		
+		if (path.equals(Property.JOB_COORDINATION_PATH)) {
 			try {
 				validateInput(requestParams);
 			} catch (BadRequestException e) {
 				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
 			}
 			try {
-				return modsMechCalibAgent.setUpJob(requestParams.toString());
+				return autoMechCalibAgent.setUpJob(requestParams.toString());
 			} catch (IOException | AutoMechCalibAgentException | SlurmJobException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
 			try {
-				return modsMechCalibAgent.produceStatistics(requestParams.toString());
+				return autoMechCalibAgent.produceStatistics(requestParams.toString());
 			} catch (IOException | AutoMechCalibAgentException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
@@ -129,8 +130,13 @@ public class AutoMechCalibAgent extends JPSAgent {
 			}
 			
 			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
-			if (rxnIRI == null || rxnIRI.isEmpty()) {
-				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
+			if (rxnIRI != null && !rxnIRI.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISPLACED.getPropertyName());
+			}
+			
+			String relPertur = JSonRequestParser.getRelPerturb(requestParams.toString());
+			if (relPertur == null || relPertur.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_RELATIVE_PERTURBATION_MISSING.getPropertyName());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
