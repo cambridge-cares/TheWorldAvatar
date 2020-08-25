@@ -20,6 +20,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -248,6 +249,12 @@ public class Utils {
 		return zipFile;
 	}
 	
+	/**
+	 * Unzip a given file to the specified destination. 
+	 * 
+	 * @param zipFilePath path of zip file
+	 * @param destDir destination of unzip file
+	 */
 	public static void unzipFile(String zipFilePath, String destDir) {
 		File dir = new File(destDir);
 		// create output directory if it doesn't exist
@@ -294,6 +301,17 @@ public class Utils {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * Copy the whole folder and its subfolders from source to destination. 
+	 * @param source
+	 * @param destination
+	 * @throws IOException
+	 */
+	public static void copyFolder(String source, String destination) throws IOException {
+		File srcDir = new File(source);
+		File destDir = new File(destination);
+		FileUtils.copyDirectory(srcDir, destDir);
+	}
 	
 }
