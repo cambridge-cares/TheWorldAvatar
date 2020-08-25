@@ -1,10 +1,13 @@
+import json
+from datetime import date
+
 from Chatbot.CoordinateAgent import CoordinateAgent
 
-
-# ca = CoordinateAgent()
-# ca.run('what is the weight of all the alkines with a boiling point less than -100')
+ca = CoordinateAgent()
 
 questions = []
+
+
 def load_and_process_questions():
     with open('../wiki_corpus/type_4_questions') as f:
         contents = f.readlines()[1:]
@@ -16,4 +19,18 @@ def load_and_process_questions():
         line = line.replace('[', '').replace(']', '')
         questions.append(line)
 
-load_and_process_questions()
+    return questions
+
+
+def append_log(content):
+    with open('test_log', 'a') as f:
+        f.write(str(content) + '\n -------------- \n')
+
+
+questions = load_and_process_questions()
+for q in questions:
+    r = ca.run(q)
+    if r is not None:
+        print('this is a big big achievement')
+        append_log(q)
+        append_log(r)

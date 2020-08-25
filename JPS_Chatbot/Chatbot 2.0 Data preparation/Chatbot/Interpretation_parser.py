@@ -6,26 +6,10 @@ import tarfile
 import nltk
 
 
-def extract_nlu_model(extract_dir='../models/'):
-    # Identify the newest trained nlu model
-    path = '../models/'
-    files = os.listdir(path)
-    paths = [os.path.join(path, basename) for basename in files if ('.tar' in basename)]
-    file_name = max(paths, key=os.path.getctime)
-    # Extract the model to a temporary directory
-    tf = tarfile.open(file_name)
-    tf.extractall(path=extract_dir)
-
-
 class InterpretationParser:
 
     def __init__(self):
-
-        extract_nlu_model()
-        self.stopwords = ['all', 'the']
-        # self.stopwords.append('all')
-        self.interpreter = Interpreter.load('../models/nlu')
-
+        self.interpreter = None
         self.entity_intent_map = {'item_attribute_query': {'attribute': None, 'entity': None},
                                   'batch_restriction_query': {'attribute': None, 'class': None},
                                   'batch_restriction_query_numerical': {'class': None, 'attribute': None,

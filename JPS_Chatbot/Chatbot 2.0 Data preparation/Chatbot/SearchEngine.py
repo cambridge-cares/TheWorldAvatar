@@ -22,7 +22,10 @@ def filter_components(term_type, term):
                    'than']
 
     print('term_type', term_type, 'term', term)
-    term_tokens = word_tokenize(term)
+    try:
+        term_tokens = word_tokenize(term)
+    except:
+        return None
     term_processed = ' '.join(
         [token.lower().strip() for token in term_tokens if token.lower().strip() not in stopwords])
 
@@ -55,10 +58,13 @@ class SearchEngine:
         for term in high_score_terms:
             score = term[1]
             term = term[0]
-            uri = self.wiki_dictionary[mode]['dict'][term]
-            print(uri)
-            for u in uri:
-                uris.append((u.replace('http://www.wikidata.org/entity/', ''), score))
+            try:
+                uri = self.wiki_dictionary[mode]['dict'][term]
+                print(uri)
+                for u in uri:
+                    uris.append((u.replace('http://www.wikidata.org/entity/', ''), score))
+            except:
+                pass
         return uris
 
     # three op
@@ -99,17 +105,23 @@ class SearchEngine:
 
             if key == 'comparison' or key == 'numerical_value':
                 value = filter_components(term_type=key, term=value)
+                if value is None:
+                    return None
                 obj_temp = {key: value}
                 results.append(obj_temp)
             else:
                 if type(value) is list:
                     for v in value:
                         v = filter_components(term_type=key, term=v)
+                        if v is None:
+                            return None
                         uris = self.find_matches_from_wiki(term=v, mode=key)
                         obj_temp = {key: remove_duplicated(uris)}
                         results.append(obj_temp)
                 else:
                     value = filter_components(term_type=key, term=value)
+                    if value is None:
+                        return None
                     uris = self.find_matches_from_wiki(term=value, mode=key)
                     obj_temp = {key: remove_duplicated(uris)}
                     results.append(obj_temp)

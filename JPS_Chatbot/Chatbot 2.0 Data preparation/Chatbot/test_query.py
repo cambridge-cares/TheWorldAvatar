@@ -1,16 +1,10 @@
-from Chatbot.SPARQLQuery import SPARQLQuery
+endpoint_url = "https://query.wikidata.org/sparql"
+import _thread
+import sys
+from pprint import pprint
+from time import sleep
 
-query = '''
-SELECT ?oLabel ?v ?unitLabel
-        WHERE {
-        ?o wdt:P31 wd:Q159226 . # class    
-        ?o wdt:P2102 ?x . # attribute_2  
-        ?o p:P361/psv:P361 ?value . # attribute_1 x 2 
-        ?value wikibase:quantityAmount ?v .
-        ?value wikibase:quantityUnit ?unit .
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
-        FILTER(?x > -100 ).  } # comparison numerical_value 
-'''
+from SPARQLWrapper import SPARQLWrapper, JSON
 
 q2 = '''
        SELECT ?oLabel ?v ?unitLabel
@@ -24,8 +18,44 @@ q2 = '''
         FILTER(?x > -100 ).  } # comparison numerical_value  
 
 '''
-sq = SPARQLQuery()
-sq.query(query)
 
-qs = [query, q2]
-sq.process_multiple_queries(qs)
+
+def run_query():
+    print('=================  the result from %s is =================')
+    user_agent = "WDQS-example Python/%s.%s" % (sys.version_info[0], sys.version_info[1])
+
+    sparql = SPARQLWrapper(endpoint_url, agent=user_agent)
+    sparql.setQuery(q2)
+    sparql.setReturnFormat(JSON)
+    result = sparql.query().convert()
+    pprint(result)
+    return result
+
+
+def process_multiple_queries(sparql_queries):
+    length = len(sparql_queries)
+    two_queries = sparql_queries[:2]
+    try:
+        print('starting the thread')
+        _thread.start_new_thread(run_query)
+    #  _thread.start_new_thread(run_query, (two_queries[1], 2,))
+    except:
+        print("Error: unable to start thread")
+
+
+query = '''
+SELECT ?oLabel ?v ?unitLabel
+        WHERE {
+        ?o wdt:P31 wd:Q159226 . # class    
+        ?o wdt:P2102 ?x . # attribute_2  
+        ?o p:P361/psv:P361 ?value . # attribute_1 x 2 
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit .
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
+        FILTER(?x > -100 ).  } # comparison numerical_value 
+'''
+
+# qs = [query, q2]
+# process_multiple_queries(qs)
+
+

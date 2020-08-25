@@ -32,6 +32,7 @@ def generate_combinations(results):
     # pprint(sorted_list[:5])
     return sorted_list
 
+
 def retrieve_uris_from_entities(entities, order):
     # get the object by label, the remove the object
     print('---------- entities -----------')
@@ -53,6 +54,29 @@ def retrieve_uris_from_entities(entities, order):
     pprint(results)
     return results
     # TODO: put the comparison and the number in, apply filter over them
+
+
+def fill_sparql_query_for_one_intent(template, order, entities):
+    list_of_sparqls = []
+    # this function takes the template, entities, the order, returns a list of sparql queries
+    r = retrieve_uris_from_entities(entities, order=order)
+    combinations = generate_combinations(r)
+    for comb in combinations:
+        elements = []
+        uris = comb['uris']
+        for u in uris:
+            if type(u) is tuple:
+                elements.append(u[0])
+            else:
+                elements.append(u)
+        try:
+            sparql_query = template % (elements[2], elements[1], elements[0], elements[0], elements[3], elements[4])
+            print('-------------- sparql query --------------')
+            print(sparql_query)
+            list_of_sparqls.append(sparql_query)
+        except:
+            return None
+    return list_of_sparqls
 
 
 class SPARQLConstructor:
@@ -86,6 +110,7 @@ class SPARQLConstructor:
 
         pprint(self.templates['item_attribute_query'])
 
+    # TODO: generalize the fill_sparql_query
     def fill_sparql_query(self, intent_and_entities_with_uris):
         #     {'entities': [{'attribute': ['http://www.wikidata.org/entity/P8224',
         #                                  'http://www.wikidata.org/entity/P274',
@@ -98,43 +123,16 @@ class SPARQLConstructor:
         entities = intent_and_entities_with_uris['entities']
         intent = intent_and_entities_with_uris['intent']
         template = self.templates[intent]
-        list_of_sparqls = []
+
         if intent == 'item_attribute_query':
             order = ['attribute', 'entity']
         elif intent == 'batch_restriction_query_numerical_and_attribute':
-            order = ['attribute', 'attribute', 'class', 'comparison', 'numerical_value'] # first attribute is the attribute_1
-            r = retrieve_uris_from_entities(entities, order=order)
-            combinations = generate_combinations(r)
-            for comb in combinations:
-                elements = []
-                uris = comb['uris']
-                for u in uris:
-                    if type(u) is tuple:
-                        elements.append(u[0])
-                    else:
-                        elements.append(u)
-
-                sparql_query = template % (elements[2],  elements[1], elements[0], elements[0], elements[3], elements[4])
-                print('-------------- sparql query --------------')
-                print(sparql_query)
-                list_of_sparqls.append(sparql_query)
-
-            return list_of_sparqls
-
-
-        '''
-        SELECT ?oLabel ?v ?unitLabel
-        WHERE {
-        ?o wdt:P31 wd:%s # class.   
-        ?o wdt:%s ?x . # attribute_2  
-        ?o p:%s/psv:%s ?value . # attribute_1 x 2 
-        ?value wikibase:quantityAmount ?v .
-        ?value wikibase:quantityUnit ?unit .
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
-        FILTER(?x %s %s ).  } # comparison numerical_value   
-        '''
-
-
+            order = ['attribute', 'attribute', 'class', 'comparison', 'numerical_value']  # first attribute is the
+            # attribute_1
+        if len(order) == 0:
+            return None
+        else:
+            return fill_sparql_query_for_one_intent(template=template, order=order, entities=entities)
 
     # this is a tricky move, for type 4, attributes must be put in proper order
 
