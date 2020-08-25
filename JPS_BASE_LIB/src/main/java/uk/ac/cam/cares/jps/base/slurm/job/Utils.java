@@ -603,9 +603,10 @@ public class Utils{
 	public static File getFailedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
 		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
 		String failedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
-		workspace = new File(failedJobsDirectory);
-		if(workspace.mkdirs()){
-			return workspace;
+		File jobFolderInFailedJobs = new File(failedJobsDirectory);
+		jobFolderInFailedJobs.mkdirs();
+		if(jobFolderInFailedJobs.exists()){
+			return jobFolderInFailedJobs;
 		}
 		return null;
 	}
