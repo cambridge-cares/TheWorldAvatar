@@ -24,8 +24,13 @@ def further_process_labels():
             if 'itemAltLabel' in property:
                 alt_labels = property['itemAltLabel']['value'].split(', ')
                 original_alt_p_count = original_alt_p_count + len(alt_labels)
-                shorter_alt_labels = [x.strip() for x in alt_labels if not ((len(x) > 20) or 'id' in x.lower() or (not re.fullmatch(r'[a-zA-Z ]+', x)))]
-                
+                shorter_alt_labels = [x.strip() for x in alt_labels if not ((len(x) > 35) or (' ID' in x)  or (not re.fullmatch(r'[a-zA-Z ]+', x)))]
+                for lb in shorter_alt_labels:
+                    if ' ID' in lb:
+                        print(lb)
+                        input()
+
+
                 for l in shorter_alt_labels:
                     if l.lower() not in all_p_labels:
                         all_p_labels.append(l)
@@ -35,9 +40,9 @@ def further_process_labels():
                 alt_properties_count = alt_properties_count + len(shorter_alt_labels)
             trimmed_property.append(p_with_trimmed_alt)    
                 
-    # print('count of shorter_alt_labels', alt_properties_count)
-    # print('all original_alt_p_count', original_alt_p_count)      
-    # print('all properties', len(properties))
+    print('count of shorter_alt_labels', alt_properties_count)
+    print('all original_alt_p_count', original_alt_p_count)
+    print('all properties', len(properties))
 
     # print(trimmed_property)
             
@@ -65,7 +70,8 @@ def further_process_labels():
             if 'altLabel_list' in instance:
                 alt_labels = instance['altLabel_list']['value'].split('$ ')
                 original_alt_i_count = original_alt_i_count + len(alt_labels)
-                shorter_alt_labels = [x.strip() for x in alt_labels if not ((len(x) > 20) or 'id' in x.lower() or (not re.fullmatch(r'[a-zA-Z ]+', x)))]
+
+                shorter_alt_labels = [x.strip() for x in alt_labels if not ((len(x) > 30) or (' ID' in x) or (not re.fullmatch(r'[a-zA-Z ]+', x)))]
                 
                 for l in shorter_alt_labels:
                     if l.lower() not in all_i_labels:

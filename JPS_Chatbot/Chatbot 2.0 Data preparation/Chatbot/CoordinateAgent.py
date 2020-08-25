@@ -69,8 +69,10 @@ class CoordinateAgent():
         pprint(result)
         return result
 
+
 ca = CoordinateAgent()
-ca.run('find all the fatty acids with molecular weight more than 100')
+ca.run('What are the chemical structures of all fatty acids')
+# ca.run('find all the fatty acids with molecular weight more than 100')
 # ca.run('the kindling point of C2HBrClF3')
 # # # r = ca.run(question='what is the molecular weight of benzene')
 # # ca.run(question='show me the heat capacity of glucose')

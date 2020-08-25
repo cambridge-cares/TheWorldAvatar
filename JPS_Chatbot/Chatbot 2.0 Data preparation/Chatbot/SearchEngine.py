@@ -19,7 +19,7 @@ def filter_components(term_type, term):
     stopwords = ['the', 'all', 'a', 'an', 'that', 'of']
     smaller_than = ['smaller than', 'less', 'less than', 'under', 'smaller', 'beneath', 'lower', 'lower than', 'fewer']
     larger_than = ['bigger', 'bigger than', 'larger than', 'larger', 'over', 'above', 'beyond', 'broader', 'broader ',
-                   'than', 'more than', 'more']
+                   'than', 'more than','more']
 
     print('term_type', term_type, 'term', term)
     try:

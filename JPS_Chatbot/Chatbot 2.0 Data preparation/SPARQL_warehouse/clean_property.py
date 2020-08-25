@@ -14,7 +14,7 @@ with open('distinct_properties') as f:
         id = re.findall(r'P[0-9]+', property['item']['value'])[0] 
         label = property['itemLabel']['value']      
         if 'itemAltLabel' in property:
-            altLabels = property['itemAltLabel']['value'].strip().split('$')
+            altLabels = property['itemAltLabel']['value'].strip().split(', ')
             alt_counter = alt_counter + len(altLabels)
         
         if id not in unique_property_id:

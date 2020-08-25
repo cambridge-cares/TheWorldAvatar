@@ -40,8 +40,8 @@ def retrieve_uris_from_entities(entities, order):
     print('\n')
     temp_list = entities
     results = []
-    for e in entities:
-        for o_label in order:
+    for o_label in order:
+        for e in entities:
             key = ''
             uris = []
             for k, u in e.items():
@@ -64,7 +64,10 @@ def fill_sparql_query_for_one_intent(template, order, entities, index_order):
     # this function takes the template, entities, the order, returns a list of sparql queries
     r = retrieve_uris_from_entities(entities, order=order)
     combinations = generate_combinations(r)
-
+    print('=============== check =============')
+    print('entities', entities)
+    print('order', order)
+    print('index order', index_order)
     for comb in combinations:
         elements = []
         uris = comb['uris']
@@ -79,6 +82,7 @@ def fill_sparql_query_for_one_intent(template, order, entities, index_order):
             for i in index_order:
                 candidates.append(elements[i])
             elements = tuple(candidates)
+            print('elements', elements)
             # sparql_query = template % (elements[2], elements[1], elements[0], elements[0], elements[3], elements[4])
             sparql_query = template % elements
             print('-------------- sparql query --------------')
@@ -91,23 +95,25 @@ def fill_sparql_query_for_one_intent(template, order, entities, index_order):
 
 class SPARQLConstructor:
     def __init__(self):
-
         self.templates = {
-            'batch_restriction_query_numerical_and_attribute': '''
-
-         ''',
-            'item_attribute_query': '''
-         SELECT ?o\nWHERE \n{\n  wd:%s wdt:%s ?o .  \n\n} LIMIT 50
-         ''',
             'batch_restriction_query': '''
+            
+        SELECT ?oLabel ?v ?v2 ?unitLabel
+        WHERE
+         {
+          ?o wdt:P31 wd:%s . # class
+          ?o wdt:%s ?v . # attribute
+          OPTIONAL {
+                ?o p:%s/psv:%s ?value . # attribute x 2 
+                ?value wikibase:quantityAmount ?v2 .
+                ?value wikibase:quantityUnit ?unit .
+          }
+          SERVICE wikibase:label { bd:serviceParam wikibase:language  "[AUTO_LANGUAGE],en". }
+        } LIMIT 50 # class, attribute, attribute, attribute
+         ''',
 
-         SELECT ?oLabel  ?v ?value ?unitLabel\nWHERE\n{\n   ?o wdt:P31  wd:%s .\n   ?o wdt:%s ?v .\n  
-         OPTIONAL {\n   ?o  p:%s/psv:%s ?v .\n   ?v     wikibase:quantityAmount     ?value.\n   ?v     
-         wikibase:quantityUnit       ?unit.\n}\n   SERVICE wikibase:label { bd:serviceParam 
-         wikibase:language \"[AUTO_LANGUAGE],en\". }\n      } LIMIT 50\n '''
-        }
-
-        self.templates['batch_restriction_query_numerical'] = '''
+            'batch_restriction_query_numerical': '''
+            
         SELECT ?oLabel ?v ?v2 ?unitLabel
         WHERE
          {
@@ -121,9 +127,10 @@ class SPARQLConstructor:
           }
           SERVICE wikibase:label { bd:serviceParam wikibase:language  "[AUTO_LANGUAGE],en". }
         } LIMIT 50 # class, attribute, comparison, numerical_value, attribute, attribute
-        '''
+        ''',
 
-        self.templates['item_attribute_query'] = '''
+            'item_attribute_query': '''
+            
         SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
         
         wd:%s wdt:%s ?v2 .
@@ -135,9 +142,11 @@ class SPARQLConstructor:
         }
 
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
-        '''
+        ''',
 
-        self.templates['batch_restriction_query_numerical_and_attribute'] = '''
+            'batch_restriction_query_numerical_and_attribute': '''
+            
+            
         SELECT ?oLabel ?v ?unitLabel
         WHERE {
         ?o wdt:P31 wd:%s . # class    
@@ -147,9 +156,7 @@ class SPARQLConstructor:
         ?value wikibase:quantityUnit ?unit .
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }
         FILTER(?x %s %s ).  } # comparison numerical_value  
-        '''
-
-        pprint(self.templates['item_attribute_query'])
+        '''}
 
     # TODO: generalize the fill_sparql_query
     def fill_sparql_query(self, intent_and_entities_with_uris):
@@ -176,7 +183,11 @@ class SPARQLConstructor:
         elif intent == 'batch_restriction_query_numerical':
             order = ['class', 'attribute', 'comparison', 'numerical_value']
             index_order = [0, 1, 2, 3, 1, 1]
-        # class, attribute, comparison, numerical_value, attribute, attribute
+            # class, attribute, comparison, numerical_value, attribute, attribute
+        elif intent == 'batch_restriction_query':
+            # class, attribute, attribute, attribute
+            order = ['class', 'attribute']
+            index_order = [0,1,1,1]
         if len(order) == 0:
             return None
         else:

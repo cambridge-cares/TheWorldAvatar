@@ -99,7 +99,9 @@ def process_classes():
     # check whether there is any repetition.
     # print([item for item, count in collections.Counter(all_labels_instances).items() if count > 1])
     # pprint(class_dictionary)
-    # print(class_dictionary['acid'])
+    print('-------- classes --------------')
+    print(class_dictionary['acid'])
+    print(class_dictionary['fatty acid'])
 
     return {'dict': class_dictionary, 'list': list(set(all_labels_classes))}
 
@@ -119,9 +121,8 @@ def process_properties():
             alt_label_list = [x.strip().lower() for x in p["itemAltLabel"]["value"].split(', ')]
             property_dictionary = add_to_dictionary(alt_label_list, uri, property_dictionary)
             all_labels_properties = all_labels_properties + alt_label_list
+            property_dictionary = add_to_dictionary(alt_label_list, uri, property_dictionary)
 
-        # ---------------- formula ----------------
-        property_dictionary = add_to_dictionary(label, uri, property_dictionary)
         # =============== make label collection ==========
         all_labels_properties.append(label)
     # check whether there is any repetition.
