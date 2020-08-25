@@ -244,15 +244,17 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 						File outputFile= new File(zipFilePath);
 						if(!outputFile.isFile() || !outputFile.exists()){
 							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
-							System.out.println("In !outputFile.isFile() || !outputFile.exists()");
 							continue;
 						}
 						// Unzip the output zip file.
 						FileUtil.unzip(zipFilePath, outputFolder.getAbsolutePath());
+						// Opens the main concentration file.
 						File file = new File(outputFolder.getAbsolutePath().concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
+						// Checks the existence of the main concentration file.
 						if(!file.exists()){
+							// If the main concentration file does not exist,
+							// the job status is marked with error termination.   
 							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
-							System.out.println("In !outputFile.isFile() || !outputFile.exists()");
 							continue;							
 						}
 						if(annotateOutputs(jobFolder, zipFilePath)) {
