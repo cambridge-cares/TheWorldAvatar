@@ -44,8 +44,17 @@ public enum Property {
 	MODEL_CANTERA_SCRIPT("runCanteraLFS.py"),
 	MODEL_CANTERA_MULTI_OPT("../../../runCanteraLFS.py -t multi -d"),
 	MODEL_CANTERA_MIX_AVERAGE_OPT("../../../runCanteraLFS.py -t mix -d"),
-	MODEL_CANTERA_OUTPUT("OutputCase00001Lfs0001Info.csv");
+	MODEL_CANTERA_OUTPUT("OutputCase00001Lfs0001Info.csv"),
+	JOB_SETUP_MECHANISM_IRI_MISSING("The mechanism IRI is not provided."),
+	JOB_SETUP_EXPERIMENT_IRI_MISSING("The experiment IRI is provided."),
+	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is provided."),
+	JOB_SETUP_RELATIVE_PERTURBATION_MISSING("The relative perturbation is provided.");
 	
+	
+	public static final String JOB_REQUEST_PATH = "/job/request";
+    public static final String JOB_STATISTICS_PATH = "/job/statistics";
+    public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
+    
 	private String propertyName;
 	private int value;
 	private Property(String propertyName) {
