@@ -6,14 +6,15 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.commons.lang.StringUtils;
 import org.json.JSONObject;
@@ -24,7 +25,6 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentConfiguration;
@@ -33,6 +33,8 @@ import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechCalibOutputProces
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
+import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
@@ -40,15 +42,15 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Controller
-public class MoDSMechCalibAgent extends HttpServlet {
+@WebServlet(urlPatterns = {Property.JOB_REQUEST_PATH, Property.JOB_STATISTICS_PATH})
+public class MoDSMechCalibAgent extends JPSAgent {
+	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSMechCalibAgent.class);
 	String server = "login-cpu.hpc.cam.ac.uk";
 	String username = "jb2197";
@@ -69,32 +71,73 @@ public class MoDSMechCalibAgent extends HttpServlet {
 	public static ApplicationContext applicationContextMoDSAgent;
 	public static MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
 	
+	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSMechCalib Agent";
+	
 	public static void main(String[] args) throws ServletException, MoDSMechCalibAgentException {
 		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
 //		modsMechCalibAgent.init();
 		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\",\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264155_173\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264148_166\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264020_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264017_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264156_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264154_172\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264157_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264152_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264053_71\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264158_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264104_122\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264135_153\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264142_160\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264134_152\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264165_183\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264137_155\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264159_177\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264136_154\"]},\"mods\":{\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"},\"sensAna\":{\"topN\":\"10\",\"relPerturbation\":\"1e-3\"}}}}";
-		try {
-			modsMechCalibAgent.query(input);
-			
-		} catch (IOException | SlurmJobException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	/**
-	 * Allows to perform a SPARQL query of any complexity. 
-	 * It returns the resutls in JSON format. 
-	 * 
-	 * @param input the JSON input to set up and run a calibration job. 
-	 * @return a message if the job was set up successfully or failed.
+	 * Receives requests that match with the URL patterns listed in the<br>
+	 * annotations of this class. 
 	 */
-	@RequestMapping(value="/job/request", method = RequestMethod.GET)
-	@ResponseBody
-	public String query(@RequestParam String input) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
-		System.out.println("received query:\n"+input);
-		logger.info("received query:\n"+input);
-		return setUpJob(input);
+	@Override
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		String path = request.getServletPath();
+		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
+		System.out.println("A request has been received..............................");
+		if (path.equals(Property.JOB_REQUEST_PATH)) {
+			try {
+				validateInput(requestParams);
+			} catch (BadRequestException e) {
+				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
+			}
+			try {
+				return modsMechCalibAgent.setUpJob(requestParams.toString());
+			} catch (IOException | MoDSMechCalibAgentException | SlurmJobException e) {
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
+			try {
+				return modsMechCalibAgent.produceStatistics(requestParams.toString());
+			} catch (IOException | MoDSMechCalibAgentException e) {
+				throw new JPSRuntimeException(e.getMessage());
+			}
+		} else {
+			System.out.println("Unknown request");
+			throw new JPSRuntimeException(UNKNOWN_REQUEST);
+		}
+	}
+	
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty()) {
+            throw new BadRequestException();
+        }
+		try {
+			String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(requestParams.toString());
+			if (mechanismIRI == null || mechanismIRI.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_MECHANISM_IRI_MISSING.getPropertyName());
+			}
+			
+			List<String> ignExpIRI = JSonRequestParser.getOntoChemExpIgnitionDelayIRI(requestParams.toString());
+			List<String> flsExpIRI = JSonRequestParser.getOntoChemExpFlameSpeedIRI(requestParams.toString());
+			if ((ignExpIRI == null || ignExpIRI.isEmpty()) 
+					&& (flsExpIRI == null || flsExpIRI.isEmpty())) {
+				throw new BadRequestException(Property.JOB_SETUP_EXPERIMENT_IRI_MISSING.getPropertyName());
+			}
+			
+			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
+			if (rxnIRI == null || rxnIRI.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return true;
 	}
 	
 	/**
@@ -108,9 +151,7 @@ public class MoDSMechCalibAgent extends HttpServlet {
 	 * @param input the JSON string specifying the return data format, e.g., JSON.
 	 * @return the statistics in JSON format if requested.
 	 */
-	@RequestMapping(value="/job/statistics", method = RequestMethod.GET)
-	@ResponseBody
-	public String produceStatistics(@RequestParam String input) throws IOException, MoDSMechCalibAgentException {
+	public JSONObject produceStatistics(String input) throws IOException, MoDSMechCalibAgentException {
 		System.out.println("Received a request to send statistics.\n");
 		logger.info("Received a request to send statistics.\n");
 		if (jobSubmission==null) {
@@ -120,7 +161,10 @@ public class MoDSMechCalibAgent extends HttpServlet {
 	}
 	
 	/**
-	 * Shows the following statistics of quantum jobs processed by MoDS Agent.
+	 * Shows the following statistics of calibration jobs processed by MoDS Agent. <br>
+	 * This method covers the show statics URL that is not included in the<br>
+	 * list of URL patterns. 
+	 * 
 	 * - Total number of jobs submitted
      * - Total number of jobs currently running  
      * - Total number of jobs successfully completed
@@ -130,7 +174,7 @@ public class MoDSMechCalibAgent extends HttpServlet {
      * @return the statistics in HTML format.
 	 */
 	
-	@RequestMapping(value="/job/show/statistics",method = RequestMethod.GET)
+	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, MoDSMechCalibAgentException {
 		System.out.println("Received a request to show statistics.\n");
@@ -142,7 +186,7 @@ public class MoDSMechCalibAgent extends HttpServlet {
 	}
 	
 	/**
-	 * Starts the scheduler to monitor calibration jobs.
+	 * Starts the asynchronous scheduler to monitor calibration jobs.
 	 * 
 	 * @throws MoDSMechCalibAgentException
 	 */
@@ -324,11 +368,11 @@ public class MoDSMechCalibAgent extends HttpServlet {
 	 * @throws MoDSMechCalibAgentException
 	 * @throws SlurmJobException
 	 */
-	public String setUpJob(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
+	public JSONObject setUpJob(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
 		obj.put("message", message);
-		return obj.toString();
+		return obj;
 	}
 	
 	/**
