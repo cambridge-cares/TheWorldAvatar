@@ -55,28 +55,36 @@ class OntoCompChemData:
         for i, json_dat in enumerate(self.data):
             if len(self.data) > 1:
             #    json_name = self.log.replace('.log','#'+str(i+1)+'.json')
-                 json_name = self.log + '#' + str(i+1)+'.json'
+                 json_name = self.log + '#' + str(i+1)+'.json'                
+                 owl_name = base=os.path.basename(self.log) + '#' + str(i+1)+'.owl'
             else:
             #    json_name = self.log.replace('.log','.json')
-                 json_name = self.log + '.json'
+                 json_name = self.log + '.json'                
+                 owl_name = base=os.path.basename(self.log) + '.owl'
 
             # dump call ...
             dict_data = json.loads(json_dat)
             with open(json_name, 'w') as outfile:
                 json.dump(dict_data, outfile, indent = 4)
-                
+            
+                 
             ''' Generates knowledge graph as owl file for each generated josn file '''
-            r = random.uniform(100000,1000000)
+#           r = random.uniform(100000,1000000)
+            r=1
             file_name= Path(self.log).stem
+            
             ontocompchem_graph = Graph()
             
-            self.outputowl(ontocompchem_graph, dict_data, file_name, r, k)
+            #gives log file name with extension without file path
+            log_file_name = os.path.basename(self.log)
+            
+            self.outputowl(ontocompchem_graph, dict_data, file_name, log_file_name,owl_name,r, k)
             k = k+1
             for (key, value) in iteritems(dict_data):
                 print(" - ", key, " : ", value)
              
 
-    def outputowl(self,ontocompchem_graph, dict_data,file_name, rnd,k):
+    def outputowl(self,ontocompchem_graph, dict_data,file_name, log_file_name, owl_name,rnd,k):
 
         print("output owl: ")
 
@@ -86,8 +94,8 @@ class OntoCompChemData:
         empirical_formula = dict_data["Empirical formula"]
         program_version = dict_data["Program version"]
 
-        ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + file_name + ".owl#"
-        source_base_uri =  "http://theworldavatar.com/kb/ontocompchem/"
+        ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
+        source_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/"
 
         """Namespace definition"""
         ontocompchem_namespace = Namespace("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")
@@ -109,7 +117,7 @@ class OntoCompChemData:
 
 
         '''Create ontocompchem knowledge graph by generating owl file.'''
-        self.create_ontocompchem_graph(ontocompchem_graph, dict_data, ontology_base_uri, source_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, rnd)
+        self.create_ontocompchem_graph(ontocompchem_graph, dict_data, ontology_base_uri, source_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, log_file_name,owl_name,rnd)
 
         '''Printing created ontology that is an instance of OntoCompChem ontology.'''
         #print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -124,19 +132,21 @@ class OntoCompChemData:
         ''' Check the number of jobs found in log file'''
         
         if len(self.data) > 1:
-            owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
+#            owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
+             owl_path = g_path+"#"+str(k)+".owl"
         else:
-            owl_path = os.path.splitext(g_path)[0]+".owl"
+#            owl_path = os.path.splitext(g_path)[0]+".owl"
+             owl_path = g_path+".owl"
+
 
         print("owl_path: " , owl_path)
 
         '''Write owl content into owl file that is stored in the same folder where json file is saved.'''
-        f = open(owl_path, "a+")
-        f.write(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
+        f = open(owl_path, "w")
+        f.write(ontocompchem_graph.serialize(format="ttl").decode("utf-8"))
         f.close()
 
-
-    def create_ontocompchem_graph(self,ontocompchem_graph, dict_data, ontology_base_uri,source_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,rnd):
+    def create_ontocompchem_graph(self,ontocompchem_graph, dict_data, ontology_base_uri,source_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,log_file_name,owl_name,rnd):
 
          '''Create main ontocompchem knowledge graph (instance of ontocompchem Tbox)'''
          self.import_ontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
@@ -155,7 +165,7 @@ class OntoCompChemData:
          self.generate_atom_count(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_electronic_and_zpe_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_scf_energy(ontocompchem_graph, dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_file_iri(ontocompchem_graph,  dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_base_uri, file_name, rnd)
+         self.generate_file_iri(ontocompchem_graph,  dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_base_uri, file_name, log_file_name, owl_name,rnd)
 
 
     def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
@@ -168,7 +178,6 @@ class OntoCompChemData:
 
 #        for i, json_dat in enumerate(self.data):
 #                  dict_data = json.loads(json_dat)
-
 
         '''Extract empirical formula '''
         empirical_formula = dict_data["Empirical formula"]
@@ -546,14 +555,14 @@ class OntoCompChemData:
 
              if electronic_and_zpe_energy is not None:
                  electronic_and_zpe_energy_literal=Literal(electronic_and_zpe_energy)
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, ontocompchem_namespace.ElectronicAndZPEEnergy))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, gc_namespace.FloatValue))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.ElectronicAndZPEEnergy))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)), gc_namespace.hasValue, electronic_and_zpe_energy_literal))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_electronic_and_zpe_energy_value_"+str(empirical_formula)+ "_"+str(uuid_electronic_and_zpe_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
     def generate_scf_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
@@ -568,17 +577,17 @@ class OntoCompChemData:
                  scf_energy = dict_data["Electronic energy"]
                  scf_energy_literal=Literal(scf_energy)
                  empirical_formula = dict_data["Empirical formula"]
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, ontocompchem_namespace.ScfEnergy))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd))))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, gc_namespace.FloatValue))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), RDF.type, OWL.Thing))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)), gc_namespace.hasValue, scf_energy_literal))
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+file_name), gc_namespace.isCalculationOn, URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)), RDF.type, ontocompchem_namespace.ScfEnergy))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)), gc_namespace.hasElectronicEnergy, URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd))))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)), RDF.type, gc_namespace.FloatValue))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)), RDF.type, OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)), gc_namespace.hasValue, scf_energy_literal))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
 
-    def generate_file_iri(self,ontocompchem_graph,  dict_data, ontocompchem_namespace,gc_namespace,ontology_base_uri,source_base_uri,file_name,rnd):
+    def generate_file_iri(self,ontocompchem_graph,  dict_data, ontocompchem_namespace,gc_namespace,ontology_base_uri,source_base_uri,file_name,log_file_name,owl_name,rnd):
 
         '''Generate graph for output sources ".g09", ".log", ".g16", ".owl" '''
         #for i, json_dat in enumerate(self.data):
@@ -589,13 +598,13 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.SourcePackage))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
 
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_base_uri+ self.log)))
-        ontocompchem_graph.add((URIRef(source_base_uri+ self.log), RDF.type, ontocompchem_namespace.OutputSource))
-        ontocompchem_graph.add((URIRef(source_base_uri+ self.log), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_base_uri+ log_file_name)))
+        ontocompchem_graph.add((URIRef(source_base_uri+ log_file_name), RDF.type, ontocompchem_namespace.OutputSource))
+        ontocompchem_graph.add((URIRef(source_base_uri+ log_file_name), RDF.type, OWL.Thing))
 
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_base_uri+ os.path.splitext(self.log)[0]+'.owl')))
-        ontocompchem_graph.add((URIRef(source_base_uri+ os.path.splitext(self.log)[0]+'.owl'), RDF.type, ontocompchem_namespace.OutputSource))
-        ontocompchem_graph.add((URIRef(source_base_uri+ os.path.splitext(self.log)[0]+'.owl'), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_base_uri+ owl_name)))#os.path.splitext(self.log)[0]+'.owl'
+        ontocompchem_graph.add((URIRef(source_base_uri+ owl_name), RDF.type, ontocompchem_namespace.OutputSource))#os.path.splitext(self.log)[0]+'.owl'
+        ontocompchem_graph.add((URIRef(source_base_uri+ owl_name), RDF.type, OWL.Thing))#os.path.splitext(self.log)[0]+'.owl'
 
 
 
