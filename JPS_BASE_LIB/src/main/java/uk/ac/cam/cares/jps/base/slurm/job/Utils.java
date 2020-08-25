@@ -566,9 +566,10 @@ public class Utils{
 	public static File getCompletedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
 		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
 		String completedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
-		workspace = new File(completedJobsDirectory);
-		if(workspace.mkdirs()){
-			return workspace;
+		File jobFolderInCompletedJobs = new File(completedJobsDirectory);
+		jobFolderInCompletedJobs.mkdirs();
+		if(jobFolderInCompletedJobs.exists()){
+			return jobFolderInCompletedJobs;
 		}
 		return null;
 	}
