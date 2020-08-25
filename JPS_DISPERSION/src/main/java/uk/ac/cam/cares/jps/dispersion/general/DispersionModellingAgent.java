@@ -243,7 +243,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 						String zipFilePath = jobFolder.getAbsolutePath() + "/output.zip";
 						File outputFile= new File(zipFilePath);
 						if(!outputFile.isFile() || !outputFile.exists()){
-							Utils.modifyStatus(jobFolder.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
 							System.out.println("In !outputFile.isFile() || !outputFile.exists()");
 							continue;
 						}
@@ -251,7 +251,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 						FileUtil.unzip(zipFilePath, outputFolder.getAbsolutePath());
 						File file = new File(outputFolder.getAbsolutePath().concat(File.separator).concat(FILE_NAME_3D_MAIN_CONC_DATA));
 						if(!file.exists()){
-							Utils.modifyStatus(jobFolder.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
 							System.out.println("In !outputFile.isFile() || !outputFile.exists()");
 							continue;							
 						}
@@ -263,7 +263,7 @@ public class DispersionModellingAgent extends JPSHttpServlet {
 							logger.error("DispersionModellingAgent: Annotation has not been completed.");
 							System.out.println("Annotation has not been completed.");
 							// Edit the status file to be error termination
-							Utils.modifyStatus(jobFolder.getAbsolutePath(),
+							Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(),
 									Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
 						}
 					}
