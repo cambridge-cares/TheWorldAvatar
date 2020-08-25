@@ -19,7 +19,7 @@ def filter_components(term_type, term):
     stopwords = ['the', 'all', 'a', 'an', 'that', 'of']
     smaller_than = ['smaller than', 'less', 'less than', 'under', 'smaller', 'beneath', 'lower', 'lower than', 'fewer']
     larger_than = ['bigger', 'bigger than', 'larger than', 'larger', 'over', 'above', 'beyond', 'broader', 'broader ',
-                   'than']
+                   'than', 'more than', 'more']
 
     print('term_type', term_type, 'term', term)
     try:
@@ -51,8 +51,31 @@ class SearchEngine:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
 
-    def find_matches_from_wiki(self, term, mode='entity'):
-        high_score_terms = self.find_high_scores(term, mode)
+    def compare_other_dictionaries(self, term, intent, mode):
+        print('executing the compare other dictionaries')
+        print('intent', intent)
+        print('mode', mode)
+        print('term', term)
+        if intent == 'batch_restriction_query':
+            dict_names = ['attribute', 'class', 'entity']
+            dict_names.remove(mode)
+            highest_scores = []
+            for name in dict_names:
+                table = self.wiki_dictionary[name]['list']
+                scores = []
+                for word in table:
+                    scores.append(fuzz.ratio(term.lower(), word.lower()))
+                highest_scores.append(max(scores))
+                print('highest_scores', highest_scores)
+            return max(highest_scores)
+        else:
+            return 0
+
+    def find_matches_from_wiki(self, term, mode='entity', intent='item_attribute_query'):
+        high_score_terms = self.find_high_scores(term, mode, intent)
+        if high_score_terms == 'Error001':
+            return 'Error001'
+
         # get the uri for the terms
         uris = []
         for term in high_score_terms:
@@ -68,7 +91,7 @@ class SearchEngine:
         return uris
 
     # three op
-    def find_high_scores(self, term, mode='entity'):
+    def find_high_scores(self, term, mode='entity', intent='item_attribute_query'):
         dictionary = self.wiki_dictionary[mode]['dict']
         table = self.wiki_dictionary[mode]['list']
 
@@ -84,6 +107,12 @@ class SearchEngine:
         sort_orders = sorted(temp.items(), key=lambda x: x[1], reverse=True)
         temp_2 = sorted(t2.items(), key=lambda x: x[1], reverse=True)
         selected_terms = sort_orders[:self.top_k]
+        highest_score = selected_terms[0][1]
+        other_max_score = self.compare_other_dictionaries(term, intent=intent, mode=mode)
+        if highest_score < other_max_score:
+            # we have a problem of wrong intent recognition
+            return 'Error001'
+
         print('============= todo =============')
         pprint(selected_terms)
         print('--------------------------------')
@@ -102,7 +131,6 @@ class SearchEngine:
         print(list_of_entities)
         results = []
         for key, value in list_of_entities.items():
-
             if key == 'comparison' or key == 'numerical_value':
                 value = filter_components(term_type=key, term=value)
                 if value is None:
@@ -115,14 +143,18 @@ class SearchEngine:
                         v = filter_components(term_type=key, term=v)
                         if v is None:
                             return None
-                        uris = self.find_matches_from_wiki(term=v, mode=key)
+                        uris = self.find_matches_from_wiki(term=v, mode=key, intent=question_type)
+                        if uris == 'Error001':
+                            return 'Error001'
                         obj_temp = {key: remove_duplicated(uris)}
                         results.append(obj_temp)
                 else:
                     value = filter_components(term_type=key, term=value)
                     if value is None:
                         return None
-                    uris = self.find_matches_from_wiki(term=value, mode=key)
+                    uris = self.find_matches_from_wiki(term=value, mode=key,intent=question_type)
+                    if uris == 'Error001':
+                        return 'Error001'
                     obj_temp = {key: remove_duplicated(uris)}
                     results.append(obj_temp)
 

@@ -69,7 +69,7 @@ def process_instances():
         instance_dictionary = add_to_dictionary(alt_label_list, uri, instance_dictionary)
         # ---------------- formula ----------------
         formula = instance["x"]["value"].translate(transl).lower()
-        instance_dictionary = add_to_dictionary(label, uri, instance_dictionary)
+        instance_dictionary = add_to_dictionary(formula, uri, instance_dictionary)
         # =============== make label collection ==========
         all_labels_instances.append(formula)
         all_labels_instances = all_labels_instances + alt_label_list
@@ -77,6 +77,9 @@ def process_instances():
     # check whether there is any repetition.
     # print([item for item, count in collections.Counter(all_labels_instances).items() if count > 1])
     # pprint(instance_dictionary)
+    print('------- instances --------')
+    print(instance_dictionary['c6h12o6'])
+    print(instance_dictionary['glucose'])
     return {'dict': instance_dictionary, 'list':list(set(all_labels_instances))}
 
 
@@ -126,6 +129,7 @@ def process_properties():
     # pprint(process_properties())
     print(property_dictionary['heat capacity'])
     print(property_dictionary['boiling point'])
+
     return {'dict': property_dictionary, 'list': list(set(all_labels_properties))}
 
 

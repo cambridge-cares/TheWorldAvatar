@@ -34,7 +34,7 @@ public class GetExtraInfo extends HttpServlet {
 		// TODO Auto-generated method stub
 		JSONObject r = AgentCaller.readJsonParameter(request);
 		String path = r.getString("path");
-		 String outputFile = path + "/extra_info.json";
+		 String outputFile = path + "/VisualizationInput.json";
 			// get what file is stored in the folder 
 			// DAT / GST
          String result = new QueryBroker().readFileLocal(outputFile);

@@ -1,0 +1,304 @@
+-  the loxanol v's Store norske leksikon ID
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q43656 wdt:P4342 ?v2 .
+        OPTIONAL {
+        wd:Q43656 p:P4342/psv:P4342 ?value . # attribute
+        wd:Q43656 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+-  the SPLASH of clamoxyl
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q201928 wdt:P4964 ?v2 .
+        OPTIONAL {
+        wd:Q201928 p:P4964/psv:P4964 ?value . # attribute
+        wd:Q201928 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- what is the freezing point of abrolet
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q57055 wdt:P2101 ?v2 .
+        OPTIONAL {
+        wd:Q57055 p:P2101/psv:P2101 ?value . # attribute
+        wd:Q57055 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- monomethylamine is a assembly of what
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q409304 wdt:P361 ?v2 .
+        OPTIONAL {
+        wd:Q409304 p:P361/psv:P361 ?value . # attribute
+        wd:Q409304 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- C6H6S is a holonym of what
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q338965 wdt:P527 ?v2 .
+        OPTIONAL {
+        wd:Q338965 p:P527/psv:P527 ?value . # attribute
+        wd:Q338965 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- list the atomic weight of alyrane
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q416740 wdt:P2067 ?v2 .
+        OPTIONAL {
+        wd:Q416740 p:P2067/psv:P2067 ?value . # attribute
+        wd:Q416740 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+-  the ZVG number of mebr
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q421758 wdt:P679 ?v2 .
+        OPTIONAL {
+        wd:Q421758 p:P679/psv:P679 ?value . # attribute
+        wd:Q421758 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- give the Commons image of finasteride
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q424167 wdt:P18 ?v2 .
+        OPTIONAL {
+        wd:Q424167 p:P18/psv:P18 ?value . # attribute
+        wd:Q424167 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+-  the molecular formula of alsiodol
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q155883 wdt:P274 ?v2 .
+        OPTIONAL {
+        wd:Q155883 p:P274/psv:P274 ?value . # attribute
+        wd:Q155883 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- show the neodol's YSO ID
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q57055 wdt:P2347 ?v2 .
+        OPTIONAL {
+        wd:Q57055 p:P2347/psv:P2347 ?value . # attribute
+        wd:Q57055 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+-  the DSSTox substance ID of phenyl ether
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q419453 wdt:P3117 ?v2 .
+        OPTIONAL {
+        wd:Q419453 p:P3117/psv:P3117 ?value . # attribute
+        wd:Q419453 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- give the Human Metabolome Database ID of chloroacetic acid
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q409013 wdt:P2057 ?v2 .
+        OPTIONAL {
+        wd:Q409013 p:P2057/psv:P2057 ?value . # attribute
+        wd:Q409013 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- show me the rejected match of grape oil
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q416972 wdt:P1889 ?v2 .
+        OPTIONAL {
+        wd:Q416972 p:P1889/psv:P1889 ?value . # attribute
+        wd:Q416972 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+-  the Guide to Pharmacology Ligand ID of ulcatif
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q411159 wdt:P595 ?v2 .
+        OPTIONAL {
+        wd:Q411159 p:P595/psv:P595 ?value . # attribute
+        wd:Q411159 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- show me the portrait of homoolan
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q57055 wdt:P18 ?v2 .
+        OPTIONAL {
+        wd:Q57055 p:P18/psv:P18 ?value . # attribute
+        wd:Q57055 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 
+- list the C23H28ClN3O5S's Reaxys registry number
+
+ -------------- 
+----------
+ -------------- 
+
+        SELECT ?name ?v ?v2 ?unitLabel WHERE  {                     
+        
+        wd:Q420626 wdt:P1579 ?v2 .
+        OPTIONAL {
+        wd:Q420626 p:P1579/psv:P1579 ?value . # attribute
+        wd:Q420626 rdfs:label ?name filter (lang(?name) = "en").
+        ?value wikibase:quantityAmount ?v .
+        ?value wikibase:quantityUnit ?unit . 
+        }
+
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en" }}  
+        
+ -------------- 

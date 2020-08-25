@@ -46,11 +46,20 @@ class CoordinateAgent():
         intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
         if intent_and_entities_with_uris is None:
             return None
+        elif intent_and_entities_with_uris == 'Error001':
+            # now switch intent to item_attribute_query, and the entity to entity...
+            print(intent_and_entities)
+            print('we have a Error001')
+            intent_and_entities['type'] = 'item_attribute_query'
+            intent_and_entities['entities']['entity'] = intent_and_entities['entities']['class']
+
+        intent_and_entities_with_uris = self.search_engine.parse_entities(intent_and_entities)
 
         print('================= result with uris ================')
         pprint(intent_and_entities_with_uris)
         sparqls = self.sparql_constructor.fill_sparql_query(intent_and_entities_with_uris)
         if sparqls is None:
+            print('No valid SPARQL is returned')
             return None
         if len(sparqls) >= 5:
             sparqls = sparqls[:5]
@@ -61,5 +70,9 @@ class CoordinateAgent():
         return result
 
 ca = CoordinateAgent()
-# # r = ca.run(question='what is the molecular weight of benzene')
-ca.run(question='what is the heat capacity of ch4')
+ca.run('find all the fatty acids with molecular weight more than 100')
+# ca.run('the kindling point of C2HBrClF3')
+# # # r = ca.run(question='what is the molecular weight of benzene')
+# # ca.run(question='show me the heat capacity of glucose')
+# # ca.run(question='what is the chemical structure of glucose')
+# ca.run('show me the boliing point of ch4')

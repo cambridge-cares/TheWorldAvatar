@@ -5,7 +5,7 @@ from datetime import date
 
 ps = PorterStemmer()
 
-size_of_trainning = 5000
+size_of_trainning = 10000
 
 labels = json.loads(open('corpus_for_trainning').read())
 c_labels = labels[0]
@@ -186,7 +186,7 @@ def generate_random_numerical_value():
 
 def generate_type_3_questions():
     type_3_questions = []
-    # e.g. find all the acids with molecular weight more than 100
+    # e.g. find all the fatty acids with molecular weight more than 100
     template = '%s [%s](class) %s [%s](attribute) [%s](comparison) [%s](numerical_value)'  # wh_word, class, mid_word, property ,superlative_word, numerical_value
 
     for i in range(0, size_of_trainning):

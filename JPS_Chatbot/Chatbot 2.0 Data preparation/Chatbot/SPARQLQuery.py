@@ -51,7 +51,7 @@ class SPARQLQuery:
             time.sleep(2)
             if len(queries) == 0:
                 return None
-        return r[0]
+        return r
 
     def start_multiple_queries(self, queries, valid_results):
 
