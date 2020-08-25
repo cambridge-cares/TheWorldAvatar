@@ -446,7 +446,7 @@ public class JobSubmission{
 		statistics = statistics + "<body>";
 		statistics = statistics.concat(jobStatistics.getBodydivStart());
 		statistics = statistics + "<center>";
-		String headerText = "Statistics about jobs submitted to DFT Agent are shown in the table below.<p>";
+		String headerText = "Statistics about jobs submitted to this agent are shown in the table below.<p>";
 		statistics = statistics.concat(jobStatistics.getStatisticsTableHeader(headerText, "Property", "Value", "50%"));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs currently running", jobStatistics.getJobsRunning()+""));
 		statistics = statistics.concat(jobStatistics.getStatisticsTableRow("Number of jobs successfully completed", jobStatistics.getJobsCompleted()+""));
