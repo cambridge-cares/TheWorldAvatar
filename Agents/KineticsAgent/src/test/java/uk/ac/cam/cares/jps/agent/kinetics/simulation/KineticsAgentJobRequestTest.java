@@ -1,4 +1,4 @@
-package com.cmclinnovations.jps.agent.kinetics.simulation;
+package uk.ac.cam.cares.jps.agent.kinetics.simulation;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

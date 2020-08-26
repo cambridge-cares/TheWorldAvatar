@@ -34,9 +34,6 @@ public class KineticsAgentProperty {
 	@Value("${input.file.extension}")
 	private String inputFileExtension;
 
-	@Value("${chk.point.file.extension}")
-	private String checkPointFileExtension;
-
 	@Value("${json.input.file.name}")
 	private String jsonInputFileName;
 	
@@ -46,24 +43,12 @@ public class KineticsAgentProperty {
 	@Value("${slurm.script.file.name}")
 	private String slurmScriptFileName;
 	
-	@Value("${executable.file}")
-	private String executableFile;
-
-	@Value("${job.preprint.directive}")
-	private String jobPreprintDirective;
-
 	@Value("${output.file.name}")
 	private String outputFileName;
 
 	@Value("${output.file.extension}")
 	private String outputFileExtension;
 
-	@Value("${kg.url.to.upload.result.via.json.input}")
-	private String kgURLToUploadResultViaJsonInput;
-
-	@Value("${rdf4j.repository.ontospecies}")
-	private String rdf4jRepositoryOntoSpecies;
-	
 	@Value("${max.number.of.hpc.jobs}")
 	private int maxNumberOfHPCJobs;
 
@@ -73,35 +58,6 @@ public class KineticsAgentProperty {
 	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
 	
-	@Value("${thermo.agent.http.request.first.part}")
-	private String thermoAgentHttpRequestFirstPart;
-
-	@Value("${rdf4j.ontokin.repository.query.iri}")
-	private String ontoKinRepositoryIRI;
-	
-	@Value("${rdf4j.server.url}")
-	private String rdf4jServerURL;
-
-	
-	@Value("${rdf4j.ontokin.repository.id}")
-	private String ontoKinRepositoryID;
-
-	public String getThermoAgentHttpRequestFirstPart() {
-		return thermoAgentHttpRequestFirstPart;
-	}
-
-	public String getOntoKinRepositoryIRI() {
-		return ontoKinRepositoryIRI;
-	}
-
-	public String getRdf4jServerURL() {
-		return rdf4jServerURL;
-	}
-
-	public String getOntoKinRepositoryID() {
-		return ontoKinRepositoryID;
-	}
-
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
 	}
@@ -138,10 +94,6 @@ public class KineticsAgentProperty {
 		return inputFileExtension;
 	}
 
-	public String getCheckPointFileExtension() {
-		return checkPointFileExtension;
-	}
-
 	public String getJsonInputFileName() {
 		return jsonInputFileName;
 	}
@@ -154,28 +106,12 @@ public class KineticsAgentProperty {
 		return slurmScriptFileName;
 	}
 
-	public String getExecutableFile() {
-		return executableFile;
-	}
-
-	public String getJobPreprintDirective() {
-		return jobPreprintDirective;
-	}
-
 	public String getOutputFileName() {
 		return outputFileName;
 	}
 
 	public String getOutputFileExtension() {
 		return outputFileExtension;
-	}
-
-	public String getKgURLToUploadResultViaJsonInput() {
-		return kgURLToUploadResultViaJsonInput;
-	}
-
-	public String getRdf4jRepositoryOntoSpecies() {
-		return rdf4jRepositoryOntoSpecies;
 	}
 
 	public int getMaxNumberOfHPCJobs() {

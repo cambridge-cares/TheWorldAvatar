@@ -1,5 +1,10 @@
 package uk.ac.cam.cares.jps.agent.kinetics.simulation;
-
+/**
+ * This class is developed to manage exceptions in this project.
+ * 
+ * @author Feroz Farazi (msff2@cam.ac.uk)
+ *
+ */
 public class KineticsAgentException extends Exception {
 	
 	private static final long serialVersionUID = 1976L;
