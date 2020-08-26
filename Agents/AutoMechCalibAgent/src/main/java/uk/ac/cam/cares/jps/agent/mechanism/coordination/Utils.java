@@ -24,7 +24,10 @@ import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.slurm.job.Property;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
+import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
 public class Utils {
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);
@@ -314,4 +317,254 @@ public class Utils {
 		FileUtils.copyDirectory(srcDir, destDir);
 	}
 	
+	/**
+	 * Copy any file from the source path to the destination path.
+	 * 
+	 * @param from the absolute path to the file which will be copied.
+	 * @param to the absolute path to the folder where the file will be<br>
+	 * copied. If user provides absolute path including the file name,<br>
+	 * probably renamed or the same as the one in the from path, the method<br>
+	 * will keep the same name. 
+	 * 
+	 * @throws IOException
+	 */
+	public static void copyFile(File from, File to) throws IOException {
+		com.google.common.io.Files.copy(from, to);
+	}
+	
+	/**
+	 * Reads the job id from the status file.
+	 * 
+	 * @param statusFilePath the absolute path to the status file.
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getJobId(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().toLowerCase().startsWith(Status.ATTRIBUTE_JOB_ID.getName().toLowerCase())){
+				String tokens[] = line.trim().split(":");
+				if(tokens.length>=2 && tokens[1].trim().length()>0){
+					statusFile.close();
+					return tokens[1].trim();
+				}
+			}
+		}
+		statusFile.close();
+		return null;
+	}
+	/**
+	 * Adds the job id to the status file. 
+	 * 
+	 * @param filePath the path to the status file.
+	 * @param jobId the job id generated following the sbatch submission. 
+	 * @throws IOException
+	 */
+	public static void addJobId(String filePath, String jobId) throws IOException{
+		List<String> fileContent = new ArrayList<>();
+		BufferedReader br = openSourceFile(filePath);
+		String line;
+		while((line=br.readLine())!=null){
+		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())) {
+		        line = Status.ATTRIBUTE_JOB_STATUS.getName().concat(" ").concat(Status.STATUS_JOB_RUNNING.getName());
+		    }
+		    if (line.trim().startsWith(Status.ATTRIBUTE_JOB_ID.getName())) {
+		        line = Status.ATTRIBUTE_JOB_ID.getName().concat(" ").concat(jobId);
+		    }
+		    fileContent.add(line);
+		}
+		br.close();
+		BufferedWriter bw = openBufferedWriter(filePath);
+		for(String lineContent:fileContent){
+			bw.write(lineContent.concat("\n"));
+		}
+		bw.flush();
+		bw.close();
+	}
+	
+	/**
+	 * Reads the agent id from the status file.
+	 * 
+	 * @param statusFilePath
+	 * @return
+	 * @throws IOException
+	 */
+	public static String getAgentId(String statusFilePath) throws IOException {
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().toLowerCase().startsWith(Status.ATTRIBUTE_AGENT_ID.getName().toLowerCase())){
+				String tokens[] = line.trim().split(":");
+				if(tokens.length>=2 && tokens[1].trim().length()>0){
+					statusFile.close();
+					return tokens[1].trim();
+				}
+			}
+		}
+		statusFile.close();
+		return null;
+	}
+	
+	public static void modifyAgentId(String filePath, String agentId) throws IOException {
+		List<String> fileContent = new ArrayList<>();
+		BufferedReader br = openSourceFile(filePath);
+		String line;
+		while((line=br.readLine())!=null) {
+			if (line.trim().startsWith(Status.ATTRIBUTE_AGENT_ID.getName())) {
+				line = Status.ATTRIBUTE_AGENT_ID.getName().concat(" ").concat(agentId);
+			}
+			fileContent.add(line);
+		}
+		br.close();
+		BufferedWriter bw = openBufferedWriter(filePath);
+		for (String lineContent:fileContent) {
+			bw.write(lineContent.concat("\n"));
+		}
+		bw.flush();
+		bw.close();
+	}
+	
+	/**
+	 * Checks if a job is still running.
+	 * 
+	 * @param jobFolder
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobRunning(File jobFolder) throws IOException{
+		return isJobRunning(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+	}
+	
+	/**
+	 * Check the status if a job is currently running.
+	 * 
+	 * @param statusFilePath the absolute path to the status file.
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobRunning(String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Status.STATUS_JOB_RUNNING.getName()) 
+						|| line.contains(Status.STATUS_JOB_COMPLETING.getName()) 
+						|| line.contains(Status.STATUS_JOB_PENDING.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Check if a job is completed.
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobCompleted(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		return isJobFinished(jobFolder, jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()), slurmJobProperty);
+	}
+	
+	/**
+	 * Check the status if a job finished.
+	 * 
+	 * @param jobFolder the folder that contains the job.
+	 * @param statusFilePath the file that contains the status of the job.
+	 * @param slurmJobProperty the variable that allows to read different<br>
+	 * properties including agentClass, completed jobs folder prefix, etc.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobFinished(File jobFolder, String statusFilePath, SlurmJobProperty slurmJobProperty) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Status.STATUS_JOB_COMPLETED.getName())){
+					statusFile.close();
+					if(isJobPostProcessed(jobFolder, statusFilePath)){
+						moveToComplete(jobFolder, slurmJobProperty);
+					}
+					return true;
+				}
+				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
+					statusFile.close();
+					if(isJobPostProcessed(jobFolder, statusFilePath)){
+						moveToComplete(jobFolder, slurmJobProperty);
+					}
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Check the status if a job post-processed.
+	 * 
+	 * @param jobFolder the folder that contains the job.
+	 * @param statusFilePath the file that contains the status of the job.
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobPostProcessed(File jobFolder, String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_OUTPUT.getName())){
+				if(line.contains(Status.OUTPUT_PROCESSED.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Moves the provided job folder to the folder that contains completed<br>
+	 * and post-processed jobs of the agent. 
+	 * 
+	 * @param jobFolder the folder that contains a job
+	 * @param slurmJobProperty
+	 */
+	public static void moveToComplete(File jobFolder, SlurmJobProperty slurmJobProperty) {
+		try {
+			File destDir = getCompletedJobsDirectory(jobFolder, slurmJobProperty);
+			if(destDir!=null){
+				FileUtils.copyDirectory(jobFolder, destDir);
+				FileUtils.deleteDirectory(jobFolder);
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns the folder where completed jobs are saved.
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static File getCompletedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		String completedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
+		workspace = new File(completedJobsDirectory);
+		if(workspace.mkdirs()){
+			return workspace;
+		}
+		return null;
+	}
 }
