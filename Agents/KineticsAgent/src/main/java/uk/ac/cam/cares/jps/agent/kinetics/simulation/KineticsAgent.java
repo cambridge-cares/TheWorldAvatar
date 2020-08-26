@@ -32,14 +32,14 @@ import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 
 /**
- * Quantum Calculation Agent developed for setting-up and running quantum
- * jobs at a level of theory.   
+ * Kinetics Agent developed for setting-up and running kinetics simulation jobs.
  * 
  * @author Feroz Farazi (msff2@cam.ac.uk)
  *
  */
 @Controller
-@WebServlet(urlPatterns = {KineticsAgent.JOB_REQUEST_PATH, KineticsAgent.JOB_STATISTICS_PATH})
+@WebServlet(urlPatterns = { KineticsAgent.JOB_REQUEST_PATH, KineticsAgent.JOB_STATISTICS_PATH,
+		KineticsAgent.JOB_OUTPUT_REQUEST_PATH })
 public class KineticsAgent extends JPSAgent{
 	private static final long serialVersionUID = -8669607645910441935L;
 	private Logger logger = LoggerFactory.getLogger(KineticsAgent.class);	
@@ -52,6 +52,7 @@ public class KineticsAgent extends JPSAgent{
 	public static final String UNKNOWN_REQUEST = "The request is unknown to Kinetics Agent";
 	
     public static final String JOB_REQUEST_PATH = "/job/request";
+    public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
     public static final String JOB_STATISTICS_PATH = "/job/statistics";
     public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
 	
@@ -174,15 +175,6 @@ public class KineticsAgent extends JPSAgent{
 	}
 	
 	/**
-	 * Initialises the unique instance of the SlurmJobProperty class and<br>
-	 * sets all properties by reading them from the kinetics-agent property file<br>
-	 * through the KineticsAgent class. 
-	 * 
-	 */
-	private void initSlurmJobProperty(){
-	}
-	
-	/**
 	 * Receives and processes HTTP requests that match with the URL patterns<br>
 	 * listed in the annotations of this class.
 	 * 
@@ -202,7 +194,11 @@ public class KineticsAgent extends JPSAgent{
 			}catch(SlurmJobException | IOException | KineticsAgentException e){
 				throw new JPSRuntimeException(e.getMessage());
 			}
-		} else if (path.equals(KineticsAgent.JOB_STATISTICS_PATH)) {
+		} 
+//		else if (path.equals(KineticsAgent.JOB_OUTPUT_REQUEST_PATH)){
+//			return simulationResults();
+//		} 
+		else if (path.equals(KineticsAgent.JOB_STATISTICS_PATH)) {
 			try {
 				return produceStatistics(requestParams.toString());
 			} catch (IOException | KineticsAgentException e) {
@@ -232,11 +228,8 @@ public class KineticsAgent extends JPSAgent{
      * @throws SlurmJobException
      */
 	private void monitorJobs() throws SlurmJobException{
-		if(jobSubmission==null){
-			jobSubmission = new JobSubmission(kineticsAgentProperty.getAgentClass(), kineticsAgentProperty.getHpcAddress());
-		}
 		//Configures all properties required for setting-up and running a Slurm job. 
-		initSlurmJobProperty();
+		initAgentProperty();
 		jobSubmission.monitorJobs();
 		processOutputs();
 	}
@@ -258,7 +251,9 @@ public class KineticsAgent extends JPSAgent{
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
 							boolean successful = false;
 							/************************************************
-							 * [MICHAEL, CALL POST-PROCESSING METHOD HERE]
+							 * [MICHAEL, CALL POST-PROCESSING METHOD HERE AND
+							 * INDICATE USING THE successful VARIABLE DECLARED
+							 * ABOVE IF THE PROCESS EXECUTED SUCCESSFULLY OR NOT.]
 							 ***********************************************/
 							// The successful completion of post-processing
 							// triggers the job status update.
@@ -293,7 +288,7 @@ public class KineticsAgent extends JPSAgent{
 	public JSONObject setUpJob(String jsonString) throws IOException, KineticsAgentException, SlurmJobException{
         	String message = setUpJobOnAgentMachine(jsonString);
 			JSONObject obj = new JSONObject();
-			obj.put("message", message);
+			obj.put("jobId", message);
         	return obj;
     }
 	
@@ -326,7 +321,8 @@ public class KineticsAgent extends JPSAgent{
 	 */
 	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, KineticsAgentException{
 		/************************************************************************************************************************
-		 * [MICHAEL, PREPARE INPUT FILES IN A TEMPORARY LOCATION, COMPRESS THEM IN A ZIP FILE AND PUT THE PATH TO THE ZIP FILE ]
+		 * [MICHAEL, PREPARE INPUT FILES IN A TEMPORARY LOCATION, COMPRESS THEM IN A ZIP FILE AND PUT THE PATH TO THE ZIP FILE BELOW
+		 * AT THE PLACE INDICATED]
 		 ************************************************************************************************************************/
 		return new File("path to the zip file");
 	}
