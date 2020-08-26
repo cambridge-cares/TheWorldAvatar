@@ -215,7 +215,7 @@ public class JobSubmission{
     	if(createAllFileInJobFolder(ws, workspaceFolder, jobFolder, jsonString, slurmScript, input)==null){
     		return null;
     	}
-    	return Status.JOB_SETUP_SUCCESS_MSG.getName();
+    	return jobFolder.getName();
 	}
 	
 	/**
