@@ -24,16 +24,16 @@ parser = CcGaussianParser()
 CompChemObj = OntoCompChemData()
 
 Test_suite1 = {
-                'g1': ['co2_g1_g09.log'],
-#               'g2': ['co2_g2_g09.log', 'co2_g2mp2_g09.log']
-                'linked': ['co2_linked_g09.log']
-#               'cas': ['co2_cas_g09.log', 'co2_casmp2.log'],
-#               'dft': ['TEOS_ub971_6311+gdp.log','co2_freq_g09.log','co2_sp_dft_g09.log','co2_opt_freq_dft_p_g09.log','co2_opt_freq_dft_t_g09.log','h_sp_n_g09.log'],
-#               'ccsd': ['co2_ccsd_g09.log','co2_qci_g09.log'],
-#               'ci': ['co2_cis.log'],
-#               'mpn': ['oh_sp_mp4_g03.log'],
-#               "extra":['Cl.g09', 'Ti.g09','TiCl4.g09','O_3let.g09','71-41-0.g09','71-43-2.g09','A2R5H.log'],
-#               "failed_jobs":['c2h4_opt_dft_g09_failed.log', 'c2h4_opt_dft_g09_powercut.log','co2_linked_g09.log']
+               'g1': ['co2_g1_g09.log'],
+               'g2': ['co2_g2_g09.log', 'co2_g2mp2_g09.log'],
+               'linked': ['co2_linked_g09.log'],
+               'cas': ['co2_cas_g09.log', 'co2_casmp2.log'],
+               'dft': ['TEOS_ub971_6311+gdp.log','co2_freq_g09.log','co2_sp_dft_g09.log','co2_opt_freq_dft_p_g09.log','co2_opt_freq_dft_t_g09.log','h_sp_n_g09.log'],
+               'ccsd': ['co2_ccsd_g09.log','co2_qci_g09.log'],
+               'ci': ['co2_cis.log'],
+               'mpn': ['oh_sp_mp4_g03.log'],
+               'extra':['Cl.g09', 'Ti.g09','TiCl4.g09','O_3let.g09','71-41-0.g09','71-43-2.g09','A2R5H.log', '1b.log'],
+               'failed_jobs':['c2h4_opt_dft_g09_failed.log', 'c2h4_opt_dft_g09_powercut.log','co2_linked_g09.log']
 }
 
 class TestGaussianParser(unittest.TestCase):
@@ -98,15 +98,7 @@ class TestGaussianParser(unittest.TestCase):
             for log_file in logs:
                 test_name = 'Gaussian '+ method
                 file_path = os.path.join(test_path, method, log_file)
-
-                #print("Test " + test_name+", File: "+ log_file)
-                #print("Test path:", test_path)
-                #print("file_path:", file_path)
                 
-                #print("log_file split text: ", os.path.splitext(log_file))
-                #print("log_file: ", log_file)
-                #print("method:", method)
-
                 test_data_list = parser.parse(file_path)
                 k=1
                 for i, test_data in enumerate(test_data_list):
@@ -116,25 +108,21 @@ class TestGaussianParser(unittest.TestCase):
                     
                     if len(test_data_list) > 1:
                     #   ref_name = log_file.replace('.log','#'+str(i+1)+'.json')
-                        ref_owl_name = log_file + '#' + str(i+1)+'.owl'                        
-                        #print("ref_name (json): ", ref_name)
-                        #print("ref_owl_name: ", ref_owl_name)
+                        ref_owl_name = log_file + '#' + str(i+1)+'.owl'
 
                     else:
                         #ref_name = log_file.replace('.log','.json')
                         ref_owl_name =  log_file+'.owl'
-                        #print("ref_owl_name:", ref_owl_name)
-                        #print("ref_name (json): ", ref_name)
                         
                     owl_ref_path = os.path.join(test_path, method, ref_owl_name)
                     
                     print("owl_ref_path:", owl_ref_path)   
-                    #print("ref_owl_name:", ref_owl_name) 
+ 
                     
 #                   r = random.uniform(100000,1000000)  
                     r=1                  
                     file_name= Path(log_file).stem
-                    #print("log_file: ", log_file)
+
                     
                     test_graph = Graph()
                     
