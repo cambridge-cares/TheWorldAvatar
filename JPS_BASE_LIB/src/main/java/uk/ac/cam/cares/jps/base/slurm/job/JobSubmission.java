@@ -14,8 +14,6 @@ import java.util.Set;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
@@ -26,10 +24,9 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 /**
- * The API developed for setting-up and running jobs Slurm jobs.
+ * This is an API developed for setting-up and running Slurm jobs.
  * 
  * @author msff2
  *
@@ -37,20 +34,13 @@ import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 public class JobSubmission{
 	private Logger logger = LoggerFactory.getLogger(JobSubmission.class);	
 	private String hpcAddress;
-//	private String username = "msff2";
-//	private String password = getDecipheredPassword("Abcdl955_l7_l7_l7_aB");
-	private String username = "kp536";
-	private String password = "City_Chem2020%";
-	private int delayBeforeStart = 50;
-	private int interval = 60;
 	private String agentClass;
 	private File workspaceDirectory;
 	private String workspaceName;
 	private String workspaceParentPath;
 	boolean isAuthenticated;
 	
-	public static ApplicationContext applicationContext;
-	public static SlurmJobProperty slurmJobProperty;
+	public SlurmJobProperty slurmJobProperty = new SlurmJobProperty();
 	
 	static Session session;
 	static JSch jsch = new JSch();
@@ -64,22 +54,6 @@ public class JobSubmission{
 
 	public void setHpcAddress(String hpcAddress) {
 		this.hpcAddress = hpcAddress;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 	
 	public String getAgentClass() {
@@ -110,22 +84,6 @@ public class JobSubmission{
 //		JobSubmission jobSubmission = new JobSubmission("DFTAgent", new File(System.getProperty("user.home")), "login-skylake.hpc.cam.ac.uk");
 //		jobSubmission.init();
 	}
-
-	public int getDelayBeforeStart() {
-		return delayBeforeStart;
-	}
-
-	public void setDelayBeforeStart(int delayBeforeStart) {
-		this.delayBeforeStart = delayBeforeStart;
-	}
-
-	public int getInterval() {
-		return interval;
-	}
-
-	public void setInterval(int interval) {
-		this.interval = interval;
-	}
 	
 	public String getWorkspaceParentPath() {
 		return workspaceParentPath;
@@ -148,13 +106,6 @@ public class JobSubmission{
 		this.hpcAddress = hpcAddress;
 		this.workspaceDirectory = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), agentClass);
 		this.workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
-		// initialising classes to read properties from the dft-agent.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
 	}
 	
 	/**
@@ -480,8 +431,8 @@ public class JobSubmission{
 					session.disconnect();
 				}
 				System.out.println("Initialising a session.");
-				session = jsch.getSession(getUsername(), getHpcAddress(), 22);
-				String pwd = getPassword();
+				session = jsch.getSession(slurmJobProperty.getHpcServerLoginUserName(), getHpcAddress(), 22);
+				String pwd = slurmJobProperty.getHpcServerLoginUserPassword();
 				session.setPassword(pwd);
 				session.setConfig("StrictHostKeyChecking", "no");
 				session.connect();
@@ -684,14 +635,14 @@ public class JobSubmission{
 	
 	private String createJobFolder(String job) throws JSchException, IOException{
 		// Creates the "mkdir" (make directory) command to create the workspace/jobspace directory.
-		String command = "mkdir /home/".concat(username).concat("/").concat(workspaceDirectory.getName());
+		String command = "mkdir /home/".concat(slurmJobProperty.getHpcServerLoginUserName()).concat("/").concat(workspaceDirectory.getName());
 		// Executes the command to create the workspace/jobspace directory.
 		executeCommand(command);
 		// Creates the command to create the job directory.
-		command = "mkdir /home/".concat(username).concat("/").concat(workspaceDirectory.getName()).concat("/").concat(job);
+		command = "mkdir /home/".concat(slurmJobProperty.getHpcServerLoginUserName()).concat("/").concat(workspaceDirectory.getName()).concat("/").concat(job);
 		// Executes the command for creating the job directory.
 		executeCommand(command);
-		return "/home/".concat(username).concat("/").concat(workspaceDirectory.getName()).concat("/").concat(job);
+		return "/home/".concat(slurmJobProperty.getHpcServerLoginUserName()).concat("/").concat(workspaceDirectory.getName()).concat("/").concat(job);
 	}
 	
 	/**
@@ -725,12 +676,12 @@ public class JobSubmission{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
 				if(slurmJobProperty.getOutputFileExtension().trim().toLowerCase().equals(".log")){
-					downloadFile(Utils.getLogFilePathOnHPC(runningJob, getUsername(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+					downloadFile(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
 					updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
 				}else{
-					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, getUsername(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
+					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
 				}
-				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, getUsername(), workspaceDirectory, getHpcAddress()));
+				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()));
 				return true;
 			}
 		}
