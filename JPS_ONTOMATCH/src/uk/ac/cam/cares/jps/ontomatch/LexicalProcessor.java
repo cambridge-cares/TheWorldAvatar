@@ -18,45 +18,56 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /***
  * 
-Agent that lexical process an ontology and save it in an pkl file
+Agent that lexically process an ontology and save it in an pkl file
+A necessary shared function used by several ElementMatcher
 Functionally it is a servlet wrapper around the python program that actually does the job 
 Input: IRI of ontology
-Output: metadata annotation
+Output: metadata annotation(pointing to filename.pkl)
  * @author shaocong
  *
  */
 
 @WebServlet(urlPatterns = { "/ontologyProcessor" })
 
-public class OntologyProcessor extends JPSHttpServlet{
+public class LexicalProcessor extends JPSHttpServlet{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5914984180067956570L;
+
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		System.out.println("Ontology processor agent");
 		JSONObject jo = requestParams;
-        //TODO:check if agent locator can find this script
-		String afileIRI = null;
-		String stubIRI = "http://www.theworldavatar.com/OntoEIP/OntoEN/power_plant.owl";
-		String stubAddress = "D:\\workwork\\ontoMatchFiles\\targetOntology.pkl";//output
+		String afileIRI = null, saveAddress = null;
+
+		//TODO: Used for simpletesting, comment out and move to JUNIT later
+		String stubIRI = "D://workwork//testFiles//ontologies/PowerPlant.owl";
+		String stubAddress = "D://workwork/ontoMatchFiles/targetOntology.pkl";
 		try {
-			//afileIRI = jo.getString("ontologyIRI");
-			//String saveAddress =  KeyValueMap.getInstance().get("targetOntology.pklfile");
+			afileIRI = jo.getString("ontologyIRI");
+			saveAddress = jo.getString("saveAddress");
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		JSONObject resultObj = new JSONObject();
 		//TODO: call python, then save file
 		try {
-			String[] paras = {stubIRI, stubAddress};
-			String[] results = AsyncPythonHelper.callPython("ontologyWrapper.py",paras,OntologyProcessor.class);
+			String[] paras = {afileIRI, saveAddress};
+			String[] results = AsyncPythonHelper.callPython("ontologyWrapper.py",paras,LexicalProcessor.class);
 			String agent  = "http://www.theworldavatar.com/"+request.getServletPath();
 			System.out.println(agent);
 			List<String> topics = new ArrayList<String>();
-			topics.add(stubIRI);
-	    	MetaDataAnnotator.annotate(stubAddress, null, agent, true, topics);
+			topics.add(afileIRI);
+	    	MetaDataAnnotator.annotate(saveAddress, null, agent, true, topics);
 			System.out.println("result: ");
 			System.out.println(results[0].toString());
 			System.out.println("err: ");
 			System.out.println(results[1].toString());
+			if(results[0].toString().contains("success")) {
 			resultObj.put("success", true);
+			} else {
+				resultObj.put("error", results[1].toString());
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -28,16 +28,19 @@ import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
 /**
- * read alignment API file, write linkage to ep/file?
- * current result is actually in files, but should be in the future to ep
+ * Agent that read alignment result file, then write linkage to kb
  * @author zsc
  *
  */
 @WebServlet(urlPatterns = { "/dataLinker" })
 public class DataLinker extends JPSHttpServlet {
     
-	private static final long serialVersionUID = -2354646810093235777L;
     
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -7950910519843708707L;
+
 	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(DataLinker.class);

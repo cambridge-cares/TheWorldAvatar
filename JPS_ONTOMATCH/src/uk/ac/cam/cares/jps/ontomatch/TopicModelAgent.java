@@ -22,6 +22,10 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 @WebServlet(urlPatterns = { "/topicModelAgent" })
 public class TopicModelAgent extends JPSHttpServlet{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4621180516256485859L;
 	private String TOPICMODEL_TRAININGDOCUMENTS_PATH = "topicmodel.trainingdocuments.path";
 	private String TOPICMODEL_DICTIONARY_PATH = "topicmodel.dictionary.path";
 	private String TOPICMODEL_CORPUS_PATH = "topicmodel.corpus.path";
@@ -38,25 +42,22 @@ public class TopicModelAgent extends JPSHttpServlet{
         String dictionaryLocation = KeyValueMap.getInstance().get(TOPICMODEL_CORPUS_PATH);
         String modelLocation = KeyValueMap.getInstance().get(TOPICMODEL_CORPUS_PATH);
         
-        //TODO:check if agent locator can find this script
+        JSONObject result = new JSONObject();
+
 		try {
 			String[] params = {corpusLocation, dictionaryLocation, documentsLocation, modelLocation}; 
-			String[] result = AsyncPythonHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
-		System.out.println(result);
+			String[] prints = AsyncPythonHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
+		System.out.println(prints[0]);
+		System.out.println("err:" + prints[1]);
+
+		result.put("success", 1);
+		System.out.print("read parameter result: ");
+		System.out.println(result.toString());
 		} catch (Exception e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-        JSONObject result = new JSONObject();
-		JSONArray resArr = new JSONArray();
-		try {
-			result.put("success", 1);
-			System.out.print("read parameter result: ");
-			System.out.println(result.toString());
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
 		return result;
 
 	}

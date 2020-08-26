@@ -20,49 +20,52 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-
+/***
+ * Agent that reads content from alignment kg(rdf format), for visualization purpose
+ *
+ */
 @WebServlet(urlPatterns = { "/alignment" })
 public class AlignmentReader extends JPSHttpServlet {
     
-	private static final long serialVersionUID = -2354646810093235777L;
-    
+    /**
+     * 
+     */
+	private static final long serialVersionUID = -4365515995166685342L;
+
+
 	@Override
     protected void setLogger() {
-        logger = LoggerFactory.getLogger(DataLinker.class);
+        logger = LoggerFactory.getLogger(AlignmentReader.class);
     }
 	
-	Logger logger = LoggerFactory.getLogger(DataLinker.class);
 	
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("Datalinker agent");
-
+		System.out.println("AlignmentReader agent");
 		JSONObject jo = requestParams;
-		// read alignment
 		String afileIRI = "";
+		Double threshold = 0.0;
+		//read parameters
 		try {
 			//Use this for stageB
-			//afileIRI = jo.getString("alignmentIRI");
+			afileIRI = jo.getString("alignmentIRI");
+			threshold = jo.getDouble("threshold");
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//TODO: add this to config
-	    String threshold = "0.6";
-	    String stubIRI = "http://localhost:3000/a.owl";
+	    //String threshold = "0.6";
+	    //String stubIRI = "http://localhost:3000/a.owl";
 		System.out.println("reading alignment from  " + afileIRI);
-		//get a list of matched IRIs where 
-		//add to destination
-		JSONArray instances2Equal;
+	 	JSONArray instances2Equal;
 
 		JSONObject result = new JSONObject();
 		try {
-			instances2Equal = AlignmentHelper.readAlignmentFileAsJSONArray(stubIRI, threshold);
+			//get a list of matched IRIs where
+			instances2Equal = AlignmentIOHelper.readAlignmentFileAsJSONArray(afileIRI, threshold);
 			result.put("alignmentlist", instances2Equal);
 			System.out.print("read parameter result: ");
 			System.out.println(result.toString());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;

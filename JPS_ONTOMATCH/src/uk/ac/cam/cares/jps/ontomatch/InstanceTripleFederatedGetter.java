@@ -21,11 +21,17 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-@WebServlet(urlPatterns = { "/federatedQuery" })
-public class FederatedQuery extends JPSHttpServlet{
+/***
+ * Agent for Visualization/View only. Get related triples to an entity across JPS and DBP.
+ * (Might be made into more general case in future)
+ */
+@WebServlet(urlPatterns = { "/federatedAttrs" })
+public class InstanceTripleFederatedGetter extends JPSHttpServlet{
 
-	private static final long serialVersionUID = -2354646810093235777L;
-    private String serviceIRI = null;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 7607478466081757161L;
 	@Override
     protected void setLogger() {
         logger = LoggerFactory.getLogger(DataLinker.class);
