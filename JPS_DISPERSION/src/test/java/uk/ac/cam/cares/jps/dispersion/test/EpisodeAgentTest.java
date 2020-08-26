@@ -277,6 +277,7 @@ public class EpisodeAgentTest extends TestCase {
         Method validateInput = ea.getClass().getDeclaredMethod("validateInput",JSONObject.class);
         validateInput.setAccessible(true);
 
+        // create a complete set of inputs that should pass the test
         String keyUppercorner = "uppercorner";
         String keyLowercorner = "lowercorner";
         String keyUpperx = "upperx";
@@ -396,6 +397,7 @@ public class EpisodeAgentTest extends TestCase {
         low.put(keyLowery, ymin);
         assertTrue(checkInput(ea,validateInput,jo));
 
+        //empty srsname is ok
         String keySrsname = "srsname";
         scope.put(keySrsname,"");
         assertTrue(checkInput(ea,validateInput,jo));
@@ -407,15 +409,17 @@ public class EpisodeAgentTest extends TestCase {
         assertTrue(checkInput(ea,validateInput,jo));
     }
 
-    private Boolean checkInput(EpisodeAgent ea,Method validateInput,JSONObject jo) throws IllegalAccessException, IllegalArgumentException {
+    private boolean checkInput(EpisodeAgent ea,Method validateInput,JSONObject jo) throws IllegalAccessException, IllegalArgumentException {
 //      This method is used in the testvalidateInput method, returns true if all inputs are present
+        boolean valid=false;
         try {
             validateInput.invoke(ea, jo);
-            return true;
+            valid=true;//this is not the best way to do this because this is not the output of the method
         } catch (InvocationTargetException e) {
             // this is a workaround as the JPS servlet will give a runtime exception
             assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
-            return false;
+            valid=false;
         }
+        return valid;
     }
 }

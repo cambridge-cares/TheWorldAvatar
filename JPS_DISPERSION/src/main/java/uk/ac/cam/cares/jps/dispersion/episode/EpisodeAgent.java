@@ -23,11 +23,14 @@ import java.util.zip.ZipOutputStream;
 import javax.servlet.ServletException;
 import javax.ws.rs.BadRequestException;
 
+import org.cts.CRSFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.RegistryManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -348,6 +351,8 @@ public class EpisodeAgent extends DispersionModellingAgent {
     }
 
     private boolean validateInput(JSONObject input) {
+        // Validate inputs for the processRequestParameters method
+        // Returns true if complete set of inputs are present and false if not
         boolean valid = false;
             try {
                 JSONArray stnIRI=input.getJSONArray("stationiri");
@@ -368,25 +373,29 @@ public class EpisodeAgent extends DispersionModellingAgent {
                 String upy = region.getJSONObject("uppercorner").get("uppery").toString();
 
                 // check if provided coordinates are valid doubles
-                double proclowx = Double.valueOf(lowx);
-                double procupx = Double.valueOf(upx);
-                double proclowy = Double.valueOf(lowy);
-                double procupy = Double.valueOf(upy);
+                Double.valueOf(lowx);
+                Double.valueOf(upx);
+                Double.valueOf(lowy);
+                Double.valueOf(upy);
 
+                // city IRI
                 String cityIRI = input.getString("city");
                 new URL(cityIRI).toURI();
+                // Agent IRI
                 String agent=input.getString("agent");
                 new URL(agent).toURI();
+                // Air station IRI
                 String airstn=input.getString("airStationIRI");
                 new URL(airstn).toURI();
+                //CRS name
                 String sourceCRSName = region.optString("srsname"); 
                 if ((sourceCRSName == null) || sourceCRSName.isEmpty()) {
                     sourceCRSName = CRSTransformer.EPSG_4326; 
                 }
-                // the following two lines are used to verify that the CRS name is valid
-                // todo: create a function to validate coordinate system
-                double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
-                CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,center);
+                CRSFactory crsFact = new CRSFactory();
+                RegistryManager registryManager = crsFact.getRegistryManager();
+                registryManager.addRegistry(new EPSGRegistry());
+                crsFact.getCRS(sourceCRSName);
                 valid = true;
             } catch (Exception e) {
                 throw new BadRequestException(e);
