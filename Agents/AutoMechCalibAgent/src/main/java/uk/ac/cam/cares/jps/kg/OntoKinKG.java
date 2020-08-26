@@ -104,7 +104,22 @@ public class OntoKinKG extends RepositoryManager {
 		}
 		
 		return queriedReactionList;
-	} 
+	}
+	
+	public String queryMechanismIRI(String mechanismOwl) throws AutoMechCalibAgentException {
+		if(mechanismOwl.trim().startsWith("<")){
+			mechanismOwl = mechanismOwl.substring(1);
+		}
+		if(mechanismOwl.trim().endsWith(">")){
+			mechanismOwl = mechanismOwl.substring(0,mechanismOwl.length()-1);
+		}
+		String queriedMechanismIRI = "";
+		String queryString = formMechanismIRIQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismOwl);
+		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+		queriedMechanismIRI = testResults.get(1).get(0);
+		return queriedMechanismIRI;
+	}
 	
 	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws AutoMechCalibAgentException {
 		String queryString = prefixBindingOntoKin;
@@ -175,6 +190,18 @@ public class OntoKinKG extends RepositoryManager {
 		queryString = queryString.concat("    ").concat("?arrhCoef ontokin:hasPreExponentialFactor ?preE . \n");
 		queryString = queryString.concat("    ").concat("?arrhCoef ontokin:hasPreExponentialFactorUnits ?preEU \n");
 		queryString = queryString.concat("    ").concat("    BIND(CONCAT(?preE, \"_\", ?preEU) AS ?PreExpFactor) \n");
+		queryString = queryString.concat("}");
+		return queryString;
+	}
+	
+	private String formMechanismIRIQuery(String prefixBindingOntoKin, String mechanismOwl) throws AutoMechCalibAgentException {
+		String queryString = prefixBindingOntoKin;
+		queryString = queryString.concat(RDF);
+		queryString = queryString.concat(DC);
+		queryString = queryString.concat("SELECT ?MechanismIRI \n");
+		queryString = queryString.concat("WHERE { \n");
+		queryString = queryString.concat("    ").concat("?MechanismIRI rdf:type ontokin:ReactionMechanism . \n");
+		queryString = queryString.concat("    ").concat("FILTER regex(str(?MechanismIRI), \"").concat(mechanismOwl).concat("\", \"i\") \n");
 		queryString = queryString.concat("}");
 		return queryString;
 	}
