@@ -164,15 +164,13 @@ public class Utils{
 				if(line.contains(Status.STATUS_JOB_COMPLETED.getName())){
 					statusFile.close();
 					if(isJobPostProcessed(jobFolder, statusFilePath)){
-						moveToComplete(jobFolder, slurmJobProperty);
+						moveToCompletedJobsFolder(jobFolder, slurmJobProperty);
 					}
 					return true;
 				}
 				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
 					statusFile.close();
-					if(isJobPostProcessed(jobFolder, statusFilePath)){
-						moveToComplete(jobFolder, slurmJobProperty);
-					}
+					moveToFailedJobsFolder(jobFolder, slurmJobProperty);
 					return true;
 				}
 			}
@@ -545,7 +543,7 @@ public class Utils{
 	 * @param jobFolder the folder that contains a job
 	 * @param slurmJobProperty
 	 */
-	public static void moveToComplete(File jobFolder, SlurmJobProperty slurmJobProperty) {
+	public static void moveToCompletedJobsFolder(File jobFolder, SlurmJobProperty slurmJobProperty) {
 		try {
 			File destDir = getCompletedJobsDirectory(jobFolder, slurmJobProperty);
 			if(destDir!=null){
@@ -568,9 +566,48 @@ public class Utils{
 	public static File getCompletedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
 		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
 		String completedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
-		workspace = new File(completedJobsDirectory);
-		if(workspace.mkdirs()){
-			return workspace;
+		File jobFolderInCompletedJobs = new File(completedJobsDirectory);
+		jobFolderInCompletedJobs.mkdirs();
+		if(jobFolderInCompletedJobs.exists()){
+			return jobFolderInCompletedJobs;
+		}
+		return null;
+	}
+	
+	/**
+	 * Moves the provided job folder to the folder that contains failed<br>
+	 * jobs of the agent.
+	 * 
+	 * @param jobFolder the folder that contains a job
+	 * @param slurmJobProperty
+	 */
+	public static void moveToFailedJobsFolder(File jobFolder, SlurmJobProperty slurmJobProperty) {
+		try {
+			File destDir = getFailedJobsDirectory(jobFolder, slurmJobProperty);
+			if(destDir!=null){
+				FileUtils.copyDirectory(jobFolder, destDir);
+				FileUtils.deleteDirectory(jobFolder);
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns the folder where failed jobs are saved.
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static File getFailedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		String failedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
+		File jobFolderInFailedJobs = new File(failedJobsDirectory);
+		jobFolderInFailedJobs.mkdirs();
+		if(jobFolderInFailedJobs.exists()){
+			return jobFolderInFailedJobs;
 		}
 		return null;
 	}

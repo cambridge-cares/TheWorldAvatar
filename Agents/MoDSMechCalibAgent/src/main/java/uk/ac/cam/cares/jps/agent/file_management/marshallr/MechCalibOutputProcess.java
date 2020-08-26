@@ -195,21 +195,45 @@ public class MechCalibOutputProcess {
 			BufferedReader br = new BufferedReader(new FileReader(calibSummary));
 			// read the header to get the list of rxns
 			String[] header = br.readLine().split(",");
-			// get the last run of optimisation
+			// get the column index of First/Last/Best and SumOfSquares
+			int flbIdx = 1;
+			int ofIdx = 3;
+			for (int i = 0; i < header.length; i++) {
+				if (header[i].toLowerCase().contains("first/last/best")) {
+					flbIdx = i;
+				} else if (header[i].toLowerCase().contains("sumofsquares")) {
+					ofIdx = i;
+				}
+			}
+			// get the best run of optimisation
 			String line = "";
-			String lastline = "";
+			String[] currentBest = new String[header.length];
+			String bestline = "";
+			boolean init = true;
 			while ((line = br.readLine()) != null) {
-				lastline = line;
+				String[] dataLine = line.split(",");
+				if (dataLine[flbIdx].contains("2")) {
+					if (init) {
+						bestline = line;
+						init = false;
+						currentBest = bestline.split(",");
+					} else {
+						if (Double.parseDouble(currentBest[ofIdx]) > Double.parseDouble(dataLine[ofIdx])) {
+							bestline = line;
+							currentBest = bestline.split(",");
+						}
+					}
+				}
 			}
 			br.close();
-			String[] lastRun = lastline.split(",");
 			// read the multipliers
 			for (int i = 0; i < header.length; i++) {
 				if (header[i].contains(Property.MODEL_KINETICS.getPropertyName())) {
-					multipliers.put(header[i].substring(header[i].lastIndexOf("_")+1), lastRun[i]);
+					multipliers.put(header[i].substring(header[i].lastIndexOf("_")+1), currentBest[i]);
 				}
 			}
 		}
+		
 		// query the rate params
 		OntoKinKG ontokinkg = new OntoKinKG();
 		LinkedHashMap<String, String> orig = ontokinkg.queryRxnPreExpFactor(mechanismIRI, reactionIRIList);

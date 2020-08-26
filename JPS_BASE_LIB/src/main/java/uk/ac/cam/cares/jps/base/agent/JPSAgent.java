@@ -11,14 +11,14 @@ public class JPSAgent extends JPSHttpServlet implements JPSAgentInterface {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
-            validateInput(requestParams);
-            return requestParams;
+        JSONObject responseParams = new JSONObject();
+        return responseParams;
     }
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-        validateInput(requestParams);
-        return requestParams;
+        JSONObject responseParams = new JSONObject();
+        return responseParams;
     }
 
     @Override

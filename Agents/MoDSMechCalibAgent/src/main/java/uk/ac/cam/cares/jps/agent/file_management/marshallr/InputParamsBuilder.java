@@ -302,19 +302,12 @@ public class InputParamsBuilder {
 		propertyGroup.appendChild(getProperty(doc, "MechFile", mechFile));
 		propertyGroup.appendChild(getProperty(doc, "ThermFile", ""));
 		
-		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "ReactionRateIndices", "dimension", "dimensionless", "unit", "-")));
-		valueList = new ArrayList<String>();
-		for (int i = 0; i < numOfReactions; i += 1) {
-			valueList.add(Integer.toString(i+1));
-		}
-		propertyGroup.appendChild(getProperty(doc, attribs, valueList));
-		
-		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "ReactionRateMultipliers", "dimension", "dimensionless", "unit", "-")));
+		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "ReactionRate_A_Modifiers", "dimension", "dimensionless", "unit", "-")));
 		valueList = new ArrayList<String>();
 		for (int i = 0; i < numOfReactions; i += 1) {
 			valueList.add("1.0");
 		}
-		propertyGroup.appendChild(getProperty(doc, attribs, valueList));
+		propertyGroup.appendChild(getPropertyWithValueIndex(doc, attribs, generateValueWithIndex(valueList)));
 		
 		propertyGroup.appendChild(getProperty(doc, "SurfaceFile", ""));
 		propertyGroup.appendChild(getProperty(doc, "TransportFile", ""));

@@ -68,4 +68,12 @@ public interface IModel {
 	 * @throws MoDSMechCalibAgentException
 	 */
 	public void setUpMoDS() throws IOException, MoDSMechCalibAgentException;
+	
+	/**
+	 * Set up the simulation script required for the model to execute. 
+	 * 
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	public void placeScript() throws IOException, MoDSMechCalibAgentException;
 }
