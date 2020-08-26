@@ -13,10 +13,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cmclinnovations.jps.agent.configuration.DFTAgentProperty;
 import com.cmclinnovations.jps.agent.json.parser.JSonRequestParser;
 
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
 
 public class Utils {
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);	
@@ -209,8 +209,8 @@ public class Utils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static String getUniqueSpeciesIRI(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
-		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getJsonInputFileName()).concat(slurmJobProperty.getJsonFileExtension()));
+	public static String getUniqueSpeciesIRI(File jobFolder, DFTAgentProperty dftAgentProperty) throws IOException{
+		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(dftAgentProperty.getJsonInputFileName()).concat(dftAgentProperty.getJsonFileExtension()));
 		String fileContent = getFileContent(br);
 		return JSonRequestParser.getSpeciesIRI(fileContent);
 	}
@@ -223,8 +223,8 @@ public class Utils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean isInvokingThermoAgentRequired(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
-		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getJsonInputFileName()).concat(slurmJobProperty.getJsonFileExtension()));
+	public static boolean isInvokingThermoAgentRequired(File jobFolder, DFTAgentProperty dftAgentProperty) throws IOException{
+		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(dftAgentProperty.getJsonInputFileName()).concat(dftAgentProperty.getJsonFileExtension()));
 		String fileContent = getFileContent(br);
 		return JSonRequestParser.isInvokingThermoAgentRequired(fileContent);
 	}
@@ -237,8 +237,8 @@ public class Utils {
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean isApplyingThermoUpdateToMechanismRequired(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
-		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getJsonInputFileName()).concat(slurmJobProperty.getJsonFileExtension()));
+	public static boolean isApplyingThermoUpdateToMechanismRequired(File jobFolder, DFTAgentProperty dftAgentProperty) throws IOException{
+		BufferedReader br = openSourceFile(jobFolder.getAbsolutePath().concat(File.separator).concat(dftAgentProperty.getJsonInputFileName()).concat(dftAgentProperty.getJsonFileExtension()));
 		String fileContent = getFileContent(br);
 		return JSonRequestParser.isApplyingThermoUpdateToMechanismRequired(fileContent);
 	}

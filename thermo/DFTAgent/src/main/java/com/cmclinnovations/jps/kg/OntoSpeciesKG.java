@@ -12,6 +12,8 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
+
+import com.cmclinnovations.jps.agent.configuration.DFTAgentProperty;
 import com.cmclinnovations.jps.agent.quantum.calculation.DFTAgent;
 import com.cmclinnovations.jps.agent.quantum.calculation.DFTAgentException;
 import com.cmclinnovations.jps.agent.quantum.calculation.Property;
@@ -58,14 +60,14 @@ public class OntoSpeciesKG{
 	 * @return
 	 * @throws DFTAgentException
 	 */
-	public String querySpeciesGeometry(String speciesIRI, SlurmJobProperty slurmJobProperty) throws DFTAgentException{
+	public String querySpeciesGeometry(String speciesIRI, DFTAgentProperty dftAgentProperty) throws DFTAgentException{
 		String speciesGeometry = null;
 		if(!speciesIRI.trim().startsWith("<") && !speciesIRI.trim().endsWith(">")){
 			speciesIRI = "<".concat(speciesIRI).concat(">");
 		}
 		String queryString = formGeometryQuery(Property.PREFIX_BINDING_ONTOSPECIES.getPropertyName(), speciesIRI);
 		System.out.println("QueryString:"+queryString+"\n");
-		List<String> testResults = queryRepository(slurmJobProperty.getRdf4jServerUrl(), Property.RDF4J_ONTOSPECIES_REPOSITORY_ID.getPropertyName(), queryString);
+		List<String> testResults = queryRepository(dftAgentProperty.getRdf4jServerURL(), Property.RDF4J_ONTOSPECIES_REPOSITORY_ID.getPropertyName(), queryString);
 		for(String testResult: testResults){
 //			System.out.println("Test Result:\n"+testResult);
 			speciesGeometry = testResult;
