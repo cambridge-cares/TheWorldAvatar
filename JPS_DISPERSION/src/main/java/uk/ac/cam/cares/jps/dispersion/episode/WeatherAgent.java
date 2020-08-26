@@ -23,6 +23,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.cts.CRSFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.RegistryManager;
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -141,38 +144,41 @@ public class WeatherAgent extends JPSHttpServlet {
 			return response;
 		}
 
-	private boolean validateInput(JSONObject input) {
-		boolean valid = false;
-		try {
-			String cityiri=input.get("city").toString();
-			
-			// check whether it's IRI
-			new URL(cityiri).toURI();
-            
-			JSONObject region = input.getJSONObject("region");
-			String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
-			String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
-			String upx = region.getJSONObject("uppercorner").get("upperx").toString();
-			String upy = region.getJSONObject("uppercorner").get("uppery").toString();
+    private boolean validateInput(JSONObject input) {
+        boolean valid = false;
+        try {
+            String cityiri=input.get("city").toString();
 
-			// check if provided coordinates are valid doubles
-			double proclowx = Double.valueOf(lowx);
-			double procupx = Double.valueOf(upx);
-			double proclowy = Double.valueOf(lowy);
-			double procupy = Double.valueOf(upy);
+            // check whether it's IRI
+            new URL(cityiri).toURI();
 
-			// validate coordinates
-			String sourceCRSName = region.optString("srsname");
-		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { 
-		    	sourceCRSName = CRSTransformer.EPSG_4326; 
-		    }
-		    
-			double[] center = CalculationUtils.calculateCenterPoint(procupx, procupy, proclowx, proclowy);
-			CRSTransformer.transform(sourceCRSName,CRSTransformer.EPSG_4326,center);
-			valid = true;
-		} catch (Exception e) {
-			throw new BadRequestException(e);
-		}
+            JSONObject region = input.getJSONObject("region");
+            String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
+            String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
+            String upx = region.getJSONObject("uppercorner").get("upperx").toString();
+            String upy = region.getJSONObject("uppercorner").get("uppery").toString();
+
+            // check if provided coordinates are valid doubles
+            Double.valueOf(lowx);
+            Double.valueOf(upx);
+            Double.valueOf(lowy);
+            Double.valueOf(upy);
+
+            // validate coordinates
+            String sourceCRSName = region.optString("srsname");
+            if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { 
+                sourceCRSName = CRSTransformer.EPSG_4326; 
+            }
+
+            CRSFactory crsFact = new CRSFactory();
+            RegistryManager registryManager = crsFact.getRegistryManager();
+            registryManager.addRegistry(new EPSGRegistry());
+            crsFact.getCRS(sourceCRSName);
+
+            valid = true;
+        } catch (Exception e) {
+            throw new BadRequestException(e);
+        }
 
 		return valid;
 	}
