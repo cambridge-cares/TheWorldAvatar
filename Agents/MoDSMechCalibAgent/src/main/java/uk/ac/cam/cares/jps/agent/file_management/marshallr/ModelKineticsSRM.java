@@ -361,6 +361,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			active_subtype = active_subtype.concat(" subtype_"+"rxn_"+i);
 		}
 		LinkedHashMap<String, LinkedHashMap<String, String>> algorithms = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+		LinkedHashMap<String, String> algoEvaluation = new LinkedHashMap<String, String>();
+		algoEvaluation.put("algorithm_type", "Run");
+		algoEvaluation.put("n_run", "0");
+		algoEvaluation.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		LinkedHashMap<String, String> algoSampling = new LinkedHashMap<String, String>();
 		algoSampling.put("optimisable_param_subtypes", active_subtype.substring(1));
 		algoSampling.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
@@ -388,6 +392,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("rho_factor", "0.5");
 		algoCalibration.put("epsilon", "0.001");
 		algoCalibration.put("previous_algorithm", "SamplingAlg");
+		algorithms.put("Evaluation", algoEvaluation);
 		algorithms.put("SamplingAlg", algoSampling);
 		algorithms.put("CalibrationAlg", algoCalibration);
 		collectAlgorithms(algorithms);
