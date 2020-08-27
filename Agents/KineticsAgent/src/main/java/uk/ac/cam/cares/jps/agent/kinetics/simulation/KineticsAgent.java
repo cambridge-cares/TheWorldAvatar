@@ -1,7 +1,10 @@
 package uk.ac.cam.cares.jps.agent.kinetics.simulation;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -30,6 +33,7 @@ import uk.ac.cam.cares.jps.base.slurm.job.PostProcessing;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /**
  * Kinetics Agent developed for setting-up and running kinetics simulation jobs.
@@ -105,8 +109,8 @@ public class KineticsAgent extends JPSAgent{
 	 * @throws KineticsAgentException
 	 */
 	public void init() throws ServletException{
-        logger.info("---------- Quantum Calculation Agent has started ----------");
-        System.out.println("---------- Quantum Calculation Agent has started ----------");
+        logger.info("---------- Kinetics Simulation Agent has started ----------");
+        System.out.println("---------- Kinetics Simulation Agent has started ----------");
         ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
         KineticsAgent kineticsAgent = new KineticsAgent();
 		// initialising classes to read properties from the kinetics-agent.properites file
@@ -125,8 +129,8 @@ public class KineticsAgent extends JPSAgent{
 			}
 		}, kineticsAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
 				kineticsAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- Quantum jobs are being monitored  ----------");
-        System.out.println("---------- Quantum jobs are being monitored  ----------");
+		logger.info("---------- Kinetics Simulation jobs are being monitored  ----------");
+        System.out.println("---------- Kinetics Simulation jobs are being monitored  ----------");
        	
 	}
 	
@@ -183,22 +187,17 @@ public class KineticsAgent extends JPSAgent{
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
     	System.out.println("A request has been received..............................");
-		if(path.equals(KineticsAgent.JOB_REQUEST_PATH)) {
-			try{
-				validateInput(requestParams);
-			}catch(BadRequestException e){
-				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
-			}
-			try{
+    	if(path.equals(KineticsAgent.JOB_REQUEST_PATH)) {
+        	System.out.println("In path..............................:"+path);
+        	System.out.println("json string:"+requestParams.toString());
+    		try{
 			   return setUpJob(requestParams.toString());
 			}catch(SlurmJobException | IOException | KineticsAgentException e){
 				throw new JPSRuntimeException(e.getMessage());
 			}
-		} 
-//		else if (path.equals(KineticsAgent.JOB_OUTPUT_REQUEST_PATH)){
-//			return simulationResults();
-//		} 
-		else if (path.equals(KineticsAgent.JOB_STATISTICS_PATH)) {
+		} else if (path.equals(KineticsAgent.JOB_OUTPUT_REQUEST_PATH)){
+			return getSimulationResults(requestParams);
+		} else if (path.equals(KineticsAgent.JOB_STATISTICS_PATH)) {
 			try {
 				return produceStatistics(requestParams.toString());
 			} catch (IOException | KineticsAgentException e) {
@@ -223,13 +222,120 @@ public class KineticsAgent extends JPSAgent{
     }
     
     /**
+     * Checks the status of a job and returns results if it is finished and<br>
+     * post-processing is successfully completed. If the job has terminated<br>
+     * with an error or failed, then error termination message is sent.
+     * 
+     * The JSON input for this request has the following format:
+     * {"jobId": "login-skylake.hpc.cam.ac.uk_117804308649998"}
+     * 
+     * @param requestParams
+     * @return
+     */
+    private JSONObject getSimulationResults(JSONObject requestParams){
+    	JSONObject json = new JSONObject();
+    	String jobId = getJobId(requestParams);
+    	if(jobId == null){
+    		return json.put("message", "jobId is not present in the request parameters.");
+    	}
+    	initAgentProperty();
+    	JSONObject message = checkJobInWorkspace(json, jobId);
+		if(message != null){
+			return message;
+		}
+		JSONObject result = checkJobInCompletedJobs(json, jobId);
+		if(result != null){
+			return result;
+		}
+		message = checkJobInFailedJobs(json, jobId);
+		if(message != null){
+			return message;
+		}		
+		return json.put("message", "The job no longer exists in the system.");
+    }
+    
+    /**
+     * Checks the presence of the requested job in the workspace.<br>
+     * If the job is available, it returns that the job is currently running.
+     * 
+     * @param json
+     * @param jobId
+     * @return
+     */
+	private JSONObject checkJobInWorkspace(JSONObject json, String jobId) {
+		// The path to the set-up and running jobs folder.
+		workspace = jobSubmission.getWorkspaceDirectory();
+		if (workspace.isDirectory()) {
+			File[] jobFolders = workspace.listFiles();
+			for (File jobFolder : jobFolders) {
+				if (jobFolder.getName().equals(jobId)) {
+					return json.put("message", "The job is being executed.");
+				}
+			}
+		}
+		return null;
+	}
+
+    /**
+     * Checks the presence of the requested job in the completed jobs.<br>
+     * If the job is available, it returns the result.
+     * 
+     * @param json
+     * @param jobId
+     * @return
+     */
+	private JSONObject checkJobInCompletedJobs(JSONObject json, String jobId) {
+    	// The path to the completed jobs folder.
+		String completedJobsPath = workspace.getParent().concat(File.separator)
+				.concat(kineticsAgentProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName());
+		File completedJobsFolder = new File(completedJobsPath);
+		if (completedJobsFolder.isDirectory()) {
+			File[] jobFolders = completedJobsFolder.listFiles();
+			for (File jobFolder : jobFolders) {
+				if (jobFolder.getName().equals(jobId)) {
+					try {
+						String inputJsonPath = completedJobsPath.concat(File.separator).concat(kineticsAgentProperty.getJsonInputFileName()).concat(kineticsAgentProperty.getJsonFileExtension());
+						InputStream inputStream = new FileInputStream(inputJsonPath);
+						return new JSONObject(FileUtil.inputStreamToString(inputStream));
+					} catch (FileNotFoundException e) {
+						return json.put("message", "The job has been completed, but the file that contains results is not found."); 
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+    /**
+     * Checks the presence of the requested job in the failed jobs.<br>
+     * If the job is available, it returns a message saying that<br>
+     * job has failed.
+     * 
+     * @param json
+     * @param jobId
+     * @return
+     */
+	private JSONObject checkJobInFailedJobs(JSONObject json, String jobId) {
+		// The path to the failed jobs folder.
+		String failedJobsPath = workspace.getParent().concat(File.separator)
+				.concat(kineticsAgentProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName());
+		File failedJobsFolder = new File(failedJobsPath);
+		File[] jobFolders = failedJobsFolder.listFiles();
+		for (File jobFolder : jobFolders) {
+			if (jobFolder.getName().equals(jobId)) {
+				return json.put("message", "The job terminated with an error. Please check the failed jobs folder.");
+			}
+		}
+		return null;
+	}
+    
+    /**
      * Monitors already set up jobs.
      * 
      * @throws SlurmJobException
      */
 	private void monitorJobs() throws SlurmJobException{
 		//Configures all properties required for setting-up and running a Slurm job. 
-		initAgentProperty();
 		jobSubmission.monitorJobs();
 		processOutputs();
 	}
@@ -241,7 +347,6 @@ public class KineticsAgent extends JPSAgent{
 	 * 
 	 */
 	public void processOutputs() {
-		initAgentProperty();
 		workspace = jobSubmission.getWorkspaceDirectory();
 		try {
 			if (workspace.isDirectory()) {
@@ -285,12 +390,12 @@ public class KineticsAgent extends JPSAgent{
 	 * @throws IOException
 	 * @throws KineticsAgentException
 	 */
-	public JSONObject setUpJob(String jsonString) throws IOException, KineticsAgentException, SlurmJobException{
-        	String message = setUpJobOnAgentMachine(jsonString);
-			JSONObject obj = new JSONObject();
-			obj.put("jobId", message);
-        	return obj;
-    }
+	public JSONObject setUpJob(String jsonString) throws IOException, KineticsAgentException, SlurmJobException {
+		String message = setUpJobOnAgentMachine(jsonString);
+		JSONObject obj = new JSONObject();
+		obj.put("jobId", message);
+		return obj;
+	}
 	
 	/**
 	 * Sets up the quantum job for the current input.
@@ -336,5 +441,19 @@ public class KineticsAgent extends JPSAgent{
 	 */
 	public String getNewJobFolderName(String hpcAddress, long timeStamp){
 		return hpcAddress.concat("_").concat("" + timeStamp);
+	}
+	
+	/**
+	 * Returns the job id.
+	 * 
+	 * @param jsonObject
+	 * @return
+	 */
+	public String getJobId(JSONObject jsonObject){
+		if(jsonObject.has("jobId")){
+			return jsonObject.get("jobId").toString();
+		}else{
+			return null;
+		}
 	}
 }
