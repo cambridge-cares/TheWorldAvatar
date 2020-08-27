@@ -58,6 +58,13 @@ public class KineticsAgentProperty {
 	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
 	
+        /**
+         * Location of python scripts (should contain 'agkin', 'simulation_templates', and 'venv' directories).
+         */
+        @Value("${agent.scripts.location}")
+        private String agentScriptsLocation;
+        
+     
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
 	}
@@ -125,5 +132,14 @@ public class KineticsAgentProperty {
 	public int getAgentPeriodicActionInterval() {
 		return agentPeriodicActionInterval;
 	}
+        
+        /**
+         * Returns the Location of python scripts.
+         * 
+         * @return python scripts directory
+         */
+        public String getAgentScriptsLocation() {
+            return agentScriptsLocation;
+        }
 }
 
