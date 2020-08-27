@@ -17,8 +17,6 @@ var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
-// var getUKPPAttrList =require("./routes/getUKPPAttrList");
-// var ppMap = require('./routes/mapPowerPlant');
 var UKontoTwinMap = require('./routes/ontoTwinUK');
 
 var app = express();
