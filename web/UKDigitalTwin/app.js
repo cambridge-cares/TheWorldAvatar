@@ -17,7 +17,7 @@ var request =require("request");
 var bodyParser = require('body-parser');
 var util = require('util');
 var config = require("./config.js");
- var getUKPPAttrList =require("./routes/getUKPPAttrList");
+// var getUKPPAttrList =require("./routes/getUKPPAttrList");
 // var ppMap = require('./routes/mapPowerPlant');
 var UKontoTwinMap = require('./routes/ontoTwinUK');
 
@@ -45,11 +45,11 @@ function setHeader(res, mpath){
 app.use(bodyParser.text({ type: 'application/json' }));
 
 /*serve static file***/
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'))); // declare the application of middleware
 app.use(express.static(path.join(__dirname, 'ROOT'), {'setHeaders': setHeader}));
 
 /*posting to dataObserve to get orginal data & register for future data change*/
-app.use("/getUKPPAttrList", getUKPPAttrList);
+// app.use("/getUKPPAttrList", getUKPPAttrList);
 app.use('/ontoTwinUK', UKontoTwinMap);
 // app.use('/ppmap', ppMap);
 
