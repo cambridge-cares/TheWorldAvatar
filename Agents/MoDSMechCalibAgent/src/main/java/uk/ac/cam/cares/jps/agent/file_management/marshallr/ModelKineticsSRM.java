@@ -51,7 +51,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private List<String> caseNames = new ArrayList<>();
 	private String ignDelayMethod = "2";
 	private String ignDelaySpecies = "AR";
-	
+	private String numOfSobolPoints = "1000";
+
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
 	}
@@ -66,6 +67,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setIgnDelaySpecies(String ignDelaySpecies) {
 		this.ignDelaySpecies = ignDelaySpecies;
+	}
+	
+	public String getNumOfSobolPoints() {
+		return numOfSobolPoints;
+	}
+
+	public void setNumOfSobolPoints(String numOfSobolPoints) {
+		this.numOfSobolPoints = numOfSobolPoints;
 	}
 	
 	/**
@@ -245,6 +254,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setIgnDelaySpecies(species);
 		}
 		
+		// set up the sobol points option that will be used for generating MoDS_inputs.xml file
+		String numSobol = JSonRequestParser.getNumOfSobolPoints(otherOptions);
+		if (numSobol != null && !numSobol.isEmpty()) {
+			setNumOfSobolPoints(numSobol);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -373,7 +388,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoSampling.put("objective_function", "SumOfSquares");
 		algoSampling.put("output_by_case", "false");
 		algoSampling.put("output_values", "true");
-		algoSampling.put("n_points", "1000");
+		algoSampling.put("n_points", getNumOfSobolPoints());
 		algoSampling.put("seed", "1");
 		algoSampling.put("output_interval", "10");
 		algoSampling.put("previous_algorithm", "Initial");
