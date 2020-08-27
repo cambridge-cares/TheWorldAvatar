@@ -3,6 +3,8 @@ package uk.ac.cam.cares.jps.base.config;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -41,12 +43,11 @@ public class KeyValueMap {
 	 */
 	private void init() {
 		
-		String path = AgentLocator.getJPSBaseDirectory();
 		
 		boolean runningForTest = AgentLocator.isJPSRunningForTest();
 		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		try {
-			loadProperties(path + "/conf/jps.properties");
+			loadProperties("/jps.properties");
 		}catch (FileNotFoundException exc) {
 			JPSBaseLogger.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
@@ -59,7 +60,7 @@ public class KeyValueMap {
 		if (runningForTest)  {
 			try {
 				// if started on local server then overwrite values from jps.properties
-				loadProperties(path + "/conf/jpstest.properties");
+				loadProperties("/jpstest.properties");
 			}catch (FileNotFoundException exc) {
 				JPSBaseLogger.error(this, exc);
 				throw new JPSRuntimeException(exc.getMessage(), exc);
@@ -73,9 +74,11 @@ public class KeyValueMap {
 	    
 		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
 		
-		FileInputStream inputStream = new FileInputStream(propertyFile);
+		InputStream fin=null;
 		Properties props = new Properties();
-		props.load(inputStream);	
+		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
+		props = new Properties();
+		props.load(fin); 	
 		
 		Set<String> keys = props.stringPropertyNames();
 		for (String key : keys) {
