@@ -1,10 +1,12 @@
-package uk.ac.cam.cares.jps.agent.kinetics.simulation;
+package uk.ac.cam.cares.jps.agent.kinetics.simulation.test;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import org.junit.Test;
 
+import uk.ac.cam.cares.jps.agent.kinetics.simulation.KineticsAgent;
+import uk.ac.cam.cares.jps.agent.kinetics.simulation.KineticsAgentException;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 
