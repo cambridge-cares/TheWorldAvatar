@@ -188,15 +188,14 @@ public class KineticsAgent extends JPSAgent{
 		String path = request.getServletPath();
     	System.out.println("A request has been received..............................");
     	if(path.equals(KineticsAgent.JOB_REQUEST_PATH)) {
-        	System.out.println("In path..............................:"+path);
-        	System.out.println("json string:"+requestParams.toString());
     		try{
 			   return setUpJob(requestParams.toString());
 			}catch(SlurmJobException | IOException | KineticsAgentException e){
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(KineticsAgent.JOB_OUTPUT_REQUEST_PATH)){
-			return getSimulationResults(requestParams);
+			JSONObject result = getSimulationResults(requestParams);
+			return result;
 		} else if (path.equals(KineticsAgent.JOB_STATISTICS_PATH)) {
 			try {
 				return produceStatistics(requestParams.toString());
@@ -232,37 +231,37 @@ public class KineticsAgent extends JPSAgent{
      * @param requestParams
      * @return
      */
-    private JSONObject getSimulationResults(JSONObject requestParams){
-    	JSONObject json = new JSONObject();
-    	String jobId = getJobId(requestParams);
-    	if(jobId == null){
-    		return json.put("message", "jobId is not present in the request parameters.");
-    	}
-    	initAgentProperty();
-    	JSONObject message = checkJobInWorkspace(json, jobId);
-		if(message != null){
+	private JSONObject getSimulationResults(JSONObject requestParams) {
+		JSONObject json = new JSONObject();
+		String jobId = getJobId(requestParams);
+		if (jobId == null) {
+			return json.put("message", "jobId is not present in the request parameters.");
+		}
+		initAgentProperty();
+		JSONObject message = checkJobInWorkspace(jobId);
+		if (message != null) {
 			return message;
 		}
-		JSONObject result = checkJobInCompletedJobs(json, jobId);
-		if(result != null){
+		JSONObject result = checkJobInCompletedJobs(jobId);
+		if (result != null) {
 			return result;
 		}
-		message = checkJobInFailedJobs(json, jobId);
-		if(message != null){
+		message = checkJobInFailedJobs(jobId);
+		if (message != null) {
 			return message;
-		}		
+		}
 		return json.put("message", "The job no longer exists in the system.");
-    }
+	}
     
     /**
      * Checks the presence of the requested job in the workspace.<br>
      * If the job is available, it returns that the job is currently running.
      * 
      * @param json
-     * @param jobId
      * @return
      */
-	private JSONObject checkJobInWorkspace(JSONObject json, String jobId) {
+	private JSONObject checkJobInWorkspace(String jobId) {
+		JSONObject json = new JSONObject();
 		// The path to the set-up and running jobs folder.
 		workspace = jobSubmission.getWorkspaceDirectory();
 		if (workspace.isDirectory()) {
@@ -281,11 +280,11 @@ public class KineticsAgent extends JPSAgent{
      * If the job is available, it returns the result.
      * 
      * @param json
-     * @param jobId
      * @return
      */
-	private JSONObject checkJobInCompletedJobs(JSONObject json, String jobId) {
-    	// The path to the completed jobs folder.
+	private JSONObject checkJobInCompletedJobs(String jobId) {
+		JSONObject json = new JSONObject();
+		// The path to the completed jobs folder.
 		String completedJobsPath = workspace.getParent().concat(File.separator)
 				.concat(kineticsAgentProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName());
 		File completedJobsFolder = new File(completedJobsPath);
@@ -315,15 +314,19 @@ public class KineticsAgent extends JPSAgent{
      * @param jobId
      * @return
      */
-	private JSONObject checkJobInFailedJobs(JSONObject json, String jobId) {
+	private JSONObject checkJobInFailedJobs(String jobId) {
+		JSONObject json = new JSONObject();
 		// The path to the failed jobs folder.
 		String failedJobsPath = workspace.getParent().concat(File.separator)
 				.concat(kineticsAgentProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName());
 		File failedJobsFolder = new File(failedJobsPath);
-		File[] jobFolders = failedJobsFolder.listFiles();
-		for (File jobFolder : jobFolders) {
-			if (jobFolder.getName().equals(jobId)) {
-				return json.put("message", "The job terminated with an error. Please check the failed jobs folder.");
+		if (failedJobsFolder.isDirectory()) {
+			File[] jobFolders = failedJobsFolder.listFiles();
+			for (File jobFolder : jobFolders) {
+				if (jobFolder.getName().equals(jobId)) {
+					return json.put("message",
+							"The job terminated with an error. Please check the failed jobs folder.");
+				}
 			}
 		}
 		return null;
