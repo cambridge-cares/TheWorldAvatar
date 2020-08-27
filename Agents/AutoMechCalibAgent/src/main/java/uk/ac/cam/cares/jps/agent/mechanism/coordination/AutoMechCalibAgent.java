@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Executors;
@@ -79,9 +80,18 @@ public class AutoMechCalibAgent extends JPSAgent {
 	
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to AutoMechCalib Agent";
+	public static final String NO_PATH_RETURN_AGENT_CALLER = "The job requested by AutoMechCalibAgent is not correctly set";
+	public static final String MULTI_PATH_RETURN_AGENT_CALLER = "The job requested by AutoMechCalibAgent returned more than one response";
 	
 	public static void main(String[] args) throws ServletException, AutoMechCalibAgentException {
-		
+		AutoMechCalibAgent autoMechCalibAgent = new AutoMechCalibAgent();
+		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},\"mods\":{\"ignDelayOption\":{\"method\":\"1\", \"species\":\"AR\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"10\", \"relPerturbation\":\"1e-3\"}}}}";
+		try {
+			autoMechCalibAgent.setUpJob(jsonString);
+		} catch (IOException | SlurmJobException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	/**
@@ -827,8 +837,17 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @throws SlurmJobException
 	 */
 	public String setUpAgentJob(String coordinationFolderPath, String agentPath, String jsonString) throws IOException, AutoMechCalibAgentException, SlurmJobException {
-		String modsJobPath = execute(agentPath, jsonString);
-		if (modsJobPath != null && !modsJobPath.isEmpty()) {
+		String jobFolderMsg = execute(agentPath, jsonString);
+		if (jobFolderMsg != null && !jobFolderMsg.isEmpty()) {
+			JSONObject path = new JSONObject(jobFolderMsg);
+			Iterator<String> keyset = path.keys();
+			if (!keyset.hasNext()) {
+				throw new JPSRuntimeException(NO_PATH_RETURN_AGENT_CALLER);
+			}
+			String modsJobPath = path.getString(keyset.next());
+			if (keyset.hasNext()) {
+				throw new JPSRuntimeException(MULTI_PATH_RETURN_AGENT_CALLER);
+			}
 			if (modsJobPath.endsWith("\\")) {
 				modsJobPath = modsJobPath.substring(0, modsJobPath.lastIndexOf("\\"));
 			}
@@ -841,10 +860,6 @@ public class AutoMechCalibAgent extends JPSAgent {
 			File coorStatus = Utils.getStatusFile(coordinatorFolder);
 			Utils.addJobId(coorStatus.getAbsolutePath(), modsJobFolder.getName());
 			Utils.modifyAgentId(coorStatus.getAbsolutePath(), Utils.getAgentId(modsStatus.getAbsolutePath()));
-			
-//			String destJobPath = localFolderPath.concat(File.separator).concat(srcJobPath.substring(srcJobPath.lastIndexOf("\\")));
-//			Utils.copyFolder(srcJobPath, destJobPath);
-//			// TODO only copy the status file to this folder
 			return Status.JOB_SETUP_SUCCESS_MSG.getName(); 
 		}
 		return null;
