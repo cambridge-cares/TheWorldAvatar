@@ -16,7 +16,7 @@ config.baseUri = "http://www.theworldavatar.com"
 config.crebase = "http://www.theworldavatar.com/damecoolquestion/ontochem"
 config.ontokinbase = "http://www.theworldavatar.com/damecoolquestion/ontokin2"
 
-config.localRDF4j = "http://127.0.0.1:8080/rdf4j-server/repositories/PowerPlant"
+config.localRDF4j = "https://como.ceb.cam.ac.uk/rdf4j-server/repositories/UKPowerPlant"
 
 configDevelop();
 
