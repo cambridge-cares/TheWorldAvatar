@@ -64,15 +64,15 @@ text-align: left;
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
     <img  src="pages/images/cam_lang_negativ1%20NEW_0.png">
     </a>
-       <h1 id="head1">The JPS self growing knowledge graph: Statistics</h1>
+       <h1 id="head1">Knowledge-graph Statistics</h1>
        
 	   <span id="readme-button">?</span>
 		<span id="readme-text">
-		This is the Computational Modelling Group's self growing knowledge graph statistics. It contains information about number of Gaussian calculations in the JPS knowledge graph, number of species, synonims, number of reactions etc. 
+		This is the Computational Modelling Group's JPS knowledge graph statistics. It contains information about number of Gaussian calculations in the JPS knowledge graph, number of species, synonims, number of reactions etc. 
 		
 		<br/>
 		<br/>
-		The JPS self growing knowledge graph is powered by the Resource Description Framework (RDF) .
+		The JPS knowledge graph is powered by the Resource Description Framework (RDF) .
         <br/>
         <br/>
 
@@ -82,7 +82,7 @@ text-align: left;
 <br/>
 </span>
 		
-<p id="description">Explore statistics for the JPS self growing knowledge graph.   </p>
+<p id="description">Explore statistics of the JPS knowledge-graph.   </p>
 
 </div>
 <body class="oneColFixCtr">
@@ -204,7 +204,7 @@ Here is java script for visualization molecules.
       
       
       <td class="noBorder" colspan="6" style="font-size: 20px;">
-        <b>Self growing knowledge graph statistics</b> 
+        <b>Knowledge-graph statistics</b> 
       </td> 
       
       <td class="noBorder" width="150"  height="15"/> 
@@ -514,7 +514,7 @@ var chart = new Chart(ctx, {
       
       
       <td class="noBorder" colspan="6" style="font-size: 20px;">
-        <b>Self growing knowledge graph: OntoKin species and reactions statistics</b> 
+        <b>Knowledge-graph: OntoKin species and reactions statistics</b> 
       </td> 
       
       <td class="noBorder" width="150"  height="15"/> 
