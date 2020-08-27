@@ -68,12 +68,10 @@ flame.inlet.mdot = gas.DP[0]*50*0.01
 
 # First flame: 
 flame.energy_enabled = False
-flame.set_refine_criteria(ratio = 10.0, slope = 1, curve = 1)
+flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
 flame.set_max_jac_age(50, 50)
 flame.set_time_step(5.e-06, [10, 20, 80]) #s
 flame.max_time_step_count = 4000
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
 flame.solve(verbose)
 # Second flame and so on ...: 
 flame.energy_enabled = True
