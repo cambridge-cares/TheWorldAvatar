@@ -243,10 +243,10 @@ public class JobStatistics {
 		startDiv = startDiv.concat("<img id=\"care-banner-img\" src=\"");
 		startDiv = startDiv.concat(resourcePath.concat("images/cam_lang_negativ1%20NEW_0.png\">"));
 		startDiv = startDiv.concat("</a>");
-		startDiv = startDiv.concat("<h1 id=\"title\">DFT Agent</h1>");
+		startDiv = startDiv.concat("<h1 id=\"title\">A JPS Agent</h1>");
 		startDiv = startDiv.concat("<p id=\"description\">");
-		startDiv = startDiv.concat("An agent developed for performing quantum chemistry calculations at "
-				+ "various levels of theories to create a living, continuously self-improving and growing "
+		startDiv = startDiv.concat("An agent developed for performing simulations on HPC servers "
+				+ "to create a living, continuously self-improving and growing "
 				+ "Knowledge Graph of species serving the need for thermochemical data across disciplines.");
 		startDiv = startDiv.concat("</p>");
 		startDiv = startDiv.concat("</div>");
@@ -260,7 +260,7 @@ public class JobStatistics {
 	 * @return
 	 */
 	private String pathToResource(){
-		return "/DFTAgent/assets/";
+		return "/KineticsAgent/assets/";
 	}
 	
 	/**
