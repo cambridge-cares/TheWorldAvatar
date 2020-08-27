@@ -52,7 +52,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String ignDelayMethod = "2";
 	private String ignDelaySpecies = "AR";
 	private String numOfSobolPoints = "1000";
-
+	private String numOfInitPoints = "1";
+	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
 	}
@@ -77,6 +78,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		this.numOfSobolPoints = numOfSobolPoints;
 	}
 	
+	public String getNumOfInitPoints() {
+		return numOfInitPoints;
+	}
+
+	public void setNumOfInitPoints(String numOfInitPoints) {
+		this.numOfInitPoints = numOfInitPoints;
+	}
+
 	/**
 	 * Collect all information required by MoDS to execute the model kineticsSRM. 
 	 * The information required: 
@@ -260,6 +269,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setNumOfSobolPoints(numSobol);
 		}
 		
+		// set up the initial points option that will be used for generating MoDS_inputs.xml file
+		String numInit = JSonRequestParser.getNumOfInitPoints(otherOptions);
+		if (numInit != null && !numInit.isEmpty()) {
+			setNumOfInitPoints(numInit);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -401,7 +416,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
 		algoCalibration.put("n_iters", "400");
-		algoCalibration.put("n_initial_points", "10");
+		algoCalibration.put("n_initial_points", getNumOfInitPoints());
 		algoCalibration.put("constrained", "true");
 		algoCalibration.put("rho", "0.2");
 		algoCalibration.put("rho_factor", "0.5");
