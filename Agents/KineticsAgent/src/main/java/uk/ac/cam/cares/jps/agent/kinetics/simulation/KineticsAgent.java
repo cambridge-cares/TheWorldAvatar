@@ -359,32 +359,74 @@ public class KineticsAgent extends JPSAgent {
 			if (workspace.isDirectory()) {
 				File[] jobFolders = workspace.listFiles();
 				for (File jobFolder : jobFolders) {
-					if (Utils.isJobCompleted(jobFolder)) {
-						if (!Utils.isJobOutputProcessed(jobFolder)) {
-							boolean successful = false;
-							/**
-							 * **********************************************
-							 * [MICHAEL, CALL POST-PROCESSING METHOD HERE AND INDICATE USING
-							 * THE successful VARIABLE DECLARED ABOVE IF THE PROCESS
-							 * EXECUTED SUCCESSFULLY OR NOT.]
-							 * *********************************************
-							 */
-							// The successful completion of post-processing
-							// triggers the job status update.
 
-							// Name of directory within job folder containing CSV outputs
-							// TODO - Check if this folder exists (or leave to script)?
-							String outputDirName = "outputs";
+					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
 
-							// TODO - Build commands to Daniel's postproc script
-							// TODO - Run script (what happens if python not installed, or incorrect version?)
-							// TODO - Read script output and modify 'successful' variable
-							if (successful) {
-								PostProcessing.updateJobOutputStatus(jobFolder);
-							} else {
-								Utils.modifyStatus(Utils.getStatusFile(jobFolder).getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+						// Name of directory within job folder containing CSV outputs
+						Path outputsDir = Paths.get(jobFolder.getAbsolutePath(), "outputs");
+
+						if (!Files.exists(outputsDir)) {
+							// Failure
+							Utils.modifyStatus(
+								Utils.getStatusFile(jobFolder).getAbsolutePath(),
+								Status.JOB_LOG_MSG_ERROR_TERMINATION.getName()
+							);
+							continue;
+						}
+
+						// Get the location of the python scripts directory
+						Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
+						if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
+
+						// Build commands for Daniel's postproc script
+						List<String> commands = new ArrayList<>();
+						commands.add(Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_post.exe").toString());
+
+						// Location of job directory
+						commands.add("-d");
+						commands.add(jobFolder.getAbsolutePath());
+
+						// Run script 
+						ProcessBuilder builder = new ProcessBuilder();
+						builder.directory(Paths.get(scriptsDir.toString(), "venv", "Scripts").toFile());
+						builder.redirectErrorStream(true);
+						builder.command(commands);
+
+						// Could redirect the script's output here, looks like a logging system is required first
+						Process process = builder.start();
+
+						// Wait until the process is finished (should add a timeout here, expected duration?)
+						while (process.isAlive()) {
+							try {
+								Thread.sleep(500);
+							} catch (InterruptedException iException) {
+								// Failure
+								Utils.modifyStatus(
+									Utils.getStatusFile(jobFolder).getAbsolutePath(),
+									Status.JOB_LOG_MSG_ERROR_TERMINATION.getName()
+								);
 							}
 						}
+
+						// Check the outputs JSON file
+						Path outputsJSON = Paths.get(outputsDir.toString(), "output.json");
+
+						if (!Files.exists(outputsJSON) || Files.readAllBytes(outputsJSON).length <= 0) {
+							// Try looking in the job directory directly
+							outputsJSON = Paths.get(jobFolder.getAbsolutePath(), "output.json");
+
+							if (!Files.exists(outputsJSON) || Files.readAllBytes(outputsJSON).length <= 0) {
+								// No valid output.json, failure
+								Utils.modifyStatus(
+									Utils.getStatusFile(jobFolder).getAbsolutePath(),
+									Status.JOB_LOG_MSG_ERROR_TERMINATION.getName()
+								);
+								continue;
+							}
+						}
+
+						// Success
+						PostProcessing.updateJobOutputStatus(jobFolder);
 					}
 				}
 			}
@@ -465,8 +507,6 @@ public class KineticsAgent extends JPSAgent {
 
 		// Build commands for Daniel's preproc script
 		List<String> commands = new ArrayList<>();
-		//commands.add("python");
-		//commands.add("");
 		commands.add(Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_pre.exe").toString());
 
 		// Location of SRM simulation templates folder
@@ -483,22 +523,10 @@ public class KineticsAgent extends JPSAgent {
 		builder.redirectErrorStream(true);
 		builder.command(commands);
 
-		System.out.print("Running scripts with commands:");
-		System.out.println(String.join(" ", commands));
-		System.out.println("From: " + builder.directory());
-
-		// Wait until the process is finished
-		// TODO - Add a timeout here, need to determine expected time limit for script
+		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
 
-		InputStream is = process.getInputStream();
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-
-		String line = null;
-		while ((line = reader.readLine()) != null) {
-			System.out.println(line);
-		}
-
+		// Wait until the process is finished (should add a timeout here, expected duration?)
 		while (process.isAlive()) {
 			try {
 				Thread.sleep(500);
@@ -515,7 +543,7 @@ public class KineticsAgent extends JPSAgent {
 			.map(Path::toFile)
 			.forEach((File f) -> zipContents.add(f));
 		zipContents.remove(destination.toFile());
-		
+
 		// Will throw an IOException if something goes wrong
 		new ZipUtility().zip(zipContents, zipFile.toString());
 

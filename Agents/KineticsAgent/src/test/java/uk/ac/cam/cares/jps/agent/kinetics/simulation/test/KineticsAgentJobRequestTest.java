@@ -18,7 +18,7 @@ import org.junit.Assert;
 public class KineticsAgentJobRequestTest {
 
 	/**
-	 * Performs a local test  of the agents job setup using a sample JSON request (read from a resource file).
+	 * Performs a test of the agent's job setup using a sample JSON request (read from a resource file).
 	 *
 	 * Note that this test will only function if the kinetics agent scripts have been correctly installed (using the
 	 * SRM backends "for_release" script) and structure of the agents directory matches the following (and is set in
