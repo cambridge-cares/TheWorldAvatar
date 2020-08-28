@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -14,6 +15,7 @@
 		<!-- <rdf4j.version>2.4.2</rdf4j.version> -->
 		<rdf4j.version>2.0</rdf4j.version>
 		<jackson-core.version>2.11.1</jackson-core.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
 
@@ -168,29 +170,29 @@
 			<version>0.0.1</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core -->
-	    <dependency>
-	        <groupId>com.fasterxml.jackson.core</groupId>
-	        <artifactId>jackson-core</artifactId>
-	        <version>${jackson-core.version}</version>
-	    </dependency>
-	
-	    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
-	    <dependency>
-	        <groupId>com.fasterxml.jackson.core</groupId>
-	        <artifactId>jackson-databind</artifactId>
-	        <version>${jackson-core.version}</version>
-	    </dependency>
-	    
-	    <dependency>
-		    <groupId>com.fasterxml.jackson.core</groupId>
-		    <artifactId>jackson-annotations</artifactId>
-		    <version>${jackson-core.version}</version>
-		</dependency>
-		
 		<dependency>
-		    <groupId>com.fasterxml.jackson.module</groupId>
-		    <artifactId>jackson-module-scala_2.11</artifactId>
-		    <version>${jackson-core.version}</version>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-core</artifactId>
+			<version>${jackson-core.version}</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson-core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>${jackson-core.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.fasterxml.jackson.module</groupId>
+			<artifactId>jackson-module-scala_2.11</artifactId>
+			<version>${jackson-core.version}</version>
 		</dependency>
 	</dependencies>
 
@@ -218,10 +220,10 @@
 				<version>3.2.1</version>
 				<configuration>
 					<warName>${project.artifactId}</warName>
-					<outputDirectory>${tomcatPath}/webapps</outputDirectory>
+					<outputDirectory>${env.CATALINA_HOME}/webapps</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
 	</build>
-	
+
 </project>
