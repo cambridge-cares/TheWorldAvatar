@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -33,25 +32,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.ac.cam.cares.jps.agent.configuration.AutoMechCalibAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.AutoMechCalibAgentProperty;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechCalibOutputProcess;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSFileManagement;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.coordination.AutoMechCalibAgentException;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
-import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Workspace;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Controller
@@ -59,40 +50,18 @@ import com.jcraft.jsch.SftpException;
 public class AutoMechCalibAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(AutoMechCalibAgent.class);
-	String server = "login-cpu.hpc.cam.ac.uk";
-	String username = "jb2197";
-	String password = new String();
-	boolean isAuthenticated;
-	private File jobSpace;
-	
-	static Session session;
-	static JSch jsch = new JSch();
-	
-	static int scheduledIteration = 0;
+	private File workspace;
 	static Set<String> jobsRunning = new HashSet<String>();
 	
-	SlurmJob slurmJob = new SlurmJob();
 	public static JobSubmission jobSubmission;
-	public static ApplicationContext applicationContext;
-	public static SlurmJobProperty slurmJobProperty;
-	public static ApplicationContext applicationContextMoDSAgent;
+	public static ApplicationContext applicationContextAutoMechCalibAgent;
 	public static AutoMechCalibAgentProperty autoMechCalibAgentProperty;
 	
+	public static final String REQUEST_RECEIVED = "A request to AutoMechCalibAgent has been received..............................";
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to AutoMechCalib Agent";
 	public static final String NO_PATH_RETURN_AGENT_CALLER = "The job requested by AutoMechCalibAgent is not correctly set";
 	public static final String MULTI_PATH_RETURN_AGENT_CALLER = "The job requested by AutoMechCalibAgent returned more than one response";
-	
-	public static void main(String[] args) throws ServletException, AutoMechCalibAgentException {
-		AutoMechCalibAgent autoMechCalibAgent = new AutoMechCalibAgent();
-		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},\"mods\":{\"ignDelayOption\":{\"method\":\"1\", \"species\":\"AR\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"10\", \"relPerturbation\":\"1e-3\"}}}}";
-		try {
-			autoMechCalibAgent.setUpJob(jsonString);
-		} catch (IOException | SlurmJobException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
@@ -101,8 +70,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		AutoMechCalibAgent autoMechCalibAgent = new AutoMechCalibAgent();
-		System.out.println("A request has been received..............................");
+		System.out.println(REQUEST_RECEIVED);
 		
 		if (path.equals(Property.JOB_COORDINATION_PATH)) {
 			try {
@@ -111,18 +79,18 @@ public class AutoMechCalibAgent extends JPSAgent {
 				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
 			}
 			try {
-				return autoMechCalibAgent.setUpJob(requestParams.toString());
+				return setUpJob(requestParams.toString());
 			} catch (IOException | AutoMechCalibAgentException | SlurmJobException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
 			try {
-				return autoMechCalibAgent.produceStatistics(requestParams.toString());
+				return produceStatistics(requestParams.toString());
 			} catch (IOException | AutoMechCalibAgentException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else {
-			System.out.println("Unknown request");
+			System.out.println(UNKNOWN_REQUEST);
 			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
 	}
@@ -172,11 +140,12 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @return the statistics in JSON format if requested.
 	 */
 	public JSONObject produceStatistics(String input) throws IOException, AutoMechCalibAgentException {
-		System.out.println("Received a request to send statistics.\n");
-		logger.info("Received a request to send statistics.\n");
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		System.out.println("Received a request to send AutoMechCalibAgent statistics.\n");
+		logger.info("Received a request to send AutoMechCalibAgent statistics.\n");
+		// Initialises all properties required for this agent to set-up<br>
+		// and run jobs. It will also initialise the unique instance of<br>
+		// Job Submission class.
+		initAgentProperty();
 		return jobSubmission.getStatistics(input);
 	}
 	
@@ -197,11 +166,9 @@ public class AutoMechCalibAgent extends JPSAgent {
 	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, AutoMechCalibAgentException {
-		System.out.println("Received a request to show statistics.\n");
-		logger.info("Received a request to show statistics.\n");
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		System.out.println("Received a request to show AutoMechCalibAgent statistics.\n");
+		logger.info("Received a request to show AutoMechCalibAgent statistics.\n");
+		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
 	
@@ -215,22 +182,13 @@ public class AutoMechCalibAgent extends JPSAgent {
 		System.out.println("---------- Automated Mechanism Calibration Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		AutoMechCalibAgent autoMechCalibAgent = new AutoMechCalibAgent();
-		// initialising classes to read properties from the mods-agent.properties file
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(AutoMechCalibAgentConfiguration.class);
-		}
-		if (autoMechCalibAgentProperty == null) {
-			autoMechCalibAgentProperty = applicationContextMoDSAgent.getBean(AutoMechCalibAgentProperty.class);
-		}
-		// the first 30 refers to the delay (in seconds) before the job scheduler
-		// starts and the second 60 refers to the interval between two consecutive
-		// executions of the scheduler.
+		// initialising classes to read properties from the automechcalib-agent.properties file
+		initAgentProperty();
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
 		executorService.scheduleAtFixedRate(() -> {
 			try {
 				autoMechCalibAgent.monitorJobs();
@@ -238,10 +196,47 @@ public class AutoMechCalibAgent extends JPSAgent {
 				e.printStackTrace();
 			}
 		}, 
-				slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(), 
-				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+				autoMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
+				autoMechCalibAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
 		logger.info("---------- Automated Calibration jobs are being monitored  ----------");
 		System.out.println("---------- Automated Calibration jobs are being monitored  ----------");
+	}
+	
+	/**
+	 * Initialises the unique instance of the AutoMechCalibAgentProperty class that<br>
+	 * reads all properties of AutoMechCalibAgent from the automechcalib-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the automechcalib-agent property file<br>
+	 * through the AutoMechCalibAgent class.
+	 */
+	private void initAgentProperty() {
+		// initialising classes to read properties from the automechcalib-agent.properties file
+		if (applicationContextAutoMechCalibAgent == null) {
+			applicationContextAutoMechCalibAgent = new AnnotationConfigApplicationContext(AutoMechCalibAgentConfiguration.class);
+		}
+		if (autoMechCalibAgentProperty == null) {
+			autoMechCalibAgentProperty = applicationContextAutoMechCalibAgent.getBean(AutoMechCalibAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(autoMechCalibAgentProperty.getAgentClass(), autoMechCalibAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(autoMechCalibAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(autoMechCalibAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(autoMechCalibAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(autoMechCalibAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(autoMechCalibAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(autoMechCalibAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(autoMechCalibAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(autoMechCalibAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(autoMechCalibAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(autoMechCalibAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(autoMechCalibAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(autoMechCalibAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(autoMechCalibAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(autoMechCalibAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(autoMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(autoMechCalibAgentProperty.getAgentPeriodicActionInterval());
+		}
 	}
 	
 	/**
@@ -253,14 +248,18 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 */
 	private void monitorJobs() throws SlurmJobException {
 		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+			jobSubmission = new JobSubmission(autoMechCalibAgentProperty.getAgentClass(), autoMechCalibAgentProperty.getHpcAddress());
 		}
+		initAgentProperty();
+		workspace = jobSubmission.getWorkspaceDirectory();
+		logger.info("AutoMechCalibAgent is monitoring.");
+		System.out.println("AutoMechCalibAgent is monitoring the jobs.");
 		try {
-			if (jobSubmission.getWorkspaceDirectory().isDirectory()) {
-				File[] jobFolders = jobSubmission.getWorkspaceDirectory().listFiles();
+			if (workspace.isDirectory()) {
+				File[] jobFolders = workspace.listFiles();
 				updateRunningJobSet(jobFolders, jobsRunning);
 				for (File jobFolder : jobFolders) {
-					if (!Utils.isJobCompleted(jobFolder, slurmJobProperty)) {
+					if (!Utils.isJobCompleted(jobFolder, jobSubmission.slurmJobProperty)) {
 						if (Utils.isJobRunning(jobFolder)) {
 							if (updateRunningJobsStatus(jobFolder)) {
 								if (jobsRunning.contains(jobFolder.getName())) {
@@ -475,7 +474,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 */
 	private String getCompleteJobDir(String agentId, String jobFolderId) throws IOException {
 		String jobDir = Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(agentId).concat(File.separator).concat(jobFolderId);
-		String completedJobDir = Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(agentId).concat(File.separator).concat(jobFolderId);
+		String completedJobDir = Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(autoMechCalibAgentProperty.getAgentCompletedJobsSpacePrefix()).concat(agentId).concat(File.separator).concat(jobFolderId);
 		if (Utils.getStatusFile(new File(jobDir)).exists()) {
 			return null;
 		} else if (Utils.getStatusFile(new File(completedJobDir)).exists()) {
@@ -494,7 +493,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @throws AutoMechCalibAgentException
 	 */
 	private String getModifiedJson(String sensAnaJobFolderPath, String autoJobFolderPath) throws IOException, AutoMechCalibAgentException {
-		File modifiedJson = new File(sensAnaJobFolderPath.concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(File.separator).concat(Property.AGENT_SENS_ANA_MODIFIED_JSON));
+		File modifiedJson = new File(sensAnaJobFolderPath.concat(File.separator).concat(autoMechCalibAgentProperty.getOutputFileName()).concat(File.separator).concat(Property.AGENT_SENS_ANA_MODIFIED_JSON));
 		File jsonCopy = new File(autoJobFolderPath.concat(File.separator).concat(Property.AGENT_SENS_ANA_MODIFIED_JSON));
 		try {
 			Utils.copyFile(modifiedJson, jsonCopy);
@@ -516,7 +515,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @throws AutoMechCalibAgentException
 	 */
 	private String getUpdatedMech(String mechCalibJobFolderPath, String autoJobFolderPath) throws IOException, AutoMechCalibAgentException {
-		String outputFolderPath = mechCalibJobFolderPath.concat(File.separator).concat(slurmJobProperty.getOutputFileName());
+		String outputFolderPath = mechCalibJobFolderPath.concat(File.separator).concat(autoMechCalibAgentProperty.getOutputFileName());
 		String mechId = getUpdatedMechId(outputFolderPath);
 		if (mechId == null) {
 			throw new JPSRuntimeException("Output of mechanism calibration is not properly processed");
@@ -762,24 +761,15 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @throws SlurmJobException
 	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, AutoMechCalibAgentException, SlurmJobException {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
-					slurmJobProperty.getHpcAddress());
-		}
+		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
 		if (jobSubmission.getWorkspaceDirectory()==null) {
 			return Status.JOB_SETUP_ERROR.getName();
 		} else {
 			Workspace ws = new Workspace();
 			File workspaceFolder = jobSubmission.getWorkspaceDirectory();
-			File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), slurmJobProperty.getHpcAddress(), timeStamp);
-			String statusFileMsg = ws.createStatusFile(workspaceFolder, ws.getStatusFilePath(jobFolder), slurmJobProperty.getHpcAddress());
+			File jobFolder = ws.createJobFolder(workspaceFolder.getAbsolutePath(), autoMechCalibAgentProperty.getHpcAddress(), timeStamp);
+			String statusFileMsg = ws.createStatusFile(workspaceFolder, ws.getStatusFilePath(jobFolder), autoMechCalibAgentProperty.getHpcAddress());
 			if (statusFileMsg == null) {
 				return null;
 			}

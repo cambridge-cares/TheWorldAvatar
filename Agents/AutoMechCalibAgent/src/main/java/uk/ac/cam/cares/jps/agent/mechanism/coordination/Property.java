@@ -56,7 +56,7 @@ public enum Property {
 	public static final String AGENT_MECH_CALIB_UPDATED_MECH_SUFFIX = ".owl";
 	public static final String AGENT_SENS_ANA_CLASS = "MoDSSensAnaAgent";
 	public static final String AGENT_MECH_CALIB_CLASS = "MoDSMechCalibAgent";
-	public static final String JOB_COORDINATION_PATH = "/AutoMechCalibAgent/coordination";
+	public static final String JOB_COORDINATION_PATH = "/coordination/request";
 	public static final String AGENT_SENS_ANA_PATH = "/MoDSSensAnaAgent";
 	public static final String AGENT_MECH_CALIB_PATH = "/MoDSMechCalibAgent";
 	public static final String JOB_REQUEST_PATH = "/job/request";

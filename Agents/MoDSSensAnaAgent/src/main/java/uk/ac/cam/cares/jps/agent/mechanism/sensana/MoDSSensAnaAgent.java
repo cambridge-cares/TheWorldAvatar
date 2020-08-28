@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -40,18 +39,13 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Controller
@@ -59,42 +53,15 @@ import com.jcraft.jsch.SftpException;
 public class MoDSSensAnaAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSSensAnaAgent.class);
-	String server = "login-cpu.hpc.cam.ac.uk";
-	String username = "jb2197";
-	String password = new String();
-	boolean isAuthenticated;
-	private File jobSpace;
+	private File workspace;
 	
-	static Session session;
-	static JSch jsch = new JSch();
-	
-	static int scheduledIteration = 0;
-	static List<String> jobsRunning = new ArrayList<>();
-	
-	SlurmJob slurmJob = new SlurmJob();
 	public static JobSubmission jobSubmission;
-	public static ApplicationContext applicationContext;
-	public static SlurmJobProperty slurmJobProperty;
-	public static ApplicationContext applicationContextMoDSAgent;
-	public static MoDSSensAnaAgentProperty modsAgentProperty;
+	public static ApplicationContext applicationContextMoDSSensAnaAgent;
+	public static MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
 	
+	public static final String REQUEST_RECEIVED = "A request to MoDSSensAnaAgent has been received..............................";
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSSensAna Agent";
-	
-	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
-		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
-		
-//		try {
-//			modsSensAnaAgent.selectSensRxns(new File("C:\\Users\\jb2197\\MoDSSensAnaAgent_4639325665088300\\login-skylake.hpc.cam.ac.uk_4639325666472100"));
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-		
-//		modsSensAnaAgent.init();
-		
-		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},\"mods\":{\"ignDelayOption\":{\"method\":\"1\", \"species\":\"AR\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"10\", \"relPerturbation\":\"1e-3\"}}}}";
-	}
 	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
@@ -103,8 +70,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
-		System.out.println("A request has been received..............................");
+		System.out.println(REQUEST_RECEIVED);
 		if (path.equals(Property.JOB_REQUEST_PATH)) {
 			try {
 				validateInput(requestParams);
@@ -112,18 +78,18 @@ public class MoDSSensAnaAgent extends JPSAgent {
 				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
 			}
 			try {
-				return modsSensAnaAgent.setUpJob(requestParams.toString());
+				return setUpJob(requestParams.toString());
 			} catch (IOException | MoDSSensAnaAgentException | SlurmJobException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
 			try {
-				return modsSensAnaAgent.produceStatistics(requestParams.toString());
+				return produceStatistics(requestParams.toString());
 			} catch (IOException | MoDSSensAnaAgentException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else {
-			System.out.println("Unknown request");
+			System.out.println(UNKNOWN_REQUEST);
 			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
 	}
@@ -168,11 +134,12 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @return the statistics in JSON format if requested.
 	 */
 	public JSONObject produceStatistics(@RequestParam String input) throws IOException, MoDSSensAnaAgentException {
-		System.out.println("Received a request to send statistics.\n");
-		logger.info("Received a request to send statistics.\n");
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		System.out.println("Received a request to send MoDSSensAnaAgent statistics.\n");
+		logger.info("Received a request to send MoDSSensAnaAgent statistics.\n");
+		// Initialises all properties required for this agent to set-up<br>
+		// and run jobs. It will also initialise the unique instance of<br>
+		// Job Submission class.
+		initAgentProperty();
 		return jobSubmission.getStatistics(input);
 	}
 	
@@ -193,11 +160,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, MoDSSensAnaAgentException {
-		System.out.println("Received a request to show statistics.\n");
-		logger.info("Received a request to show statistics.\n");
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		System.out.println("Received a request to show MoDSSensAnaAgent statistics.\n");
+		logger.info("Received a request to show MoDSSensAnaAgent statistics.\n");
+		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
 	
@@ -211,22 +176,13 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		System.out.println("---------- Sensitivity Analysis Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
-		// initialising classes to read properties from the mods-agent.properties file
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSSensAnaAgentConfiguration.class);
-		}
-		if (modsAgentProperty == null) {
-			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSSensAnaAgentProperty.class);
-		}
-		// the first 30 refers to the delay (in seconds) before the job scheduler
-		// starts and the second 60 refers to the interval between two consecutive
-		// executions of the scheduler.
+		// initialising classes to read properties from the modssensana-agent.properties file
+		initAgentProperty();
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
 		executorService.scheduleAtFixedRate(() -> {
 			try {
 				modsSensAnaAgent.monitorJobs();
@@ -234,22 +190,59 @@ public class MoDSSensAnaAgent extends JPSAgent {
 			{e.printStackTrace();
 			}
 		}, 
-				slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(), 
-				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+				modsSensAnaAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
+				modsSensAnaAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
 		logger.info("---------- SensAna jobs are being monitored  ----------");
 		System.out.println("---------- SensAna jobs are being monitored  ----------");
 	}
 	
+	/**
+	 * Initialises the unique instance of the MoDSSensAnaAgentProperty class that<br>
+	 * reads all properties of MoDSSensAnaAgent from the modssensana-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the modssensana-agent property file<br>
+	 * through the MoDSSensAnaAgent class.
+	 */
+	private void initAgentProperty() {
+		// initialising classes to read properties from the modssensana-agent.properties file
+		if (applicationContextMoDSSensAnaAgent == null) {
+			applicationContextMoDSSensAnaAgent = new AnnotationConfigApplicationContext(MoDSSensAnaAgentConfiguration.class);
+		}
+		if (modsSensAnaAgentProperty == null) {
+			modsSensAnaAgentProperty = applicationContextMoDSSensAnaAgent.getBean(MoDSSensAnaAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(modsSensAnaAgentProperty.getAgentClass(), modsSensAnaAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(modsSensAnaAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(modsSensAnaAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(modsSensAnaAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(modsSensAnaAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(modsSensAnaAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(modsSensAnaAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(modsSensAnaAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(modsSensAnaAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(modsSensAnaAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(modsSensAnaAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(modsSensAnaAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(modsSensAnaAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(modsSensAnaAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(modsSensAnaAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(modsSensAnaAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(modsSensAnaAgentProperty.getAgentPeriodicActionInterval());
+		}
+	}
+	
+	/**
+	 * Monitors already set up jobs. 
+	 * 
+	 * @throws SlurmJobException
+	 */
 	private void monitorJobs() throws SlurmJobException {
 		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+			jobSubmission = new JobSubmission(modsSensAnaAgentProperty.getAgentClass(), modsSensAnaAgentProperty.getHpcAddress());
 		}
-		try {
-			jobSubmission.monitorJobs();
-		} catch (SlurmJobException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		jobSubmission.monitorJobs();
 		processOutputs();
 	}
 	
@@ -260,25 +253,11 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * 
 	 */
 	private void processOutputs() {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
-		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSSensAnaAgentConfiguration.class);
-		}
-		if (modsAgentProperty == null) {
-			modsAgentProperty = applicationContextMoDSAgent.getBean(MoDSSensAnaAgentProperty.class);
-		}
-		jobSpace = jobSubmission.getWorkspaceDirectory();
+		initAgentProperty();
+		workspace = jobSubmission.getWorkspaceDirectory();
 		try {
-			if (jobSpace.isDirectory()) {
-				File[] jobFolders = jobSpace.listFiles();
+			if (workspace.isDirectory()) {
+				File[] jobFolders = workspace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
@@ -318,14 +297,14 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	
 	public void selectSensRxns(File jobFolder) throws IOException, MoDSSensAnaAgentException {
 		File outputFile = new File(jobFolder.getAbsolutePath());
-		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(slurmJobProperty.getOutputFileExtension());
-		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName());
+		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(modsSensAnaAgentProperty.getOutputFileName()).concat(modsSensAnaAgentProperty.getOutputFileExtension());
+		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(modsSensAnaAgentProperty.getOutputFileName());
 		Utils.unzipFile(zipFilePath, destDir);
 		
 		String jsonString = readJsonInput(new File(jobFolder.getAbsolutePath()
 				.concat(File.separator)
-				.concat(slurmJobProperty.getJsonInputFileName())
-				.concat(slurmJobProperty.getJsonFileExtension())));
+				.concat(modsSensAnaAgentProperty.getJsonInputFileName())
+				.concat(modsSensAnaAgentProperty.getJsonFileExtension())));
 		
 		JsonNode inputNode = new ObjectMapper().readTree(jsonString);
 		String topN = JSonRequestParser.getTopNForRxns(jsonString);
@@ -422,20 +401,11 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @throws SlurmJobException
 	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSSensAnaAgentException, SlurmJobException {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
-					slurmJobProperty.getHpcAddress());
-		}
+		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
+		String jobFolderName = getNewJobFolderName(modsSensAnaAgentProperty.getHpcAddress(), timeStamp);
 		String setUpMsg = jobSubmission.setUpJob(jsonString, 
-				new File(getClass().getClassLoader().getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), 
+				new File(getClass().getClassLoader().getResource(modsSensAnaAgentProperty.getSlurmScriptFileName()).getPath()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
 		if (setUpMsg == null) {
 			return null;
