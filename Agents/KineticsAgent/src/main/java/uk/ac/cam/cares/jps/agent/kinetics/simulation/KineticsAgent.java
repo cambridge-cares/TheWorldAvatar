@@ -1,12 +1,11 @@
 package uk.ac.cam.cares.jps.agent.kinetics.simulation;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -499,7 +498,12 @@ public class KineticsAgent extends JPSAgent {
 
 			// Save JSON raw input to file
 			Path dstJSON = Paths.get(destination.toString(), "input.json");
-			Files.writeString(dstJSON, jsonInput);
+
+			FileWriter fileWriter = new FileWriter(dstJSON.toFile());
+			fileWriter.write(jsonInput);
+			
+			fileWriter.flush();
+			fileWriter.close();
 
 		} catch (IOException ioException) {
 			throw new IOException("Could not create temporary directory with JSON file at: " + destination);
