@@ -379,7 +379,12 @@ public class KineticsAgent extends JPSAgent {
 
 						// Build commands for Daniel's postproc script
 						List<String> commands = new ArrayList<>();
-						commands.add(Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_post.exe").toString());
+
+						Path execPath = Paths.get(scriptsDir.toString(), "venv", "bin", "agkin_post");
+						if (!Files.exists(execPath)) {
+							execPath = Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_post.exe");
+						}
+						commands.add(execPath.toString());
 
 						// Location of job directory
 						commands.add("-d");
@@ -501,7 +506,7 @@ public class KineticsAgent extends JPSAgent {
 
 			FileWriter fileWriter = new FileWriter(dstJSON.toFile());
 			fileWriter.write(jsonInput);
-			
+
 			fileWriter.flush();
 			fileWriter.close();
 
@@ -511,7 +516,12 @@ public class KineticsAgent extends JPSAgent {
 
 		// Build commands for Daniel's preproc script
 		List<String> commands = new ArrayList<>();
-		commands.add(Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_pre.exe").toString());
+
+		Path execPath = Paths.get(scriptsDir.toString(), "venv", "bin", "agkin_pre");
+		if (!Files.exists(execPath)) {
+			execPath = Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_pre.exe");
+		}
+		commands.add(execPath.toString());
 
 		// Location of SRM simulation templates folder
 		commands.add("-s");
