@@ -15,7 +15,7 @@
 <!--after pressing refresh button it clears content of page.-->
 <!--<meta http-equiv="refresh" content="300;url=upload.action"/>-->
 
-<title>Molhub: Thermochemistry database</title>
+<title>Quantum chemistry knowledge graph: Thermochemistry database</title>
 
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/static/group/CoMoStyle.css"/>
     
@@ -152,15 +152,15 @@ text-align: left;
     <a href="http://www.cares.cam.ac.uk/node/454#overlay-context=c4t-research">
     <img  src="images/cam_lang_negativ1%20NEW_0.png">
     </a>
-       <h1 id="head1">Molhub: Thermochemistry database</h1>
+       <h1 id="head1">Quantum chemistry knowledge graph: Thermochemistry database</h1>
        
 	   <span id="readme-button">?</span>
 		<span id="readme-text">
-		This is the Computational Modelling Group's open database for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
+		This is the Computational Modelling Group's open knowledge graph for our thermochemistry data. It contains theoretical results that can be navigated and queried both manually through a browser and automatically. 
 		
 		<br/>
 		<br/>
-		The database is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
+		The knowledge graph is powered by the Resource Description Framework (RDF) and allows sophisticated queries of the data based on the graph pattern relationships between data points. 
 		These queries are defined using the SPARQL Protocol and RDF Query Language (SPARQL). These queries can be implemented using a variety of different programming languages and make the database extremely flexible.
         <br/>
         <br/>
@@ -171,7 +171,7 @@ text-align: left;
 <br/>
 </span>
 		
-<p id="description">Exlpore Molhub as an open database for thermochemistry data.   </p>
+<p id="description">Explore knowledge graph as an open database for thermochemistry data.   </p>
 
 </div>
 
@@ -196,7 +196,7 @@ text-align: left;
 
 <div id="leftnav" class="clearfix">
     
-<ul><li class="selcsm">MolHub</li></ul>
+<ul><li class="selcsm">Quantum chemistry knowledge graph</li></ul>
     
 </div>
 

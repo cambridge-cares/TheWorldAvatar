@@ -47,13 +47,13 @@ import uk.ac.ceb.como.molhub.model.XMLValidationManager;
  * 
  */
 
-public class UploadAction extends ActionSupport implements ValidationAware {
+public class UploadLogAction extends ActionSupport implements ValidationAware {
 
 	/** The Constant serialVersionUID. */
 	private static final long serialVersionUID = 1L;
 
 	/** The Constant logger. */
-	final static Logger logger = Logger.getLogger(UploadAction.class.getName());
+	final static Logger logger = Logger.getLogger(UploadLogAction.class.getName());
 
 	/**
 	 * @author NK510 Adds molhub properties such as: Folder path where g09, xml and
@@ -61,7 +61,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 *         Xslt file path. Xsd file path. Jmol data file path, that is used to
 	 *         generated png file.
 	 */
-	Properties molhubPropreties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
+	Properties molhubPropreties = PropertiesManager.loadProperties(UploadLogAction.class.getClassLoader().getResourceAsStream("molhub.management.properties"));
 
 	private String dataFolderPath = molhubPropreties.getProperty("data.folder.path").toString();
 
@@ -78,7 +78,7 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 	 * @author NK510 Adds kb properties such as: OntoCompChem URI, RDF4J server URL.
 	 * 
 	 */
-	Properties kbProperties = PropertiesManager.loadProperties(UploadAction.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
+	Properties kbProperties = PropertiesManager.loadProperties(UploadLogAction.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
 
 	private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString();
 
@@ -148,10 +148,17 @@ public class UploadAction extends ActionSupport implements ValidationAware {
 		}
 		// For each file selected, it iterates once.
 		for (File f : files) {
+			
+			logger.info("file name: " +f.getName());
+			
 			Module rootModule = new Module();
 			// Creates unique folder name for each uploaded Gaussian file (g09),
 			// XML file, OWL file, and PNG file.
 			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
+			
+//			logger.info("file extension: " +f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("\\")+1));
+			
+			
 			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".g09");
 			// Adds .xml extension to the XML file.  
 			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");

@@ -116,7 +116,7 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 				/**
 				 * 
-				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script is implemented by {@author danieln@cmclinnovations.com} 
+				 * @author nk510 <p>Runs Python script for thermodynamic calculations. Python script is implemented by Dr Daniel Nurkowski {@author danieln@cmclinnovations.com} 
 				 * 
 				 */
 				

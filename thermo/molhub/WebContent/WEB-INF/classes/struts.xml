@@ -12,7 +12,7 @@
  	
 <package name="default" namespace="/" extends="struts-default">
 
-    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadAction" method="execute">
+    <action name="upload" class="uk.ac.ceb.como.molhub.action.UploadLogAction" method="execute">
 
      <interceptor-ref name="fileUpload"/>
      <interceptor-ref name="basicStack"/>
