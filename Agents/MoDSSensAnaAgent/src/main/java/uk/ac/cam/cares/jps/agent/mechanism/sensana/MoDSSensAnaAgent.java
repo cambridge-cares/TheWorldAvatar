@@ -116,6 +116,13 @@ public class MoDSSensAnaAgent extends JPSAgent {
 			if (relPertur == null || relPertur.isEmpty()) {
 				throw new BadRequestException(Property.JOB_SETUP_RELATIVE_PERTURBATION_MISSING.getPropertyName());
 			}
+			
+			String maxAvg = JSonRequestParser.getMaxOrAvg(requestParams.toString());
+			if (maxAvg != null && !maxAvg.isEmpty()) {
+				if (!maxAvg.toLowerCase().contains("max") && !maxAvg.toLowerCase().contains("avg")) {
+					throw new BadRequestException(Property.JOB_SETUP_MAX_AVG_INAPPROPRIATE.getPropertyName());
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -305,16 +312,10 @@ public class MoDSSensAnaAgent extends JPSAgent {
 				.concat(File.separator)
 				.concat(modsSensAnaAgentProperty.getJsonInputFileName())
 				.concat(modsSensAnaAgentProperty.getJsonFileExtension())));
-		
 		JsonNode inputNode = new ObjectMapper().readTree(jsonString);
-		String topN = JSonRequestParser.getTopNForRxns(jsonString);
-		if (topN != null && !topN.isEmpty()) {
-		} else {
-			topN = "10";
-		}
-		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
+		
 		SensAnaResultsProcess sensAnaRePro = new SensAnaResultsProcess();
-		List<String> selectedRxns = sensAnaRePro.processResults(destDir, mechanismIRI, Integer.parseInt(topN));
+		List<String> selectedRxns = sensAnaRePro.processResults(destDir, jsonString);
 		
 		updateJsonForCalib(inputNode, selectedRxns, destDir.concat(File.separator).concat("modifiedInput.json"));
 		

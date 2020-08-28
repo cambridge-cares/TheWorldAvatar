@@ -122,6 +122,13 @@ public class AutoMechCalibAgent extends JPSAgent {
 			if (relPertur == null || relPertur.isEmpty()) {
 				throw new BadRequestException(Property.JOB_SETUP_RELATIVE_PERTURBATION_MISSING.getPropertyName());
 			}
+			
+			String maxAvg = JSonRequestParser.getMaxOrAvg(requestParams.toString());
+			if (maxAvg != null && !maxAvg.isEmpty()) {
+				if (!maxAvg.toLowerCase().contains("max") && !maxAvg.toLowerCase().contains("avg")) {
+					throw new BadRequestException(Property.JOB_SETUP_MAX_AVG_INAPPROPRIATE.getPropertyName());
+				}
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

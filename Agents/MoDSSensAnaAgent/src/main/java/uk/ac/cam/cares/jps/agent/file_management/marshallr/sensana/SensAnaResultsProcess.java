@@ -20,77 +20,47 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
 public class SensAnaResultsProcess {
 	private Logger logger = LoggerFactory.getLogger(SensAnaResultsProcess.class);
+	private String topN = "10";
+	private String maxORavg = "avg";
 	
-	public static void main(String[] args) throws IOException, MoDSSensAnaAgentException {
-		
-//		String resultsFolder = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\SensAna\\";
-//		
-//		String maxDcDtOH = "login-cpu.hpc.cam.ac.uk_3705638140418000_SensAna_MaxDcDt_OH";
-//		String maxDcDtCO = "login-cpu.hpc.cam.ac.uk_3705655429858500_SensAna_MaxDcDt_CO";
-//		String concCO = "login-cpu.hpc.cam.ac.uk_3705683489571800_SensAna_Conc_CO";
-//		String concOH = "login-cpu.hpc.cam.ac.uk_3705704050765200_SensAna_Conc_OH";
-//		String temp400K = "login-cpu.hpc.cam.ac.uk_3705731441602300_SensAna_Temp_400K";
-//		String maxDpDt = "login-cpu.hpc.cam.ac.uk_3705768273696900_SensAna_MaxDpDt";
-//		String maxDtDt= "login-cpu.hpc.cam.ac.uk_3705790466069800_SensAna_MaxDtDt";
-//		
-//		int topN = 20;
-//		
-//		List<String> sensAnaCases = new ArrayList<>();
-//		sensAnaCases.add(maxDcDtOH);
-//		sensAnaCases.add(maxDcDtCO);
-//		sensAnaCases.add(concCO);
-//		sensAnaCases.add(concOH);
-//		sensAnaCases.add(temp400K);
-//		sensAnaCases.add(maxDpDt);
-//		sensAnaCases.add(maxDtDt);
-//		
-//		for (String sensAna : sensAnaCases) {
-//			SensAnaResultsProcess sensAnaResultsProcess = new SensAnaResultsProcess();
-//			sensAnaResultsProcess.processResults(resultsFolder.concat(sensAna), topN);
-//		}
-		
-		SensAnaResultsProcess sensAnaResultsProcess = new SensAnaResultsProcess();
-		List<String> rxnIRI = sensAnaResultsProcess.processResults("C:\\Users\\jb2197\\MoDSSensAnaAgent_4639325665088300\\login-skylake.hpc.cam.ac.uk_4639325666472100\\output", "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261", 2);
-		System.out.println(rxnIRI);
-		
-//		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261";
-		
-//		System.setProperty("hadoop.home.dir", "C:\\Hadoop");
-//		List<Double> inputData = new ArrayList<>();
-//		inputData.add(35.5);
-//		inputData.add(36.5);
-//		inputData.add(38.5);
-//		inputData.add(32.5);
-		
-//		resolved the jackson version conflict problem following below link
-//		https://programming.vip/docs/resolution-of-jackson-version-conflict-in-spark-application.html
-		
-//		SparkConf conf = new SparkConf().setAppName("startingSpark").setMaster("local[*]");
-//		JavaSparkContext sc = new JavaSparkContext(conf);
-//		
-//		JavaRDD<Double> myRdd = sc.parallelize(inputData);
-//		System.out.println(myRdd.count());
-//		Double result = myRdd.reduce((Double value1, Double value2) -> value1 + value2);
-//		
-//		System.out.println(result);
-//		sc.close();
-//		SparkSession spark = SparkSession.builder().appName("Java Spark SQL Example").config("spark.master", "local").getOrCreate();
-//		System.out.println(resultsFolder+maxDcDtOH+simResults);
-//		Dataset<Row> csv = spark.read().format("csv").option("header","true").load(resultsFolder+maxDcDtOH+simResults);
-//		csv.show();
+	public String getTopN() {
+		return topN;
+	}
+
+	public void setTopN(String topN) {
+		this.topN = topN;
 	}
 	
+	public String getMaxORavg() {
+		return maxORavg;
+	}
+
+	public void setMaxORavg(String maxORavg) {
+		this.maxORavg = maxORavg;
+	}
 	
-	public List<String> processResults(String jobFolderPath, String mechanismIRI, Integer topN) throws IOException, MoDSSensAnaAgentException {
+	public List<String> processResults(String jobFolderPath, String jsonString) throws IOException, MoDSSensAnaAgentException {
+		String n = JSonRequestParser.getTopNForRxns(jsonString);
+		if (n != null && !n.isEmpty()) {
+			setTopN(n);
+		}
+		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
+		
+		String maxAvg = JSonRequestParser.getMaxOrAvg(jsonString);
+		if (maxAvg != null && !maxAvg.isEmpty()) {
+			setMaxORavg(maxAvg);
+		}
+		
 		// process ign sens results, get a file to record the rxns selected
-		List<String> ignRxnIRI = processResponse("subtype_IgnitionDelay", mechanismIRI, jobFolderPath, topN);
+		List<String> ignRxnIRI = processResponse("subtype_IgnitionDelay", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMaxORavg());
 		// process flame sens results, get a file to record the rxns selected
-		List<String> flameRxnIRI = processResponse("subtype_LaminarFlameSpeed", mechanismIRI, jobFolderPath, topN);
+		List<String> flameRxnIRI = processResponse("subtype_LaminarFlameSpeed", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMaxORavg());
 		// merge the two files and get one final list
 		List<String> supersetRxns = mergeTwoResponses(ignRxnIRI, flameRxnIRI);
 		
@@ -99,7 +69,7 @@ public class SensAnaResultsProcess {
 	}
 	
 	
-	public List<String> processResponse(String response, String mechanismIRI, String jobFolderPath, Integer topN) throws IOException, MoDSSensAnaAgentException {
+	public List<String> processResponse(String response, String mechanismIRI, String jobFolderPath, Integer topN, String maxAvg) throws IOException, MoDSSensAnaAgentException {
 		if (!jobFolderPath.endsWith("\\")) {
 			jobFolderPath = jobFolderPath.concat("\\");
 		}
