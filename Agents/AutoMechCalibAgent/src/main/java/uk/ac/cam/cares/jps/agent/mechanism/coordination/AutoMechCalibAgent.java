@@ -343,8 +343,9 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 */
 	private boolean updateRunningJobsStatus(File jobFolder, File statusFile) throws IOException, AutoMechCalibAgentException, SlurmJobException, JSchException, SftpException, InterruptedException {
 		if (statusFile != null) {
-			File completeJobDir = new File(getCompleteJobDir(Utils.getAgentId(statusFile.getAbsolutePath()), Utils.getJobId(statusFile.getAbsolutePath())));
-			if (completeJobDir.exists()) {
+			String completeJobDirPath = getCompleteJobDir(Utils.getAgentId(statusFile.getAbsolutePath()), Utils.getJobId(statusFile.getAbsolutePath()));
+			if (completeJobDirPath != null) {
+				File completeJobDir = new File(completeJobDirPath);
 				Utils.copyFolder(completeJobDir.getAbsolutePath(), jobFolder.getAbsolutePath().concat(File.separator).concat(completeJobDir.getName()));
 				if (isJobSensAna(jobFolder)) {
 					String msg = retrieveSensAnaOutput(jobFolder, statusFile); // TODO return this value to user
@@ -449,9 +450,14 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @throws SlurmJobException
 	 */
 	private String retrieveSensAnaOutput(File jobFolder, File statusFile) throws IOException, AutoMechCalibAgentException, SlurmJobException {
-		String jsonString = getModifiedJson(jobFolder.getAbsolutePath().concat(File.separator).concat(Utils.getJobId(statusFile.getAbsolutePath())), 
+		String sensAnaFolderName = Utils.getJobId(statusFile.getAbsolutePath());
+		if (sensAnaFolderName != null) {
+			String jsonString = getModifiedJson(jobFolder.getAbsolutePath().concat(File.separator).concat(sensAnaFolderName), 
 				jobFolder.getAbsolutePath());
-		return setUpMechCalibJob(jobFolder.getAbsolutePath(), jsonString);
+			return setUpMechCalibJob(jobFolder.getAbsolutePath(), jsonString);
+		} else {
+			throw new JPSRuntimeException("The folder name of MoDSSensAnaAgent job is not found.");
+		}
 	}
 	
 	/**
@@ -482,9 +488,9 @@ public class AutoMechCalibAgent extends JPSAgent {
 	private String getCompleteJobDir(String agentId, String jobFolderId) throws IOException {
 		String jobDir = Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(agentId).concat(File.separator).concat(jobFolderId);
 		String completedJobDir = Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(autoMechCalibAgentProperty.getAgentCompletedJobsSpacePrefix()).concat(agentId).concat(File.separator).concat(jobFolderId);
-		if (Utils.getStatusFile(new File(jobDir)).exists()) {
+		if (Utils.getStatusFile(new File(jobDir)) != null) {
 			return null;
-		} else if (Utils.getStatusFile(new File(completedJobDir)).exists()) {
+		} else if (Utils.getStatusFile(new File(completedJobDir)) != null) {
 			return completedJobDir;
 		}
 		return null;
@@ -502,15 +508,16 @@ public class AutoMechCalibAgent extends JPSAgent {
 	private String getModifiedJson(String sensAnaJobFolderPath, String autoJobFolderPath) throws IOException, AutoMechCalibAgentException {
 		File modifiedJson = new File(sensAnaJobFolderPath.concat(File.separator).concat(autoMechCalibAgentProperty.getOutputFileName()).concat(File.separator).concat(Property.AGENT_SENS_ANA_MODIFIED_JSON));
 		File jsonCopy = new File(autoJobFolderPath.concat(File.separator).concat(Property.AGENT_SENS_ANA_MODIFIED_JSON));
-		try {
-			Utils.copyFile(modifiedJson, jsonCopy);
-		} catch (IOException e) {
-			throw new JPSRuntimeException("Not able to copy the output Json file from sensitivity analysis");
+		if (modifiedJson.exists()) {
+			try {
+				Utils.copyFile(modifiedJson, jsonCopy);
+			} catch (IOException e) {
+				throw new JPSRuntimeException("Not able to copy the output Json file from sensitivity analysis");
+			}
+			return readJsonInput(jsonCopy);
+		} else {
+			throw new JPSRuntimeException("Json input for mechanism calibration is not found");	
 		}
-		if (!modifiedJson.exists()) {
-			throw new JPSRuntimeException("Json input for mechanism calibration is not found");
-		}
-		return readJsonInput(jsonCopy);
 	}
 	
 	/**
