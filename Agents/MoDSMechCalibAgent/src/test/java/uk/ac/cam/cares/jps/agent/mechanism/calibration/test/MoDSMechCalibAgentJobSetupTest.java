@@ -9,30 +9,26 @@ import java.io.IOException;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentConfiguration;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgent;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class MoDSMechCalibAgentJobSetupTest extends MoDSMechCalibAgent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 3366455762189966807L;
+
 	@Test
 	public void test() throws IOException, MoDSMechCalibAgentException, SlurmJobException {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
-					slurmJobProperty.getHpcAddress());
-		}
-		BufferedReader br = FileUtil.openSourceFile(getClass().getClassLoader().getResource(slurmJobProperty.getJsonInputFileName().concat(slurmJobProperty.getJsonFileExtension())).getPath());
+		initAgentProperty();
+		BufferedReader br = FileUtil.openSourceFile(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getJsonInputFileName().concat(modsMechCalibAgentProperty.getJsonFileExtension())).getPath());
 		
 		String jsonString = "";
 		String line = "";
@@ -41,6 +37,43 @@ public class MoDSMechCalibAgentJobSetupTest extends MoDSMechCalibAgent {
 		}
 		br.close();
 		setUpJobOnAgentMachine(jsonString);
+	}
+	
+	/**
+	 * Initialises the unique instance of the MoDSMechCalibAgentProperty class that<br>
+	 * reads all properties of MoDSMechCalibAgent from the modsmechcalib-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the modsmechcalib-agent property file<br>
+	 * through the MoDSMechCalibAgent class.
+	 */
+	private void initAgentProperty() {
+		// initialising classes to read properties from the modsmechcalib-agent.properties file
+		if (applicationContextMoDSMechCalibAgent == null) {
+			applicationContextMoDSMechCalibAgent = new AnnotationConfigApplicationContext(MoDSMechCalibAgentConfiguration.class);
+		}
+		if (modsMechCalibAgentProperty == null) {
+			modsMechCalibAgentProperty = applicationContextMoDSMechCalibAgent.getBean(MoDSMechCalibAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(modsMechCalibAgentProperty.getAgentClass(), modsMechCalibAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(modsMechCalibAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(modsMechCalibAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(modsMechCalibAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(modsMechCalibAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(modsMechCalibAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(modsMechCalibAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(modsMechCalibAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(modsMechCalibAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(modsMechCalibAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(modsMechCalibAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(modsMechCalibAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(modsMechCalibAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(modsMechCalibAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(modsMechCalibAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(modsMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(modsMechCalibAgentProperty.getAgentPeriodicActionInterval());
+		}
 	}
 	
 	/**
@@ -55,8 +88,8 @@ public class MoDSMechCalibAgentJobSetupTest extends MoDSMechCalibAgent {
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		long timeStamp = Utils.getTimeStamp();
 		return jobSubmission.setUpJob(jsonString, 
-				new File(getClass().getClassLoader().getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), 
-				new File(getClass().getClassLoader().getResource(slurmJobProperty.getInputFileName().concat(slurmJobProperty.getInputFileExtension())).getPath()), 
+				new File(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getSlurmScriptFileName()).getPath()), 
+				new File(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getInputFileName().concat(modsMechCalibAgentProperty.getInputFileExtension())).getPath()), 
 				timeStamp);
 	}
 }
