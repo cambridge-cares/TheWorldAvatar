@@ -27,7 +27,7 @@ import uk.ac.cam.cares.jps.kg.OntoKinKG;
 public class SensAnaResultsProcess {
 	private Logger logger = LoggerFactory.getLogger(SensAnaResultsProcess.class);
 	private String topN = "10";
-	private String maxORavg = "avg";
+	private boolean max = false;
 	
 	public String getTopN() {
 		return topN;
@@ -37,12 +37,24 @@ public class SensAnaResultsProcess {
 		this.topN = topN;
 	}
 	
-	public String getMaxORavg() {
-		return maxORavg;
+	public boolean getMax() {
+		return max;
 	}
 
-	public void setMaxORavg(String maxORavg) {
-		this.maxORavg = maxORavg;
+	public void setMax(boolean max) {
+		this.max = max;
+	}
+	
+	public static void main(String[] args) {
+		String jsonString = "{\"json\":{\"mods\":{\"sensAna\":{\"relPerturbation\":\"1e-3\",\"topN\":\"10\", \"maxORavg\":\"avg\"},\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"}},\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"}}}";
+		String jobFolderPath = "C:\\Users\\jb2197\\CompletedJobsMoDSSensAnaAgent_4639325665088300\\login-skylake.hpc.cam.ac.uk_6554602362814500\\output";
+		SensAnaResultsProcess test = new SensAnaResultsProcess();
+		try {
+			test.processResults(jobFolderPath, jsonString);
+		} catch (IOException | MoDSSensAnaAgentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public List<String> processResults(String jobFolderPath, String jsonString) throws IOException, MoDSSensAnaAgentException {
@@ -53,14 +65,14 @@ public class SensAnaResultsProcess {
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		
 		String maxAvg = JSonRequestParser.getMaxOrAvg(jsonString);
-		if (maxAvg != null && !maxAvg.isEmpty()) {
-			setMaxORavg(maxAvg);
+		if (maxAvg != null && !maxAvg.isEmpty() && maxAvg.toLowerCase().contains("max")) {
+			setMax(true);
 		}
 		
 		// process ign sens results, get a file to record the rxns selected
-		List<String> ignRxnIRI = processResponse("subtype_IgnitionDelay", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMaxORavg());
+		List<String> ignRxnIRI = processResponse("subtype_IgnitionDelay", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMax());
 		// process flame sens results, get a file to record the rxns selected
-		List<String> flameRxnIRI = processResponse("subtype_LaminarFlameSpeed", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMaxORavg());
+		List<String> flameRxnIRI = processResponse("subtype_LaminarFlameSpeed", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMax());
 		// merge the two files and get one final list
 		List<String> supersetRxns = mergeTwoResponses(ignRxnIRI, flameRxnIRI);
 		
@@ -69,7 +81,7 @@ public class SensAnaResultsProcess {
 	}
 	
 	
-	public List<String> processResponse(String response, String mechanismIRI, String jobFolderPath, Integer topN, String maxAvg) throws IOException, MoDSSensAnaAgentException {
+	public List<String> processResponse(String response, String mechanismIRI, String jobFolderPath, Integer topN, boolean max) throws IOException, MoDSSensAnaAgentException {
 		if (!jobFolderPath.endsWith("\\")) {
 			jobFolderPath = jobFolderPath.concat("\\");
 		}
@@ -80,11 +92,11 @@ public class SensAnaResultsProcess {
 		
 		// take input, process, then write results to output file
 		// determine the cases that to be used for reaction selection
-		LinkedHashMap<Integer, String> successCases = identifyCases(response, new File(responseResults), new File(sensAnaResults));
+		LinkedHashMap<Integer, List<Double>> successCases = identifyCases(response, new File(responseResults), new File(sensAnaResults));
 		// get the list of active parameters tested in the sensitivity analysis
 		LinkedHashMap<Integer, String> activeParameters = getSensParameters(new File(deriResults));
 		// load sensitivity analysis results into one map <rxnIndex, averaged sensitivity over all successfully simulated cases>
-		LinkedHashMap<String, Double> sensAnaForRxns = computeSensForRxns(successCases, activeParameters, new File(sensAnaResults));		
+		LinkedHashMap<String, Double> sensAnaForRxns = computeSensForRxns(successCases, activeParameters, max);		
 		// get the top N reactions that most sensitive
 		LinkedHashMap<String, Double> selectedRxns = getTopNRxns(sensAnaForRxns, topN);
 		
@@ -95,41 +107,73 @@ public class SensAnaResultsProcess {
 		return listOfRxnIRI;
 	}
 	
-	private LinkedHashMap<Integer, String> identifyCases(String response, File simFile, File sensFile) throws IOException, MoDSSensAnaAgentException {
-		// read the list of cases and simulation results with original parameters
-		String[] casesList = null;
-		String[] simResults = null;
-		if (simFile.isFile()) {
-			BufferedReader br = new BufferedReader(new FileReader(simFile));
-			casesList = br.readLine().split(",");
-			simResults = br.readLine().split(",");
-			br.close();
-		}
-		
+	
+	private LinkedHashMap<Integer, List<Double>> identifyCases(String response, File simFile, File sensFile) throws IOException, MoDSSensAnaAgentException {
+		// read the list of cases and original simulation results with original parameters
+		List<String> casesList = new ArrayList<>();
+		List<String> origResults = new ArrayList<>();
+		// preliminary assessment success cases
+		List<String> preCases = new ArrayList<>();
 		// read the list of all cases for all responses
 		List<String> allCasesList = new ArrayList<>();
-		if (sensFile.isFile()) {
-			BufferedReader br = new BufferedReader(new FileReader(sensFile));
-			allCasesList = new ArrayList<>(Arrays.asList(br.readLine().split(",")));
-			br.close();
-		}
-		
 		// select only the cases that simulated successfully, i.e., result is within the pre-specified range
-		LinkedHashMap<Integer, String> successCases = new LinkedHashMap<Integer, String>();
-		for (int i = 0; i < casesList.length; i++) {
-			// TODO further parametrised this comparison part to better cope with range
+		LinkedHashMap<Integer, List<Double>> successCases = new LinkedHashMap<Integer, List<Double>>();
+		if (simFile.isFile() && sensFile.isFile()) {
+			BufferedReader brSim = new BufferedReader(new FileReader(simFile));
+			BufferedReader brSens = new BufferedReader(new FileReader(sensFile));
+			casesList = Arrays.asList(brSim.readLine().split(","));
+			origResults = Arrays.asList(brSim.readLine().split(","));
+			allCasesList = new ArrayList<>(Arrays.asList(brSens.readLine().split(",")));
+			String simLine = null;
+			String sensLine = null;
+			int idx = 1;
+			// assessment TODO further parametrised this comparison part to better cope with range
 			if (response.toLowerCase().contains("ign") || response.toLowerCase().contains("delay")) {
-				if (Double.valueOf(simResults[i]) > 0 && Double.valueOf(simResults[i]) < 500) {
-					successCases.put(allCasesList.indexOf(casesList[i]), casesList[i]);
+				for (int i = 0; i < casesList.size(); i++) {
+					if (Double.valueOf(origResults.get(i)) > 0 && Double.valueOf(origResults.get(i)) < 500) {
+						preCases.add(casesList.get(i));
+					}
+				}
+				while ((simLine = brSim.readLine()) != null && (sensLine = brSens.readLine()) != null) {
+					List<String> simList = Arrays.asList(simLine.split(","));
+					List<String> sensList = Arrays.asList(sensLine.split(","));
+					List<Double> sensVal = new ArrayList<>();
+					for (String preCase : preCases) {
+						int simIdx = casesList.indexOf(preCase);
+						int sensIdx = allCasesList.indexOf(preCase);
+						if (Double.valueOf(simList.get(simIdx)) > 0 && Double.valueOf(simList.get(simIdx)) < 500) {
+							sensVal.add(Math.abs(Double.valueOf(sensList.get(sensIdx)))); // get the absolute value
+						}
+					}
+					successCases.put(idx, sensVal);
+					idx++;
 				}
 			} else if (response.toLowerCase().contains("flame") || response.toLowerCase().contains("speed")) {
-				if (Double.valueOf(simResults[i]) > 0) {
-					successCases.put(allCasesList.indexOf(casesList[i]), casesList[i]);
+				for (int i = 0; i < casesList.size(); i++) {
+					if (Double.valueOf(origResults.get(i)) > 0) {
+						preCases.add(casesList.get(i));
+					}
+				}
+				while ((simLine = brSim.readLine()) != null && (sensLine = brSens.readLine()) != null) {
+					List<String> simList = Arrays.asList(simLine.split(","));
+					List<String> sensList = Arrays.asList(sensLine.split(","));
+					List<Double> sensVal = new ArrayList<>();
+					for (String preCase : preCases) {
+						int simIdx = casesList.indexOf(preCase);
+						int sensIdx = allCasesList.indexOf(preCase);
+						if (Double.valueOf(simList.get(simIdx)) > 0) {
+							sensVal.add(Math.abs(Double.valueOf(sensList.get(sensIdx)))); // get the absolute value
+						}
+					}
+					successCases.put(idx, sensVal);
+					idx++;
 				}
 			}
+			brSim.close();
+			brSens.close();
+			return successCases;
 		}
-		
-		return successCases;
+		return null;
 	}
 	
 	private LinkedHashMap<Integer, String> getSensParameters(File deriFile) throws IOException, MoDSSensAnaAgentException {
@@ -146,33 +190,24 @@ public class SensAnaResultsProcess {
 			}
 			br.close();
 		}
-		
 		return activeParameters;
 	}
 	
-	private LinkedHashMap<String, Double> computeSensForRxns(LinkedHashMap<Integer, String> successCases, LinkedHashMap<Integer, String> activeParameters, File sensAnaFile) throws IOException, MoDSSensAnaAgentException {
+	private LinkedHashMap<String, Double> computeSensForRxns(LinkedHashMap<Integer, List<Double>> successCases, LinkedHashMap<Integer, String> activeParameters, boolean max) throws IOException, MoDSSensAnaAgentException {
 		LinkedHashMap<String, Double> sensTableForRxns = new LinkedHashMap<String, Double>();
-		if (sensAnaFile.isFile()) {
-			BufferedReader br = new BufferedReader(new FileReader(sensAnaFile));
-			// read the header to get the list of simulation cases
-			String[] casesHeader = br.readLine().split(",");
-			String line = null;
-			int i = 1; // this indicates the start index of reaction
-			while ((line = br.readLine()) != null) {
-				double accSens = 0;
-				String[] rxnSens = line.split(",");
-				for (Integer j : successCases.keySet()) {
-					// IMPORTANT - take absolute value of sensitivity results
-					accSens = accSens + Math.abs(Double.valueOf(rxnSens[j]));
-				}
-				accSens = accSens / successCases.size();
-				sensTableForRxns.put(activeParameters.get(i), accSens);
-				i++; // move to the next reaction
+		if (max) {
+			for (Integer j : successCases.keySet()) {
+				Double maxi = Collections.max(successCases.get(j));
+				sensTableForRxns.put(activeParameters.get(j), maxi);
 			}
-			br.close();
+			return sensTableForRxns;
+		} else {
+			for (Integer j : successCases.keySet()) {
+				Double avg = successCases.get(j).stream().collect(Collectors.summingDouble(Double::doubleValue)) / successCases.get(j).size();
+				sensTableForRxns.put(activeParameters.get(j), avg);
+			}
+			return sensTableForRxns;
 		}
-		
-		return sensTableForRxns;
 	}
 	
 	private LinkedHashMap<String, Double> getTopNRxns(Map<String, Double> allRxns, Integer topN) throws IOException, MoDSSensAnaAgentException {
