@@ -300,11 +300,8 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				.concat(modsMechCalibAgentProperty.getJsonInputFileName())
 				.concat(modsMechCalibAgentProperty.getJsonFileExtension())));
 		
-		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
-		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
-		
 		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
-		mechCalibPro.processResults(destDir, mechanismIRI, reactionIRIList, String.valueOf(Utils.getTimeStamp()));
+		mechCalibPro.processResults(destDir, jsonString);
 		
 		System.out.println("Mechanism calibration results were successfully processed.");
 	}

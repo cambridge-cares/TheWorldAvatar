@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 
+import org.codehaus.plexus.util.FileUtils;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
@@ -42,6 +44,7 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
+import uk.ac.cam.cares.jps.kg.RepositoryManager;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
@@ -161,34 +164,43 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		}
 		
 		// TODO download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
-		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
-		MechanismDownload mechanismDownload = new MechanismDownload();
-		try {
-			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
-		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-				| TransformerException e) {
-			e.printStackTrace();
-		}
-		
-		
-		/**
-		 * Owl converter that converts OWL to XML file
-		 */
-//		OwlConverter owlConverter = new OwlConverter();
-//		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
-//		mechanismOwlFiles.add(mechanismIRI);
+//		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
+//		MechanismDownload mechanismDownload = new MechanismDownload();
 //		try {
-//			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath);
-//		} catch (OWLOntologyCreationException | OntoException e) {
-//			// TODO Auto-generated catch block
+//			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
+//					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
+//			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
+//		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
+//				| TransformerException e) {
 //			e.printStackTrace();
 //		}
-//		
 		
-		
-		
+		// download the mechanism owl file, and convert it to xml format
+		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
+		String mechOWL = folderTemporaryPath.concat(FRONTSLASH).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
+		RepositoryManager repo = new RepositoryManager();
+		try {
+			repo.downloadOntology(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, 
+					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), mechOWL);
+		} catch (uk.ac.cam.cares.jps.kg.OntoException e) {
+			e.printStackTrace();
+		}
+		OwlConverter owlConverter = new OwlConverter();
+		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
+		mechanismOwlFiles.add(mechOWL);
+		try {
+			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath.replace("\\", "/"));
+		} catch (OWLOntologyCreationException | OntoException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		File mechXMLToCopy = new File(mechOWL.replace(".owl", ".xml"));
+		File mechXML = new File(folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM));
+		try {
+			FileUtils.copyFile(mechXMLToCopy, mechXML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		// create model instance
 		ExecutableModel kineticsSRM = new ExecutableModel();
@@ -208,7 +220,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		// set up model exp files
 		List<String> expFiles = new ArrayList<>();
 		expFiles.add(expDataCSV.getName());
-		expFiles.add(mechanismXML.substring(mechanismXML.lastIndexOf(FRONTSLASH)));
+		expFiles.add(mechXML.getName());
 		kineticsSRM.setExpFiles(expFiles);
 		
 		// set up model case names
@@ -680,10 +692,10 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	}
 	
 	/**
-	 * Create the mechanism file used by the executable kineticsSRM. 
+	 * Create the mechanism file used by the executable kineticsSRM.
 	 * 
+	 * @param copyOfMechanismFilePath
 	 * @param mechanism
-	 * @param copyOfMechanism
 	 * @return
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
