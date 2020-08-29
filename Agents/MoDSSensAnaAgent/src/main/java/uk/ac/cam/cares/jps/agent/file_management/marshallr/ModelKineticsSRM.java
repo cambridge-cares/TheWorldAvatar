@@ -13,25 +13,16 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
-import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
@@ -151,18 +142,6 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			}
 		}
 		
-		// TODO download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
-//		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
-//		MechanismDownload mechanismDownload = new MechanismDownload();
-//		try {
-//			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-//					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-//			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
-//		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-//				| TransformerException e) {
-//			e.printStackTrace();
-//		}
-		
 		// download the mechanism owl file, and convert it to xml format
 		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
 		String mechOWL = folderTemporaryPath.concat(FRONTSLASH).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
@@ -179,7 +158,6 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		try {
 			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath.replace("\\", "/"));
 		} catch (OWLOntologyCreationException | OntoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		File mechXMLToCopy = new File(mechOWL.replace(".owl", ".xml"));

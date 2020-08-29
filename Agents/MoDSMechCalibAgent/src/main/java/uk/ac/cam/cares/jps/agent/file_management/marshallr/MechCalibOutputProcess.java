@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -28,7 +26,6 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
-import org.codehaus.plexus.util.FileUtils;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -36,9 +33,7 @@ import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter;
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
-import com.google.common.primitives.Doubles;
 
-import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
@@ -76,10 +71,6 @@ public class MechCalibOutputProcess {
 		this.updatedParams = updatedParams;
 	}
 	
-//	private String getCorrespondParam(String key) {
-//		return getUpdatedParams().get(key);
-//	}
-	
 	public static void main(String[] args) {
 		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
 		
@@ -89,7 +80,6 @@ public class MechCalibOutputProcess {
 		try {
 			mechCalibPro.processResults(jobFolderPath, jsonString);
 		} catch (IOException | MoDSMechCalibAgentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -107,7 +97,6 @@ public class MechCalibOutputProcess {
 		new File(mechFolder).mkdirs();
 		String calibSum = jobFolderPath.concat(File.separator).concat("CalibrationAlg\\CalibrationAlg_Summary.csv");
 		String paramOutputResults = mechFolder.concat(File.separator).concat("UpdatedPreExpFactors.csv");
-//		String mechXml = mechFolder+"mechanism.xml";
 		String mechOwlUpload = "mechanism_"+timeStamp+".owl";
 		
 		// download the mechanism owl file, and convert it to xml format
@@ -126,34 +115,15 @@ public class MechCalibOutputProcess {
 		try {
 			owlConverter.convert(mechanismOwlFiles, mechFolder.replace("\\", "/"));
 		} catch (OWLOntologyCreationException | com.cmclinnovations.ontochem.model.exception.OntoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		String mechXML = mechOWL.replace(".owl", ".xml");
-//		File mechXML = new File(mechXml);
-//		try {
-//			FileUtils.copyFile(mechXMLToCopy, mechXML);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		
-		// obtain the xml version of mech file TODO to be replaced with owlConverter convert
-//		MechanismDownload mechanismDownload = new MechanismDownload();
-//		try {
-//			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-//					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-//			mechanismDownload.obtainMechanism(mechanismWebPath, mechXml);
-//		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-//				| TransformerException e) {
-//			e.printStackTrace();
-//		}
 		
 		// obtain rate parameters, then update the rate params in the mech.xml
 		try {
 			obtainNewRateParams(new File(calibSum), new File(paramOutputResults), new File(mechXML), mechanismIRI, reactionIRIList);
 		} catch (XPathExpressionException | ParserConfigurationException | SAXException
 				| TransformerFactoryConfigurationError | TransformerException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -165,7 +135,6 @@ public class MechCalibOutputProcess {
 			System.out.println(mechXML.substring(0, mechXML.lastIndexOf("\\")));
 			ctmlConverter.convert(mechCtmlFiles, mechFolder);
 		} catch (OWLOntologyCreationException | com.cmclinnovations.ontochem.model.exception.OntoException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 		
@@ -175,7 +144,6 @@ public class MechCalibOutputProcess {
 					mechOwlUpload, mechFolder.concat(File.separator), Property.RDF4J_ONTOKIN_KB_URL.getPropertyName(), 
 					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName());
 		} catch (OntoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

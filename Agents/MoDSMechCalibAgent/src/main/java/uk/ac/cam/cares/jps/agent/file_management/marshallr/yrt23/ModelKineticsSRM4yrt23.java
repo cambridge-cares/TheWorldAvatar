@@ -13,31 +13,20 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 
 import org.codehaus.plexus.util.FileUtils;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
-import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ExecutableModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.IModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.InputParamsBuilder;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechanismDownload;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.ModelKineticsSRM;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
@@ -155,18 +144,6 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 			}
 		}
 		
-		// TODO download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
-//		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
-//		MechanismDownload mechanismDownload = new MechanismDownload();
-//		try {
-//			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-//					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-//			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
-//		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-//				| TransformerException e) {
-//			e.printStackTrace();
-//		}
-		
 		// download the mechanism owl file, and convert it to xml format
 		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
 		String mechOWL = folderTemporaryPath.concat(FRONTSLASH).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
@@ -183,7 +160,6 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		try {
 			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath.replace("\\", "/"));
 		} catch (OWLOntologyCreationException | OntoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		File mechXMLToCopy = new File(mechOWL.replace(".owl", ".xml"));
@@ -776,45 +752,4 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		
 		return inputParams.getName();
 	}
-	
-//	/**
-//	 * Convert a string array to a string in the format of CSV file. 
-//	 * 
-//	 * @param data
-//	 * @return
-//	 */
-//	private String convertToCSV(String[] data) {
-//	    return Stream.of(data)
-//	      .map(this::escapeSpecialCharacters)
-//	      .collect(Collectors.joining(","));
-//	}
-//	
-//	/**
-//	 * Escape special characters when converting string array to string in the format of CSV file. 
-//	 * 
-//	 * @param data
-//	 * @return
-//	 */
-//	private String escapeSpecialCharacters(String data) {
-//	    String escapedData = data.replaceAll("\\R", " ");
-//	    if (data.contains(",") || data.contains("\"") || data.contains("'")) {
-//	        data = data.replace("\"", "\"\"");
-//	        escapedData = "\"" + data + "\"";
-//	    }
-//	    return escapedData;
-//	}
-//	
-//	/**
-//	 * Check if the given folder path exist, create one if it does not exist. 
-//	 * 
-//	 * @param folderPath
-//	 * @throws IOException
-//	 * @throws MoDSMechCalibAgentException
-//	 */
-//	private void checkFolderPath(String folderPath) throws IOException, MoDSMechCalibAgentException {
-//		File folder = new File(folderPath);
-//		if (!folder.exists()) {
-//			folder.mkdir();
-//		}
-//	}
 }
