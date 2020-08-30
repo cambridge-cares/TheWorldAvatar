@@ -14,7 +14,7 @@ import org.springframework.web.util.UriUtils;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 
-public class OntoKinKG extends RepositoryManager {
+public class OntoKinKG {
 	Logger logger = Logger.getLogger(OntoKinKG.class);
 	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
@@ -36,7 +36,7 @@ public class OntoKinKG extends RepositoryManager {
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
 		String queryString = formNumOfReactionsQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
 		return testResults;
 	}
@@ -47,7 +47,7 @@ public class OntoKinKG extends RepositoryManager {
 		}
 		LinkedHashMap<String, String> queriedReactionList = new LinkedHashMap<String, String>();
 		String queryString = formAllReactionsQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
 		for (List<String> rxn : testResults) {
 			if (StringUtils.isNumeric(rxn.get(0))) {
@@ -67,7 +67,7 @@ public class OntoKinKG extends RepositoryManager {
 				reactionIRI = "<".concat(reactionIRI).concat(">");
 			}
 			String queryString = formReactionsToOptimiseQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), reactionIRI);
-			List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+			List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
 			queriedReactionList.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
 		}
@@ -81,7 +81,7 @@ public class OntoKinKG extends RepositoryManager {
 		}
 		LinkedHashMap<String, String> queriedReaction = new LinkedHashMap<String, String>();
 		String queryString = formReactionBasedOnNoQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI, reactionNo);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
 		queriedReaction.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
 		

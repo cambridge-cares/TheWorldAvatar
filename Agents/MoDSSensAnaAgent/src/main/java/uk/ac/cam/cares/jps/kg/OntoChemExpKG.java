@@ -17,7 +17,7 @@ import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 
-public class OntoChemExpKG extends RepositoryManager {
+public class OntoChemExpKG {
 	Logger logger = Logger.getLogger(OntoChemExpKG.class);
 	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
@@ -104,7 +104,7 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formConcentrationQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
 		return testResults;
 	}
@@ -114,7 +114,7 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formEquivalenceRatioQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
 		return testResults;
 	}
@@ -124,7 +124,7 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formExperimentDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
 		return testResults;
 	}
@@ -134,7 +134,7 @@ public class OntoChemExpKG extends RepositoryManager {
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
 		String queryString = formFlameSpeedExpDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
+		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
 				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
 		return testResults;
 	}
