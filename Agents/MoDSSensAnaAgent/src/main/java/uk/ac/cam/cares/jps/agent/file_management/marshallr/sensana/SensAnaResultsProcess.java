@@ -51,11 +51,15 @@ public class SensAnaResultsProcess {
 		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
 	}
 	
-	public static void main(String[] args) {
-		String jsonString = "{\"json\":{\"mods\":{\"sensAna\":{\"relPerturbation\":\"1e-3\",\"topN\":\"10\", \"maxORavg\":\"avg\"},\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"}},\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"}}}";
-		String jobFolderPath = "C:\\Users\\jb2197\\CompletedJobsMoDSSensAnaAgent_4639325665088300\\login-skylake.hpc.cam.ac.uk_6554602362814500\\output";
-	}
-	
+	/**
+	 * Process the output of a sensitivity analysis job. 
+	 * 
+	 * @param jobFolderPath
+	 * @param jsonString
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public List<String> processResults(String jobFolderPath, String jsonString) throws IOException, MoDSSensAnaAgentException {
 		String n = JSonRequestParser.getTopNForRxns(jsonString);
 		if (n != null && !n.isEmpty()) {
@@ -79,7 +83,18 @@ public class SensAnaResultsProcess {
 		return supersetRxns;
 	}
 	
-	
+	/**
+	 * Process the results of a given response. 
+	 * 
+	 * @param response
+	 * @param mechanismIRI
+	 * @param jobFolderPath
+	 * @param topN
+	 * @param max
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public List<String> processResponse(String response, String mechanismIRI, String jobFolderPath, Integer topN, boolean max) throws IOException, MoDSSensAnaAgentException {
 		if (!jobFolderPath.endsWith("\\")) {
 			jobFolderPath = jobFolderPath.concat("\\");
@@ -106,7 +121,16 @@ public class SensAnaResultsProcess {
 		return listOfRxnIRI;
 	}
 	
-	
+	/**
+	 * Identify the simulation cases that were successful. 
+	 * 
+	 * @param response
+	 * @param simFile
+	 * @param sensFile
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private LinkedHashMap<Integer, List<Double>> identifyCases(String response, File simFile, File sensFile) throws IOException, MoDSSensAnaAgentException {
 		// read the list of cases and original simulation results with original parameters
 		List<String> casesList = new ArrayList<>();
@@ -175,6 +199,14 @@ public class SensAnaResultsProcess {
 		return null;
 	}
 	
+	/**
+	 * Get the list of reactions that investigated during the sensitivity analysis. 
+	 * 
+	 * @param deriFile
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private LinkedHashMap<Integer, String> getSensParameters(File deriFile) throws IOException, MoDSSensAnaAgentException {
 		LinkedHashMap<Integer, String> activeParameters = new LinkedHashMap<Integer, String>();
 		if (deriFile.isFile()) {
@@ -192,6 +224,16 @@ public class SensAnaResultsProcess {
 		return activeParameters;
 	}
 	
+	/**
+	 * Compute the sensitivity coefficient of each reaction. 
+	 * 
+	 * @param successCases
+	 * @param activeParameters
+	 * @param max
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private LinkedHashMap<String, Double> computeSensForRxns(LinkedHashMap<Integer, List<Double>> successCases, LinkedHashMap<Integer, String> activeParameters, boolean max) throws IOException, MoDSSensAnaAgentException {
 		LinkedHashMap<String, Double> sensTableForRxns = new LinkedHashMap<String, Double>();
 		if (max) {
@@ -209,6 +251,15 @@ public class SensAnaResultsProcess {
 		}
 	}
 	
+	/**
+	 * Compute the top N sensitive reactions. 
+	 * 
+	 * @param allRxns
+	 * @param topN
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private LinkedHashMap<String, Double> getTopNRxns(Map<String, Double> allRxns, Integer topN) throws IOException, MoDSSensAnaAgentException {
 		// sort all reactions based on its sensitivity values
 		LinkedHashMap<String, Double> sortedRxns = sortRxnSens(allRxns);
@@ -223,6 +274,14 @@ public class SensAnaResultsProcess {
 		return topNRxns;
 	}
 	
+	/**
+	 * Sort the reactions based on sensitivity coefficient, from most sensitive to least sensitive. 
+	 * 
+	 * @param allRxns
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private LinkedHashMap<String, Double> sortRxnSens(Map<String, Double> allRxns) throws IOException, MoDSSensAnaAgentException {
 		// get the list of reactions based on the map of key and value
 		List<Entry<String, Double>> listOfRxns = new LinkedList<Entry<String, Double>>(allRxns.entrySet());
@@ -243,6 +302,16 @@ public class SensAnaResultsProcess {
 		return rxnsInOrder;
 	}
 	
+	/**
+	 * Write selected reactions of response to CSV file. 
+	 * 
+	 * @param mechanismIRI
+	 * @param resultsFile
+	 * @param selectedRxns
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private List<String> writeSelectedRxns(String mechanismIRI, File resultsFile, LinkedHashMap<String, Double> selectedRxns) throws IOException, MoDSSensAnaAgentException {
 		List<String[]> dataLines = new ArrayList<>();
 		dataLines.add(new String[] {"No", "RxnIRI", "RxnEquation", "RxnSensitivity"});
@@ -270,6 +339,15 @@ public class SensAnaResultsProcess {
 		return listOfRxnIRI;
 	}
 	
+	/**
+	 * Put the selected reactions from two responses into one list. 
+	 * 
+	 * @param response1
+	 * @param response2
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private List<String> mergeTwoResponses(List<String> response1, List<String> response2) throws IOException, MoDSSensAnaAgentException {
 		for (String res : response2) {
 			if (!response1.contains(res)) {

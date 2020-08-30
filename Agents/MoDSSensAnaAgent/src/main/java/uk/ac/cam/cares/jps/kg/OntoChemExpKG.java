@@ -3,16 +3,7 @@ package uk.ac.cam.cares.jps.kg;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletException;
-
 import org.apache.log4j.Logger;
-import org.eclipse.rdf4j.RDF4JException;
-import org.eclipse.rdf4j.query.BindingSet;
-import org.eclipse.rdf4j.query.TupleQuery;
-import org.eclipse.rdf4j.query.TupleQueryResult;
-import org.eclipse.rdf4j.repository.Repository;
-import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
@@ -21,19 +12,17 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 public class OntoChemExpKG {
 	Logger logger = Logger.getLogger(OntoChemExpKG.class);
 	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
-//	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-//	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
-	
-	
-	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
-//		OntoChemExpKG ontoChemExpKG = new OntoChemExpKG();
-//		ontoChemExpKG.formatExperimentDataTable("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
-	}
 	
 	public OntoChemExpKG(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
 		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
 	}
 	
+	/**
+	 * DataTable class that records the queried experimental data. 
+	 * 
+	 * @author jb2197
+	 *
+	 */
 	public final class DataTable {
 	    private final List<String> header;
 	    private final List<List<String>> data;
@@ -52,6 +41,13 @@ public class OntoChemExpKG {
 	    }
 	}
 	
+	/**
+	 * Form a data table given an IRI of experiment that measures laminar flame speed. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public DataTable formatFlameSpeedExpDataTable(String experimentIRI) throws MoDSSensAnaAgentException {
 		// TODO
 		List<String> columnTitles = new ArrayList<String>();
@@ -69,6 +65,13 @@ public class OntoChemExpKG {
 		return new DataTable(columnTitles, experimentData);
 	}
 	
+	/**
+	 * Form a data table given an IRI of experiment that measures ignition delay times. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public DataTable formatExperimentDataTable(String experimentIRI) throws MoDSSensAnaAgentException {
 		List<String> columnTitles = new ArrayList<String>();
 		List<List<String>> experimentData = new ArrayList<List<String>>();
@@ -103,8 +106,13 @@ public class OntoChemExpKG {
 		return new DataTable(columnTitles, experimentData);
 	}
 	
-	
-	
+	/**
+	 * Query the concentration of a chemical mixture. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public List<List<String>> queryConcentration(String experimentIRI) throws MoDSSensAnaAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
@@ -115,6 +123,13 @@ public class OntoChemExpKG {
 		return testResults;
 	}
 	
+	/**
+	 * Query the equivalence ratio of a fuel-oxidiser mixture. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public List<List<String>> queryEquivalenceRatio(String experimentIRI) throws MoDSSensAnaAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
@@ -125,6 +140,13 @@ public class OntoChemExpKG {
 		return testResults;
 	}
 	
+	/**
+	 * Query the ignition delay times experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public List<List<String>> queryExperimentData(String experimentIRI) throws MoDSSensAnaAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
@@ -135,6 +157,12 @@ public class OntoChemExpKG {
 		return testResults;
 	}
 	
+	/**
+	 * Query the laminar flame speed experimental data. 
+	 * @param experimentIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public List<List<String>> queryFlameSpeedExpData(String experimentIRI) throws MoDSSensAnaAgentException {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
@@ -145,6 +173,12 @@ public class OntoChemExpKG {
 		return testResults;
 	}
 	
+	/**
+	 * Form the query string of chemical mixture concentration. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
 	private String formConcentrationQuery(String experimentIRI) {
 		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat("SELECT ?molecule ?composition \n");
@@ -160,6 +194,12 @@ public class OntoChemExpKG {
 		return queryString;
 	}
 	
+	/**
+	 * Form the query string of equivalence ratio of fuel-oxidiser mixture. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
 	private String formEquivalenceRatioQuery(String experimentIRI) {
 		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat("SELECT ?Phi \n");
@@ -174,6 +214,12 @@ public class OntoChemExpKG {
 		return queryString;
 	}
 	
+	/**
+	 * Form the query string of ignition delay times experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
 	private String formExperimentDataQuery(String experimentIRI) {
 		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
@@ -213,6 +259,12 @@ public class OntoChemExpKG {
 		return queryString;
 	}
 	
+	/**
+	 * Form the query string of laminar flame speed experimental data. 
+	 * 
+	 * @param experimentIRI
+	 * @return
+	 */
 	private String formFlameSpeedExpDataQuery(String experimentIRI) {
 		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
@@ -283,5 +335,4 @@ public class OntoChemExpKG {
 		queryString = queryString.concat("}");
 		return queryString;
 	}
-	
 }

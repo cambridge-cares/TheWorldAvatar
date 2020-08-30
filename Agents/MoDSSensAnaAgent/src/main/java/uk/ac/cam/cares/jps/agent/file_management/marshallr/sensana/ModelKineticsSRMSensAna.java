@@ -739,26 +739,6 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		String ignDelayModel = getIgnDelayMethod();
 		String ignDelaySpeciesIndex = getIgnDelaySpecies();
 		
-		// -Method 0. Searching for the maximum rate of temperature increase.
-//		String ignDelayModel = "0";
-//		String ignDelaySpeciesIndex = "AR";
-		
-		// -Method 1. Searching for the maximum rate of pressure increase.
-//		String ignDelayModel = "1";
-//		String ignDelaySpeciesIndex = "AR";
-		
-		// -Method 2. Searching for the point at which temperature increase exceeds 400 K.
-//		String ignDelayModel = "2";
-//		String ignDelaySpeciesIndex = "AR";
-		
-		// -Method 3. Searching for the maximum mole fraction of species "x".
-//		String ignDelayModel = "3";
-//		String ignDelaySpeciesIndex = "OH";
-		
-		// -Method 4. Searching for the maximum rate of increase of the mole fraction of species "x".
-//		String ignDelayModel = "4";
-//		String ignDelaySpeciesIndex = "CO";
-		
 		
 		String oxidiser = NAME_OXIDISER; // this name is to be further parameterised, also to be connected to MoDS_Inputs.xml
 		for (int i = 0; i < headerLine.length; i++) {

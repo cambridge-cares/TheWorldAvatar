@@ -63,21 +63,6 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSSensAna Agent";
 	
-	public static void main(String[] args) {
-		MoDSSensAnaAgent test = new MoDSSensAnaAgent();
-		test.initAgentProperty();
-		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = test.getNewJobFolderName(modsSensAnaAgentProperty.getHpcAddress(), timeStamp);
-		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"},\"mods\":{\"ignDelayOption\":{\"method\":\"1\", \"species\":\"AR\"}, \"flameSpeedOption\":{\"tranModel\":\"mix-average\"}, \"sensAna\":{\"topN\":\"10\", \"relPerturbation\":\"1e-3\"}}}}";
-		try {
-			test.setUpJob(jsonString);
-		} catch (IOException | MoDSSensAnaAgentException | SlurmJobException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-	
-	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
 	 * annotations of this class. 

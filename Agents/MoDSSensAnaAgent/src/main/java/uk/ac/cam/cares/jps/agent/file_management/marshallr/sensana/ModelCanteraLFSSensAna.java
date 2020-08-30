@@ -68,7 +68,6 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI,
 			List<String> reactionIRIList) throws IOException, MoDSSensAnaAgentException {
-		// TODO Auto-generated method stub
 		// check if the target folder exist
 		checkFolderPath(folderTemporaryPath);
 		
@@ -151,7 +150,6 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 
 	@Override
 	public List<String> formFiles(ExecutableModel exeModel, String otherOptions) throws IOException, MoDSSensAnaAgentException {
-		// TODO Auto-generated method stub
 		// check if the target folder exist
 		checkFolderPath(folderInitialPath);
 		checkFolderPath(folderAllPath);
@@ -196,7 +194,6 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	@Override
 	public List<String> createFolderInitial(List<String> activeParameters)
 			throws IOException, MoDSSensAnaAgentException {
-		// TODO Auto-generated method stub
 		// set the passive parameter csv file path
 		File passiveParametersAndOutputsFilePath = new File(folderInitialPath
 				.concat(FRONTSLASH+FILE_MODS_PREFIX+UNDERSCORE+modelName+UNDERSCORE+FILE_MODS_PASSIVE_SUFFIX));
@@ -230,7 +227,6 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	@Override
 	public List<String> createFolderAll(List<String> processedActiveParam)
 			throws IOException, MoDSSensAnaAgentException {
-		// TODO Auto-generated method stub
 		// set the mechanism file, element file and lfsSimulation file path
 		File copyOfMechanismFilePath = new File(folderAllPath.concat(FRONTSLASH+FILE_MECHANISM_CANTERA));
 		File elementData = new File(folderAllPath.concat(FRONTSLASH+FILE_MECHANISM_ELEMENT));
@@ -257,7 +253,6 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 
 	@Override
 	public void setUpMoDS() throws IOException, MoDSSensAnaAgentException {
-		// TODO Auto-generated method stub
 		// modify algorithms with new output response to update response_param_subtypes
 		updateAlgorithms("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		

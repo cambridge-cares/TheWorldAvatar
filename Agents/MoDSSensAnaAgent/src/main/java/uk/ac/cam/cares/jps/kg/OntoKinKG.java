@@ -1,11 +1,8 @@
 package uk.ac.cam.cares.jps.kg;
 
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-
-import javax.servlet.ServletException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -18,23 +15,17 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 public class OntoKinKG {
 	Logger logger = Logger.getLogger(OntoKinKG.class);
 	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
-//	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-//	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
-//	public static final String DC = "PREFIX dc: <http://purl.org/dc/elements/1.1/> \n";
-//	public static final String REACTION_MECHANISM = "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> \n";
-	
-	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
-//		OntoKinKG ontoKinKG = new OntoKinKG();
-//		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237";
-//		ontoKinKG.queryNumOfReactions(mechanismIRI);
-	}
 	
 	public OntoKinKG(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
 		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
 	}
 	
 	/**
-	 * Reads the 
+	 * Query number of reactions in a given mechanism. 
+	 * 
+	 * @param mechanismIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
 	 */
 	public List<List<String>> queryNumOfReactions(String mechanismIRI) throws MoDSSensAnaAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
@@ -46,6 +37,13 @@ public class OntoKinKG {
 		return testResults;
 	}
 	
+	/**
+	 * Query all reactions in a given mechanism. 
+	 * 
+	 * @param mechanismIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public LinkedHashMap<String, String> queryAllReactions(String mechanismIRI) throws MoDSSensAnaAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
@@ -62,6 +60,14 @@ public class OntoKinKG {
 		return queriedReactionList;
 	}
 	
+	/**
+	 * Query the reaction equations for optimisation given a mechanism and a list of reactions. 
+	 * 
+	 * @param mechanismIRI
+	 * @param reactionIRIList
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public LinkedHashMap<String, String> queryReactionsToOptimise(String mechanismIRI, List<String> reactionIRIList) throws MoDSSensAnaAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
@@ -80,6 +86,14 @@ public class OntoKinKG {
 		return queriedReactionList;
 	}
 	
+	/**
+	 * Query reaction equation given its sequence number. 
+	 * 
+	 * @param mechanismIRI
+	 * @param reactionNo
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public LinkedHashMap<String, String> queryReactionBasedOnNo(String mechanismIRI, String reactionNo) throws MoDSSensAnaAgentException {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
@@ -93,11 +107,27 @@ public class OntoKinKG {
 		return queriedReaction;
 	}
 	
+	/**
+	 * Download a mechanism given its name. 
+	 * 
+	 * @param aboxFileName
+	 * @param contextURL
+	 * @param aboxFilePath
+	 * @throws MoDSSensAnaAgentException
+	 * @throws OntoException
+	 */
 	public void downloadMechanism(String aboxFileName, String contextURL, String aboxFilePath) throws MoDSSensAnaAgentException, OntoException {
 		RepositoryManager.downloadOntology(modsSensAnaAgentProperty.getRdf4jServerURL(), aboxFileName, contextURL, 
 				modsSensAnaAgentProperty.getRdf4jRepositoryOntoKin(), aboxFilePath);
 	}
 	
+	/**
+	 * Form the query string for number of reactions. 
+	 * 
+	 * @param mechanismIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private String formNumOfReactionsQuery(String mechanismIRI) throws MoDSSensAnaAgentException {
 		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
 		queryString = queryString.concat(Property.PREFIX_BINDING_REACTION_MECHANISM.getPropertyName());
@@ -112,6 +142,13 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
+	/**
+	 * Form the query string for list of all reactions. 
+	 * 
+	 * @param mechanismIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private String formAllReactionsQuery(String mechanismIRI) throws MoDSSensAnaAgentException {
 		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
 		queryString = queryString.concat(Property.PREFIX_BINDING_REACTION_MECHANISM.getPropertyName());
@@ -129,6 +166,13 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
+	/**
+	 * Form the query string for list of reactions to be optimised. 
+	 * 
+	 * @param reactionIRI
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private String formReactionsToOptimiseQuery(String reactionIRI) throws MoDSSensAnaAgentException {
 		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
 		queryString = queryString.concat(Property.PREFIX_BINDING_DC.getPropertyName());
@@ -140,6 +184,13 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
+	/**
+	 * Form the query string for reaction equation given its sequence number. 
+	 * @param mechanismIRI
+	 * @param reactionNo
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private String formReactionBasedOnNoQuery(String mechanismIRI, String reactionNo) throws MoDSSensAnaAgentException {
 		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
 		queryString = queryString.concat(Property.PREFIX_BINDING_REACTION_MECHANISM.getPropertyName());
@@ -157,6 +208,12 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
+	/**
+	 * Encode a reaction equation into URL. 
+	 * 
+	 * @param equation
+	 * @return
+	 */
 	private String encodeReactionEquation(String equation) {
 	    try {
 	    	equation = UriUtils.encodePath(equation, "UTF-8")

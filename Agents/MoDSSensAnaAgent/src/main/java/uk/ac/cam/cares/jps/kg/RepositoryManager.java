@@ -22,25 +22,14 @@ import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFHandler;
 import org.eclipse.rdf4j.rio.Rio;
 import org.semanticweb.owlapi.model.IRI;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 
 public class RepositoryManager {
 	static Logger logger = Logger.getLogger(RepositoryManager.class);
-//	private static String ONTOKIN_TBOX_IRI;
-//	private static String SERVER_URL;
-//	private static String REPOSITORY_ID;
-//	private static String ONTOKIN_KB_URL;
-//	private static String ONTOKIN_KB_ABOX_FILE_PATH;
 	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
 	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
-
-//	private static String ONTOCHEMEXP_TBOX_IRI;
-//	private static String ONTOCHEMEXP_KB_URL;
-//	private static String ONTOCHEMEXP_ABOX_FILE_PATH;
-
+	
 	/**
 	 * Loads an abox to the ontology KB repository. It also creates</br>
 	 * a context, which is a necessary feature to delete the abox</br>
@@ -152,7 +141,6 @@ public class RepositoryManager {
 	 * @param queryString
 	 * @return Set<String>
 	 */
-
 	public static List<String> queryRepositoryExperimentalData(String serverURL, String repositoryID, String queryString)
 			throws OntoException, MoDSSensAnaAgentException {
 		List<String> results = new ArrayList<>();
@@ -237,7 +225,16 @@ public class RepositoryManager {
 		}
 		return json.toString();
 	}
-
+	
+	/**
+	 * Query a given repository using a given SPARQL query string. 
+	 * 
+	 * @param serverURL
+	 * @param repositoryID
+	 * @param queryString
+	 * @return
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public static List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString)
 			throws MoDSSensAnaAgentException {
 		List<List<String>> processedResultList = new ArrayList<List<String>>();
@@ -270,45 +267,7 @@ public class RepositoryManager {
 		}
 		return processedResultList;
 	}
-
-//	/**
-//	 * Initialises property values.
-//	 * 
-//	 * @throws OntoException
-//	 */
-//	private static void init() throws OntoException {
-//		if (applicationContext == null) {
-//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-//		}
-		// need to modify this part
-//		if (ontochemexpKB == null) {
-//			ontochemexpKB = applicationContext.getBean(OntoChemExp.class);
-//		}
-		// get the property values
-//		ONTOCHEM_KB_URL = ontoChemKB.getOntoKinKbURL();
-//		ONTOCHEM_TBOX_IRI = ontoChemKB.getOntoKinKbTBoxIri();
-//		ONTOCHEM = "PREFIX ontochem: <"+ONTOCHEM_TBOX_IRI+"#> \n";
-//		SERVER_URL = ontoChemKB.getOntoChemKBRDF4JServerUrl();
-//		REPOSITORY_ID = ontoChemKB.getOntoChemKBRDF4JRepositoryId();
-//		ONTOCHEM_KB_ABOX_FILE_PATH = ontoChemKB.getOntoChemKBABoxFilePath();
-//		if(ONTOCHEM_KB_URL==null || ONTOCHEM_KB_URL.isEmpty()){
-//			logger.info("The value of the property ontochem.kb.url in the jps-project.properties file is null or empty.");
-//			throw new OntoException("The value of the property ontochem.kb.url in the jps-project.properties file is null or empty.");
-//		}
-//		if(ONTOCHEM_TBOX_IRI==null || ONTOCHEM_TBOX_IRI.isEmpty()){
-//			logger.info("The value of the property ontochem.kb.tbox.iri in the jps-project.properties file is null or empty.");
-//			throw new OntoException("The value of the property ontochem.kb.tbox.iri in the jps-project.properties file is null or empty.");
-//		}
-//		if(SERVER_URL==null || SERVER_URL.isEmpty()){
-//			logger.info("The value of the property ontochem.kb.rdf4j.server.url in the jps-project.properties file is null or empty.");
-//			throw new OntoException("The value of the property ontochem.kb.rdf4j.server.url in the jps-project.properties file is null or empty.");
-//		}
-//		if(REPOSITORY_ID==null || REPOSITORY_ID.isEmpty()){
-//			logger.info("The value of the property ontochem.kb.rdf4j.repository.id in the jps-project.properties file is null or empty.");
-//			throw new OntoException("The value of the property ontochem.kb.rdf4j.repository.id in the jps-project.properties file is null or empty.");
-//		}
-//	}
-
+	
 	/**
 	 * Checks the validity of the following parameters:</br>
 	 * 1. The Server URL.</br>
