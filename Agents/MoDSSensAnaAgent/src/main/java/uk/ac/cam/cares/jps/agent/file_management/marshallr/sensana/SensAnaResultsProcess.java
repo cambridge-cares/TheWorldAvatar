@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
@@ -28,6 +29,7 @@ public class SensAnaResultsProcess {
 	private Logger logger = LoggerFactory.getLogger(SensAnaResultsProcess.class);
 	private String topN = "10";
 	private boolean max = false;
+	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
 	
 	public String getTopN() {
 		return topN;
@@ -45,16 +47,13 @@ public class SensAnaResultsProcess {
 		this.max = max;
 	}
 	
+	public SensAnaResultsProcess(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
+		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
+	}
+	
 	public static void main(String[] args) {
 		String jsonString = "{\"json\":{\"mods\":{\"sensAna\":{\"relPerturbation\":\"1e-3\",\"topN\":\"10\", \"maxORavg\":\"avg\"},\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"}},\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\"}}}";
 		String jobFolderPath = "C:\\Users\\jb2197\\CompletedJobsMoDSSensAnaAgent_4639325665088300\\login-skylake.hpc.cam.ac.uk_6554602362814500\\output";
-		SensAnaResultsProcess test = new SensAnaResultsProcess();
-		try {
-			test.processResults(jobFolderPath, jsonString);
-		} catch (IOException | MoDSSensAnaAgentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public List<String> processResults(String jobFolderPath, String jsonString) throws IOException, MoDSSensAnaAgentException {
@@ -249,7 +248,7 @@ public class SensAnaResultsProcess {
 		dataLines.add(new String[] {"No", "RxnIRI", "RxnEquation", "RxnSensitivity"});
 		List<String> listOfRxnIRI = new ArrayList<>();
 		for (String rxn : selectedRxns.keySet()) {
-			OntoKinKG ontoKinKg = new OntoKinKG();
+			OntoKinKG ontoKinKg = new OntoKinKG(modsSensAnaAgentProperty);
 			LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn.substring(rxn.lastIndexOf("_")+1));
 			String iri = new String();
 			String equ = new String();

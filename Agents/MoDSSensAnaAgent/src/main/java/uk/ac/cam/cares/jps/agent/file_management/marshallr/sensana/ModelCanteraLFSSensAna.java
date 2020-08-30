@@ -25,6 +25,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ExecutableModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.IModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
@@ -39,6 +40,8 @@ import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelCanteraLFSSensAna.class);
+	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -56,6 +59,11 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 	public void setTranModel(String tranModel) {
 		this.tranModel = tranModel;
 	}
+	
+	public ModelCanteraLFSSensAna(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
+		super(modsSensAnaAgentProperty);
+		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
+	}
 
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI,
@@ -65,14 +73,14 @@ public class ModelCanteraLFSSensAna extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsSensAnaAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryAllReactions(mechanismIRI);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG();
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsSensAnaAgentProperty);
 			DataTable dataTable = ocekg.formatFlameSpeedExpDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());

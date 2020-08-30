@@ -11,23 +11,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.web.util.UriUtils;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 
 public class OntoKinKG {
 	Logger logger = Logger.getLogger(OntoKinKG.class);
-	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
-	public static final String DC = "PREFIX dc: <http://purl.org/dc/elements/1.1/> \n";
-	public static final String REACTION_MECHANISM = "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> \n";
+	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+//	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+//	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
+//	public static final String DC = "PREFIX dc: <http://purl.org/dc/elements/1.1/> \n";
+//	public static final String REACTION_MECHANISM = "PREFIX reaction_mechanism: <http://www.theworldavatar.com/ontology/ontocape/material/substance/reaction_mechanism.owl#> \n";
 	
 	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
-		OntoKinKG ontoKinKG = new OntoKinKG();
-		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237";
-		ontoKinKG.queryNumOfReactions(mechanismIRI);
+//		OntoKinKG ontoKinKG = new OntoKinKG();
+//		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237";
+//		ontoKinKG.queryNumOfReactions(mechanismIRI);
 	}
 	
-//	
+	public OntoKinKG(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
+		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
+	}
+	
 	/**
 	 * Reads the 
 	 */
@@ -35,9 +40,9 @@ public class OntoKinKG {
 		if(!mechanismIRI.trim().startsWith("<") && !mechanismIRI.trim().endsWith(">")){
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
-		String queryString = formNumOfReactionsQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formNumOfReactionsQuery(mechanismIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoKin(), queryString);
 		return testResults;
 	}
 	
@@ -46,9 +51,9 @@ public class OntoKinKG {
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
 		LinkedHashMap<String, String> queriedReactionList = new LinkedHashMap<String, String>();
-		String queryString = formAllReactionsQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formAllReactionsQuery(mechanismIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoKin(), queryString);
 		for (List<String> rxn : testResults) {
 			if (StringUtils.isNumeric(rxn.get(0))) {
 				queriedReactionList.put(rxn.get(0), encodeReactionEquation(rxn.get(1)));
@@ -66,9 +71,9 @@ public class OntoKinKG {
 			if(!reactionIRI.trim().startsWith("<") && !reactionIRI.trim().endsWith(">")){
 				reactionIRI = "<".concat(reactionIRI).concat(">");
 			}
-			String queryString = formReactionsToOptimiseQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), reactionIRI);
-			List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+			String queryString = formReactionsToOptimiseQuery(reactionIRI);
+			List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+					modsSensAnaAgentProperty.getRdf4jRepositoryOntoKin(), queryString);
 			queriedReactionList.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
 		}
 		
@@ -80,18 +85,23 @@ public class OntoKinKG {
 			mechanismIRI = "<".concat(mechanismIRI).concat(">");
 		}
 		LinkedHashMap<String, String> queriedReaction = new LinkedHashMap<String, String>();
-		String queryString = formReactionBasedOnNoQuery(Property.PREFIX_BINDING_ONTOKIN.getPropertyName(), mechanismIRI, reactionNo);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formReactionBasedOnNoQuery(mechanismIRI, reactionNo);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoKin(), queryString);
 		queriedReaction.put(testResults.get(1).get(0), encodeReactionEquation(testResults.get(1).get(1)));
 		
 		return queriedReaction;
 	}
 	
-	private String formNumOfReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSSensAnaAgentException {
-		String queryString = prefixBindingOntoKin;
-		queryString = queryString.concat(REACTION_MECHANISM);
-		queryString = queryString.concat(RDF);
+	public void downloadMechanism(String aboxFileName, String contextURL, String aboxFilePath) throws MoDSSensAnaAgentException, OntoException {
+		RepositoryManager.downloadOntology(modsSensAnaAgentProperty.getRdf4jServerURL(), aboxFileName, contextURL, 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoKin(), aboxFilePath);
+	}
+	
+	private String formNumOfReactionsQuery(String mechanismIRI) throws MoDSSensAnaAgentException {
+		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_REACTION_MECHANISM.getPropertyName());
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
 		queryString = queryString.concat("SELECT (COUNT(?reaction) AS ?numOfReactions) \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ?reaction rdf:type reaction_mechanism:ChemicalReaction . \n");
@@ -102,11 +112,11 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
-	private String formAllReactionsQuery(String prefixBindingOntoKin, String mechanismIRI) throws MoDSSensAnaAgentException {
-		String queryString = prefixBindingOntoKin;
-		queryString = queryString.concat(REACTION_MECHANISM);
-		queryString = queryString.concat(RDF);
-		queryString = queryString.concat(DC);
+	private String formAllReactionsQuery(String mechanismIRI) throws MoDSSensAnaAgentException {
+		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_REACTION_MECHANISM.getPropertyName());
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
+		queryString = queryString.concat(Property.PREFIX_BINDING_DC.getPropertyName());
 		queryString = queryString.concat("SELECT ?No ?Equation \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ?reaction rdf:type reaction_mechanism:ChemicalReaction . \n");
@@ -119,9 +129,9 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
-	private String formReactionsToOptimiseQuery(String prefixBindingOntoKin, String reactionIRI) throws MoDSSensAnaAgentException {
-		String queryString = prefixBindingOntoKin;
-		queryString = queryString.concat(DC);
+	private String formReactionsToOptimiseQuery(String reactionIRI) throws MoDSSensAnaAgentException {
+		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_DC.getPropertyName());
 		queryString = queryString.concat("SELECT ?reactionNo ?reactionEquation \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(reactionIRI).concat(" dc:identifier ?reactionNo . \n");
@@ -130,11 +140,11 @@ public class OntoKinKG {
 		return queryString;
 	}
 	
-	private String formReactionBasedOnNoQuery(String prefixBindingOntoKin, String mechanismIRI, String reactionNo) throws MoDSSensAnaAgentException {
-		String queryString = prefixBindingOntoKin;
-		queryString = queryString.concat(REACTION_MECHANISM);
-		queryString = queryString.concat(RDF);
-		queryString = queryString.concat(DC);
+	private String formReactionBasedOnNoQuery(String mechanismIRI, String reactionNo) throws MoDSSensAnaAgentException {
+		String queryString = Property.PREFIX_BINDING_ONTOKIN.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_REACTION_MECHANISM.getPropertyName());
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
+		queryString = queryString.concat(Property.PREFIX_BINDING_DC.getPropertyName());
 		queryString = queryString.concat("SELECT ?Reaction ?Equation \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ?Reaction rdf:type reaction_mechanism:ChemicalReaction . \n");

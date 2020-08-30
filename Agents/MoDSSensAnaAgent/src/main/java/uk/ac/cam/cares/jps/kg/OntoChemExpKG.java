@@ -14,18 +14,24 @@ import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 
 public class OntoChemExpKG {
 	Logger logger = Logger.getLogger(OntoChemExpKG.class);
-	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
+	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+//	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
+//	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
 	
 	
 	public static void main(String[] args) throws ServletException, MoDSSensAnaAgentException {
-		OntoChemExpKG ontoChemExpKG = new OntoChemExpKG();
-		ontoChemExpKG.formatExperimentDataTable("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
+//		OntoChemExpKG ontoChemExpKG = new OntoChemExpKG();
+//		ontoChemExpKG.formatExperimentDataTable("https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_684814261441600");
+	}
+	
+	public OntoChemExpKG(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
+		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
 	}
 	
 	public final class DataTable {
@@ -103,9 +109,9 @@ public class OntoChemExpKG {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formConcentrationQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formConcentrationQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
@@ -113,9 +119,9 @@ public class OntoChemExpKG {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formEquivalenceRatioQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formEquivalenceRatioQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
@@ -123,9 +129,9 @@ public class OntoChemExpKG {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formExperimentDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formExperimentDataQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
@@ -133,14 +139,14 @@ public class OntoChemExpKG {
 		if(!experimentIRI.trim().startsWith("<") && !experimentIRI.trim().endsWith(">")){
 			experimentIRI = "<".concat(experimentIRI).concat(">");
 		}
-		String queryString = formFlameSpeedExpDataQuery(Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName(), experimentIRI);
-		List<List<String>> testResults = RepositoryManager.queryRepository(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-				Property.RDF4J_ONTOCHEMEXP_REPOSITORY_ID.getPropertyName(), queryString);
+		String queryString = formFlameSpeedExpDataQuery(experimentIRI);
+		List<List<String>> testResults = RepositoryManager.queryRepository(modsSensAnaAgentProperty.getRdf4jServerURL(), 
+				modsSensAnaAgentProperty.getRdf4jRepositoryOntoChemExp(), queryString);
 		return testResults;
 	}
 	
-	private String formConcentrationQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
+	private String formConcentrationQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat("SELECT ?molecule ?composition \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
@@ -154,8 +160,8 @@ public class OntoChemExpKG {
 		return queryString;
 	}
 	
-	private String formEquivalenceRatioQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
+	private String formEquivalenceRatioQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
 		queryString = queryString.concat("SELECT ?Phi \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
@@ -168,9 +174,9 @@ public class OntoChemExpKG {
 		return queryString;
 	}
 	
-	private String formExperimentDataQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
-		queryString = queryString.concat(RDF);
+	private String formExperimentDataQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
 		queryString = queryString.concat("SELECT ?Temperature ?UnitTemp ?Pressure ?UnitPres ?IgnitionDelay ?UnitIgni \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasDataGroup ?dataGroup . \n");
@@ -207,9 +213,9 @@ public class OntoChemExpKG {
 		return queryString;
 	}
 	
-	private String formFlameSpeedExpDataQuery(String prefixBindingOntoChemExp, String experimentIRI) {
-		String queryString = prefixBindingOntoChemExp;
-		queryString = queryString.concat(RDF);
+	private String formFlameSpeedExpDataQuery(String experimentIRI) {
+		String queryString = Property.PREFIX_BINDING_ONTOCHEMEXP.getPropertyName();
+		queryString = queryString.concat(Property.PREFIX_BINDING_RDF.getPropertyName());
 		queryString = queryString.concat("SELECT ?Fuel ?Oxidizer ?Phi ?Temperature ?UnitTemp ?Pressure ?UnitPres ?LaminarFlameSpeed ?UnitLFS ?LFSErrors \n");
 		queryString = queryString.concat("WHERE { \n");
 		queryString = queryString.concat("    ").concat(experimentIRI).concat(" OntoChemExp:hasCommonProperties ?commonProperties . \n");
