@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -424,6 +425,11 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() throws SlurmJobException{
+		if(!hostAvailabilityCheck(getHpcAddress(), 22)){
+			System.out.println("The HPC server with address " + getHpcAddress() + " is not available.");
+			session = null;
+			return;
+		}
 		scheduledIteration++;
 		try {
 			if (session == null || scheduledIteration%10==0) {
@@ -462,15 +468,19 @@ public class JobSubmission{
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		} catch(SftpException e){
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		} catch(JSchException e){
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		}
 	}
@@ -900,14 +910,25 @@ public class JobSubmission{
 		System.out.println("Closing the channel.");
 		return outputs;
 	}
-	
+
 	/**
-	 * Decodes the password.
+	 * Indicates if a server is online.
 	 * 
-	 * @param password encrypted password.
+	 * @param server refers to the server address
+	 * @param port referes to the port number
 	 * @return
 	 */
-	private String getDecipheredPassword(String password){
-		return password.replace("l", "1").replace("_", "").replace("7", "3").replace("3", "4");
+	public boolean hostAvailabilityCheck(String server, int port) {
+		boolean available = true;
+		try {
+			(new Socket(server, port)).close();
+		} catch (UnknownHostException e) {
+			available = false;
+		} catch (IOException e) {
+			available = false;
+		} catch (NullPointerException e) {
+			available = false;
+		}
+		return available;
 	}
 }
