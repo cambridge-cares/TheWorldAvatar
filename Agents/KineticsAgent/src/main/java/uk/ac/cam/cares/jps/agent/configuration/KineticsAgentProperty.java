@@ -63,7 +63,12 @@ public class KineticsAgentProperty {
          */
         @Value("${agent.scripts.location}")
         private String agentScriptsLocation;
-        
+    
+    /**
+     * File that contains the results of a job.
+     */
+    @Value("${reference.output.json.file}")
+    private String referenceOutputJsonFile;
      
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
@@ -145,5 +150,14 @@ public class KineticsAgentProperty {
             }
         	return userHome.concat(agentScriptsLocation);
         }
+
+        /**
+         * Returns the name of reference output JSON file. 
+         * 
+         * @return
+         */
+		public String getReferenceOutputJsonFile() {
+			return referenceOutputJsonFile;
+		}
 }
 
