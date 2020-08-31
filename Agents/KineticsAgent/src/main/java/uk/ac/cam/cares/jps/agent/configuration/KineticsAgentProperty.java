@@ -139,7 +139,11 @@ public class KineticsAgentProperty {
          * @return python scripts directory
          */
         public String getAgentScriptsLocation() {
-            return agentScriptsLocation;
+            String userHome = System.getProperty("user.home");
+            if(userHome.contains("\\")){
+            	userHome = userHome.replace("\\", "/");
+            }
+        	return userHome.concat(agentScriptsLocation);
         }
 }
 
