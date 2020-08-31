@@ -46,7 +46,6 @@ import com.jcraft.jsch.SftpException;
 public class MoDSMechCalibAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSMechCalibAgent.class);
-	String server = "login-cpu.hpc.cam.ac.uk";
 	private File workspace;
 	
 	public static JobSubmission jobSubmission;
@@ -289,6 +288,13 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
 	
+	/**
+	 * Update the mechanism with optimised rate parameters. 
+	 * 
+	 * @param jobFolder
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public void updateCalibMech(File jobFolder) throws IOException, MoDSMechCalibAgentException {
 		File outputFile = new File(jobFolder.getAbsolutePath());
 		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(modsMechCalibAgentProperty.getOutputFileName()).concat(modsMechCalibAgentProperty.getOutputFileExtension());
@@ -300,12 +306,20 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				.concat(modsMechCalibAgentProperty.getJsonInputFileName())
 				.concat(modsMechCalibAgentProperty.getJsonFileExtension())));
 		
-		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
+		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess(modsMechCalibAgentProperty);
 		mechCalibPro.processResults(destDir, jsonString);
 		
 		System.out.println("Mechanism calibration results were successfully processed.");
 	}
 	
+	/**
+	 * Read content from json file. 
+	 * 
+	 * @param input
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
 	private String readJsonInput(File input) throws IOException, MoDSMechCalibAgentException {
 		String jsonString = new String();
 		BufferedReader br = null;
@@ -392,7 +406,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws MoDSMechCalibAgentException
 	 */
 	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSMechCalibAgentException {
-		MoDSFileManagement fileMagt = new MoDSFileManagement();
+		MoDSFileManagement fileMagt = new MoDSFileManagement(modsMechCalibAgentProperty);
 		
 		String jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
 		

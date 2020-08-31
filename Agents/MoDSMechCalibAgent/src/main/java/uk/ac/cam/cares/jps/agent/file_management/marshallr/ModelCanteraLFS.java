@@ -22,12 +22,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.primitives.Doubles;
-
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
@@ -39,6 +37,8 @@ import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelCanteraLFS.class);
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -59,6 +59,11 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		this.tranModel = tranModel;
 	}
 	
+	public ModelCanteraLFS(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		super(modsMechCalibAgentProperty);
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
+	}
+	
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI,
 			List<String> reactionIRIList) throws IOException, MoDSMechCalibAgentException {
@@ -66,14 +71,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsMechCalibAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryReactionsToOptimise(mechanismIRI, reactionIRIList);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG();
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsMechCalibAgentProperty);
 			DataTable dataTable = ocekg.formatFlameSpeedExpDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());

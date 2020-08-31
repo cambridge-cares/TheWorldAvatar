@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ExecutableModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.IModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.InputParamsBuilder;
@@ -33,11 +34,12 @@ import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentExcepti
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
-import uk.ac.cam.cares.jps.kg.RepositoryManager;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRM4yrt23.class);
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -63,6 +65,11 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 
 	public void setIgnDelaySpecies(String ignDelaySpecies) {
 		this.ignDelaySpecies = ignDelaySpecies;
+	}
+	
+	public ModelKineticsSRM4yrt23(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		super(modsMechCalibAgentProperty);
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
 	}
 	
 	/**
@@ -94,14 +101,14 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsMechCalibAgentProperty);
 //		// query active parameters
 //		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryReactionsToOptimise(mechanismIRI, reactionIRIList);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG();
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsMechCalibAgentProperty);
 			DataTable dataTable = ocekg.formatExperimentDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());
@@ -147,12 +154,10 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		// download the mechanism owl file, and convert it to xml format
 		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
 		String mechOWL = folderTemporaryPath.concat(FRONTSLASH).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
-		RepositoryManager repo = new RepositoryManager();
 		try {
-			repo.downloadOntology(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, 
-					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), mechOWL);
-		} catch (uk.ac.cam.cares.jps.kg.OntoException e) {
-			e.printStackTrace();
+			ontoKinKG.downloadMechanism(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, mechOWL);
+		} catch (uk.ac.cam.cares.jps.kg.OntoException e1) {
+			e1.printStackTrace();
 		}
 		OwlConverter owlConverter = new OwlConverter();
 		ArrayList<String> mechanismOwlFiles = new ArrayList<>();

@@ -87,6 +87,12 @@ public class MoDSMechCalibAgentProperty {
 	
 	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
+	
+	@Value("${kg.upload.rdf4j.server.url}")
+	private String kgUploadRdf4jServerUrl;
+	
+	@Value("${kg.upload.rdf4j.repository.ontokin}")
+	private String kgUploadRdf4jRepositoryOntoKin;
 
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
@@ -182,6 +188,14 @@ public class MoDSMechCalibAgentProperty {
 
 	public int getAgentPeriodicActionInterval() {
 		return agentPeriodicActionInterval;
+	}
+
+	public String getKgUploadRdf4jServerUrl() {
+		return kgUploadRdf4jServerUrl;
+	}
+
+	public String getKgUploadRdf4jRepositoryOntoKin() {
+		return kgUploadRdf4jRepositoryOntoKin;
 	}
 	
 }

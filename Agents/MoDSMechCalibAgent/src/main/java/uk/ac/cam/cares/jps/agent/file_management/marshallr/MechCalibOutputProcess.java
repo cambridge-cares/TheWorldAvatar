@@ -34,15 +34,17 @@ import org.xml.sax.SAXException;
 import com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter;
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Utils;
 import uk.ac.cam.cares.jps.kg.OntoException;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
-import uk.ac.cam.cares.jps.kg.RepositoryManager;
 
 public class MechCalibOutputProcess {
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
+	
 	private LinkedHashMap<String, String> origParams = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> multipliers = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> updatedParams = new LinkedHashMap<String, String>();
@@ -71,20 +73,31 @@ public class MechCalibOutputProcess {
 		this.updatedParams = updatedParams;
 	}
 	
-	public static void main(String[] args) {
-		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
-		
-		String jobFolderPath = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\Temp";
-		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\",\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264155_173\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264148_166\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264020_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264017_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264156_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264154_172\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264157_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264152_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264053_71\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264158_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264104_122\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264135_153\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264142_160\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264134_152\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264165_183\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264137_155\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264159_177\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264136_154\"]},\"mods\":{\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"},\"sensAna\":{\"topN\":\"10\",\"relPerturbation\":\"1e-3\"}}}}";
-		
-		try {
-			mechCalibPro.processResults(jobFolderPath, jsonString);
-		} catch (IOException | MoDSMechCalibAgentException e) {
-			e.printStackTrace();
-		}
+	public MechCalibOutputProcess(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
 	}
 	
+//	public static void main(String[] args) {
+//		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
+//		
+//		String jobFolderPath = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\Temp";
+//		String jsonString = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\",\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264155_173\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264148_166\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264020_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264017_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264156_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264154_172\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264157_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264152_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264053_71\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264158_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264104_122\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264135_153\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264142_160\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264134_152\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264165_183\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264137_155\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264159_177\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264136_154\"]},\"mods\":{\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"},\"sensAna\":{\"topN\":\"10\",\"relPerturbation\":\"1e-3\"}}}}";
+//		
+//		try {
+//			mechCalibPro.processResults(jobFolderPath, jsonString);
+//		} catch (IOException | MoDSMechCalibAgentException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
+	/**
+	 * Process the output of a mechanism calibration job. 
+	 * 
+	 * @param jobFolderPath
+	 * @param jsonString
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public void processResults(String jobFolderPath, String jsonString) throws IOException, MoDSMechCalibAgentException {
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
@@ -102,12 +115,11 @@ public class MechCalibOutputProcess {
 		// download the mechanism owl file, and convert it to xml format
 		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
 		String mechOWL = mechFolder.concat(File.separator).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
-		RepositoryManager repo = new RepositoryManager();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsMechCalibAgentProperty);
 		try {
-			repo.downloadOntology(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, 
-					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), mechOWL);
-		} catch (OntoException e) {
-			e.printStackTrace();
+			ontoKinKG.downloadMechanism(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, mechOWL);
+		} catch (OntoException e3) {
+			e3.printStackTrace();
 		}
 		OwlConverter owlConverter = new OwlConverter();
 		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
@@ -140,15 +152,28 @@ public class MechCalibOutputProcess {
 		
 		// upload the updated owl to server
 		try {
-			repo.loadOntology(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-					mechOwlUpload, mechFolder.concat(File.separator), Property.RDF4J_ONTOKIN_KB_URL.getPropertyName(), 
-					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName());
+			ontoKinKG.uploadMechanism(mechOwlUpload, mechFolder.concat(File.separator));
 		} catch (OntoException e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
+	/**
+	 * Obtain the XML of mechanism with updated rate parameters. 
+	 * 
+	 * @param calibSummary
+	 * @param resultsFile
+	 * @param mechXml
+	 * @param mechanismIRI
+	 * @param reactionIRIList
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws XPathExpressionException
+	 * @throws TransformerFactoryConfigurationError
+	 * @throws TransformerException
+	 */
 	private void obtainNewRateParams(File calibSummary, File resultsFile, File mechXml, String mechanismIRI, List<String> reactionIRIList) 
 			throws IOException, MoDSMechCalibAgentException, ParserConfigurationException, SAXException, XPathExpressionException, TransformerFactoryConfigurationError, TransformerException {
 		// get the list of new multipliers
@@ -196,7 +221,7 @@ public class MechCalibOutputProcess {
 		}
 		
 		// query the rate params
-		OntoKinKG ontokinkg = new OntoKinKG();
+		OntoKinKG ontokinkg = new OntoKinKG(modsMechCalibAgentProperty);
 		LinkedHashMap<String, String> orig = ontokinkg.queryRxnPreExpFactor(mechanismIRI, reactionIRIList);
 		List<String[]> dataLines = new ArrayList<>();
 		dataLines.add(new String[] {"ReactionNo", "OrigPreExpFactor", "Multiplier", "UpdatedPreExpFactor"});
