@@ -427,6 +427,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		LinkedHashMap<String, String> model = new LinkedHashMap<String, String>();
 		model.put("executable_name", Property.MODEL_KINETICS_EXE.getPropertyName());
 		model.put("working_directory", "");
+		model.put("args", modsMechCalibAgentProperty.getKineticsFolderPath().concat(SPACE).concat(modsMechCalibAgentProperty.getKineticsExecutableName()));
 		models.put(modelName, model);
 		collectModels(models);
 		

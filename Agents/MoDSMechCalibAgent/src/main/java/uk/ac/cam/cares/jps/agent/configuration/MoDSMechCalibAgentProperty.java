@@ -81,6 +81,12 @@ public class MoDSMechCalibAgentProperty {
 	
 	@Value("${kg.upload.rdf4j.repository.ontokin}")
 	private String kgUploadRdf4jRepositoryOntoKin;
+	
+	@Value("${kinetics.folder.path}")
+	private String kineticsFolderPath;
+	
+	@Value("${kinetics.executable.name}")
+	private String kineticsExecutableName;
 
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
@@ -172,6 +178,14 @@ public class MoDSMechCalibAgentProperty {
 
 	public String getKgUploadRdf4jRepositoryOntoKin() {
 		return kgUploadRdf4jRepositoryOntoKin;
+	}
+
+	public String getKineticsFolderPath() {
+		return kineticsFolderPath;
+	}
+
+	public String getKineticsExecutableName() {
+		return kineticsExecutableName;
 	}
 	
 }

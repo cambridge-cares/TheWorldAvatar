@@ -75,6 +75,12 @@ public class MoDSSensAnaAgentProperty {
 	
 	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
+	
+	@Value("${kinetics.folder.path}")
+	private String kineticsFolderPath;
+	
+	@Value("${kinetics.executable.name}")
+	private String kineticsExecutableName;
 
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
@@ -158,6 +164,14 @@ public class MoDSSensAnaAgentProperty {
 
 	public int getAgentPeriodicActionInterval() {
 		return agentPeriodicActionInterval;
+	}
+
+	public String getKineticsFolderPath() {
+		return kineticsFolderPath;
+	}
+
+	public String getKineticsExecutableName() {
+		return kineticsExecutableName;
 	}
 	
 }
