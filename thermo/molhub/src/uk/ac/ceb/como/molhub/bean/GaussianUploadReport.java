@@ -12,6 +12,8 @@ public class GaussianUploadReport implements Cloneable{
 	/** The gaussian file name. */
 	private String gaussianFileName;
 	
+	private String owlFileName ;
+	
 	/** The validation compchem file. */
 	private boolean validationCompchemFile;
 	
@@ -38,6 +40,15 @@ public class GaussianUploadReport implements Cloneable{
 		this.uuid=uuid;
 		this.gaussianFileName=gaussianFileName;
 		this.validationCompchemFile=validationCompchemFile;
+		this.consistencyCompchemOntologyFile=consistencyCompchemOntologyFile;		
+	}
+
+
+	public GaussianUploadReport(String uuid, String gaussianFileName, String owlFileName, boolean consistencyCompchemOntologyFile) {
+		
+		this.uuid=uuid;
+		this.gaussianFileName=gaussianFileName;
+		this.owlFileName=owlFileName;
 		this.consistencyCompchemOntologyFile=consistencyCompchemOntologyFile;		
 	}
 
@@ -111,6 +122,14 @@ public class GaussianUploadReport implements Cloneable{
 	 */
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public String getOwlFileName() {
+		return owlFileName;
+	}
+
+	public void setOwlFileName(String owlFileName) {
+		this.owlFileName = owlFileName;
 	}
 
 	/* (non-Javadoc)

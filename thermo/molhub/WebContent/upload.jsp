@@ -118,11 +118,11 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 					<!-- 
 					     1. Lists report about all uploaded Gaussian files. 
 					     2. DOES NOT check whether Gaussian file is correct or no. 
-					     3. Checks whether XML file is valid against Compchem schema. 
+					     3. Reports generated owl file name. For one uploaded Gaussian file it is possible to report more than one owl file name. 
 					     4. Checks whether generated ontology (owl) file is consistent.  
 					-->
 					
-					<table class="borderAll" border="1">
+					<table class="borderAll" border="1">					
 						<tr>
 							<s:iterator value="column" var="c">
 								<th><s:property /></th>
@@ -132,11 +132,10 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 						<s:iterator value="uploadReportList" var="report" status="status">
 							<tr>
 								<td class="nowrap"><s:property value="uuid" /></td>
-								<td class="nowrap"><s:property value="gaussianFileName" /></td>
-								<td class="nowrap"><s:property
-										value="validationCompchemFile" /></td>
-								<td class="nowrap"><s:property
-										value="consistencyCompchemOntologyFile" /></td>
+								<td class="nowrap"><s:property value="owlFileName"/></td>
+								<td class="nowrap"><s:property value="gaussianFileName" /></td>			
+								<td class="nowrap"><s:property value="consistencyCompchemOntologyFile" /></td>
+								<!-- <td class="nowrap"><s:property value="validationCompchemFile" /></td> -->
 							</tr>
 							
 						</s:iterator>

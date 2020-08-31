@@ -86,11 +86,8 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 		 */
 		
 		for (Map.Entry<String, Object> mp : session.entrySet()) {
-			
-
 
 			String speciesFolder = owlFolderPath +  mp.getKey().toString() + "/";
-
 			
 			String jsonFolderPath = dataFolderPath + mp.getKey().toString() + "/";
 

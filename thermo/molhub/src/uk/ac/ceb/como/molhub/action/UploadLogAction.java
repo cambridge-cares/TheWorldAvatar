@@ -3,11 +3,16 @@ package uk.ac.ceb.como.molhub.action;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -30,6 +35,7 @@ import com.opensymphony.xwork2.ValidationAware;
 import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
 import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
 import uk.ac.ceb.como.molhub.model.ExecutorManager;
@@ -72,6 +78,9 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	private String xsd = molhubPropreties.getProperty("xsd.file.path").toString();
 
 	private String jmolDataJarFilePath = molhubPropreties.getProperty("jmol.data.jar.file.path").toString();
+	
+	private String pythonParserPath = molhubPropreties.getProperty("python.parser.file.path").toString();
+	
 
 	/**
 	 * 
@@ -138,8 +147,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		// after the upload.
 		if (!files.isEmpty()) {
 			column.add("UUID");
-			column.add("Gaussian file");
-			column.add("XML validation");
+			column.add("Gaussian file name ");
+			column.add("OWL file name");
 			column.add("OWL consistency");
 		}
 		// If user clicks on the upload button without selecting any files.
@@ -149,19 +158,17 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		// For each file selected, it iterates once.
 		for (File f : files) {
 			
-			logger.info("file name: " +f.getName());
-			
 			Module rootModule = new Module();
 			// Creates unique folder name for each uploaded Gaussian file (g09),
 			// XML file, OWL file, and PNG file.
 			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
 			
-//			logger.info("file extension: " +f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf("\\")+1));
+			String fileExtension = uploadFileName[fileNumber].substring(uploadFileName[fileNumber].lastIndexOf(".") + 1);
 			
-			
-			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".g09");
-			// Adds .xml extension to the XML file.  
-			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
+			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension);
+			// Adds .xml extension to the XML file.
+			// Not used any more  XML file  
+//			File outputXMLFile = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".xml");
 			// Adds .owl extension to the OWL file.
 			String outputOwlFile = kbFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl";
 			final File owlFile = new File(outputOwlFile);
@@ -175,72 +182,177 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			FolderManager.createFolder(kbFolderPath + "/" + uuidFolderName);
 			// User uploaded Gaussian file is saved.
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
-			// Molhub generated XML file is saved. 
-			GenerateXml.generateRootModule(inputG09File, outputXMLFile, rootModule);
+			
+			// Molhub generated XML file is saved. 		
+//			GenerateXml.generateRootModule(inputG09File, outputXMLFile, rootModule);
+			
 			// Validates the generated XML file 
-			boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd, outputXMLFile);
+//			boolean xmlValidation = XMLValidationManager.validateXMLSchema(xsd, outputXMLFile);
+			
 			// If the generated XML file is valid against Compchem XML Schema
 			// then in both the if and else blocks the XSLT transformations
 			// convert the XML file into an OWL file. 
-			if (xmlValidation) {
+//			if (xmlValidation) {
+				
 				// Both in the if block and else block, it runs the XSLT
 				// transformation and the UUID folder name generated earlier
 				// is used as part of IRI of the OWL file.
 				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().trim().length() == 0)) {
-					Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
-							new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
-							new StreamSource(xslt));
+					
+//					Transformation.trasnformation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
+//							new FileInputStream(outputXMLFile.getPath()), new FileOutputStream(owlFile),
+//							new StreamSource(xslt));
+					/**
+					 * Runs python code that parses uploaded Gaussian file and generates json and owl files.
+					 */
+					Runnable process_run = new Runnable() {
+						
+				         public void run() {
+						
+				        	 Process process;
+							
+				        	 try {
+								
+								process = Runtime.getRuntime().exec(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" );
+
+								logger.info("process.isAlive(): " + process.isAlive());
+							    
+								logger.info("Done.");
+							
+				        	 } catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							    
+								
+				         }
+				     };
+
+				     new Thread(process_run).start();
+				     
+					 
+
+					
 				}else {
 					// Verifies the validity of the OntoSpcecies IRI in the case
 					// of a single file upload.
 					checkURLValidity(getOntoSpeciesIRI());
 					// In addition to the transformation into OWL it establishes
 					// a link to the corresponding OntoSpecies entry (Species).
-					Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
-							getOntoSpeciesIRI(), new FileInputStream(outputXMLFile.getPath()),
-							new FileOutputStream(owlFile), new StreamSource(xslt));
+//					Transformation.transfromation(uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1),
+//							getOntoSpeciesIRI(), new FileInputStream(outputXMLFile.getPath()),
+//							new FileOutputStream(owlFile), new StreamSource(xslt));
 				}
-				// Generates image (.png file) from uploaded Gaussian file by
-				// using JmolData.jar.
 				
+				Thread.sleep(2000);
+				
+				
+				List<File> owlFileList = getArrayFileList(dataFolderPath  + uuidFolderName +"/", ".owl");
+				
+				logger.info("owlFileList.isEmpty(): " + owlFileList.isEmpty() + " owlFileList.size(): " + owlFileList.size());				
+				
+				if(!owlFileList.isEmpty()) {
+					
+				for(File owlFiles: owlFileList) {
+					
+				logger.info("owlFiles.getName(): " +owlFiles.getName());		
+				
+				boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(dataFolderPath +  uuidFolderName + "/" + owlFiles.getName());
+				
+				gaussianUploadReport = new GaussianUploadReport(
+						/**
+						 * @author NK510 (caresssd@hermes.cam.ac.uk)
+						 * Generates uploading report without information whether XML file is valid or not. This version of the code does not generate XML file. 
+						 */
+						uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], owlFiles.getName(),consistency);
+				
+				uploadReportList.add(gaussianUploadReport);
+				
+				
+				
+				}
+				
+//				Thread.sleep(1000);
+				
+//				Runnable move_file_run = new Runnable() {
+//			         public void run() {
+				
+				moveToFile(owlFileList, uuidFolderName );
+			        	 /**
+							 * Copy generated owl file into created folder inside ./kb/ontocompchem.
+							 */
+//							for(File owlFiles: owlFileList) {
+//								
+//								try {
+//									Files.move(Paths.get(dataFolderPath +  uuidFolderName + "/" + owlFiles.getName()),Paths.get(kbFolderPath +  uuidFolderName + "/" + owlFiles.getName()), StandardCopyOption.REPLACE_EXISTING);
+//								} catch (IOException e) {
+//									// TODO Auto-generated catch block
+//									e.printStackTrace();
+//								}
+//							}
+							
+//			         }
+//			     };
+
+//			     new Thread(move_file_run).start();
+
+				}				
+				
+				/**
+				 * 
+				 * Moves generated owl file from (data) folder where we store json and log files to (kb) folder where we store owl file.
+				 *  
+				 */
+//				Files.move(Paths.get(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl"), 
+//						Paths.get(kbFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".owl"), StandardCopyOption.REPLACE_EXISTING);
+				
+				/**
+				 * Generates image (.png file) from uploaded Gaussian file by
+				 * using JmolData.jar.
+				 * 
+				 */
 				String[] cmd = { "java", "-jar", jmolDataJarFilePath, "--nodisplay", "-j", "background white",
 						inputG09File.getAbsolutePath().toString(), "-w",
 						"png:" + pngFile.getAbsolutePath().toString() };
 				
 				Runtime.getRuntime().exec(cmd);
-			}
+//			}
 			
-			/**
-			 * It validates generated Compchem xml file against Compchem XML schema,
-			 * and checks consistency of the generated Compchem ontology (ABox).
-			 */
-			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlFile);
+//			/**
+//			 * It validates generated Compchem xml file against Compchem XML schema,
+//			 * and checks consistency of the generated Compchem ontology (ABox).
+//			 */
+//			boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(outputOwlFile);
 
-			gaussianUploadReport = new GaussianUploadReport(
-					uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber],
-					xmlValidation, consistency);
+//			gaussianUploadReport = new GaussianUploadReport(
+					/**
+					 * @author NK510 (caresssd@hermes.cam.ac.uk)
+					 * Generates uploading report without information whether XML file is valid or not. This version of the code does not generate XML file. 
+					 */
+//					uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], consistency);
+			
 			uploadReportList.add(gaussianUploadReport);
 			
 			/**
 			 * If the generated OWL file is valid, it is loaded to the triple
 			 * store.
 			 */
-			if (consistency) {
-				if (consistency) {
-					loadOntology(serverURL, uuidFolderName + ".owl", kbFolderPath + uuidFolderName + "/",
-							serverURL + uuidFolderName + ".owl", REPOSITORY_ID);
-				}
-			}
+//			if (consistency) {
+//				if (consistency) {
+//					loadOntology(serverURL, uuidFolderName + ".owl", kbFolderPath + uuidFolderName + "/",
+//							serverURL + uuidFolderName + ".owl", REPOSITORY_ID);
+//				}
+//			}
 			
 			/**
 			 * An error message is shown if the generated ontology (ABox) is
 			 * inconsistent.
 			 */
-			if (!consistency) {
-				addFieldError("term.name", "Ontology '" + owlFile.getName()
-						+ "' is not consistent. Owl file is not loaded into triple store.");
-				return ERROR;
-			}
+//			if (!consistency) {
+//				addFieldError("term.name", "Ontology '" + owlFile.getName()
+//						+ "' is not consistent. Owl file is not loaded into triple store.");
+//				return ERROR;
+//			}
 			fileNumber++;
 		}
 		NumberFormat formatter = new DecimalFormat("#00.000");
@@ -252,6 +364,23 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		return SUCCESS;
 	}
 
+	
+	public synchronized void moveToFile(List<File> owlFileList, String uuidFolderName ) {
+		
+		for(File owlFiles: owlFileList) {
+			
+			try {
+//				Files.move(Paths.get(dataFolderPath +  uuidFolderName + "/" + owlFiles.getName()),Paths.get(kbFolderPath +  uuidFolderName + "/" + owlFiles.getName()), StandardCopyOption.REPLACE_EXISTING);
+				Files.copy(owlFiles.toPath(),(new File(kbFolderPath +  uuidFolderName + "/" + owlFiles.getName())).toPath(),StandardCopyOption.REPLACE_EXISTING);
+//				Files.move(owlFiles.toPath(),(new File(kbFolderPath +  uuidFolderName + "/" + owlFiles.getName())).toPath(),StandardCopyOption.REPLACE_EXISTING);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+    }
+	
 	/**
 	 * Gets the upload.
 	 *
@@ -494,4 +623,19 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			e.printStackTrace();
 		}
 	}
+	
+public static List<File> getArrayFileList(String folderPath, final String strings){
+		
+		File dir = new File(folderPath);
+		
+		List<File> list = Arrays.asList(dir.listFiles(new FilenameFilter(){
+	       
+	        public boolean accept(File dir, String name) {
+	        	
+	            return name.endsWith(strings);
+	        
+	        }}));
+		
+		return list;
+	}	
 }
