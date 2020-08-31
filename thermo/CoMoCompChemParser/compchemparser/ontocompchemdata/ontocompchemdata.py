@@ -95,7 +95,8 @@ class OntoCompChemData:
         program_version = dict_data["Program version"]
 
         ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
-        source_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/"
+        source_kb_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/"
+        source_data_base_uri =  "http://theworldavatar.com/data/ontocompchem/" + file_name + "/"
 
         """Namespace definition"""
         ontocompchem_namespace = Namespace("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")
@@ -117,7 +118,7 @@ class OntoCompChemData:
 
 
         '''Create ontocompchem knowledge graph by generating owl file.'''
-        self.create_ontocompchem_graph(ontocompchem_graph, dict_data, ontology_base_uri, source_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, log_file_name,owl_name,rnd)
+        self.create_ontocompchem_graph(ontocompchem_graph, dict_data, ontology_base_uri, source_kb_base_uri,source_data_base_uri, ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, log_file_name,owl_name,rnd)
 
         '''Printing created ontology that is an instance of OntoCompChem ontology.'''
         #print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
@@ -146,7 +147,7 @@ class OntoCompChemData:
         f.write(ontocompchem_graph.serialize(format="ttl").decode("utf-8"))
         f.close()
 
-    def create_ontocompchem_graph(self,ontocompchem_graph, dict_data, ontology_base_uri,source_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,log_file_name,owl_name,rnd):
+    def create_ontocompchem_graph(self,ontocompchem_graph, dict_data, ontology_base_uri,source_kb_base_uri,source_data_base_uri,ontocompchem_ontology,file_name,program_version,table_namespace,ontocompchem_namespace,gc_namespace,unit_namespace,log_file_name,owl_name,rnd):
 
          '''Create main ontocompchem knowledge graph (instance of ontocompchem Tbox)'''
          self.import_ontology(ontocompchem_graph,ontology_base_uri,ontocompchem_ontology)
@@ -165,7 +166,7 @@ class OntoCompChemData:
          self.generate_atom_count(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_electronic_and_zpe_energy(ontocompchem_graph,  dict_data,ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
          self.generate_scf_energy(ontocompchem_graph, dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, file_name, rnd)
-         self.generate_file_iri(ontocompchem_graph,  dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_base_uri, file_name, log_file_name, owl_name,rnd)
+         self.generate_file_iri(ontocompchem_graph,  dict_data, ontocompchem_namespace, gc_namespace, ontology_base_uri, source_kb_base_uri, source_data_base_uri, file_name, log_file_name, owl_name,rnd)
 
 
     def import_ontology(self,ontocompchem_graph,ontology_base_uri,ontocompchem_ontology):
@@ -587,7 +588,7 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_scf_energy_value_"+str(empirical_formula)+ "_"+str(uuid_scf_energy)+"_"+str(rnd)),gc_namespace.hasUnit,URIRef("http://data.nasa.gov/qudt/owl/unit#Hartree")))
 
 
-    def generate_file_iri(self,ontocompchem_graph,  dict_data, ontocompchem_namespace,gc_namespace,ontology_base_uri,source_base_uri,file_name,log_file_name,owl_name,rnd):
+    def generate_file_iri(self,ontocompchem_graph,  dict_data, ontocompchem_namespace,gc_namespace,ontology_base_uri,source_kb_base_uri,source_data_base_uri,file_name,log_file_name,owl_name,rnd):
 
         '''Generate graph for output sources ".g09", ".log", ".g16", ".owl" '''
         #for i, json_dat in enumerate(self.data):
@@ -598,13 +599,13 @@ class OntoCompChemData:
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, gc_namespace.SourcePackage))
         ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), RDF.type, OWL.Thing))
 
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_base_uri+ log_file_name)))
-        ontocompchem_graph.add((URIRef(source_base_uri+ log_file_name), RDF.type, ontocompchem_namespace.OutputSource))
-        ontocompchem_graph.add((URIRef(source_base_uri+ log_file_name), RDF.type, OWL.Thing))
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_data_base_uri+ log_file_name)))
+        ontocompchem_graph.add((URIRef(source_data_base_uri+ log_file_name), RDF.type, ontocompchem_namespace.OutputSource))
+        ontocompchem_graph.add((URIRef(source_data_base_uri+ log_file_name), RDF.type, OWL.Thing))
 
-        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_base_uri+ owl_name)))#os.path.splitext(self.log)[0]+'.owl'
-        ontocompchem_graph.add((URIRef(source_base_uri+ owl_name), RDF.type, ontocompchem_namespace.OutputSource))#os.path.splitext(self.log)[0]+'.owl'
-        ontocompchem_graph.add((URIRef(source_base_uri+ owl_name), RDF.type, OWL.Thing))#os.path.splitext(self.log)[0]+'.owl'
+        ontocompchem_graph.add((URIRef(ontology_base_uri+"job_module_has_environment_module_"+str(empirical_formula)+ "_"+str(rnd)), gc_namespace.hasOutputFile, URIRef(source_kb_base_uri+ owl_name)))#os.path.splitext(self.log)[0]+'.owl'
+        ontocompchem_graph.add((URIRef(source_kb_base_uri+ owl_name), RDF.type, ontocompchem_namespace.OutputSource))#os.path.splitext(self.log)[0]+'.owl'
+        ontocompchem_graph.add((URIRef(source_kb_base_uri+ owl_name), RDF.type, OWL.Thing))#os.path.splitext(self.log)[0]+'.owl'
 
 
 
