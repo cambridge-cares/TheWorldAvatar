@@ -169,7 +169,6 @@ public class AutoMechCalibAgent extends JPSAgent {
      * 
      * @return the statistics in HTML format.
 	 */
-	
 	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, AutoMechCalibAgentException {
@@ -476,7 +475,6 @@ public class AutoMechCalibAgent extends JPSAgent {
 				jobFolder.getAbsolutePath());
 	}
 	
-	
 	/**
 	 * Check if the job folder is moved to completed folder. 
 	 * 
@@ -575,72 +573,6 @@ public class AutoMechCalibAgent extends JPSAgent {
 		return null;
 	}
 	
-//	/**
-//	 * Return the folder where completed jobs are saved. 
-//	 * 
-//	 * @param jobFolder
-//	 * @param agentClass
-//	 * @return
-//	 * @throws IOException
-//	 */
-//	private File obtainCompletedJobsDirectory(File jobFolder, String agentClass) throws IOException {
-//		File workspace = Workspace.getWorkspace(Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName(), agentClass);
-//		String completedJobsDirectory = Property.AGENT_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
-//		workspace = new File(completedJobsDirectory);
-//		if (workspace.exists()) {
-//			return workspace;
-//		}
-//		return null;
-//	}
-	
-//	/**
-//	 * Monitors the currently running calibration jobs to allow new jobs to start.
-//	 * In doing so , it checks if the number of running jobs is less than the 
-//	 * maximum number of jobs allowed to run at a time. 
-//	 * 
-//	 */
-//	private void processOutputs() {
-//		if (applicationContext == null) {
-//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-//		}
-//		if (slurmJobProperty == null) {
-//			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-//		}
-//		if (jobSubmission==null) {
-//			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-//		}
-//		if (applicationContextMoDSAgent == null) {
-//			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(AutoMechCalibAgentConfiguration.class);
-//		}
-//		if (autoMechCalibAgentProperty == null) {
-//			autoMechCalibAgentProperty = applicationContextMoDSAgent.getBean(AutoMechCalibAgentProperty.class);
-//		}
-//		jobSpace = jobSubmission.getWorkspaceDirectory();
-//		try {
-//			if (jobSpace.isDirectory()) {
-//				File[] jobFolders = jobSpace.listFiles();
-//				for (File jobFolder : jobFolders) {
-//					if (Utils.isJobCompleted(jobFolder)) {
-//						if (!Utils.isJobOutputProcessed(jobFolder)) {
-//							updateCalibMech(jobFolder);
-//							updateJpbOutputStatus(jobFolder);
-//						}
-//					}
-//				}
-//			}
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		} catch (SftpException e) {
-//			e.printStackTrace();
-//		} catch (JSchException e) {
-//			e.printStackTrace();
-//		} catch (AutoMechCalibAgentException e) {
-//			e.printStackTrace();
-//		}
-//	}
-	
 	/**
 	 * Updates the output status of a completed job.
 	 * 
@@ -729,26 +661,6 @@ public class AutoMechCalibAgent extends JPSAgent {
 		return jsonString;
 	}
 	
-//	public void updateCalibMech(File jobFolder) throws IOException, AutoMechCalibAgentException {
-//		File outputFile = new File(jobFolder.getAbsolutePath());
-//		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(slurmJobProperty.getOutputFileExtension());
-//		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName());
-//		Utils.unzipFile(zipFilePath, destDir);
-//		
-//		String jsonString = readJsonInput(new File(jobFolder.getAbsolutePath()
-//				.concat(File.separator)
-//				.concat(slurmJobProperty.getJsonInputFileName())
-//				.concat(slurmJobProperty.getJsonFileExtension())));
-//		
-//		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
-//		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
-//		
-//		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
-//		mechCalibPro.processResults(destDir, mechanismIRI, reactionIRIList, String.valueOf(Utils.getTimeStamp()));
-//		
-//		System.out.println("Mechanism calibration results were successfully processed.");
-//	}
-	
 	/**
 	 * Set up an automated mechanism calibration job. 
 	 * 
@@ -811,8 +723,6 @@ public class AutoMechCalibAgent extends JPSAgent {
 				Property.AGENT_SENS_ANA_PATH.concat(Property.JOB_REQUEST_PATH), jsonString);
 	}
 	
-	
-	
 	/**
 	 * Set up a mechanism calibration job by sending HTTP<br>
 	 * request to execute MoDSMechCalibAgent. 
@@ -868,49 +778,6 @@ public class AutoMechCalibAgent extends JPSAgent {
 		}
 		return null;
 	}
-	
-//	/**
-//	 * Sets up the calibration job for the current input. 
-//	 * 
-//	 * @param jsonString
-//	 * @return
-//	 * @throws IOException
-//	 * @throws AutoMechCalibAgentException
-//	 * @throws SlurmJobException
-//	 */
-//	private String setUpJobOnAge ntMachine(String jsonString) throws IOException, AutoMechCalibAgentException, SlurmJobException {
-//		if (applicationContext == null) {
-//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-//		}
-//		if (slurmJobProperty == null) {
-//			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-//		}
-//		if (jobSubmission == null) {
-//			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
-//					slurmJobProperty.getHpcAddress());
-//		}
-//		long timeStamp = Utils.getTimeStamp();
-//		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
-//		return jobSubmission.setUpJob(jsonString, 
-//				new File(getClass().getClassLoader().getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), 
-//				getInputFile(jsonString, jobFolderName), timeStamp);
-//	}
-	
-//	/**
-//	 * Sets up the calibration job for the current request.
-//	 * 
-//	 * @param jsonString
-//	 * @return
-//	 * @throws IOException
-//	 * @throws AutoMechCalibAgentException
-//	 */
-//	private File getInputFile(String jsonString, String jobFolderName) throws IOException, AutoMechCalibAgentException {
-//		MoDSFileManagement fileMagt = new MoDSFileManagement();
-//		
-//		String jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
-//		
-//		return Utils.getZipFile(new File(jobFolderPath).getAbsolutePath());
-//	}
 	
 	/**
 	 * Produces a job folder name by following the schema hpcAddress_timestamp.

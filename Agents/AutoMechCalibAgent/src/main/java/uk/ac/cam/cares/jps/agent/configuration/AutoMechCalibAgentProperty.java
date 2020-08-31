@@ -5,10 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- * This class reads all inputs from the automechcalib-agent.properties file, that is<br>
- * to say it reads:
- * - multiple comma separated endpoints for ontochemexp knowledge graph
- * - multiple comma separated endpoints for ontokin knowledge graph
+ * This class reads all inputs from the automechcalib-agent.properties file. 
  * 
  * @author jb2197
  *
@@ -48,12 +45,6 @@ public class AutoMechCalibAgentProperty {
 
 	@Value("${output.file.extension}")
 	private String outputFileExtension;
-	
-	@Value("${executable.file}")
-	private String executableFile;
-	
-	@Value("${chk.point.file.extension}")
-	private String checkPointFileExtension;
 
 	@Value("${json.input.file.name}")
 	private String jsonInputFileName;
@@ -63,9 +54,6 @@ public class AutoMechCalibAgentProperty {
 
 	@Value("${slurm.script.file.name}")
 	private String slurmScriptFileName;
-
-	@Value("${job.preprint.directive}")
-	private String jobPreprintDirective;
 
 	@Value("${rdf4j.server.url}")
 	private String rdf4jServerURL;
@@ -138,14 +126,6 @@ public class AutoMechCalibAgentProperty {
 		return outputFileExtension;
 	}
 
-	public String getExecutableFile() {
-		return executableFile;
-	}
-
-	public String getCheckPointFileExtension() {
-		return checkPointFileExtension;
-	}
-
 	public String getJsonInputFileName() {
 		return jsonInputFileName;
 	}
@@ -156,10 +136,6 @@ public class AutoMechCalibAgentProperty {
 
 	public String getSlurmScriptFileName() {
 		return slurmScriptFileName;
-	}
-
-	public String getJobPreprintDirective() {
-		return jobPreprintDirective;
 	}
 
 	public String getRdf4jServerURL() {
