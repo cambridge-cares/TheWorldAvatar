@@ -27,8 +27,6 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 
 public class RepositoryManager {
 	static Logger logger = Logger.getLogger(RepositoryManager.class);
-	public static final String RDF = "PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n";
-	public static final String RDFS = "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#> \n";
 	
 	/**
 	 * Loads an abox to the ontology KB repository. It also creates</br>

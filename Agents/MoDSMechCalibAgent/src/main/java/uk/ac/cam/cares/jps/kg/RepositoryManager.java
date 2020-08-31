@@ -394,7 +394,7 @@ public class RepositoryManager {
 			throw new OntoException(message.concat(" is empty."));
 		}
 		if (!file.exists()) {
-			throw new OntoException("The following file does not exist:"+path);
+//			throw new OntoException("The following file does not exist:"+path);
 		}
 	}
 
