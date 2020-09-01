@@ -296,7 +296,7 @@ public class KineticsAgent extends JPSAgent {
 			for (File jobFolder : jobFolders) {
 				if (jobFolder.getName().equals(jobId)) {
 					try {
-						String inputJsonPath = completedJobsPath.concat(File.separator).concat(kineticsAgentProperty.getJsonInputFileName()).concat(kineticsAgentProperty.getJsonFileExtension());
+						String inputJsonPath = completedJobsPath.concat(File.separator).concat(kineticsAgentProperty.getReferenceOutputJsonFile());
 						InputStream inputStream = new FileInputStream(inputJsonPath);
 						return new JSONObject(FileUtil.inputStreamToString(inputStream));
 					} catch (FileNotFoundException e) {
@@ -401,11 +401,12 @@ public class KineticsAgent extends JPSAgent {
 						}
 
 						// Check the outputs JSON file
-						Path outputsJSON = Paths.get(jobFolder.getAbsolutePath(), "output.json");
+						String outputFilename = kineticsAgentProperty.getReferenceOutputJsonFile();
+						Path outputsJSON = Paths.get(jobFolder.getAbsolutePath(), outputFilename);
 
 						if (!Files.exists(outputsJSON) || Files.readAllBytes(outputsJSON).length <= 0) {
 							// Try looking in the job directory directly
-							outputsJSON = Paths.get(jobFolder.getAbsolutePath(), "output.json");
+							outputsJSON = Paths.get(jobFolder.getAbsolutePath(), outputFilename);
 
 							if (!Files.exists(outputsJSON) || Files.readAllBytes(outputsJSON).length <= 0) {
 								// No valid output.json, failure

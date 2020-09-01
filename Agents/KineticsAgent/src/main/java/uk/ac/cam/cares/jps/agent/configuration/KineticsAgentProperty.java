@@ -63,7 +63,12 @@ public class KineticsAgentProperty {
          */
         @Value("${agent.scripts.location}")
         private String agentScriptsLocation;
-        
+    
+    /**
+     * File that contains the results of a job.
+     */
+    @Value("${reference.output.json.file}")
+    private String referenceOutputJsonFile;
      
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
@@ -139,7 +144,20 @@ public class KineticsAgentProperty {
          * @return python scripts directory
          */
         public String getAgentScriptsLocation() {
-            return agentScriptsLocation;
+            String userHome = System.getProperty("user.home");
+            if(userHome.contains("\\")){
+            	userHome = userHome.replace("\\", "/");
+            }
+        	return userHome.concat(agentScriptsLocation);
         }
+
+        /**
+         * Returns the name of reference output JSON file. 
+         * 
+         * @return
+         */
+		public String getReferenceOutputJsonFile() {
+			return referenceOutputJsonFile;
+		}
 }
 

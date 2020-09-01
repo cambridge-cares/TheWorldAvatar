@@ -371,7 +371,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	public JSONObject setUpJob(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		String message = setUpJobOnAgentMachine(jsonString);
 		JSONObject obj = new JSONObject();
-		obj.put("message", message);
+		obj.put("jobFolderPath", message);
 		return obj;
 	}
 	
@@ -397,9 +397,13 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		}
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
-		return jobSubmission.setUpJob(jsonString, 
+		String setUpMsg = jobSubmission.setUpJob(jsonString, 
 				new File(getClass().getClassLoader().getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
+		if (setUpMsg == null) {
+			return null;
+		}
+		return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
 	}
 	
 	/**

@@ -4,25 +4,25 @@
              xsi:schemaLocation="http://www.springframework.org/schema/beans
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/security
-	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+	http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <http auto-config="true">
-        <intercept-url pattern="/add-initiative-form" access="ROLE_USER, ROLE_ADMIN" />
-        <intercept-url pattern="/update-initiative-form" access="ROLE_ADMIN" />
+	<http disable-url-rewriting="false">
+		<headers disabled="true"/>
+		<csrf disabled="true"/>
 
-        <form-login login-page="/login" default-target-url="/home"
-                    authentication-failure-url="/loginfailed" />
-        <logout logout-success-url="/home" />
-    </http>
+		<intercept-url pattern="/login" access="permitAll"/>
+		<intercept-url pattern="/**" access="hasRole('USER')"/>
+		<form-login login-page="/login"/>
+		<logout logout-url="/j_spring_security_logout" logout-success-url="/"/>
+	</http>
 
-    <authentication-manager>
-        <authentication-provider>
-            <user-service>
-                <user name="user" password="password" authorities="ROLE_USER" />
-                <user name="feroz" password="password" authorities="ROLE_ADMIN" />
-                <user name="admin" password="password" authorities="ROLE_ADMIN" />
-            </user-service>
-        </authentication-provider>
-    </authentication-manager>
+	<authentication-manager>
+		<authentication-provider>
+			<user-service>
+				<user name="user" password="password" authorities="ROLE_USER" />
+				<user name="admin" password="password" authorities="ROLE_USER,ROLE_ADMIN" />
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
 
 </beans:beans>
