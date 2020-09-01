@@ -129,7 +129,9 @@ public class Matlab_agent {
 		MatlabProxy proxy = factory.getProxy();
 		// do stuff over the proxy
                   
-        proxy.eval("run('C:/JParkSimulator-git-project/JPS_DIGITALTWIN/res/matlab/Run_Script.m')");
+        proxy.eval("run('/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/Run_Script.m')");
+        
+      
 		
 	}
 }
