@@ -45,6 +45,7 @@ public class KineticsAgentJobRequestTest {
 			
 			System.out.println("JOB MESSAGE:");
 			System.out.println(messageActual);
+			
 			Assert.assertEquals(messageActual, Status.JOB_SETUP_SUCCESS_MSG.getName());
 			
 			

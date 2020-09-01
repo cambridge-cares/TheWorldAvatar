@@ -7,6 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @PropertySource("classpath:kinetics-agent.properties")
 public class KineticsAgentProperty {
+
 	@Value("${hpc.server.login.user.name}")
 	private String hpcServerLoginUserName;
 
@@ -15,7 +16,7 @@ public class KineticsAgentProperty {
 
 	@Value("${agent.class}")
 	private String agentClass;
-	
+
 	@Value("${agent.class}")
 	private String agentWorkspacePrefix;
 
@@ -24,7 +25,7 @@ public class KineticsAgentProperty {
 
 	@Value("${agent.failed.job.space.prefix}")
 	private String agentFailedJobsSpacePrefix;
-	
+
 	@Value("${hpc.address}")
 	private String hpcAddress;
 
@@ -36,13 +37,13 @@ public class KineticsAgentProperty {
 
 	@Value("${json.input.file.name}")
 	private String jsonInputFileName;
-	
+
 	@Value("${json.file.extension}")
 	private String jsonFileExtension;
 
 	@Value("${slurm.script.file.name}")
 	private String slurmScriptFileName;
-	
+
 	@Value("${output.file.name}")
 	private String outputFileName;
 
@@ -54,22 +55,22 @@ public class KineticsAgentProperty {
 
 	@Value("${agent.initial.delay.to.start}")
 	private int agentInitialDelayToStartJobMonitoring;
-	
+
 	@Value("${agent.periodic.action.interval}")
 	private int agentPeriodicActionInterval;
-	
-        /**
-         * Location of python scripts (should contain 'agkin', 'simulation_templates', and 'venv' directories).
-         */
-        @Value("${agent.scripts.location}")
-        private String agentScriptsLocation;
-    
-    /**
-     * File that contains the results of a job.
-     */
-    @Value("${reference.output.json.file}")
-    private String referenceOutputJsonFile;
-     
+
+	/**
+	 * Location of python scripts (should contain 'agkin', 'simulation_templates', and 'venv' directories).
+	 */
+	@Value("${agent.scripts.location}")
+	private String agentScriptsLocation;
+
+	/**
+	 * File that contains the results of a job.
+	 */
+	@Value("${reference.output.json.file}")
+	private String referenceOutputJsonFile;
+
 	public String getHpcServerLoginUserName() {
 		return hpcServerLoginUserName;
 	}
@@ -137,27 +138,31 @@ public class KineticsAgentProperty {
 	public int getAgentPeriodicActionInterval() {
 		return agentPeriodicActionInterval;
 	}
-        
-        /**
-         * Returns the Location of python scripts.
-         * 
-         * @return python scripts directory
-         */
-        public String getAgentScriptsLocation() {
-            String userHome = System.getProperty("user.home");
-            if(userHome.contains("\\")){
-            	userHome = userHome.replace("\\", "/");
-            }
-        	return userHome.concat(agentScriptsLocation);
-        }
 
-        /**
-         * Returns the name of reference output JSON file. 
-         * 
-         * @return
-         */
-		public String getReferenceOutputJsonFile() {
-			return referenceOutputJsonFile;
+	/**
+	 * Returns the Location of python scripts.
+	 *
+	 * @return python scripts directory
+	 */
+	public String getAgentScriptsLocation() {
+		String userHome = System.getProperty("user.home");
+		if (userHome.contains("\\")) {
+			userHome = userHome.replace("\\", "/");
 		}
-}
 
+		if (!userHome.endsWith("/") && !agentScriptsLocation.startsWith("/")) {
+			return userHome.concat("/" + agentScriptsLocation);
+		} else {
+			return userHome.concat(agentScriptsLocation);
+		}
+	}
+
+	/**
+	 * Returns the name of reference output JSON file.
+	 *
+	 * @return
+	 */
+	public String getReferenceOutputJsonFile() {
+		return referenceOutputJsonFile;
+	}
+}
