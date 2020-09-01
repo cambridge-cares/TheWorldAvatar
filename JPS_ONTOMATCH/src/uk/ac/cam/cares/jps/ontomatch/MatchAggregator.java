@@ -11,8 +11,12 @@ import java.util.Map;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.jena.ontology.Individual;
+import org.apache.jena.ontology.OntClass;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.util.iterator.ExtendedIterator;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -129,7 +133,7 @@ public class MatchAggregator extends JPSHttpServlet{
 	    		one2oneCardinalityFiltering();
 	    	}
 	    	if(choices.contains(AGGREGATE_CHOICE.PENALIZING)){
-	    		penalizing();
+	    		penalizing(classAlignmentIRI, sameClassThreshold, pFactor);
 	    	}
 	    	filtering(threshold);
 	    }
@@ -181,7 +185,6 @@ public class MatchAggregator extends JPSHttpServlet{
                         Map mcell = finalScoreList.get(idxElement);                       
 						 mcell.put("measure",(double)mcell.get("measure")+Double.parseDouble(myscore[2])*myWeight);
 					}	
-
 			 }			
 		}
 	}
@@ -198,6 +201,76 @@ public class MatchAggregator extends JPSHttpServlet{
 		}		
 	}
 	
+	
+	private void penalizing(String classAlignmentIRI, double sameClassThreshold, double pFactor) throws Exception {
+		//need to call the python for now
+		//JSONArray scoreListNow = AlignmentIOHelper.scoreList2Json(finalScoreList);
+		//JSONArray classAlignment = AlignmentIOHelper.readAlignmentFileAsJSONArray(classAlignmentIRI, 0.0);
+		//String[] paras = {scoreListNow.toString(), classAlignmentIRI};
+		//String[] results = AsyncPythonHelper.callPython("PenalizerCaller.py",paras,LexicalProcessor.class);
+		//parse the return back to list
+		//JSONArray scoreListNew = new JSONArray(results[0]);
+		//finalScoreList =  AlignmentIOHelper.Json2ScoreList(scoreListNew);
+		//read 
+	    OntModel srcModel = ModelFactory.createOntologyModel();
+	    srcModel.read(srcOnto);
+	    OntModel tgtModel = ModelFactory.createOntologyModel();
+	    tgtModel.read(tgtOnto);
+	    Map ICMap1 = constructICMap(srcModel,srcOnto);
+	    Map ICMap2 = constructICMap(tgtModel, tgtOnto);
+		int elementNum = finalScoreList.size();
+		for(int idxElement = 0; idxElement < elementNum; idxElement++) {
+            Map mcell = finalScoreList.get(idxElement);             
+            String indi1 = (String) mcell.get("entity1");
+            String indi2 = (String) mcell.get("entity2");
+            JSONArray joca = AlignmentIOHelper.readAlignmentFileAsJSONArray(classAlignmentIRI, sameClassThreshold); 
+            List classAlign = AlignmentIOHelper.Json2ScoreList(joca);
+            if(!sameClass(classAlign, ICMap1, ICMap2, indi1, indi2)) {//does not belong to same class
+				 mcell.put("measure",(double)mcell.get("measure")*pFactor);//penalize
+            }
+		}
+        
+	}
+	
+
+    private boolean sameClass(List<Map> classAlign, Map icmap1, Map icmap2, String indiIri1, String indiIri2) {
+    	String class1 = (String) icmap1.get(indiIri1);
+    	String class2 = (String) icmap1.get(indiIri2);
+    	if (sameClass(classAlign, class1, class2)) {
+    		return true;
+    	} else {
+    		return false;
+    	}
+ 
+    }
+    
+    private boolean sameClass(List<Map> classAlign, String classIRI1, String classIRI2) {
+    	for(Map map:classAlign) {
+    		String mapped1 = (String) map.get("entity1");
+    		String mapped2 = (String) map.get("entity2");
+    		if(mapped1.equals(classIRI1) && mapped2.equals(classIRI2) ||(mapped1.equals(classIRI2)&&mapped2.equals(classIRI1))) {
+    		return true;	
+    		}
+    	}
+    	return false;
+    }
+	
+	private Map constructICMap(OntModel model, String ontologyIRI) {
+	    Map ICMap = new HashMap();
+	     ExtendedIterator classes = model.listClasses();
+	     while (classes.hasNext())
+	     {
+	       OntClass thisClass = (OntClass) classes.next();
+	       ExtendedIterator instances = thisClass.listInstances();
+	       while (instances.hasNext())
+	       {
+	         Individual thisInstance = (Individual) instances.next();
+	         ICMap.put(thisInstance.toString(), thisClass.toString());
+	       }
+	     }
+	     return ICMap;
+	}
+	
 	private void one2oneCardinalityFiltering() throws IOException {
 		//need to call the python for now
 		//input: map rendered as json
@@ -207,18 +280,5 @@ public class MatchAggregator extends JPSHttpServlet{
 		JSONArray scoreListNew = new JSONArray(results[0]);
 		finalScoreList =  AlignmentIOHelper.Json2ScoreList(scoreListNew);
 	}
-	
-	private void penalizing() throws Exception {
-		//need to call the python for now
-		JSONArray scoreListNow = AlignmentIOHelper.scoreList2Json(finalScoreList);
-		JSONArray classAlignment = AlignmentIOHelper.readAlignmentFileAsJSONArray(classAlignmentIRI, 0.0);
-		String[] paras = {scoreListNow.toString(), classAlignment.toString() };
-		String[] results = AsyncPythonHelper.callPython("matchers/Penalizer.py",paras,LexicalProcessor.class);
-		//TODO: what is the return type?
-		//TODO: parse the return back to list
-		JSONArray scoreListNew = new JSONArray(results[0]);
-		finalScoreList =  AlignmentIOHelper.Json2ScoreList(scoreListNew);
-	}
-	
 }
 

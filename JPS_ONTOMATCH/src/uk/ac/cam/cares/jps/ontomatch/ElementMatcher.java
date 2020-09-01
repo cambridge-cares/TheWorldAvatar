@@ -1,10 +1,13 @@
 package uk.ac.cam.cares.jps.ontomatch;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,54 +36,66 @@ public class ElementMatcher extends JPSHttpServlet{
 	 */
 	private static final long serialVersionUID = -7032945484999523116L;
 
-	//Type of matchers
+	/**Type of element matchers**/
 	public enum MATCHERTYPE {
-	    DOMAIN, STRING,WORD, VALUE
+	    DOMAIN, STRING,WORD, VALUE,I_STRING,I_WORD
 	}
-	private String MATCH_METHOD = "matchSerial";//parameters to py script specifying match method, this
+	/**Types of matching type, only related to function names in py script, no algorithm difference**/
+	public enum MATCHING_TYPE {
+	    INDIVIDUAL, TERM
+	}
+	private final String MATCH_TERM_FUNCTION_NAME = "matchSerial";
+	private final String MATCH_INDIVIDUAL_FUNCTION_NAME = "matchIndividuals";
 
+	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		System.out.println("element matcher agent");
 		JSONObject jo = requestParams;
-		String savePath = null, matchMethod = null, targetOnto = null, sourceOnto = null,modelPath = null, dictPath = null;
+		String savePath = null, matchMethod = null, targetOnto = null, sourceOnto = null,
+				modelPath = null, dictPath = null;
         MATCHERTYPE type = null;
-		//for testing, comment out later
-		//MATCHERTYPE type = MATCHERTYPE.DOMAIN;
-		//String stubSavePath = "file:///D:/workwork/testFiles/alignments/aStr3.owl";
-		//String stubTgt = "D://workwork//testFiles//ontologies/PowerPlant.owl";
-		//String stubSrc = "D://workwork//testFiles//ontologies/dbpedia_2014.owl";
-		//String stubModelPath = "D:/workwork/ontoMatchData/simMatch/model/modellevel2/model30t5p5a.gensim";
-		//String stubDictPath = "D:/workwork/ontoMatchData/simMatch/model/modellevel2/dictionarylevel2.gensim";
+        MATCHING_TYPE matchingType = null;
+		String tgtPkl, srcPkl, pyMatchFunction = null;
+
 		
 		//query for metadata: pkl address
-		String TgtPkl = queryLexicalPklAddressfromMetaData(targetOnto);
-		String SrcPkl = queryLexicalPklAddressfromMetaData(sourceOnto);		
-	
+
+	   
 		/***read params****/
 		try {
 			savePath = jo.getString("alignmentFileAddress");
 			targetOnto = jo.getString("targetOntoIRI");
 			sourceOnto = jo.getString("sourceOntoIRI");
 			type = MATCHERTYPE.valueOf(jo.getString("matcherType"));
+			matchingType = MATCHING_TYPE.valueOf(jo.getString("matchingType"));
 			/**special case: domain matcher needs extra params**/
 			if(type == MATCHERTYPE.DOMAIN) {
 				modelPath = jo.getString("modelAddress");
 				dictPath = jo.getString("dictAddress");
 			}
+		
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
 		JSONObject resultObj = new JSONObject();
 		/***call python, then save to kb(rdf)*****/
 		try {
+			/**get matching function name in py*/
+			pyMatchFunction = getPyFunctionName(matchingType);
+			/**query pkl address***/
+			tgtPkl = queryLexicalPklAddressfromMetaData(targetOnto);
+			srcPkl = queryLexicalPklAddressfromMetaData(sourceOnto);	
+			
+		    /**get matcher script addr****/	
 			String[] results = null;
 			String matcherLocation = getMatcherScriptName(type);//get script name by matcher type and call
+			/**construct params list according to matcher type, then call pythonHelper***/
 			if(type == MATCHERTYPE.DOMAIN) {//special case: domain matcher needs extra params
-				String[] paras = {savePath, sourceOnto,targetOnto, MATCH_METHOD, modelPath, dictPath};
+				String[] paras = {savePath, srcPkl,tgtPkl, pyMatchFunction, modelPath, dictPath};
 				//			String[] paras = {stubSavePath, SrcPkl,TgtPkl, MATCH_METHOD, stubModelPath, stubDictPath};
 			results = AsyncPythonHelper.callPython(matcherLocation,paras,LexicalProcessor.class);
 			} else {
-				String[] paras = {savePath, sourceOnto,targetOnto, MATCH_METHOD};
+				String[] paras = {savePath, srcPkl,tgtPkl, pyMatchFunction};
 				//String[] paras = {stubSavePath, SrcPkl,TgtPkl, MATCH_METHOD};
 			results = AsyncPythonHelper.callPython(matcherLocation,paras,LexicalProcessor.class);
 			}
@@ -136,11 +151,31 @@ public class ElementMatcher extends JPSHttpServlet{
 		case WORD:
 			return "BOWMatcherCaller.py";
 		case DOMAIN:
-			return "DomainMatcherCaller.py";	
+			return "domainMatcherCaller.py";	
+		case VALUE:
+			return "ValueMatcherCaller.py";	
+		case I_STRING:
+			return "InstanceStringMatcherCaller.py";	
+		case I_WORD:
+			return "InstanceBOWMatcherCaller.py";	
 		default:
 			throw new Exception("Matcher Type not Supported");
-		} 
-		
-		
+		} 	
+	}
+	
+	private String getPyFunctionName(MATCHING_TYPE mt) throws Exception {
+		switch(mt) {
+		case TERM:
+			return MATCH_TERM_FUNCTION_NAME;
+		case INDIVIDUAL:
+			return MATCH_INDIVIDUAL_FUNCTION_NAME;
+		default:
+			throw new Exception("Matching Type not Found");	
+		}
+	}
+	
+	//for testing
+	protected void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 }

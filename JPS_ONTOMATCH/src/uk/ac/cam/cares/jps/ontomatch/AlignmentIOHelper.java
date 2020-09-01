@@ -1,5 +1,8 @@
 package uk.ac.cam.cares.jps.ontomatch;
 
+import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -10,13 +13,17 @@ import java.util.Map;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
+import org.apache.jena.rdf.model.Model;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
+import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.query.ResourcePathConverter;
 import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
+import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 /***
  * Agent component that contains:
@@ -110,15 +117,61 @@ public class AlignmentIOHelper {
 	 * @param addr(local address)
 	 * @throws IOException
 	 */
-	//TODO: json doesnt work,rewrite this in java then...or make into a file
-	public static void writeAlignment2File(List<Map> alignment, String onto1, String onto2, String addr) throws IOException {
-		//TODO: if use py, needs to convert Java list to JSON and JSON to py list
-		String aIRI = ResourcePathConverter.convert(addr);
-		String ja = scoreList2Json(alignment).toString();
-		String[] paras = {aIRI, onto1, onto2, ja};
-		String[] results = AsyncPythonHelper.callPython("alignment.py",paras,AlignmentIOHelper.class);
-	    if(!results[0].contains("success")) {
-	    	throw new IOException("Python execution failed, print error stack:  "+results[1]);
-	    }
+	public static void writeAlignment2File(List<Map> alignment, String onto1, String onto2, String aIRI) throws IOException {
+		String addr = ResourcePathConverter.convertToLocalPath(aIRI);
+		System.out.println(addr);
+		System.out.println(aIRI);
+		QueryBroker b = new QueryBroker();
+		try {
+			Model model = ModelFactory.createDefaultModel();
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		    BufferedWriter writer = new BufferedWriter(new FileWriter(addr));
+            model.write(writer);
+		    //FileUtil.writeFileLocally(addr, emptyRDF);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		//put header
+	    String alignmentHeaderUpdateStr = "PREFIX a: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> " + 
+	    		"INSERT DATA{\r\n" + 
+	    		"  <"+aIRI+"> a a:Alignment.\r\n" + 
+	    		"  <"+aIRI+"> a:onto1  <"+aIRI+"#onto1>.\r\n" + 
+	    		"  <"+aIRI+"> a:onto2  <"+aIRI+"#onto2>.\r\n" +
+	    		"  <"+aIRI+"#onto1> a  a:ontology.\r\n" +
+	    		"  <"+aIRI+"#onto1> a:location  \""+onto1+"\".\r\n" +
+	    		"  <"+aIRI+"#onto2> a  a:ontology.\r\n" +
+	    		"  <"+aIRI+"#onto2> a:location  \""+onto2+"\".\r\n" +
+	    		"}";
+
+	    b.updateFile(aIRI, alignmentHeaderUpdateStr);
+		for(int idx =0; idx < alignment.size();idx++) {
+			Map matched  = alignment.get(idx);
+			String nodeName = aIRI+"#cell"+Integer.toString(idx+1);
+			String updateStr  = getCellUpdateStr(matched, nodeName);
+			System.out.println(updateStr);
+			b.updateFile(aIRI, updateStr);
+		}
+	}
+	
+	/**
+	 * construct one set of sparql string to insert one matched pair of alignment file
+	 * @param match
+	 * @param nodeIRI
+	 * @return
+	 */
+	private static String getCellUpdateStr(Map match, String nodeIRI) {
+		String entity1 =  (String) match.get("entity1");
+		String entity2 =  (String) match.get("entity2");
+		double measure = (double)match.get("measure");
+//TODO: test to see if explicit type definition is required
+		String alignmentCellUpdateStr = "PREFIX a: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> " 
+	    +"INSERT DATA{\r\n" 
+		+"  <"+nodeIRI+"> a a:Cell.\r\n"
+		+"  <"+nodeIRI+"> a:entity1 \""+entity1+"\".\r\n"
+		+"  <"+nodeIRI+"> a:entity2 \""+entity2+"\".\r\n"
+		+"  <"+nodeIRI+"> a:measure \""+Double.toString(measure)+"\".\r\n"//XSD.float
+				+"  <"+nodeIRI+"> a:relation \"=\".\r\n"
+	    		+ "}";
+		return alignmentCellUpdateStr;
 	}
 }
