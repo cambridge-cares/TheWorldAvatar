@@ -10,7 +10,7 @@
 	<url>http://www.springframework.org/spring-ws</url>
 
 	<properties>
-		<spring-version>4.0.3.RELEASE</spring-version>
+		<spring-version>5.1.0.RELEASE</spring-version>
 		<org.slf4j-version>1.6.6</org.slf4j-version>
 		<rdf4j.version>2.4.2</rdf4j.version>
 	</properties>

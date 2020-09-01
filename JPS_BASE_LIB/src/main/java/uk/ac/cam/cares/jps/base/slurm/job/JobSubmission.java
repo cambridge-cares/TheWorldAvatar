@@ -127,9 +127,7 @@ public class JobSubmission{
 	 */
 	public String setUpJob(String jsonInput, File slurmScript, File input, long timeStamp) throws IOException, SlurmJobException{
         	String message = setUpJobOnAgentMachine(jsonInput, slurmScript, input, timeStamp);
-			JSONObject obj = new JSONObject();
-			obj.put("message", message);
-        	return obj.toString();
+        	return message;
     }
 
 	/**

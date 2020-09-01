@@ -298,7 +298,7 @@ public class KineticsAgent extends JPSAgent {
 			for (File jobFolder : jobFolders) {
 				if (jobFolder.getName().equals(jobId)) {
 					try {
-						String inputJsonPath = completedJobsPath.concat(File.separator).concat(kineticsAgentProperty.getReferenceOutputJsonFile());
+						String inputJsonPath = completedJobsPath.concat(File.separator).concat(jobFolder.getName()).concat(File.separator).concat(kineticsAgentProperty.getReferenceOutputJsonFile());
 						InputStream inputStream = new FileInputStream(inputJsonPath);
 						return new JSONObject(FileUtil.inputStreamToString(inputStream));
 					} catch (FileNotFoundException e) {
