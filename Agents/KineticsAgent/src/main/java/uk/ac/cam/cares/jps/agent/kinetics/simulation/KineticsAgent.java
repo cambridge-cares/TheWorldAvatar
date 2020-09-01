@@ -1,11 +1,13 @@
 package uk.ac.cam.cares.jps.agent.kinetics.simulation;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -392,6 +394,22 @@ public class KineticsAgent extends JPSAgent {
 	 */
 	public boolean postProcessing(Path jobFolder) throws IOException {
 
+		// Find the job results ZIP
+		Path archive = Paths.get(
+			jobFolder.toString(),
+			kineticsAgentProperty.getOutputFileName() + kineticsAgentProperty.getOutputFileExtension()
+		);
+		if (!Files.exists(archive)) throw new IOException("Cannot find expected archive at: " + archive);
+
+		// Unzip
+		Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
+		
+		ZipUtility zipper = new ZipUtility();
+		zipper.unzip(
+			archive.toString(),
+			outputsDir.toString()
+		);
+
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
@@ -405,10 +423,10 @@ public class KineticsAgent extends JPSAgent {
 		}
 		commands.add(execPath.toString());
 
-		// Location of job directory
+		// Location of outputs directory directory
 		commands.add("-d");
-		commands.add(jobFolder.toString());
-
+		commands.add(outputsDir.toString());
+		
 		// Run script 
 		ProcessBuilder builder = new ProcessBuilder();
 		builder.directory(Paths.get(scriptsDir.toString(), "venv", "Scripts").toFile());
@@ -418,6 +436,14 @@ public class KineticsAgent extends JPSAgent {
 		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
 
+		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+			String line = null;
+			while((line = reader.readLine()) != null) {
+				System.out.println(line);
+			}
+		} catch(Exception exception ) {
+			exception.printStackTrace(System.out);
+		}
 		// Wait until the process is finished (should add a timeout here, expected duration?)
 		while (process.isAlive()) {
 			try {
@@ -430,7 +456,7 @@ public class KineticsAgent extends JPSAgent {
 
 		// Check the outputs JSON file
 		String outputFilename = kineticsAgentProperty.getReferenceOutputJsonFile().trim();
-		Path outputsJSON = Paths.get(jobFolder.toString(), outputFilename);
+		Path outputsJSON = Paths.get(outputsDir.toString(), outputFilename);
 
 		if (!Files.exists(outputsJSON) || Files.readAllBytes(outputsJSON).length <= 0) {
 			// Try looking in the job directory directly
@@ -441,6 +467,12 @@ public class KineticsAgent extends JPSAgent {
 				return false;
 			}
 		}
+		
+		// Copy the JSON up into the job folder just in case Ferox expects it there
+		Files.copy(
+			outputsJSON, 
+			Paths.get(jobFolder.toString(), outputFilename)
+		);
 
 		// Success!
 		return true;
