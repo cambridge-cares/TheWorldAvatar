@@ -361,18 +361,6 @@ public class KineticsAgent extends JPSAgent {
 
 					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
 
-						// Name of directory within job folder containing CSV outputs
-						Path outputsDir = Paths.get(jobFolder.getAbsolutePath(), "outputs");
-
-						if (!Files.exists(outputsDir)) {
-							// Failure
-							Utils.modifyStatus(
-								Utils.getStatusFile(jobFolder).getAbsolutePath(),
-								Status.JOB_LOG_MSG_ERROR_TERMINATION.getName()
-							);
-							continue;
-						}
-
 						// Get the location of the python scripts directory
 						Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 						if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
@@ -413,7 +401,7 @@ public class KineticsAgent extends JPSAgent {
 						}
 
 						// Check the outputs JSON file
-						Path outputsJSON = Paths.get(outputsDir.toString(), "output.json");
+						Path outputsJSON = Paths.get(jobFolder.getAbsolutePath(), "output.json");
 
 						if (!Files.exists(outputsJSON) || Files.readAllBytes(outputsJSON).length <= 0) {
 							// Try looking in the job directory directly
@@ -487,7 +475,6 @@ public class KineticsAgent extends JPSAgent {
 	 * @throws KineticsAgentException
 	 */
 	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, KineticsAgentException {
-
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
