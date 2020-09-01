@@ -18,6 +18,13 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.ArrayList;
 
+import com.mathworks.engine.EngineException;
+import com.mathworks.engine.MatlabEngine;
+import com.mathworks.engine.MatlabExecutionException;
+import com.mathworks.engine.MatlabSyntaxException;
+import com.mathworks.*;
+import matlabcontrol.*;
+
 /**
  * Loads the CSV output from GProms into the Matlab agent and executes the matlab input file for the electical systems
  * 
@@ -26,7 +33,7 @@ import java.util.ArrayList;
  */
 
 public class Matlab_agent {
-	public static void main(String[] args) throws IllegalArgumentException, IllegalStateException, InterruptedException, ExecutionException {
+	public static void main(String[] args) throws IllegalArgumentException, IllegalStateException, InterruptedException, MatlabExecutionException, MatlabSyntaxException, ExecutionException, MatlabConnectionException, MatlabInvocationException {
 		
 		//Read the CSV input file from /res/input/ directory
 		
@@ -111,6 +118,18 @@ public class Matlab_agent {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		MatlabProxyFactoryOptions.Builder builder = new MatlabProxyFactoryOptions.Builder();
+		// setup the factory
+//		    setCopyPasteCallback() connects to an existing MATLAB by copy-pasting a few lines into the command window
+//		    setUsePreviouslyControlledSession() starts a new MATLAB or connects to a previously started MATLAB without any user intervention
+
+		MatlabProxyFactory factory = new MatlabProxyFactory(builder.build());
+		// get the proxy
+		MatlabProxy proxy = factory.getProxy();
+		// do stuff over the proxy
+                  
+        proxy.eval("run('C:/JParkSimulator-git-project/JPS_DIGITALTWIN/res/matlab/Run_Script.m')");
 		
 	}
 }
