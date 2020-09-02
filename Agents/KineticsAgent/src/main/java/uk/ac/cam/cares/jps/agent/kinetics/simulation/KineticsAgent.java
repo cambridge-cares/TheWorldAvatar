@@ -71,6 +71,11 @@ public class KineticsAgent extends JPSAgent {
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
+	
+	/**
+	 *  Location of the temporary directory creating during the setupInputFiles() method.
+	 */
+	private Path temporaryDirectory = null;
 
 	/**
 	 * Shows the following statistics of quantum jobs processed by Kinetics Agent.</br>
@@ -478,6 +483,11 @@ public class KineticsAgent extends JPSAgent {
 			Paths.get(jobFolder.toString(), outputFilename)
 		);
 		
+		// Remove the temporary directory
+		if(temporaryDirectory != null && Files.exists(temporaryDirectory)) {
+			FileUtils.deleteDirectory(temporaryDirectory.toFile());
+		}
+		
 		// Success!
 		return true;
 	}
@@ -514,11 +524,6 @@ public class KineticsAgent extends JPSAgent {
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(kineticsAgentProperty.getHpcAddress(), timeStamp);
 		
-		
-		File slurm = new File(getClass().getClassLoader().getResource(kineticsAgentProperty.getSlurmScriptFileName()).getPath());
-		System.out.println("--- SLURM SCRIPT IS ---");
-		System.out.println(slurm.getAbsolutePath());
-		
 		return jobSubmission.setUpJob(
 			jsonInput, new File(getClass().getClassLoader()
 				.getResource(kineticsAgentProperty.getSlurmScriptFileName()).getPath()),
@@ -544,12 +549,12 @@ public class KineticsAgent extends JPSAgent {
 		if (!Files.exists(templatesDir)) throw new IOException("Cannot find SRM templates directory at: " + templatesDir);
 
 		// Create a temporary folder in the user's home location
-		Path destination = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
+		Path temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
 		try {
-			Files.createDirectory(destination);
+			Files.createDirectory(temporaryDirectory);
 
 			// Save JSON raw input to file
-			Path dstJSON = Paths.get(destination.toString(), "input.json");
+			Path dstJSON = Paths.get(temporaryDirectory.toString(), "input.json");
 
 			FileWriter fileWriter = new FileWriter(dstJSON.toFile());
 			fileWriter.write(jsonInput);
@@ -558,9 +563,8 @@ public class KineticsAgent extends JPSAgent {
 			fileWriter.close();
 
 		} catch (IOException ioException) {
-			throw new IOException("Could not create temporary directory with JSON file at: " + destination);
+			throw new IOException("Could not create temporary directory with JSON file at: " + temporaryDirectory);
 		}
-
 		
 		// Build commands for Daniel's preproc script
 		ProcessBuilder builder = new ProcessBuilder();
@@ -583,7 +587,7 @@ public class KineticsAgent extends JPSAgent {
 
 		// Location of temporary output folder
 		commands.add("-d");
-		commands.add(destination.toString());
+		commands.add(temporaryDirectory.toString());
 
 		builder.command(commands);
 
@@ -600,19 +604,16 @@ public class KineticsAgent extends JPSAgent {
 		}
 
 		// Compress all files in the temporary directory into a ZIP
-		Path zipFile = Paths.get(System.getProperty("user.home"), destination.getFileName().toString() + ".zip");
+		Path zipFile = Paths.get(System.getProperty("user.home"), temporaryDirectory.getFileName().toString() + ".zip");
 		List<File> zipContents = new ArrayList<>();
 
-		Files.walk(destination)
+		Files.walk(temporaryDirectory)
 			.map(Path::toFile)
 			.forEach((File f) -> zipContents.add(f));
-		zipContents.remove(destination.toFile());
+		zipContents.remove(temporaryDirectory.toFile());
 
 		// Will throw an IOException if something goes wrong
 		new ZipUtility().zip(zipContents, zipFile.toString());
-
-		// Delete the temporary directory
-		FileUtils.deleteDirectory(destination.toFile());
 
 		// Return the final ZIP file
 		return new File(zipFile.toString());
