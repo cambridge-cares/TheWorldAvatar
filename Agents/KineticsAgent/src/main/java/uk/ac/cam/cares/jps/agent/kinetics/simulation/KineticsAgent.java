@@ -549,7 +549,7 @@ public class KineticsAgent extends JPSAgent {
 		if (!Files.exists(templatesDir)) throw new IOException("Cannot find SRM templates directory at: " + templatesDir);
 
 		// Create a temporary folder in the user's home location
-		Path temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
+		temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
 		try {
 			Files.createDirectory(temporaryDirectory);
 
