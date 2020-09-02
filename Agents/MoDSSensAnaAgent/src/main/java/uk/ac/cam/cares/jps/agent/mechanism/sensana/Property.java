@@ -48,9 +48,9 @@ public enum Property {
 	MODEL_CANTERA_MIX_AVERAGE_OPT("../../../runCanteraLFS.py -t mix -d"),
 	MODEL_CANTERA_OUTPUT("OutputCase00001Lfs0001Info.csv"),
 	JOB_SETUP_MECHANISM_IRI_MISSING("The mechanism IRI is not provided."),
-	JOB_SETUP_EXPERIMENT_IRI_MISSING("The experiment IRI is provided."),
-	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is provided."),
-	JOB_SETUP_RELATIVE_PERTURBATION_MISSING("The relative perturbation is provided."),
+	JOB_SETUP_EXPERIMENT_IRI_MISSING("The experiment IRI is not provided."),
+	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is not provided."),
+	JOB_SETUP_RELATIVE_PERTURBATION_MISSING("The relative perturbation is not provided."),
 	JOB_SETUP_MAX_AVG_INAPPROPRIATE("The processing option for sensitivity analysis should be either \"max\" or \"avg\"."),
 	JOB_SETUP_MODS_EXE_PATH_MISSING("The MoDS executable path is not provided."),
 	JOB_SETUP_CANTERA_CONDA_ENV_MISSING("The conda environment where Cantera installed is not provided.");
