@@ -73,6 +73,9 @@
                     </webResources>
                     <warName>${project.artifactId}##${project.version}</warName>
                     <outputDirectory>${tomcatPath}/webapps</outputDirectory>
+                    <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <webXml>WebContent\WEB-INF\web.xml</webXml>
+                    <webappDirectory>WebContent</webappDirectory>
                 </configuration>
             </plugin>
 
@@ -123,6 +126,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+            <version>4.0.3</version>
         </dependency>
 
     </dependencies>

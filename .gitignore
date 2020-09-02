@@ -32,11 +32,12 @@ target
 /JPS_COMPOSITION_LITE/target/m2e-wtp/web-resources/META-INF/maven/uk.ac.cam.cares.jps/JPS_COMPOSITION_LITE/pom.properties
 *.class
 /JPS_ESS/target
-/JPS_BASE_LIB/src/uk/ac/cam/cares/jps/base/listener/BaseOntologyModelManager.java
-/JPS_BASE/conf/jpstest.properties
 /JPS_COMPOSITION_LITE/target
 /JPS_NLP/target
-/JPS_BIODIESELPLANT3/.project
-.project
-/JPS_BIODIESELPLANT3/.settings
 /JPS_Version_0/ADMS/ADMS_JAVA_END/ADMS-Java-11-10-17/ADMS/ADMS_1/src/kb_dev
+.DS_Store
+JPS_DISPERSION/JPS_DISPERSION.iml
+/*/target
+/*/.settings/
+/*/.project
+/*/.classpath

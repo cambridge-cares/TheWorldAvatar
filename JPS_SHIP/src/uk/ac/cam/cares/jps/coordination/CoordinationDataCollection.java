@@ -1,6 +1,7 @@
 package uk.ac.cam.cares.jps.coordination;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -19,9 +20,9 @@ import uk.ac.cam.cares.jps.ship.HKUWeatherRetriever;
 public class CoordinationDataCollection extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 		
-	public void executeSGData(JSONObject jo){
+	public JSONObject executeSGDataADMS(JSONObject jo) throws ExecutionException, InterruptedException {
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "11563323.926");
+		upcorn.put("upperx", "11564077.989");
 		upcorn.put("uppery", "143305.896");
 		JSONObject lowcorn = new JSONObject();
 		lowcorn.put("lowerx", "11560879.832");
@@ -31,38 +32,117 @@ public class CoordinationDataCollection extends HttpServlet {
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
 		jo.put("region", joregion);
-		jo.put("location", "Singapore");
-		
-		callAgent(jo);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-001.owl#AirQualityStation-001");
+
+		return jo;
 	}
+	public JSONObject executeSGDataEPISODE(JSONObject jo) throws ExecutionException, InterruptedException {
 	
-	public void executeHKData(JSONObject jo){
+		//SG episode
 		JSONObject upcorn = new JSONObject();
-		upcorn.put("upperx", "12720831.57");
-		upcorn.put("uppery", "2562311.02");
+		upcorn.put("upperx", "11572101.89");
+		upcorn.put("uppery", "151860.32");
 		JSONObject lowcorn = new JSONObject();
-		lowcorn.put("lowerx", "12693826.33");
-		lowcorn.put("lowery", "2535141.08");
+		lowcorn.put("lowerx", "11552101.832");
+		lowcorn.put("lowery", "131707.739");
 		JSONObject joregion = new JSONObject();
 		joregion.put("srsname","EPSG:3857");
 		joregion.put("lowercorner",lowcorn);
 		joregion.put("uppercorner",upcorn);
 		jo.put("region", joregion);
-		jo.put("location", "Hong Kong");
-		
-		callAgent(jo);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/sgp/singapore/AirQualityStation-002.owl#AirQualityStation-002");
+		return jo;
+	}
+	
+	public void executeHKData(JSONObject jo){
+		//HK episode
+//		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12720578.56");
+//		upcorn.put("uppery", "2562555.26");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12694101.21");
+//		lowcorn.put("lowery", "2534900.06");
+//		JSONObject joregion = new JSONObject();
+//		joregion.put("srsname","EPSG:3857");
+//		joregion.put("lowercorner",lowcorn);
+//		joregion.put("uppercorner",upcorn);
+//		jo.put("region", joregion);
+	
+	
+//		callAgent(jo);
+	}
+	
+	public JSONObject executeHKDataADMS(JSONObject jo) throws ExecutionException, InterruptedException {
+		JSONObject upcorn = new JSONObject();
+//		upcorn.put("upperx", "12708579.81");
+//		upcorn.put("uppery", "2547126.72");
+//		JSONObject lowcorn = new JSONObject();
+//		lowcorn.put("lowerx", "12706653.262");
+//		lowcorn.put("lowery", "2545200.172");
+		upcorn.put("upperx", "12711879.81");
+		upcorn.put("uppery", "2550426.72");
+		JSONObject lowcorn = new JSONObject();
+		lowcorn.put("lowerx", "12706653.262");
+		lowcorn.put("lowery", "2545200.172");
+		JSONObject joregion = new JSONObject();
+		joregion.put("srsname","EPSG:3857");
+		joregion.put("lowercorner",lowcorn);
+		joregion.put("uppercorner",upcorn);
+		jo.put("region", joregion);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ADMS.owl#Service");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-001.owl#AirQualityStation-001");
+
+		return jo;
+	}
+	public JSONObject executeHKDataEPISODE(JSONObject jo) throws ExecutionException, InterruptedException {
+
+		JSONObject upcorn = new JSONObject();
+		upcorn.put("upperx", "12720578.56");
+		upcorn.put("uppery", "2562555.26");
+		JSONObject lowcorn = new JSONObject();
+		lowcorn.put("lowerx", "12694101.21");
+		lowcorn.put("lowery", "2534900.06");
+		JSONObject joregion = new JSONObject();
+		joregion.put("srsname","EPSG:3857");
+		joregion.put("lowercorner",lowcorn);
+		joregion.put("uppercorner",upcorn);
+		jo.put("region", joregion);
+		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__Episode.owl#Service");
+		jo.put("airStationIRI","http://www.theworldavatar.com/kb/hkg/hongkong/AirQualityStation-002.owl#AirQualityStation-002");
+		return jo;
 	}
 
 	
-	public void callAgent(JSONObject jo) {
-		jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
-		AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
+	public void callAgent(JSONObject jo,JSONObject jo2) throws ExecutionException, InterruptedException {
+		//jo.put("agent", "http://www.theworldavatar.com/kb/agents/Service__ComposedADMS.owl#Service");
+		
+
+//		jo.put("reactionmechanism", "http://www.theworldavatar.com/kb/ontokin/Reduced_PRF_ERC_particle.owl#ReactionMechanism_184144363244001");
+		jo.put("reactionmechanism", "none");
+		jo2.put("reactionmechanism", "none");
+
+//		AgentCaller.executeGetWithJsonParameter("JPS_SHIP/ADMSCoordinationAgentForShipWithoutComposition",jo.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo2.toString());
+		AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/adms/dispersion/coordination",jo.toString());
+		//@TODO Make it separate threads
+		/*sample code:*/
+//		CompletableFuture<String> asyncEpisode = CompletableFuture.supplyAsync(() ->
+//				AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/episode/dispersion/coordination",jo2.toString()));
+//		CompletableFuture<String> asyncAdms = CompletableFuture.supplyAsync(() ->
+//				AgentCaller.executeGetWithJsonParameter("JPS_DISPERSION/adms/dispersion/coordination",jo.toString()));
+//		asyncEpisode.get();
+//		asyncAdms.get();
+
 	}
 
 	protected void doGet(HttpServletRequest req, HttpServletResponse res) throws IOException {
 		
 		JSONObject jo = new JSONObject();
-		
+		JSONObject jo2 = new JSONObject();
+		JSONObject jo3 = new JSONObject();
+		JSONObject jo4 = new JSONObject();
 		JSONObject inputjo = AgentCaller.readJsonParameter(req);
 		String scenarioUrl = null;
 		String scenarioName = inputjo.optString("scenarioname");
@@ -81,8 +161,18 @@ public class CoordinationDataCollection extends HttpServlet {
 
 		
 		//retrieveShipdata();
-		executeSGData(jo);
-		executeHKData(jo);
+		try {
+			JSONObject episode=executeSGDataEPISODE(jo2);
+			JSONObject adms=executeSGDataADMS(jo);
+			JSONObject episodeHK=executeHKDataEPISODE(jo4);
+			JSONObject admsHK=executeHKDataADMS(jo3);
+			
+			callAgent(adms,episode);
+			callAgent(admsHK,episodeHK);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		//executeHKData(jo);
 
 		
 		System.out.println("it is executed");

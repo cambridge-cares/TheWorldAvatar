@@ -87,7 +87,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
 				+ "WHERE { ?entity a j5:T-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
 
 		String result = new QueryBroker().queryFile(iritempsensor, sensorinfo);
 		String[] keys = JenaResultSetFormatter.getKeys(result);
@@ -99,7 +99,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
 				+ "WHERE { ?entity a j5:Q-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
 
 		String result2 = new QueryBroker().queryFile(iriirradiationsensor, sensorinfo2);
 		String[] keys2 = JenaResultSetFormatter.getKeys(result2);
@@ -111,7 +111,7 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 				+ "PREFIX j6:<http://www.w3.org/2006/time#> " + "SELECT ?entity ?propval ?proptimeval "
 				+ "WHERE { ?entity a j5:F-Sensor ." + "  ?entity j4:observes ?prop ." + " ?prop   j2:hasValue ?vprop ."
 				+ " ?vprop   j2:numericalValue ?propval ." + " ?vprop   j6:hasTime ?proptime ."
-				+ " ?proptime   j6:inXSDDateTimeStamp ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
+				+ " ?proptime   j6:inXSDDateTime ?proptimeval ." + "}" + "ORDER BY ASC(?proptimeval)";
 
 		String result3 = new QueryBroker().queryFile(irispeedsensor, sensorinfo3);
 		String[] keys3 = JenaResultSetFormatter.getKeys(result3);
@@ -141,11 +141,11 @@ public class WeatherIrradiationRetriever extends JPSHttpServlet {
 		
 		//update the owl file
 		//String baseURL2 = AgentLocator.getCurrentJpsAppDirectory(this) + "/workingdir/";
-		String irifortemp=converter.startConversion(readingFromCSV,"temperature");
+		String irifortemp=converter.startConversion(readingFromCSV,"temperature","001","SG");
 		System.out.println(irifortemp+" is updated");
-		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation");
+		String iriforirradiation=converter.startConversion(readingFromCSV,"irradiation","001","SG");
 		System.out.println(iriforirradiation+" is updated");
-		String iriforwind=converter.startConversion(readingFromCSV,"windpseed");
+		String iriforwind=converter.startConversion(readingFromCSV,"windpseed","001","SG");
 		System.out.println(iriforwind+" is updated");
 		JSONObject resultweather = new JSONObject();
 		//resultweather.put("folder",folder );

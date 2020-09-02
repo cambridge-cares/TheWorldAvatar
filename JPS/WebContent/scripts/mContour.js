@@ -1,12 +1,12 @@
 /**
  */
-
 //Concentration contour map threshould number
 const THRESHOULD_NUM = 8
 
 //Height is faked, each plane displayed between an interval
 const HEIGHT_INTERVAL = 5
 const LEGEND_DIV = 'legendwrapper'
+
 
 function getContourMaps (address) {
 
@@ -76,13 +76,11 @@ function getContourMaps (address) {
         })
 
         //=========set up canvas for image conversion=========================//
-
-        let canvas = $('#drawcanvas')[0]
-        let context = canvas.getContext('2d')
-
-        context.translate(canvas.width, 0)
-        context.scale(-1, 1)
-
+let canvas = $('#drawcanvas')[0];
+let context = canvas.getContext('2d');
+context.save();
+context.translate(canvas.width, 0);
+context.scale(-1, 1);
         //========convert all svg strs to png images=============//
 
         let futureImages = svgstrs.map((svgstr) => {
@@ -102,11 +100,13 @@ function getContourMaps (address) {
             context.clearRect(0, 0, canvas.width, canvas.height)
             return dataurl
           })
-
+          context.restore();
           resolve(dataurls)
 
         }, err => {//todo: err handling
-          reject(err)
+          reject(err);
+          context.restore();
+
         })
 
         //todo: this is the command for actualluy draw on map

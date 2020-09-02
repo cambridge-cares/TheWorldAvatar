@@ -120,6 +120,7 @@ public class TestExecutionEndpoint {
 		URIBuilder builder = new URIBuilder().setScheme("http").setHost(myHost).setPort(myPort)
 				.setPath("/JPS_COMPOSITION_LITE/ExecutionEndpoint").setParameter("query", compositionResultInString);
 		String result = Request.executeGet(builder);
+		System.out.println("result= "+result);
 	}
 
 }
