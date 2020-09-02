@@ -255,7 +255,7 @@ public class KineticsAgent extends JPSAgent {
 		if (message != null) {
 			return message;
 		}
-		return json.put("message", "The job no longer exists in the system.");
+		return json.put("message", "The job is not available in the system.");
 	}
 
 	/**
