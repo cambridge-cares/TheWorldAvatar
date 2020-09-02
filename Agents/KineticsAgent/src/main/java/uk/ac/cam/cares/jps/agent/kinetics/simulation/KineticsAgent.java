@@ -22,6 +22,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
+import org.apache.commons.io.FileUtils;
 
 import org.slf4j.LoggerFactory;
 import org.json.JSONObject;
@@ -415,22 +416,24 @@ public class KineticsAgent extends JPSAgent {
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
 
 		// Build commands for Daniel's postproc script
-		List<String> commands = new ArrayList<>();
-
+		ProcessBuilder builder = new ProcessBuilder();
+		builder.redirectErrorStream(true);
+		
 		Path execPath = Paths.get(scriptsDir.toString(), "venv", "bin", "agkin_post");
+		builder.directory(Paths.get(scriptsDir.toString(), "venv", "bin").toFile());
+		
 		if (!Files.exists(execPath)) {
+			builder.directory(Paths.get(scriptsDir.toString(), "venv", "Scripts").toFile());
 			execPath = Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_post.exe");
 		}
+		
+		List<String> commands = new ArrayList<>();
 		commands.add(execPath.toString());
 
 		// Location of outputs directory directory
 		commands.add("-d");
 		commands.add(outputsDir.toString());
 		
-		// Run script 
-		ProcessBuilder builder = new ProcessBuilder();
-		builder.directory(Paths.get(scriptsDir.toString(), "venv", "Scripts").toFile());
-		builder.redirectErrorStream(true);
 		builder.command(commands);
 
 		// Could redirect the script's output here, looks like a logging system is required first
@@ -444,6 +447,7 @@ public class KineticsAgent extends JPSAgent {
 		} catch(Exception exception ) {
 			exception.printStackTrace(System.out);
 		}
+		
 		// Wait until the process is finished (should add a timeout here, expected duration?)
 		while (process.isAlive()) {
 			try {
@@ -468,12 +472,12 @@ public class KineticsAgent extends JPSAgent {
 			}
 		}
 		
-		// Copy the JSON up into the job folder just in case Ferox expects it there
+		// Copy the JSON up into the job folder just in case Feroz expects it there
 		Files.copy(
 			outputsJSON, 
 			Paths.get(jobFolder.toString(), outputFilename)
 		);
-
+		
 		// Success!
 		return true;
 	}
@@ -509,6 +513,12 @@ public class KineticsAgent extends JPSAgent {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(kineticsAgentProperty.getHpcAddress(), timeStamp);
+		
+		
+		File slurm = new File(getClass().getClassLoader().getResource(kineticsAgentProperty.getSlurmScriptFileName()).getPath());
+		System.out.println("--- SLURM SCRIPT IS ---");
+		System.out.println(slurm.getAbsolutePath());
+		
 		return jobSubmission.setUpJob(
 			jsonInput, new File(getClass().getClassLoader()
 				.getResource(kineticsAgentProperty.getSlurmScriptFileName()).getPath()),
@@ -551,13 +561,20 @@ public class KineticsAgent extends JPSAgent {
 			throw new IOException("Could not create temporary directory with JSON file at: " + destination);
 		}
 
+		
 		// Build commands for Daniel's preproc script
-		List<String> commands = new ArrayList<>();
+		ProcessBuilder builder = new ProcessBuilder();
+		builder.redirectErrorStream(true);
 
 		Path execPath = Paths.get(scriptsDir.toString(), "venv", "bin", "agkin_pre");
+		builder.directory(Paths.get(scriptsDir.toString(), "venv", "bin").toFile());
+		
 		if (!Files.exists(execPath)) {
 			execPath = Paths.get(scriptsDir.toString(), "venv", "Scripts", "agkin_pre.exe");
+			builder.directory(Paths.get(scriptsDir.toString(), "venv", "Scripts").toFile());
 		}
+		
+		List<String> commands = new ArrayList<>();
 		commands.add(execPath.toString());
 
 		// Location of SRM simulation templates folder
@@ -568,10 +585,6 @@ public class KineticsAgent extends JPSAgent {
 		commands.add("-d");
 		commands.add(destination.toString());
 
-		// Run script 
-		ProcessBuilder builder = new ProcessBuilder();
-		builder.directory(Paths.get(scriptsDir.toString(), "venv", "Scripts").toFile());
-		builder.redirectErrorStream(true);
 		builder.command(commands);
 
 		// Could redirect the script's output here, looks like a logging system is required first
@@ -599,15 +612,7 @@ public class KineticsAgent extends JPSAgent {
 		new ZipUtility().zip(zipContents, zipFile.toString());
 
 		// Delete the temporary directory
-		try {
-			// TODO - Consider using the Apache Commons IO library to help here
-			Files.walk(destination)
-				.sorted(Comparator.reverseOrder())
-				.map(Path::toFile)
-				.forEach(File::delete);
-		} catch (IOException ioException) {
-			throw new IOException("Could not delete temporary directory at: " + destination);
-		}
+		FileUtils.deleteDirectory(destination.toFile());
 
 		// Return the final ZIP file
 		return new File(zipFile.toString());
