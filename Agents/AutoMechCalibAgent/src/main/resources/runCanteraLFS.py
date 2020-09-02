@@ -66,37 +66,63 @@ gas.set_equivalence_ratio(phi=phi, fuel=fuel, oxidizer=oxidizer)
 flame = ct.FreeFlame(gas, width=width)
 flame.inlet.mdot = gas.DP[0]*50*0.01
 
-# First flame: 
+# Start solving with solving energy equations disabled
 flame.energy_enabled = False
+# Setup the tolerance
+tol_ss = [1.0e-5, 1.0e-13] # [rtol atol] for steady-state problem
+tol_ts = [1.0e-5, 1.0e-13] # [rtol atol] for time stepping
+flame.flame.set_steady_tolerances(default=tol_ss)
+flame.flame.set_transient_tolerances(default=tol_ts)
+# Setup the refinement and grid properties
 flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
 flame.set_max_jac_age(50, 50)
 flame.set_time_step(5.e-06, [10, 20, 80]) #s
 flame.max_time_step_count = 4000
-flame.solve(verbose)
-# Second flame and so on ...: 
-flame.energy_enabled = True
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 7.0, slope = 0.85, curve = 1)
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 7.0, slope = 0.75, curve = 0.75)
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 6.0, slope = 0.75, curve = 0.75)
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 5.0, slope = 0.5, curve = 0.5)
-flame.solve(verbose)
-# Third flame and so on ...:
-flame.set_refine_criteria(ratio = 5.0, slope = 0.3, curve = 0.3)
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 3.0, slope = 0.1, curve = 0.1)
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 2.0, slope = 0.05, curve = 0.05, prune = 0.01)
-flame.solve(verbose)
-# Fourth flame and so on ...
-flame.set_refine_criteria(ratio = 2.0, slope = 0.03, curve = 0.03, prune = 0.01)
-flame.solve(verbose)
-flame.set_refine_criteria(ratio = 2.0, slope = 0.02, curve = 0.02, prune = 0.01)
+# Solve the first flame
 flame.solve(verbose)
 
+# Solve the second flame and so on with energy equations enabled
+flame.energy_enabled = True
+flame.solve(verbose)
+
+# Loop the solver over a set of refinement criteria
+refCrit = []
+refCrit.append([5.0, 1, 1])
+refCrit.append([5.0, 0.995, 1])
+refCrit.append([5.0, 0.99, 1])
+refCrit.append([5.0, 0.985, 1])
+refCrit.append([5.0, 0.98, 1])
+refCrit.append([5.0, 0.97, 1])
+refCrit.append([5.0, 0.95, 1])
+refCrit.append([5.0, 0.92, 1])
+refCrit.append([5.0, 0.90, 1])
+refCrit.append([5.0, 0.85, 0.90])
+refCrit.append([5.0, 0.80, 0.85])
+refCrit.append([5.0, 0.70, 0.80])
+refCrit.append([5.0, 0.50, 0.75])
+refCrit.append([5.0, 0.50, 0.50])
+refCrit.append([5.0, 0.30, 0.30])
+refCrit.append([3.0, 0.10, 0.10])
+
+for ref in refCrit:
+    flame.set_refine_criteria(ratio = ref[0], slope = ref[1], curve = ref[2])
+    flame.solve(verbose)
+
+# Refine solution with prune
+flame.set_refine_criteria(ratio = 2.0, slope = 0.05, curve = 0.05, prune = 0.01)
+flame.solve(verbose)
+
+#print("success:{}".format(flame.u[0]))
+#flame.set_refine_criteria(ratio = 2.0, slope = 0.03, curve = 0.03, prune = 0.005)
+#flame.solve(verbose)
+#print("success:{}".format(flame.u[0]))
+#flame.set_refine_criteria(ratio = 2.0, slope = 0.02, curve = 0.02, prune = 0.001)
+#flame.solve(verbose)
+#print("success:{}".format(flame.u[0]))
+
+##################################################################################
+# Solve with multi-component model if specified
+##################################################################################
 if ('multi' in tranModel) or ('Multi' in tranModel):
     flame.transport_model = 'Multi'
     flame.solve(verbose)
@@ -130,6 +156,10 @@ if ('multi' in tranModel) or ('Multi' in tranModel):
 ##    flame.save(solFile,'multi', 'solution with multicomponent transport')
 #    print("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n")
 
+
+##################################################################################
+# Generate output file
+##################################################################################
 # Collect data for dfLfs
 lfsDict = {}
 lfsDict['CaseName'] = caseName
