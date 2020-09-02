@@ -444,6 +444,7 @@ public class KineticsAgent extends JPSAgent {
 		} catch(Exception exception ) {
 			exception.printStackTrace(System.out);
 		}
+		
 		// Wait until the process is finished (should add a timeout here, expected duration?)
 		while (process.isAlive()) {
 			try {
@@ -468,7 +469,7 @@ public class KineticsAgent extends JPSAgent {
 			}
 		}
 		
-		// Copy the JSON up into the job folder just in case Ferox expects it there
+		// Copy the JSON up into the job folder just in case Feroz expects it there
 		Files.copy(
 			outputsJSON, 
 			Paths.get(jobFolder.toString(), outputFilename)
