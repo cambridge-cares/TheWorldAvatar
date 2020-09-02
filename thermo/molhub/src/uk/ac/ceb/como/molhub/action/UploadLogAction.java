@@ -28,6 +28,11 @@ import org.eclipse.rdf4j.repository.RepositoryConnection;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
@@ -158,6 +163,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		// For each file selected, it iterates once.
 		for (File f : files) {
 			
+			Process process = null;
+			
 			Module rootModule = new Module();
 			// Creates unique folder name for each uploaded Gaussian file (g09),
 			// XML file, OWL file, and PNG file.
@@ -204,34 +211,21 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 //							new StreamSource(xslt));
 					/**
 					 * Runs python code that parses uploaded Gaussian file and generates json and owl files.
-					 */
-					Runnable process_run = new Runnable() {
-						
-				         public void run() {
-						
-				        	 Process process;
-							
-				        	 try {
+					 */	
+				  try {
 								
-								process = Runtime.getRuntime().exec(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" );
+				  process = Runtime.getRuntime().exec(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" );
 
-								logger.info("process.isAlive(): " + process.isAlive());
+				  logger.info("process.isAlive(): " + process.isAlive());
 							    
-								logger.info("Done.");
-							
-				        	 } catch (IOException e) {
+				  logger.info("Done.");
+				
+				  process.waitFor();
+				  
+				  } catch (IOException e) {
 								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							    
-								
-				         }
-				     };
-
-				     new Thread(process_run).start();
-				     
-					 
-
+				     e.printStackTrace();
+				  }
 					
 				}else {
 					// Verifies the validity of the OntoSpcecies IRI in the case
@@ -244,8 +238,6 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 //							new FileOutputStream(owlFile), new StreamSource(xslt));
 				}
 				
-				Thread.sleep(2000);
-				
 				
 				List<File> owlFileList = getArrayFileList(dataFolderPath  + uuidFolderName +"/", ".owl");
 				
@@ -254,49 +246,50 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				if(!owlFileList.isEmpty()) {
 					
 				for(File owlFiles: owlFileList) {
-					
-				logger.info("owlFiles.getName(): " +owlFiles.getName());		
 				
-				boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(dataFolderPath +  uuidFolderName + "/" + owlFiles.getName());
+					File owl_File = new File(owlFiles.getAbsoluteFile().toString().replace("#", ""));
+					
+			        logger.info("ontology file path: " + owl_File.getAbsolutePath().toString());
+			        
+			        OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
+			        OWLOntology ontology = manager.loadOntologyFromOntologyDocument(owl_File);
+
+			        /**
+		             * Save the file into RDF/XML format
+			         */
+			        RDFXMLOntologyFormat rdfxmlFormat = new RDFXMLOntologyFormat();
+			        manager.saveOntology(ontology, rdfxmlFormat, IRI.create(owl_File));	
+			        
+				logger.info("owlFiles.getName(): " +owl_File.getName());		
+				
+				boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(dataFolderPath +  uuidFolderName + "/" + owl_File.getName());
+				
+					
+				if (consistency) {
+					
+					loadOntology(serverURL, owl_File.getName(), dataFolderPath + uuidFolderName + "/",  uuidFolderName , REPOSITORY_ID);
+					
+				
+			}
 				
 				gaussianUploadReport = new GaussianUploadReport(
 						/**
 						 * @author NK510 (caresssd@hermes.cam.ac.uk)
 						 * Generates uploading report without information whether XML file is valid or not. This version of the code does not generate XML file. 
 						 */
-						uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], owlFiles.getName(),consistency);
+						uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], owl_File.getName(),consistency);
 				
 				uploadReportList.add(gaussianUploadReport);
 				
-				
+				Files.copy(owl_File.toPath(),(new File(kbFolderPath +  uuidFolderName + "/" + owl_File.getName())).toPath(),StandardCopyOption.REPLACE_EXISTING);
 				
 				}
 				
-//				Thread.sleep(1000);
+				/**
+				 * Copy generated owl file into created folder inside ./kb/ontocompchem.
+				 */
 				
-//				Runnable move_file_run = new Runnable() {
-//			         public void run() {
-				
-				moveToFile(owlFileList, uuidFolderName );
-			        	 /**
-							 * Copy generated owl file into created folder inside ./kb/ontocompchem.
-							 */
-//							for(File owlFiles: owlFileList) {
-//								
-//								try {
-//									Files.move(Paths.get(dataFolderPath +  uuidFolderName + "/" + owlFiles.getName()),Paths.get(kbFolderPath +  uuidFolderName + "/" + owlFiles.getName()), StandardCopyOption.REPLACE_EXISTING);
-//								} catch (IOException e) {
-//									// TODO Auto-generated catch block
-//									e.printStackTrace();
-//								}
-//							}
-							
-//			         }
-//			     };
-
-//			     new Thread(move_file_run).start();
-
-				}				
+//				moveToFile(owlFileList, uuidFolderName );
 				
 				/**
 				 * 
@@ -331,8 +324,6 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					 */
 //					uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], consistency);
 			
-			uploadReportList.add(gaussianUploadReport);
-			
 			/**
 			 * If the generated OWL file is valid, it is loaded to the triple
 			 * store.
@@ -352,8 +343,11 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 //				addFieldError("term.name", "Ontology '" + owlFile.getName()
 //						+ "' is not consistent. Owl file is not loaded into triple store.");
 //				return ERROR;
-//			}
+			}
+			
 			fileNumber++;
+			
+			
 		}
 		NumberFormat formatter = new DecimalFormat("#00.000");
 		final long endTime = System.currentTimeMillis();
@@ -361,6 +355,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		if (!files.isEmpty()) {
 			addActionMessage("Upload completed in " + runningTime);
 		}
+		
+		
 		return SUCCESS;
 	}
 
@@ -598,17 +594,17 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 * @param serverURL
 	 * @param owlFileName
 	 * @param owlFilePath
-	 * @param baseURI
+	 * @param baseFolder
 	 * @param repositoryID
 	 * @throws OntoException
 	 */
-	public void loadOntology(String serverURL, String owlFileName, String owlFilePath, String baseURI, String repositoryID) throws Exception{
+	public void loadOntology(String serverURL, String owlFileName, String owlFilePath, String baseFolder, String repositoryID) throws Exception{
 		try {
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
 			repo.initialize();
 			RepositoryConnection con = repo.getConnection();
 			ValueFactory f = repo.getValueFactory();
-			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOCOMPCHEM_KB_URL.concat(owlFileName));
+			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOCOMPCHEM_KB_URL.concat(baseFolder + "/" +owlFileName));
 			try {
 				URL url = new URL("file:/".concat(owlFilePath).concat(owlFileName));
 				con.add(url, url.toString(), RDFFormat.RDFXML, context);

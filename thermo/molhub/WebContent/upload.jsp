@@ -36,6 +36,9 @@ TH {
     
 }
 
+
+
+
 </style>
 
 <div class="jumbotron text-center" id="topBanner">
@@ -122,28 +125,25 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 					     4. Checks whether generated ontology (owl) file is consistent.  
 					-->
 					
-					<table class="borderAll" border="1">					
-						<tr>
-							<s:iterator value="column" var="c">
-								<th><s:property /></th>
-							</s:iterator>
-
-						</tr>
-						<s:iterator value="uploadReportList" var="report" status="status">
-							<tr>
-								<td class="nowrap"><s:property value="uuid" /></td>
-								<td class="nowrap"><s:property value="owlFileName"/></td>
-								<td class="nowrap"><s:property value="gaussianFileName" /></td>			
-								<td class="nowrap"><s:property value="consistencyCompchemOntologyFile" /></td>
-								<!-- <td class="nowrap"><s:property value="validationCompchemFile" /></td> -->
-							</tr>
-							
-						</s:iterator>
+					<table class="borderAll" border="2">
+					<tr>
+					<s:iterator value="column" var="c">
+					<th><s:property /></th>
+					</s:iterator>
+					</tr>
+					
+					<s:iterator value="uploadReportList" var="report" status="status">
+					<tr>
+					<td class="nowrap"><s:property value="uuid" /></td>
+					<th class="nowrap"><s:property value="gaussianFileName"/></th>
+					<td class="nowrap"><s:property value="owlFileName"/></td>
+					<th class="nowrap"><s:property value="consistencyCompchemOntologyFile"/></th>
+					<!--<td class="nowrap"><s:property value="validationCompchemFile" /></td>-->
+					</tr>							
+					</s:iterator>
+					
 					</table>
-
-
 				</div>
-				
 
 			<!--</div>-->
 		<!--</div>-->
