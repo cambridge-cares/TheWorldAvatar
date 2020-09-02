@@ -48,6 +48,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String ignDelaySpecies = "AR";
 	private String numOfSobolPoints = "1000";
 	private String numOfInitPoints = "1";
+	private String outputInterval = "1";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -81,6 +82,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		this.numOfInitPoints = numOfInitPoints;
 	}
 	
+	public String getOutputInterval() {
+		return outputInterval;
+	}
+
+	public void setOutputInterval(String outputInterval) {
+		this.outputInterval = outputInterval;
+	}
+
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
 		super(modsMechCalibAgentProperty);
 		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
@@ -264,6 +273,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setNumOfSobolPoints(numSobol);
 		}
 		
+		// set up the output interval of sobol sampling that will be used for generating MoDS_inputs.xml file
+		String outputInterval = JSonRequestParser.getOutputInterval(otherOptions);
+		if (outputInterval != null && !outputInterval.isEmpty()) {
+			setOutputInterval(outputInterval);
+		}
+		
 		// set up the initial points option that will be used for generating MoDS_inputs.xml file
 		String numInit = JSonRequestParser.getNumOfInitPoints(otherOptions);
 		if (numInit != null && !numInit.isEmpty()) {
@@ -400,7 +415,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoSampling.put("output_values", "true");
 		algoSampling.put("n_points", getNumOfSobolPoints());
 		algoSampling.put("seed", "1");
-		algoSampling.put("output_interval", "10");
+		algoSampling.put("output_interval", getOutputInterval());
 		algoSampling.put("previous_algorithm", "Initial");
 		LinkedHashMap<String, String> algoCalibration = new LinkedHashMap<String, String>();
 		algoCalibration.put("optimisable_param_subtypes", active_subtype.substring(1));
