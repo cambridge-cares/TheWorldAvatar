@@ -76,7 +76,7 @@ public class JPSAgentTest extends TestCase {
             valid = (boolean) validateInput.invoke(jpsa, input);
             assertTrue(valid);
         } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
+            assertEquals("javax.ws.rs.BadRequestException", e.getTargetException().getStackTrace()[6].getClassName());
         }
 
         input.put("a", "b");
