@@ -14,12 +14,13 @@
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
 #SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
 
-# Read parameters about MoDS executable path from input.json
+# Read parameters about MoDS executable path and cantera conda environment from input.json
 MODS_MPI=$(cat input.json|jq -r .json.mods.executable.path)
+CANTERA_ENV=$(cat input.json|jq -r .json.cantera.environment)
 
 # Load the environment seen by the application
 eval "$(conda shell.bash hook)"
-conda activate pycantera                     #REQUIRED - loads the cantera environment
+conda activate $CANTERA_ENV                     #REQUIRED - loads the cantera environment
 
 #! Number of nodes and tasks per node allocated by SLURM (do not change):
 numnodes=$SLURM_JOB_NUM_NODES

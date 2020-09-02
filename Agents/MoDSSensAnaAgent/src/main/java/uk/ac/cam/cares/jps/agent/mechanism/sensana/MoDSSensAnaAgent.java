@@ -128,6 +128,11 @@ public class MoDSSensAnaAgent extends JPSAgent {
 			if (modsExePath == null || modsExePath.isEmpty()) {
 				throw new BadRequestException(Property.JOB_SETUP_MODS_EXE_PATH_MISSING.getPropertyName());
 			}
+			
+			String canteraEnv = JSonRequestParser.getCanteraCondaEnv(requestParams.toString());
+			if (canteraEnv == null || canteraEnv.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_CANTERA_CONDA_ENV_MISSING.getPropertyName());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

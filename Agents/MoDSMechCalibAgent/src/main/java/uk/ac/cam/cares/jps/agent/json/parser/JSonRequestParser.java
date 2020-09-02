@@ -98,6 +98,12 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getCanteraCondaEnv(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("cantera").path("environment");
+		
+		return locateNode.asText();
+	}
+	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");
 //	}
