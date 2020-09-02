@@ -50,7 +50,8 @@ public enum Property {
 	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is not provided."),
 	JOB_SETUP_REACTION_IRI_MISPLACED("The reaction IRI list is misplaced"),
 	JOB_SETUP_RELATIVE_PERTURBATION_MISSING("The relative perturbation is provided."),
-	JOB_SETUP_MAX_AVG_INAPPROPRIATE("The processing option for sensitivity analysis should be either \"max\" or \"avg\".");
+	JOB_SETUP_MAX_AVG_INAPPROPRIATE("The processing option for sensitivity analysis should be either \"max\" or \"avg\"."),
+	JOB_SETUP_MODS_EXE_PATH_MISSING("The MoDS executable path is not provided.");
 	
 	public static final String AGENT_SENS_ANA_MODIFIED_JSON = "modifiedInput.json";
 	public static final String AGENT_MECH_CALIB_UPDATED_MECH_PREFIX = "mechanism";

@@ -14,6 +14,9 @@
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
 #SBATCH --mail-type=END,FAIL                 # notifications for job done & fail
 
+# Read parameters about MoDS executable path from input.json
+MODS_MPI=$(cat input.json|jq -r .json.mods.executable.path)
+
 # Load the environment seen by the application
 eval "$(conda shell.bash hook)"
 conda activate pycantera                     #REQUIRED - loads the cantera environment
@@ -40,7 +43,6 @@ rm -rf $SLURM_JOB_NAME/
 chmod +x *.sh
 
 # Execute the simulation
-MODS_MPI=/home/jb2197/Codes_kinetics/mods-backend/outputs/Release/bin/MoDS_mpi
 CMD="mpirun -ppn $mpi_tasks_per_node -np $np \"$MODS_MPI\""
 echo -e "\nExecuting command:\n$CMD\n==================\n"
 eval $CMD

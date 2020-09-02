@@ -50,6 +50,7 @@ public enum Property {
 	JOB_SETUP_MECHANISM_IRI_MISSING("The mechanism IRI is not provided."),
 	JOB_SETUP_EXPERIMENT_IRI_MISSING("The experiment IRI is provided."),
 	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is provided.");
+	JOB_SETUP_MODS_EXE_PATH_MISSING("The MoDS executable path is not provided.");
 	
 	public static final String JOB_REQUEST_PATH = "/job/request";
     public static final String JOB_STATISTICS_PATH = "/job/statistics";

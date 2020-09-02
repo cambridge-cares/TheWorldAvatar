@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 
 public class JSonRequestParser {
 	
@@ -91,6 +88,12 @@ public class JSonRequestParser {
 	
 	public static String getNumOfInitPoints(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("initPoints");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getMoDSExePath(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("executable").path("path");
 		
 		return locateNode.asText();
 	}

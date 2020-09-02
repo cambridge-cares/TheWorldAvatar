@@ -109,6 +109,11 @@ public class MoDSMechCalibAgent extends JPSAgent {
 			if (rxnIRI == null || rxnIRI.isEmpty()) {
 				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
 			}
+			
+			String modsExePath = JSonRequestParser.getMoDSExePath(requestParams.toString());
+			if (modsExePath == null || modsExePath.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_MODS_EXE_PATH_MISSING.getPropertyName());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

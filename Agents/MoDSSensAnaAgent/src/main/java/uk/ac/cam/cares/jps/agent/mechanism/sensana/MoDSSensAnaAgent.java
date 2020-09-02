@@ -123,6 +123,11 @@ public class MoDSSensAnaAgent extends JPSAgent {
 					throw new BadRequestException(Property.JOB_SETUP_MAX_AVG_INAPPROPRIATE.getPropertyName());
 				}
 			}
+			
+			String modsExePath = JSonRequestParser.getMoDSExePath(requestParams.toString());
+			if (modsExePath == null || modsExePath.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_MODS_EXE_PATH_MISSING.getPropertyName());
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
