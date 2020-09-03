@@ -35,8 +35,6 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
@@ -44,11 +42,8 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
@@ -91,18 +86,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private double deltaT;
 	boolean restart=false;
 	
-	static JobSubmission jobSubmission;
-	public static SlurmJobProperty slurmJobProperty;
-	public static ApplicationContext applicationContext;
-	private File jobSpace;
-	
 	//below is based on location input (city iri)
 	private String epsgInUTM="48";//48N
 	private String epsgActive="32648";
 	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
-	 
-//	static JobSubmission jobSubmission;
-//	public static SlurmJobProperty slurmJobProperty;
 	
     String chimneyiriInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
             + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
@@ -1097,34 +1084,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	return obj.toString();
 }
 	
-	private String setUpJobOnAgentMachine(String jsonInput,String datapath) throws IOException, SlurmJobException {
-		if (jobSubmission == null) {
-			if (slurmJobProperty == null) {
-		        if (applicationContext == null) {
-					applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-				}
-				slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-				logger.info("slurmjobproperty="+slurmJobProperty.toString());
-			}
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
-					slurmJobProperty.getHpcAddress());
-		}
+	private String setUpJobOnAgentMachine(String jsonInput, String datapath) throws IOException, SlurmJobException {
+		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
-//String slurmdir=getClass().getClassLoader()
-//.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#");
-		System.out.println("slumscript="+decodeURL(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()));
-System.out.println("excecutable = "+decodeURL(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath()));
-		
-		return jobSubmission.setUpJob(
-				jsonInput, new File(decodeURL(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath())),
+		String jobFolderName = getNewJobFolderName(dispersionAgentProperty.getHpcAddress(), timeStamp);
+		return jobSubmission.setUpJob(jsonInput,
+				new File(decodeURL(
+						getClass().getClassLoader().getResource(dispersionAgentProperty.getSlurmScriptFileName()).getPath())),
 				getInputFile(datapath, jobFolderName),
-				new File(decodeURL(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath())),
-				 timeStamp);
+				new File(decodeURL(
+						getClass().getClassLoader().getResource(dispersionAgentProperty.getExecutableFile()).getPath())),
+				timeStamp);
 	}
 	
 	public static File getZipFile(String folderName) throws IOException {
