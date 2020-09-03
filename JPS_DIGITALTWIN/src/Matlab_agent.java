@@ -1,29 +1,36 @@
-import java.io.File;  // Import the File class
+ // Import the File class
 import java.io.IOException;  // Import the IOException class to handle errors
 import java.io.FileWriter; 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.PrintStream;
-import java.net.URI;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.io.ByteArrayOutputStream;
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+
+import matlabcontrol.MatlabConnectionException;
+import matlabcontrol.MatlabInvocationException;
+import matlabcontrol.MatlabProxy;
+import matlabcontrol.MatlabProxyFactory;
+import matlabcontrol.MatlabProxyFactoryOptions;
+
+//import matlabcontrol.MatlabConnectionException;
+//import matlabcontrol.MatlabInvocationException;
+//import matlabcontrol.MatlabProxy;
+//import matlabcontrol.MatlabProxyFactory;
+//import matlabcontrol.MatlabProxyFactoryOptions;
+
 import java.util.ArrayList;
 
-import com.mathworks.engine.EngineException;
-import com.mathworks.engine.MatlabEngine;
-import com.mathworks.engine.MatlabExecutionException;
-import com.mathworks.engine.MatlabSyntaxException;
-import com.mathworks.*;
-import matlabcontrol.*;
+
+//import com.mathworks.engine.MatlabExecutionException;
+//import com.mathworks.engine.MatlabSyntaxException;
+//import com.mathworks.*;
+//import matlabcontrol.*;
 
 /**
  * Loads the CSV output from GProms into the Matlab agent and executes the matlab input file for the electical systems
@@ -33,7 +40,7 @@ import matlabcontrol.*;
  */
 
 public class Matlab_agent {
-	public static void main(String[] args) throws IllegalArgumentException, IllegalStateException, InterruptedException, MatlabExecutionException, MatlabSyntaxException, ExecutionException, MatlabConnectionException, MatlabInvocationException {
+	public static void main(String[] args) throws IllegalArgumentException, IllegalStateException, InterruptedException, ExecutionException {
 		
 		//Read the CSV input file from /res/input/ directory
 		
@@ -126,12 +133,22 @@ public class Matlab_agent {
 
 		MatlabProxyFactory factory = new MatlabProxyFactory(builder.build());
 		// get the proxy
-		MatlabProxy proxy = factory.getProxy();
+		MatlabProxy proxy = null;
+		try {
+			proxy = factory.getProxy();
+		} catch (MatlabConnectionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// do stuff over the proxy
                   
-        proxy.eval("run('/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/Run_Script.m')");
-        
-      
+        try {
+			proxy.eval("run('/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/Run_Script.m')");
+		} catch (MatlabInvocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+       
 		
 	}
 }

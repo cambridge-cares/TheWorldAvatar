@@ -43,8 +43,8 @@ MotorStep      = data;
  thd_phase_db                = thd(LoadPhaseCurrent);
 
  % write the values back to the excel file
-  csvwrite('C:\Users\GKAR01\Documents\MATLAB\Biodiesel_Plant\temp.csv',[t(:),LoadPSignal(:),LoadQSignal(:),LoadPosSeqVSignal(:),LoadPhaseCurrent(:)]);
-  csvwrite('C:\Users\GKAR01\Documents\MATLAB\Biodiesel_Plant\freq.csv',[Ftime(:),FSignal(:)]);
+  csvwrite('threephase.csv',[t(:),LoadPSignal(:),LoadQSignal(:),LoadPosSeqVSignal(:),LoadPhaseCurrent(:)]);
+  csvwrite('freq.csv',[Ftime(:),FSignal(:)]);
   disp('Writing Data to CSV file.');
   
   
