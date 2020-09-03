@@ -20,7 +20,7 @@
     ontocompchem:hasEnvironment <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_environment_module_C8H20O4Si1_1> ;
     ontocompchem:hasInitialization <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_initilization_module_C8H20O4Si1_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log> a ontocompchem:OutputSource,
+<http://theworldavatar.com/data/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log> a ontocompchem:OutputSource,
         owl:Thing .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl> a ontocompchem:OutputSource,
@@ -1094,7 +1094,7 @@
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_environment_module_C8H20O4Si1_1> a gc:SourcePackage,
         owl:Thing ;
-    gc:hasOutputFile <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log>,
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log>,
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl> ;
     ontocompchem:hasProgram "Gaussian"^^xsd:string ;
     ontocompchem:hasProgramVersion "2003+E.01"^^xsd:string ;

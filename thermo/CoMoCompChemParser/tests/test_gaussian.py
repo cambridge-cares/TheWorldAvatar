@@ -129,7 +129,8 @@ class TestGaussianParser(unittest.TestCase):
                     empirical_formula = test_data["Empirical formula"]        
                     program_version = test_data["Program version"]
                     ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + ref_owl_name + "#"
-                    source_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" +file_name +"/"
+                    source_kb_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" +file_name +"/"
+                    source_data_base_uri =  "http://theworldavatar.com/data/ontocompchem/" + file_name + "/"
                     
                     """Namespace definition"""
                     ontocompchem_namespace = Namespace("http://www.theworldavatar.com/ontology/ontocompchem/ontocompchem.owl#")
@@ -151,7 +152,7 @@ class TestGaussianParser(unittest.TestCase):
                     
                     '''Create ontocompchem knowledge graph by generating owl file.'''
                     CompChemObj = OntoCompChemData()
-                    CompChemObj.create_ontocompchem_graph(test_graph, test_data, ontology_base_uri, source_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace,log_file, ref_owl_name,r)
+                    CompChemObj.create_ontocompchem_graph(test_graph, test_data, ontology_base_uri, source_kb_base_uri,source_data_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace,log_file, ref_owl_name,r)
                     
                     ref_graph = rdflib.Graph()
                     

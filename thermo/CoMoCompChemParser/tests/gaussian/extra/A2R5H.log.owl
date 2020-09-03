@@ -20,7 +20,7 @@
     ontocompchem:hasEnvironment <http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log.owl#job_module_has_environment_module_C12H9_1> ;
     ontocompchem:hasInitialization <http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log.owl#job_module_has_initilization_module_C12H9_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log> a ontocompchem:OutputSource,
+<http://theworldavatar.com/data/ontocompchem/A2R5H/A2R5H.log> a ontocompchem:OutputSource,
         owl:Thing .
 
 <http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log.owl> a ontocompchem:OutputSource,
@@ -726,7 +726,7 @@
 
 <http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log.owl#job_module_has_environment_module_C12H9_1> a gc:SourcePackage,
         owl:Thing ;
-    gc:hasOutputFile <http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log>,
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/A2R5H/A2R5H.log>,
         <http://theworldavatar.com/kb/ontocompchem/A2R5H/A2R5H.log.owl> ;
     ontocompchem:hasProgram "Gaussian"^^xsd:string ;
     ontocompchem:hasProgramVersion "2009+D.01"^^xsd:string ;

@@ -17,7 +17,7 @@
     ontocompchem:hasEnvironment <http://theworldavatar.com/kb/ontocompchem/1b/1b.log.owl#job_module_has_environment_module_C80H20_1> ;
     ontocompchem:hasInitialization <http://theworldavatar.com/kb/ontocompchem/1b/1b.log.owl#job_module_has_initilization_module_C80H20_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/1b/1b.log> a ontocompchem:OutputSource,
+<http://theworldavatar.com/data/ontocompchem/1b/1b.log> a ontocompchem:OutputSource,
         owl:Thing .
 
 <http://theworldavatar.com/kb/ontocompchem/1b/1b.log.owl> a ontocompchem:OutputSource,
@@ -2891,7 +2891,7 @@
 
 <http://theworldavatar.com/kb/ontocompchem/1b/1b.log.owl#job_module_has_environment_module_C80H20_1> a gc:SourcePackage,
         owl:Thing ;
-    gc:hasOutputFile <http://theworldavatar.com/kb/ontocompchem/1b/1b.log>,
+    gc:hasOutputFile <http://theworldavatar.com/data/ontocompchem/1b/1b.log>,
         <http://theworldavatar.com/kb/ontocompchem/1b/1b.log.owl> ;
     ontocompchem:hasProgram "Gaussian"^^xsd:string ;
     ontocompchem:hasProgramVersion "2009+D.01"^^xsd:string ;
