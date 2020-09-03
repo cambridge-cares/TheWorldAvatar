@@ -9,6 +9,7 @@ def main():
     argparser = argparse.ArgumentParser(description='Gaussian log file parser')
     argparser.add_argument('-f', metavar='', help="path to Gaussian log file", required=True)
     argparser.add_argument('-j', metavar='', help="generates JSON file(s)", default =False,required=False)
+    argparser.add_argument('-p', metavar='', help="specify output file path", default =False,required=False)
     args = argparser.parse_args()
     # check cmd line args for errors
     if len(args.f) == 0:
@@ -17,7 +18,7 @@ def main():
         utils.dienicely("File: '"+args.f+"' doesn't exist.")
 
     # run the code
-    run(args.f,args.j)
+    run(args.f,args.j,args.p)
     print('finished!')
 
 if __name__ == "__main__":
