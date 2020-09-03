@@ -7,7 +7,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.BadRequestException;
 
-public class JPSMatlabagent extends JPSHttpServlet implements JPSAgentInterface {
+public class JPSMatlabAgent extends JPSHttpServlet implements JPSAgentInterface {
 
     @Override
     public JSONObject processRequestParameters(JSONObject requestParams) {
