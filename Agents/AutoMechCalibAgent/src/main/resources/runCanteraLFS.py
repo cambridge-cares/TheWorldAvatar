@@ -6,6 +6,17 @@ import argparse
 import os
 ct.suppress_thermo_warnings()
 
+from timeit import default_timer as timer
+class interrupter(object):
+    def __init__(self, start, tmax):
+        self.start = start
+        self.tmax = tmax
+    def __call__(self, _):
+        t_now = timer()
+        if t_now - self.start > self.tmax:
+            raise Exception('Max simulation time exceeded')
+        return 0
+        
 parser = argparse.ArgumentParser(description='Simulate laminar flame speed')
 parser.add_argument('-d', '--dataPath', type=str, metavar='', required=True, help='File path for simulation settings')
 parser.add_argument('-t', '--tranModel', type=str, metavar='', required=True, help='Transport model for simulation, mix or multi')
@@ -78,6 +89,8 @@ flame.set_refine_criteria(ratio = 7.0, slope = 1, curve = 1)
 flame.set_max_jac_age(50, 50)
 flame.set_time_step(5.e-06, [10, 20, 80]) #s
 flame.max_time_step_count = 4000
+# Setup the interrupter
+flame.set_interrupt(interrupter(timer(),timeLimit))
 # Solve the first flame
 flame.solve(verbose)
 
