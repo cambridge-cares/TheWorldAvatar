@@ -18,11 +18,6 @@ import matlabcontrol.MatlabProxy;
 import matlabcontrol.MatlabProxyFactory;
 import matlabcontrol.MatlabProxyFactoryOptions;
 
-//import matlabcontrol.MatlabConnectionException;
-//import matlabcontrol.MatlabInvocationException;
-//import matlabcontrol.MatlabProxy;
-//import matlabcontrol.MatlabProxyFactory;
-//import matlabcontrol.MatlabProxyFactoryOptions;
 
 import java.util.ArrayList;
 
@@ -116,9 +111,9 @@ public class Matlab_agent {
 			csvWriter.close();		
 			
 			
-			//Call Matlab
+			//Calling Matlab function
 			
-			//path: 
+			
 			
 			
 		} catch (IOException e) {
