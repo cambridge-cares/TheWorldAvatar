@@ -686,15 +686,52 @@ public class JobSubmission{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
 				if(slurmJobProperty.getOutputFileExtension().trim().toLowerCase().equals(".log")){
-					downloadFile(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
-					updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+					if(outputFileExist(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()))){
+						try{
+							downloadFile(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+							updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+						}catch(Exception e){
+							Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+						}
+					}else{
+						Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+					}
 				}else{
-					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
+					if(outputFileExist(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())))){
+						try{
+							downloadFile(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
+						}catch(Exception e){
+							Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+						}
+					}else{
+						Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+					}
 				}
 				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()));
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the output file exists. If it does, it returns true, it returns false otherwise.
+	 * 
+	 * @param fileAbsoultePath
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 */
+	private boolean outputFileExist(String fileAbsoultePath) throws JSchException, IOException{
+		String command = "[ -f "+fileAbsoultePath+" ] && echo "+Status.JOB_OUTPUT_FILE_EXIST_MESSAGE.getName();
+		ArrayList<String> outputs = executeCommand(command);
+		if(outputs!=null && outputs.size()>0){
+			System.out.println("********************************************Output file:"+outputs);
+			if(outputs.contains(Status.JOB_OUTPUT_FILE_EXIST_MESSAGE.getName())){
+				return true;
+			}
+		}
+		System.out.println("********************************************Output file doesn't exist:"+outputs);
 		return false;
 	}
 	
