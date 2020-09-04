@@ -726,12 +726,10 @@ public class JobSubmission{
 		String command = "[ -f "+fileAbsoultePath+" ] && echo "+Status.JOB_OUTPUT_FILE_EXIST_MESSAGE.getName();
 		ArrayList<String> outputs = executeCommand(command);
 		if(outputs!=null && outputs.size()>0){
-			System.out.println("********************************************Output file:"+outputs);
 			if(outputs.contains(Status.JOB_OUTPUT_FILE_EXIST_MESSAGE.getName())){
 				return true;
 			}
 		}
-		System.out.println("********************************************Output file doesn't exist:"+outputs);
 		return false;
 	}
 	
