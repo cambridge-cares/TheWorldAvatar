@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -424,6 +425,11 @@ public class JobSubmission{
 	 * 
 	 */
 	public void monitorJobs() throws SlurmJobException{
+		if(!hostAvailabilityCheck(getHpcAddress(), 22)){
+			System.out.println("The HPC server with address " + getHpcAddress() + " is not available.");
+			session = null;
+			return;
+		}
 		scheduledIteration++;
 		try {
 			if (session == null || scheduledIteration%10==0) {
@@ -462,15 +468,19 @@ public class JobSubmission{
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		} catch(SftpException e){
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		} catch(JSchException e){
 			e.printStackTrace();
+			session = null;
 			throw new SlurmJobException(e.getMessage());
 		}
 	}
@@ -676,12 +686,47 @@ public class JobSubmission{
 		if(statusFile!=null){
 			if(!isJobRunning(statusFile)){
 				if(slurmJobProperty.getOutputFileExtension().trim().toLowerCase().equals(".log")){
-					downloadFile(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
-					updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+					if(outputFileExist(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()))){
+						try{
+							downloadFile(Utils.getLogFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+							updateStatusForErrorTermination(statusFile, Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, runningJob, Status.EXTENSION_LOG_FILE.getName()));
+						}catch(Exception e){
+							Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+						}
+					}else{
+						Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+					}
 				}else{
-					downloadFile(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
+					if(outputFileExist(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())))){
+						try{
+							downloadFile(Utils.getOutputFilePathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress(), slurmJobProperty.getOutputFileName().concat(slurmJobProperty.getOutputFileExtension())), Utils.getJobOutputFilePathOnAgentPC(runningJob, workspaceDirectory, slurmJobProperty.getOutputFileName(), slurmJobProperty.getOutputFileExtension()));
+						}catch(Exception e){
+							Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+						}
+					}else{
+						Utils.modifyStatus(statusFile.getAbsolutePath(), Status.JOB_LOG_MSG_ERROR_TERMINATION.getName());
+					}
 				}
 				deleteJobOnHPC(Utils.getJobFolderPathOnHPC(runningJob, slurmJobProperty.getHpcServerLoginUserName(), workspaceDirectory, getHpcAddress()));
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the output file exists. If it does, it returns true, it returns false otherwise.
+	 * 
+	 * @param fileAbsoultePath
+	 * @return
+	 * @throws JSchException
+	 * @throws IOException
+	 */
+	private boolean outputFileExist(String fileAbsoultePath) throws JSchException, IOException{
+		String command = "[ -f "+fileAbsoultePath+" ] && echo "+Status.JOB_OUTPUT_FILE_EXIST_MESSAGE.getName();
+		ArrayList<String> outputs = executeCommand(command);
+		if(outputs!=null && outputs.size()>0){
+			if(outputs.contains(Status.JOB_OUTPUT_FILE_EXIST_MESSAGE.getName())){
 				return true;
 			}
 		}
@@ -900,14 +945,25 @@ public class JobSubmission{
 		System.out.println("Closing the channel.");
 		return outputs;
 	}
-	
+
 	/**
-	 * Decodes the password.
+	 * Indicates if a server is online.
 	 * 
-	 * @param password encrypted password.
+	 * @param server refers to the server address
+	 * @param port referes to the port number
 	 * @return
 	 */
-	private String getDecipheredPassword(String password){
-		return password.replace("l", "1").replace("_", "").replace("7", "3").replace("3", "4");
+	public boolean hostAvailabilityCheck(String server, int port) {
+		boolean available = true;
+		try {
+			(new Socket(server, port)).close();
+		} catch (UnknownHostException e) {
+			available = false;
+		} catch (IOException e) {
+			available = false;
+		} catch (NullPointerException e) {
+			available = false;
+		}
+		return available;
 	}
 }
