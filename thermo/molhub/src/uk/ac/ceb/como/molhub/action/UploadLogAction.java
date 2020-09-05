@@ -193,7 +193,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					 */	
 				  try {
 								
-				  process = Runtime.getRuntime().exec(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" );
+				  process = Runtime.getRuntime().exec(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + "/" + uuidFolderName + "/" );
 
 				  logger.info("process.isAlive(): " + process.isAlive());
 							    
@@ -211,10 +211,19 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					// of a single file upload.
 					checkURLValidity(getOntoSpeciesIRI());
 					
+					/**
+					 * @author NK510 (caresssd@hermes.cam.ac.uk)
+					 * 
+					 * TO DO: Here we should discuss how to implement adding unique species IRI on uploading log files. There are two options:
+					 * 1. Extend Angiras and Daniel's parser to generate owl file that will optionally contain unique species IRI
+					 * 2. Implement Java method that will add given unique species IRI inside the content of generated owl file.
+					 * 
+					 */
+					
 				}
 				
 				
-				List<File> owlFileList = getArrayFileList(dataFolderPath  + uuidFolderName +"/", ".owl");
+				List<File> owlFileList = getArrayFileList(kbFolderPath  + uuidFolderName +"/", ".owl");
 				
 				logger.info("owlFileList.isEmpty(): " + owlFileList.isEmpty() + " owlFileList.size(): " + owlFileList.size());				
 				
@@ -223,7 +232,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					
 				for(File owlFiles: owlFileList) {
 				
-				File owl_File = new File( dataFolderPath + uuidFolderName + "/" + owlFiles.getName());
+				File owl_File = new File(kbFolderPath + uuidFolderName + "/" + owlFiles.getName());
 					
 			    logger.info("ontology file path: " + owl_File.getAbsolutePath().toString());
 			        
@@ -245,7 +254,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				 * and checks consistency of the generated Compchem ontology (ABox).
 				 */
 				
-				boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(dataFolderPath +  uuidFolderName + "/" + owl_File.getName());
+				boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(kbFolderPath +  uuidFolderName + "/" + owl_File.getName());
 				
 				/**
 				 * If the generated OWL file is valid, it is loaded to the triple
@@ -259,7 +268,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				/**
 				 * Load ontology into triple store.
 				 */
-				loadOntology(owlFiles, serverURL, owl_File.getName().toString(), dataFolderPath + uuidFolderName + "/",  uuidFolderName , REPOSITORY_ID);
+				loadOntology(owlFiles, serverURL, owl_File.getName().toString(), kbFolderPath + uuidFolderName + "/",  uuidFolderName , REPOSITORY_ID);
 				
 				}
 				
@@ -281,13 +290,6 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 						uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], owl_File.getName(),consistency);
 				
 				uploadReportList.add(gaussianUploadReport);
-				
-				/**
-				 * Copy generated owl file into created folder inside ./kb/ontocompchem.
-				 */
-				Files.copy(owl_File.toPath(),(new File(kbFolderPath +  uuidFolderName + "/" + owl_File.getName())).toPath(),StandardCopyOption.REPLACE_EXISTING);
-				
-
 				
 				}
 			}
