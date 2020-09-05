@@ -147,7 +147,7 @@ public class RepositoryManager {
 			repo.initialize();
 			RepositoryConnection con = repo.getConnection();
 			try {
-				System.out.println("Query String:\n" + queryString);
+//				System.out.println("Query String:\n" + queryString);
 				// Export all statements in the context to System.out, in RDF/XML format
 				TupleQuery queryResult = con.prepareTupleQuery(queryString);
 				// A QueryResult is also an AutoCloseable resource, so make sure it gets
@@ -197,7 +197,7 @@ public class RepositoryManager {
 			repo.initialize();
 			RepositoryConnection con = repo.getConnection();
 			try {
-				System.out.println("Query String:\n" + queryString);
+//				System.out.println("Query String:\n" + queryString);
 				// Export all statements in the context to System.out, in RDF/XML format
 				TupleQuery queryResult = con.prepareTupleQuery(queryString);
 				// A QueryResult is also an AutoCloseable resource, so make sure it gets
@@ -243,7 +243,7 @@ public class RepositoryManager {
 			RepositoryConnection con = repo.getConnection();
 
 			try {
-				System.out.println("QueryString:\n" + queryString);
+//				System.out.println("QueryString:\n" + queryString);
 				TupleQuery queryResult = con.prepareTupleQuery(queryString);
 				try (TupleQueryResult result = queryResult.evaluate()) {
 					processResult(result, processedResultList);

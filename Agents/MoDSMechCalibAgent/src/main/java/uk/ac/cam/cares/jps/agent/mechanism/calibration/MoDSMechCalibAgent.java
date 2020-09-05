@@ -139,7 +139,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 */
 	public JSONObject produceStatistics(String input) throws IOException, MoDSMechCalibAgentException {
 		System.out.println("Received a request to send MoDSMechCalibAgent statistics.\n");
-		logger.info("Received a request to send MoDSMechCalibAgent statistics.\n");
+		logger.info("\nReceived a request to send MoDSMechCalibAgent statistics.\n");
 		// Initialises all properties required for this agent to set-up<br>
 		// and run jobs. It will also initialise the unique instance of<br>
 		// Job Submission class.
@@ -165,7 +165,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	@ResponseBody
 	public String showStatistics() throws IOException, MoDSMechCalibAgentException {
 		System.out.println("Received a request to show MoDSMechCalibAgent statistics.\n");
-		logger.info("Received a request to show MoDSMechCalibAgent statistics.\n");
+		logger.info("\nReceived a request to show MoDSMechCalibAgent statistics.\n");
 		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
@@ -176,7 +176,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws MoDSMechCalibAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("---------- Mechanism Calibration Agent has started ----------");
+		logger.info("\n---------- Mechanism Calibration Agent has started ----------");
 		System.out.println("---------- Mechanism Calibration Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
@@ -196,7 +196,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		}, 
 				modsMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
 				modsMechCalibAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- MechCalib jobs are being monitored  ----------");
+		logger.info("\n---------- MechCalib jobs are being monitored  ----------");
 		System.out.println("---------- MechCalib jobs are being monitored  ----------");
 	}
 	

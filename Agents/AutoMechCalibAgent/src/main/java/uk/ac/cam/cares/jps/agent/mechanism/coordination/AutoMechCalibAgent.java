@@ -158,7 +158,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 */
 	public JSONObject produceStatistics(String input) throws IOException, AutoMechCalibAgentException {
 		System.out.println("Received a request to send AutoMechCalibAgent statistics.\n");
-		logger.info("Received a request to send AutoMechCalibAgent statistics.\n");
+		logger.info("\nReceived a request to send AutoMechCalibAgent statistics.\n");
 		// Initialises all properties required for this agent to set-up<br>
 		// and run jobs. It will also initialise the unique instance of<br>
 		// Job Submission class.
@@ -183,7 +183,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	@ResponseBody
 	public String showStatistics() throws IOException, AutoMechCalibAgentException {
 		System.out.println("Received a request to show AutoMechCalibAgent statistics.\n");
-		logger.info("Received a request to show AutoMechCalibAgent statistics.\n");
+		logger.info("\nReceived a request to show AutoMechCalibAgent statistics.\n");
 		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
@@ -194,7 +194,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 	 * @throws AutoMechCalibAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("---------- Automated Mechanism Calibration Agent has started ----------");
+		logger.info("\n---------- Automated Mechanism Calibration Agent has started ----------");
 		System.out.println("---------- Automated Mechanism Calibration Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		AutoMechCalibAgent autoMechCalibAgent = new AutoMechCalibAgent();
@@ -214,7 +214,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 		}, 
 				autoMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
 				autoMechCalibAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- Automated Calibration jobs are being monitored  ----------");
+		logger.info("\n---------- Automated Calibration jobs are being monitored  ----------");
 		System.out.println("---------- Automated Calibration jobs are being monitored  ----------");
 	}
 	
@@ -268,7 +268,7 @@ public class AutoMechCalibAgent extends JPSAgent {
 		}
 		initAgentProperty();
 		workspace = jobSubmission.getWorkspaceDirectory();
-		logger.info("AutoMechCalibAgent is monitoring.");
+		logger.info("\nAutoMechCalibAgent is monitoring.");
 		System.out.println("AutoMechCalibAgent is monitoring the jobs.");
 		try {
 			if (workspace.isDirectory()) {

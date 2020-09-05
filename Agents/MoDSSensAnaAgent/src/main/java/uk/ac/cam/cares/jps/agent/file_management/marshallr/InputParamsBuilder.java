@@ -16,6 +16,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -23,6 +25,7 @@ import org.w3c.dom.Node;
 import com.jayway.jsonpath.JsonPath;
 
 public class InputParamsBuilder {
+	private static Logger logger = LoggerFactory.getLogger(InputParamsBuilder.class);
 	public static ArrayList<ArrayList<String>> attribs = new ArrayList<ArrayList<String>>();
 	public static ArrayList<ArrayList<String>> profileAttribs = new ArrayList<ArrayList<String>>();
 	public static ArrayList<String> valueList = new ArrayList<String>();
@@ -143,7 +146,7 @@ public class InputParamsBuilder {
             StreamResult outputFile = new StreamResult(output);
             transformer.transform(source, outputFile);
             
-            System.out.println("\nXML DOM Created Successfully..");
+            logger.info("XML DOM Created Successfully..");
 		} catch (Exception e) {
             e.printStackTrace();
         }

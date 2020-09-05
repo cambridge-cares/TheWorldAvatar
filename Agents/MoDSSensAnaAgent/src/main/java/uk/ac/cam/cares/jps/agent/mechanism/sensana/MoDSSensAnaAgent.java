@@ -153,7 +153,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 */
 	public JSONObject produceStatistics(@RequestParam String input) throws IOException, MoDSSensAnaAgentException {
 		System.out.println("Received a request to send MoDSSensAnaAgent statistics.\n");
-		logger.info("Received a request to send MoDSSensAnaAgent statistics.\n");
+		logger.info("\nReceived a request to send MoDSSensAnaAgent statistics.\n");
 		// Initialises all properties required for this agent to set-up<br>
 		// and run jobs. It will also initialise the unique instance of<br>
 		// Job Submission class.
@@ -179,7 +179,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	@ResponseBody
 	public String showStatistics() throws IOException, MoDSSensAnaAgentException {
 		System.out.println("Received a request to show MoDSSensAnaAgent statistics.\n");
-		logger.info("Received a request to show MoDSSensAnaAgent statistics.\n");
+		logger.info("\nReceived a request to show MoDSSensAnaAgent statistics.\n");
 		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
@@ -190,7 +190,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @throws MoDSSensAnaAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("---------- Sensitivity Analysis Agent has started ----------");
+		logger.info("\n---------- Sensitivity Analysis Agent has started ----------");
 		System.out.println("---------- Sensitivity Analysis Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		MoDSSensAnaAgent modsSensAnaAgent = new MoDSSensAnaAgent();
@@ -210,7 +210,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		}, 
 				modsSensAnaAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
 				modsSensAnaAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- SensAna jobs are being monitored  ----------");
+		logger.info("\n---------- SensAna jobs are being monitored  ----------");
 		System.out.println("---------- SensAna jobs are being monitored  ----------");
 	}
 	
