@@ -60,7 +60,7 @@ class TestGaussianParser(unittest.TestCase):
 
                     if len(test_data_list) > 1:
                     #   ref_name = log_file.replace('.log','#'+str(i+1)+'.json')
-                         ref_name = log_file + '#' + str(i+1)+'.json'
+                         ref_name = log_file + '_' + str(i+1)+'.json'
                          #print("ref_name (json): ", ref_name)
 
                     else:
@@ -108,11 +108,13 @@ class TestGaussianParser(unittest.TestCase):
                     
                     if len(test_data_list) > 1:
                     #   ref_name = log_file.replace('.log','#'+str(i+1)+'.json')
-                        ref_owl_name = log_file + '#' + str(i+1)+'.owl'
+                        ref_owl_name = log_file +'_'+ str(i+1)+'.owl'
+                        owl_name = log_file +"_"+ str(i+1)+'.owl'
 
                     else:
                         #ref_name = log_file.replace('.log','.json')
                         ref_owl_name =  log_file+'.owl'
+                        owl_name = log_file + '.owl'
                         
                     owl_ref_path = os.path.join(test_path, method, ref_owl_name)
                     
@@ -128,7 +130,7 @@ class TestGaussianParser(unittest.TestCase):
                     
                     empirical_formula = test_data["Empirical formula"]        
                     program_version = test_data["Program version"]
-                    ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + ref_owl_name + "#"
+                    ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
                     source_kb_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" +file_name +"/"
                     source_data_base_uri =  "http://theworldavatar.com/data/ontocompchem/" + file_name + "/"
                     
@@ -152,7 +154,7 @@ class TestGaussianParser(unittest.TestCase):
                     
                     '''Create ontocompchem knowledge graph by generating owl file.'''
                     CompChemObj = OntoCompChemData()
-                    CompChemObj.create_ontocompchem_graph(test_graph, test_data, ontology_base_uri, source_kb_base_uri,source_data_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace,log_file, ref_owl_name,r)
+                    CompChemObj.create_ontocompchem_graph(test_graph, test_data, ontology_base_uri, source_kb_base_uri,source_data_base_uri,ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace,log_file, owl_name,r)
                     
                     ref_graph = rdflib.Graph()
                     
@@ -162,17 +164,12 @@ class TestGaussianParser(unittest.TestCase):
                     #print(ref_graph.serialize(format="ttl").decode("utf-8"))
 
                     '''Printing created ontology (test graph) that is an instance of OntoCompChem ontology.'''
-#                    print(test_graph.serialize(format="ttl").decode("utf-8"))
+                    #print(test_graph.serialize(format="ttl").decode("utf-8"))
 
                     self.assertEqual(len(test_graph.serialize(format="ttl").decode("utf-8")),len(ref_graph.serialize(format="ttl").decode("utf-8")))
                     self.assertEqual(test_graph.serialize(format="ttl").decode("utf-8"),ref_graph.serialize(format="ttl").decode("utf-8"))
                     '''To get a report of which line has a difference '''
-                    self.assertListEqual(list(test_graph.serialize(format="ttl").decode("utf-8")),list(ref_graph.serialize(format="ttl").decode("utf-8")))
-
-
-                    
-                    
-                
+                    self.assertListEqual(list(test_graph.serialize(format="ttl").decode("utf-8")),list(ref_graph.serialize(format="ttl").decode("utf-8")))                
         
 if __name__ == '__main__':
     unittest.main()

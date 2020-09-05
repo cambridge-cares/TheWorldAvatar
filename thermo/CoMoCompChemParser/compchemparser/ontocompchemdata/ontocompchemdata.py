@@ -52,13 +52,14 @@ class OntoCompChemData:
 
     def outputjson(self,pathflag):
         print('Dumping to JSON, File '+self.log)
+        print("self.log : ", self.log)
         k=1
         global t
         for i, json_dat in enumerate(self.data):
             if len(self.data) > 1:
             #    json_name = self.log.replace('.log','#'+str(i+1)+'.json')
-                 json_name = self.log + '#' + str(i+1)+'.json'                
-                 owl_name = base=os.path.basename(self.log) + '#' + str(i+1)+'.owl'
+                 json_name = self.log + '_' + str(i+1)+'.json'                
+                 owl_name = base=os.path.basename(self.log) + '_' + str(i+1)+'.owl'
             else:
             #    json_name = self.log.replace('.log','.json')
                  json_name = self.log + '.json'                
@@ -145,19 +146,20 @@ class OntoCompChemData:
             path = sys.argv[6]
             if len(self.data) > 1:
 #                owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
-                 owl_name = self.log + '#' + str(k)+'.owl'   
+                 owl_name = Path(self.log).stem + '_' + str(k)+'.owl'   
                  #owl_path = g_path+"#"+str(k)+".owl"
                  owl_path = path + owl_name
+                
             else:
 #                owl_path = os.path.splitext(g_path)[0]+".owl"
-                 owl_name = self.log + ".owl"
+                 owl_name = Path(self.log).stem + ".owl"
                  #owl_path = g_path+".owl" 
                  owl_path = path + owl_name
         
         elif pathflag == False:
             if len(self.data) > 1:
 #                owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
-                 owl_path = g_path+"#"+str(k)+".owl"
+                 owl_path = g_path+"_"+str(k)+".owl"
             else:
 #                owl_path = os.path.splitext(g_path)[0]+".owl"
                  owl_path = g_path+".owl"
