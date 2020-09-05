@@ -52,7 +52,7 @@ echo
 echo 'Slurm job diagnostics:'
 sacct --job $SLURM_JOBID --format "JobName,Submit,Elapsed,AveCPU,CPUTime,UserCPU,TotalCPU,NodeList,NTasks,AveDiskRead,AveDiskWrite"
 
-# Pack all output files to output.zip (3 steps)
+# Pack all output files together with slurm output files to output.zip (4 steps)
 cd $MODSDIR
 rm -rf All/ Initial/ Working_dir/			 # 1 - remove the input files
 for FOLDER in *; do							 # 2 - remove subfolders in the output folder
@@ -66,7 +66,8 @@ for FOLDER in *; do							 # 2 - remove subfolders in the output folder
 		cd ..
 	fi
 done
-zip -r output.zip */						 # 3 - zip output files to output.zip
+cp $SLURM_SUBMIT_DIR/slurm* .				 # 3 - copy slurm output files to job folder
+zip -r output.zip */ slurm*					 # 4 - zip output files to output.zip
 
 cp -pr $SCRATCH_DIRECTORY/* $SLURM_SUBMIT_DIR
 cd $SLURM_SUBMIT_DIR
