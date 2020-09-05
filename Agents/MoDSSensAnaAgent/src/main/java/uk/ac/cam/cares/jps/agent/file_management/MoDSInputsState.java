@@ -24,8 +24,6 @@ public class MoDSInputsState {
 	public static final String STRING = "string";
 	
 	public static final String FOLDER_ROOT = System.getProperty("user.home");
-	public static final String FOLDER_DOCUMENTS = "Documents";
-	public static final String FOLDER_JOB_FOLDER = "JobFolder";
 	public static final String FOLDER_TEMPORARY = "Temporary";
 	public static final String FOLDER_ALL = "All";
 	public static final String FOLDER_INITIAL = "Initial";

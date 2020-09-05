@@ -47,6 +47,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSMechCalibAgent.class);
 	private File workspace;
+	private String jobFolderPath;
 	
 	public static JobSubmission jobSubmission;
 	public static ApplicationContext applicationContextMoDSMechCalibAgent;
@@ -401,10 +402,11 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		String setUpMsg = jobSubmission.setUpJob(jsonString, 
 				new File(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getSlurmScriptFileName()).getPath()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
-		if (setUpMsg == null) {
-			return null;
+		if (setUpMsg != null) {
+			deleteDirectory(new File(jobFolderPath));
+			return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
 		}
-		return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
+		return null;
 	}
 	
 	/**
@@ -418,7 +420,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSMechCalibAgentException {
 		MoDSFileManagement fileMagt = new MoDSFileManagement(modsMechCalibAgentProperty);
 		
-		String jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
+		jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
 		
 		return Utils.getZipFile(new File(jobFolderPath).getAbsolutePath());
 	}
@@ -455,5 +457,18 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		return null;
 	}
 	
-	
+	/**
+	 * Delete the temporary directory that generated during creating MoDS job. 
+	 * 
+	 * @param directoryToBeDeleted
+	 */
+	private void deleteDirectory(File directoryToBeDeleted) {
+	    File[] allContents = directoryToBeDeleted.listFiles();
+	    if (allContents != null) {
+	        for (File file : allContents) {
+	            deleteDirectory(file);
+	        }
+	    }
+	    directoryToBeDeleted.delete();
+	}
 }

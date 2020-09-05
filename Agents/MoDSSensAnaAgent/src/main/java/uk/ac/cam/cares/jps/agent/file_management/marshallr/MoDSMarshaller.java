@@ -55,36 +55,34 @@ public class MoDSMarshaller extends MoDSInputsState implements IMoDSMarshaller {
 		init();
 		
 		// create the job folder 
-		jobFolderPath = FOLDER_ROOT.concat(FRONTSLASH).concat(FOLDER_DOCUMENTS)
-				.concat(FRONTSLASH).concat(FOLDER_JOB_FOLDER)
-				.concat(FRONTSLASH).concat(jobFolderName);
+		jobFolderPath = FOLDER_ROOT.concat(FRONTSLASH).concat("."+jobFolderName);
 		File jobFolder = new File(jobFolderPath);
 		if (!jobFolder.exists()) {
-			jobFolder.mkdir();
+			jobFolder.mkdirs();
 		}
 		// create the \Temporary folder for file storage
 		folderTemporaryPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_TEMPORARY);
 		File temporary = new File(folderTemporaryPath);
 		if (!temporary.exists()) {
-			temporary.mkdir();
+			temporary.mkdirs();
 		}
 		// create the \Initial folder
 		folderInitialPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_INITIAL);
 		File initial = new File(folderInitialPath);
 		if (!initial.exists()) {
-			initial.mkdir();
+			initial.mkdirs();
 		}
 		// create the \All folder
 		folderAllPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_ALL);
 		File all = new File(folderAllPath);
 		if (!all.exists()) {
-			all.mkdir();
+			all.mkdirs();
 		}
 		// create the \Working_dir folder
 		folderWorkingDirPath = jobFolderPath.concat(FRONTSLASH).concat(FOLDER_WORKING_DIR);
 		File workingDir = new File(folderWorkingDirPath);
 		if (!workingDir.exists()) {
-			workingDir.mkdir();
+			workingDir.mkdirs();
 		}
 		
 		// create algorithms node
