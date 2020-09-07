@@ -38,7 +38,7 @@ public class AlignmentIOHelper {
 	 * @return JSONArray
 	 * @throws Exception
 	 */
-	public static JSONArray readAlignmentFileAsJSONArray(String iriOfAlignmentFile,Double threshold) throws Exception {
+	public static JSONArray readAlignmentFileAsJSONArray(String iriOfAlignmentFile,double threshold) throws Exception {
 		String queryStr = "PREFIX alignment: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
 				+ "SELECT ?entity1 ?entity2 ?measure " 
 				//+ "WHERE {?a ?p ?o."
@@ -72,7 +72,10 @@ public class AlignmentIOHelper {
 		return resArr;
 	}
 	
-
+	public static JSONArray readAlignmentFileAsJSONArray(String iriOfAlignmentFile) throws Exception {
+		return readAlignmentFileAsJSONArray(iriOfAlignmentFile,0.0);
+	}
+	
 	/***
 	 * alignment(List<Map>) to JsonArray
 	 * @param mlist(alignment as java List)

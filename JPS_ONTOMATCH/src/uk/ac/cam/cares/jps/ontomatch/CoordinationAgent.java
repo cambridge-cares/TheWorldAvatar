@@ -1,12 +1,15 @@
 package uk.ac.cam.cares.jps.ontomatch;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,8 +53,8 @@ public class CoordinationAgent extends JPSHttpServlet {
 		System.out.println("kb path: "+kb_path);
 		JSONObject jo = requestParams;
 		String alignmentIRI = null, sIRI = null, tIRI = null, type = null;
-        float threshold = 0;
-        Float[] weights = null;
+        double threshold = 0;
+        Double[] weights = null;
         String[] choices = null;
         String[] matchers = new String[3];
 
@@ -60,14 +63,14 @@ public class CoordinationAgent extends JPSHttpServlet {
 			 sIRI = jo.getString("sourceIRI");
 			 tIRI = jo.getString("targetIRI");
 			 type = jo.getString("matchingType");
-			 threshold = jo.getFloat("threshold");
+			 threshold = jo.getDouble("threshold");
 			 /**get weights**/
 			 JSONArray jweight = jo.getJSONArray("weights");
-			List<Float> lweight = new ArrayList<Float>();
+			List<Double> lweight = new ArrayList<Double>();
 			for(int i=0; i<jweight.length();i++) {
-				lweight.add(jweight.getFloat(i));
+				lweight.add(jweight.getDouble(i));
 			}
-			weights = new Float[lweight.size()];
+			weights = new Double[lweight.size()];
 			lweight.toArray(weights);
 			/**get choices if any**/
 			JSONArray jcho = jo.getJSONArray("choices");
@@ -128,6 +131,7 @@ public class CoordinationAgent extends JPSHttpServlet {
 		String saveAddress = AgentLocator.getCurrentJpsAppDirectory(CoordinationAgent.class)+"/JPS_ONTOMATCH/tmp/"+name; 
         requestParams.put("saveAddress", saveAddress);
         requestParams.put("ontologyIRI", IRI);
+        System.out.println("Call lexical processor with saveAddress:"+saveAddress+" ontologyIRI: "+IRI);
 		AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/ontologyProcessor", requestParams.toString());
 
 	}
@@ -148,14 +152,16 @@ public class CoordinationAgent extends JPSHttpServlet {
 		return null;
 	}
 	
-	protected void callAggregationAgents(Float[] weight, String[] alignmentIRIs2Aggr, String[] choices, float threshold, String srcOnto, String tgtOnto, String addr ) {
+	protected void callAggregationAgents(Double[] weights, String[] alignmentIRIs2Aggr, String[] choices, double threshold, String srcOnto, String tgtOnto, String addr ) {
 		JSONObject requestParams = new JSONObject();
-        requestParams.put("weights", weight);
+        requestParams.put("weights", weights);
         requestParams.put("alignments", alignmentIRIs2Aggr);
-        requestParams.put("choices", choices);
         requestParams.put("srcOnto", srcOnto);
         requestParams.put("tgtOnto", tgtOnto);
         requestParams.put("addr", addr);
+        if(choices!=null) {
+            requestParams.put("choices", choices);
+        }
 
         AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/matchAggregator", requestParams.toString());
 	}
@@ -176,6 +182,9 @@ public class CoordinationAgent extends JPSHttpServlet {
         requestParams.put("threshold", threshold );
 		String termAlignment = AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/AlignmentReader", requestParams.toString());
 		//TODO:get list, then call functionBelow		
+	}
+	protected void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
 	}
 }
 

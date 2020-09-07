@@ -41,7 +41,7 @@ public class InstanceTripleFederatedGetter extends JPSHttpServlet{
 	
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("Datalinker agent");
+		System.out.println("federated getter");
 
 		JSONObject jo = requestParams;
 		// read alignment
