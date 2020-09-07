@@ -51,6 +51,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String numOfInitPoints = "1";
 	private String outputInterval = "1";
 	private String simEnd = "200";
+	private String nIters = "400";
+	private String rho = "0.2";
+	private String rhoFactor = "0.5";
+	private String epsilon = "0.001";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -98,6 +102,38 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setSimEnd(String simEnd) {
 		this.simEnd = simEnd;
+	}
+
+	public String getnIters() {
+		return nIters;
+	}
+
+	public void setnIters(String nIters) {
+		this.nIters = nIters;
+	}
+
+	public String getRho() {
+		return rho;
+	}
+
+	public void setRho(String rho) {
+		this.rho = rho;
+	}
+
+	public String getRhoFactor() {
+		return rhoFactor;
+	}
+
+	public void setRhoFactor(String rhoFactor) {
+		this.rhoFactor = rhoFactor;
+	}
+
+	public String getEpsilon() {
+		return epsilon;
+	}
+
+	public void setEpsilon(String epsilon) {
+		this.epsilon = epsilon;
 	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -301,6 +337,27 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setSimEnd(simEnd);
 		}
 		
+		// set up Hooke-Jeeves algorithms parameters
+		String nIters = JSonRequestParser.getNIters(otherOptions);
+		if (nIters != null && !nIters.isEmpty()) {
+			setnIters(nIters);
+		}
+		
+		String rho = JSonRequestParser.getRho(otherOptions);
+		if (rho != null && !rho.isEmpty()) {
+			setRho(rho);;
+		}
+		
+		String rhoFactor = JSonRequestParser.getRhoFactor(otherOptions);
+		if (rhoFactor != null && !rhoFactor.isEmpty()) {
+			setRhoFactor(rhoFactor);;
+		}
+		
+		String eps = JSonRequestParser.getEpsilon(otherOptions);
+		if (eps != null && !eps.isEmpty()) {
+			setEpsilon(eps);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -441,12 +498,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("objective_function", "SumOfSquares");
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
-		algoCalibration.put("n_iters", "400");
+		algoCalibration.put("n_iters", getnIters());
 		algoCalibration.put("n_initial_points", getNumOfInitPoints());
 		algoCalibration.put("constrained", "true");
-		algoCalibration.put("rho", "0.2");
-		algoCalibration.put("rho_factor", "0.5");
-		algoCalibration.put("epsilon", "0.001");
+		algoCalibration.put("rho", getRho());
+		algoCalibration.put("rho_factor", getRhoFactor());
+		algoCalibration.put("epsilon", getEpsilon());
 		algoCalibration.put("previous_algorithm", "SamplingAlg");
 		algorithms.put("Evaluation", algoEvaluation);
 		algorithms.put("SamplingAlg", algoSampling);

@@ -116,6 +116,30 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getNIters(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("nIters");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getRho(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("rho");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getRhoFactor(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("rhoFactor");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getEpsilon(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("epsilon");
+		
+		return locateNode.asText();
+	}
+	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");
 //	}
