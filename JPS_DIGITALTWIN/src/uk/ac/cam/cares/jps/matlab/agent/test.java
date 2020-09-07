@@ -28,7 +28,20 @@ public class test extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
-		
+		 Runtime rs = Runtime.getRuntime();
+		    try {
+				try {
+					rs.exec("/Users/gourab/Matlab/call_matlab.sh").waitFor();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.printf("executed ");
+				
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		
 		
 		response.getWriter().append("Served at: ").append(request.getContextPath());

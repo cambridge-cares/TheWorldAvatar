@@ -24,12 +24,12 @@ import matlabcontrol.MatlabProxyFactoryOptions;
 
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
+//import org.apache.poi.ss.usermodel.Cell;
 //import org.apache.poi.ss.usermodel.FormulaEvaluator;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+//import org.apache.poi.ss.usermodel.Row;
+//import org.apache.poi.ss.usermodel.Sheet;
+//import org.apache.poi.ss.usermodel.Workbook;
+//import org.apache.poi.ss.usermodel.WorkbookFactory;
 //import org.apache.poi.xssf.usermodel.XSSFRow;
 //import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -102,76 +102,13 @@ public class Matlab_agent {
               
          }
 		
-		
-		FileOutputStream out = new FileOutputStream("/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/matlab_input.xlsx");
+		FileOutputStream out = new FileOutputStream("/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/input/matlab_input.xlsx");
 		wbo.write(out);
 		out.close();
 		
-		//Removing blank spaces and sheet from the excel file 
-		FileInputStream file1 = new FileInputStream("/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/matlab_input.xlsx");
 		
-		//XSSFWorkbook wb = new XSSFWorkbook(fis);
-		
-		Workbook wb = WorkbookFactory.create(file1);
-		Sheet worksheet = wb.getSheetAt(0);
-		
-
-		
-		worksheet.shiftRows(1, worksheet.getLastRowNum(), -3);
-		
-		Row row1 = worksheet.createRow(0);
-		   // Create a cell and put a value in it.
-		   Cell cell11 = row1.createCell(0);
-		   cell11.setCellValue("Time");
-		   Cell cell12 = row1.createCell(1);
-		   cell12.setCellValue("Active Power");
-		   Cell cell13 = row1.createCell(2);  // create third column
-		   cell13.setCellValue("Reactive Power");
-		   
-		   
-		   // Total no of rows
-		   int nrows = worksheet.getLastRowNum();
-		   
-		   // Total no of columns.
-		   int ncols = worksheet.getRow(0).getPhysicalNumberOfCells();
-		   
-		   System.out.printf("Number of columns: " + ncols);
-		   
-		   for(int j=1;j<nrows;j++){
-			   
-			   for(int k = 0; k < ncols; k++){
-				   
-				   if (k == 1) {
-					   Row row2 = worksheet.getRow(j);
-					   
-					   Double testdata1 = worksheet.getRow(j).getCell(k).getNumericCellValue();
-					   System.out.printf("Column value: " + testdata1);
-					   int l = k+1;
-					   Double cvalue = 0.5 * testdata1;
-					   
-					   Cell cell = row2.getCell(l);
-			            if(cell == null)
-			                cell = row2.createCell(l);
-			 
-			            cell.setCellValue(cvalue);
-			            System.out.printf(" ;" + cell + "\n");
-					   
-					   
-				   }
-				   
-				   
-			   }
-			   
-			   wb.write(new FileOutputStream("/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/matlab/Motor_Step_1.xlsx"));
-			   
-
-			  
-		   }  
-	
-		   
-	    wb.close();
-		   
-		 
+	    
+	    
 		  
 		  //Get the current relative path
 		Path currentRelativePath = Paths.get("");

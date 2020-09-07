@@ -47,7 +47,9 @@ public class JPSMatlabAgent extends HttpServlet {
 		
 		
 		//Append current relative path with the input file path
-		String pathToInputFile = s+"/res/input/input.csv";
+		//String pathToInputFile = s+"/res/input/input.csv";
+		
+		String pathToInputFile = "/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN/res/input/input.csv";
 		
 		BufferedReader csvReader = null;
 		try {
@@ -83,7 +85,9 @@ public class JPSMatlabAgent extends HttpServlet {
 			csvReader.close();
 			
 			//Write the ArrayList into CSV into the path specified
-			String pathToOutputFile = s+"/res/output/output.csv";			
+			//String pathToOutputFile = s+"/res/output/output.csv";
+			
+			String pathToOutputFile = "/Users/gourab/JParkSimulator-git/JPS_DIGITALTWIN//res/output/output.csv";
 			
 			FileWriter csvWriter = new FileWriter(pathToOutputFile);
 			csvWriter.append("Time");
@@ -103,6 +107,7 @@ public class JPSMatlabAgent extends HttpServlet {
 			csvWriter.close();		
 			
 			
+			System.out.printf("Output File Created");
 			//Calling Matlab function
 			
 			

@@ -11,7 +11,6 @@ close all
 data = xlsread('Motor_Step_1.xlsx'); 
 
 
-
 tFinal          = 2;
 Factor          = 1000;
 MotorStep      = data;
