@@ -55,6 +55,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String rho = "0.2";
 	private String rhoFactor = "0.5";
 	private String epsilon = "0.001";
+	private String objectiveFunction = "SumOfSquares";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -134,6 +135,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setEpsilon(String epsilon) {
 		this.epsilon = epsilon;
+	}
+
+	public String getObjectiveFunction() {
+		return objectiveFunction;
+	}
+
+	public void setObjectiveFunction(String objectiveFunction) {
+		this.objectiveFunction = objectiveFunction;
 	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -358,6 +367,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setEpsilon(eps);
 		}
 		
+		// set up the objective function that will be used for generating MoDS_inputs.xml file
+		String objectiveFunction = JSonRequestParser.getObjectiveFunction(otherOptions);
+		if (objectiveFunction != null && !objectiveFunction.isEmpty()) {
+			setObjectiveFunction(objectiveFunction);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -483,7 +498,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoSampling.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		algoSampling.put("algorithm_type", "Sobol");
 //		algoSampling.put("model_name", "exe");
-		algoSampling.put("objective_function", "SumOfSquares");
+		algoSampling.put("objective_function", getObjectiveFunction());
 		algoSampling.put("output_by_case", "false");
 		algoSampling.put("output_values", "true");
 		algoSampling.put("n_points", getNumOfSobolPoints());
@@ -495,7 +510,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		algoCalibration.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		algoCalibration.put("algorithm_type", "Hooke_Jeeves");
 //		algoCalibration.put("model_name", "exe");
-		algoCalibration.put("objective_function", "SumOfSquares");
+		algoCalibration.put("objective_function", getObjectiveFunction());
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
 		algoCalibration.put("n_iters", getnIters());

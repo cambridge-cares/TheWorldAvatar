@@ -48,6 +48,7 @@ public class MechCalibOutputProcess {
 	private LinkedHashMap<String, String> origParams = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> multipliers = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> updatedParams = new LinkedHashMap<String, String>();
+	private String objectiveFunction = "SumOfSquares";
 	
 	public LinkedHashMap<String, String> getOrigParams() {
 		return origParams;
@@ -71,6 +72,14 @@ public class MechCalibOutputProcess {
 
 	public void setUpdatedParams(LinkedHashMap<String, String> updatedParams) {
 		this.updatedParams = updatedParams;
+	}
+	
+	public String getObjectiveFunction() {
+		return objectiveFunction;
+	}
+
+	public void setObjectiveFunction(String objectiveFunction) {
+		this.objectiveFunction = objectiveFunction;
 	}
 	
 	public MechCalibOutputProcess(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -187,7 +196,7 @@ public class MechCalibOutputProcess {
 			for (int i = 0; i < header.length; i++) {
 				if (header[i].toLowerCase().contains("first/last/best")) {
 					flbIdx = i;
-				} else if (header[i].toLowerCase().contains("sumofsquares")) {
+				} else if (header[i].toLowerCase().contains(getObjectiveFunction().toLowerCase())) {
 					ofIdx = i;
 				}
 			}
