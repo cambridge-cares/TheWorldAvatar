@@ -24,9 +24,10 @@ var mapRouterFactory = function (router, getCoordinatesData, texts, view) {
         //send a file
     });
 
-    router = cacheRouter(router).get('/coordinates', getCoordinatesData, { expiredTime:36, sendResult});
+    router = cacheRouter(router).get('/coordinates', getCoordinatesData, { expiredTime:3600, sendResult});
 
-    function sendResult(result,res) {
+    function sendResult(result, res) {
+        console.log('***********************send result********************************');
         res.json(JSON.parse(result))
     }
     return router;

@@ -226,6 +226,20 @@ this.googleMap.setCenter(latlng);
             console.log("Can not get location")
         }
     });
+/*****
+    $.ajax({
+        url: self.curPath + "/:uri",
+        method: "GET",
+        async: true,
+        success: function (pps) {
+             console.log('check status of ajax')
+             self.updateMarkers(pps, pps);
+        },
+        error: function () {
+            console.log("Can not get uri")
+        }
+    });
+*/
       animatedLines = []
 },
 
@@ -451,7 +465,7 @@ getIconByType: function (type, highlight) {
                 console.log(res[1]);
                 console.log(res.length);
                 if (res.length === 2) {
-                    thead += "<tr><td style=\"text-align:center\">name</td><td style=\"text-align:center\">" + res[1] + "</td></tr>";
+                    thead += "<tr><td style=\"text-align:center\">Name</td><td style=\"text-align:center\">" + res[1] + "</td></tr>";
                 } else {
                     thead += "<tr><td style=\"text-align:center\">uri</td><td style=\"text-align:center\">" + value + "</td></tr>";
                 }
@@ -498,7 +512,7 @@ getIconByType: function (type, highlight) {
             console.log("Drawing for "+muri+" at E"+pp.location.lng)*/
 
             let marker = new google.maps.Marker({
-                position: {lat: pp.location.lat, lng: pp.location.lng},
+                position: { lat: pp.location.Latitute, lng: pp.location.Longitude},
                 icon: icon,
                 map: self.googleMap
             });
@@ -567,7 +581,21 @@ getIconByType: function (type, highlight) {
                 marker.timer = setTimeout(function () {
                     if (!marker.sglclickPrevent) {
                         if (pp) {
-                            var attributeArray = { uri: pp['uri'], location: pp['location'] };
+                            var attributeArray = {
+                                uri: pp['uri'], location: pp['location'],
+                                Commissioned_year: pp['built_year'],
+                                Annual_Generation: pp['Annual_Generation'],
+                                Owner: pp['Owner'],
+                                Located_country: pp['Country'],
+                                
+                               /*Generation_Technology: pp['Generation_Technology'],
+                                Annual_Generation: pp['Annual_Generation'],
+                                CO2_Emission: pp['CO2_Emission'],
+                                Owner: pp['Owner'],
+                                Country: pp['Country'],
+                                Designed_Capacity: pp['Designed_Capacity'],
+                               */
+                                };
                             self.formatPopup(attributeArray, pp['uri'], marker);
                         } else {
                             self.openEditablePopupNet(muri, marker);
