@@ -49,7 +49,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -57,7 +57,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C16_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -65,7 +65,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C17_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -73,7 +73,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C20_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -81,7 +81,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C5_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -89,7 +89,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C6_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -97,7 +97,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C7_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -105,7 +105,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_C8_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -113,7 +113,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H10_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -121,7 +121,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H11_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -129,7 +129,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H13_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -137,7 +137,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H14_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -145,7 +145,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H15_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -153,7 +153,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H18_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -161,7 +161,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H19_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -169,7 +169,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H21_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -177,7 +177,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H22_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -185,7 +185,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H23_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -193,7 +193,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H24_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -201,7 +201,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H25_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -209,7 +209,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H26_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -217,7 +217,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H27_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -225,7 +225,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H28_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -233,7 +233,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H29_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -241,7 +241,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H30_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -249,7 +249,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H31_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -257,7 +257,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H32_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -265,7 +265,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_H9_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -273,7 +273,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -281,7 +281,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -289,7 +289,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -297,15 +297,15 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
-    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#SI> .
+    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:Si .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_C12_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
@@ -467,7 +467,7 @@
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 5.50595e-01 .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_x3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -2.53697e-01 .
@@ -632,7 +632,7 @@
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 1.327654e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_y3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 3.3362e-01 .
@@ -797,7 +797,7 @@
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -1.317178e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_coordinate_z3_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue -2.84223e-01 .
@@ -962,7 +962,7 @@
     gc:hasUnit unit:Dalton ;
     gc:hasValue 1.599491e+01 .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_mass_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Dalton ;
     gc:hasValue 2.797693e+01 .
@@ -1001,7 +1001,7 @@
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O3_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_O4_a3c43724-3174-323f-857b-70c6ef3e6f8e_1>,
-        <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_SI0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+        <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_atom_C8H20O4Si1_Si0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasFormalCharge <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#finalization_module_has_molecule_formal_charge_C8H20O4Si1_1> ;
     ontocompchem:hasSpinMultiplicity "1"^^xsd:string .
 
@@ -1041,19 +1041,19 @@
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_C8_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_H20_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#H> .
+    gc:isElement table:H .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_SI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#SI> .
+    gc:isElement table:Si .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_basis_set_parameter_C8H20O4Si1_1> a gc:BasisSet,
         owl:Thing ;
@@ -1079,9 +1079,9 @@
     gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasNumberOfAtoms "4"^^xsd:string .
 
-<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_SI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+<http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
         owl:Thing ;
-    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_SI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#has_atom_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasNumberOfAtoms "1"^^xsd:string .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_property_C8H20O4Si1_1> a gc:MoleculeProperty,
@@ -1089,7 +1089,7 @@
     gc:hasMolecule <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_C8_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_H20_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_O4_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1>,
-        <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_SI1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+        <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_molecule_C8H20O4Si1_Si1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasName "C8H20O4Si1" .
 
 <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#job_module_has_environment_module_C8H20O4Si1_1> a gc:SourcePackage,
@@ -1106,15 +1106,15 @@
     gc:hasParameter <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_basis_set_parameter_C8H20O4Si1_1>,
         <http://theworldavatar.com/kb/ontocompchem/TEOS_ub971_6311+gdp/TEOS_ub971_6311+gdp.log.owl#initialization_module_has_level_of_theory_parameter_C8H20O4Si1_1> .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#SI> a table:Element,
+table:Si a table:Element,
         owl:Thing .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#O> a table:Element,
+table:O a table:Element,
         owl:Thing .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#C> a table:Element,
+table:C a table:Element,
         owl:Thing .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#H> a table:Element,
+table:H a table:Element,
         owl:Thing .
 

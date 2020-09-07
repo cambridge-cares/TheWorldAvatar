@@ -1,15 +1,15 @@
 {
     "Empirical formula": "Cl4Ti1",
     "Atom counts": {
-        "CL": 4,
-        "TI": 1
+        "Cl": 4,
+        "Ti": 1
     },
     "Atom types": [
-        "CL",
-        "TI",
-        "CL",
-        "CL",
-        "CL"
+        "Cl",
+        "Ti",
+        "Cl",
+        "Cl",
+        "Cl"
     ],
     "Atomic masses": [
         34.9688527,

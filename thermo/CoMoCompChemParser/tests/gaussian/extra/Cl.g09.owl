@@ -35,37 +35,37 @@
         owl:Thing ;
     gc:hasMolecule <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_molecule_Cl1_1> .
 
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_atom_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_atom_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
-    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_x3_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_y3_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_z3_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_mass_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#CL> .
+    gc:hasAtomCoordinateX <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_x3_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_y3_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_z3_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasMass <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_mass_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:isElement table:Cl .
 
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_x3_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
-        owl:Thing ;
-    gc:hasUnit unit:Angstrom ;
-    gc:hasValue 0e+00 .
-
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_y3_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_x3_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 0e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_z3_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_y3_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Angstrom ;
     gc:hasValue 0e+00 .
 
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_mass_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_coordinate_z3_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
+        owl:Thing ;
+    gc:hasUnit unit:Angstrom ;
+    gc:hasValue 0e+00 .
+
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_mass_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
     gc:hasUnit unit:Dalton ;
     gc:hasValue 3.496885e+01 .
 
 <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_molecule_Cl1_1> a gc:Molecule,
         owl:Thing ;
-    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_atom_Cl1_CL0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
+    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_atom_Cl1_Cl0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasFormalCharge <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#finalization_module_has_molecule_formal_charge_Cl1_1> ;
     ontocompchem:hasSpinMultiplicity "2"^^xsd:string .
 
@@ -83,9 +83,9 @@
     gc:hasUnit unit:Hartree ;
     gc:hasValue -4.60102e+02 .
 
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#has_atom_Cl1_CL1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#has_atom_Cl1_Cl1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#CL> .
+    gc:isElement table:Cl .
 
 <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_basis_set_parameter_Cl1_1> a gc:BasisSet,
         owl:Thing ;
@@ -96,14 +96,14 @@
         owl:Thing ;
     ontocompchem:hasLevelOfTheory "UB971/6-311+G(d,p)" .
 
-<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_molecule_Cl1_CL1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
+<http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_molecule_Cl1_Cl1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Molecule,
         owl:Thing ;
-    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#has_atom_Cl1_CL1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasAtom <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#has_atom_Cl1_Cl1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasNumberOfAtoms "1"^^xsd:string .
 
 <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_molecule_property_Cl1_1> a gc:MoleculeProperty,
         owl:Thing ;
-    gc:hasMolecule <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_molecule_Cl1_CL1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
+    gc:hasMolecule <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_molecule_Cl1_Cl1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> ;
     gc:hasName "Cl1" .
 
 <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#job_module_has_environment_module_Cl1_1> a gc:SourcePackage,
@@ -120,6 +120,6 @@
     gc:hasParameter <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_basis_set_parameter_Cl1_1>,
         <http://theworldavatar.com/kb/ontocompchem/Cl/Cl.g09.owl#initialization_module_has_level_of_theory_parameter_Cl1_1> .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#CL> a table:Element,
+table:Cl a table:Element,
         owl:Thing .
 

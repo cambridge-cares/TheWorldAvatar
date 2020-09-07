@@ -48,7 +48,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_y3_C1O2_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_z3_C1O2_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_mass_C1O2_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_atom_C1O2_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -56,7 +56,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_y3_C1O2_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_z3_C1O2_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_mass_C1O2_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
 <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_atom_C1O2_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:Atom,
         owl:Thing ;
@@ -64,7 +64,7 @@
     gc:hasAtomCoordinateY <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_y3_C1O2_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasAtomCoordinateZ <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_z3_C1O2_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
     gc:hasMass <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_mass_C1O2_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
 <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#finalization_module_has_coordinate_x3_C1O2_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
@@ -161,11 +161,11 @@
 
 <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#has_atom_C1O2_C1_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#C> .
+    gc:isElement table:C .
 
 <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#has_atom_C1O2_O2_a7728f65-eabb-3d50-963c-f9ee1f9cb753_1> a gc:Atom,
         owl:Thing ;
-    gc:isElement <http://www.daml.org/2003/01/periodictable/PeriodicTable#O> .
+    gc:isElement table:O .
 
 <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#initialization_module_has_basis_set_parameter_C1O2_1> a gc:BasisSet,
         owl:Thing ;
@@ -206,9 +206,9 @@
     gc:hasParameter <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#initialization_module_has_basis_set_parameter_C1O2_1>,
         <http://theworldavatar.com/kb/ontocompchem/co2_g1_g09/co2_g1_g09.log.owl#initialization_module_has_level_of_theory_parameter_C1O2_1> .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#C> a table:Element,
+table:C a table:Element,
         owl:Thing .
 
-<http://www.daml.org/2003/01/periodictable/PeriodicTable#O> a table:Element,
+table:O a table:Element,
         owl:Thing .
 

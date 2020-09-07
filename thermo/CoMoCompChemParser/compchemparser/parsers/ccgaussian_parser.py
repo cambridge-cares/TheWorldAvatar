@@ -496,7 +496,10 @@ class CcGaussianParser():
             data[EMP_FORMULA] = footer[6].strip().split('(')[0]
             data[ATOM_COUNTS] = {}
             for (at, ac) in re.findall(ATOMS_RE, data[EMP_FORMULA]):
-                data[ATOM_COUNTS][at.upper()] = int(ac)
+                #data[ATOM_COUNTS][at.upper()] = int(ac)
+                #Line added by Nenad Krdzavac (caresssd@hermes.cam.ac.uk). 
+                #Line above is commented because it generates upper case of atom name. That syntax does not mathc periodic table naming atoms.
+                 data[ATOM_COUNTS][at] = int(ac)
 
             # this can also be read from here, though I am not sure
             # if the footer would always contain this info

@@ -491,9 +491,9 @@ class OntoCompChemData:
                  ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)), RDF.type,OWL.Thing))
 
                  '''Generate atom element'''
-                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey))))
-                 ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
-                 ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(akey)),RDF.type,OWL.Thing))
+                 ontocompchem_graph.add((URIRef(ontology_base_uri+"finalization_module_has_atom_"+str(empirical_formula)+ "_"+str(akey)+str(atom_iterator)+"_"+str(uuid_geometry_atomic_mass)+"_"+str(rnd)),gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(akey))))
+                 ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(akey)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))                                                 
+                 ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(akey)),RDF.type,OWL.Thing))
 
                  if "Atomic masses" in dict_data:
                      '''generate atomic mass'''
@@ -562,9 +562,9 @@ class OntoCompChemData:
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"initialization_module_has_molecule_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.hasAtom,URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd))))
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,gc_namespace.Atom))
                      ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), RDF.type,OWL.Thing))
-                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key))))
-                     ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
-                     ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable#"+str(key)),RDF.type,OWL.Thing))
+                     ontocompchem_graph.add((URIRef(ontology_base_uri+"has_atom_"+str(empirical_formula)+ "_"+str(key)+str(value)+"_"+str(uuid_atom_count)+"_"+str(rnd)), gc_namespace.isElement,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(key))))
+                     ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(key)),RDF.type,URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#Element")))
+                     ontocompchem_graph.add((URIRef("http://www.daml.org/2003/01/periodictable/PeriodicTable.owl#"+str(key)),RDF.type,OWL.Thing))
 
     def generate_electronic_and_zpe_energy(self,ontocompchem_graph, dict_data,ontocompchem_namespace,gc_namespace,ontology_base_uri,file_name,rnd):
 
