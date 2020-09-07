@@ -251,7 +251,7 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		}
 		
 		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
-		if (simEnd != null & !simEnd.isEmpty()) {
+		if (simEnd != null && !simEnd.isEmpty()) {
 			setSimEnd(simEnd);
 		}
 		

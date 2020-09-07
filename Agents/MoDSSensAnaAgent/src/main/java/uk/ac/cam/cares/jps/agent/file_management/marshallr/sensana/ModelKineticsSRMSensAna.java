@@ -282,7 +282,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		
 		// set up the simulation end time for generating InputParams.xml file
 		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
-		if (simEnd != null & !simEnd.isEmpty()) {
+		if (simEnd != null && !simEnd.isEmpty()) {
 			setSimEnd(simEnd);
 		}
 		
