@@ -17,6 +17,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.logging.log4j.core.util.Integers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,9 +28,11 @@ import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
 public class SensAnaResultsProcess {
 	private Logger logger = LoggerFactory.getLogger(SensAnaResultsProcess.class);
+	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+	
 	private String topN = "10";
 	private boolean max = false;
-	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+	private String simEnd = "200";
 	
 	public String getTopN() {
 		return topN;
@@ -45,6 +48,14 @@ public class SensAnaResultsProcess {
 
 	public void setMax(boolean max) {
 		this.max = max;
+	}
+	
+	public String getSimEnd() {
+		return simEnd;
+	}
+
+	public void setSimEnd(String simEnd) {
+		this.simEnd = simEnd;
 	}
 	
 	public SensAnaResultsProcess(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
@@ -70,6 +81,11 @@ public class SensAnaResultsProcess {
 		String maxAvg = JSonRequestParser.getMaxOrAvg(jsonString);
 		if (maxAvg != null && !maxAvg.isEmpty() && maxAvg.toLowerCase().contains("max")) {
 			setMax(true);
+		}
+		
+		String simEnd = JSonRequestParser.getSimEnd(jsonString);
+		if (simEnd != null && !simEnd.isEmpty()) {
+			setSimEnd(simEnd);
 		}
 		
 		// process ign sens results, get a file to record the rxns selected
@@ -153,7 +169,7 @@ public class SensAnaResultsProcess {
 			// assessment TODO further parametrised this comparison part to better cope with range
 			if (response.toLowerCase().contains("ign") || response.toLowerCase().contains("delay")) {
 				for (int i = 0; i < casesList.size(); i++) {
-					if (Double.valueOf(origResults.get(i)) > 0 && Double.valueOf(origResults.get(i)) < 500) {
+					if (Double.valueOf(origResults.get(i)) > 0 && Double.valueOf(origResults.get(i)) < Integers.parseInt(getSimEnd())) {
 						preCases.add(casesList.get(i));
 					}
 				}
@@ -164,7 +180,7 @@ public class SensAnaResultsProcess {
 					for (String preCase : preCases) {
 						int simIdx = casesList.indexOf(preCase);
 						int sensIdx = allCasesList.indexOf(preCase);
-						if (Double.valueOf(simList.get(simIdx)) > 0 && Double.valueOf(simList.get(simIdx)) < 500) {
+						if (Double.valueOf(simList.get(simIdx)) > 0 && Double.valueOf(simList.get(simIdx)) < Integers.parseInt(getSimEnd())) {
 							sensVal.add(Math.abs(Double.valueOf(sensList.get(sensIdx)))); // get the absolute value
 						}
 					}
