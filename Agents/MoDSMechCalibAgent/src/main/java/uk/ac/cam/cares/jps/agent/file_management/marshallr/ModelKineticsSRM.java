@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
+import com.jayway.jsonpath.JsonPath;
 
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
@@ -49,6 +50,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String numOfSobolPoints = "1000";
 	private String numOfInitPoints = "1";
 	private String outputInterval = "1";
+	private String simEnd = "200";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -89,12 +91,20 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	public void setOutputInterval(String outputInterval) {
 		this.outputInterval = outputInterval;
 	}
+	
+	public String getSimEnd() {
+		return simEnd;
+	}
+
+	public void setSimEnd(String simEnd) {
+		this.simEnd = simEnd;
+	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
 		super(modsMechCalibAgentProperty);
 		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
 	}
-
+	
 	/**
 	 * Collect all information required by MoDS to execute the model kineticsSRM. 
 	 * The information required: 
@@ -283,6 +293,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String numInit = JSonRequestParser.getNumOfInitPoints(otherOptions);
 		if (numInit != null && !numInit.isEmpty()) {
 			setNumOfInitPoints(numInit);
+		}
+		
+		// set up the simulation end time for generating InputParams.xml file
+		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
+		if (simEnd != null & !simEnd.isEmpty()) {
+			setSimEnd(simEnd);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -856,6 +872,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 						.put("chemistry", new JSONObject()
 								.put("mechFile", FILE_MECHANISM)
 								.put("numOfReactions", numOfReactions))
+						.put("numerical", new JSONObject()
+								.put("simEnd", getSimEnd()))
 						.put("oxidiser", oxidiser)
 						.put("ignDelayPostProcessor", new JSONObject()
 								.put("ignDelayModel", ignDelayModel)

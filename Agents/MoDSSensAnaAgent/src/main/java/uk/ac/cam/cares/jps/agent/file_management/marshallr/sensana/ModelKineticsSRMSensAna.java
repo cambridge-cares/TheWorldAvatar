@@ -52,6 +52,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	private String ignDelayMethod = "2";
 	private String ignDelaySpecies = "AR";
 	private String relPerturbation = "0.01";
+	private String simEnd = "200";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -75,6 +76,14 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 
 	public void setRelPerturbation(String relPerturbation) {
 		this.relPerturbation = relPerturbation;
+	}
+	
+	public String getSimEnd() {
+		return simEnd;
+	}
+
+	public void setSimEnd(String simEnd) {
+		this.simEnd = simEnd;
 	}
 	
 	public ModelKineticsSRMSensAna(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
@@ -269,6 +278,12 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		String relPer = JSonRequestParser.getRelPerturb(otherOptions);
 		if (relPer != null && !relPer.isEmpty()) {
 			setRelPerturbation(relPer);	
+		}
+		
+		// set up the simulation end time for generating InputParams.xml file
+		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
+		if (simEnd != null & !simEnd.isEmpty()) {
+			setSimEnd(simEnd);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -777,6 +792,8 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 						.put("chemistry", new JSONObject()
 								.put("mechFile", FILE_MECHANISM)
 								.put("numOfReactions", numOfReactions))
+						.put("numerical", new JSONObject()
+								.put("simEnd", getSimEnd()))
 						.put("oxidiser", oxidiser)
 						.put("ignDelayPostProcessor", new JSONObject()
 								.put("ignDelayModel", ignDelayModel)

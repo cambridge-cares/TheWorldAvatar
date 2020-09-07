@@ -50,6 +50,7 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 	private List<String> caseNames = new ArrayList<>();
 	private String ignDelayMethod = "4";
 	private String ignDelaySpecies = "CH";
+	private String simEnd = "200";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -65,6 +66,14 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 
 	public void setIgnDelaySpecies(String ignDelaySpecies) {
 		this.ignDelaySpecies = ignDelaySpecies;
+	}
+	
+	public String getSimEnd() {
+		return simEnd;
+	}
+
+	public void setSimEnd(String simEnd) {
+		this.simEnd = simEnd;
 	}
 	
 	public ModelKineticsSRM4yrt23(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -239,6 +248,11 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 		String species = JSonRequestParser.getIgnDelaySpecies(otherOptions);
 		if (species != null && !species.isEmpty()) {
 			setIgnDelaySpecies(species);
+		}
+		
+		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
+		if (simEnd != null & !simEnd.isEmpty()) {
+			setSimEnd(simEnd);
 		}
 		
 //		// process the active parameters to be only the equation of reactions
@@ -744,6 +758,8 @@ public class ModelKineticsSRM4yrt23 extends MoDSMarshaller implements IModel {
 						.put("chemistry", new JSONObject()
 								.put("mechFile", FILE_MECHANISM)
 								.put("numOfReactions", numOfReactions))
+						.put("numerical", new JSONObject()
+								.put("simEnd", getSimEnd()))
 						.put("oxidiser", oxidiser)
 						.put("ignDelayPostProcessor", new JSONObject()
 								.put("ignDelayModel", ignDelayModel)

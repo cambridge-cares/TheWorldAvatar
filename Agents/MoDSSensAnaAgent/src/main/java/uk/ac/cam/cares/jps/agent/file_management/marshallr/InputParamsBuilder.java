@@ -94,7 +94,7 @@ public class InputParamsBuilder {
 			mainRootElement.appendChild(getPropertyGroupReactor(doc, "Reactor", jsonString));
 			mainRootElement.appendChild(getPropertyGroupSolver(doc, "Solver"));
 			mainRootElement.appendChild(getPropertyGroupChemistry(doc, "Chemistry", jsonString));
-			mainRootElement.appendChild(getPropertyGroupNumerical(doc, "numerical"));
+			mainRootElement.appendChild(getPropertyGroupNumerical(doc, "numerical", jsonString));
 			mainRootElement.appendChild(getPropertyGroupPressureEquilibration(doc, "PressureEquilibration"));
 			mainRootElement.appendChild(getPropertyGroupFuel(doc, "fuel"));
 			mainRootElement.appendChild(getPropertyGroupOxidiser(doc, "Oxidiser", jsonString));
@@ -318,9 +318,11 @@ public class InputParamsBuilder {
 		return propertyGroup;
 	}
 	
-	public static Node getPropertyGroupNumerical(Document doc, String ref) {
+	public static Node getPropertyGroupNumerical(Document doc, String ref, String jsonString) {
 		Element propertyGroup = doc.createElement("property_group");
 		propertyGroup.setAttribute("ref", ref);
+		
+		String simEnd = JsonPath.read(jsonString, "$.kinetics.numerical.simEnd");
 		
 		valueList = new ArrayList<String>(Arrays.asList("1", "2"));
 		propertyGroup.appendChild(getProperty(doc, "RndSeeds", valueList));
@@ -331,7 +333,7 @@ public class InputParamsBuilder {
 		propertyGroup.appendChild(getProperty(doc, attribs, "0"));
 		
 		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "SimEnd", "dimension_lookup", "independent_variable", "unit", "ms")));
-		propertyGroup.appendChild(getProperty(doc, attribs, "500"));
+		propertyGroup.appendChild(getProperty(doc, attribs, simEnd));
 		
 		attribs = generateAttribs(new ArrayList<String>(Arrays.asList("ref", "SimStep", "dimension_lookup", "independent_variable_duration", "unit", "us")));
 		propertyGroup.appendChild(getProperty(doc, attribs, "1"));
