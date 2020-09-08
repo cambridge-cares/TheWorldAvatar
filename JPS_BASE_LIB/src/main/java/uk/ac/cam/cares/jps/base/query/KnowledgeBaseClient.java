@@ -3,13 +3,18 @@ package uk.ac.cam.cares.jps.base.query;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.Statement;
 
+import org.apache.jena.jdbc.JenaDriver;
+import org.apache.jena.jdbc.remote.RemoteEndpointDriver;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.update.UpdateAction;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 
+import java.util.List;
 import java.util.logging.Logger;
 import org.json.JSONObject;
 
@@ -25,6 +30,11 @@ public class KnowledgeBaseClient {
 	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
 	private static KnowledgeBaseClient instance = null;
 	
+	private String queryEndpoint;
+	private String updateEndpoint;
+	private List<String> graphs;
+	private String query;
+	
 	private static synchronized KnowledgeBaseClient getInstance() {
 		if (instance == null) {
 			instance = new KnowledgeBaseClient();
@@ -32,6 +42,44 @@ public class KnowledgeBaseClient {
 		return instance;
 	}
 
+	/*
+	 * The default constructor.
+	 */
+	public KnowledgeBaseClient(){
+		
+	}
+	
+	/**
+	 * A constructor defined to initialise the query EndPoint URL, update<p>
+	 * EndPoint URL and a set of graphs to send a data retrieval or update<p>
+	 * query.    
+	 * 
+	 * @param queryEndpoint
+	 * @param updateEndpoint
+	 * @param graphs
+	 */
+	public KnowledgeBaseClient(String queryEndpoint, String updateEndpoint, List<String> graphs){
+		this.queryEndpoint = queryEndpoint;
+		this.updateEndpoint = updateEndpoint;
+		this.graphs = graphs;
+	}
+	
+	/**
+	 * A constructor defined to initialise the query EndPoint URL, update<p>
+	 * EndPoint URL and a set of graphs to send a data retrieval or update<p>
+	 * query.    
+	 * 
+	 * @param queryEndpoint
+	 * @param updateEndpoint
+	 * @param graphs
+	 */
+	public KnowledgeBaseClient(String queryEndpoint, String updateEndpoint, List<String> graphs, String query){
+		this.queryEndpoint = queryEndpoint;
+		this.updateEndpoint = updateEndpoint;
+		this.graphs = graphs;
+		this.query = query;
+	}
+	
 	/**
 	 * https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-put<br>
 	 * The method also allows to put non-RDF resources.
