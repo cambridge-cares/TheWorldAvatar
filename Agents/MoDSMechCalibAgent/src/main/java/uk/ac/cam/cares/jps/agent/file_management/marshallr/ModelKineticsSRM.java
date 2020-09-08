@@ -56,6 +56,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String rhoFactor = "0.5";
 	private String epsilon = "0.001";
 	private String objectiveFunction = "SumOfSquares";
+	private String responseRatio = "1.0";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -143,6 +144,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setObjectiveFunction(String objectiveFunction) {
 		this.objectiveFunction = objectiveFunction;
+	}
+
+	public String getResponseRatio() {
+		return responseRatio;
+	}
+
+	public void setResponseRatio(String responseRatio) {
+		this.responseRatio = responseRatio;
 	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -373,6 +382,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setObjectiveFunction(objectiveFunction);
 		}
 		
+		// set up the response ratio between two responses
+		String responseRatio = JSonRequestParser.getResponseRatio(otherOptions);
+		if (responseRatio != null && !responseRatio.isEmpty()) {
+			setResponseRatio(responseRatio);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -567,9 +582,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String lbFactor = "";
 		String ubFactor = "";
 		double sqrtN = Math.sqrt(caseNames.size());
+		double sqrtRatio = Math.sqrt(Double.valueOf(getResponseRatio()));
 		double errFrac = 0.20;
-		double lb_fac = (1-errFrac)*sqrtN;
-		double ub_fac = (1+errFrac)*sqrtN;
+		double lb_fac = (1-errFrac)*sqrtN/sqrtRatio;
+		double ub_fac = (1+errFrac)*sqrtN/sqrtRatio;
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
 			lbFactor = lbFactor.concat(";"+lb_fac);

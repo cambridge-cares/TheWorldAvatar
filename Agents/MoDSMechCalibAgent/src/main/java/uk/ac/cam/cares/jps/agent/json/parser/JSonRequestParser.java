@@ -146,6 +146,12 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getResponseRatio(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("calibrationAlg").path("responseRatio");
+		
+		return locateNode.asText();
+	}
+	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");
 //	}
