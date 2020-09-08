@@ -222,7 +222,6 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					
 				}
 				
-				
 				List<File> owlFileList = getArrayFileList(kbFolderPath  + uuidFolderName +"/", ".owl");
 				
 				logger.info("owlFileList.isEmpty(): " + owlFileList.isEmpty() + " owlFileList.size(): " + owlFileList.size());				

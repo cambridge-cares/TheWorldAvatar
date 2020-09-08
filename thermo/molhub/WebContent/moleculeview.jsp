@@ -424,7 +424,7 @@ Here is java script for visualization molecules.
 
 <ul>
   <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
-  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>
+<!--<li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>-->
   <li><a href="http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
   <s:if test="%{nasaFileName!=null}">
   <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>

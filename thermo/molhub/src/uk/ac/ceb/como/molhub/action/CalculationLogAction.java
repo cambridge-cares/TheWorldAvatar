@@ -28,7 +28,7 @@ import uk.ac.ceb.como.molhub.model.PropertiesManager;
  *         </p>
  */
 
-public class CalculationAction extends ActionSupport implements SessionAware {
+public class CalculationLogAction extends ActionSupport implements SessionAware {
 
 	final static Logger logger = Logger.getLogger(CalculationAction.class.getName());
 
@@ -93,10 +93,12 @@ public class CalculationAction extends ActionSupport implements SessionAware {
 
 			List<File> aboxFiles = utility.getArrayFileList(speciesFolder, ".owl");
 
-			for (File af : aboxFiles) {				
-				
+			for (File af : aboxFiles) {
+
 				OntModel model = CompChemQuery.getOntModel(af.getAbsolutePath());
 
+				logger.info("af.getAbsolutePath(): " + af.getAbsolutePath());
+				
 				String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
 
 //				CompChemQuery.performQuery(model, q, af.getName().toString(), speciesFolder);  
