@@ -51,7 +51,8 @@ public enum Property {
 	JOB_SETUP_EXPERIMENT_IRI_MISSING("The experiment IRI is not provided."),
 	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is not provided."),
 	JOB_SETUP_MODS_EXE_PATH_MISSING("The MoDS executable path is not provided."),
-	JOB_SETUP_CANTERA_CONDA_ENV_MISSING("The conda environment where Cantera installed is not provided.");
+	JOB_SETUP_CANTERA_CONDA_ENV_MISSING("The conda environment where Cantera installed is not provided."),
+	JOB_SETUP_MECHANISM_REACTION_MISMATCH("The mechanism IRI and reaction IRI list does not match.");
 	
 	public static final String JOB_REQUEST_PATH = "/job/request";
     public static final String JOB_STATISTICS_PATH = "/job/statistics";

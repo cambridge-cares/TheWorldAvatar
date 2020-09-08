@@ -112,6 +112,17 @@ public class MoDSMechCalibAgent extends JPSAgent {
 			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
 			if (rxnIRI == null || rxnIRI.isEmpty()) {
 				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
+			} else {
+				OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
+				LinkedHashMap<String, String> results;
+				try {
+					results = ontoKinKg.queryReactionsToOptimise(mechanismIRI, rxnIRI);
+					if (results == null || results.isEmpty()) {
+						throw new BadRequestException(Property.JOB_SETUP_MECHANISM_REACTION_MISMATCH.getPropertyName());
+					}
+				} catch (MoDSMechCalibAgentException e) {
+					e.printStackTrace();
+				}
 			}
 			
 			String modsExePath = JSonRequestParser.getMoDSExePath(requestParams.toString());
