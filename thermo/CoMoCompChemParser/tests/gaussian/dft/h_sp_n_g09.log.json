@@ -22,6 +22,7 @@
         ]
     ],
     "Geometry unit": "Angstroms",
+    "Geometry type": "atomic",
     "Electronic energy": -0.502156338827,
     "Program name": "Gaussian",
     "Program version": "2009+D.01",

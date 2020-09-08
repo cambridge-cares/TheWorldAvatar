@@ -23,6 +23,7 @@
         ]
     ],
     "Geometry unit": "Angstroms",
+    "Geometry type": "atomic",
     "Electronic energy": -75.0656262775,
     "Electronic and ZPE energy": -75.065626,
     "Program name": "Gaussian",

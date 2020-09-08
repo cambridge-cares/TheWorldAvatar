@@ -231,14 +231,18 @@ class CcGaussianParser():
         def set_geom_type(data):
             # sets geometry type based on nr of atoms and rot constants in a molecule
             if data[ROT_CONST_NR] is not None and \
-            data[ATOM_TYPES] is not None:
-
-                if len(parseddata[ATOM_TYPES]) == 1:
-                    data[GEOM_TYPE] = 'atomic'
-                elif data[ROT_CONST_NR] == 1:
+            data[ATOM_TYPES] is not None:            
+            
+                if data[ROT_CONST_NR] == 1:
                     data[GEOM_TYPE] = 'linear'
                 else:
                     data[GEOM_TYPE] = 'nonlinear'
+        # If species has one atom then it generates geometry type as atomic. Fixed by Angiras Menon (am2145@cam.ac.uk).     
+            elif data[ROT_CONST_NR] is None and \
+            data[ATOM_TYPES] is not None:
+                if len(parseddata[ATOM_TYPES]) == 1:
+                    data[GEOM_TYPE] = 'atomic'
+            
         #---------------------------------------------
         def check_charge_spin_mult(data, cur_line, log_lines):
             # tries to extract charge and spin multiplicity from a log file line
