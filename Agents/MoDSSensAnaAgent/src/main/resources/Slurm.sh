@@ -8,7 +8,7 @@
 #SBATCH -A COMO-SL2-CPU
 #SBATCH --mem=64000
 #SBATCH --time=96:00:00
-#SBATCH --nodes=10
+#SBATCH --nodes=3
 #SBATCH --ntasks-per-node=16
 #SBATCH --output slurm.%u.%j.%N.stdout.txt   # (%u,%j,%N)=(user, job allocation #, node)  
 #SBATCH --error slurm.%u.%j.%N.errout.txt    #
