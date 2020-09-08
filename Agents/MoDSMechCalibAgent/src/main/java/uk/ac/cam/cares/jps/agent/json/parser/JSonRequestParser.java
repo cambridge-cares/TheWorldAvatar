@@ -152,6 +152,12 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getRangeOfMultipliers(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("samplingAlg").path("rangeOfMultipliers");
+		
+		return locateNode.asText();
+	}
+	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");
 //	}

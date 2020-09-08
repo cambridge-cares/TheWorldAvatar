@@ -57,6 +57,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private String epsilon = "0.001";
 	private String objectiveFunction = "SumOfSquares";
 	private String responseRatio = "1.0";
+	private String rangeOfMultipliers = "100.0";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -152,6 +153,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setResponseRatio(String responseRatio) {
 		this.responseRatio = responseRatio;
+	}
+
+	public String getRangeOfMultipliers() {
+		return rangeOfMultipliers;
+	}
+
+	public void setRangeOfMultipliers(String rangeOfMultipliers) {
+		this.rangeOfMultipliers = rangeOfMultipliers;
 	}
 
 	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -388,6 +397,12 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			setResponseRatio(responseRatio);
 		}
 		
+		// set up the range of multipliers
+		String rangeOfMultipliers = JSonRequestParser.getRangeOfMultipliers(otherOptions);
+		if (rangeOfMultipliers != null && !rangeOfMultipliers.isEmpty()) {
+			setRangeOfMultipliers(rangeOfMultipliers);
+		}
+		
 		// process the active parameters to be only the equation of reactions
 		List<String> processedActiveParam = new ArrayList<>();
 		for (String activeParamNo : activeParameters.keySet()) {
@@ -610,8 +625,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", activeParameters.get(i));
 			initialRead.put("row", "0");
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_abs", "1.0E-3");
-			initialRead.put("ub_abs", "1000.0");
+			initialRead.put("lb_abs", String.valueOf(1/Double.valueOf(getRangeOfMultipliers())));
+			initialRead.put("ub_abs", String.valueOf(Double.valueOf(getRangeOfMultipliers())));
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
 			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRate_A_Modifiers']/value[@index='"+i+"']");
