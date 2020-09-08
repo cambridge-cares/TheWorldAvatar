@@ -313,6 +313,13 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
 	
+	/**
+	 * Select the reactions to be optimised based on sensitivity analysis results and reactions must included that provided by user. 
+	 * 
+	 * @param jobFolder
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	public void selectSensRxns(File jobFolder) throws IOException, MoDSSensAnaAgentException {
 		File outputFile = new File(jobFolder.getAbsolutePath());
 		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(modsSensAnaAgentProperty.getOutputFileName()).concat(modsSensAnaAgentProperty.getOutputFileExtension());
@@ -333,6 +340,14 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		System.out.println("Sensitivity analysis results were successfully processed.");
 	}
 	
+	/**
+	 * Read content from json input file. 
+	 * 
+	 * @param input
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private String readJsonInput(File input) throws IOException, MoDSSensAnaAgentException {
 		String jsonString = new String();
 		BufferedReader br = null;
@@ -345,6 +360,14 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		return jsonString;
 	}
 	
+	/**
+	 * Add list of IRI of reactions to be optimised to json input so that forms input json for MoDSMechCalibAgent. 
+	 * @param inputNode
+	 * @param selectedRxns
+	 * @param output
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
 	private void updateJsonForCalib(JsonNode inputNode, List<String> selectedRxns, String output) throws IOException, MoDSSensAnaAgentException {
 		JsonNode locateNode = inputNode.path("json").path("ontokinIRI");
 		String rxns = new String();
@@ -358,7 +381,6 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		bw.write(inputNode.toString());
 		bw.close();
 	}
-	
 	
 	/**
 	 * Updates the latest status of the running jobs. 

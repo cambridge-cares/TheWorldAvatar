@@ -33,6 +33,7 @@ public class SensAnaResultsProcess {
 	private String topN = "10";
 	private boolean max = false;
 	private String simEnd = "200";
+	private List<String> rxnsMustInclude = new ArrayList<String>();
 	
 	public String getTopN() {
 		return topN;
@@ -58,6 +59,14 @@ public class SensAnaResultsProcess {
 		this.simEnd = simEnd;
 	}
 	
+	public List<String> getRxnsMustInclude() {
+		return rxnsMustInclude;
+	}
+
+	public void setRxnsMustInclude(List<String> rxnsMustInclude) {
+		this.rxnsMustInclude = rxnsMustInclude;
+	}
+
 	public SensAnaResultsProcess(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
 		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
 	}
@@ -93,7 +102,13 @@ public class SensAnaResultsProcess {
 		// process flame sens results, get a file to record the rxns selected
 		List<String> flameRxnIRI = processResponse("subtype_LaminarFlameSpeed", mechanismIRI, jobFolderPath, Integer.parseInt(getTopN()), getMax());
 		// merge the two files and get one final list
-		List<String> supersetRxns = mergeTwoResponses(ignRxnIRI, flameRxnIRI);
+		List<String> supersetRxns = mergeTwoRxnLists(ignRxnIRI, flameRxnIRI);
+		// merge the selected reactions with the reactions must include that specified by user
+		List<String> rxnsMustInclude = JSonRequestParser.getRxnsMustInclude(jsonString);
+		if (rxnsMustInclude != null && !rxnsMustInclude.isEmpty()) {
+			List<String> rxnSelection = addRxnsMustInclude(mechanismIRI, rxnsMustInclude, supersetRxns);
+			return rxnSelection;
+		}
 		
 		logger.info("Sensitivity analysis results have been processed successfully.");
 		return supersetRxns;
@@ -358,20 +373,47 @@ public class SensAnaResultsProcess {
 	/**
 	 * Put the selected reactions from two responses into one list. 
 	 * 
-	 * @param response1
-	 * @param response2
+	 * @param rxnList1
+	 * @param rxnList2
 	 * @return
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
 	 */
-	private List<String> mergeTwoResponses(List<String> response1, List<String> response2) throws IOException, MoDSSensAnaAgentException {
-		for (String res : response2) {
-			if (!response1.contains(res)) {
-				response1.add(res);
+	private List<String> mergeTwoRxnLists(List<String> rxnList1, List<String> rxnList2) throws IOException, MoDSSensAnaAgentException {
+		for (String res : rxnList2) {
+			if (!rxnList1.contains(res)) {
+				rxnList1.add(res);
 			}
 		}
 		
-		return response1;
+		return rxnList1;
+	}
+	
+	/**
+	 * Add reactions must include to list of selected reactions from sensitivity analysis. 
+	 * 
+	 * @param mechanismIRI
+	 * @param rxnsMustInclude
+	 * @param rxnsFromSensAna
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSSensAnaAgentException
+	 */
+	private List<String> addRxnsMustInclude(String mechanismIRI, List<String> rxnsMustInclude, List<String> rxnsFromSensAna) throws IOException, MoDSSensAnaAgentException {
+		List<String> listOfRxnIRI = new ArrayList<>();
+		for (String rxn : rxnsMustInclude) {
+			OntoKinKG ontoKinKg = new OntoKinKG(modsSensAnaAgentProperty);
+			LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn);
+			String iri = new String();
+			String equ = new String();
+			for (String rxnIRI : rxnIRIandEqu.keySet()) {
+				iri = rxnIRI;
+				equ = rxnIRIandEqu.get(rxnIRI);
+				listOfRxnIRI.add(iri);
+			}
+		}
+		
+		return mergeTwoRxnLists(listOfRxnIRI, rxnsFromSensAna);
 	}
 	
 	/**

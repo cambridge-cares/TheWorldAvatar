@@ -49,6 +49,16 @@ public class JSonRequestParser {
 		return reactionIRI;
 	}
 	
+	public static List<String> getRxnsMustInclude(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("reactionMustInclude");
+		List<String> reactionIRI = new ArrayList<>();
+		for (JsonNode arrayItem : locateNode) {
+			reactionIRI.add(arrayItem.asText());
+		}
+		
+		return reactionIRI;
+	}
+	
 	// mods part
 	public static String getIgnDelayMethod(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("ignDelayOption").path("method");
