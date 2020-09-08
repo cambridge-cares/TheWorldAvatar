@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -37,6 +38,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
+import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.SftpException;
@@ -72,6 +74,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
 			}
 			try {
+				requestParams = validateRxnMustInclude(requestParams);
 				return setUpJob(requestParams.toString());
 			} catch (IOException | MoDSMechCalibAgentException | SlurmJobException e) {
 				throw new JPSRuntimeException(e.getMessage());
@@ -124,6 +127,34 @@ public class MoDSMechCalibAgent extends JPSAgent {
 			e.printStackTrace();
 		}
 		return true;
+	}
+	
+	/**
+	 * Validate if the reactions must include are added to list of reactions to be optimised, and add those not included reactions. 
+	 * 
+	 * @param requestParams
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
+	public JSONObject validateRxnMustInclude(JSONObject requestParams) throws MoDSMechCalibAgentException {
+		try {
+			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
+			List<String> rxnsMustInclude = JSonRequestParser.getRxnsMustInclude(requestParams.toString());
+			String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(requestParams.toString());
+			for (String rxn : rxnsMustInclude) {
+				OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
+				LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn);
+				for (String iri : rxnIRIandEqu.keySet()) {
+					if (!rxnIRI.contains(iri)) {
+						requestParams.getJSONObject("json").getJSONObject("ontokinIRI").getJSONArray("reactionList").put(iri);
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return requestParams;
 	}
 	
 	/**
