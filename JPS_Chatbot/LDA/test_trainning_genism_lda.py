@@ -108,6 +108,8 @@ lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                             per_word_topics=True)
 
 pprint(lda_model.print_topics(num_words= 10))
+
+lda_model.save('LDA_MODEL')
 doc_lda = lda_model[corpus]
 
 
@@ -117,15 +119,17 @@ question = 'what is the heat capacity of h2o2'
 # question = 'what do you know about china'
 
 cmd = ''
-while cmd is not 'stop':
+while cmd != 'stop':
     cmd = input('type in the question\t\t')
     question = [cmd.split(' ')]
-    # print('========== make bigrams ==========')
-    # print(make_bigrams(question))
-    # print('==================================')
+    print('========== make bigrams ==========')
+    print(make_bigrams(question))
+    print('==================================')
+
+
     question = lemmatization(make_bigrams(question))
-    # print(question)
-    # print('==================================')
+    print(question)
+    print('==================================')
     question = question[0]
     bow = lda_model.id2word.doc2bow(question)
     result = lda_model.get_document_topics(bow)
