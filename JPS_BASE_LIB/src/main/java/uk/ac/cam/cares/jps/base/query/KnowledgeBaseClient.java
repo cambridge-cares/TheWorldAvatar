@@ -81,6 +81,31 @@ public class KnowledgeBaseClient {
 	}
 	
 	/**
+	 * Generates the URL of the remote data repository's EndPoint either to<p>
+	 * perform a data retrieval or an update query.  
+	 * 
+	 * @return
+	 */
+	protected String getConnectionUrl() {
+		StringBuilder sb = new StringBuilder();
+		boolean queryFlag = false;
+		boolean updateFlag = false;
+		sb.append(JenaDriver.DRIVER_PREFIX);
+		sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
+		if (this.queryEndpoint != null) {
+			queryFlag = true;
+			sb.append(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT);
+		}
+		if (this.updateEndpoint != null) {
+			if(queryFlag){
+				sb.append("&");
+			}
+			sb.append(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT);
+		}
+		return sb.toString();
+	}
+	
+	/**
 	 * https://www.w3.org/TR/2013/REC-sparql11-http-rdf-update-20130321/#http-put<br>
 	 * The method also allows to put non-RDF resources.
 	 * 
