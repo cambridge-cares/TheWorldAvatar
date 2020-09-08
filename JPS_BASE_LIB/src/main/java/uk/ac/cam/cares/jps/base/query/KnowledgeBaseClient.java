@@ -303,4 +303,79 @@ public class KnowledgeBaseClient {
 		}
 		return url;
 	}
+	
+	/**
+	 * Can return the URL of the query EndPoint.  
+	 * 
+	 * @return
+	 */
+	public String getQueryEndpoint() {
+		return queryEndpoint;
+	}
+
+	/**
+	 * Sets the URL of the query EndPoint if provided. 
+	 * 
+	 * @param queryEndpoint
+	 */
+	public void setQueryEndpoint(String queryEndpoint) {
+		this.queryEndpoint = queryEndpoint;
+	}
+	
+	/**
+	 * Returns the URL of the update EndPoint if available.
+	 * 
+	 * @return
+	 */
+	public String getUpdateEndpoint() {
+		return updateEndpoint;
+	}
+	
+	/**
+	 * Set the URL of the update EndPoint if provided.
+	 * 
+	 * @param updateEndpoint
+	 */
+	public void setUpdateEndpoint(String updateEndpoint) {
+		this.updateEndpoint = updateEndpoint;
+	}
+
+	/**
+	 * Returns a set of graphs if available. These are the graphs to which<p>
+	 * a data retrieval or update query can be sent. 
+	 * 
+	 * @return
+	 */
+	public List<String> getGraphs() {
+		return graphs;
+	}
+	
+	/**
+	 * Sets a set of graphs if provided for sending a data retrieval or<p>
+	 * or update query.
+	 * 
+	 * @param graphs
+	 */
+	public void setGraphs(List<String> graphs) {
+		this.graphs = graphs;
+	}
+
+	/**
+	 * Returns the available query.
+	 * 
+	 * @return
+	 */
+	public String getQuery() {
+		return query;
+	}
+
+	/**
+	 * Sets a query if provided.
+	 * 
+	 * @param query
+	 */
+	public void setQuery(String query) {
+		this.query = query;
+	}
+
 }
