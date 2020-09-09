@@ -145,14 +145,16 @@ class OntoCompChemData:
         if pathflag == True:
             path = sys.argv[6]
             if len(self.data) > 1:
-#                owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"
-                 owl_name = Path(self.log).stem + '_' + str(k)+'.owl'   
+#                owl_path = os.path.splitext(g_path)[0]+"#"+str(k)+".owl"                 
+                 #Line below is commented because it causes problem with generating owl file. Commented by Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+                 #owl_name = Path(self.log).stem + '_' + str(k)+'.owl'                 
                  #owl_path = g_path+"#"+str(k)+".owl"
                  owl_path = path + owl_name
                 
             else:
 #                owl_path = os.path.splitext(g_path)[0]+".owl"
-                 owl_name = Path(self.log).stem + ".owl"
+                 #Line below is commented because it causes problem with generating owl file. Commented by Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+                 #owl_name = Path(self.log).stem + ".owl"                 
                  #owl_path = g_path+".owl" 
                  owl_path = path + owl_name
         
