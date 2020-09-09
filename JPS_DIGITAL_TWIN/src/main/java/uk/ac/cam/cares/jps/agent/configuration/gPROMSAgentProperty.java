@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource("classpath:kinetics-agent.properties")
+@PropertySource("classpath:gPROMS-agent.properties")
 public class gPROMSAgentProperty {
 	@Value("${hpc.server.login.user.name}")
 	private String hpcServerLoginUserName;

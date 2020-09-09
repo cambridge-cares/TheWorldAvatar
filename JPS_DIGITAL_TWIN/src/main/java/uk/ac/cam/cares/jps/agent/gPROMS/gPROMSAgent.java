@@ -65,7 +65,7 @@ import uk.ac.cam.cares.jps.base.util.FileUtil;
 		/* gPROMSAgent.JOB_OUTPUT_REQUEST_PATH */ })
 public class gPROMSAgent extends JPSAgent {
 
-	private static final long serialVersionUID = -8669607645910441935L;
+	private static final long serialVersionUID = 1L;
 	private Logger logger = LoggerFactory.getLogger(gPROMSAgent.class);
 	private File workspace;
 	static JobSubmission jobSubmission;
@@ -73,7 +73,7 @@ public class gPROMSAgent extends JPSAgent {
 	public static gPROMSAgentProperty gPROMSAgentProperty;
 
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
-	public static final String UNKNOWN_REQUEST = "The request is unknown to Kinetics Agent";
+	public static final String UNKNOWN_REQUEST = "The request is unknown to gPROMS Agent";
 
 	public static final String JOB_REQUEST_PATH = "/job/request";
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
@@ -106,11 +106,11 @@ public class gPROMSAgent extends JPSAgent {
 	 */
 
 	public void init() throws ServletException {
-		logger.info("---------- Kinetics Simulation Agent has started ----------");
-		System.out.println("---------- Kinetics Simulation Agent has started ----------");
+		logger.info("---------- gPROMS Simulation Agent has started ----------");
+		System.out.println("---------- gPROMS Simulation Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		gPROMSAgent gPROMSAgent = new gPROMSAgent();
-		// initialising classes to read properties from the kinetics-agent.properites
+		// initialising classes to read properties from the gPROMS-agent.properites
 		// file
 		initAgentProperty();
 		// In the following method call, the parameter getAgentInitialDelay-<br>
@@ -127,8 +127,8 @@ public class gPROMSAgent extends JPSAgent {
 			}
 		}, gPROMSAgentProperty.getAgentInitialDelayToStartJobMonitoring(),
 				gPROMSAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- Kinetics Simulation jobs are being monitored  ----------");
-		System.out.println("---------- Kinetics Simulation jobs are being monitored  ----------");
+		logger.info("---------- gPROMS Simulation jobs are being monitored  ----------");
+		System.out.println("---------- gPROMS Simulation jobs are being monitored  ----------");
 
 	}
 
