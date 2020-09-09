@@ -335,7 +335,9 @@ public class MoDSSensAnaAgent extends JPSAgent {
 		SensAnaResultsProcess sensAnaRePro = new SensAnaResultsProcess(modsSensAnaAgentProperty);
 		List<String> selectedRxns = sensAnaRePro.processResults(destDir, jsonString);
 		
-		updateJsonForCalib(inputNode, selectedRxns, destDir.concat(File.separator).concat("modifiedInput.json"));
+		if (selectedRxns != null && !selectedRxns.isEmpty()) {
+			updateJsonForCalib(inputNode, selectedRxns, destDir.concat(File.separator).concat("modifiedInput.json"));
+		}
 		
 		System.out.println("Sensitivity analysis results were successfully processed.");
 	}
@@ -348,7 +350,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
 	 */
-	private String readJsonInput(File input) throws IOException, MoDSSensAnaAgentException {
+	protected String readJsonInput(File input) throws IOException, MoDSSensAnaAgentException {
 		String jsonString = new String();
 		BufferedReader br = null;
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
@@ -368,7 +370,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
 	 */
-	private void updateJsonForCalib(JsonNode inputNode, List<String> selectedRxns, String output) throws IOException, MoDSSensAnaAgentException {
+	protected void updateJsonForCalib(JsonNode inputNode, List<String> selectedRxns, String output) throws IOException, MoDSSensAnaAgentException {
 		JsonNode locateNode = inputNode.path("json").path("ontokinIRI");
 		String rxns = new String();
 		for (String rxn : selectedRxns) {
@@ -501,7 +503,7 @@ public class MoDSSensAnaAgent extends JPSAgent {
 	 * 
 	 * @param directoryToBeDeleted
 	 */
-	private void deleteDirectory(File directoryToBeDeleted) {
+	protected void deleteDirectory(File directoryToBeDeleted) throws IOException {
 	    File[] allContents = directoryToBeDeleted.listFiles();
 	    if (allContents != null) {
 	        for (File file : allContents) {

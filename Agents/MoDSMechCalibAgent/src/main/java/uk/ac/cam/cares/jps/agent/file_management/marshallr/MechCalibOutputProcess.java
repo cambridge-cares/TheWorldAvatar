@@ -94,7 +94,7 @@ public class MechCalibOutputProcess {
 	 * @throws IOException
 	 * @throws MoDSMechCalibAgentException
 	 */
-	public void processResults(String jobFolderPath, String jsonString) throws IOException, MoDSMechCalibAgentException {
+	public String processResults(String jobFolderPath, String jsonString) throws IOException, MoDSMechCalibAgentException {
 		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
 		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
 		String timeStamp = ""+Utils.getTimeStamp();
@@ -148,10 +148,12 @@ public class MechCalibOutputProcess {
 		
 		// upload the updated owl to server
 		try {
-			ontoKinKG.uploadMechanism(mechOwlUpload, mechFolder.concat(File.separator));
+			return ontoKinKG.uploadMechanism(mechOwlUpload, mechFolder.concat(File.separator));
 		} catch (OntoException e) {
 			e.printStackTrace();
 		}
+		
+		return null;
 	}
 	
 	/**

@@ -58,6 +58,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	public static final String REQUEST_RECEIVED = "A request to MoDSMechCalibAgent has been received..............................";
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSMechCalib Agent";
+	public static final String OUTPUT_PROCESS_FAILED = "Mechanism calibration results process were failed.";
 	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
@@ -360,9 +361,12 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				.concat(modsMechCalibAgentProperty.getJsonFileExtension())));
 		
 		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess(modsMechCalibAgentProperty);
-		mechCalibPro.processResults(destDir, jsonString);
-		
-		System.out.println("Mechanism calibration results were successfully processed.");
+		String mechOwlOnServer = mechCalibPro.processResults(destDir, jsonString);
+		if (mechOwlOnServer != null && !mechOwlOnServer.isEmpty()) {
+			System.out.println("Mechanism calibration results were successfully processed.");
+		} else {
+			throw new JPSRuntimeException(OUTPUT_PROCESS_FAILED);
+		}
 	}
 	
 	/**
@@ -373,7 +377,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws IOException
 	 * @throws MoDSMechCalibAgentException
 	 */
-	private String readJsonInput(File input) throws IOException, MoDSMechCalibAgentException {
+	protected String readJsonInput(File input) throws IOException, MoDSMechCalibAgentException {
 		String jsonString = new String();
 		BufferedReader br = null;
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
@@ -504,7 +508,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * 
 	 * @param directoryToBeDeleted
 	 */
-	private void deleteDirectory(File directoryToBeDeleted) {
+	protected void deleteDirectory(File directoryToBeDeleted) throws IOException {
 	    File[] allContents = directoryToBeDeleted.listFiles();
 	    if (allContents != null) {
 	        for (File file : allContents) {

@@ -152,12 +152,31 @@ public class OntoKinKG {
 	 * 
 	 * @param aboxFileName
 	 * @param aboxFilePath
+	 * @return
 	 * @throws MoDSMechCalibAgentException
 	 * @throws OntoException
 	 */
-	public void uploadMechanism(String aboxFileName, String aboxFilePath) throws MoDSMechCalibAgentException, OntoException {
+	public String uploadMechanism(String aboxFileName, String aboxFilePath) throws MoDSMechCalibAgentException, OntoException {
 		RepositoryManager.loadOntology(modsMechCalibAgentProperty.getKgUploadRdf4jServerUrl(), aboxFileName, aboxFilePath, 
 				Property.RDF4J_ONTOKIN_KB_URL.getPropertyName(), modsMechCalibAgentProperty.getKgUploadRdf4jRepositoryOntoKin());
+		return Property.RDF4J_ONTOKIN_KB_URL.getPropertyName().concat(aboxFileName);
+	}
+	
+	/**
+	 * Delete a mechanism from kg. 
+	 * @param mechanismName
+	 * @param contextURL
+	 * @return
+	 */
+	public boolean deleteMechanism(String mechanismName, String contextURL) {
+		try {
+			RepositoryManager.deleteOntology(modsMechCalibAgentProperty.getKgUploadRdf4jServerUrl(), 
+					mechanismName, contextURL, modsMechCalibAgentProperty.getKgUploadRdf4jRepositoryOntoKin());
+			return true;
+		} catch (OntoException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 	/**
