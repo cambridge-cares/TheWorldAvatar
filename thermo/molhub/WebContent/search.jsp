@@ -199,6 +199,8 @@ Session result: <s:property value="session"/>
 <!--Define parameter for uuid to be used in query all data in RDF4J repository.-->
 <s:param name="uuidName"><s:property  value="uuid"/></s:param>
 
+<s:param name="uuidFileName"><s:property  value="uniqueFileIdentifier"/></s:param>
+
 </s:url>
 
 <div class="species-image" id="middlepanel"></div>
@@ -213,7 +215,7 @@ Session result: <s:property value="session"/>
             <div>
                 <div class="property-name"><s:property value="resultsColumn[1]"/></div>
                 <div class="property-value" align="left">
-                <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/></s:a>
+                <s:a href="%{moleculeView}" target="_blank">http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property  value="uuid"/>/<s:property  value="uniqueFileIdentifier"/></s:a>
                 </div>
             </div>
             <p/>

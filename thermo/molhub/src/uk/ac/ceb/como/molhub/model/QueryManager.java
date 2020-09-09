@@ -286,9 +286,17 @@ public class QueryManager {
 
 				while (result.hasNext()) {
 
-					BindingSet bindingSet = result.next();
+					BindingSet bindingSet = result.next();			
+					
+					String uuIdentifider = bindingSet.getValue("uuid").stringValue();
+					
+					String uuid = uuIdentifider.split("#")[1];
+					
+					String fileNameId = uuIdentifider.split("#")[0];
+					
+					String uniqueIdentifier = fileNameId.split("/")[1];
 
-					MoleculeProperty moleculeProperty = new MoleculeProperty(bindingSet.getValue("uuid").stringValue(),
+					MoleculeProperty moleculeProperty = new MoleculeProperty(uuid, uniqueIdentifier, 
 //							moleculeName,
 							/**
 							 * @author nk510

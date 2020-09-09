@@ -115,7 +115,9 @@ public class QueryString {
 				+ "PREFIX gc: <http://purl.org/gc/>" 
 				+ "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
 				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
-				+ "SELECT DISTINCT (strafter(str(?g09), '.owl#') AS ?uuid) ?levelOfTheory ?basisSetValue "
+//				+ "SELECT DISTINCT (strafter(str(?g09), '.owl#') AS ?uuid) ?levelOfTheory ?basisSetValue "
+//				commented line above and added line below.
+				+ "SELECT DISTINCT (strafter(str(?g09), 'ontocompchem/') AS ?uuid) ?levelOfTheory ?basisSetValue "
 				+ "WHERE {" 
 				+ "?g09 "+ontoCompChemNS+":hasInitialization ?mn0 ." 
 				+ "?mn0 gc:hasMoleculeProperty ?mp0 ."
@@ -196,7 +198,26 @@ public class QueryString {
 
 		return query;
 	}
+	
 
+	public static String geFrequency(String uuid, String uuidFile) {
+
+		String query = "PREFIX "+ontoCompChemNS+": <"+ontoCompChemUri+">"
+				+ "PREFIX gc: <http://purl.org/gc/>" + "PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>"
+				+ "PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>"
+				+ "SELECT ?frequenciesSize ?frequenciesValue ?frequenciesUnit " + "WHERE {"
+//				+ "<http://como.cheng.cam.ac.uk/molhub/compchem/" + uuid + ">  gc:isCalculationOn ?fc1 ."
+				+ "<"+ontoCompChemAboxBaseUri+ uuid+"/" +uuidFile+"#"+ uuid + ">  gc:isCalculationOn ?fc1 ."
+				+ "?fc1 rdf:type gc:VibrationalAnalysis." 
+				+ "?fc1 gc:hasResult ?r ." 
+				+ "?r rdf:type gc:Frequency ."
+				+ "?r gc:hasVibrationCount ?frequenciesSize ." 
+				+ "?r "+ontoCompChemNS+":hasFrequencies ?frequenciesValue ."
+				+ "?r gc:hasUnit ?frequenciesUnit ." 
+				+ "}";
+
+		return query;
+	}
 	/**
 	 * Gets the atomic mass.
 	 *

@@ -173,4 +173,31 @@ public class FolderManager {
         return fileName;
 	
 	}	
+	
+//	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
+	public String getFileUniqueName(String uuid, String uuidFile, String kbFolderPath, String dataFolderPath, String format) {
+		
+		String folderName = null;
+		
+		if(format.endsWith(".owl")) {
+		
+//			folderName = catalinaFolderPath + "/webapps/ROOT/kb/ontocompchem/" + uuid.toString();
+			folderName =kbFolderPath + uuid.toString();
+		
+		}
+		else {
+			
+//			folderName = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/" + uuid.toString();
+			folderName= dataFolderPath + uuid.toString();
+			
+		}
+		
+//		String folderName = folderPath + uuid.toString();
+		File file = new File(folderName + "/" + uuidFile);
+		
+		
+        return file.getName()  ;
+	
+	}
+	
 }

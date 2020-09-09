@@ -58,6 +58,8 @@ public class MoleculeViewLogAction extends ActionSupport {
 	 * entity and showing results on new page.
 	 */
 	private String uuid = ServletActionContext.getRequest().getParameter("uuidName");
+	
+	private String uuidFile = ServletActionContext.getRequest().getParameter("uuidFileName");
 
 	/** The gaussian file name. */
 	private String gaussianFileName = folderManager.getFileName(getUuid(), kbFolderPath, dataFolderPath, ".g09");
@@ -66,7 +68,8 @@ public class MoleculeViewLogAction extends ActionSupport {
 	private String xmlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".xml");
 
 	/** The owl file name. */
-	private String owlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".owl");
+//	private String owlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".owl");
+	private String owlFileName = folderManager.getFileUniqueName(getUuid(),getUuidFile(),kbFolderPath,dataFolderPath, ".owl");
 
 	/** The nasa file name. */
 	private String nasaFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, "_nasa.json");
@@ -166,6 +169,14 @@ public class MoleculeViewLogAction extends ActionSupport {
 	 */
 	public String getUuid() {
 		return uuid;
+	}
+
+	public String getUuidFile() {
+		return uuidFile;
+	}
+
+	public void setUuidFile(String uuidFile) {
+		this.uuidFile = uuidFile;
 	}
 
 	/**

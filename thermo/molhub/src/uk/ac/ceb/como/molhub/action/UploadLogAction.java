@@ -1,33 +1,28 @@
 package uk.ac.ceb.como.molhub.action;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-import org.eclipse.rdf4j.repository.RepositoryException;
+
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
+
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.io.RDFXMLOntologyFormat;
 import org.semanticweb.owlapi.model.IRI;
@@ -38,15 +33,11 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
 
 import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
-import uk.ac.cam.ceb.como.compchem.xslt.Transformation;
-import uk.ac.cam.ceb.como.io.chem.file.jaxb.Module;
-import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
-import uk.ac.cam.ceb.como.jaxb.xml.generation.GenerateXml;
+
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
-import uk.ac.ceb.como.molhub.model.ExecutorManager;
 import uk.ac.ceb.como.molhub.model.FolderManager;
 import uk.ac.ceb.como.molhub.model.PropertiesManager;
-import uk.ac.ceb.como.molhub.model.XMLValidationManager;
+
 
 /**
  * The Class uploads one or more selected Gaussian files (g09)<br>
@@ -77,11 +68,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	private String dataFolderPath = molhubPropreties.getProperty("data.folder.path").toString();
 
 	private String kbFolderPath = molhubPropreties.getProperty("kb.folder.path").toString();
-
-	private String xslt = molhubPropreties.getProperty("xslt.file.path").toString();
-
-	private String xsd = molhubPropreties.getProperty("xsd.file.path").toString();
-
+	
 	private String jmolDataJarFilePath = molhubPropreties.getProperty("jmol.data.jar.file.path").toString();
 	
 	private String pythonParserPath = molhubPropreties.getProperty("python.parser.file.path").toString();
@@ -93,8 +80,6 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 * 
 	 */
 	Properties kbProperties = PropertiesManager.loadProperties(UploadLogAction.class.getClassLoader().getResourceAsStream("kb.ontocompchem.management.properties"));
-
-	private String ontoCompChemUri = kbProperties.getProperty("ontocompchem.kb.tbox.uri").toString();
 
 	private final String ONTOCOMPCHEM_KB_URL = kbProperties.getProperty("ontocompchem.kb.uri").toString();
 	
@@ -200,6 +185,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				  logger.info("Done.");
 				
 				  process.waitFor();
+				  
+				  process.destroy();
 				  
 				  } catch (IOException e) {
 								// TODO Auto-generated catch block
