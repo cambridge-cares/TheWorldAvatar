@@ -87,14 +87,14 @@ public class KeyValueMap {
 			JPSBaseLogger.info(this, key + " = " + value);
 		}
 	}
-	public static String getProperty(String propertyFile, String getKey) {
+	public String getProperty(String propertyFile, String getKey) {
+		JPSBaseLogger.info(this, "grab "+getKey+ " from " + propertyFile);
 		InputStream fin=null;
 		Properties props = new Properties();
 		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
 		props = new Properties();
 		try {
-		props.load(fin);
-		fin.close();}
+		props.load(fin);}
 		catch (IOException exc) {
 			JPSBaseLogger.info(KeyValueMap.class,  " properties was not loaded ");
 		}

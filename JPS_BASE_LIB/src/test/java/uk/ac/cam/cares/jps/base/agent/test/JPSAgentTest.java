@@ -46,16 +46,20 @@ public class JPSAgentTest extends TestCase {
         HttpServletRequest request = getMockRequest();
 
         try {
-            assertTrue(input.toString().equals(processRequestParameters.invoke(jpsa, input).toString()));
+            assertEquals(input, processRequestParameters.invoke(jpsa, input));
         } catch (InvocationTargetException e) {
             assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
         }
 
         try {
-            assertTrue(input.toString().equals(processRequestParametersWithRequest.invoke(jpsa, input, request).toString()));
+            assertEquals(input, processRequestParametersWithRequest.invoke(jpsa, input, request));
         } catch (InvocationTargetException e) {
             assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
         }
+
+        input.put("a", "b");
+        assertEquals(input, processRequestParameters.invoke(jpsa, input));
+        assertEquals(input, processRequestParametersWithRequest.invoke(jpsa, input, request));
 
     }
 
@@ -72,7 +76,7 @@ public class JPSAgentTest extends TestCase {
             valid = (boolean) validateInput.invoke(jpsa, input);
             assertTrue(valid);
         } catch (InvocationTargetException e) {
-            assertEquals("javax.ws.rs.BadRequestException", e.getTargetException().getStackTrace()[6].getClassName());
+            assertEquals("javax.ws.rs.BadRequestException", e.getCause().getCause().getStackTrace()[14].getClassName());
         }
 
         input.put("a", "b");
