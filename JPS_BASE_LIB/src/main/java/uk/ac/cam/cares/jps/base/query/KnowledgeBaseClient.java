@@ -126,51 +126,7 @@ public class KnowledgeBaseClient {
 		sb.append("=");
 		sb.append(endpointURL);
 		return sb.toString();
-	}
-	
-	/**
-	 * Executes the query that is provided through the constructors or setter<p>
-	 * method.
-	 * 
-	 * @return
-	 */
-	public JSONObject executeQuery() throws SQLException{
-		String connectionUrl = getConnectionUrl();
-		if(connectionUrl.isEmpty()){
-			return null;
-		}
-		if(isConnectionUrlValid(connectionUrl)){
-			executeQuery(this.query);
-		}
-		return null;
-	}
-	
-	/**
-	 * Executes the query supplied by the calling method and returns results. 
-	 * 
-	 * @param query
-	 * @return
-	 */
-	public JSONObject executeQuery(String query) throws SQLException{
-        JSONObject results = new JSONObject();
-		Connection conn = null;
-        Statement stmt = null;
-        try {
-            RemoteEndpointDriver.register();
-            System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
-			System.out.println(query);
-            java.sql.ResultSet rs = stmt.executeQuery(query);
-			while (rs.next()) {
-				// Print out type as a string
-				System.out.println(rs.getString("reactionMechanism"));
-			}
-        } catch (SQLException e) {
-        	throw new SQLException(e.getMessage());
-        }
-        return results;
-	}
+	}	
 	
 	/**
 	 * Checks the validity of the URL generated for connecting to a remote<p>
