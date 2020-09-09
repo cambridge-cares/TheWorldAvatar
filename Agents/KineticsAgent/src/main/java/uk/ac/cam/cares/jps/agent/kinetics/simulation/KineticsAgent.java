@@ -12,7 +12,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -72,10 +71,6 @@ public class KineticsAgent extends JPSAgent {
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
 	
-	/**
-	 *  Location of the temporary directory creating during the setupInputFiles() method.
-	 */
-	private Path temporaryDirectory = null;
 
 	/**
 	 * Shows the following statistics of quantum jobs processed by Kinetics Agent.</br>
@@ -369,7 +364,13 @@ public class KineticsAgent extends JPSAgent {
 
 					if (Utils.isJobCompleted(jobFolder) && !Utils.isJobOutputProcessed(jobFolder)) {
 
-						boolean outcome = postProcessing(Paths.get(jobFolder.getAbsolutePath()));
+                        boolean outcome = false;
+                        try {
+                            outcome = postProcessing(Paths.get(jobFolder.getAbsolutePath()));
+                        } catch(Exception exception) {
+                            exception.printStackTrace(System.out);
+                            outcome = false;
+                        }
 
 						if (outcome) {
 							// Success
@@ -398,8 +399,9 @@ public class KineticsAgent extends JPSAgent {
 	 *
 	 * @return true if post-processing is successful
 	 */
-	public boolean postProcessing(Path jobFolder) throws IOException {
-
+	public boolean postProcessing(Path jobFolder) throws Exception {
+        System.out.println("Running postProcessing() method...");
+        
 		// Find the job results ZIP
 		Path archive = Paths.get(
 			jobFolder.toString(),
@@ -408,6 +410,8 @@ public class KineticsAgent extends JPSAgent {
 		if (!Files.exists(archive)) throw new IOException("Cannot find expected archive at: " + archive);
 
 		// Unzip
+        System.out.println("Unzipping files...");
+
 		Path outputsDir = Paths.get(jobFolder.toString(), "outputs");
 		
 		ZipUtility zipper = new ZipUtility();
@@ -416,6 +420,10 @@ public class KineticsAgent extends JPSAgent {
 			outputsDir.toString()
 		);
 
+        // Artificial delay to wait for the unzipping (not an indeal fudge)
+        Thread.sleep(1000);
+        System.out.println("Unzipped files!");
+        
 		// Get the location of the python scripts directory
 		Path scriptsDir = Paths.get(kineticsAgentProperty.getAgentScriptsLocation());
 		if (!Files.exists(scriptsDir)) throw new IOException("Cannot find python scripts directory at: " + scriptsDir);
@@ -440,19 +448,24 @@ public class KineticsAgent extends JPSAgent {
 		commands.add(outputsDir.toString());
 		
 		builder.command(commands);
-
+        System.out.println("Built command line arguments...");
+        
 		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
 
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
-			String line = null;
-			while((line = reader.readLine()) != null) {
-				System.out.println(line);
-			}
-		} catch(Exception exception ) {
-			exception.printStackTrace(System.out);
-		}
-		
+         try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line = null;
+            
+            while((line = reader.readLine()) != null) {
+                System.out.println(line);
+                if(line.toLowerCase().contains("failed") || line.toLowerCase().contains("error")) {
+                    throw new KineticsAgentException("Error encountered when running pre-processing script!");
+                }
+            }
+        } catch(Exception exception) {
+            throw new KineticsAgentException("Error encountered when running pre-processing script!");
+        }
+        
 		// Wait until the process is finished (should add a timeout here, expected duration?)
 		while (process.isAlive()) {
 			try {
@@ -462,6 +475,8 @@ public class KineticsAgent extends JPSAgent {
 				return false;
 			}
 		}
+        
+        System.out.println("Python script completed!");
 
 		// Check the outputs JSON file
 		String outputFilename = kineticsAgentProperty.getReferenceOutputJsonFile().trim();
@@ -478,15 +493,24 @@ public class KineticsAgent extends JPSAgent {
 		}
 		
 		// Copy the JSON up into the job folder just in case Feroz expects it there
-		Files.copy(
-			outputsJSON, 
-			Paths.get(jobFolder.toString(), outputFilename)
-		);
+        Path jsonCopy = Paths.get(jobFolder.toString(), outputFilename);
+        
+        if(!Files.exists(jsonCopy)) {
+            Files.copy(outputsJSON, jsonCopy);
+        }
 		
 		// Remove the temporary directory
-		if(temporaryDirectory != null && Files.exists(temporaryDirectory)) {
-			FileUtils.deleteDirectory(temporaryDirectory.toFile());
-		}
+        Path temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolder.getFileName().toString());
+        
+        try {
+            if(temporaryDirectory != null && Files.exists(temporaryDirectory)) {
+                Thread.sleep(1000);
+                FileUtils.deleteDirectory(temporaryDirectory.toFile());
+                System.out.println("Deleted directory at: " + temporaryDirectory);
+            }
+        } catch(IOException ioException) {
+            System.out.println("WARNING: Could not delete temporary directory at " + temporaryDirectory);
+        }
 		
 		// Success!
 		return true;
@@ -549,7 +573,7 @@ public class KineticsAgent extends JPSAgent {
 		if (!Files.exists(templatesDir)) throw new IOException("Cannot find SRM templates directory at: " + templatesDir);
 
 		// Create a temporary folder in the user's home location
-		temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
+		Path temporaryDirectory = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
 		try {
 			Files.createDirectory(temporaryDirectory);
 
@@ -594,6 +618,19 @@ public class KineticsAgent extends JPSAgent {
 		// Could redirect the script's output here, looks like a logging system is required first
 		Process process = builder.start();
 
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line = null;
+            
+            while((line = reader.readLine()) != null) {
+                System.out.println(line);
+                if(line.toLowerCase().contains("failed") || line.toLowerCase().contains("error")) {
+                    throw new KineticsAgentException("Error encountered when running pre-processing script!");
+                }
+            }
+        } catch(Exception exception) {
+            throw new KineticsAgentException("Error encountered when running pre-processing script!");
+        }
+            
 		// Wait until the process is finished (should add a timeout here, expected duration?)
 		while (process.isAlive()) {
 			try {
