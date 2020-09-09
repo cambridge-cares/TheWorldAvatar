@@ -1,14 +1,14 @@
 package uk.ac.cam.cares.jps.agent.mechanism.calibration.test;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
+import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import junit.framework.Assert;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgent;
@@ -16,27 +16,33 @@ import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentExcepti
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class MoDSMechCalibAgentJobSetupTest extends MoDSMechCalibAgent {
 
 	/**
-	 * 
+	 * Performs a test of the agent's job setup using a sample JSON request (read from a resource file). 
 	 */
 	private static final long serialVersionUID = 3366455762189966807L;
 
 	@Test
 	public void test() throws IOException, MoDSMechCalibAgentException, SlurmJobException {
 		initAgentProperty();
-		BufferedReader br = FileUtil.openSourceFile(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getJsonInputFileName().concat(modsMechCalibAgentProperty.getJsonFileExtension())).getPath());
 		
+		BufferedReader br = FileUtil.openSourceFile(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getJsonInputFileName().concat(modsMechCalibAgentProperty.getJsonFileExtension())).getPath());
 		String jsonString = "";
 		String line = "";
 		while ((line = br.readLine()) != null) {
 			jsonString = jsonString.concat(line);
 		}
 		br.close();
-		setUpJobOnAgentMachine(jsonString);
+		
+		String message = setUpJobOnAgentMachine(jsonString);
+		System.out.println("JOB MESSAGE:");
+		System.out.println(message);
+		
+		Assert.assertEquals(new JSONObject(message).get("message"), Status.JOB_SETUP_SUCCESS_MSG.getName());
 	}
 	
 	/**

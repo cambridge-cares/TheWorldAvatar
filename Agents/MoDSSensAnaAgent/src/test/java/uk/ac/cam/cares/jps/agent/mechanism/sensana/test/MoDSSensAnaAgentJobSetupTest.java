@@ -1,14 +1,14 @@
 package uk.ac.cam.cares.jps.agent.mechanism.sensana.test;
 
-import static org.junit.Assert.*;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 
+import org.json.JSONObject;
 import org.junit.Test;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import junit.framework.Assert;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgent;
@@ -16,12 +16,13 @@ import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Utils;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
+import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
 
 public class MoDSSensAnaAgentJobSetupTest extends MoDSSensAnaAgent {
 
 	/**
-	 * 
+	 * Performs a test of the agent's job setup using a sample JSON request (read from a resource file). 
 	 */
 	private static final long serialVersionUID = -5572888046042546793L;
 
@@ -30,14 +31,18 @@ public class MoDSSensAnaAgentJobSetupTest extends MoDSSensAnaAgent {
 		initAgentProperty();
 		
 		BufferedReader br = FileUtil.openSourceFile(getClass().getClassLoader().getResource(modsSensAnaAgentProperty.getJsonInputFileName().concat(modsSensAnaAgentProperty.getJsonFileExtension())).getPath());
-		
 		String jsonString = "";
 		String line = "";
 		while ((line = br.readLine()) != null) {
 			jsonString = jsonString.concat(line);
 		}
 		br.close();
-		setUpJobOnAgentMachine(jsonString);
+		
+		String message = setUpJobOnAgentMachine(jsonString);
+		System.out.println("JOB MESSAGE:");
+		System.out.println(message);
+		
+		Assert.assertEquals(new JSONObject(message).get("message"), Status.JOB_SETUP_SUCCESS_MSG.getName());
 	}
 	
 	/**
