@@ -174,7 +174,7 @@ public class CompChemQuery {
 			 * Creates json file based on name of created OWL file including log/g09/g16 extension.
 			 */
 			logger.info("fileName.substring(0, fileName.lastIndexOf(\".\")): " + fileName.substring(0, fileName.lastIndexOf(".")));
-			fileOutputStream=new FileOutputStream(new File(targetFolder+ fileName.substring(0, fileName.lastIndexOf("."))  +".json"),false);
+			fileOutputStream=new FileOutputStream(new File(targetFolder+ fileName.substring(0, fileName.lastIndexOf("."))  +"q.json"),false);
 	       		
 			ResultSetFormatter.outputAsJSON(fileOutputStream, resultSet);
 
