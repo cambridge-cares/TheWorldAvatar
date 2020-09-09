@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.apache.jena.jdbc.JenaDriver;
@@ -29,10 +31,10 @@ import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 public class KnowledgeBaseClient {
 	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
 	private static KnowledgeBaseClient instance = null;
+	private static final String HTTP_PROTOCOL_PREFIX = "http:";
 	
 	private String queryEndpoint;
 	private String updateEndpoint;
-	private List<String> graphs;
 	private String query;
 	
 	private static synchronized KnowledgeBaseClient getInstance() {
@@ -50,18 +52,12 @@ public class KnowledgeBaseClient {
 	}
 	
 	/**
-	 * A constructor defined to initialise the query EndPoint URL, update<p>
-	 * EndPoint URL and a set of graphs to send a data retrieval or update<p>
-	 * query.    
+	 * A constructor defined to initialise only the query EndPoint URL.
 	 * 
 	 * @param queryEndpoint
-	 * @param updateEndpoint
-	 * @param graphs
 	 */
-	public KnowledgeBaseClient(String queryEndpoint, String updateEndpoint, List<String> graphs){
+	public KnowledgeBaseClient(String queryEndpoint){
 		this.queryEndpoint = queryEndpoint;
-		this.updateEndpoint = updateEndpoint;
-		this.graphs = graphs;
 	}
 	
 	/**
@@ -71,12 +67,24 @@ public class KnowledgeBaseClient {
 	 * 
 	 * @param queryEndpoint
 	 * @param updateEndpoint
-	 * @param graphs
 	 */
-	public KnowledgeBaseClient(String queryEndpoint, String updateEndpoint, List<String> graphs, String query){
+	public KnowledgeBaseClient(String queryEndpoint, String updateEndpoint){
 		this.queryEndpoint = queryEndpoint;
 		this.updateEndpoint = updateEndpoint;
-		this.graphs = graphs;
+	}
+	
+	/**
+	 * A constructor defined to initialise the query EndPoint URL, update<p>
+	 * EndPoint URL and a set of graphs to send a data retrieval or update<p>
+	 * query.    
+	 * 
+	 * @param queryEndpoint
+	 * @param updateEndpoint
+	 * @param query
+	 */
+	public KnowledgeBaseClient(String queryEndpoint, String updateEndpoint, String query){
+		this.queryEndpoint = queryEndpoint;
+		this.updateEndpoint = updateEndpoint;
 		this.query = query;
 	}
 	
@@ -89,20 +97,108 @@ public class KnowledgeBaseClient {
 	protected String getConnectionUrl() {
 		StringBuilder sb = new StringBuilder();
 		boolean queryFlag = false;
-		boolean updateFlag = false;
 		sb.append(JenaDriver.DRIVER_PREFIX);
 		sb.append(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX);
 		if (this.queryEndpoint != null) {
 			queryFlag = true;
-			sb.append(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT);
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT, this.queryEndpoint));
 		}
 		if (this.updateEndpoint != null) {
 			if(queryFlag){
 				sb.append("&");
 			}
-			sb.append(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT);
+			sb.append(generateEndpointProperty(RemoteEndpointDriver.PARAM_UPDATE_ENDPOINT, this.updateEndpoint));
 		}
 		return sb.toString();
+	}
+
+	/**
+	 * Puts the type of an endpoint (e.g. query and update), equal to symbol<p>
+	 * and end point URL in a string and returns the string.
+	 * 
+	 * @param endpointType
+	 * @param endpointURL
+	 * @return
+	 */
+	private String generateEndpointProperty(String endpointType, String endpointURL){
+		StringBuilder sb = new StringBuilder();
+		sb.append(endpointType);
+		sb.append("=");
+		sb.append(endpointURL);
+		return sb.toString();
+	}
+	
+	/**
+	 * Executes the query that is provided through the constructors or setter<p>
+	 * method.
+	 * 
+	 * @return
+	 */
+	public JSONObject executeQuery() throws SQLException{
+		String connectionUrl = getConnectionUrl();
+		if(connectionUrl.isEmpty()){
+			return null;
+		}
+		if(isConnectionUrlValid(connectionUrl)){
+			executeQuery(this.query);
+		}
+		return null;
+	}
+	
+	/**
+	 * Executes the query supplied by the calling method and returns results. 
+	 * 
+	 * @param query
+	 * @return
+	 */
+	public JSONObject executeQuery(String query) throws SQLException{
+        JSONObject results = new JSONObject();
+		Connection conn = null;
+        Statement stmt = null;
+        try {
+            RemoteEndpointDriver.register();
+            System.out.println(getConnectionUrl());
+            conn = DriverManager.getConnection(getConnectionUrl());
+            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+			System.out.println(query);
+            java.sql.ResultSet rs = stmt.executeQuery(query);
+			while (rs.next()) {
+				// Print out type as a string
+				System.out.println(rs.getString("reactionMechanism"));
+			}
+        } catch (SQLException e) {
+        	throw new SQLException(e.getMessage());
+        }
+        return results;
+	}
+	
+	/**
+	 * Checks the validity of the URL generated for connecting to a remote<p>
+	 * repository based on user provided inputs via one of the parameterised<p>
+	 * constructors or setter methods.
+	 * 
+	 * @param connectionUrl provided URL that is to be used for establishing<p>
+	 * a connection with the remote repository to perform query or update<p>
+	 * operations.
+	 * @return
+	 */
+	public boolean isConnectionUrlValid(String connectionUrl){
+		if (!connectionUrl.startsWith(JenaDriver.DRIVER_PREFIX
+				.concat(RemoteEndpointDriver.REMOTE_DRIVER_PREFIX)
+				.concat(RemoteEndpointDriver.PARAM_QUERY_ENDPOINT)
+				.concat(HTTP_PROTOCOL_PREFIX))) {
+			return false;
+		}
+		String[] tokens = connectionUrl.split(HTTP_PROTOCOL_PREFIX);
+		for(String token: tokens){
+			if(token.isEmpty()){
+				return false;
+			}
+			if(token.length()<3){
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/**
@@ -363,26 +459,6 @@ public class KnowledgeBaseClient {
 	 */
 	public void setUpdateEndpoint(String updateEndpoint) {
 		this.updateEndpoint = updateEndpoint;
-	}
-
-	/**
-	 * Returns a set of graphs if available. These are the graphs to which<p>
-	 * a data retrieval or update query can be sent. 
-	 * 
-	 * @return
-	 */
-	public List<String> getGraphs() {
-		return graphs;
-	}
-	
-	/**
-	 * Sets a set of graphs if provided for sending a data retrieval or<p>
-	 * or update query.
-	 * 
-	 * @param graphs
-	 */
-	public void setGraphs(List<String> graphs) {
-		this.graphs = graphs;
 	}
 
 	/**
