@@ -21,8 +21,6 @@ public class testHome extends HttpServlet{
 	    }
 	    catch(Exception ex) {
 
-	        // do nothing bc idk what I'm doing
-
 	    }
 	}
 }

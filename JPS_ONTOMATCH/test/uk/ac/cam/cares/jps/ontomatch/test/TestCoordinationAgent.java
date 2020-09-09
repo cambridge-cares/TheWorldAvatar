@@ -41,16 +41,17 @@ public class TestCoordinationAgent extends Mockito{
 		//TODO: substitute with actual tmp file please
 		String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
 		String stubSrc = "D://workwork//testFiles//ontologies/dbpedia_2014.owl";
-        JSONArray jaw = new JSONArray();
-        jaw.put(0.4);jaw.put(0.4);jaw.put(0.2);
+        double[] jaw = new double[3];
+        jaw[0] = 0.4;jaw[1] = 0.4;jaw[2] = 0.2;
 		JSONObject jo  = new JSONObject();
         jo.put("aIRI", stubSavePath);
         jo.put("sourceIRI", stubSrc);
         jo.put("targetIRI", stubTgt);
         jo.put("matchingType", mt);
         jo.put("threshold", 0.6);
-        jo.put("weights", jaw.toString());
-
+        jo.put("weights", jaw);
+        jo.put("dictAddress", "D:\\workwork\\testFiles\\model\\dictionarylevel2.gensim");
+        jo.put("modelAddress", "D:\\workwork\\testFiles\\model\\model30t5p5a.gensim");
 
         Reader inputString = new StringReader(jo.toString());
         BufferedReader reader = new BufferedReader(inputString);

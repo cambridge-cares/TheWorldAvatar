@@ -27,68 +27,62 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
+
 /**
- * Agent that read alignment result file, then write linkage to kb
- * @author zsc
- *
+ * Agent that read alignment result file, then write linkage to KG
+ * Input from KG: alignment Ontology of one matching process
+ * Output to KG: owl:sameAs triples
+ * @author shaocong zhang
+ * @version 1.0
+ * @since 2020-09-08
  */
 @WebServlet(urlPatterns = { "/dataLinker" })
 public class DataLinker extends JPSHttpServlet {
     
     
-	/**
-	 * 
-	 */
+
 	private static final long serialVersionUID = -7950910519843708707L;
 
-	@Override
-    protected void setLogger() {
-        logger = LoggerFactory.getLogger(DataLinker.class);
-    }
-	
-	Logger logger = LoggerFactory.getLogger(DataLinker.class);
-	
+
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("Datalinker agent");
+		logger.info("Datalinker agent");
 
 		JSONObject jo = requestParams;
-		// read alignment
 		String afileIRI = "";
+		double threshold = 0.0;
 		try {
-			//afileIRI = jo.getString("alignmentIRI");
+			afileIRI = jo.getString("alignmentIRI");
+			threshold = jo.getDouble("threshold");
+
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//TODO: add this to config
-	    String threshold = "0.6";
-	    String stubIRI = "http://localhost:3000/a.owl";
-		System.out.println("reading alignment from  " + stubIRI);
-		//get a list of matched IRIs where 
-		//add to destination
-		List<String[]> instances2Equal = provideAlignedInstanceList(stubIRI, threshold);
+
+		logger.info("reading alignment from  " + afileIRI);
+		//get a list of matched IRIs 
+		List<String[]> instances2Equal = provideAlignedInstanceList(afileIRI, threshold);
+		//add owl:sameAs triple to KG
 		addEqual(instances2Equal);
 		JSONObject result = new JSONObject();
-		JSONArray resArr = new JSONArray();
 		try {
 			result.put("success", 1);
-			System.out.print("read parameter result: ");
-			System.out.println(result.toString());
 		} catch (JSONException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
-		//logger.info("optimization result = " + result);
 	}
 
 
 	
 
-	
-	//TODO: merge this function into ALignment Helper
-	public List<String[]> provideAlignedInstanceList(String iriOfAlignmentFile,String threshold) {
+   /***
+    * function that reads the alignment list from an alignment ontology file and return	it as a list of string array
+    * @param iriOfAlignmentFile
+    * @param threshold threshold of measure to filter aligned entities that get returned by query
+    * @return alignment result as list of string array <{entity1, entity2, measure}...>
+    */
+	public List<String[]> provideAlignedInstanceList(String iriOfAlignmentFile,double threshold) {
 		String queryStr = "PREFIX alignment: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
 				+ "SELECT ?entity1 ?entity2 " 
 				//+ "WHERE {?a ?p ?o."
@@ -97,7 +91,7 @@ public class DataLinker extends JPSHttpServlet {
 				+ "?cell  alignment:entity2 ?entity2 ."
 				+"?cell alignment:measure ?measure."
 
-				+ "FILTER (?measure >= "+threshold +" ) " //filtering gen 001 as it is slackbus
+				+ "FILTER (?measure >= "+Double.toString(threshold) +" ) " //filtering gen 001 as it is slackbus
 				+ "}";
 		System.out.println(queryStr);
 		List<String[]> resultListfromquery = null;
@@ -107,8 +101,6 @@ public class DataLinker extends JPSHttpServlet {
 			String result = JenaResultSetFormatter.convertToJSONW3CStandard(resultSet);
 			String[] keys = JenaResultSetFormatter.getKeys(result);
 			resultListfromquery = JenaResultSetFormatter.convertToListofStringArrays(result, keys);
-	        System.out.println("reading alignment:");
-			System.out.println(resultListfromquery.toString());
 			
 		}
 		catch(Exception e) {
@@ -123,7 +115,7 @@ public class DataLinker extends JPSHttpServlet {
 		
 
 	/**
-	 * sparql update to powerplant databases
+	 * sparql update owl:sameAs triple to KG
 	 * @param alignedInstances
 	 */
 	public void addEqual(List<String[]> alignedInstances) {
@@ -136,7 +128,6 @@ public class DataLinker extends JPSHttpServlet {
                     "INSERT DATA\r\n" + 
                     		"{<"+iri1+"> owl:sameAs <"+iri2+">.\r\n" + 
                     		"}";        	
-           System.out.println(iri1);
            try {
                broker.updateFile(iri1, updateStr);
 
@@ -144,7 +135,7 @@ public class DataLinker extends JPSHttpServlet {
                StringWriter sw = new StringWriter();
                e.printStackTrace(new PrintWriter(sw));
                String exceptionAsString = sw.toString();
-   			System.out.println(exceptionAsString);
+   			logger.error(exceptionAsString);
            }
         }
 	}

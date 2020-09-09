@@ -21,68 +21,55 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-/***
- * Agent for Visualization/View only. Get related triples to an entity across JPS and DBP.
- * (Might be made into more general case in future)
+
+/**
+ * Agent gets related triples to an entity across JPS and DBP. For Visualization/View only.
+ * Input from KG: related triples to an entity 
+ * @author shaocong zhang
+ * @version 1.0
+ * @since 2020-09-08
  */
+
 @WebServlet(urlPatterns = { "/federatedAttrs" })
 public class InstanceTripleFederatedGetter extends JPSHttpServlet{
 
-    /**
-	 * 
-	 */
+
 	private static final long serialVersionUID = 7607478466081757161L;
-	@Override
-    protected void setLogger() {
-        logger = LoggerFactory.getLogger(DataLinker.class);
-    }
-	
-	Logger logger = LoggerFactory.getLogger(DataLinker.class);
-	
+
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("federated getter");
-
 		JSONObject jo = requestParams;
-		// read alignment
 		String entityIRI = null;
-		System.out.println(jo.toString());
 		try {
 			entityIRI = jo.getString("entityIRI");
-			System.out.println("QUERY FOR: "+entityIRI);
+			logger.info("InstanceTripleFederatedGetter:QUERY FOR ENTITY: "+entityIRI);
 		} catch (JSONException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		//stub for testing
-	    String stubIRI = "http://www.theworldavatar.com/kb/powerplants/Altbach_Coal_Power_Plant_Germany.owl#Altbach_Coal_Power_Plant_Germany";
-		JSONArray resArr = performFederatedQuery(stubIRI);
+	    //String stubIRI = "http://www.theworldavatar.com/kb/powerplants/Altbach_Coal_Power_Plant_Germany.owl#Altbach_Coal_Power_Plant_Germany";
+		JSONArray resArr = performFederatedQuery(entityIRI);
 		JSONObject result = new JSONObject();
 		int tripleNumber = resArr.length();
 		try {
 			result.put("content", resArr);
 			result.put("number", tripleNumber);
-			System.out.print("read parameter result: ");
-			System.out.println(result.toString());
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return result;
 
-		//TODO: return must e json array
-		//logger.info("optimization result = " + result);
 	}
 
 
-	/**only neeeded for local testing**/
-    public String convertIRI(String iri, boolean local2IRI) {
-    	if (local2IRI == true) {
-    	return iri.replace("localhost:3000", "www.theworldavatar.com");
-    	}else{
-    		return iri.replace("www.theworldavatar.com","localhost:3000");
-    	}}
 
+
+	
+	/***
+	 * query KG for related triples of entity then return as JSONArray
+	 * @param iri of entity
+	 * @return
+	 */
 	public JSONArray performFederatedQuery(String iri) {
 		String queryStrRemote = "PREFIX owl: <http://www.w3.org/2002/07/owl#> "
 				+ "SELECT distinct ?p ?o " 
@@ -103,22 +90,18 @@ public class InstanceTripleFederatedGetter extends JPSHttpServlet{
 			ResultSet resultSetLocal = JenaHelper.query(model, queryStrLocal);
 
 			String resultR = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetRemote);
-			System.out.println(resultR);
 			String resultL = JenaResultSetFormatter.convertToJSONW3CStandard(resultSetLocal);
-			System.out.println(resultL);
 			String[] keys = JenaResultSetFormatter.getKeys(resultR);
 			List<String[]> localListfromquery = JenaResultSetFormatter.convertToListofStringArrays(resultL, keys);
 			List<String[]> remoteListfromquery = JenaResultSetFormatter.convertToListofStringArrays(resultR, keys);
 			List<String[]> combined = new ArrayList<String[]>(localListfromquery);
 			combined.addAll(remoteListfromquery);
-			System.out.println("reading attributes:");
 			for(String[] paras:combined) {
 				JSONObject resObj = new JSONObject();
 				for(int idx = 0; idx<keys.length; idx++) {
 					resObj.put(keys[idx], paras[idx]);
 				}
 				resArr.put(resObj);
-				System.out.println(resObj);
 			}
 		}
 		catch(Exception e) {
@@ -132,5 +115,11 @@ public class InstanceTripleFederatedGetter extends JPSHttpServlet{
 	}
 		
 
-	
+	/**only neeeded for local testing**/
+    public String convertIRI(String iri, boolean local2IRI) {
+    	if (local2IRI == true) {
+    	return iri.replace("localhost:3000", "www.theworldavatar.com");
+    	}else{
+    		return iri.replace("www.theworldavatar.com","localhost:3000");
+    	}}
 }

@@ -1,11 +1,14 @@
 package uk.ac.cam.cares.jps.ontomatch;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.List;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -20,51 +23,43 @@ import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
 
-/***
+/**
  * Agent that reads content from alignment kg(rdf format), for visualization purpose
- *
+ * Input from KG: alignment Ontology of one matching process
+ * @author shaocong zhang
+ * @version 1.0
+ * @since 2020-09-08
  */
+
 @WebServlet(urlPatterns = { "/alignment" })
 public class AlignmentReader extends JPSHttpServlet {
     
-    /**
-     * 
-     */
 	private static final long serialVersionUID = -4365515995166685342L;
 
-
-	@Override
-    protected void setLogger() {
-        logger = LoggerFactory.getLogger(AlignmentReader.class);
-    }
 	
 	
 	@Override
 	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("AlignmentReader agent");
+		logger.info("AlignmentReader agent");
 		JSONObject jo = requestParams;
 		String afileIRI = "";
 		Double threshold = 0.0;
 		//read parameters
 		try {
-			//Use this for stageB
 			afileIRI = jo.getString("alignmentIRI");
 			threshold = jo.getDouble("threshold");
 		} catch (JSONException e1) {
 			e1.printStackTrace();
 		}
-	    //String threshold = "0.6";
-	    //String stubIRI = "http://localhost:3000/a.owl";
-		System.out.println("reading alignment from  " + afileIRI);
+
+		logger.info("reading alignment from  " + afileIRI);
 	 	JSONArray instances2Equal;
 
 		JSONObject result = new JSONObject();
 		try {
-			//get a list of matched IRIs where
+			//get list of matched IRIs
 			instances2Equal = AlignmentIOHelper.readAlignmentFileAsJSONArray(afileIRI, threshold);
 			result.put("alignmentlist", instances2Equal);
-			System.out.print("read parameter result: ");
-			System.out.println(result.toString());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -73,6 +68,15 @@ public class AlignmentReader extends JPSHttpServlet {
 
 		
 
-
+	/***
+	 * Protected Wrapper of private method for unit testing
+	 * @param request
+	 * @param response
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
 }
 
