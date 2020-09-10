@@ -137,7 +137,7 @@ public class FolderManager {
 	 * @param format the format of file.
 	 * @return the file name
 	 */
-//	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
+
 	public String getFileName(String uuid,  String kbFolderPath, String dataFolderPath, String format) {
 		
 		String fileName=null;
@@ -145,19 +145,16 @@ public class FolderManager {
 		String folderName = null;
 		
 		if(format.endsWith(".owl")) {
-		
-//			folderName = catalinaFolderPath + "/webapps/ROOT/kb/ontocompchem/" + uuid.toString();
-			folderName =kbFolderPath + uuid.toString();
+			
+		folderName =kbFolderPath + uuid.toString();
 		
 		}
 		else {
 			
-//			folderName = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/" + uuid.toString();
-			folderName= dataFolderPath + uuid.toString();
+		folderName= dataFolderPath + uuid.toString();
 			
 		}
 		
-//		String folderName = folderPath + uuid.toString();
 		File file = new File(folderName);
 
 		for(File f : file.listFiles()) {
@@ -172,29 +169,68 @@ public class FolderManager {
 		
         return fileName;
 	
-	}	
+	}
 	
-//	public String getFileName(String uuid,  String catalinaFolderPath, String format) {
-	public String getFileUniqueName(String uuid, String uuidFile, String kbFolderPath, String dataFolderPath, String format) {
+public String getLogFileName(String uuid,  String uuidFile) {
+	
+
+		
+		String logFileName = "";
+		
+		if(uuidFile.contains(".log")) {
+		
+		logFileName = uuid +".log";
+		}
+		
+		if(uuidFile.contains(".g09")) {
+			
+			logFileName = uuid +".g09";
+			}
+		
+		if(uuidFile.contains("g.16")) {
+			
+			logFileName = uuid + ".g16";
+		}
+
+		
+        return logFileName;
+}
+
+/**
+ * @author NK510 (caresssd@hermes.cam.ac.uk)
+ * @param uuidFile the unique identifies (parameter) for owl file name.
+ * @return json file name that contains data extracted from log file.
+ */
+public String getGaussianJsonFileName(String uuidFile) {
+	
+	return uuidFile.replaceAll(".owl", ".json");
+}
+
+	public String getOwlFileName(String uuid, String uuidFile, String kbFolderPath, String format) {
 		
 		String folderName = null;
 		
 		if(format.endsWith(".owl")) {
-		
-//			folderName = catalinaFolderPath + "/webapps/ROOT/kb/ontocompchem/" + uuid.toString();
-			folderName =kbFolderPath + uuid.toString();
-		
-		}
-		else {
-			
-//			folderName = catalinaFolderPath + "/webapps/ROOT/data/ontocompchem/" + uuid.toString();
-			folderName= dataFolderPath + uuid.toString();
-			
+		folderName =kbFolderPath + uuid.toString();
 		}
 		
-//		String folderName = folderPath + uuid.toString();
 		File file = new File(folderName + "/" + uuidFile);
 		
+        return file.getName()  ;
+}
+	
+
+	public String getJsonNasaFileName(String uuid, String uuidFile, String dataFolderPath, String format) {
+		
+		String folderName = null;
+		
+		if(format.endsWith("q_nasa.json")) {
+
+		folderName =dataFolderPath + uuid.toString() + "/" + uuidFile.replaceAll(".owl", "") + format;
+		
+		}
+		
+		File file = new File(folderName);
 		
         return file.getName()  ;
 	

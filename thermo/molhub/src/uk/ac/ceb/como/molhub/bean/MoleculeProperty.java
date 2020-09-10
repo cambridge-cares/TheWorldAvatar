@@ -26,6 +26,8 @@ public class MoleculeProperty {
 	 */
 	private String uuid;
 
+	private String initialization;
+	
 	/** The molecule name. */
 	private String moleculeName;
 
@@ -98,16 +100,17 @@ public class MoleculeProperty {
 	 * @param basisSet      the basis set
 	 * @param levelOfTheory the level of theory
 	 * @param geometryType  the geometry type
+	 * @param initialization the initialization iri
 	 */
-//public MoleculeProperty(String uuid,String moleculeName, String basisSet, String levelOfTheory, String geometryType) {
-//		
-//		this.uuid=uuid;
-//		this.moleculeName=moleculeName;
-//		this.basisSet=basisSet;
-//		this.levelOfTheory=levelOfTheory;
-//		this.geometryType=geometryType;
-//		
-//	}
+public MoleculeProperty(String uuid,String moleculeName, String basisSet, String levelOfTheory, String geometryType, String initialization) {
+		
+		this.uuid=uuid;
+		this.moleculeName=moleculeName;
+		this.basisSet=basisSet;
+		this.levelOfTheory=levelOfTheory;
+		this.geometryType=geometryType;
+		this.initialization=initialization;
+	}
 
 	/**
 	 * Instantiates a new molecule property.
@@ -371,6 +374,16 @@ public class MoleculeProperty {
 
 	public void setUniqueFileIdentifier(String uniqueFileIdentifier) {
 		this.uniqueFileIdentifier = uniqueFileIdentifier;
+	}
+
+
+	public String getInitialization() {
+		return initialization;
+	}
+
+
+	public void setInitialization(String initialization) {
+		this.initialization = initialization;
 	}
 
 

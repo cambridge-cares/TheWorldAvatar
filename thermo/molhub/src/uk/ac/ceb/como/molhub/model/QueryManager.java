@@ -386,24 +386,23 @@ public class QueryManager {
 		return finalSet;
 	}
 
+
 	/**
+	 * Gets the all frequencies
 	 * 
-	 * Gets the all frequencies.
-	 *
-	 * @author nk510
-	 * @param uuid unique folder name.
+	 * @param uuid
+	 * @param uuidFile
 	 * @return A Java List.
 	 *         <p>
 	 *         A list of all frequencies (size, value, unit) for given uuid.
 	 *         </p>
-	 * 
-	 */
 
-	public static List<Frequency> getAllFrequencies(String uuid) {
+	 */
+	public static List<Frequency> getAllFrequencies(String uuid, String uuidFile) {
 
 		List<Frequency> frequencyList = new ArrayList<Frequency>();
 
-		String queryString = QueryString.geFrequency(uuid);
+		String queryString = QueryString.geFrequency(uuid, uuidFile);
 
 		Repository repository = new HTTPRepository(serverUrl);
 
@@ -424,6 +423,8 @@ public class QueryManager {
 				while (result.hasNext()) {
 
 					BindingSet bindingSet = result.next();
+					
+					logger.info("frequency: " + bindingSet.getValue("frequenciesSize").stringValue() +" " + bindingSet.getValue("frequenciesValue").stringValue() +" " + bindingSet.getValue("frequenciesUnit").stringValue());
 
 					Frequency frequency = new Frequency(bindingSet.getValue("frequenciesSize").stringValue(),
 							bindingSet.getValue("frequenciesValue").stringValue(),
@@ -459,12 +460,75 @@ public class QueryManager {
 		return frequencyList;
 
 	}
+	
+//	public static List<Frequency> getAllFrequencies(String uuid) {
+//
+//		List<Frequency> frequencyList = new ArrayList<Frequency>();
+//
+//		String queryString = QueryString.geFrequency(uuid);
+//
+//		Repository repository = new HTTPRepository(serverUrl);
+//
+//		repository.initialize();
+//
+//		RepositoryConnection connection = repository.getConnection();
+//
+//		try {
+//
+//			connection.begin(IsolationLevels.SNAPSHOT_READ);
+//
+//			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
+//
+//			TupleQueryResult result = tupleQuery.evaluate();
+//
+//			try {
+//
+//				while (result.hasNext()) {
+//
+//					BindingSet bindingSet = result.next();
+//
+//					Frequency frequency = new Frequency(bindingSet.getValue("frequenciesSize").stringValue(),
+//							bindingSet.getValue("frequenciesValue").stringValue(),
+//							bindingSet.getValue("frequenciesUnit").stringValue());
+//
+//					frequencyList.add(frequency);
+//				}
+//
+//				connection.commit();
+//
+//			} catch (Exception e) {
+//
+//				logger.info(e.getMessage());
+//
+//			} finally {
+//
+//				result.close();
+//			}
+//
+//		} catch (RepositoryException e) {
+//
+//			logger.info(e.getMessage());
+//
+//			connection.rollback();
+//
+//		} finally {
+//
+//			connection.close();
+//
+//			repository.shutDown();
+//		}
+//
+//		return frequencyList;
+//
+//	}
+	
 
 	/**
 	 * 
 	 * Gets the all non compositet molecule properties.
 	 *
 	 * @param uuid the uuid is name for unique folder name
+	 * @param uuidFile the uuid of uploaded owl file
 	 * @return A Java List.
 	 *         <p>
 	 *         all non composite molecule properties . Non composite molecule
@@ -474,9 +538,9 @@ public class QueryManager {
 	 * 
 	 */
 
-	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid) {
+	public static List<MoleculeProperty> getAllNonCompositetMoleculeProperties(String uuid, String uuidFile) {
 
-		String queryString = QueryString.geNonCompositetMoleculeProperties(uuid);
+		String queryString = QueryString.geNonCompositetMoleculeProperties(uuid, uuidFile);
 
 		List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
 
@@ -498,8 +562,8 @@ public class QueryManager {
 
 				while (result.hasNext()) {
 
-					BindingSet bindingSet = result.next();										
-					
+					BindingSet bindingSet = result.next();
+
 					MoleculeProperty moleculeProperty = new MoleculeProperty(uuid,
 //							bindingSet.getValue("moleculeName").stringValue(),
 							/**
@@ -509,7 +573,7 @@ public class QueryManager {
 							SentenceManager.removeNumberAndSpaces(bindingSet.getValue("moleculeName").stringValue()),
 							bindingSet.getValue("basisSetValue").stringValue(),
 							bindingSet.getValue("levelOfTheory").stringValue(),
-							bindingSet.getValue("geometryTypeValue").stringValue());
+							bindingSet.getValue("geometryTypeValue").stringValue(),bindingSet.getValue("mn0").stringValue());
 
 					moleculePropertyList.add(moleculeProperty);
 
@@ -551,9 +615,9 @@ public class QueryManager {
 	 * @return the rotational symmerty number.
 	 * 
 	 */
-	public static String getAllRotationalSymmertyNumber(String uuid) {
+	public static String getAllRotationalSymmertyNumber(String uuid, String uuidFile) {
 
-		String queryString = QueryString.getRotationalSymmertyNumber(uuid);
+		String queryString = QueryString.getRotationalSymmertyNumber(uuid, uuidFile);
 
 		String rotationalSymmetryNumber = new String();
 
@@ -618,9 +682,9 @@ public class QueryManager {
 	 * 
 	 */
 
-	public static String getAllSpinMultiplicity(String uuid) {
+	public static String getAllSpinMultiplicity(String uuid, String uuidFile) {
 
-		String queryString = QueryString.getSpinMultiplicity(uuid);
+		String queryString = QueryString.getSpinMultiplicity(uuid, uuidFile);
 
 		String spinMultiplicityValue = new String();
 
@@ -684,11 +748,11 @@ public class QueryManager {
 	 * 
 	 */
 
-	public static List<FormalCharge> getAllFormalCharge(String uuid) {
+	public static List<FormalCharge> getAllFormalCharge(String uuid, String uuidFile) {
 
 		List<FormalCharge> formalChargeList = new ArrayList<FormalCharge>();
 
-		String queryString = QueryString.getFormalCharge(uuid);
+		String queryString = QueryString.getFormalCharge(uuid, uuidFile);
 
 		Repository repository = new HTTPRepository(serverUrl);
 
@@ -755,11 +819,11 @@ public class QueryManager {
 	 *         </p>
 	 * 
 	 */
-	public static List<AtomicMass> getAllAtomicMass(String uuid) {
+	public static List<AtomicMass> getAllAtomicMass(String uuid, String uuidFile) {
 
 		List<AtomicMass> atomicMassList = new ArrayList<AtomicMass>();
 
-		String queryString = QueryString.getAtomicMass(uuid);
+		String queryString = QueryString.getAtomicMass(uuid, uuidFile);
 
 		Repository repository = new HTTPRepository(serverUrl);
 
@@ -780,12 +844,24 @@ public class QueryManager {
 				while (result.hasNext()) {
 
 					BindingSet bindingSet = result.next();
+					
+					if((bindingSet.getValue("massUnit").stringValue()!="") || (bindingSet.getValue("massUnit").stringValue()!=null)) {
 
 					AtomicMass atomicMass = new AtomicMass(bindingSet.getValue("atomicName").stringValue(),
 							bindingSet.getValue("massValue").stringValue(),
 							bindingSet.getValue("massUnit").stringValue());
 
 					atomicMassList.add(atomicMass);
+					} 
+					
+					if((bindingSet.getValue("massUnit").stringValue()=="") || (bindingSet.getValue("massUnit").stringValue()==null)) {						
+						AtomicMass atomicMass = new AtomicMass(bindingSet.getValue("atomicName").stringValue(),
+								bindingSet.getValue("massValue").stringValue());
+
+						atomicMassList.add(atomicMass);
+						
+					}
+					
 				}
 
 				connection.commit();
@@ -823,6 +899,7 @@ public class QueryManager {
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 *
 	 * @param uuid the uuid is name for unique folder.
+	 * @param uuidFile the uuid of owl file used in IRIs
 	 * @return the rotational constant.
 	 *         <p>
 	 *         These data are given as the following 3-tuple (rotational constant
@@ -831,11 +908,11 @@ public class QueryManager {
 	 * 
 	 */
 
-	public static List<RotationalConstant> getAllRotationalConstant(String uuid) {
+	public static List<RotationalConstant> getAllRotationalConstant(String uuid, String uuidFile) {
 
 		List<RotationalConstant> rotationalConstantList = new ArrayList<RotationalConstant>();
 
-		String queryString = QueryString.getRotationalConstant(uuid);
+		String queryString = QueryString.getRotationalConstant(uuid, uuidFile);
 
 		Repository repository = new HTTPRepository(serverUrl);
 
@@ -902,12 +979,12 @@ public class QueryManager {
 	 * @param electronicEnergyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy.
 	 * @return The List of electronic energy.
 	 */
-	public static List<ElectronicEnergy> getElectronicEnergy(String uuid, String electronicEnergyClass){
+	public static List<ElectronicEnergy> getElectronicEnergy(String uuid, String uuidFile, String electronicEnergyClass){
 		
 		
 		List<ElectronicEnergy> electronicEnergyList = new ArrayList<ElectronicEnergy>();
 		
-		String queryString = QueryString.getElectronicEnergy(uuid, electronicEnergyClass);
+		String queryString = QueryString.getElectronicEnergy(uuid, uuidFile,electronicEnergyClass);
 		
 		
 		Repository repository = new HTTPRepository(serverUrl);

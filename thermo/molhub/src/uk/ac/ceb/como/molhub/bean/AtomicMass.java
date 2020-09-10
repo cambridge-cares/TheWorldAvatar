@@ -33,6 +33,13 @@ public class AtomicMass {
 		this.atomicMassUnit=atomicMassUnit;
 	}
 	
+public AtomicMass(String atomName, String atomicMassValue) {
+		
+		this.atomName=atomName;
+		this.atomicMassValue=atomicMassValue;
+		
+	}
+
 	/**
 	 * Gets the atomic mass value.
 	 *

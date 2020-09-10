@@ -138,12 +138,9 @@ TH {
     
 }
 
-
 #tableName td {
 text-align: left;
 }
-
-
 
 </style>
 
@@ -210,19 +207,6 @@ text-align: left;
 </div>
 
 <div id="main-content" class="clearfix">
- 
-<!-- <div id="main-content" class="clearfix">-->
-
-<!--<div id="tool-container">-->
-
-<!--
-
-<div class="container">
-
-Here is java script for visualization molecules.
-
-</div>
--->
 
 <h1 align="left"><s:iterator value="moleculePropertyList" var="resultSet"><s:property value="#resultSet.moleculeName"/></s:iterator></h1>
 
@@ -343,16 +327,16 @@ Here is java script for visualization molecules.
                 
                 <tr align="left">
                     <td align="left">
-                    <s:if test="%{atomicMassList.size>0}">
+                    <!--<s:if test="%{atomicMassList.size>0}">-->
                     <b>Atomic Mass</b><P/>
                      <s:iterator value="atomicMassList" var="resultAtomicMass">
                      <ul>
                      <li><b>Atom Name:</b> <s:property value="#resultAtomicMass.atomName"/></li>
-                     <li><b>Atomic Mass Value:</b> <s:property value="#resultAtomicMass.atomicMassValue"/></li>
-                     <li><b>Atomic Mass Unit:</b><a href="<s:property value="#resultAtomicMass.atomicMassUnit"/>"><s:property value="#resultAtomicMass.atomicMassUnit"/></a></li>
+                     <li><b>Atomic Mass Value:</b> <s:property value="#resultAtomicMass.atomicMassValue"/></li>                     
+                     <li><b>Atomic Mass Unit:</b><a href="<s:property value="#resultAtomicMass.atomicMassUnit"/>"><s:property value="#resultAtomicMass.atomicMassUnit"/></a></li>              
                      </ul>
                      </s:iterator>
-                     </s:if>                    
+                     <!--</s:if>-->
                     </td>                    
                     <td></td>
                     <td></td>
@@ -414,6 +398,24 @@ Here is java script for visualization molecules.
                     <td></td>
                 </tr>
                 
+                 <tr align="left">
+                    <td align="left">
+                    <s:if test="%{electronicAndZeroPointEnergyList.size>0}">
+                    <b>Electronic and ZPE Energy</b><P/>
+                     <s:iterator value="electronicAndZeroPointEnergyList" var="resultElectronicAndZeroPointEnergy">
+                     <ul>
+                     <li><b>Zero-point Electronic Energy Value:</b> <s:property value="#resultElectronicAndZeroPointEnergy.electronicEnergyValue"/></li>
+                     <li><b>Zero-point Electronic Energy Unit:</b><a href="<s:property value="#resultElectronicAndZeroPointEnergy.electronicEnergyUnit"/>"><s:property value="#resultElectronicAndZeroPointEnergy.electronicEnergyUnit"/></a></li>
+                     </ul>
+                     </s:iterator>
+                     </s:if>                    
+                    </td>                    
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                
+                
                 
                 
             </tbody>
@@ -423,8 +425,8 @@ Here is java script for visualization molecules.
         <p align="left">This page is a human readable frontend to the molecule database. The following links provide access to other data formats. Depending on your browser these may not be rendered properly.
 
 <ul>
-  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(G09)</a></li>
-<!--<li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="xmlFileName"/>">XML</a></li>-->
+  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="gaussianFileName"/>">Gaussian(LOG file)</a></li>
+  <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value=" gaussianJsonFileName"/>">Gaussian(JSON file)</a></li>
   <li><a href="http://<%=request.getHeader("host")%>/kb/ontocompchem/<s:property value="uuid"/>/<s:property value="owlFileName"/>">OWL</a></li>
   <s:if test="%{nasaFileName!=null}">
   <li><a href="http://<%=request.getHeader("host")%>/data/ontocompchem/<s:property value="uuid"/>/<s:property value="nasaFileName"/>">NASA</a></li>
@@ -433,20 +435,8 @@ Here is java script for visualization molecules.
 </p>
 </div>
 </div>
-<!--</div>-->
 
 </div>
-
-
-
-<!-- PUT CONTENT HERE -->
-
-<!--</div>-->
-
- <!-- 
-</div>
-</div>
--->
 
 </body>
 </html>

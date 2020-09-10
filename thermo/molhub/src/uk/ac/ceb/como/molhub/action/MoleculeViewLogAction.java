@@ -54,25 +54,23 @@ public class MoleculeViewLogAction extends ActionSupport {
 	private String kbFolderPath = molhubPropreties.getProperty("kb.folder.path").toString();
 	
 	/**
-	 * The uuid is used as unique identifier for query all properties of a digital
-	 * entity and showing results on new page.
+	 * The uuid and uuidFile are used as unique identifiers for query all properties of a digital
+	 * entity and showing results on new page. They are also used to create URLs to log, owl and json files. 
 	 */
 	private String uuid = ServletActionContext.getRequest().getParameter("uuidName");
 	
 	private String uuidFile = ServletActionContext.getRequest().getParameter("uuidFileName");
 
 	/** The gaussian file name. */
-	private String gaussianFileName = folderManager.getFileName(getUuid(), kbFolderPath, dataFolderPath, ".g09");
-
-	/** The xml file name. */
-	private String xmlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".xml");
-
+	private String gaussianFileName = folderManager.getLogFileName(getUuid(), getUuidFile());
+	
+	private String gaussianJsonFileName = folderManager.getGaussianJsonFileName(getUuidFile());
+	
 	/** The owl file name. */
-//	private String owlFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, ".owl");
-	private String owlFileName = folderManager.getFileUniqueName(getUuid(),getUuidFile(),kbFolderPath,dataFolderPath, ".owl");
+	private String owlFileName = folderManager.getOwlFileName(getUuid(),getUuidFile(),kbFolderPath,".owl");
 
 	/** The nasa file name. */
-	private String nasaFileName = folderManager.getFileName(getUuid(), kbFolderPath,dataFolderPath, "_nasa.json");
+	private String nasaFileName = folderManager.getJsonNasaFileName(getUuid(), getUuidFile(),dataFolderPath, "q_nasa.json");
 
 	/** The molecule property list. */
 	List<MoleculeProperty> moleculePropertyList = new ArrayList<MoleculeProperty>();
@@ -96,6 +94,7 @@ public class MoleculeViewLogAction extends ActionSupport {
 	 */
 	List<ElectronicEnergy> zeroPointElectronicEnergyList = new ArrayList<ElectronicEnergy>();
 	
+	List<ElectronicEnergy> electronicAndZeroPointEnergyList = new ArrayList<ElectronicEnergy>();
 	
 	/*
 	 * (non-Javadoc)
@@ -109,35 +108,35 @@ public class MoleculeViewLogAction extends ActionSupport {
 		/**
 		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid.</p>
 		 */
-		frequencyList = QueryManager.getAllFrequencies(getUuid());
+		frequencyList = QueryManager.getAllFrequencies(getUuid(),getUuidFile());
 
 		/**
 		 * @author nk510 <p>SPARQL returns an object that remembers uud, molecule name,
 		 *         basis set value, level of theory, and geometry type value.</p>
 		 */
 
-		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
+		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid(),getUuidFile());
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers rotational symmetry number
 		 *         for given uuid.</p>
 		 */
 
-		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid());
+		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid(),getUuidFile());
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers spin multiplicity value
 		 *         for given uuid.</p>
 		 */
 
-		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
+		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid(),getUuidFile());
 
 		/**
 		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
 		 *         includes atomic mass value, atomic mass unit, and atom name.</p>
 		 */
 
-		atomicMassList = QueryManager.getAllAtomicMass(getUuid());
+		atomicMassList = QueryManager.getAllAtomicMass(getUuid(),getUuidFile());
 		
 		/**
 		 * @author nk510 
@@ -145,30 +144,22 @@ public class MoleculeViewLogAction extends ActionSupport {
 	     *         constant value, rotational constant unit).</p> 
 		 */
 
-		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());
+		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid(),getUuidFile());
 
 		/**
 		 * @author nk510 <p>SPARQL returns List<FormalCharge> that remembers formal charge value and formal charge unit
 		 *         for given uuid.</p>
 		 */	
 
-		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
+		formalChargeList = QueryManager.getAllFormalCharge(getUuid(),getUuidFile());
 		
+		zeroPointElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),getUuidFile(),"ZeroPointEnergy");
 		
-		scfElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ScfEnergy");
+		electronicAndZeroPointEnergyList = QueryManager.getElectronicEnergy(getUuid(),getUuidFile(),"ElectronicAndZPEEnergy");
 		
-		zeroPointElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ZeroPointEnergy");
+		scfElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),getUuidFile(),"ScfEnergy");
 		
 		return SUCCESS;
-	}
-
-	/**
-	 * Gets the uuid.
-	 *
-	 * @return the uuid
-	 */
-	public String getUuid() {
-		return uuid;
 	}
 
 	public String getUuidFile() {
@@ -178,6 +169,15 @@ public class MoleculeViewLogAction extends ActionSupport {
 	public void setUuidFile(String uuidFile) {
 		this.uuidFile = uuidFile;
 	}
+	
+	/**
+	 * Gets the uuid.
+	 *
+	 * @return the uuid
+	 */
+	public String getUuid() {
+		return uuid;
+	}	
 
 	/**
 	 * Sets the uuid.
@@ -206,27 +206,7 @@ public class MoleculeViewLogAction extends ActionSupport {
 	 */
 	public void setGaussianFileName(String gaussianFileName) {
 		this.gaussianFileName = gaussianFileName;
-	}
-
-	/**
-	 * Gets the xml file name.
-	 *
-	 * @return the xml file name
-	 */
-	public String getXmlFileName() {
-		return xmlFileName;
-	}
-
-	/**
-	 * Sets the xml file name.
-	 *
-	 * @param xmlFileName
-	 *            the new xml file name
-	 */
-	public void setXmlFileName(String xmlFileName) {
-		this.xmlFileName = xmlFileName;
-	}
-
+	}	
 	/**
 	 * Gets the owl file name.
 	 *
@@ -401,6 +381,22 @@ public class MoleculeViewLogAction extends ActionSupport {
 
 	public void setZeroPointElectronicEnergyList(List<ElectronicEnergy> zeroPointElectronicEnergyList) {
 		this.zeroPointElectronicEnergyList = zeroPointElectronicEnergyList;
+	}
+
+	public String getGaussianJsonFileName() {
+		return gaussianJsonFileName;
+	}
+
+	public void setGaussianJsonFileName(String gaussianJsonFileName) {
+		this.gaussianJsonFileName = gaussianJsonFileName;
+	}
+
+	public List<ElectronicEnergy> getElectronicAndZeroPointEnergy() {
+		return electronicAndZeroPointEnergyList;
+	}
+
+	public void setElectronicAndZeroPointEnergy(List<ElectronicEnergy> electronicAndZeroPointEnergyList) {
+		this.electronicAndZeroPointEnergyList = electronicAndZeroPointEnergyList;
 	}
 
 	

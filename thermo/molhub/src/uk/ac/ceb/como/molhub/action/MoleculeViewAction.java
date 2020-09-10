@@ -106,35 +106,36 @@ public class MoleculeViewAction extends ActionSupport {
 		/**
 		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid.</p>
 		 */
-		frequencyList = QueryManager.getAllFrequencies(getUuid());
+//		The line below is commented because the method getAllFrequencies(getUuid() is also commented and not used in new version of the code. If you want to run it, uncomment first the method QueryManager.getAllFrequencies(getUuid()
+//		frequencyList = QueryManager.getAllFrequencies(getUuid());
 
 		/**
 		 * @author nk510 <p>SPARQL returns an object that remembers uud, molecule name,
 		 *         basis set value, level of theory, and geometry type value.</p>
 		 */
 
-		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
+//		moleculePropertyList = QueryManager.getAllNonCompositetMoleculeProperties(getUuid());
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers rotational symmetry number
 		 *         for given uuid.</p>
 		 */
 
-		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid());
+//		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid());
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers spin multiplicity value
 		 *         for given uuid.</p>
 		 */
 
-		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
+//		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid());
 
 		/**
 		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
 		 *         includes atomic mass value, atomic mass unit, and atom name.</p>
 		 */
 
-		atomicMassList = QueryManager.getAllAtomicMass(getUuid());
+//		atomicMassList = QueryManager.getAllAtomicMass(getUuid());
 		
 		/**
 		 * @author nk510 
@@ -142,19 +143,19 @@ public class MoleculeViewAction extends ActionSupport {
 	     *         constant value, rotational constant unit).</p> 
 		 */
 
-		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());
+//		rotationalConstantList = QueryManager.getAllRotationalConstant(getUuid());
 
 		/**
 		 * @author nk510 <p>SPARQL returns List<FormalCharge> that remembers formal charge value and formal charge unit
 		 *         for given uuid.</p>
 		 */	
 
-		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
+//		formalChargeList = QueryManager.getAllFormalCharge(getUuid());
 		
 		
-		scfElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ScfEnergy");
+//		scfElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ScfEnergy");
 		
-		zeroPointElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ZeroPointEnergy");
+//		zeroPointElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),"ZeroPointEnergy");
 		
 		return SUCCESS;
 	}
