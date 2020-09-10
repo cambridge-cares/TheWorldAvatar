@@ -44,8 +44,6 @@ public class KeyValueMap {
 	private void init() {
 		
 		
-		boolean runningForTest = AgentLocator.isJPSRunningForTest();
-		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		try {
 			loadProperties("/jps.properties");
 		}catch (FileNotFoundException exc) {
@@ -56,7 +54,9 @@ public class KeyValueMap {
 			JPSBaseLogger.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
 		}
-		
+
+		boolean runningForTest = Boolean.valueOf(map.get("test"));
+		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		if (runningForTest)  {
 			try {
 				// if started on local server then overwrite values from jps.properties
