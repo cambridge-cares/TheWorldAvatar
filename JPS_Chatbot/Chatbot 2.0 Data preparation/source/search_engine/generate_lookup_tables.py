@@ -2,7 +2,7 @@ import json
 import collections
 from pprint import pprint
 
-path = '../SPARQL_warehouse'
+path = '../../SPARQL_warehouse'
 class_table = 'all_distinct_classes'
 property_table = 'distinct_properties'
 instances_table = 'selected_instance'

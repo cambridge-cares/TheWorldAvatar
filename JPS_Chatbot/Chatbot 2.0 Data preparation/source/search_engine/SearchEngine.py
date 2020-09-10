@@ -4,7 +4,7 @@ from fuzzywuzzy import fuzz
 
 class SearchEngine:
     def __init__(self):
-        self.file_path = './wiki_dictionary'
+        self.file_path = 'wiki_dictionary'
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 5

@@ -28,7 +28,7 @@ class LDAClassifier:
         stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
         self.stop_words = stopwords.words('english')
         self.stop_words.extend(['from', 'subject', 're', 'edu', 'use'])
-        self.lda_model = gensim.models.ldamodel.LdaModel.load('LDA_MODEL')
+        self.lda_model = gensim.models.ldamodel.LdaModel.load('Chatbot/LDA_MODEL')
         self.nlp = spacy.load('en_core_web_sm', disable=['parser', 'ner'])
         self.stemmer = PorterStemmer()
 

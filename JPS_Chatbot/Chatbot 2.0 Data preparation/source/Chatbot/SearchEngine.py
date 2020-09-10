@@ -46,7 +46,7 @@ def filter_components(term_type, term):
 
 class SearchEngine:
     def __init__(self):
-        self.file_path = '../search_engine/wiki_dictionary'
+        self.file_path = './search_engine/wiki_dictionary'
         with open(self.file_path) as f:
             self.wiki_dictionary = json.loads(f.read())
         self.top_k = 3
