@@ -53,7 +53,7 @@
 						</resource>
 					</webResources>
 
-					<webXml>WebContent\WEB-INF\lib\web.xml</webXml>
+					<webXml>WebContent\WEB-INF\web.xml</webXml>
 					<warName>${project.artifactId}##${project.version}</warName>
 					<!-- outputDirectory>D:\myPrograms\Tomcat 9.0\webapps</outputDirectory -->
 					<outputDirectory>${tomcatPath}/webapps</outputDirectory>
