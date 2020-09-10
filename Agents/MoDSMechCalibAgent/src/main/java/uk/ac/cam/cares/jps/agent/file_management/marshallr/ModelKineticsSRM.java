@@ -13,24 +13,18 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
+import org.codehaus.plexus.util.FileUtils;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
+import com.jayway.jsonpath.JsonPath;
 
-import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
@@ -41,6 +35,8 @@ import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRM.class);
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -51,6 +47,17 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 	private List<String> caseNames = new ArrayList<>();
 	private String ignDelayMethod = "2";
 	private String ignDelaySpecies = "AR";
+	private String numOfSobolPoints = "1000";
+	private String numOfInitPoints = "1";
+	private String outputInterval = "1";
+	private String simEnd = "200";
+	private String nIters = "400";
+	private String rho = "0.2";
+	private String rhoFactor = "0.5";
+	private String epsilon = "0.001";
+	private String objectiveFunction = "SumOfSquares";
+	private String responseRatio = "1.0";
+	private String rangeOfMultipliers = "100.0";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -66,6 +73,99 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 
 	public void setIgnDelaySpecies(String ignDelaySpecies) {
 		this.ignDelaySpecies = ignDelaySpecies;
+	}
+	
+	public String getNumOfSobolPoints() {
+		return numOfSobolPoints;
+	}
+
+	public void setNumOfSobolPoints(String numOfSobolPoints) {
+		this.numOfSobolPoints = numOfSobolPoints;
+	}
+	
+	public String getNumOfInitPoints() {
+		return numOfInitPoints;
+	}
+
+	public void setNumOfInitPoints(String numOfInitPoints) {
+		this.numOfInitPoints = numOfInitPoints;
+	}
+	
+	public String getOutputInterval() {
+		return outputInterval;
+	}
+
+	public void setOutputInterval(String outputInterval) {
+		this.outputInterval = outputInterval;
+	}
+	
+	public String getSimEnd() {
+		return simEnd;
+	}
+
+	public void setSimEnd(String simEnd) {
+		this.simEnd = simEnd;
+	}
+
+	public String getnIters() {
+		return nIters;
+	}
+
+	public void setnIters(String nIters) {
+		this.nIters = nIters;
+	}
+
+	public String getRho() {
+		return rho;
+	}
+
+	public void setRho(String rho) {
+		this.rho = rho;
+	}
+
+	public String getRhoFactor() {
+		return rhoFactor;
+	}
+
+	public void setRhoFactor(String rhoFactor) {
+		this.rhoFactor = rhoFactor;
+	}
+
+	public String getEpsilon() {
+		return epsilon;
+	}
+
+	public void setEpsilon(String epsilon) {
+		this.epsilon = epsilon;
+	}
+
+	public String getObjectiveFunction() {
+		return objectiveFunction;
+	}
+
+	public void setObjectiveFunction(String objectiveFunction) {
+		this.objectiveFunction = objectiveFunction;
+	}
+
+	public String getResponseRatio() {
+		return responseRatio;
+	}
+
+	public void setResponseRatio(String responseRatio) {
+		this.responseRatio = responseRatio;
+	}
+
+	public String getRangeOfMultipliers() {
+		return rangeOfMultipliers;
+	}
+
+	public void setRangeOfMultipliers(String rangeOfMultipliers) {
+		this.rangeOfMultipliers = rangeOfMultipliers;
+	}
+
+	public ModelKineticsSRM(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		super(modsMechCalibAgentProperty);
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
 	}
 	
 	/**
@@ -97,14 +197,14 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsMechCalibAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryReactionsToOptimise(mechanismIRI, reactionIRIList);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG();
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsMechCalibAgentProperty);
 			DataTable dataTable = ocekg.formatExperimentDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());
@@ -149,34 +249,29 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			}
 		}
 		
-		// TODO download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
-		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
-		MechanismDownload mechanismDownload = new MechanismDownload();
+		// download the mechanism owl file, and convert it to xml format
+		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
+		String mechOWL = folderTemporaryPath.concat(FRONTSLASH).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
 		try {
-			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
-		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-				| TransformerException e) {
+			ontoKinKG.downloadMechanism(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, mechOWL);
+		} catch (uk.ac.cam.cares.jps.kg.OntoException e1) {
+			e1.printStackTrace();
+		}
+		OwlConverter owlConverter = new OwlConverter();
+		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
+		mechanismOwlFiles.add(mechOWL);
+		try {
+			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath.replace("\\", "/"));
+		} catch (OWLOntologyCreationException | OntoException e) {
 			e.printStackTrace();
 		}
-		
-		
-		/**
-		 * Owl converter that converts OWL to XML file
-		 */
-//		OwlConverter owlConverter = new OwlConverter();
-//		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
-//		mechanismOwlFiles.add(mechanismIRI);
-//		try {
-//			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath);
-//		} catch (OWLOntologyCreationException | OntoException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-		
-		
+		File mechXMLToCopy = new File(mechOWL.replace(".owl", ".xml"));
+		File mechXML = new File(folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM));
+		try {
+			FileUtils.copyFile(mechXMLToCopy, mechXML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		
 		// create model instance
@@ -197,7 +292,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		// set up model exp files
 		List<String> expFiles = new ArrayList<>();
 		expFiles.add(expDataCSV.getName());
-		expFiles.add(mechanismXML.substring(mechanismXML.lastIndexOf(FRONTSLASH)));
+		expFiles.add(mechXML.getName());
 		kineticsSRM.setExpFiles(expFiles);
 		
 		// set up model case names
@@ -243,6 +338,69 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String species = JSonRequestParser.getIgnDelaySpecies(otherOptions);
 		if (species != null && !species.isEmpty()) {
 			setIgnDelaySpecies(species);
+		}
+		
+		// set up the sobol points option that will be used for generating MoDS_inputs.xml file
+		String numSobol = JSonRequestParser.getNumOfSobolPoints(otherOptions);
+		if (numSobol != null && !numSobol.isEmpty()) {
+			setNumOfSobolPoints(numSobol);
+		}
+		
+		// set up the output interval of sobol sampling that will be used for generating MoDS_inputs.xml file
+		String outputInterval = JSonRequestParser.getOutputInterval(otherOptions);
+		if (outputInterval != null && !outputInterval.isEmpty()) {
+			setOutputInterval(outputInterval);
+		}
+		
+		// set up the initial points option that will be used for generating MoDS_inputs.xml file
+		String numInit = JSonRequestParser.getNumOfInitPoints(otherOptions);
+		if (numInit != null && !numInit.isEmpty()) {
+			setNumOfInitPoints(numInit);
+		}
+		
+		// set up the simulation end time for generating InputParams.xml file
+		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
+		if (simEnd != null && !simEnd.isEmpty()) {
+			setSimEnd(simEnd);
+		}
+		
+		// set up Hooke-Jeeves algorithms parameters
+		String nIters = JSonRequestParser.getNIters(otherOptions);
+		if (nIters != null && !nIters.isEmpty()) {
+			setnIters(nIters);
+		}
+		
+		String rho = JSonRequestParser.getRho(otherOptions);
+		if (rho != null && !rho.isEmpty()) {
+			setRho(rho);;
+		}
+		
+		String rhoFactor = JSonRequestParser.getRhoFactor(otherOptions);
+		if (rhoFactor != null && !rhoFactor.isEmpty()) {
+			setRhoFactor(rhoFactor);;
+		}
+		
+		String eps = JSonRequestParser.getEpsilon(otherOptions);
+		if (eps != null && !eps.isEmpty()) {
+			setEpsilon(eps);
+		}
+		
+		// set up the objective function that will be used for generating MoDS_inputs.xml file
+		String objectiveFunction = JSonRequestParser.getObjectiveFunction(otherOptions);
+		if (objectiveFunction != null && !objectiveFunction.isEmpty()) {
+			setObjectiveFunction(objectiveFunction);
+		}
+		
+		// set up the response ratio between two responses
+		String responseRatio = JSonRequestParser.getResponseRatio(otherOptions);
+		if (responseRatio != null && !responseRatio.isEmpty()) {
+			setResponseRatio(responseRatio);
+		}
+		
+		// set up the range of multipliers
+		String rangeOfMultipliers = JSonRequestParser.getRangeOfMultipliers(otherOptions);
+		if (rangeOfMultipliers != null && !rangeOfMultipliers.isEmpty()) {
+			setRangeOfMultipliers(rangeOfMultipliers);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -361,33 +519,38 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			active_subtype = active_subtype.concat(" subtype_"+"rxn_"+i);
 		}
 		LinkedHashMap<String, LinkedHashMap<String, String>> algorithms = new LinkedHashMap<String, LinkedHashMap<String, String>>();
+		LinkedHashMap<String, String> algoEvaluation = new LinkedHashMap<String, String>();
+		algoEvaluation.put("algorithm_type", "Run");
+		algoEvaluation.put("n_run", "0");
+		algoEvaluation.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		LinkedHashMap<String, String> algoSampling = new LinkedHashMap<String, String>();
 		algoSampling.put("optimisable_param_subtypes", active_subtype.substring(1));
 		algoSampling.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		algoSampling.put("algorithm_type", "Sobol");
 //		algoSampling.put("model_name", "exe");
-		algoSampling.put("objective_function", "SumOfSquares");
+		algoSampling.put("objective_function", getObjectiveFunction());
 		algoSampling.put("output_by_case", "false");
 		algoSampling.put("output_values", "true");
-		algoSampling.put("n_points", "1000");
+		algoSampling.put("n_points", getNumOfSobolPoints());
 		algoSampling.put("seed", "1");
-		algoSampling.put("output_interval", "10");
+		algoSampling.put("output_interval", getOutputInterval());
 		algoSampling.put("previous_algorithm", "Initial");
 		LinkedHashMap<String, String> algoCalibration = new LinkedHashMap<String, String>();
 		algoCalibration.put("optimisable_param_subtypes", active_subtype.substring(1));
 		algoCalibration.put("response_param_subtypes", "subtype_".concat(outputResponses.get(0)));
 		algoCalibration.put("algorithm_type", "Hooke_Jeeves");
 //		algoCalibration.put("model_name", "exe");
-		algoCalibration.put("objective_function", "SumOfSquares");
+		algoCalibration.put("objective_function", getObjectiveFunction());
 		algoCalibration.put("output_by_case", "false");
 		algoCalibration.put("output_values", "true");
-		algoCalibration.put("n_iters", "400");
-		algoCalibration.put("n_initial_points", "10");
+		algoCalibration.put("n_iters", getnIters());
+		algoCalibration.put("n_initial_points", getNumOfInitPoints());
 		algoCalibration.put("constrained", "true");
-		algoCalibration.put("rho", "0.2");
-		algoCalibration.put("rho_factor", "0.5");
-		algoCalibration.put("epsilon", "0.001");
+		algoCalibration.put("rho", getRho());
+		algoCalibration.put("rho_factor", getRhoFactor());
+		algoCalibration.put("epsilon", getEpsilon());
 		algoCalibration.put("previous_algorithm", "SamplingAlg");
+		algorithms.put("Evaluation", algoEvaluation);
 		algorithms.put("SamplingAlg", algoSampling);
 		algorithms.put("CalibrationAlg", algoCalibration);
 		collectAlgorithms(algorithms);
@@ -397,6 +560,7 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		LinkedHashMap<String, String> model = new LinkedHashMap<String, String>();
 		model.put("executable_name", Property.MODEL_KINETICS_EXE.getPropertyName());
 		model.put("working_directory", "");
+		model.put("args", modsMechCalibAgentProperty.getKineticsFolderPath().concat(SPACE).concat(modsMechCalibAgentProperty.getKineticsExecutableName()));
 		models.put(modelName, model);
 		collectModels(models);
 		
@@ -433,9 +597,10 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 		String lbFactor = "";
 		String ubFactor = "";
 		double sqrtN = Math.sqrt(caseNames.size());
+		double sqrtRatio = Math.sqrt(Double.valueOf(getResponseRatio()));
 		double errFrac = 0.20;
-		double lb_fac = (1-errFrac)*sqrtN;
-		double ub_fac = (1+errFrac)*sqrtN;
+		double lb_fac = (1-errFrac)*sqrtN/sqrtRatio;
+		double ub_fac = (1+errFrac)*sqrtN/sqrtRatio;
 		for (int j = 0; j < caseNames.size(); j++) {
 			row = row.concat(";"+j);
 			lbFactor = lbFactor.concat(";"+lb_fac);
@@ -460,8 +625,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 			initialRead.put("column", activeParameters.get(i));
 			initialRead.put("row", "0");
 			initialRead.put("read_function", "Get_DSV_double");
-			initialRead.put("lb_abs", "1.0E-3");
-			initialRead.put("ub_abs", "1000.0");
+			initialRead.put("lb_abs", String.valueOf(1/Double.valueOf(getRangeOfMultipliers())));
+			initialRead.put("ub_abs", String.valueOf(Double.valueOf(getRangeOfMultipliers())));
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
 			workingWrite.put("path", "//srm_inputs/property_group[@ref='Chemistry']/property[@ref='ReactionRate_A_Modifiers']/value[@index='"+i+"']");
@@ -810,6 +975,8 @@ public class ModelKineticsSRM extends MoDSMarshaller implements IModel {
 						.put("chemistry", new JSONObject()
 								.put("mechFile", FILE_MECHANISM)
 								.put("numOfReactions", numOfReactions))
+						.put("numerical", new JSONObject()
+								.put("simEnd", getSimEnd()))
 						.put("oxidiser", oxidiser)
 						.put("ignDelayPostProcessor", new JSONObject()
 								.put("ignDelayModel", ignDelayModel)

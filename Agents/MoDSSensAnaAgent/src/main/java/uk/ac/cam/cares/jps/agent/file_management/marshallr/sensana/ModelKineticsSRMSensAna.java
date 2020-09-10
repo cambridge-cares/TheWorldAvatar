@@ -13,39 +13,34 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
-
+import org.codehaus.plexus.util.FileUtils;
 import org.json.JSONObject;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
 import com.cmclinnovations.ontochem.model.exception.OntoException;
 
-import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSSensAnaAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.ExecutableModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.IModel;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.InputParamsBuilder;
-import uk.ac.cam.cares.jps.agent.file_management.marshallr.MechanismDownload;
 import uk.ac.cam.cares.jps.agent.file_management.marshallr.MoDSMarshaller;
-import uk.ac.cam.cares.jps.agent.file_management.mods.models.Model;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.MoDSSensAnaAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.sensana.Property;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
+import uk.ac.cam.cares.jps.kg.RepositoryManager;
 import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelKineticsSRMSensAna.class);
+	private MoDSSensAnaAgentProperty modsSensAnaAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -57,6 +52,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	private String ignDelayMethod = "2";
 	private String ignDelaySpecies = "AR";
 	private String relPerturbation = "0.01";
+	private String simEnd = "200";
 	
 	public String getIgnDelayMethod() {
 		return ignDelayMethod;
@@ -80,6 +76,19 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 
 	public void setRelPerturbation(String relPerturbation) {
 		this.relPerturbation = relPerturbation;
+	}
+	
+	public String getSimEnd() {
+		return simEnd;
+	}
+
+	public void setSimEnd(String simEnd) {
+		this.simEnd = simEnd;
+	}
+	
+	public ModelKineticsSRMSensAna(MoDSSensAnaAgentProperty modsSensAnaAgentProperty) {
+		super(modsSensAnaAgentProperty);
+		this.modsSensAnaAgentProperty = modsSensAnaAgentProperty;
 	}
 
 	/**
@@ -111,14 +120,14 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsSensAnaAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryAllReactions(mechanismIRI);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG();
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsSensAnaAgentProperty);
 			DataTable dataTable = ocekg.formatExperimentDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());
@@ -160,35 +169,29 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 			}
 		}
 		
-		// TODO download mechanism owl file, this part should be modified to do the conversion of OWL to XML on the fly
-		String mechanismXML = folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM);
-		MechanismDownload mechanismDownload = new MechanismDownload();
+		// download the mechanism owl file, and convert it to xml format
+		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
+		String mechOWL = folderTemporaryPath.concat(FRONTSLASH).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
 		try {
-			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-			mechanismDownload.obtainMechanism(mechanismWebPath, mechanismXML);
-		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-				| TransformerException e) {
+			ontoKinKG.downloadMechanism(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, mechOWL);
+		} catch (uk.ac.cam.cares.jps.kg.OntoException e1) {
+			e1.printStackTrace();
+		}
+		OwlConverter owlConverter = new OwlConverter();
+		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
+		mechanismOwlFiles.add(mechOWL);
+		try {
+			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath.replace("\\", "/"));
+		} catch (OWLOntologyCreationException | OntoException e) {
 			e.printStackTrace();
 		}
-		
-		
-		/**
-		 * Owl converter that converts OWL to XML file
-		 */
-//		OwlConverter owlConverter = new OwlConverter();
-//		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
-//		mechanismOwlFiles.add(mechanismIRI);
-//		try {
-//			owlConverter.convert(mechanismOwlFiles, folderTemporaryPath);
-//		} catch (OWLOntologyCreationException | OntoException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		
-		
-		
-		
+		File mechXMLToCopy = new File(mechOWL.replace(".owl", ".xml"));
+		File mechXML = new File(folderTemporaryPath.concat(FRONTSLASH).concat(FILE_MECHANISM));
+		try {
+			FileUtils.copyFile(mechXMLToCopy, mechXML);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		// create model instance
 		ExecutableModel kineticsSRM = new ExecutableModel();
@@ -208,7 +211,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		// set up model exp files
 		List<String> expFiles = new ArrayList<>();
 		expFiles.add(expDataCSV.getName());
-		expFiles.add(mechanismXML.substring(mechanismXML.lastIndexOf(FRONTSLASH)));
+		expFiles.add(mechXML.getName());
 		kineticsSRM.setExpFiles(expFiles);
 		
 		// set up model case names
@@ -275,6 +278,12 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		String relPer = JSonRequestParser.getRelPerturb(otherOptions);
 		if (relPer != null && !relPer.isEmpty()) {
 			setRelPerturbation(relPer);	
+		}
+		
+		// set up the simulation end time for generating InputParams.xml file
+		String simEnd = JSonRequestParser.getSimEnd(otherOptions);
+		if (simEnd != null && !simEnd.isEmpty()) {
+			setSimEnd(simEnd);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -407,6 +416,7 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		LinkedHashMap<String, String> model = new LinkedHashMap<String, String>();
 		model.put("executable_name", Property.MODEL_KINETICS_EXE.getPropertyName());
 		model.put("working_directory", "");
+		model.put("args", modsSensAnaAgentProperty.getKineticsFolderPath().concat(SPACE).concat(modsSensAnaAgentProperty.getKineticsExecutableName()));
 		models.put(modelName, model);
 		collectModels(models);
 		
@@ -680,10 +690,10 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 	}
 	
 	/**
-	 * Create the mechanism file used by the executable kineticsSRM. 
+	 * Create the mechanism file used by the executable kineticsSRM.
 	 * 
+	 * @param copyOfMechanismFilePath
 	 * @param mechanism
-	 * @param copyOfMechanism
 	 * @return
 	 * @throws IOException
 	 * @throws MoDSSensAnaAgentException
@@ -745,26 +755,6 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 		String ignDelayModel = getIgnDelayMethod();
 		String ignDelaySpeciesIndex = getIgnDelaySpecies();
 		
-		// -Method 0. Searching for the maximum rate of temperature increase.
-//		String ignDelayModel = "0";
-//		String ignDelaySpeciesIndex = "AR";
-		
-		// -Method 1. Searching for the maximum rate of pressure increase.
-//		String ignDelayModel = "1";
-//		String ignDelaySpeciesIndex = "AR";
-		
-		// -Method 2. Searching for the point at which temperature increase exceeds 400 K.
-//		String ignDelayModel = "2";
-//		String ignDelaySpeciesIndex = "AR";
-		
-		// -Method 3. Searching for the maximum mole fraction of species "x".
-//		String ignDelayModel = "3";
-//		String ignDelaySpeciesIndex = "OH";
-		
-		// -Method 4. Searching for the maximum rate of increase of the mole fraction of species "x".
-//		String ignDelayModel = "4";
-//		String ignDelaySpeciesIndex = "CO";
-		
 		
 		String oxidiser = NAME_OXIDISER; // this name is to be further parameterised, also to be connected to MoDS_Inputs.xml
 		for (int i = 0; i < headerLine.length; i++) {
@@ -802,6 +792,8 @@ public class ModelKineticsSRMSensAna extends MoDSMarshaller implements IModel {
 						.put("chemistry", new JSONObject()
 								.put("mechFile", FILE_MECHANISM)
 								.put("numOfReactions", numOfReactions))
+						.put("numerical", new JSONObject()
+								.put("simEnd", getSimEnd()))
 						.put("oxidiser", oxidiser)
 						.put("ignDelayPostProcessor", new JSONObject()
 								.put("ignDelayModel", ignDelayModel)

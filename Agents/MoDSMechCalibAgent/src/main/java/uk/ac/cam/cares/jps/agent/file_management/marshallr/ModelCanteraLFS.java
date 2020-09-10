@@ -22,12 +22,10 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.primitives.Doubles;
-
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
 import uk.ac.cam.cares.jps.agent.file_management.mods.functions.Function;
 import uk.ac.cam.cares.jps.agent.file_management.mods.parameters.Parameter;
 import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
@@ -39,6 +37,8 @@ import uk.ac.cam.cares.jps.kg.OntoChemExpKG.DataTable;
 
 public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	private static Logger logger = LoggerFactory.getLogger(ModelCanteraLFS.class);
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
+	
 	private int numOfReactions;
 	private String modelName = new String();
 	private LinkedHashMap<String, String> activeParameters = new LinkedHashMap<String, String>(); // linkedHashMap? 
@@ -50,6 +50,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	private List<String> outputErrs = new ArrayList<>();
 	
 	private String tranModel = "mix-average";
+	private String rangeOfMultipliers = "100.0";
 	
 	public String getTranModel() {
 		return tranModel;
@@ -59,6 +60,19 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		this.tranModel = tranModel;
 	}
 	
+	public String getRangeOfMultipliers() {
+		return rangeOfMultipliers;
+	}
+
+	public void setRangeOfMultipliers(String rangeOfMultipliers) {
+		this.rangeOfMultipliers = rangeOfMultipliers;
+	}
+
+	public ModelCanteraLFS(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		super(modsMechCalibAgentProperty);
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
+	}
+	
 	@Override
 	public ExecutableModel formExecutableModel(List<String> experimentIRI, String mechanismIRI,
 			List<String> reactionIRIList) throws IOException, MoDSMechCalibAgentException {
@@ -66,14 +80,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		checkFolderPath(folderTemporaryPath);
 		
 		// create ontology kg instance for query
-		OntoKinKG ontoKinKG = new OntoKinKG();
+		OntoKinKG ontoKinKG = new OntoKinKG(modsMechCalibAgentProperty);
 		// query active parameters
 		LinkedHashMap<String, String> activeParameters = ontoKinKG.queryReactionsToOptimise(mechanismIRI, reactionIRIList);
 		// collect experiment information
 		List<List<String>> headers = new ArrayList<List<String>>();
 		List<List<String>> dataCollection = new ArrayList<List<String>>();
 		for (String experiment : experimentIRI) {
-			OntoChemExpKG ocekg = new OntoChemExpKG();
+			OntoChemExpKG ocekg = new OntoChemExpKG(modsMechCalibAgentProperty);
 			DataTable dataTable = ocekg.formatFlameSpeedExpDataTable(experiment);
 			headers.add(dataTable.getTableHeader());
 			dataCollection.addAll(dataTable.getTableData());
@@ -169,6 +183,12 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		String tran = JSonRequestParser.getFlameSpdTranModel(otherOptions);
 		if (tran != null && !tran.isEmpty()) {
 			setTranModel(tran);
+		}
+		
+		// set up the range of multipliers
+		String rangeOfMultipliers = JSonRequestParser.getRangeOfMultipliers(otherOptions);
+		if (rangeOfMultipliers != null && !rangeOfMultipliers.isEmpty()) {
+			setRangeOfMultipliers(rangeOfMultipliers);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -355,8 +375,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			LinkedHashMap<String, String> initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("path", "//ctml/reactionData[@id='GAS_reaction_data']/reaction[@id='"+i+"']/rateCoeff/Arrhenius/A");
 			initialRead.put("read_function", "Get_XML_double");
-			initialRead.put("lb_abs", "1.0E-3");
-			initialRead.put("ub_abs", "1000.0");
+			initialRead.put("lb_abs", String.valueOf(1/Double.valueOf(getRangeOfMultipliers())));
+			initialRead.put("ub_abs", String.valueOf(Double.valueOf(getRangeOfMultipliers())));
 			
 			fileHash.put("initialRead "+FILE_MECHANISM_BASE, initialRead);
 			baseParam.setFileHash(fileHash);
@@ -376,8 +396,8 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			initialRead = new LinkedHashMap<String, String>();
 			initialRead.put("path", "//ctml/reactionData[@id='GAS_reaction_data']/reaction[@id='"+i+"']/rateCoeff/Arrhenius/A");
 			initialRead.put("read_function", "Get_XML_double");
-			initialRead.put("lb_abs", "1.0E-3");
-			initialRead.put("ub_abs", "1000.0");
+			initialRead.put("lb_abs", String.valueOf(1/Double.valueOf(getRangeOfMultipliers())));
+			initialRead.put("ub_abs", String.valueOf(Double.valueOf(getRangeOfMultipliers())));
 			
 			LinkedHashMap<String, String> workingWrite = new LinkedHashMap<String, String>();
 			workingWrite.put("path", "//ctml/reactionData[@id='GAS_reaction_data']/reaction[@id='"+i+"']/rateCoeff/Arrhenius/A");
