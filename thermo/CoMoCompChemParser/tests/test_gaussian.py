@@ -130,7 +130,7 @@ class TestGaussianParser(unittest.TestCase):
                     
                     empirical_formula = test_data["Empirical formula"]        
                     program_version = test_data["Program version"]
-                    ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
+                    ontology_base_uri = "http://www.theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
                     source_kb_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" +file_name +"/"
                     source_data_base_uri =  "http://theworldavatar.com/data/ontocompchem/" + file_name + "/"
                     

@@ -105,7 +105,7 @@ class OntoCompChemData:
         empirical_formula = dict_data["Empirical formula"]
         program_version = dict_data["Program version"]
 
-        ontology_base_uri = "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
+        ontology_base_uri = "http://www.theworldavatar.com/kb/ontocompchem/" + file_name + "/" + owl_name + "#"
         source_kb_base_uri =  "http://theworldavatar.com/kb/ontocompchem/" + file_name + "/"
         source_data_base_uri =  "http://theworldavatar.com/data/ontocompchem/" + file_name + "/"
 
@@ -132,7 +132,7 @@ class OntoCompChemData:
         self.create_ontocompchem_graph(ontocompchem_graph, dict_data, ontology_base_uri, source_kb_base_uri,source_data_base_uri, ontocompchem_ontology, file_name, program_version, table_namespace, ontocompchem_namespace, gc_namespace, unit_namespace, log_file_name,owl_name,rnd)
 
         '''Printing created ontology that is an instance of OntoCompChem ontology.'''
-        #print(ontocompchem_graph.serialize(format="pretty-xml").decode("utf-8"))
+        #print(ontocompchem_graph.serialize(format="ttl").decode("utf-8"))
 
 
         '''Serialize generated graph into owl file.'''
