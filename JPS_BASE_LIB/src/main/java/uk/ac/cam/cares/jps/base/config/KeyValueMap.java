@@ -1,10 +1,8 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -69,7 +67,11 @@ public class KeyValueMap {
 			}
 		}
 	}
-	
+	/**  load all key value pairs 
+	 * 
+	 * @param propertyFile
+	 * @throws IOException
+	 */
 	private void loadProperties(String propertyFile) throws IOException {
 	    
 		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
@@ -87,8 +89,13 @@ public class KeyValueMap {
 			JPSBaseLogger.info(this, key + " = " + value);
 		}
 	}
-	public String getProperty(String propertyFile, String getKey) {
-		JPSBaseLogger.info(this, "grab "+getKey+ " from " + propertyFile);
+	/**
+	 * static method of accessing a property from a given properties file in JPS BASE LIB
+	 * @param propertyFile
+	 * @param getKey
+	 * @return
+	 */
+	public static String getProperty(String propertyFile, String getKey) {
 		InputStream fin=null;
 		Properties props = new Properties();
 		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function

@@ -46,10 +46,6 @@
 				<configuration>
 					<webResources>
 						<resource>
-							<directory>conf</directory>
-							<targetPath>conf</targetPath>
-						</resource>
-						<resource>
 							<directory>PythonCustomLibraries</directory>
 							<targetPath>PythonCustomLibraries</targetPath>
 						</resource>

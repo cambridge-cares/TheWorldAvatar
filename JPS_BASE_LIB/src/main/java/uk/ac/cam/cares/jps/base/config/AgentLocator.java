@@ -23,8 +23,7 @@ import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 
 public class AgentLocator {
 
-    private static String JPS_CONFIG = "jps.properties";
-    private static String JPS_CONFIG_ENVIRONMENT_TEST_KEY = "test";
+	private static String JPS_CONFIG_ENVIRONMENT_TEST_KEY = "test";
     private static AgentLocator instance = null;
 
     private static Logger logger = LoggerFactory.getLogger(AgentLocator.class);
@@ -56,7 +55,12 @@ public class AgentLocator {
         jpsBaseDirectory = createJpsBaseDirectory(path);
         logger.info("JPS_BASE directory = " + jpsBaseDirectory);
     }
-     
+    /** previously used to determine the location of JPS BASE CONFIG as part of JPS BASE webapp
+     * Now config file is stored in JPS BASE LIB/src/main/resources
+     *  
+     * @param currentJpsAppDirectory
+     * @return
+     */
     public static String createJpsBaseDirectory(String currentJpsAppDirectory) {
     	return "/";
 //        String result = null;
@@ -168,22 +172,8 @@ public class AgentLocator {
      * @return Boolean testMode
      */
     public static boolean isJPSRunningForTest() {
-
         Boolean testMode = false;
-//        try {
-        
         testMode = Boolean.valueOf(KeyValueMap.getInstance().get(JPS_CONFIG_ENVIRONMENT_TEST_KEY));
-//        	InputStream inputStream=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
-//    		Properties props = new Properties();
-//            props.load(inputStream);
-//            String test = props.getProperty(JPS_CONFIG_ENVIRONMENT_TEST_KEY);
-//            if (!test.isEmpty()) {
-//                testMode = Boolean.valueOf(test);
-//            }
-//        } catch (IOException e) {
-//            throw new JPSRuntimeException(e.getMessage(), e);
-//        }
-
         return testMode;
     }
 
