@@ -28,15 +28,26 @@ public class test extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		
+		
+		
+		// Call matlab function to execute the electrical model in matlab
+		
+		//Created a executable script (call_talab.sh) to run the script.
+		
+		//For windows machine change the file_name_macos.sh extention to file_name_win.bat 
+		
+		//It is running on no display mode.
+		
 		 Runtime rs = Runtime.getRuntime();
 		    try {
 				try {
+					System.out.printf("\n----------------------Starting the execution of the electrical system-----------------------\n ");
 					rs.exec("/Users/gourab/Matlab/call_matlab.sh").waitFor();
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				System.out.printf("executed ");
+				System.out.printf("\n---------------------------Completed Execution-------------------------------\n");
 				
 			} catch (IOException e) {
 				// TODO Auto-generated catch block

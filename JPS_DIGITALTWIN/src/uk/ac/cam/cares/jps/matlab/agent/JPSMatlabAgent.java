@@ -119,9 +119,9 @@ public class JPSMatlabAgent extends HttpServlet {
 		}
 		/*
 		MatlabProxyFactoryOptions.Builder builder = new MatlabProxyFactoryOptions.Builder();
-		// setup the factory
-//		    setCopyPasteCallback() connects to an existing MATLAB by copy-pasting a few lines into the command window
-//		    setUsePreviouslyControlledSession() starts a new MATLAB or connects to a previously started MATLAB without any user intervention
+		// setup the factory.
+		// setCopyPasteCallback() connects to an existing MATLAB by copy-pasting a few lines into the command window.
+		// setUsePreviouslyControlledSession() starts a new MATLAB or connects to a previously started MATLAB without any user intervention.
 
 		MatlabProxyFactory factory = new MatlabProxyFactory(builder.build());
 		// get the proxy
