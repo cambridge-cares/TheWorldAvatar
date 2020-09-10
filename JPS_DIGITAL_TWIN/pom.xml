@@ -15,8 +15,6 @@
 		<rdf4j.version>2.4.2</rdf4j.version>
 	</properties>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
-		<testSourceDirectory>test</testSourceDirectory>
 		<plugins>
 
 			<plugin>
@@ -42,18 +40,6 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>3.2.2</version>
 				<configuration>
-					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<webResources>
-
-						<resource>
-							<directory>WebContent</directory>
-							<includes>
-								<include>*.html</include>
-							</includes>
-						</resource>
-					</webResources>
-
-					<webXml>WebContent\WEB-INF\web.xml</webXml>
 					<warName>${project.artifactId}##${project.version}</warName>
 					<!-- outputDirectory>D:\myPrograms\Tomcat 9.0\webapps</outputDirectory -->
 					<outputDirectory>${tomcatPath}/webapps</outputDirectory>

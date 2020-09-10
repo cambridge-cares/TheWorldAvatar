@@ -41,8 +41,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentConfiguration;
 import uk.ac.cam.cares.jps.agent.configuration.gPROMSAgentProperty;
-import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
-import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgentException;
+//import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgent;
+//import uk.ac.cam.cares.jps.agent.gPROMS.gPROMSAgentException;
 import uk.ac.cam.cares.jps.agent.utils.ZipUtility;
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
@@ -380,7 +380,7 @@ public class gPROMSAgent extends JPSAgent {
 		return jobSubmission.setUpJob(jsonInput,
 				new File(getClass().getClassLoader().getResource(gPROMSAgentProperty.getSlurmScriptFileName())
 						.getPath()),
-				new File("/Users/aravindd/git_repos/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/input.zip"),
+				new File("C:/Users/caresadmin/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/input.zip"),
 				timeStamp);
 	}
 
