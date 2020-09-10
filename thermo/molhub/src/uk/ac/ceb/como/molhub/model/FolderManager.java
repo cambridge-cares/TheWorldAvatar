@@ -171,6 +171,11 @@ public class FolderManager {
 	
 	}
 	
+/**
+ * @param uuid unique identifier that we use to create folder, name uploaded log file
+ * @param uuidFile unique identifier for generated owl file. 
+ * @return the log file name
+ */
 public String getLogFileName(String uuid,  String uuidFile) {
 	
 
@@ -220,6 +225,13 @@ public String getGaussianJsonFileName(String uuidFile) {
 }
 	
 
+	/**
+	 * @param uuid unique identifier that we use to create folder, name uploaded log file.
+	 * @param uuidFile unique identifier for generated owl file.
+	 * @param dataFolderPath data folder path
+	 * @param format format of a file.
+	 * @return the json file name that contains information about results of NASA polynomial calculations.
+	 */
 	public String getJsonNasaFileName(String uuid, String uuidFile, String dataFolderPath, String format) {
 		
 		String folderName = null;
@@ -232,7 +244,18 @@ public String getGaussianJsonFileName(String uuidFile) {
 		
 		File file = new File(folderName);
 		
+		/**
+		 * @author NK510 (caresssd@hermes.cam.ac.uk)
+		 * Checks whether NASA polynomial JSON file is generated. 
+		 */
+		if(file.exists()) {
+			
         return file.getName()  ;
+        
+		}else {
+			
+			return null;
+		}
 	
 	}
 	

@@ -391,14 +391,12 @@ public class MoleculeViewLogAction extends ActionSupport {
 		this.gaussianJsonFileName = gaussianJsonFileName;
 	}
 
-	public List<ElectronicEnergy> getElectronicAndZeroPointEnergy() {
+	public List<ElectronicEnergy> getElectronicAndZeroPointEnergyList() {
 		return electronicAndZeroPointEnergyList;
 	}
 
-	public void setElectronicAndZeroPointEnergy(List<ElectronicEnergy> electronicAndZeroPointEnergyList) {
+	public void setElectronicAndZeroPointEnergyList(List<ElectronicEnergy> electronicAndZeroPointEnergyList) {
 		this.electronicAndZeroPointEnergyList = electronicAndZeroPointEnergyList;
 	}
-
-	
 	
 }

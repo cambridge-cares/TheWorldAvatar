@@ -365,8 +365,8 @@ public class QueryString {
 	 * @author NK510 (caresssd@hermes.cam.ac.uk)
 	 * 
 	 * @param uuid the uuid as a parameter for SPARQL query.
-	 * @param energyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy
-	 * @return A SPARQL query as a String. Result of this query should be scf energy value and scf energy unit.
+	 * @param energyClass different type of electronic energy classes such as ScfEnergy, ZeroPointEnergy, ElectronicAndZPEEnergy
+	 * @return A SPARQL query as a String. Result of this query should be energy value and  energy unit.
 	 * 
 	 */
 	public static String getElectronicEnergy(String uuid, String uuidFile, String energyClass) {

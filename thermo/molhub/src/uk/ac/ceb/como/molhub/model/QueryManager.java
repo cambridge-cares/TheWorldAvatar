@@ -854,7 +854,8 @@ public class QueryManager {
 					atomicMassList.add(atomicMass);
 					} 
 					
-					if((bindingSet.getValue("massUnit").stringValue()=="") || (bindingSet.getValue("massUnit").stringValue()==null)) {						
+					if((bindingSet.getValue("massUnit").stringValue()=="") || (bindingSet.getValue("massUnit").stringValue()==null)) {	
+						
 						AtomicMass atomicMass = new AtomicMass(bindingSet.getValue("atomicName").stringValue(),
 								bindingSet.getValue("massValue").stringValue());
 
