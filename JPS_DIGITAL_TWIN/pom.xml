@@ -15,7 +15,7 @@
 		<rdf4j.version>2.4.2</rdf4j.version>
 	</properties>
 	<build>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>test</testSourceDirectory>
 		<plugins>
 
