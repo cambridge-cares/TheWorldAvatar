@@ -1,24 +1,27 @@
 package uk.ac.ceb.como.molhub.action;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
+
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.exec.ExecuteException;
 import org.apache.log4j.Logger;
 
 import org.eclipse.rdf4j.RDF4JException;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.repository.Repository;
 import org.eclipse.rdf4j.repository.RepositoryConnection;
-
 import org.eclipse.rdf4j.repository.http.HTTPRepository;
 import org.eclipse.rdf4j.rio.RDFFormat;
 
@@ -34,6 +37,7 @@ import com.opensymphony.xwork2.ValidationAware;
 import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
 import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
+import uk.ac.ceb.como.molhub.model.ExecutorManager;
 import uk.ac.ceb.como.molhub.model.FolderManager;
 import uk.ac.ceb.como.molhub.model.PropertiesManager;
 
@@ -153,9 +157,10 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		/**
 		 *  For each file selected, it iterates once.
 		 */
-		for (File f : files) {
+		
+		
+		for (File f : files) {	
 			
-			Process process = null;
 			
 			/**
 			 *  Creates unique folder name for each uploaded Gaussian file (g09),  XML file, OWL file, and PNG file.
@@ -196,22 +201,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					/**
 					 * Runs python code that parses uploaded Gaussian file and generates json and owl files.
 					 */	
-				  try {
-								
-				  process = Runtime.getRuntime().exec(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + "/" + uuidFolderName + "/" );
-
-				  logger.info("process.isAlive(): " + process.isAlive());
-							    
-				  logger.info("Done.");
-				
-				  process.waitFor();
 				  
-				  process.destroy();
-				  
-				  } catch (IOException e) {
-								
-				     e.printStackTrace();
-				  }
+					new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + "/" + uuidFolderName + "/" );
 					
 				}else {
 					
@@ -232,6 +223,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					 */
 					
 				}
+
 				
 				List<File> owlFileList = new FileUtility().getArrayFileList(kbFolderPath  + uuidFolderName +"/", ".owl");
 				
@@ -242,10 +234,10 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					
 				for(File owlFiles: owlFileList) {
 				
-				File owl_File = new File(kbFolderPath + uuidFolderName + "/" + owlFiles.getName());
+				 File owl_File = new File(kbFolderPath + uuidFolderName + "/" + owlFiles.getName());
 					
 			    logger.info("ontology file path: " + owl_File.getAbsolutePath().toString());
-			        
+			    
 			    OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			    OWLOntology ontology = manager.loadOntologyFromOntologyDocument(owl_File);
 
@@ -280,7 +272,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				 */
 				loadOntology(owlFiles, serverURL, owl_File.getName().toString(), kbFolderPath + uuidFolderName + "/",  uuidFolderName , REPOSITORY_ID);
 				
-				}
+				}				
 				
 				/**
 				 * An error message is shown if the generated ontology (ABox) is
@@ -550,8 +542,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 * @param repositoryID the repository id
 	 * @throws OntoException
 	 */
-	public void loadOntology(File owlFile, String serverURL, String owlFileName, String owlFilePath, String baseFolder, String repositoryID) throws Exception{
-		
+	public synchronized void loadOntology(File owlFile, String serverURL, String owlFileName, String owlFilePath, String baseFolder, String repositoryID) throws Exception{			
+			
 		try {
 			
 			Repository repo = new HTTPRepository(serverURL, repositoryID);
@@ -561,17 +553,22 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOCOMPCHEM_KB_URL.concat(baseFolder + "/" +owlFileName));
 			
+			con.begin();
+			
 			try {
 				
 				URL url = new URL("file:/".concat(owlFilePath).concat(owlFileName));
 
 				con.add(owlFile, url.toString(), RDFFormat.RDFXML,context);
+				
 				con.commit();
 				
 			} finally {
 				con.close();
 				repo.shutDown();
 			}
+			
+			
 			
 		} catch (RDF4JException e) {
 			
@@ -585,4 +582,68 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 		}
 	}
+	
+	
+	private void runParser(String CMD) throws IOException, InterruptedException {
+	    logger.info("Standard output: " + CMD);
+	    Process process = Runtime.getRuntime().exec(CMD);
+
+	    // Get input streams
+	    BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
+	    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
+	    String line = "";
+	    String newLineCharacter = System.getProperty("line.separator");
+
+	    boolean isOutReady = false;
+	    boolean isErrorReady = false;
+	    boolean isProcessAlive = false;
+
+	    boolean isErrorOut = true;
+	    boolean isErrorError = true;
+
+
+	    logger.info("Read command ");
+	    while (process.isAlive()) {
+	        //Read the stdOut
+
+	        do {
+	            isOutReady = stdInput.ready();
+	            //System.out.println("OUT READY " + isOutReady);
+	            isErrorOut = true;
+	            isErrorError = true;
+
+	            if (isOutReady) {
+	                line = stdInput.readLine();
+	                isErrorOut = false;
+	                logger.info("=====================================================================================" + line + newLineCharacter);
+	            }
+	            isErrorReady = stdError.ready();
+	            //System.out.println("ERROR READY " + isErrorReady);
+	            if (isErrorReady) {
+	                line = stdError.readLine();
+	                isErrorError = false;
+	                logger.info("ERROR::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" + line + newLineCharacter);
+
+	            }
+	            isProcessAlive = process.isAlive();
+	            //System.out.println("Process Alive " + isProcessAlive);
+	            if (!isProcessAlive) {
+	                logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Process DIE " + line + newLineCharacter);
+	                line = null;
+	                isErrorError = false;
+	                process.waitFor(1000, TimeUnit.MILLISECONDS);
+	            }
+
+	        } while (line != null);
+
+	        //Nothing else to read, lets pause for a bit before trying again
+	        logger.info("PROCESS WAIT FOR");
+	        process.waitFor(100, TimeUnit.MILLISECONDS);
+	    }
+	    logger.info("Command finished");
+	}
+	
+	
+
+
 }
