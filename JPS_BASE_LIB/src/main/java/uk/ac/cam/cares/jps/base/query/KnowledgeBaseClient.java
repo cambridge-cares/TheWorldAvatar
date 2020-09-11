@@ -31,6 +31,26 @@ import uk.ac.cam.cares.jps.base.log.JPSBaseLogger;
 import uk.ac.cam.cares.jps.base.scenario.JPSContext;
 import uk.ac.cam.cares.jps.base.scenario.ScenarioHelper;
 
+/**
+ * This class allows to establish connection with remote knowledge repositories<p>
+ * to perform SPARQL query and update operations. It supports many triple stores<p>
+ * such as Blazegraph and RDF4J. It requires to set the end point URL for the<p>
+ * intended type of operation. See some example end point URLS:<p>
+ * <p>
+ * Blazegraph query end point URL: http://localhost:8080/blazegraph/namespace/kb/sparql
+ * <p>
+ * Note that this is for the namespace called "kb". If you have a different namespace,<p>
+ * e.g, "ontokin", replace "kb" with "ontokin" in the above URL<p>
+ * <p>
+ * RDF4J query end point URL: http://localhost:8080/rdf4j-server/repositories/ontospecieskb
+ * <p>
+ * Note that this is for the repository called ontospecieskb.<p>
+ * <p>
+ * Namespace in Blazegraph and repository in RDF4J refer to the same thing.
+ * 
+ * @author Feroz Farazi (msff2@cam.ac.uk)
+ *
+ */
 public class KnowledgeBaseClient {
 	private static final Logger log = Logger.getLogger(KnowledgeBaseClient.class.getName());
 	private static KnowledgeBaseClient instance = null;
