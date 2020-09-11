@@ -100,8 +100,6 @@ public class CalculationLogAction extends ActionSupport implements SessionAware 
 				logger.info("af.getAbsolutePath(): " + af.getAbsolutePath());
 				
 				String q = FileUtils.readFileToString(sparqlFile, "UTF-8");
-
-//				CompChemQuery.performQuery(model, q, af.getName().toString(), speciesFolder);  
 				
 				CompChemQuery.performQuery(model, q, af.getName().toString(), jsonFolderPath); 
 

@@ -1,7 +1,6 @@
 package uk.ac.ceb.como.molhub.action;
 
 import java.io.File;
-
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
@@ -33,7 +32,7 @@ import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ValidationAware;
 
 import uk.ac.cam.ceb.como.compchem.ontology.InconsistencyExplanation;
-
+import uk.ac.cam.ceb.como.jaxb.parsing.utils.FileUtility;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
 import uk.ac.ceb.como.molhub.model.FolderManager;
 import uk.ac.ceb.como.molhub.model.PropertiesManager;
@@ -130,47 +129,68 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 * as it is instructed in the struts2.xml file, which is located in<br>
 	 * molhub\WebContent\WEB-INF\classes.
 	 */
+	/* (non-Javadoc)
+	 * @see com.opensymphony.xwork2.ActionSupport#execute()
+	 */
 	@Override
 	public String execute() throws Exception {
 		int fileNumber = 0;
-		// These column names appear in the generated report table 
-		// after the upload.
+		/**
+		 *  These column names appear in the generated report table after the upload. 
+		 */
 		if (!files.isEmpty()) {
 			column.add("UUID");
 			column.add("Gaussian file name ");
 			column.add("OWL file name");
 			column.add("OWL consistency");
 		}
-		// If user clicks on the upload button without selecting any files.
+		/**
+		 *  If user clicks on the upload button without selecting any files.
+		 */
 		if (files.isEmpty()) {
 			addActionMessage("Please select Gaussian files first, and than press 'Upload' button.");
 		}
-		// For each file selected, it iterates once.
+		/**
+		 *  For each file selected, it iterates once.
+		 */
 		for (File f : files) {
 			
 			Process process = null;
 			
-			// Creates unique folder name for each uploaded Gaussian file (g09),  XML file, OWL file, and PNG file.
+			/**
+			 *  Creates unique folder name for each uploaded Gaussian file (g09),  XML file, OWL file, and PNG file.
+			 */
 			String uuidFolderName = FolderManager.generateUniqueFolderName(f.getName());
 			
 			String fileExtension = uploadFileName[fileNumber].substring(uploadFileName[fileNumber].lastIndexOf(".") + 1);
 			
 			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension);
 			
-			// Png file name is the same as the name of folder where that
-			// image is saved. Adds .png extension to the png file.
+			/** Png file name is the same as the name of folder where that
+			*
+			* image is saved. Adds .png extension to the png file.
+			*/
 			File pngFile = new File(dataFolderPath + "/" + uuidFolderName + "/"
 					+ uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".png");
-			// Creates folders where molhub stores G09, xml and png files
+			/**
+			 *  Creates folders where molhub stores G09, xml and png files
+			 */
 			FolderManager.createFolder(dataFolderPath + "/" + uuidFolderName);
-			// Creates a folder for saving the ontology.
+			/**
+			 *  Creates a folder for saving the ontology.
+			 */
 			FolderManager.createFolder(kbFolderPath + "/" + uuidFolderName);
-			// User uploaded Gaussian file is saved.
+			/** 
+			 * User uploaded Gaussian file is saved.
+			 * 
+			 */
 			FolderManager.saveFileInFolder(inputG09File, f.getAbsolutePath());
 				
-				// Both in the if block and else block, it runs the XSLT
-				// transformation and the UUID folder name generated earlier
-				// is used as part of IRI of the OWL file.
+				 /**
+				 * Both in the if block and else block, it runs the XSLT
+				 *  transformation and the UUID folder name generated earlier
+				 *  is used as part of IRI of the OWL file.
+				 */
 				if((getOntoSpeciesIRI() == null) || (getOntoSpeciesIRI().trim().length() == 0)) {
 					
 					/**
@@ -189,19 +209,23 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				  process.destroy();
 				  
 				  } catch (IOException e) {
-								// TODO Auto-generated catch block
+								
 				     e.printStackTrace();
 				  }
 					
 				}else {
-					// Verifies the validity of the OntoSpcecies IRI in the case
-					// of a single file upload.
+					
+					/**
+					 * Verifies the validity of the OntoSpcecies IRI in the case
+					 * of a single file upload.
+					 */
+					
 					checkURLValidity(getOntoSpeciesIRI());
 					
 					/**
 					 * @author NK510 (caresssd@hermes.cam.ac.uk)
 					 * 
-					 * TO DO: Here we should discuss how to implement adding unique species IRI on uploading log files. There are two options:
+					 * TO DO: Here we should discuss how to implement adding unique species IRI into OWL file, upon uploading log files. There are two options:
 					 * 1. Extend Angiras and Daniel's parser to generate owl file that will optionally contain unique species IRI
 					 * 2. Implement Java method that will add given unique species IRI inside the content of generated owl file.
 					 * 
@@ -209,7 +233,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					
 				}
 				
-				List<File> owlFileList = getArrayFileList(kbFolderPath  + uuidFolderName +"/", ".owl");
+				List<File> owlFileList = new FileUtility().getArrayFileList(kbFolderPath  + uuidFolderName +"/", ".owl");
 				
 				logger.info("owlFileList.isEmpty(): " + owlFileList.isEmpty() + " owlFileList.size(): " + owlFileList.size());				
 				
@@ -494,13 +518,10 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	public void setServerUrl(String serverUrl) {
 		this.serverURL = serverUrl;
 	}
-
+	
 	/**
-	 * Checks the validity of a URL.
-	 * 
-	 * @param url
-	 * @param message
-	 * @throws OntoException
+	 * @param iri the IRI
+	 * @throws Exception
 	 */
 	private void checkURLValidity(String iri) throws Exception{
 		if(iri==null){
@@ -522,11 +543,11 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	 * a context, which is a necessary feature to delete the mechanism</br>
 	 * if user wants.
 	 * 
-	 * @param serverURL
-	 * @param owlFileName
-	 * @param owlFilePath
-	 * @param baseFolder
-	 * @param repositoryID
+	 * @param serverURL the server url
+	 * @param owlFileName owl file name
+	 * @param owlFilePath owl file path
+	 * @param baseFolder folder where owl file is stored
+	 * @param repositoryID the repository id
 	 * @throws OntoException
 	 */
 	public void loadOntology(File owlFile, String serverURL, String owlFileName, String owlFilePath, String baseFolder, String repositoryID) throws Exception{
@@ -541,6 +562,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			org.eclipse.rdf4j.model.IRI context = f.createIRI(ONTOCOMPCHEM_KB_URL.concat(baseFolder + "/" +owlFileName));
 			
 			try {
+				
 				URL url = new URL("file:/".concat(owlFilePath).concat(owlFileName));
 
 				con.add(owlFile, url.toString(), RDFFormat.RDFXML,context);
@@ -563,19 +585,4 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 		}
 	}
-	
-public static List<File> getArrayFileList(String folderPath, final String strings){
-		
-		File dir = new File(folderPath);
-		
-		List<File> list = Arrays.asList(dir.listFiles(new FilenameFilter(){
-	       
-	        public boolean accept(File dir, String name) {
-	        	
-	            return name.endsWith(strings);
-	        
-	        }}));
-		
-		return list;
-	}	
 }

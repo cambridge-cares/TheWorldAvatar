@@ -57,7 +57,7 @@ public class MoleculeViewLogAction extends ActionSupport {
 	 * The uuid and uuidFile are used as unique identifiers for query all properties of a digital
 	 * entity and showing results on new page. They are also used to create URLs to log, owl and json files. 
 	 */
-	private String uuid = ServletActionContext.getRequest().getParameter("uuidName");
+	private String uuid = ServletActionContext.getRequest().getParameter("uuidName");	
 	
 	private String uuidFile = ServletActionContext.getRequest().getParameter("uuidFileName");
 
@@ -93,7 +93,9 @@ public class MoleculeViewLogAction extends ActionSupport {
 	 * The zero-point electronic energy list. 
 	 */
 	List<ElectronicEnergy> zeroPointElectronicEnergyList = new ArrayList<ElectronicEnergy>();
-	
+	/**
+	 * The electronic and zero point energy list. 
+	 */
 	List<ElectronicEnergy> electronicAndZeroPointEnergyList = new ArrayList<ElectronicEnergy>();
 	
 	/*
@@ -106,7 +108,7 @@ public class MoleculeViewLogAction extends ActionSupport {
 	public String execute() {
 		
 		/**
-		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid.</p>
+		 * @author nk510 <p>SPARQL returns a list of frequencies for given uuid and uuidFile.</p>
 		 */
 		frequencyList = QueryManager.getAllFrequencies(getUuid(),getUuidFile());
 
@@ -119,20 +121,20 @@ public class MoleculeViewLogAction extends ActionSupport {
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers rotational symmetry number
-		 *         for given uuid.</p>
+		 *         for given uuid and uuidFile.</p>
 		 */
 
 		rotationalSymmetryNumber = QueryManager.getAllRotationalSymmertyNumber(getUuid(),getUuidFile());
 
 		/**
 		 * @author nk510 <p>SPARQL returns String that remembers spin multiplicity value
-		 *         for given uuid.</p>
+		 *         for given uuid and uuidFile.</p>
 		 */
 
 		spinMultiplicityValue = QueryManager.getAllSpinMultiplicity(getUuid(),getUuidFile());
 
 		/**
-		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid. It
+		 * @author nk510 <p>Remembers atomic masses for each atom appearing in a molecule (species) based on uuid and uuidFile. It
 		 *         includes atomic mass value, atomic mass unit, and atom name.</p>
 		 */
 
@@ -148,24 +150,45 @@ public class MoleculeViewLogAction extends ActionSupport {
 
 		/**
 		 * @author nk510 <p>SPARQL returns List<FormalCharge> that remembers formal charge value and formal charge unit
-		 *         for given uuid.</p>
+		 *         for given uuid and uuidFile.</p>
 		 */	
 
 		formalChargeList = QueryManager.getAllFormalCharge(getUuid(),getUuidFile());
 		
+		/**
+		 * @author nk510 <p>SPARQL returns List<ElectronicEnergy> that remembers zero point electronic energy value and  unit
+		 *         for given uuid and given uuidFile.</p>
+		 */	
+		
 		zeroPointElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),getUuidFile(),"ZeroPointEnergy");
 		
+		/**
+		 * @author nk510 <p>SPARQL returns List<ElectronicEnergy> that remembers electronic and zero point energy value and  unit
+		 *         for given uuid and given uuidFile.</p>
+		 */	
+		
 		electronicAndZeroPointEnergyList = QueryManager.getElectronicEnergy(getUuid(),getUuidFile(),"ElectronicAndZPEEnergy");
+		
+		/**
+		 * @author nk510 <p>SPARQL returns List<ElectronicEnergy> that remembers scf electronic energy value and  unit
+		 *         for given uuid and given uuidFile.</p>
+		 */	
 		
 		scfElectronicEnergyList = QueryManager.getElectronicEnergy(getUuid(),getUuidFile(),"ScfEnergy");
 		
 		return SUCCESS;
 	}
 
+	/**
+	 * @return the uuidFile
+	 */
 	public String getUuidFile() {
 		return uuidFile;
 	}
 
+	/**
+	 * @param uuidFile unique name for generated owl file.
+	 */
 	public void setUuidFile(String uuidFile) {
 		this.uuidFile = uuidFile;
 	}
@@ -359,42 +382,72 @@ public class MoleculeViewLogAction extends ActionSupport {
 		this.rotationalConstantList = rotationalConstantList;
 	}
 
+	/**
+	 * @return list of formal charge data
+	 */
 	public List<FormalCharge> getFormalChargeList() {
 		return formalChargeList;
 	}
 
+	/**
+	 * @param formalChargeList list of formal charge data.
+	 */
 	public void setFormalChargeList(List<FormalCharge> formalChargeList) {
 		this.formalChargeList = formalChargeList;
 	}
 
+	/**
+	 * @return scf electronic energy
+	 */
 	public List<ElectronicEnergy> getScfElectronicEnergyList() {
 		return scfElectronicEnergyList;
 	}
 
+	/**
+	 * @param scfElectronicEnergyList the list of scf electronic energy data
+	 */
 	public void setScfElectronicEnergyList(List<ElectronicEnergy> scfElectronicEnergyList) {
 		this.scfElectronicEnergyList = scfElectronicEnergyList;
 	}
 
+	/**
+	 * @return zero point energy electronic energy list
+	 */
 	public List<ElectronicEnergy> getZeroPointElectronicEnergyList() {
 		return zeroPointElectronicEnergyList;
 	}
 
+	/**
+	 * @param zero point electronic energy list
+	 */
 	public void setZeroPointElectronicEnergyList(List<ElectronicEnergy> zeroPointElectronicEnergyList) {
 		this.zeroPointElectronicEnergyList = zeroPointElectronicEnergyList;
 	}
 
+	/**
+	 * @return gaussian JSON file name
+	 */
 	public String getGaussianJsonFileName() {
 		return gaussianJsonFileName;
 	}
 
+	/**
+	 * @param gaussianJsonFileName
+	 */
 	public void setGaussianJsonFileName(String gaussianJsonFileName) {
 		this.gaussianJsonFileName = gaussianJsonFileName;
 	}
 
+	/**
+	 * @return electronic snd zero point energy list
+	 */
 	public List<ElectronicEnergy> getElectronicAndZeroPointEnergyList() {
 		return electronicAndZeroPointEnergyList;
 	}
 
+	/**
+	 * @param electronic and zero point energy list
+	 */
 	public void setElectronicAndZeroPointEnergyList(List<ElectronicEnergy> electronicAndZeroPointEnergyList) {
 		this.electronicAndZeroPointEnergyList = electronicAndZeroPointEnergyList;
 	}

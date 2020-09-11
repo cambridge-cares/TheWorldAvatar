@@ -461,68 +461,6 @@ public class QueryManager {
 
 	}
 	
-//	public static List<Frequency> getAllFrequencies(String uuid) {
-//
-//		List<Frequency> frequencyList = new ArrayList<Frequency>();
-//
-//		String queryString = QueryString.geFrequency(uuid);
-//
-//		Repository repository = new HTTPRepository(serverUrl);
-//
-//		repository.initialize();
-//
-//		RepositoryConnection connection = repository.getConnection();
-//
-//		try {
-//
-//			connection.begin(IsolationLevels.SNAPSHOT_READ);
-//
-//			TupleQuery tupleQuery = connection.prepareTupleQuery(QueryLanguage.SPARQL, queryString);
-//
-//			TupleQueryResult result = tupleQuery.evaluate();
-//
-//			try {
-//
-//				while (result.hasNext()) {
-//
-//					BindingSet bindingSet = result.next();
-//
-//					Frequency frequency = new Frequency(bindingSet.getValue("frequenciesSize").stringValue(),
-//							bindingSet.getValue("frequenciesValue").stringValue(),
-//							bindingSet.getValue("frequenciesUnit").stringValue());
-//
-//					frequencyList.add(frequency);
-//				}
-//
-//				connection.commit();
-//
-//			} catch (Exception e) {
-//
-//				logger.info(e.getMessage());
-//
-//			} finally {
-//
-//				result.close();
-//			}
-//
-//		} catch (RepositoryException e) {
-//
-//			logger.info(e.getMessage());
-//
-//			connection.rollback();
-//
-//		} finally {
-//
-//			connection.close();
-//
-//			repository.shutDown();
-//		}
-//
-//		return frequencyList;
-//
-//	}
-	
-
 	/**
 	 * 
 	 * Gets the all non compositet molecule properties.
@@ -565,7 +503,6 @@ public class QueryManager {
 					BindingSet bindingSet = result.next();
 
 					MoleculeProperty moleculeProperty = new MoleculeProperty(uuid,
-//							bindingSet.getValue("moleculeName").stringValue(),
 							/**
 							 * @author nk510
 							 * It removes any occurrence of "1" and removes  spaces in the resulting output string of species name.

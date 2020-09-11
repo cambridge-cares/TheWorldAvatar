@@ -88,9 +88,15 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 	 */
 	@Override
 	public String execute() throws Exception {
-
+		
+        /**
+         * Propositional logic parser used together with Philipp's parser to parse input string in search box 
+         */
 		PLParser parser = new PLParser();
 
+		/**
+		 * Calculates satisfiability of search text.
+		 */
 		DPLL dpll = new DPLLSatisfiable();
 
 		String periodicTableSymbol = null;

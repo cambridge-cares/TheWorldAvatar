@@ -136,6 +136,7 @@ public class FolderManager {
 	 * @param dataFolderPath folder where Gaussian, xml, and png files are stored.
 	 * @param format the format of file.
 	 * @return the file name
+	 *  
 	 */
 
 	public String getFileName(String uuid,  String kbFolderPath, String dataFolderPath, String format) {
