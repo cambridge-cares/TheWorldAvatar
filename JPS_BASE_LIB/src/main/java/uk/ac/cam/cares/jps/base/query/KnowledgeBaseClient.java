@@ -18,6 +18,9 @@ import org.apache.jena.update.UpdateRequest;
 
 import java.util.List;
 import java.util.logging.Logger;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import uk.ac.cam.cares.jps.base.config.JPSConstants;
@@ -146,32 +149,80 @@ public class KnowledgeBaseClient {
 	}
 	
 	/**
-	 * Executes the query supplied by the calling method and returns results. 
+	 * Executes the query supplied by the calling method and returns results.
 	 * 
 	 * @param query
 	 * @return
 	 */
-	public JSONObject executeQuery(String query) throws SQLException{
-        JSONObject results = new JSONObject();
+	public JSONArray executeQuery(String query) throws SQLException {
+		JSONArray results = new JSONArray();
 		Connection conn = null;
-        Statement stmt = null;
-        try {
-            RemoteEndpointDriver.register();
-            System.out.println(getConnectionUrl());
-            conn = DriverManager.getConnection(getConnectionUrl());
-            stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
+		Statement stmt = null;
+		try {
+			RemoteEndpointDriver.register();
+			System.out.println(getConnectionUrl());
+			conn = DriverManager.getConnection(getConnectionUrl());
+			stmt = conn.createStatement(java.sql.ResultSet.TYPE_FORWARD_ONLY, java.sql.ResultSet.CONCUR_READ_ONLY);
 			System.out.println(query);
-            java.sql.ResultSet rs = stmt.executeQuery(query);
-            while (rs.next()) {
-				// Print out type as a string
-				System.out.println(rs.getString("reactionMechanism"));
-			}
-        } catch (SQLException e) {
-        	throw new SQLException(e.getMessage());
-        }
-        return results;
+			java.sql.ResultSet rs = stmt.executeQuery(query);
+			results = convert(rs);
+		} catch (SQLException e) {
+			throw new SQLException(e.getMessage());
+		}
+		return results;
 	}
 	
+	/**
+	 * Converts query results into JSON.
+	 * 
+	 * @param rs
+	 * @return results in JSON format
+	 * @throws SQLException
+	 * @throws JSONException
+	 */
+	public JSONArray convert(java.sql.ResultSet rs) throws SQLException, JSONException {
+		JSONArray json = new JSONArray();
+		java.sql.ResultSetMetaData rsmd = rs.getMetaData();
+		while (rs.next()) {
+			int numColumns = rsmd.getColumnCount();
+			JSONObject obj = new JSONObject();
+			for (int i = 1; i < numColumns + 1; i++) {
+				String column_name = rsmd.getColumnName(i);
+				if (rsmd.getColumnType(i) == java.sql.Types.ARRAY) {
+					obj.put(column_name, rs.getArray(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.BIGINT) {
+					obj.put(column_name, rs.getInt(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.BOOLEAN) {
+					obj.put(column_name, rs.getBoolean(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.BLOB) {
+					obj.put(column_name, rs.getBlob(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.DOUBLE) {
+					obj.put(column_name, rs.getDouble(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.FLOAT) {
+					obj.put(column_name, rs.getFloat(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.INTEGER) {
+					obj.put(column_name, rs.getInt(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.NVARCHAR) {
+					obj.put(column_name, rs.getNString(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.VARCHAR) {
+					obj.put(column_name, rs.getString(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.TINYINT) {
+					obj.put(column_name, rs.getInt(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.SMALLINT) {
+					obj.put(column_name, rs.getInt(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.DATE) {
+					obj.put(column_name, rs.getDate(column_name));
+				} else if (rsmd.getColumnType(i) == java.sql.Types.TIMESTAMP) {
+					obj.put(column_name, rs.getTimestamp(column_name));
+				} else {
+					obj.put(column_name, rs.getObject(column_name));
+				}
+			}
+			json.put(obj);
+		}
+		return json;
+	}
+
 	/**
 	 * Checks the validity of the URL generated for connecting to a remote<p>
 	 * repository based on user provided inputs via one of the parameterised<p>
