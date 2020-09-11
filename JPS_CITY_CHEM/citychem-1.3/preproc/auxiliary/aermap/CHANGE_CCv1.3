@@ -1,0 +1,38 @@
+
+CHANGES IN AERMAP
+=================
+
+aermap.f	23.05.2019
+==========================
+
+
+Line 8605 ...
+
+      SUBROUTINE WRITRZ
+
+Line 8642
+C     Compute number of lines to output per radial/row and number leftover
+C      NLIN = INT( (IRXT-1) / 6) + 1
+C      LEFTOV = MOD (IRXT,6)
+      NLIN = INT( (IRXT-1) / 5) + 1
+      LEFTOV = MOD (IRXT,5)
+
+Line 8655
+C               NITM = 6
+               NITM = 5
+
+Line 8677
+C               NITM = 6
+               NITM = 5
+
+Line 8691
+C 3016 FORMAT(3X,A8,1X,A8,1X,'ELEV ',I4,6(1X,F8.1))
+C 3017 FORMAT(3X,A8,1X,A8,1X,'HILL ',I4,6(1X,F8.1))
+ 3016 FORMAT(3X,A8,1X,A8,1X,'ELEV ',I4,5(1X,F8.1))
+ 3017 FORMAT(3X,A8,1X,A8,1X,'HILL ',I4,5(1X,F8.1))
+
+
+
+
+
+

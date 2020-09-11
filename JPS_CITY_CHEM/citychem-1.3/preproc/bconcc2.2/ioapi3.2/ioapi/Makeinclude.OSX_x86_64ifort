@@ -1,0 +1,38 @@
+# VERSION "$Id: Makeinclude.OSX_x86_64ifort 1 2017-06-10 18:05:20Z coats $"
+#
+#  Library flags severely hacked to satisfy Sun's broken
+#  compiler-linker system
+#  From Scott N. Spak / Center for Sustainability and the Global Environment
+#  University of Wisconsin-Madison
+
+AR   = ar 
+CC   = gcc -arch x86_64
+FC   = ifort
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+## Module-include-directory command
+MODI = -I
+E132 = -extend-source 132
+
+MFLAGS = -traceback
+
+OMPFLAGS  = 
+OMPLIBS   =
+COPTFLAGS = -O3 -m64 ${MFLAGS}
+FOPTFLAGS = ${MFLAGS} -xT -O3 -ip -mdynamic-no-pic -warn declarations -recursive
+FPPFLAGS  = 
+FSFLAGS   = -save
+ARCHFLAGS = \
+ -DAUTO_ARRAYS=1 \
+ -DF90=1 \
+ -DFLDMN=1 \
+ -DFSTR_L=int \
+ -DAVOID_FLUSH=1
+
+#PARFLAGS  =
+#ARCHLIB   = -Bstatic -lc
+
+#M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+#PVMLIBS   = -lpvm3

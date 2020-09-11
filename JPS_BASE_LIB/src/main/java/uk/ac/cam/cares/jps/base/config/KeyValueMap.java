@@ -1,7 +1,8 @@
 package uk.ac.cam.cares.jps.base.config;
 
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -40,34 +41,46 @@ public class KeyValueMap {
 	 */
 	private void init() {
 		
-		String path = AgentLocator.getJPSBaseDirectory();
 		
-		boolean runningForTest = AgentLocator.isJPSRunningForTest();
-		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		try {
-			loadProperties(path + "/conf/jps.properties");
-		} catch (IOException exc) {
+			loadProperties("/jps.properties");
+		}catch (FileNotFoundException exc) {
 			JPSBaseLogger.error(this, exc);
 			throw new JPSRuntimeException(exc.getMessage(), exc);
 		}
-		
+		catch (IOException exc) {
+			JPSBaseLogger.error(this, exc);
+			throw new JPSRuntimeException(exc.getMessage(), exc);
+		}
+
+		boolean runningForTest = Boolean.valueOf(map.get("test"));
+		JPSBaseLogger.info(this, "Tomcat is running for test = " + runningForTest);
 		if (runningForTest)  {
 			try {
 				// if started on local server then overwrite values from jps.properties
-				loadProperties(path + "/conf/jpstest.properties");
+				loadProperties("/jpstest.properties");
+			}catch (FileNotFoundException exc) {
+				JPSBaseLogger.error(this, exc);
+				throw new JPSRuntimeException(exc.getMessage(), exc);
 			} catch (IOException exc) {
 				JPSBaseLogger.info(this, "jpstest.properties was not found");
 			}
 		}
 	}
-	
+	/**  load all key value pairs 
+	 * 
+	 * @param propertyFile
+	 * @throws IOException
+	 */
 	private void loadProperties(String propertyFile) throws IOException {
 	    
 		JPSBaseLogger.info(this, "loading key-value pairs from " + propertyFile);
 		
-		FileInputStream inputStream = new FileInputStream(propertyFile);
+		InputStream fin=null;
 		Properties props = new Properties();
-		props.load(inputStream);	
+		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
+		props = new Properties();
+		props.load(fin); 	
 		
 		Set<String> keys = props.stringPropertyNames();
 		for (String key : keys) {
@@ -75,5 +88,24 @@ public class KeyValueMap {
 			put(key, value);
 			JPSBaseLogger.info(this, key + " = " + value);
 		}
+	}
+	/**
+	 * static method of accessing a property from a given properties file in JPS BASE LIB
+	 * @param propertyFile
+	 * @param getKey
+	 * @return
+	 */
+	public static String getProperty(String propertyFile, String getKey) {
+		InputStream fin=null;
+		Properties props = new Properties();
+		fin=KeyValueMap.class.getResourceAsStream(propertyFile); //this is a static function
+		props = new Properties();
+		try {
+		props.load(fin);}
+		catch (IOException exc) {
+			JPSBaseLogger.info(KeyValueMap.class,  " properties was not loaded ");
+		}
+		String value = props.getProperty(getKey);
+		return value;
 	}
 }

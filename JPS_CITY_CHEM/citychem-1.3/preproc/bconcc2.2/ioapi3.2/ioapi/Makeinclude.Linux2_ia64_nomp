@@ -1,0 +1,29 @@
+# VERSION "$Id: Makeinclude.Linux2_ia64_nomp 1 2017-06-10 18:05:20Z coats $"
+#
+#
+#       Linux for IA64 using the Intel compiler suite, OpenMP disabled
+#
+AR   = ar
+CC   = ecc
+CXX  = ecpc
+FC   = efc -auto -w90 -cm
+M4   = m4
+CPP  = cpp
+LINK = $(CC)
+
+MODI = -I       ## Module-include-directory command
+
+MFLAGS    = -tpp2 -traceback
+
+OMPFLAGS  = # -openmp
+OMPLIBS   = -Vaxlib # -openmp
+COPTFLAGS = -O3 ${MFLAGS}
+FOPTFLAGS = -O3 ${MFLAGS}
+FPPFLAGS  = 
+FSFLAGS   = -save
+ARCHFLAGS = -DAUTO_ARRAYS=1 -DF90=1 -DFLDMN=1 -DFSTR_L=int
+PARFLAGS  =
+ARCHLIB   = 
+
+M4DEFFILE = $(PVM_ROOT)/conf/$(PVM_ARCH).m4
+PVMLIBS   = -lpvm3
