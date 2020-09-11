@@ -208,6 +208,7 @@
         1.00783,
         1.00783
     ],
+    "Atomic mass unit": "atomic",
     "Method": "RHSEH1PBE TD-FC",
     "Basis set": "6-311G(d,p)",
     "Spin multiplicity": 1,

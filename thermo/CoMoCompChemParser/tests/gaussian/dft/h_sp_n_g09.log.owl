@@ -55,6 +55,7 @@
 
 <http://www.theworldavatar.com/kb/ontocompchem/h_sp_n_g09/h_sp_n_g09.log.owl#finalization_module_has_mass_H1_H0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
+    gc:hasUnit unit:Dalton ;
     gc:hasValue 1.00783e+00 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/h_sp_n_g09/h_sp_n_g09.log.owl#finalization_module_has_molecule_H1_1> a gc:Molecule,

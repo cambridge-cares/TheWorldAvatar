@@ -553,6 +553,7 @@ class CcGaussianParser():
                     data[ATOM_MASSES] = []
                     for at in data[ATOM_TYPES]:
                         data[ATOM_MASSES].append(eld.get_el_wt_by_symbol(at))
+                    data[ATOM_MASSES_UNIT] = 'atomic'
         #================================================
 
         #================================================

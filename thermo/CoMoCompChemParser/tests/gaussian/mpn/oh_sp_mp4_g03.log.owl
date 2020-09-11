@@ -79,10 +79,12 @@
 
 <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_has_mass_H1O1_H1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
+    gc:hasUnit unit:Dalton ;
     gc:hasValue 1.00783e+00 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_has_mass_H1O1_O0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
+    gc:hasUnit unit:Dalton ;
     gc:hasValue 1.599949e+01 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/oh_sp_mp4_g03/oh_sp_mp4_g03.log.owl#finalization_module_has_molecule_H1O1_1> a gc:Molecule,

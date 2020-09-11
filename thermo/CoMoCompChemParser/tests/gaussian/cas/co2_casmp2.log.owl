@@ -102,14 +102,17 @@
 
 <http://www.theworldavatar.com/kb/ontocompchem/co2_casmp2/co2_casmp2.log.owl#finalization_module_has_mass_C1O2_C0_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
+    gc:hasUnit unit:Dalton ;
     gc:hasValue 1.20107e+01 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/co2_casmp2/co2_casmp2.log.owl#finalization_module_has_mass_C1O2_O1_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
+    gc:hasUnit unit:Dalton ;
     gc:hasValue 1.599949e+01 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/co2_casmp2/co2_casmp2.log.owl#finalization_module_has_mass_C1O2_O2_a3c43724-3174-323f-857b-70c6ef3e6f8e_1> a gc:FloatValue,
         owl:Thing ;
+    gc:hasUnit unit:Dalton ;
     gc:hasValue 1.599949e+01 .
 
 <http://www.theworldavatar.com/kb/ontocompchem/co2_casmp2/co2_casmp2.log.owl#finalization_module_has_molecule_C1O2_1> a gc:Molecule,

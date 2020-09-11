@@ -9,6 +9,7 @@
     "Atomic masses": [
         1.00783
     ],
+    "Atomic mass unit": "atomic",
     "Method": "UB3LYP",
     "Basis set": "CC-pVTZ",
     "Spin multiplicity": 2,
