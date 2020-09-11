@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 
 public class JSonRequestParser {
 	
@@ -52,6 +49,16 @@ public class JSonRequestParser {
 		return reactionIRI;
 	}
 	
+	public static List<String> getRxnsMustInclude(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("reactionMustInclude");
+		List<String> reactionIRI = new ArrayList<>();
+		for (JsonNode arrayItem : locateNode) {
+			reactionIRI.add(arrayItem.asText());
+		}
+		
+		return reactionIRI;
+	}
+	
 	// mods part
 	public static String getIgnDelayMethod(String jsonString) throws JsonProcessingException, IOException {
 		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("ignDelayOption").path("method");
@@ -83,6 +90,29 @@ public class JSonRequestParser {
 		return locateNode.asText();
 	}
 	
+	public static String getMaxOrAvg(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("sensAna").path("maxORavg");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getMoDSExePath(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("mods").path("executable").path("path");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getCanteraCondaEnv(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("cantera").path("environment");
+		
+		return locateNode.asText();
+	}
+	
+	public static String getSimEnd(String jsonString) throws JsonProcessingException, IOException {
+		JsonNode locateNode = new ObjectMapper().readTree(jsonString).path("json").path("kinetics").path("numerical").path("simEnd");
+		
+		return locateNode.asText();
+	}
 	
 //	public static String getAlgName(String jsonString) {
 //		return JsonPath.read(jsonString, "$.job.mods.algorithm.name");
