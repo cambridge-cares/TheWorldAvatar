@@ -168,8 +168,7 @@ public class CompChemQuery {
 			ResultSet resultSet = qexec.execSelect();
 			
 			while(resultSet.hasNext()) { 
-		    
-//		    fileOutputStream=new FileOutputStream(new File(targetFolder+ StringUtils.substringBefore(fileName, ".")  +".json"),false);
+				
 			/**
 			 * Creates json file based on name of created OWL file including log/g09/g16 extension.
 			 */
