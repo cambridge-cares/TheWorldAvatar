@@ -16,6 +16,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLDecoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -377,9 +378,10 @@ public class gPROMSAgent extends JPSAgent {
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(gPROMSAgentProperty.getHpcAddress(), timeStamp);
 
+
 		return jobSubmission.setUpJob(jsonInput,
-				new File(getClass().getClassLoader().getResource(gPROMSAgentProperty.getSlurmScriptFileName())
-						.getPath()),
+				new File(URLDecoder.decode(getClass().getClassLoader().getResource(gPROMSAgentProperty.getSlurmScriptFileName())
+						.getPath(), "utf-8")),
 				new File("C:/Users/caresadmin/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/input.zip"),
 				timeStamp);
 	}
