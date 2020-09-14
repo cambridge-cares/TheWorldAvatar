@@ -49,17 +49,14 @@ public enum Property {
 	JOB_SETUP_EXPERIMENT_IRI_MISSING("The experiment IRI is not provided."),
 	JOB_SETUP_REACTION_IRI_MISSING("The reaction IRI list is not provided."),
 	JOB_SETUP_REACTION_IRI_MISPLACED("The reaction IRI list is misplaced"),
-	JOB_SETUP_RELATIVE_PERTURBATION_MISSING("The relative perturbation is provided."),
-	JOB_SETUP_MAX_AVG_INAPPROPRIATE("The processing option for sensitivity analysis should be either \"max\" or \"avg\"."),
-	JOB_SETUP_MODS_EXE_PATH_MISSING("The MoDS executable path is not provided."),
-	JOB_SETUP_CANTERA_CONDA_ENV_MISSING("The conda environment where Cantera installed is not provided.");
+	JOB_SETUP_RELATIVE_PERTURBATION_MISSING("The relative perturbation is provided.");
 	
 	public static final String AGENT_SENS_ANA_MODIFIED_JSON = "modifiedInput.json";
 	public static final String AGENT_MECH_CALIB_UPDATED_MECH_PREFIX = "mechanism";
 	public static final String AGENT_MECH_CALIB_UPDATED_MECH_SUFFIX = ".owl";
 	public static final String AGENT_SENS_ANA_CLASS = "MoDSSensAnaAgent";
 	public static final String AGENT_MECH_CALIB_CLASS = "MoDSMechCalibAgent";
-	public static final String JOB_COORDINATION_PATH = "/coordination/request";
+	public static final String JOB_COORDINATION_PATH = "/AutoMechCalibAgent/coordination";
 	public static final String AGENT_SENS_ANA_PATH = "/MoDSSensAnaAgent";
 	public static final String AGENT_MECH_CALIB_PATH = "/MoDSMechCalibAgent";
 	public static final String JOB_REQUEST_PATH = "/job/request";

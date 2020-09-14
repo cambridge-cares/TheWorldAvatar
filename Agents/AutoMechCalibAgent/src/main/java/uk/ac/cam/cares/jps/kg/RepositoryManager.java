@@ -26,6 +26,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import uk.ac.cam.cares.jps.agent.mechanism.coordination.AutoMechCalibAgentException;
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 public class RepositoryManager implements IRepositoryManager {
 	static Logger logger = Logger.getLogger(RepositoryManager.class);
@@ -208,39 +209,38 @@ public class RepositoryManager implements IRepositoryManager {
 	 */
 	public String queryRepositoryReturnJson(String serverURL, String repositoryID, String queryString)
 			throws OntoException {
-//		init();
-//		StringBuilder json = new StringBuilder();
-//		try {
-//			Repository repo = new HTTPRepository(serverURL, repositoryID);
-//			repo.initialize();
-//			RepositoryConnection con = repo.getConnection();
-//			try {
-//				System.out.println("Query String:\n" + queryString);
-//				// Export all statements in the context to System.out, in RDF/XML format
-//				TupleQuery queryResult = con.prepareTupleQuery(queryString);
-//				// A QueryResult is also an AutoCloseable resource, so make sure it gets
-//				// closed when done.
-//				try (TupleQueryResult result = queryResult.evaluate()) {
-//					json = getResultInJson(json, result);
-//				} finally {
-//					// Before our program exits, make sure the database is properly shut down.
-//					repo.shutDown();
-//				}
-//			} catch (Exception e) {
-//				logger.error("Exception occurred.");
-//				e.printStackTrace();
-//				throw new OntoException("Exception occurred.");
-//			} finally {
-//				logger.info("Executed the command to close the connection to the repository");
-//				con.close();
-//			}
-//		} catch (RDF4JException e) {
-//			logger.error("RDF4JException occurred.");
-//			e.printStackTrace();
-//			throw new OntoException("RDF4JException occurred.");
-//		}
-//		return json.toString();
-		return null;
+		init();
+		StringBuilder json = new StringBuilder();
+		try {
+			Repository repo = new HTTPRepository(serverURL, repositoryID);
+			repo.initialize();
+			RepositoryConnection con = repo.getConnection();
+			try {
+				System.out.println("Query String:\n" + queryString);
+				// Export all statements in the context to System.out, in RDF/XML format
+				TupleQuery queryResult = con.prepareTupleQuery(queryString);
+				// A QueryResult is also an AutoCloseable resource, so make sure it gets
+				// closed when done.
+				try (TupleQueryResult result = queryResult.evaluate()) {
+					json = getResultInJson(json, result);
+				} finally {
+					// Before our program exits, make sure the database is properly shut down.
+					repo.shutDown();
+				}
+			} catch (Exception e) {
+				logger.error("Exception occurred.");
+				e.printStackTrace();
+				throw new OntoException("Exception occurred.");
+			} finally {
+				logger.info("Executed the command to close the connection to the repository");
+				con.close();
+			}
+		} catch (RDF4JException e) {
+			logger.error("RDF4JException occurred.");
+			e.printStackTrace();
+			throw new OntoException("RDF4JException occurred.");
+		}
+		return json.toString();
 	}
 
 	public List<List<String>> queryRepository(String serverURL, String repositoryID, String queryString)
@@ -276,15 +276,15 @@ public class RepositoryManager implements IRepositoryManager {
 		return processedResultList;
 	}
 
-//	/**
-//	 * Initialises property values.
-//	 * 
-//	 * @throws OntoException
-//	 */
-//	private static void init() throws OntoException {
-//		if (applicationContext == null) {
-//			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-//		}
+	/**
+	 * Initialises property values.
+	 * 
+	 * @throws OntoException
+	 */
+	private static void init() throws OntoException {
+		if (applicationContext == null) {
+			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
+		}
 		// need to modify this part
 //		if (ontochemexpKB == null) {
 //			ontochemexpKB = applicationContext.getBean(OntoChemExp.class);
@@ -312,7 +312,7 @@ public class RepositoryManager implements IRepositoryManager {
 //			logger.info("The value of the property ontochem.kb.rdf4j.repository.id in the jps-project.properties file is null or empty.");
 //			throw new OntoException("The value of the property ontochem.kb.rdf4j.repository.id in the jps-project.properties file is null or empty.");
 //		}
-//	}
+	}
 
 	/**
 	 * Checks the validity of the following parameters:</br>
