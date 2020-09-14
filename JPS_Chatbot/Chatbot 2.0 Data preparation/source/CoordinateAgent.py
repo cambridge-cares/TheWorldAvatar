@@ -52,6 +52,7 @@ class CoordinateAgent():
             if topic == 'wiki':
                 try:
                     result = self.wiki_query(question)
+                    return result
                 except:
                     # TODO: add JPS results to it
                     pass

@@ -22,6 +22,9 @@ from urllib.parse import urlparse
 
 # To conclude, the direct scraping work fine.
 
+
+
+
 class WolframGoogle:
     def __init__(self):
         # ================= setup wolfram alpha ==============
@@ -34,39 +37,40 @@ class WolframGoogle:
         self.serpwow = GoogleSearchResults(self.google_api_key)
         self.object_template = {"head": {"vars": ["v"]}, "results": {"bindings": []}}
 
-    def get_result_from_google_directly(self, question):
+    # res = client.query('stability of FMOC amide + zinc')
 
+    def get_result_from_google_directly(self, question):
         # query = question.replace(' ', '+')
         URL = f"https://google.com/search?q={question}"
         USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0"
         MOBILE_USER_AGENT = "Mozilla/5.0 (Linux; Android 7.0; SM-G930V Build/NRD90M) AppleWebKit/537.36 (KHTML, " \
                             "like Gecko) Chrome/59.0.3071.125 Mobile Safari/537.36 "
-
         headers = {"user-agent": USER_AGENT}
         resp = requests.get(URL, headers=headers)
         print(resp.status_code)
         if resp.status_code == 200:
             soup = BeautifulSoup(resp.content, "html.parser")
-            div_result = soup.find_all('div', id ='rso')[0]
+            div_result = soup.find_all('div', id='rso')[0]
             children_divs = div_result.findChildren()
             first_child = children_divs[0]
             first_result = first_child.findChildren()[0]
-            headings =  first_result.find_all('div', role='heading')
+            headings = first_result.find_all('div', role='heading')
             valid_results = []
             for head in headings:
                 if 'People also search for' in str(head) or ('View 10+' in str(head)):
                     pass
                 else:
-                    valid_results.append(str(head))
-
-            result_div = '\n'.join(valid_results)
+                    valid_results.append(head.text)
+            result_div = '<br/>'.join(valid_results)
+            print('====== result div ==========')
             print(result_div)
 
+            return result_div
 
+        else:
+            # This indicates that Google does not give you a direct answer...
+            return None
 
-
-
-    # res = client.query('stability of FMOC amide + zinc')
     def get_result_from_serpwow(self, question):
         params = {
             "q": question
@@ -102,15 +106,15 @@ class WolframGoogle:
 
 #    def get_result_from_google(self):
 
-gs = WolframGoogle()
+# gs = WolframGoogle()
 # gs.get_result_from_google_official('what is the boiling point of water')
 # gs.get_result_from_serpwow('what is the boiling point of water')
 
-test_question_set = ['what is the boiling point of water', 'chemical structure of benzene', 'capital of saudi arabia']
-for q in test_question_set:
-    gs.get_result_from_google_directly(q)
-    time.sleep(5)
-    print('\n ================== \n')
+# test_question_set = ['what is the boiling point of water', 'chemical structure of benzene', 'capital of saudi arabia']
+# for q in test_question_set:
+#     get_result_from_google_directly(q)
+#     time.sleep(5)
+#     print('\n ================== \n')
 
 
 # wf = WolframGoogle()
