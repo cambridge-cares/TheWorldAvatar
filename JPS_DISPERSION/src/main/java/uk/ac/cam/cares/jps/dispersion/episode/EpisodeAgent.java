@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.RoundingMode;
+import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -20,18 +21,20 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import javax.servlet.ServletException;
+import javax.ws.rs.BadRequestException;
 
+import org.cts.CRSFactory;
 import org.apache.commons.io.FileUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
 import org.apache.jena.query.ResultSet;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.cts.registry.EPSGRegistry;
+import org.cts.registry.RegistryManager;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataQuery;
@@ -39,11 +42,8 @@ import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
-import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 import uk.ac.cam.cares.jps.base.util.CRSTransformer;
 import uk.ac.cam.cares.jps.base.util.MatrixConverter;
 import uk.ac.cam.cares.jps.dispersion.general.DispersionModellingAgent;
@@ -86,18 +86,10 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	private double deltaT;
 	boolean restart=false;
 	
-	static JobSubmission jobSubmission;
-	public static SlurmJobProperty slurmJobProperty;
-	public static ApplicationContext applicationContext;
-	private File jobSpace;
-	
 	//below is based on location input (city iri)
 	private String epsgInUTM="48";//48N
 	private String epsgActive="32648";
 	private String gmttimedifference="-8"; //it should be dependent on the location it simulates
-	 
-//	static JobSubmission jobSubmission;
-//	public static SlurmJobProperty slurmJobProperty;
 	
     String chimneyiriInfo = "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
             + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_realization/plant.owl#> "
@@ -221,130 +213,183 @@ public class EpisodeAgent extends DispersionModellingAgent {
 	
 	 
 	    @Override
-	protected JSONObject processRequestParameters(JSONObject requestParams) {
-	    	JSONObject responseParams=new JSONObject();
-	    	
-			JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
-			JSONObject region = requestParams.getJSONObject("region");
-			JSONObject shipdata=requestParams.getJSONObject("ship");
-			String dataPath = QueryBroker.getLocalDataPath()+"/input";
-			String cityIRI = requestParams.getString("city"); //later to be used for annotation??
-			String agent=requestParams.getString("agent");
-			String airstn=requestParams.getString("airStationIRI");
-			String extrainfo=requestParams.toString();
-			new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
-			String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
-		    if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
-		    	sourceCRSName = CRSTransformer.EPSG_4326; 
-		    }
-		    List<String>srtm=new ArrayList<String>();
-			if(cityIRI.toLowerCase().contains("singapore")) {
-				epsgInUTM="48";
-				epsgActive="32648";
-				gmttimedifference="-8";
-				srtm.add("N01E103.tif");
-				srtm.add("N01E104.tif");
-				copyTemplate(dataPath, "N01E103.hgt");
-				copyTemplate(dataPath, "N01E104.hgt");
-			}
-			else if(cityIRI.toLowerCase().contains("kong")) {
-				epsgInUTM="50";
-				epsgActive="32650";
-				gmttimedifference="-8";
-				srtm.add("N22E114.tif");
+    protected JSONObject processRequestParameters(JSONObject requestParams) {
+        JSONObject responseParams=new JSONObject();
 
-				copyTemplate(dataPath, "N22E114.hgt");
-			}
-			
-			List<String>stniri=new ArrayList<String>();
-//			stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
-//			stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
-			stniri.add(stnIRI.getString(0));
-			stniri.add(stnIRI.getString(1));
-			
-			double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
-			double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
-			double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
-			double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
-			
-			//check if it's the first run or not
-			String olddatapath=getPreviousHourDatapath(agent,cityIRI);
-			if(!olddatapath.contains("empty")) {
-				restart=true;
-				File file = new File( olddatapath+ "/output/icmhour.nc");
-				File file3des=new File(dataPath + "/icmhour.nc");
-				File file2 = new File( olddatapath+ "/output/plume_segments.dat");
-				File file2des=new File(dataPath + "/plume_segments.dat");
-				try {
-					FileUtils.copyFile(file, file3des);
-					FileUtils.copyFile(file2, file2des);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				//new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
+        if (validateInput(requestParams)) {
+            JSONArray stnIRI=requestParams.getJSONArray("stationiri"); //ok
+            JSONObject region = requestParams.getJSONObject("region");
+            JSONObject shipdata=requestParams.getJSONObject("ship");
+            String dataPath = QueryBroker.getLocalDataPath()+"/input";
+            String cityIRI = requestParams.getString("city"); //later to be used for annotation??
+            String agent=requestParams.getString("agent");
+            String airstn=requestParams.getString("airStationIRI");
+            String extrainfo=requestParams.toString();
+            new QueryBroker().putLocal(QueryBroker.getLocalDataPath()+"/extra_info.json", extrainfo);			
+            String sourceCRSName = region.optString("srsname"); //assuming from the front end of jpsship, it is in epsg 3857 for universal
+            if ((sourceCRSName == null) || sourceCRSName.isEmpty()) { //regarding the composition, it will need 4326, else, will be universal 3857 coordinate system
+                sourceCRSName = CRSTransformer.EPSG_4326; 
+            }
+            List<String>srtm=new ArrayList<String>();
+            if(cityIRI.toLowerCase().contains("singapore")) {
+                epsgInUTM="48";
+                epsgActive="32648";
+                gmttimedifference="-8";
+                srtm.add("N01E103.tif");
+                srtm.add("N01E104.tif");
+                copyTemplate(dataPath, "N01E103.hgt");
+                copyTemplate(dataPath, "N01E104.hgt");
+            }
+            else if(cityIRI.toLowerCase().contains("kong")) {
+                epsgInUTM="50";
+                epsgActive="32650";
+                gmttimedifference="-8";
+                srtm.add("N22E114.tif");
 
+                copyTemplate(dataPath, "N22E114.hgt");
+            }
 
-				
-				//new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
-			}
-			
-			System.out.println("sourcecoordinate= "+sourceCRSName);
-			System.out.println("lowerx="+lowx);
-			System.out.println("upperx="+upx);
-			System.out.println("lowery="+lowy);
-			System.out.println("uppery="+upy);
-			System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
-			region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
-			createEmissionInput(dataPath, "points.csv",shipdata);
-			createEmissionInput(dataPath, "lines.csv",shipdata);
-			try { //for control file
-				createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
-				createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
-				createControlWeatherORCityChemFile(region, dataPath, "citychem_restart.txt",stniri);
-				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_LSE.inp");
-				createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_PSE.inp");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			createReceptorFile(region,dataPath,"receptor_input.txt");
-			createWeatherInput(dataPath,"mcwind_input.txt",stniri);
-			
-			//zip all the input file created
-			File inputfile=null;
-			try {
-				inputfile=getZipFile(dataPath);
-				
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            List<String>stniri=new ArrayList<String>();
+//          stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-002.owl#WeatherStation-002");
+//          stniri.add("http://www.theworldavatar.com/kb/sgp/singapore/WeatherStation-001.owl#WeatherStation-001");
+            stniri.add(stnIRI.getString(0));
+            stniri.add(stnIRI.getString(1));
 
-			try {
-				JSONObject jsonforslurm = new JSONObject();
-				boolean value=true;
-//				if (restart==true) {//all the time must be true??
-//					value=false;
-//				}
-				long millis = System.currentTimeMillis();
-				String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
-				jsonforslurm.put("runWholeScript",value);
-				jsonforslurm.put("city",cityIRI);
-				jsonforslurm.put("agent",agent);
-				jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
-				jsonforslurm.put("expectedtime", executiontime);
-				jsonforslurm.put("airStationIRI", airstn);
-				setUpJob(jsonforslurm.toString(),dataPath);
-			} catch (IOException | SlurmJobException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+            double lowx=Double.valueOf(region.getJSONObject("lowercorner").get("lowerx").toString());
+            double lowy=Double.valueOf(region.getJSONObject("lowercorner").get("lowery").toString());
+            double upx=Double.valueOf(region.getJSONObject("uppercorner").get("upperx").toString());
+            double upy=Double.valueOf(region.getJSONObject("uppercorner").get("uppery").toString());
 
-			responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
-			return responseParams;
-		}
-    
+            //check if it's the first run or not
+            String olddatapath=getPreviousHourDatapath(agent,cityIRI);
+            if(!olddatapath.contains("empty")) {
+                restart=true;
+                File file = new File( olddatapath+ "/output/icmhour.nc");
+                File file3des=new File(dataPath + "/icmhour.nc");
+                File file2 = new File( olddatapath+ "/output/plume_segments.dat");
+                File file2des=new File(dataPath + "/plume_segments.dat");
+                try {
+                    FileUtils.copyFile(file, file3des);
+                    FileUtils.copyFile(file2, file2des);
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                //new QueryBroker().putLocal(dataPath + "/icmhour.nc", file);
+
+                //new QueryBroker().putLocal(dataPath + "/plume_segments.dat", file2);
+            }
+
+            System.out.println("sourcecoordinate= "+sourceCRSName);
+            System.out.println("lowerx="+lowx);
+            System.out.println("upperx="+upx);
+            System.out.println("lowery="+lowy);
+            System.out.println("uppery="+upy);
+            System.out.println("targetcoordinate= "+"EPSG:"+epsgActive);
+            region = getNewRegionData(upx, upy, lowx, lowy, "EPSG:"+epsgActive, sourceCRSName);
+            createEmissionInput(dataPath, "points.csv",shipdata);
+            createEmissionInput(dataPath, "lines.csv",shipdata);
+            try { //for control file
+                createControlTopologyFile(srtm,region, dataPath, "aermap.inp");
+                createControlWeatherORCityChemFile(region, dataPath, "run_file.asc",stniri);
+                createControlWeatherORCityChemFile(region, dataPath, "citychem_restart.txt",stniri);
+                createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_LSE.inp");
+                createControlEmissionFile(region,shipdata,dataPath,"cctapm_meta_PSE.inp");
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            createReceptorFile(region,dataPath,"receptor_input.txt");
+            createWeatherInput(dataPath,"mcwind_input.txt",stniri);
+
+            //zip all the input file created
+            File inputfile=null;
+            try {
+                inputfile=getZipFile(dataPath);
+
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            try {
+                JSONObject jsonforslurm = new JSONObject();
+                boolean value=true;
+//              if (restart==true) {//all the time must be true??
+//                  value=false;
+//              }
+                long millis = System.currentTimeMillis();
+                String executiontime=MetaDataAnnotator.getTimeInXsdTimeStampFormat(millis);
+                jsonforslurm.put("runWholeScript",value);
+                jsonforslurm.put("city",cityIRI);
+                jsonforslurm.put("agent",agent);
+                jsonforslurm.put("datapath",dataPath.split("/input")[0]+"/output");
+                jsonforslurm.put("expectedtime", executiontime);
+                jsonforslurm.put("airStationIRI", airstn);
+                setUpJob(jsonforslurm.toString(),dataPath);
+            } catch (IOException | SlurmJobException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            responseParams.put("folder",dataPath.split("/input")[0]+"/output/3D_instantanous_mainconc_center.dat"); //or withtBCZ?
+        }
+        return responseParams;
+    }
+
+    private boolean validateInput(JSONObject input) {
+        // Validate inputs for the processRequestParameters method
+        // Returns true if complete set of inputs are present and false if not
+        boolean valid = false;
+            try {
+                JSONArray stnIRI=input.getJSONArray("stationiri");
+                if(stnIRI.length() < 2) {
+                    System.out.println("Number of weather stations:" + stnIRI.length());
+                    System.out.println("Episode agent: At least 2 weather stations are required.");
+                    throw new Exception();
+                }
+                // at the moment it will always give two stations, in principle episode can use more than 2 stations
+                for(int x=0;x<stnIRI.length();x++) {
+                    // check if it's a valid URL
+                    new URL(stnIRI.getString(x)).toURI();
+                }
+                JSONObject region = input.getJSONObject("region");
+                String lowx = region.getJSONObject("lowercorner").get("lowerx").toString();
+                String lowy = region.getJSONObject("lowercorner").get("lowery").toString();
+                String upx = region.getJSONObject("uppercorner").get("upperx").toString();
+                String upy = region.getJSONObject("uppercorner").get("uppery").toString();
+
+                // check if provided coordinates are valid doubles
+                Double.valueOf(lowx);
+                Double.valueOf(upx);
+                Double.valueOf(lowy);
+                Double.valueOf(upy);
+
+                // city IRI
+                String cityIRI = input.getString("city");
+                new URL(cityIRI).toURI();
+                // Agent IRI
+                String agent=input.getString("agent");
+                new URL(agent).toURI();
+                // Air station IRI
+                String airstn=input.getString("airStationIRI");
+                new URL(airstn).toURI();
+                //CRS name
+                String sourceCRSName = region.optString("srsname"); 
+                if ((sourceCRSName == null) || sourceCRSName.isEmpty()) {
+                    sourceCRSName = CRSTransformer.EPSG_4326; 
+                }
+                CRSFactory crsFact = new CRSFactory();
+                RegistryManager registryManager = crsFact.getRegistryManager();
+                registryManager.addRegistry(new EPSGRegistry());
+                crsFact.getCRS(sourceCRSName);
+                valid = true;
+            } catch (Exception e) {
+                throw new BadRequestException(e);
+        }
+        return valid;
+    }
+
     @Override
 	public void createWeatherInput(String dataPath, String filename,List<String>stniri) {	
 		 List<String[]> resultquery = new ArrayList<String[]>();
@@ -1039,34 +1084,17 @@ public class EpisodeAgent extends DispersionModellingAgent {
     	return obj.toString();
 }
 	
-	private String setUpJobOnAgentMachine(String jsonInput,String datapath) throws IOException, SlurmJobException {
-		if (jobSubmission == null) {
-			if (slurmJobProperty == null) {
-		        if (applicationContext == null) {
-					applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-				}
-				slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-				logger.info("slurmjobproperty="+slurmJobProperty.toString());
-			}
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(),
-					slurmJobProperty.getHpcAddress());
-		}
+	private String setUpJobOnAgentMachine(String jsonInput, String datapath) throws IOException, SlurmJobException {
+		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
-//String slurmdir=getClass().getClassLoader()
-//.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath().replace("%23", "#");
-		System.out.println("slumscript="+decodeURL(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()));
-System.out.println("excecutable = "+decodeURL(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath()));
-		
-		return jobSubmission.setUpJob(
-				jsonInput, new File(decodeURL(getClass().getClassLoader()
-						.getResource(slurmJobProperty.getSlurmScriptFileName()).getPath())),
+		String jobFolderName = getNewJobFolderName(dispersionAgentProperty.getHpcAddress(), timeStamp);
+		return jobSubmission.setUpJob(jsonInput,
+				new File(decodeURL(
+						getClass().getClassLoader().getResource(dispersionAgentProperty.getSlurmScriptFileName()).getPath())),
 				getInputFile(datapath, jobFolderName),
-				new File(decodeURL(getClass().getClassLoader()
-								.getResource(slurmJobProperty.getExecutableFile()).getPath())),
-				 timeStamp);
+				new File(decodeURL(
+						getClass().getClassLoader().getResource(dispersionAgentProperty.getExecutableFile()).getPath())),
+				timeStamp);
 	}
 	
 	public static File getZipFile(String folderName) throws IOException {
