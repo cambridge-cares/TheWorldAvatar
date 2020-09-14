@@ -5,7 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -36,15 +36,11 @@ import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentExcepti
 import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.exception.JPSRuntimeException;
 import uk.ac.cam.cares.jps.base.slurm.job.JobSubmission;
-import uk.ac.cam.cares.jps.base.slurm.job.SlurmJob;
 import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
+import uk.ac.cam.cares.jps.kg.OntoKinKG;
 
-import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 @Controller
@@ -52,33 +48,17 @@ import com.jcraft.jsch.SftpException;
 public class MoDSMechCalibAgent extends JPSAgent {
 	private static final long serialVersionUID = 2L; //TODO to modify this
 	private Logger logger = LoggerFactory.getLogger(MoDSMechCalibAgent.class);
-	String server = "login-cpu.hpc.cam.ac.uk";
-	String username = "jb2197";
-	String password = new String();
-	boolean isAuthenticated;
-	private File jobSpace;
+	private File workspace;
+	private String jobFolderPath;
 	
-	static Session session;
-	static JSch jsch = new JSch();
-	
-	static int scheduledIteration = 0;
-	static List<String> jobsRunning = new ArrayList<>();
-	
-	SlurmJob slurmJob = new SlurmJob();
 	public static JobSubmission jobSubmission;
-	public static ApplicationContext applicationContext;
-	public static SlurmJobProperty slurmJobProperty;
-	public static ApplicationContext applicationContextMoDSAgent;
+	public static ApplicationContext applicationContextMoDSMechCalibAgent;
 	public static MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
 	
+	public static final String REQUEST_RECEIVED = "A request to MoDSMechCalibAgent has been received..............................";
 	public static final String BAD_REQUEST_MESSAGE_KEY = "message";
 	public static final String UNKNOWN_REQUEST = "The request is unknown to MoDSMechCalib Agent";
-	
-	public static void main(String[] args) throws ServletException, MoDSMechCalibAgentException {
-		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
-//		modsMechCalibAgent.init();
-		String input = "{\"json\":{\"ontochemexpIRI\":{\"ignitionDelay\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001700.owl#Experiment_404313416274000\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001701.owl#Experiment_404313804188800\",\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001702.owl#Experiment_404313946760600\"],\"flameSpeed\":[\"https://como.ceb.cam.ac.uk/kb/ontochemexp/x00001703.owl#Experiment_2748799135285400\"]},\"ontokinIRI\":{\"mechanism\":\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ReactionMechanism_73656018231261\",\"reactionList\":[\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264155_173\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264148_166\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264020_38\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264017_35\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264156_174\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264154_172\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264157_175\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264152_170\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264053_71\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264158_176\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264104_122\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264135_153\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264142_160\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264134_152\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264165_183\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264137_155\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264159_177\",\"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_original.owl#ChemicalReaction_73656018264136_154\"]},\"mods\":{\"ignDelayOption\":{\"method\":\"1\",\"species\":\"AR\"},\"flameSpeedOption\":{\"tranModel\":\"mix-average\"},\"sensAna\":{\"topN\":\"10\",\"relPerturbation\":\"1e-3\"}}}}";
-	}
+	public static final String OUTPUT_PROCESS_FAILED = "Mechanism calibration results process were failed.";
 	
 	/**
 	 * Receives requests that match with the URL patterns listed in the<br>
@@ -87,8 +67,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	@Override
 	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		String path = request.getServletPath();
-		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
-		System.out.println("A request has been received..............................");
+		System.out.println(REQUEST_RECEIVED);
 		if (path.equals(Property.JOB_REQUEST_PATH)) {
 			try {
 				validateInput(requestParams);
@@ -96,18 +75,19 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				return requestParams.put(BAD_REQUEST_MESSAGE_KEY, e.getMessage());
 			}
 			try {
-				return modsMechCalibAgent.setUpJob(requestParams.toString());
+				requestParams = validateRxnMustInclude(requestParams);
+				return setUpJob(requestParams.toString());
 			} catch (IOException | MoDSMechCalibAgentException | SlurmJobException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else if (path.equals(Property.JOB_STATISTICS_PATH)) {
 			try {
-				return modsMechCalibAgent.produceStatistics(requestParams.toString());
+				return produceStatistics(requestParams.toString());
 			} catch (IOException | MoDSMechCalibAgentException e) {
 				throw new JPSRuntimeException(e.getMessage());
 			}
 		} else {
-			System.out.println("Unknown request");
+			System.out.println(UNKNOWN_REQUEST);
 			throw new JPSRuntimeException(UNKNOWN_REQUEST);
 		}
 	}
@@ -133,11 +113,60 @@ public class MoDSMechCalibAgent extends JPSAgent {
 			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
 			if (rxnIRI == null || rxnIRI.isEmpty()) {
 				throw new BadRequestException(Property.JOB_SETUP_REACTION_IRI_MISSING.getPropertyName());
+			} else {
+				OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
+				LinkedHashMap<String, String> results;
+				try {
+					results = ontoKinKg.queryReactionsToOptimise(mechanismIRI, rxnIRI);
+					if (results == null || results.isEmpty()) {
+						throw new BadRequestException(Property.JOB_SETUP_MECHANISM_REACTION_MISMATCH.getPropertyName());
+					}
+				} catch (MoDSMechCalibAgentException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			String modsExePath = JSonRequestParser.getMoDSExePath(requestParams.toString());
+			if (modsExePath == null || modsExePath.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_MODS_EXE_PATH_MISSING.getPropertyName());
+			}
+			
+			String canteraEnv = JSonRequestParser.getCanteraCondaEnv(requestParams.toString());
+			if (canteraEnv == null || canteraEnv.isEmpty()) {
+				throw new BadRequestException(Property.JOB_SETUP_CANTERA_CONDA_ENV_MISSING.getPropertyName());
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return true;
+	}
+	
+	/**
+	 * Validate if the reactions must include are added to list of reactions to be optimised, and add those not included reactions. 
+	 * 
+	 * @param requestParams
+	 * @return
+	 * @throws MoDSMechCalibAgentException
+	 */
+	public JSONObject validateRxnMustInclude(JSONObject requestParams) throws MoDSMechCalibAgentException {
+		try {
+			List<String> rxnIRI = JSonRequestParser.getOntoKinReactionsIRI(requestParams.toString());
+			List<String> rxnsMustInclude = JSonRequestParser.getRxnsMustInclude(requestParams.toString());
+			String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(requestParams.toString());
+			for (String rxn : rxnsMustInclude) {
+				OntoKinKG ontoKinKg = new OntoKinKG(modsMechCalibAgentProperty);
+				LinkedHashMap<String, String> rxnIRIandEqu = ontoKinKg.queryReactionBasedOnNo(mechanismIRI, rxn);
+				for (String iri : rxnIRIandEqu.keySet()) {
+					if (!rxnIRI.contains(iri)) {
+						requestParams.getJSONObject("json").getJSONObject("ontokinIRI").getJSONArray("reactionList").put(iri);
+					}
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return requestParams;
 	}
 	
 	/**
@@ -152,11 +181,12 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @return the statistics in JSON format if requested.
 	 */
 	public JSONObject produceStatistics(String input) throws IOException, MoDSMechCalibAgentException {
-		System.out.println("Received a request to send statistics.\n");
-		logger.info("Received a request to send statistics.\n");
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		System.out.println("Received a request to send MoDSMechCalibAgent statistics.\n");
+		logger.info("\nReceived a request to send MoDSMechCalibAgent statistics.\n");
+		// Initialises all properties required for this agent to set-up<br>
+		// and run jobs. It will also initialise the unique instance of<br>
+		// Job Submission class.
+		initAgentProperty();
 		return jobSubmission.getStatistics(input);
 	}
 	
@@ -177,11 +207,9 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	@RequestMapping(value=Property.JOB_SHOW_STATISTICS_PATH,method = RequestMethod.GET)
 	@ResponseBody
 	public String showStatistics() throws IOException, MoDSMechCalibAgentException {
-		System.out.println("Received a request to show statistics.\n");
-		logger.info("Received a request to show statistics.\n");
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
+		System.out.println("Received a request to show MoDSMechCalibAgent statistics.\n");
+		logger.info("\nReceived a request to show MoDSMechCalibAgent statistics.\n");
+		initAgentProperty();
 		return jobSubmission.getStatistics();
 	}
 	
@@ -191,26 +219,17 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws MoDSMechCalibAgentException
 	 */
 	public void init() throws ServletException {
-		logger.info("---------- Mechanism Calibration Agent has started ----------");
+		logger.info("\n---------- Mechanism Calibration Agent has started ----------");
 		System.out.println("---------- Mechanism Calibration Agent has started ----------");
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		MoDSMechCalibAgent modsMechCalibAgent = new MoDSMechCalibAgent();
-		// initialising classes to read properties from the mods-agent.properties file
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSMechCalibAgentConfiguration.class);
-		}
-		if (modsMechCalibAgentProperty == null) {
-			modsMechCalibAgentProperty = applicationContextMoDSAgent.getBean(MoDSMechCalibAgentProperty.class);
-		}
-		// the first 30 refers to the delay (in seconds) before the job scheduler
-		// starts and the second 60 refers to the interval between two consecutive
-		// executions of the scheduler.
+		// initialising classes to read properties from the modsmechcalib-agent.properties file
+		initAgentProperty();
+		// In the following method call, the parameter getAgentInitialDelay-<br>
+		// ToStartJobMonitoring refers to the delay (in seconds) before<br>
+		// the job scheduler starts and getAgentPeriodicActionInterval<br>
+		// refers to the interval between two consecutive executions of<br>
+		// the scheduler.
 		executorService.scheduleAtFixedRate(() -> {
 			try {
 				modsMechCalibAgent.monitorJobs();
@@ -218,22 +237,59 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				e.printStackTrace();
 			}
 		}, 
-				slurmJobProperty.getAgentInitialDelayToStartJobMonitoring(), 
-				slurmJobProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
-		logger.info("---------- Calibration jobs are being monitored  ----------");
-		System.out.println("---------- Calibration jobs are being monitored  ----------");
+				modsMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring(), 
+				modsMechCalibAgentProperty.getAgentPeriodicActionInterval(), TimeUnit.SECONDS);
+		logger.info("\n---------- MechCalib jobs are being monitored  ----------");
+		System.out.println("---------- MechCalib jobs are being monitored  ----------");
 	}
 	
+	/**
+	 * Initialises the unique instance of the MoDSMechCalibAgentProperty class that<br>
+	 * reads all properties of MoDSMechCalibAgentProperty from the modsmechcalib-agent property file.<br>
+	 * 
+	 * Initialises the unique instance of the SlurmJobProperty class and<br>
+	 * sets all properties by reading them from the modsmechcalib-agent property file<br>
+	 * through the MoDSMechCalibAgentProperty class.
+	 */
+	private void initAgentProperty() {
+		// initialising classes to read properties from the modsmechcalib-agent.properties file
+		if (applicationContextMoDSMechCalibAgent == null) {
+			applicationContextMoDSMechCalibAgent = new AnnotationConfigApplicationContext(MoDSMechCalibAgentConfiguration.class);
+		}
+		if (modsMechCalibAgentProperty == null) {
+			modsMechCalibAgentProperty = applicationContextMoDSMechCalibAgent.getBean(MoDSMechCalibAgentProperty.class);
+		}
+		if (jobSubmission == null) {
+			jobSubmission = new JobSubmission(modsMechCalibAgentProperty.getAgentClass(), modsMechCalibAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserName(modsMechCalibAgentProperty.getHpcServerLoginUserName());
+			jobSubmission.slurmJobProperty.setHpcServerLoginUserPassword(modsMechCalibAgentProperty.getHpcServerLoginUserPassword());
+			jobSubmission.slurmJobProperty.setAgentClass(modsMechCalibAgentProperty.getAgentClass());
+			jobSubmission.slurmJobProperty.setAgentCompletedJobsSpacePrefix(modsMechCalibAgentProperty.getAgentCompletedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setAgentFailedJobsSpacePrefix(modsMechCalibAgentProperty.getAgentFailedJobsSpacePrefix());
+			jobSubmission.slurmJobProperty.setHpcAddress(modsMechCalibAgentProperty.getHpcAddress());
+			jobSubmission.slurmJobProperty.setInputFileName(modsMechCalibAgentProperty.getInputFileName());
+			jobSubmission.slurmJobProperty.setInputFileExtension(modsMechCalibAgentProperty.getInputFileExtension());
+			jobSubmission.slurmJobProperty.setOutputFileName(modsMechCalibAgentProperty.getOutputFileName());
+			jobSubmission.slurmJobProperty.setOutputFileExtension(modsMechCalibAgentProperty.getOutputFileExtension());
+			jobSubmission.slurmJobProperty.setJsonInputFileName(modsMechCalibAgentProperty.getJsonInputFileName());
+			jobSubmission.slurmJobProperty.setJsonFileExtension(modsMechCalibAgentProperty.getJsonFileExtension());
+			jobSubmission.slurmJobProperty.setSlurmScriptFileName(modsMechCalibAgentProperty.getSlurmScriptFileName());
+			jobSubmission.slurmJobProperty.setMaxNumberOfHPCJobs(modsMechCalibAgentProperty.getMaxNumberOfHPCJobs());
+			jobSubmission.slurmJobProperty.setAgentInitialDelayToStartJobMonitoring(modsMechCalibAgentProperty.getAgentInitialDelayToStartJobMonitoring());
+			jobSubmission.slurmJobProperty.setAgentPeriodicActionInterval(modsMechCalibAgentProperty.getAgentPeriodicActionInterval());
+		}
+	}
+	
+	/**
+	 * Monitors already set up jobs. 
+	 * 
+	 * @throws SlurmJobException
+	 */
 	private void monitorJobs() throws SlurmJobException {
 		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
+			jobSubmission = new JobSubmission(modsMechCalibAgentProperty.getAgentClass(), modsMechCalibAgentProperty.getHpcAddress());
 		}
-		try {
-			jobSubmission.monitorJobs();
-		} catch (SlurmJobException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		jobSubmission.monitorJobs();
 		processOutputs();
 	}
 	
@@ -244,25 +300,11 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * 
 	 */
 	private void processOutputs() {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission==null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), slurmJobProperty.getHpcAddress());
-		}
-		if (applicationContextMoDSAgent == null) {
-			applicationContextMoDSAgent = new AnnotationConfigApplicationContext(MoDSMechCalibAgentConfiguration.class);
-		}
-		if (modsMechCalibAgentProperty == null) {
-			modsMechCalibAgentProperty = applicationContextMoDSAgent.getBean(MoDSMechCalibAgentProperty.class);
-		}
-		jobSpace = jobSubmission.getWorkspaceDirectory();
+		initAgentProperty();
+		workspace = jobSubmission.getWorkspaceDirectory();
 		try {
-			if (jobSpace.isDirectory()) {
-				File[] jobFolders = jobSpace.listFiles();
+			if (workspace.isDirectory()) {
+				File[] jobFolders = workspace.listFiles();
 				for (File jobFolder : jobFolders) {
 					if (Utils.isJobCompleted(jobFolder)) {
 						if (!Utils.isJobOutputProcessed(jobFolder)) {
@@ -300,27 +342,42 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		return updateJobOutputStatus(jobFolder.getName(), statusFile);
 	}
 	
+	/**
+	 * Update the mechanism with optimised rate parameters. 
+	 * 
+	 * @param jobFolder
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
 	public void updateCalibMech(File jobFolder) throws IOException, MoDSMechCalibAgentException {
 		File outputFile = new File(jobFolder.getAbsolutePath());
-		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName()).concat(slurmJobProperty.getOutputFileExtension());
-		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(slurmJobProperty.getOutputFileName());
+		String zipFilePath = jobFolder.getAbsolutePath().concat(File.separator).concat(modsMechCalibAgentProperty.getOutputFileName()).concat(modsMechCalibAgentProperty.getOutputFileExtension());
+		String destDir = jobFolder.getAbsolutePath().concat(File.separator).concat(modsMechCalibAgentProperty.getOutputFileName());
 		Utils.unzipFile(zipFilePath, destDir);
 		
 		String jsonString = readJsonInput(new File(jobFolder.getAbsolutePath()
 				.concat(File.separator)
-				.concat(slurmJobProperty.getJsonInputFileName())
-				.concat(slurmJobProperty.getJsonFileExtension())));
+				.concat(modsMechCalibAgentProperty.getJsonInputFileName())
+				.concat(modsMechCalibAgentProperty.getJsonFileExtension())));
 		
-		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
-		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
-		
-		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
-		mechCalibPro.processResults(destDir, mechanismIRI, reactionIRIList, String.valueOf(Utils.getTimeStamp()));
-		
-		System.out.println("Mechanism calibration results were successfully processed.");
+		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess(modsMechCalibAgentProperty);
+		String mechOwlOnServer = mechCalibPro.processResults(destDir, jsonString);
+		if (mechOwlOnServer != null && !mechOwlOnServer.isEmpty()) {
+			System.out.println("Mechanism calibration results were successfully processed.");
+		} else {
+			throw new JPSRuntimeException(OUTPUT_PROCESS_FAILED);
+		}
 	}
 	
-	private String readJsonInput(File input) throws IOException, MoDSMechCalibAgentException {
+	/**
+	 * Read content from json file. 
+	 * 
+	 * @param input
+	 * @return
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	protected String readJsonInput(File input) throws IOException, MoDSMechCalibAgentException {
 		String jsonString = new String();
 		BufferedReader br = null;
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(input)));
@@ -385,25 +442,17 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws SlurmJobException
 	 */
 	private String setUpJobOnAgentMachine(String jsonString) throws IOException, MoDSMechCalibAgentException, SlurmJobException {
-		if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
-		if (jobSubmission == null) {
-			jobSubmission = new JobSubmission(slurmJobProperty.getAgentClass(), 
-					slurmJobProperty.getHpcAddress());
-		}
+		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
-		String jobFolderName = getNewJobFolderName(slurmJobProperty.getHpcAddress(), timeStamp);
+		String jobFolderName = getNewJobFolderName(modsMechCalibAgentProperty.getHpcAddress(), timeStamp);
 		String setUpMsg = jobSubmission.setUpJob(jsonString, 
-				new File(getClass().getClassLoader().getResource(slurmJobProperty.getSlurmScriptFileName()).getPath()), 
+				new File(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getSlurmScriptFileName()).getPath()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
-		if (setUpMsg == null) {
-			return null;
+		if (setUpMsg != null) {
+			deleteDirectory(new File(jobFolderPath));
+			return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
 		}
-		return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
+		return null;
 	}
 	
 	/**
@@ -415,9 +464,9 @@ public class MoDSMechCalibAgent extends JPSAgent {
 	 * @throws MoDSMechCalibAgentException
 	 */
 	private File getInputFile(String jsonString, String jobFolderName) throws IOException, MoDSMechCalibAgentException {
-		MoDSFileManagement fileMagt = new MoDSFileManagement();
+		MoDSFileManagement fileMagt = new MoDSFileManagement(modsMechCalibAgentProperty);
 		
-		String jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
+		jobFolderPath = fileMagt.createMoDSJob(jsonString, jobFolderName);
 		
 		return Utils.getZipFile(new File(jobFolderPath).getAbsolutePath());
 	}
@@ -454,5 +503,18 @@ public class MoDSMechCalibAgent extends JPSAgent {
 		return null;
 	}
 	
-	
+	/**
+	 * Delete the temporary directory that generated during creating MoDS job. 
+	 * 
+	 * @param directoryToBeDeleted
+	 */
+	protected void deleteDirectory(File directoryToBeDeleted) throws IOException {
+	    File[] allContents = directoryToBeDeleted.listFiles();
+	    if (allContents != null) {
+	        for (File file : allContents) {
+	            deleteDirectory(file);
+	        }
+	    }
+	    directoryToBeDeleted.delete();
+	}
 }
