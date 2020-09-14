@@ -33,7 +33,7 @@ cd $SRMDIR
 
 # Execute the simulation
 SRM=driver
-CMD="gORUN.exe Final sim Fornow Aravind123@@" -w $SRMWORKINGDIR"
+CMD="mpirun -ppn $mpi_tasks_per_node -np $np \"$SRM\" -w $SRMWORKINGDIR"
 echo -e "\nExecuting command:\n$CMD\n==================\n"
 eval $CMD
 
