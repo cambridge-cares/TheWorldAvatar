@@ -6,7 +6,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,7 +15,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
@@ -35,19 +33,22 @@ import org.xml.sax.SAXException;
 
 import com.cmclinnovations.ontochem.model.converter.ctml.CtmlConverter;
 import com.cmclinnovations.ontochem.model.converter.owl.OwlConverter;
-import com.google.common.primitives.Doubles;
 
-import uk.ac.cam.cares.jps.agent.file_management.MoDSInputsState;
+import uk.ac.cam.cares.jps.agent.configuration.MoDSMechCalibAgentProperty;
+import uk.ac.cam.cares.jps.agent.json.parser.JSonRequestParser;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.MoDSMechCalibAgentException;
 import uk.ac.cam.cares.jps.agent.mechanism.calibration.Property;
+import uk.ac.cam.cares.jps.agent.mechanism.calibration.Utils;
 import uk.ac.cam.cares.jps.kg.OntoException;
 import uk.ac.cam.cares.jps.kg.OntoKinKG;
-import uk.ac.cam.cares.jps.kg.RepositoryManager;
 
 public class MechCalibOutputProcess {
+	private MoDSMechCalibAgentProperty modsMechCalibAgentProperty;
+	
 	private LinkedHashMap<String, String> origParams = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> multipliers = new LinkedHashMap<String, String>();
 	private LinkedHashMap<String, String> updatedParams = new LinkedHashMap<String, String>();
+	private String objectiveFunction = "SumOfSquares";
 	
 	public LinkedHashMap<String, String> getOrigParams() {
 		return origParams;
@@ -73,121 +74,104 @@ public class MechCalibOutputProcess {
 		this.updatedParams = updatedParams;
 	}
 	
-//	private String getCorrespondParam(String key) {
-//		return getUpdatedParams().get(key);
-//	}
-	
-	public static void main(String[] args) {
-		MechCalibOutputProcess mechCalibPro = new MechCalibOutputProcess();
-		
-		String jobFolderPath = "C:\\Users\\jb2197\\Desktop\\PODE_Project\\Data\\Temp";
-		String mechanismIRI = "http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ReactionMechanism_1230848575548237";
-		List<String> reactionIRIList = new ArrayList<String>(Arrays.asList(new String[] {"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570512_48",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570503_39",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570639_175",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570640_176",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570509_45",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570499_35",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570607_143",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570631_167",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570634_170",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570633_169",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570504_40",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570502_38",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570618_154",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570505_41",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570638_174",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570517_53",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570604_140",
-				"http://www.theworldavatar.com/kb/ontokin/pode_mechanism_testing.owl#ChemicalReaction_1230848575570624_160"}));
-		String timeStamp = String.valueOf(System.nanoTime());
-		
-		try {
-			mechCalibPro.processResults(jobFolderPath, mechanismIRI, reactionIRIList, timeStamp);
-		} catch (IOException | MoDSMechCalibAgentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public String getObjectiveFunction() {
+		return objectiveFunction;
+	}
+
+	public void setObjectiveFunction(String objectiveFunction) {
+		this.objectiveFunction = objectiveFunction;
 	}
 	
+	public MechCalibOutputProcess(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
+		this.modsMechCalibAgentProperty = modsMechCalibAgentProperty;
+	}
 	
-	public void processResults(String jobFolderPath, String mechanismIRI, List<String> reactionIRIList, String timeStamp) throws IOException, MoDSMechCalibAgentException {
+	/**
+	 * Process the output of a mechanism calibration job. 
+	 * 
+	 * @param jobFolderPath
+	 * @param jsonString
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 */
+	public String processResults(String jobFolderPath, String jsonString) throws IOException, MoDSMechCalibAgentException {
+		String mechanismIRI = JSonRequestParser.getOntoKinMechanismIRI(jsonString);
+		List<String> reactionIRIList = JSonRequestParser.getOntoKinReactionsIRI(jsonString);
+		String timeStamp = ""+Utils.getTimeStamp();
 		String mechFolder = "";
-		if (!jobFolderPath.endsWith("\\")) {
-			jobFolderPath = jobFolderPath.concat("\\");
-			mechFolder = jobFolderPath.concat("mechanism_").concat(timeStamp).concat("\\");
-			new File(mechFolder).mkdir();
+		if (jobFolderPath.endsWith("\\")) {
+			jobFolderPath = jobFolderPath.substring(0,jobFolderPath.length()-1);
 		}
-		String calibSum = jobFolderPath+"CalibrationAlg\\CalibrationAlg_Summary.csv";
-		String paramOutputResults = mechFolder+"UpdatedPreExpFactors.csv";
-		String mechOwl = mechFolder+"mechanism__.owl";
-		String mechXml = mechFolder+"mechanism.xml";
-		String mechOwlUp = "mechanism_"+timeStamp+".owl";
+		mechFolder = jobFolderPath.concat(File.separator).concat("mechanism_").concat(timeStamp);
+		new File(mechFolder).mkdirs();
+		String calibSum = jobFolderPath.concat(File.separator).concat("CalibrationAlg\\CalibrationAlg_Summary.csv");
+		String paramOutputResults = mechFolder.concat(File.separator).concat("UpdatedPreExpFactors.csv");
+		String mechOwlUpload = "mechanism_"+timeStamp+".owl";
 		
-		// download the mech file
-		String mechWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
-		RepositoryManager repo = new RepositoryManager();
+		// download the mechanism owl file, and convert it to xml format
+		String mechHttpPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"));
+		String mechOWL = mechFolder.concat(File.separator).concat(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1));
+		OntoKinKG ontoKinKG = new OntoKinKG(modsMechCalibAgentProperty);
 		try {
-			repo.downloadOntology(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), mechWebPath.substring(mechWebPath.lastIndexOf("/")+1), mechWebPath, 
-					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName(), mechOwl);
-		} catch (OntoException e) {
+			ontoKinKG.downloadMechanism(mechHttpPath.substring(mechHttpPath.lastIndexOf("/")+1), mechHttpPath, mechOWL);
+		} catch (OntoException e3) {
+			e3.printStackTrace();
+		}
+		OwlConverter owlConverter = new OwlConverter();
+		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
+		mechanismOwlFiles.add(mechOWL);
+		try {
+			owlConverter.convert(mechanismOwlFiles, mechFolder.replace("\\", "/"));
+		} catch (OWLOntologyCreationException | com.cmclinnovations.ontochem.model.exception.OntoException e) {
 			e.printStackTrace();
 		}
-		
-		// obtain the xml version of mech file TODO to be replaced with owlConverter convert
-		MechanismDownload mechanismDownload = new MechanismDownload();
-		try {
-			String mechanismWebPath = mechanismIRI.substring(0, mechanismIRI.indexOf("#"))
-					.replace("/kb/", "/data/").replace(".owl", "/mechanism.xml");
-			mechanismDownload.obtainMechanism(mechanismWebPath, mechXml);
-		} catch (SAXException | ParserConfigurationException | TransformerFactoryConfigurationError
-				| TransformerException e) {
-			e.printStackTrace();
-		}
-		
-		// TODO
-//		OwlConverter owlConverter = new OwlConverter();
-//		ArrayList<String> mechanismOwlFiles = new ArrayList<>();
-//		mechanismOwlFiles.add(mechOwl);
-//		try {
-//			owlConverter.convert(mechanismOwlFiles, jobFolderPath);
-//		} catch (OWLOntologyCreationException | com.cmclinnovations.ontochem.model.exception.OntoException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
+		String mechXML = mechOWL.replace(".owl", ".xml");
 		
 		// obtain rate parameters, then update the rate params in the mech.xml
 		try {
-			obtainNewRateParams(new File(calibSum), new File(paramOutputResults), new File(mechXml), mechanismIRI, reactionIRIList);
+			obtainNewRateParams(new File(calibSum), new File(paramOutputResults), new File(mechXML), mechanismIRI, reactionIRIList);
 		} catch (XPathExpressionException | ParserConfigurationException | SAXException
 				| TransformerFactoryConfigurationError | TransformerException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
 		// get the owl format of mech.xml with new name mechanism_timeStamp.owl
 		CtmlConverter ctmlConverter = new CtmlConverter();
 		ArrayList<String> mechCtmlFiles = new ArrayList<>();
-		mechCtmlFiles.add(mechXml);
+		mechCtmlFiles.add(mechXML);
 		try {
-			ctmlConverter.convert(mechCtmlFiles, mechXml.substring(0, mechXml.lastIndexOf("\\")).concat("\\"));
-		} catch (OWLOntologyCreationException | com.cmclinnovations.ontochem.model.exception.OntoException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.out.println(mechXML.substring(0, mechXML.lastIndexOf("\\")));
+			ctmlConverter.convert(mechCtmlFiles, mechFolder);
+		} catch (OWLOntologyCreationException | com.cmclinnovations.ontochem.model.exception.OntoException e2) {
+			e2.printStackTrace();
 		}
 		
 		// upload the updated owl to server
 		try {
-			repo.loadOntology(Property.RDF4J_SERVER_URL_FOR_LOCALHOST.getPropertyName(), 
-					mechOwlUp, mechFolder, Property.RDF4J_ONTOKIN_KB_URL.getPropertyName(), 
-					Property.RDF4J_ONTOKIN_REPOSITORY_ID.getPropertyName());
+			return ontoKinKG.uploadMechanism(mechOwlUpload, mechFolder.concat(File.separator));
 		} catch (OntoException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
+		return null;
 	}
 	
+	/**
+	 * Obtain the XML of mechanism with updated rate parameters. 
+	 * 
+	 * @param calibSummary
+	 * @param resultsFile
+	 * @param mechXml
+	 * @param mechanismIRI
+	 * @param reactionIRIList
+	 * @throws IOException
+	 * @throws MoDSMechCalibAgentException
+	 * @throws ParserConfigurationException
+	 * @throws SAXException
+	 * @throws XPathExpressionException
+	 * @throws TransformerFactoryConfigurationError
+	 * @throws TransformerException
+	 */
 	private void obtainNewRateParams(File calibSummary, File resultsFile, File mechXml, String mechanismIRI, List<String> reactionIRIList) 
 			throws IOException, MoDSMechCalibAgentException, ParserConfigurationException, SAXException, XPathExpressionException, TransformerFactoryConfigurationError, TransformerException {
 		// get the list of new multipliers
@@ -201,7 +185,7 @@ public class MechCalibOutputProcess {
 			for (int i = 0; i < header.length; i++) {
 				if (header[i].toLowerCase().contains("first/last/best")) {
 					flbIdx = i;
-				} else if (header[i].toLowerCase().contains("sumofsquares")) {
+				} else if (header[i].toLowerCase().contains(getObjectiveFunction().toLowerCase())) {
 					ofIdx = i;
 				}
 			}
@@ -235,7 +219,7 @@ public class MechCalibOutputProcess {
 		}
 		
 		// query the rate params
-		OntoKinKG ontokinkg = new OntoKinKG();
+		OntoKinKG ontokinkg = new OntoKinKG(modsMechCalibAgentProperty);
 		LinkedHashMap<String, String> orig = ontokinkg.queryRxnPreExpFactor(mechanismIRI, reactionIRIList);
 		List<String[]> dataLines = new ArrayList<>();
 		dataLines.add(new String[] {"ReactionNo", "OrigPreExpFactor", "Multiplier", "UpdatedPreExpFactor"});

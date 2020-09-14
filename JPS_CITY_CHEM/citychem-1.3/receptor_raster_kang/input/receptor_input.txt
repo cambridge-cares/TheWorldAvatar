@@ -1,0 +1,12 @@
+simid     {Citychem-Singapore--testnotapm-00001}
+nstation  2
+nx_rec    700
+ny_rec    700
+dx_rec    100
+dy_rec    100
+z_rec     1.5
+xsw_main  331600
+ysw_main  119000
+rcmax     -9900
+monitor1  370177  136894  4.0     sentosa
+monitor2  363394  158079  3.5     Admiralty
