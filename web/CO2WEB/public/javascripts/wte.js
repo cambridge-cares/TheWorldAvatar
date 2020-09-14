@@ -1,10 +1,17 @@
 scenario = "testFW";
+/* prefix to be changed according to local or testing 
+*/
 prefix = "http://www.jparksimulator.com";
 markers = []
 var infowindow;
 var listOfIRIs = [];
+/* Common IRIS to be changed once IRI is sent over for multiple systems
+*/
 transportIRI = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/TransportSystem-001.owl#TransportSystem-001"; 
 wastenetwork = "http://www.theworldavatar.com/kb/sgp/singapore/wastenetwork/SingaporeWasteSystem.owl#SingaporeWasteSystem";
+/** selects Foodcourt queries
+ * 
+ */
 FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
 + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
 + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -41,6 +48,9 @@ FCQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste
 
 
 + "}";
+/** selects offsite waste treatment facility coordinates
+ * 
+ */
 WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -63,6 +73,8 @@ WTQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.o
     + "?vy  j2:numericalValue ?V_y ."//longitude
     + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
     + "}";
+/** selects onsite coordinates
+ *  */    
 OnWQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -86,7 +98,9 @@ OnWQuery="PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.
     + "?vy  j2:hasUnitOfMeasure ?V_y_unit ."//longitude
     + "}";
 
-//
+/** Selects transport related costs
+ * 
+ */
 transportQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/ontowaste/OntoWaste.owl#> "
     + "PREFIX j2:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#> "
     + "PREFIX j3:<http://www.theworldavatar.com/ontology/ontopowsys/PowSysPerformance.owl#> "
@@ -176,7 +190,10 @@ var wasteSystemOutputQuery = "PREFIX j1:<http://www.theworldavatar.com/ontology/
 
     + "}";
 
-
+/** Display ? element for further detail
+ * 
+ * @param {*} elemId 
+ */
 const toggleDisplay = elemId => {
     let x = document.getElementById(elemId);
     if (x.style.display !== 'block') {
