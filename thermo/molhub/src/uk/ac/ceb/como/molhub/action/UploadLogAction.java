@@ -169,22 +169,22 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			
 			String fileExtension = uploadFileName[fileNumber].substring(uploadFileName[fileNumber].lastIndexOf(".") + 1);
 			
-			File inputG09File = new File(dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension);
+			File inputG09File = new File(dataFolderPath  + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension);
 			
 			/** Png file name is the same as the name of folder where that
 			*
 			* image is saved. Adds .png extension to the png file.
 			*/
-			File pngFile = new File(dataFolderPath + "/" + uuidFolderName + "/"
+			File pngFile = new File(dataFolderPath  + uuidFolderName + "/"
 					+ uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + ".png");
 			/**
 			 *  Creates folders where molhub stores G09, xml and png files
 			 */
-			FolderManager.createFolder(dataFolderPath + "/" + uuidFolderName);
+			FolderManager.createFolder(dataFolderPath +  uuidFolderName);
 			/**
 			 *  Creates a folder for saving the ontology.
 			 */
-			FolderManager.createFolder(kbFolderPath + "/" + uuidFolderName);
+			FolderManager.createFolder(kbFolderPath  + uuidFolderName);
 			/** 
 			 * User uploaded Gaussian file is saved.
 			 * 
@@ -202,7 +202,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 					 * Runs python code that parses uploaded Gaussian file and generates json and owl files.
 					 */	
 				  
-					new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + "/" + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + "/" + uuidFolderName + "/" );
+					new ExecutorManager().runParser(pythonParserPath+ " -f "+ dataFolderPath + uuidFolderName + "/" + uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1) + "." + fileExtension + " -j True" + " -p " + kbFolderPath + uuidFolderName + "/" );
 					
 				}else {
 					
@@ -584,64 +584,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 	}
 	
 	
-	private void runParser(String CMD) throws IOException, InterruptedException {
-	    logger.info("Standard output: " + CMD);
-	    Process process = Runtime.getRuntime().exec(CMD);
-
-	    // Get input streams
-	    BufferedReader stdInput = new BufferedReader(new InputStreamReader(process.getInputStream()));
-	    BufferedReader stdError = new BufferedReader(new InputStreamReader(process.getErrorStream()));
-	    String line = "";
-	    String newLineCharacter = System.getProperty("line.separator");
-
-	    boolean isOutReady = false;
-	    boolean isErrorReady = false;
-	    boolean isProcessAlive = false;
-
-	    boolean isErrorOut = true;
-	    boolean isErrorError = true;
-
-
-	    logger.info("Read command ");
-	    while (process.isAlive()) {
-	        //Read the stdOut
-
-	        do {
-	            isOutReady = stdInput.ready();
-	            //System.out.println("OUT READY " + isOutReady);
-	            isErrorOut = true;
-	            isErrorError = true;
-
-	            if (isOutReady) {
-	                line = stdInput.readLine();
-	                isErrorOut = false;
-	                logger.info("=====================================================================================" + line + newLineCharacter);
-	            }
-	            isErrorReady = stdError.ready();
-	            //System.out.println("ERROR READY " + isErrorReady);
-	            if (isErrorReady) {
-	                line = stdError.readLine();
-	                isErrorError = false;
-	                logger.info("ERROR::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::" + line + newLineCharacter);
-
-	            }
-	            isProcessAlive = process.isAlive();
-	            //System.out.println("Process Alive " + isProcessAlive);
-	            if (!isProcessAlive) {
-	                logger.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::: Process DIE " + line + newLineCharacter);
-	                line = null;
-	                isErrorError = false;
-	                process.waitFor(1000, TimeUnit.MILLISECONDS);
-	            }
-
-	        } while (line != null);
-
-	        //Nothing else to read, lets pause for a bit before trying again
-	        logger.info("PROCESS WAIT FOR");
-	        process.waitFor(100, TimeUnit.MILLISECONDS);
-	    }
-	    logger.info("Command finished");
-	}
+	
 	
 	
 

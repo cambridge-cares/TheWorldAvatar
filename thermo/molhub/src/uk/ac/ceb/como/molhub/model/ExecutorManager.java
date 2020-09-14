@@ -47,7 +47,7 @@ public class ExecutorManager {
 	 * @throws IOException the io exception.
 	 * @throws InterruptedException the interrupted exception.
 	 * 
-	 * Runs Python parser using command line in Windows machine. 
+	 * Runs parser implemented in Python by using command line in Windows machine. 
 	 * 
 	 */
 	public void runParser(String commandLine) throws IOException, InterruptedException {
@@ -67,13 +67,12 @@ public class ExecutorManager {
 	    String lineSeparator = System.getProperty("line.separator");
 
 	    boolean isInputStreamReady = false;
-	    boolean isErrorReady = false;
+	    boolean isErrorStreamReady = false;
 	    boolean isProcessAlive = false;
 
-	    boolean outputError = true;
-	    boolean errorExistance = true;
-
-
+	    boolean outputFlag = true;
+	    boolean errorFlag = true;
+	    
 	    logger.info("Reads command line:  ");
 	    
 	    while (process.isAlive()) {
@@ -81,23 +80,31 @@ public class ExecutorManager {
 	        do {
 	        	
 	            isInputStreamReady = inputStream.ready();
+	            
 	            logger.info("is output stream ready: " + isInputStreamReady);
 	            
-	            outputError = true;
-	            errorExistance = true;
+	            outputFlag = true;
+	            errorFlag = true;
 
 	            if (isInputStreamReady) {
-	                inputStreamCommandLine = inputStream.readLine();
-	                outputError = false;
-	                logger.info("input stream command line: " + inputStreamCommandLine + lineSeparator);
+	                
+	            	inputStreamCommandLine = inputStream.readLine();
+	                
+	                outputFlag = false;
+	            
+	                logger.info("input stream command line: " + inputStreamCommandLine + lineSeparator + " output flag: " + outputFlag);
 	            }
 	            
-	            isErrorReady = errorStream.ready();
+	            isErrorStreamReady = errorStream.ready();
 	            
-	            if (isErrorReady) {
+	            if (isErrorStreamReady) {
+	            	
 	                inputStreamCommandLine = errorStream.readLine();
-	                errorExistance = false;
-	                logger.info("error stream: " + inputStreamCommandLine + lineSeparator);
+	                
+	                errorFlag = false;
+	                
+	                
+	                logger.info("error stream: " + inputStreamCommandLine + lineSeparator + " error flag: " + errorFlag);
 
 	            }
 	            
@@ -105,17 +112,20 @@ public class ExecutorManager {
 	            
 	            if (!isProcessAlive) {
 	            	
-	                inputStreamCommandLine = null;
-	                errorExistance = false;
+	            	errorFlag = false;
+	            	
+	            	logger.info("error flag: " + errorFlag);
+	            	
+	                inputStreamCommandLine = null;	                
+	                
 	                process.waitFor(1000, TimeUnit.MILLISECONDS);
 	            }
 
 	        } while (inputStreamCommandLine != null);
 
 	        /**
-	         * If remains nothing  to read then process waits 100 milliseconds.
-	         */
-	        logger.info("process is waiting for 100 milliseconds: " );
+	         * If remains nothing  to read then the process waits 100 milliseconds.
+	         */      
 	        
 	        process.waitFor(100, TimeUnit.MILLISECONDS);
 	    }
