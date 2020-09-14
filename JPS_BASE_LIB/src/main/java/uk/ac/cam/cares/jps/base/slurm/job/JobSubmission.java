@@ -26,7 +26,6 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 
 import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
-import uk.ac.cam.cares.jps.base.slurm.job.configuration.SpringConfiguration;
 
 /**
  * The API developed for setting-up and running jobs Slurm jobs.
@@ -148,13 +147,6 @@ public class JobSubmission{
 		this.hpcAddress = hpcAddress;
 		this.workspaceDirectory = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), agentClass);
 		this.workspaceParentPath = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName();
-		// initialising classes to read properties from the dft-agent.properites file
-        if (applicationContext == null) {
-			applicationContext = new AnnotationConfigApplicationContext(SpringConfiguration.class);
-		}
-		if (slurmJobProperty == null) {
-			slurmJobProperty = applicationContext.getBean(SlurmJobProperty.class);
-		}
 	}
 	
 	/**
