@@ -281,8 +281,8 @@ async function completeUpdate(callback){
 function runWTESimulation(){
     var noOfCluster = document.getElementById("noOfCluster").value;
     if (noOfCluster == ''){
-        document.getElementById("noOfCluster").value = 30;
-        noOfCluster = "30"; 
+        document.getElementById("noOfCluster").value = 40;
+        noOfCluster = "40"; 
     }
     var para = {"wastenetwork":wastenetwork, "n_cluster": noOfCluster};
     var agenturl = prefix + '/JPS_WTE/startsimulationCoordinationWTE';  
@@ -301,14 +301,14 @@ function runWTESimulation(){
     request.done(function() {
         document.getElementById("loader").style.display = "block"; 
         delayedCallback(function(){
-            queryForEconomicComp();
             var QurStr =  "?vWP     j1:isDeliveredTo  ?Site_of_delivery ."
                 +"}";
             FCQuery = FCQuery.replace("}", QurStr );
+            queryForEconomicComp(1);
             queryForOnsiteWT();
             document.getElementById("loader").style.display = "none";
+        }, 5);
         });
-    });
 }
 /** sleep function for javascript
  * 
@@ -318,21 +318,24 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 /**async function that would provide five minutes to complete simulation and then run callback function
- * @param {Function} callback
+ * @param {Function} callback function calledback
+ * @param {Integer} min Number of minutes
  */
-async function delayedCallback(callback) 
+async function delayedCallback(callback, min) 
     {
     var dt = Date();
     console.log("Wait for simulation to finish: "+dt);
-    await sleep(300*1000);//five minutes?
+    await sleep(min*60*1000);//five minutes?
     dt = Date();
     console.log("Check callback "+dt);
     callback();
   }
 /** read output of economic costs in cumulative for landcost
- * 
+ *  Added: if result is empty, wait five minutes and call again. 
+ *  @param {Integer} noOfCallback keep a counter of how many times this is called back.
  */
-function queryForEconomicComp(){
+function queryForEconomicComp(noOfCallback){
+    
     var wasteurl = createUrlForSparqlQuery(scenario, wastenetwork,wasteSystemOutputQuery);
     $.ajax({
         url: wasteurl,
@@ -341,14 +344,25 @@ function queryForEconomicComp(){
             var obj0 = JSON.parse(data);
             obj0 = obj0['results']['bindings'][0];
             console.log(obj0);
+            if (typeof myVar == "undefined" && noOfCallback < 3 ){
+                noOfCallback += 1;
+                delayedCallback(function(){
+                    queryForEconomicComp();//recursive query again to check if results are empty
+                }, 3); //Rather than five minutes, call 3 minutes
+                document.getElementById("loader").style.display = "none"; 
+            }else if (noOfCallback >= 3){
+                alert( "Three calls to server have been made yet no valid response. Check if server has error. ")
+            }else{
+                queryForOnsiteWT();//call other functions
             dumpEconomic(obj0);
+            }
         },
         error: function () {
             console.log("Failed query for compositeQuery")
         }
     });
 }
-/**  insert economic output data (I think I'm supposed to put it here?)
+/**  insert economic output data in the form of a table
  * @param data key value pairs of costs
  */
 function dumpEconomic(data){
