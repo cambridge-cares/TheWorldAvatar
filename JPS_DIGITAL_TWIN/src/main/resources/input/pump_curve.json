@@ -1,0 +1,50 @@
+[
+  {
+    "Dummy message" : [
+" Compressor Foreign Object (Version 0.0.6)              ",           
+" Copyright (c) 2012-2012 Process Systems Enterprise Ltd.",
+" =======================================================",
+" Mole fractions",
+"    Hydrogen                  : 0                       ",
+"    Water                     : 4.11                    ",
+"    Carbon Monoxide           : 0                       ",
+"    Nitrogen                  : 0.01                    ",
+"    Oxygen                    : 0                       ",
+"    Hydrogen Sulfide          : 0                       ",
+"    Argon                     : 0                       ",
+"    Carbon Dioxide            : 95.88                   ",
+"    Sulfur Dioxide            : 0                       ",
+"    Methane                   : 0                       ",
+" =======================================================",
+" Design conditions:                                     ",
+"    Inlet pressure     [Pa  ] : 162000                  ",
+"    Inlet temperature  [K   ] : 310.95                  ",
+"    Discharge pressure [Pa  ] : 798000                  ",
+"    Inlet flow         [kg/s] : 77.28                   ",
+"    Speed              [Hz  ] : 89.95                   ",
+" =======================================================",
+" Design strategy:                                       ",
+"   Optimal                                              ",
+"   The diameter is a DUMMY FOR NOW (CHANGE LATER)       ",
+" ======================================================="
+  ],
+    "DesignSpeed" : 89.95,
+    "Map" :
+    [
+      {
+        "Curve" :
+        [
+          [20.5, 4152.7 , 0.78421 ],
+          [21.4, 4213.1 , 0.805882],
+          [22.8, 4263.6 , 0.83344 ],
+          [25.7, 4188.8 , 0.856449],
+          [28.5, 3904.0 , 0.836646],
+          [31.4, 3437.9 , 0.774033],
+          [34.2, 2544.5 , 0.603414],
+          [37.1, 1296.6 , 0.32479 ],
+          [38.5, 562.5  , 0.144976]
+        ]
+      }
+    ]
+  }
+]

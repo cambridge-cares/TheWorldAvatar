@@ -1,0 +1,28 @@
+# Multiflash version: 4.3.47   November 2014 #
+# Date: 20 May 2015   Time: 11:21 #
+remove all;
+units temperature K pressure Pa enthalpy J/mol entropy J/mol/K volume m3/mol
+amounts mol viscosity Pas thcond W/m/K surten N/m diffusion m2/s;
+datum enthalpy elements entropy elements; set fractions;
+puredata INFODATA ;  
+components overwrite 1 PROPANE  
+2 ISOBUTANE ;  
+chardata INFOCHAR TBSOEREIDE ;  
+bipset RKSABIP 1 constant eos none ;  
+bipdata INFOBIPS OILANDGAS4 ;  
+model MRKSA RKSA PSAT LDEN VDW RKSABIP;
+model MSTRAPVISC SPVISC LFIT;
+model MSTRAPP SPTHCOND;
+model MST1 ST1;
+pd GAS gas MRKSA MRKSA MRKSA MSTRAPVISC MSTRAPP;
+pd LIQUID1 liquid MRKSA MRKSA MRKSA MSTRAPVISC MSTRAPP MST1;
+key LIQUID1 not 007732-18-5;
+pd LIQUID2 liquid MRKSA MRKSA MRKSA MSTRAPVISC MSTRAPP MST1;
+key LIQUID2 not 007732-18-5;
+pd WATER liquid MRKSA MRKSA MRKSA MSTRAPVISC MSTRAPP MST1;
+key WATER 007732-18-5;
+units temperature K pressure Pa enthalpy J/mol entropy J/mol/K volume m3/mol
+amounts mole viscosity Pas thcond W/m/K surten N/m diffusion m2/s;
+set physprops 1VCS;
+ 
+
