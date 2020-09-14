@@ -229,6 +229,7 @@ $(document).ready(function () {
         completeUpdate(function(){
             var interval = setInterval(function(){
                 if (Date.now() - started > 180000) {
+                    //If it takes more than three minutes to start loading, check if there is something wrong with the server
                     alert("Update issue. Check if it's working? ");
                     clearInterval(interval);
                 } else {
@@ -281,7 +282,7 @@ async function completeUpdate(callback){
 function runWTESimulation(){
     var noOfCluster = document.getElementById("noOfCluster").value;
     if (noOfCluster == ''){
-        document.getElementById("noOfCluster").value = 40;
+        document.getElementById("noOfCluster").value = 40; //gives results within 5 minutes
         noOfCluster = "40"; 
     }
     var para = {"wastenetwork":wastenetwork, "n_cluster": noOfCluster};
@@ -305,8 +306,6 @@ function runWTESimulation(){
                 +"}";
             FCQuery = FCQuery.replace("}", QurStr );
             queryForEconomicComp(1);
-            queryForOnsiteWT();
-            document.getElementById("loader").style.display = "none";
         }, 5);
         });
 }
@@ -343,18 +342,19 @@ function queryForEconomicComp(noOfCallback){
         success: function (data) {
             var obj0 = JSON.parse(data);
             obj0 = obj0['results']['bindings'][0];
-            console.log(obj0);
-            if (typeof myVar == "undefined" && noOfCallback < 3 ){
+            if (typeof obj0 == "undefined" && noOfCallback <= 5 ){
+                console.log("Results not ready yet. Need to wait for server to complete update");
+                console.log("No of callbacks so far: "+noOfCallback);
                 noOfCallback += 1;
                 delayedCallback(function(){
-                    queryForEconomicComp();//recursive query again to check if results are empty
-                }, 3); //Rather than five minutes, call 3 minutes
-                document.getElementById("loader").style.display = "none"; 
-            }else if (noOfCallback >= 3){
-                alert( "Three calls to server have been made yet no valid response. Check if server has error. ")
+                    queryForEconomicComp(noOfCallback);//recursive query again to check if results are empty
+                }, 3);
+            }else if (noOfCallback > 5){//17 minutes, no response from server? Cancelled. 
+                alert( "Five calls to server have been made yet no valid response. Check if server has error. ")
             }else{
                 queryForOnsiteWT();//call other functions
             dumpEconomic(obj0);
+                document.getElementById("loader").style.display = "none";
             }
         },
         error: function () {
