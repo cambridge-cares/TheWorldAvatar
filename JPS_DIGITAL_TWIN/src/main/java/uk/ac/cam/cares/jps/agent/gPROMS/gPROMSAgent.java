@@ -109,6 +109,7 @@ public class gPROMSAgent extends JPSAgent {
 	public void init() throws ServletException {
 		logger.info("---------- gPROMS Simulation Agent has started ----------");
 		System.out.println("---------- gPROMS Simulation Agent has started ----------");
+		System.out.println(System.getProperty("user.dir"));
 		ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 		gPROMSAgent gPROMSAgent = new gPROMSAgent();
 		// initialising classes to read properties from the gPROMS-agent.properites
@@ -132,6 +133,7 @@ public class gPROMSAgent extends JPSAgent {
 		System.out.println("---------- gPROMS Simulation jobs are being monitored  ----------");
 
 	}
+
 
 	/**
 	 * Initialises the unique instance of the gPROMSAgentProperty class that<br>
@@ -378,13 +380,46 @@ public class gPROMSAgent extends JPSAgent {
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(gPROMSAgentProperty.getHpcAddress(), timeStamp);
 
-
+		
 		return jobSubmission.setUpJob(jsonInput,
 				new File(URLDecoder.decode(getClass().getClassLoader().getResource(gPROMSAgentProperty.getSlurmScriptFileName())
 						.getPath(), "utf-8")),
-				new File("C:/Users/caresadmin/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/input.zip"),
-				timeStamp);
+			/**	new File("C:/Users/caresadmin/JParkSimulator-git/JPS_DIGITAL_TWIN/src/main/resources/input.zip"),
+			*	timeStamp);
+			*/
+				getInputFile(jsonInput, jobFolderName), timeStamp);
+	}			
+	
+
+	/**
+	 * Prepares input files, bundle them in a zip file and return the zip file to the calling method.
+	 *
+	 * @param jsonInput
+	 * @param jobFolderName
+	 * @return
+	 * @throws IOException
+	 * @throws gPROMSAgentException
+	 */
+	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, gPROMSAgentException {
+		
+		// Compress all files in the temporary directory into a ZIP
+		
+		Path zipFile = Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input.zip");
+		Path temporaryDirectory= Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input");
+		List<File> zipContents = new ArrayList<>();
+
+		Files.walk(temporaryDirectory)
+			.map(Path::toFile)
+			.forEach((File f) -> zipContents.add(f));
+		zipContents.remove(temporaryDirectory.toFile());
+
+		// Will throw an IOException if something goes wrong
+		new ZipUtility().zip(zipContents, zipFile.toString());
+
+		// Return the final ZIP file
+		return new File(zipFile.toString());
 	}
+
 
 	/**
 	 * Produces a job folder name by following the schema hpcAddress_timestamp.
