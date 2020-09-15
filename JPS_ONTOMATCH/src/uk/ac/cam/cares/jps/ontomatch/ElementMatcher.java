@@ -83,8 +83,8 @@ public class ElementMatcher extends JPSHttpServlet {
 			/** query pkl address ***/
 			tgtPkl = queryLexicalPklAddressfromMetaData(targetOnto);
 			srcPkl = queryLexicalPklAddressfromMetaData(sourceOnto);
-			logger.info("element matcher agent: get pre-processfile for:"+targetOnto+" from metadata:"+tgtPkl);
-			logger.info("element matcher agent: get pre-processfile for:"+sourceOnto+" from metadata:"+srcPkl);
+			System.out.println("element matcher agent: get pre-processfile for:"+targetOnto+" from metadata:"+tgtPkl);
+			System.out.println("element matcher agent: get pre-processfile for:"+sourceOnto+" from metadata:"+srcPkl);
 
 			/** get matcher script addr ****/
 			String[] results = null;
@@ -97,6 +97,8 @@ public class ElementMatcher extends JPSHttpServlet {
 				String[] paras = { savePath, srcPkl, tgtPkl, pyMatchFunction };
 				results = AsyncPythonHelper.callPython(matcherLocation, paras, LexicalProcessor.class);
 			}
+			System.out.println(results[0]);
+			System.out.println(results[1]);
 
 			/** check output stream for err/sucess **/
 			if (results[0].contains("success")) {
@@ -123,6 +125,7 @@ public class ElementMatcher extends JPSHttpServlet {
 		String addr = null;
 		String queryStr = "PREFIX dcterms: <http://purl.org/dc/terms/> " + "SELECT ?addr  " + "WHERE {"
 				+ "?addr  dcterms:subject <" + IRI + ">." + "}";
+		System.out.println(queryStr);
 		String resultStr = KnowledgeBaseClient.query(MetaDataAnnotator.getMetadataSetUrl(), null, queryStr);
 		try {
 			JSONObject jo = new JSONObject(resultStr);

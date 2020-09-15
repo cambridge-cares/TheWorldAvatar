@@ -15,38 +15,29 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
+import uk.ac.cam.cares.jps.ontomatch.AlignmentReader;
 import uk.ac.cam.cares.jps.ontomatch.CoordinationAgent;
-import uk.ac.cam.cares.jps.ontomatch.LexicalProcessor;
 import uk.ac.cam.cares.jps.ontomatch.test.TestCoordinationAgent.CoordinationAgentForTest;
 
-public class TestLexicalProcessor extends Mockito{
-
-	class LexicalProcessorForTest extends LexicalProcessor{
-		 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			 super.testGet(request, response);
-		 }
-		}
-
-	   
-	    @Test 
-	    public void testServlet() throws Exception {
+public class TestAlignmentReader extends Mockito{
+	/**an workaround to test the protected HTTP method*/
+	class AlignmentReaderForTest extends AlignmentReader{
+	 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		 super.testGet(request, response);
+	 }
+	}
+	  @Test 
+	    public void testTermCoordi() throws Exception {
 	        HttpServletRequest request = mock(HttpServletRequest.class);       
 	        HttpServletResponse response = mock(HttpServletResponse.class);
-
-
-	    	//String stubIRI = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
-	    	String stubIRI = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
-	        //String stubAddress = "D:/workwork/ontoMatchFiles/targetOntology.pkl";
-	        String stubAddress = "D:/workwork/jpslatest/JParkSimulator-git/JPS_ONTOMATCH/tmp/PowerPlant.pkl";
+            //TODO:later make this suitable for another set up
+			String alignmentFileIRI = "http://localhost:3000/a.owl";
 			JSONObject jo  = new JSONObject();
-	        jo.put("ontologyIRI", stubIRI);
-	        jo.put("saveAddress", stubAddress);
-
+			jo.put("alignmentIRI", alignmentFileIRI);
+	        jo.put("threshold", 0.0);
 
 
 	        Reader inputString = new StringReader(jo.toString());
@@ -60,11 +51,10 @@ public class TestLexicalProcessor extends Mockito{
 	        
 	        when(response.getWriter()).thenReturn(writer);
 
-	        new LexicalProcessorForTest().testGet(request, response);
+	        new AlignmentReaderForTest().testGet(request, response);
 
 	        writer.flush(); // it may not have been flushed yet...
-	        assertTrue(stringWriter.toString().contains("success"));
+	        assertTrue(stringWriter.toString().contains("alignmentlist"));
 	    }
-	
 	
 }

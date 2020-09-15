@@ -127,7 +127,6 @@ public class AlignmentIOHelper {
 	public static void writeAlignment2File(List<Map> alignment, String onto1, String onto2, String aIRI)
 			throws IOException {
 		String addr = ResourcePathConverter.convertToLocalPath(aIRI);
-		QueryBroker b = new QueryBroker();
 		try {
 			Model model = ModelFactory.createDefaultModel();
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -136,6 +135,7 @@ public class AlignmentIOHelper {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		QueryBroker b = new QueryBroker();
 		// write header: onto1 address, onto2 address
 		String alignmentHeaderUpdateStr = "PREFIX a: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
 				+ "INSERT DATA{\r\n" + "  <" + aIRI + "> a a:Alignment.\r\n" + "  <" + aIRI + "> a:onto1  <" + aIRI

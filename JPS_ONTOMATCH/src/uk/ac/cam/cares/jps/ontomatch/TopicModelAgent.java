@@ -52,7 +52,7 @@ public class TopicModelAgent extends JPSHttpServlet{
 			e1.printStackTrace();
 		}
 		try {//get document save address by querying metadata annotator
-			String serverPath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.KB_URL);
+			String serverPath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
 		    String docPath = queryDocsAddressfromMetaData(serverPath+request.getServletPath());
 		}catch(Exception e) {
 			e.printStackTrace();
@@ -66,7 +66,7 @@ public class TopicModelAgent extends JPSHttpServlet{
 			String[] params = {corpusLocation, dictionaryLocation, docsPath, modelLocation}; 
 			String[] prints = AsyncPythonHelper.callPython("modelTopic.py",params, TopicModelAgent.class);
 			List<String> topics = new ArrayList<String>();
-			String serverPath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.KB_URL);
+			String serverPath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
 			String afileIRI = serverPath+"topicmodel";
 			topics.add(corpusLocation);
 			topics.add(dictionaryLocation);

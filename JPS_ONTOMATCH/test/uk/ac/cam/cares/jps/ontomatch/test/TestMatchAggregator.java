@@ -17,7 +17,9 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -29,6 +31,10 @@ import uk.ac.cam.cares.jps.ontomatch.test.TestElementMatcher.ElementMatcherForTe
 public class TestMatchAggregator extends Mockito{
 
 	class MatchAggregator4Test extends MatchAggregator{
+		
+		 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+			 super.testGet(request, response);
+		 }
 		 public void testPenalizing(String classAlignmentIRI, double sameClassThreshold, double pFactor) throws Exception {
 			 super.penalizing( classAlignmentIRI,  sameClassThreshold,  pFactor); 
 		 }
@@ -46,7 +52,8 @@ public class TestMatchAggregator extends Mockito{
 		 }
 		}
 
-	
+	 
+	@Ignore
 	@Test 
     public void testFunctionPenalizing() throws Exception {
 		MatchAggregator4Test m = new MatchAggregator4Test();
@@ -72,23 +79,58 @@ public class TestMatchAggregator extends Mockito{
 		
     }
 	
-	//TODO
+	
+	@Test
 	public void testAggregateWithNoChoice(){
 		double threshold = 0.6;
 		List<Double> weights= new ArrayList<Double>(); 
 		weights.add(0.4);weights.add(0.4);weights.add(0.2);		
-		String onto1 = "D://workwork//testFiles//ontologies/dbpedia_2014.owl",onto2 = "D://workwork//testFiles//ontologies/PowerPlant.owl";
-		String[] stubAlignments = {"file:///D:/workwork/testFiles/alignments/aStr.owl","file:///D:/workwork/testFiles/alignments/aStr2.owl","file:///D:/workwork/testFiles/alignments/aStr3.owl"}; 
-		for (int i=0; i<stubAlignments.length; i++) {
-			String aIRI = stubAlignments[i];
-			try {
-				AlignmentIOHelper.readAlignmentFileAsJSONArray(aIRI);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		String onto1 = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl",onto2 = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
+		String[] stubAlignments = {"file:///D:/workwork/testFiles/alignments/PPDBDOMAIN.owl","file:///D:/workwork/testFiles/alignments/PPDBSTRING.owl","file:///D:/workwork/testFiles/alignments/PPDBWORD.owl"}; 
+		String addr = "http://www.theworldavatar.com/finalTestAggregaotr.owl";
+
+		JSONObject jo  = new JSONObject();
+        jo.put("threshold", 0.6);
+        jo.put("srcOnto", onto1);
+        jo.put("tgtOnto", onto2);
+        jo.put("addr", addr);
+        jo.put("weights", weights);
+        jo.put("alignments", stubAlignments);
+        Reader inputString = new StringReader(jo.toString());
+        BufferedReader reader = new BufferedReader(inputString);
+        
+        HttpServletRequest request = mock(HttpServletRequest.class);       
+        HttpServletResponse response = mock(HttpServletResponse.class);
+        when(request.getMethod()).thenReturn("POST");
+        try {
+			when(request.getReader()).thenReturn(reader);
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
 		}
-		String addr = "file:///D:/workwork/testFiles/alignments/final.owl";
-		//TODO
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter writer = new PrintWriter(stringWriter);
+        
+        try {
+			when(response.getWriter()).thenReturn(writer);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        try {
+			new MatchAggregator4Test().testGet(request, response);
+		} catch (ServletException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+        writer.flush(); // it may not have been flushed yet...
+        assertTrue(stringWriter.toString().contains("success"));
+	
 	}
 }

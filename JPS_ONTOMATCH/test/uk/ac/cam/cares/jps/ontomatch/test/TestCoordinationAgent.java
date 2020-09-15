@@ -30,17 +30,28 @@ public class TestCoordinationAgent extends Mockito{
 	 }
 	}
 
+	@Test 
+	public void testRetrieveTriples() {
+		String ep = "http://dbpedia.org/sparql";
+		CoordinationAgentForTest a =new CoordinationAgentForTest();
+		String targetClassIRI = "http://dbpedia.org/ontology/PowerStation" ;
+		String saveIRI =  "http://www.theworldavatar.com/tmpdbp.owl";
+		a.queryPotentialInstanceAndSave(targetClassIRI, ep, true, saveIRI);
+	    
+	}
+	
+	@Ignore
     @Test 
     public void testTermCoordi() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);       
         HttpServletResponse response = mock(HttpServletResponse.class);
-
+        System.out.println("test coordi");
 
 		String mt = "TERM";
-		String stubSavePath = "C:/Users/morta/WebstormProjects/MatchAgentVisual/public/kb";
+		String stubSavePath = "http://www.theworldavatar.com/final.owl";
 		//TODO: substitute with actual tmp file please
 		String stubTgt = "D:/workwork/testFiles/ontologies/PowerPlant.owl";
-		String stubSrc = "D://workwork//testFiles//ontologies/dbpedia_2014.owl";
+		String stubSrc = "D:/workwork/testFiles/ontologies/dbpedia_2014.owl";
         double[] jaw = new double[3];
         jaw[0] = 0.4;jaw[1] = 0.4;jaw[2] = 0.2;
 		JSONObject jo  = new JSONObject();
@@ -50,8 +61,8 @@ public class TestCoordinationAgent extends Mockito{
         jo.put("matchingType", mt);
         jo.put("threshold", 0.6);
         jo.put("weights", jaw);
-        jo.put("dictAddress", "D:\\workwork\\testFiles\\model\\dictionarylevel2.gensim");
-        jo.put("modelAddress", "D:\\workwork\\testFiles\\model\\model30t5p5a.gensim");
+        jo.put("dictAddress", "D:/workwork/ontoMatchData/simMatch/model/modellevel2/dictionarylevel2.gensim");
+        jo.put("modelAddress", "D:/workwork/ontoMatchData/simMatch/model/modellevel2/model30t5p5a.gensim");
 
         Reader inputString = new StringReader(jo.toString());
         BufferedReader reader = new BufferedReader(inputString);

@@ -22,7 +22,6 @@ import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
 import uk.ac.cam.cares.jps.base.util.PythonHelper;
 
 /***
- * 
  * Agent that lexically process an ontology and save it in an pkl file A
  * necessary shared function used by several ElementMatcher Functionally it is a
  * servlet wrapper around the python program that actually does the job Input
@@ -33,9 +32,7 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
  * @version 1.0
  * @since 2020-09-08
  */
-
 @WebServlet(urlPatterns = { "/ontologyProcessor" })
-
 public class LexicalProcessor extends JPSHttpServlet {
 
 	private static final long serialVersionUID = -5914984180067956570L;
@@ -60,20 +57,19 @@ public class LexicalProcessor extends JPSHttpServlet {
 			String[] results = AsyncPythonHelper.callPython(pyname, paras, LexicalProcessor.class);
 
 			/** write to metadata store **/
-			String serverUrl = OntomatchProperties.getInstance().getProperty(OntomatchProperties.KB_URL);
+			String serverUrl = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
 
 			String agent = serverUrl+"/" + request.getServletPath();
 			List<String> topics = new ArrayList<String>();
 			topics.add(afileIRI);
 			MetaDataAnnotator.annotate(saveAddress, null, agent, true, topics);
-			logger.info("Ontology processor agent: save to metadatastore about: " + saveAddress);
+			System.out.println("Ontology processor agent: save to metadatastore about: " + saveAddress);
 
 			/** write response: success/err **/
 			if (results[0].toString().contains("success")) {
 				resultObj.put("success", true);
 			} else {
 				resultObj.put("error", results[1].toString());
-				//System.out.println(results[1].toString());
 			    throw new Exception(results[1].toString());
 			}
 		} catch (Exception e) {
