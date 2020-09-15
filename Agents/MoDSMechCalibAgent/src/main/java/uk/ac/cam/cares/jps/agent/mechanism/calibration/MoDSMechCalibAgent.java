@@ -452,6 +452,7 @@ public class MoDSMechCalibAgent extends JPSAgent {
 				new File(getClass().getClassLoader().getResource(modsMechCalibAgentProperty.getSlurmScriptFileName()).getPath()), 
 				getInputFile(jsonString, jobFolderName), timeStamp);
 		if (setUpMsg != null) {
+			deleteDirectory(new File(jobFolderPath.concat(".zip")));
 			deleteDirectory(new File(jobFolderPath));
 			return jobSubmission.getWorkspaceDirectory().getAbsolutePath().concat(File.separator).concat(jobFolderName);
 		}
