@@ -51,6 +51,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 	
 	private String tranModel = "mix-average";
 	private String rangeOfMultipliers = "100.0";
+	private String flameSpdScaling = "linear";
 	
 	public String getTranModel() {
 		return tranModel;
@@ -66,6 +67,14 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 
 	public void setRangeOfMultipliers(String rangeOfMultipliers) {
 		this.rangeOfMultipliers = rangeOfMultipliers;
+	}
+
+	public String getFlameSpdScaling() {
+		return flameSpdScaling;
+	}
+
+	public void setFlameSpdScaling(String flameSpdScaling) {
+		this.flameSpdScaling = flameSpdScaling;
 	}
 
 	public ModelCanteraLFS(MoDSMechCalibAgentProperty modsMechCalibAgentProperty) {
@@ -189,6 +198,12 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 		String rangeOfMultipliers = JSonRequestParser.getRangeOfMultipliers(otherOptions);
 		if (rangeOfMultipliers != null && !rangeOfMultipliers.isEmpty()) {
 			setRangeOfMultipliers(rangeOfMultipliers);
+		}
+		
+		// set up scaling for flame speed response
+		String flameSpdScaling = JSonRequestParser.getFlameSpdScaling(otherOptions);
+		if (flameSpdScaling != null && !flameSpdScaling.isEmpty()) {
+			setFlameSpdScaling(flameSpdScaling);
 		}
 		
 		// process the active parameters to be only the equation of reactions
@@ -447,7 +462,7 @@ public class ModelCanteraLFS extends MoDSMarshaller implements IModel {
 			param.setCaseDetailSep(";");
 			param.setNParamsPerCase("1");
 			param.setPreserveWhiteSpace("true");
-			param.setScaling("linear");
+			param.setScaling(getFlameSpdScaling());
 			param.setCaseNamesList(caseNames);
 			param.setModelList(caseModel);
 			
