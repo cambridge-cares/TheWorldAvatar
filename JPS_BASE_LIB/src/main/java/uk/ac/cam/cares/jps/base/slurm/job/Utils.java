@@ -12,10 +12,13 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class Utils {
+import uk.ac.cam.cares.jps.base.slurm.job.configuration.SlurmJobProperty;
+
+public class Utils{
 	private static Logger logger = LoggerFactory.getLogger(Utils.class);	
 	public static long previousTimeStamp;
 	
@@ -66,7 +69,19 @@ public class Utils {
 	 * @throws IOException
 	 */
 	public static boolean isJobCompleted(File jobFolder) throws IOException{
-		return isJobFinished(jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+		return isJobFinished(jobFolder, jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()));
+	}
+	
+	/**
+	 * Check if a job is completed.
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobCompleted(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		return isJobFinished(jobFolder, jobFolder.getAbsolutePath().concat(File.separator).concat(Status.STATUS_FILE.getName()), slurmJobProperty);
 	}
 	
 	/**
@@ -105,11 +120,12 @@ public class Utils {
 	/**
 	 * Check the status if a job finished.
 	 * 
-	 * @param statusFilePath
+	 * @param jobFolder the folder that contains the job.
+	 * @param statusFilePath the file that contains the status of the job. 
 	 * @return
 	 * @throws IOException
 	 */
-	public static boolean isJobFinished(String statusFilePath) throws IOException{
+	public static boolean isJobFinished(File jobFolder, String statusFilePath) throws IOException{
 		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
 		String line;
 		while((line=statusFile.readLine())!=null){
@@ -119,6 +135,64 @@ public class Utils {
 					return true;
 				}
 				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
+					statusFile.close();
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+
+	
+	/**
+	 * Check the status if a job finished.
+	 * 
+	 * @param jobFolder the folder that contains the job.
+	 * @param statusFilePath the file that contains the status of the job.
+	 * @param slurmJobProperty the variable that allows to read different<br>
+	 * properties including agentClass, completed jobs folder prefix, etc.
+	 * 
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobFinished(File jobFolder, String statusFilePath, SlurmJobProperty slurmJobProperty) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_STATUS.getName())){
+				if(line.contains(Status.STATUS_JOB_COMPLETED.getName())){
+					statusFile.close();
+					if(isJobPostProcessed(jobFolder, statusFilePath)){
+						moveToCompletedJobsFolder(jobFolder, slurmJobProperty);
+					}
+					return true;
+				}
+				if(line.contains(Status.STATUS_JOB_ERROR_TERMINATED.getName())){
+					statusFile.close();
+					moveToFailedJobsFolder(jobFolder, slurmJobProperty);
+					return true;
+				}
+			}
+		}
+		statusFile.close();
+		return false;
+	}
+	
+	/**
+	 * Check the status if a job post-processed.
+	 * 
+	 * @param jobFolder the folder that contains the job.
+	 * @param statusFilePath the file that contains the status of the job.
+	 * @return
+	 * @throws IOException
+	 */
+	public static boolean isJobPostProcessed(File jobFolder, String statusFilePath) throws IOException{
+		BufferedReader statusFile = Utils.openSourceFile(statusFilePath);
+		String line;
+		while((line=statusFile.readLine())!=null){
+			if(line.trim().startsWith(Status.ATTRIBUTE_JOB_OUTPUT.getName())){
+				if(line.contains(Status.OUTPUT_PROCESSED.getName())){
 					statusFile.close();
 					return true;
 				}
@@ -460,5 +534,81 @@ public class Utils {
 		}
 		recreatedFile.close();
 		receivedFile.close();
+	}
+	
+	/**
+	 * Moves the provided job folder to the folder that contains completed<br>
+	 * and post-processed jobs of the agent. 
+	 * 
+	 * @param jobFolder the folder that contains a job
+	 * @param slurmJobProperty
+	 */
+	public static void moveToCompletedJobsFolder(File jobFolder, SlurmJobProperty slurmJobProperty) {
+		try {
+			File destDir = getCompletedJobsDirectory(jobFolder, slurmJobProperty);
+			if(destDir!=null){
+				FileUtils.copyDirectory(jobFolder, destDir);
+				FileUtils.deleteDirectory(jobFolder);
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns the folder where completed jobs are saved.
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static File getCompletedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		String completedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentCompletedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
+		File jobFolderInCompletedJobs = new File(completedJobsDirectory);
+		jobFolderInCompletedJobs.mkdirs();
+		if(jobFolderInCompletedJobs.exists()){
+			return jobFolderInCompletedJobs;
+		}
+		return null;
+	}
+	
+	/**
+	 * Moves the provided job folder to the folder that contains failed<br>
+	 * jobs of the agent.
+	 * 
+	 * @param jobFolder the folder that contains a job
+	 * @param slurmJobProperty
+	 */
+	public static void moveToFailedJobsFolder(File jobFolder, SlurmJobProperty slurmJobProperty) {
+		try {
+			File destDir = getFailedJobsDirectory(jobFolder, slurmJobProperty);
+			if(destDir!=null){
+				FileUtils.copyDirectory(jobFolder, destDir);
+				FileUtils.deleteDirectory(jobFolder);
+			}
+		} catch (IOException e) {
+		    e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Returns the folder where failed jobs are saved.
+	 * 
+	 * @param jobFolder
+	 * @param slurmJobProperty
+	 * @return
+	 * @throws IOException
+	 */
+	public static File getFailedJobsDirectory(File jobFolder, SlurmJobProperty slurmJobProperty) throws IOException{
+		File workspace = Workspace.getWorkspace(Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName(), slurmJobProperty.getAgentClass());
+		String failedJobsDirectory = Property.JOB_WORKSPACE_PARENT_DIR.getPropertyName().concat(File.separator).concat(slurmJobProperty.getAgentFailedJobsSpacePrefix()).concat(workspace.getName()).concat(File.separator).concat(jobFolder.getName());
+		File jobFolderInFailedJobs = new File(failedJobsDirectory);
+		jobFolderInFailedJobs.mkdirs();
+		if(jobFolderInFailedJobs.exists()){
+			return jobFolderInFailedJobs;
+		}
+		return null;
 	}
 }
