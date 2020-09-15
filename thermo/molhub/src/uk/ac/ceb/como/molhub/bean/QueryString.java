@@ -8,8 +8,10 @@ import uk.ac.ceb.como.molhub.model.QueryManager;
 /**
  * The Class QueryString.
  *
- * @author nk510
  * <p>The Class QueryString. Class implements methods for parametrised SPARQL queries.</p>
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class QueryString {	
 	

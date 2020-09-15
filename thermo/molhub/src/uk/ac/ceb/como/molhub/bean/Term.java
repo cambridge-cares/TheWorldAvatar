@@ -4,8 +4,11 @@ package uk.ac.ceb.como.molhub.bean;
 /**
  * The Class Term.
  *
- * @author nk510 <p>Represents a query term that will be used in search box. For
+ * <p>Represents a query term that will be used in search box. For
  *         example: "(H2 and O) or Cl2"</p>
+ *         
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class Term {
 

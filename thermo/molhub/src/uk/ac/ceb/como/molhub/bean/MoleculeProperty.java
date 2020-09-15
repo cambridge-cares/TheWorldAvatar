@@ -2,16 +2,12 @@ package uk.ac.ceb.como.molhub.bean;
 
 // TODO: Auto-generated Javadoc
 /**
- * @author nk510
- * The Class MoleculeProperty saves molecules properties taken form a digital entity  (g09 file). 
- */
-/**
- * @author NK
- *
- */
-/**
- * @author NK
- *
+ * 
+ * The Class MoleculeProperty saves molecules properties taken form a digital entity  (g09 file).
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
  */
 public class MoleculeProperty {
 

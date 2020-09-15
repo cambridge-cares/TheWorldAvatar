@@ -26,6 +26,9 @@ import uk.ac.ceb.como.molhub.model.PropertiesManager;
  *         files) of Compchem ontology. Runs thermo calculations implemented in
  *         Python, and generates results using json format.
  *         </p>
+ *          
+ *          @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *          @author Feroz Farazi (msff2@cam.ac.uk)
  */
 
 public class CalculationLogAction extends ActionSupport implements SessionAware {

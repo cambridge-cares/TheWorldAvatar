@@ -1,10 +1,9 @@
 package uk.ac.ceb.como.molhub.action;
 
-import java.io.BufferedReader;
 import java.io.File;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+
 import java.net.URL;
 
 import java.text.DecimalFormat;
@@ -13,9 +12,9 @@ import java.util.ArrayList;
 
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.exec.ExecuteException;
+
+
 import org.apache.log4j.Logger;
 
 import org.eclipse.rdf4j.RDF4JException;
@@ -47,8 +46,9 @@ import uk.ac.ceb.como.molhub.model.PropertiesManager;
  * on server, and generates XML, ontology file, image file, and<br>
  * adds ontologies into triple store (RDF4J).
  *
- * @author nk510 (Nenad Krdzavac)
- * @author msff2 (Feroz Farazi)
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  * 
  */
 
@@ -147,6 +147,8 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 			column.add("Gaussian file name ");
 			column.add("OWL file name");
 			column.add("OWL consistency");
+			column.add("Comment");
+			
 		}
 		/**
 		 *  If user clicks on the upload button without selecting any files.
@@ -161,6 +163,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 		
 		for (File f : files) {	
 			
+			boolean consistency=false;
 			
 			/**
 			 *  Creates unique folder name for each uploaded Gaussian file (g09),  XML file, OWL file, and PNG file.
@@ -229,6 +232,21 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				
 				logger.info("owlFileList.isEmpty(): " + owlFileList.isEmpty() + " owlFileList.size(): " + owlFileList.size());				
 				
+				/**
+				 * If OWL file is not generated then the message will be shown in report
+				 */
+				if(owlFileList.isEmpty()) {
+					
+					gaussianUploadReport = new GaussianUploadReport(
+							/**
+							 * @author NK510 (caresssd@hermes.cam.ac.uk)
+							 * Generates uploading report when OWL file is not generated and uploaded. 
+							 */
+							uuidFolderName.substring(uuidFolderName.lastIndexOf("/") + 1), uploadFileName[fileNumber], consistency,"OWL file is not generated");
+					
+					uploadReportList.add(gaussianUploadReport);
+					
+				}
 				
 				if(!owlFileList.isEmpty()) {
 					
@@ -256,7 +274,7 @@ public class UploadLogAction extends ActionSupport implements ValidationAware {
 				 * and checks consistency of the generated Compchem ontology (ABox).
 				 */
 				
-				boolean consistency = InconsistencyExplanation.getConsistencyOWLFile(kbFolderPath +  uuidFolderName + "/" + owl_File.getName());
+				consistency = InconsistencyExplanation.getConsistencyOWLFile(kbFolderPath +  uuidFolderName + "/" + owl_File.getName());
 				
 				/**
 				 * If the generated OWL file is valid, it is loaded to the triple

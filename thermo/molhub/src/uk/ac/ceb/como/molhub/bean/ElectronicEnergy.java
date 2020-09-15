@@ -2,9 +2,13 @@ package uk.ac.ceb.como.molhub.bean;
 
 /**
  * 
- * @author NK510 (caresssd@hermes.cam.ac.uk)
  * 
- * The class provides a Java bean for electronic energy data. For example scf electronic energy, zero-point energy. It stores electronic energy value and electronic energy unit. 
+ * 
+ * The class provides a Java bean for electronic energy data. For example scf electronic energy, zero-point energy. It stores electronic energy value and electronic energy unit.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
  *
  */
 public class ElectronicEnergy {

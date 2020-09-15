@@ -108,6 +108,7 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 					<!-- PUT CONTENT HERE -->
 					<div class="col-md-9">
 					
+					 
 						<s:form action="upload" method="post" enctype="multipart/form-data" theme="bootstrap" cssClass="well form-search" align="left">
 						
 							<s:file name="upload" label="Select Gaussian files to upload:" multiple="multiple" theme="bootstrap"/>
@@ -116,6 +117,7 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 
 						</s:form>
 				    
+					
 					</div>
 
 					<!-- 
@@ -138,7 +140,7 @@ These queries are defined using the SPARQL Protocol and RDF Query Language (SPAR
 					<th class="nowrap"><s:property value="gaussianFileName"/></th>
 					<td class="nowrap"><s:property value="owlFileName"/></td>
 					<th class="nowrap"><s:property value="consistencyCompchemOntologyFile"/></th>
-					<!--<td class="nowrap"><s:property value="validationCompchemFile" /></td>-->
+					<th class="nowrap"><s:property value="comment"/></th>
 					</tr>							
 					</s:iterator>
 					

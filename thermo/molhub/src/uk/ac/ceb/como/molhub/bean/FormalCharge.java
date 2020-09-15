@@ -2,8 +2,12 @@ package uk.ac.ceb.como.molhub.bean;
 
 /**
  * The Class FormalCharge.
- * @author nk510
+ * 
  * <p> Class provides a bean for formal charge data : formal charge value, formal charge unit. </p>
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
  */
 
 public class FormalCharge {

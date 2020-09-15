@@ -32,13 +32,16 @@ import uk.ac.ceb.como.molhub.model.SentenceManager;
 /**
  * The Class TermValidationAction.
  *
- * @author nk510
+ * 
  *         <p>
  * 		Implements methods for querying RDF4J repository by using
  *         propositional logic formulas. Each literal in query string consists
  *         of atom name (as given in Periodic table) and number of atoms
  *         appearing in molecule name.
  *         </p>
+ *         
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 
 public class TermValidationLogAction extends ActionSupport implements SessionAware, ValidationAware {
@@ -108,7 +111,7 @@ public class TermValidationLogAction extends ActionSupport implements SessionAwa
 		resultsColumn.add("Method: ");
 
 		/**
-		 * @author nk510
+		 * 
 		 *         <p>
 		 * 		This part of code is executing when a user presses button "Molhub Search".
 		 *         </p>

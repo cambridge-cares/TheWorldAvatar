@@ -36,10 +36,13 @@ import uk.ac.ceb.como.molhub.bean.RotationalConstant;
  * 
  * The Class QueryManager.
  *
- * @author nk510
+ * 
  *         <p>
  *         The Class QueryManager. Implements methods for query remote RDF4J triple store.
  *         </p>
+ *         
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  * 
  */
 

@@ -23,6 +23,9 @@ import uk.ac.ceb.como.molhub.model.QueryManager;
 /**
  * The Class MoleculeViewAction. 
  * Shows all molecules properties stored in RDF4J triple store. 
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class MoleculeViewLogAction extends ActionSupport {
 

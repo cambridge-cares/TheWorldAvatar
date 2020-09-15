@@ -8,11 +8,15 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 
-import uk.ac.ceb.como.molhub.action.UploadLogAction;
+
 
 /**
- * @author nk510
+ * 
  * The Class ExecutorManager.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
  */
 public class ExecutorManager {
 	

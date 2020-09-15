@@ -3,6 +3,9 @@ package uk.ac.ceb.como.molhub.bean;
 // TODO: Auto-generated Javadoc
 /**
  * The Class GaussianUploadReport.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
  */
 public class GaussianUploadReport implements Cloneable{
 
@@ -20,6 +23,7 @@ public class GaussianUploadReport implements Cloneable{
 	/** The consistency compchem ontology file. */
 	private boolean consistencyCompchemOntologyFile;
 	
+	private String comment;
 	/**
 	 * Instantiates a new gaussian upload report.
 	 */
@@ -27,8 +31,23 @@ public class GaussianUploadReport implements Cloneable{
 		
 	}
 	
+    /**
+     * @param uuid the uuid
+     * @param gaussianFileName the Gaussian file name
+     * @param comment comment when OWL file is not generated.
+     */
+    public GaussianUploadReport(String uuid, String gaussianFileName, boolean consistencyCompchemOntologyFile, String comment) {
+		
+		this.uuid=uuid;
+		this.gaussianFileName=gaussianFileName;
+		this.consistencyCompchemOntologyFile=consistencyCompchemOntologyFile;
+		this.comment=comment;
+
+	}
+
+    
 	/**
-	 * Instantiates a new gaussian upload report.
+	 * Constructor of a new Gaussian upload report.
 	 *
 	 * @param uuid the uuid
 	 * @param gaussianFileName the gaussian file name
@@ -149,4 +168,14 @@ public class GaussianUploadReport implements Cloneable{
                 + "Validation of Compchem xml file: " + isValidationCompchemFile() + " | "
                 + "Consistency of Compchem owl file :  " + isConsistencyCompchemOntologyFile();
     }
+
+
+	public String getComment() {
+		return comment;
+	}
+
+
+	public void setComment(String comment) {
+		this.comment = comment;
+	}
 }

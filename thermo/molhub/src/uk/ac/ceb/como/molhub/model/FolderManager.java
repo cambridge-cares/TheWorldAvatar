@@ -16,8 +16,12 @@ import java.util.UUID;
 import uk.ac.ceb.como.molhub.bean.GaussianUploadReport;
 
 /**
- * @author nk510
+ * 
  * The Class FolderManager.
+ * 
+ *  @author Nenad Krdzavac (caresssd@hermes.cam.ac.uk)
+ *  @author Feroz Farazi (msff2@cam.ac.uk)
+ *  
  */
 public class FolderManager {
 
