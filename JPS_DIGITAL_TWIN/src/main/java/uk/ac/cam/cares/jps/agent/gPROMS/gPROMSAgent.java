@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.io.ByteArrayOutputStream;
+import java.io.FileWriter; 
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -53,11 +55,16 @@ import uk.ac.cam.cares.jps.base.slurm.job.SlurmJobException;
 import uk.ac.cam.cares.jps.base.slurm.job.Status;
 import uk.ac.cam.cares.jps.base.slurm.job.Utils;
 import uk.ac.cam.cares.jps.base.util.FileUtil;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.ontology.OntModelSpec;
+import org.apache.jena.query.*;
+import org.apache.jena.rdf.model.ModelFactory;
+
 
 /**
  * gPROMS Agent developed for setting-up and running gPROMS chemical network on
  * HPC.
- *
+ *The input files for gPROMS execution should be placed in user.home//input folder
  * @author Aravind Devanand (aravind@u.nus.edu)
  *
  */
@@ -80,6 +87,9 @@ public class gPROMSAgent extends JPSAgent {
 	public static final String JOB_OUTPUT_REQUEST_PATH = "/job/output/request";
 	public static final String JOB_STATISTICS_PATH = "/job/statistics";
 	public static final String JOB_SHOW_STATISTICS_PATH = "/job/show/statistics";
+	
+	// Create a temporary folder in the user's home location
+	private Path temporaryDirectory = null;
 
 	public JSONObject produceStatistics(String input) throws IOException, gPROMSAgentException {
 		System.out.println("Received a request to send statistics.\n");
@@ -379,8 +389,15 @@ public class gPROMSAgent extends JPSAgent {
 		initAgentProperty();
 		long timeStamp = Utils.getTimeStamp();
 		String jobFolderName = getNewJobFolderName(gPROMSAgentProperty.getHpcAddress(), timeStamp);
-
+		System.out.println("Jobfolder is"+ jobFolderName);
+		//
 		
+		
+		Path temporaryDirectory1 = Paths.get(System.getProperty("user.home"), "." + jobFolderName);
+		System.out.println("tempdir is"+ temporaryDirectory1.toString());
+		System.out.println("tempdir1 is"+ temporaryDirectory1.toString());
+		System.out.println("userdir is"+ System.getProperty("user.dir"));
+		System.out.println("scrptdir is"+gPROMSAgentProperty.getAgentScriptsLocation().toString());
 		return jobSubmission.setUpJob(jsonInput,
 				new File(URLDecoder.decode(getClass().getClassLoader().getResource(gPROMSAgentProperty.getSlurmScriptFileName())
 						.getPath(), "utf-8")),
@@ -402,10 +419,118 @@ public class gPROMSAgent extends JPSAgent {
 	 */
 	private File getInputFile(String jsonInput, String jobFolderName) throws IOException, gPROMSAgentException {
 		
-		// Compress all files in the temporary directory into a ZIP
+		//Preparation of settings.input file
 		
-		Path zipFile = Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input.zip");
-		Path temporaryDirectory= Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input");
+		
+		
+		
+
+//Extracting required variables from owl files
+			System.out.println(System.getProperty("user.dir"));
+		   String filePath = System.getProperty("user.home")+"\\input\\debutaniser_section.owl";
+
+			OntModel model = ModelFactory.createOntologyModel(OntModelSpec.OWL_DL_MEM);
+
+			try {
+			    File file = new File(filePath);
+			    FileInputStream reader = new FileInputStream(file);
+			    model.read(reader,null);     //load the ontology model
+			} catch (Exception e) {
+			    e.printStackTrace();
+			}
+//Sample Sparql query
+//			String sparqlQuery =
+//					"SELECT ?Temp\n"+
+//					"WHERE {\n "+
+//					"?x a <http://www.semanticweb.org/caresadmin1/ontologies/2020/5/untitled-ontology-396#Temperature> .\n"+	
+//					"?x  <http://www.semanticweb.org/caresadmin1/ontologies/2020/5/untitled-ontology-396#hasValue>  ?Temp .\n"+
+//					"}" ;
+//			//System.err.println(sparqlQuery); //Prints the query
+//			Query query = QueryFactory.create(sparqlQuery);
+//
+//			QueryExecution qe = QueryExecutionFactory.create(query, model);
+//
+//			ResultSet results = qe.execSelect();
+//			//ResultSetFormatter.out(System.out, results, query);			
+//			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();	
+//			ResultSetFormatter.outputAsCSV(byteArrayOutputStream,results);
+//			String s=byteArrayOutputStream.toString();
+//			System.out.println(s);
+//			//List se=Arrays.asList(s.split("\\s*,\\s*|http"));
+//			//System.out.println(se);
+//			String[] sa= s.split("\\r?\\n");
+//			//System.out.println(Arrays.toString(sa[1]));
+//			System.out.println(sa[1]);
+
+//Trial one with the debutaniser file
+			
+			String TempQuery =
+					"PREFIX process:<http://www.theworldavatar.com/ontology/ontocape/chemical_process_system/CPS_function/process.owl#>\r\n" +
+					"PREFIX system:<http://www.theworldavatar.com/ontology/ontocape/upper_level/system.owl#>\r\n" +
+					"\r \n"+
+					"SELECT ?Temp\n"+
+					"WHERE {\n "+
+					"?x a  system:ScalarValue  .\n" + 
+					"?x system:value ?Temp .\n"+
+					"}" ;
+			//System.err.println(TempQuery); //Prints the query
+			Query queryt = QueryFactory.create(TempQuery);
+
+			QueryExecution qet = QueryExecutionFactory.create(queryt, model);
+
+			ResultSet results = qet.execSelect();
+			//ResultSetFormatter.out(System.out, results, query);			
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();	
+			ResultSetFormatter.outputAsCSV(byteArrayOutputStream,results);
+			String s=byteArrayOutputStream.toString();
+			System.out.println(s);
+			//List se=Arrays.asList(s.split("\\s*,\\s*|http"));
+			//System.out.println(se);
+			String[] sa= s.split("\\r?\\n");
+			//System.out.println(Arrays.toString(sa[1]));
+			System.out.println(sa[1]);			
+			
+//Once the file is created, data has to be written to it
+		  try {
+			  String input = System.getProperty("user.home")+"\\input\\Settings.input";
+		      FileWriter myWriter = new FileWriter(input);
+		      myWriter.write("Feed__T \n");
+		      myWriter.write(sa[1]);
+		      myWriter.write("\n");
+		      myWriter.write("Feed__P\n");
+		      myWriter.write(sa[2]);
+		      myWriter.write("\nstep1__initial_value \n");
+		      myWriter.write("step1__final_value \n");
+		      myWriter.write("step2__initial_value \n");
+		      myWriter.write("step2__final_value \n");
+		      myWriter.write("step3__initial_value \n");
+		      myWriter.write("step3__final_value \n");
+		      myWriter.write("step4__initial_value \n");
+		      myWriter.write("step4__final_value \n");
+		      
+		      myWriter.close();
+		      System.out.println("Successfully wrote to the file.");
+		    } catch (IOException e) {
+		      System.out.println("An error occurred.");
+		      e.printStackTrace();
+		    }
+	
+		
+		
+		
+		
+		
+		
+		
+		
+		// Compress all files in the temporary directory into a ZIP
+		//Path zipFile = Paths.get(System.getProperty("user.home"), temporaryDirectory.getFileName().toString() + ".zip");
+		Path zipFile = Paths.get(System.getProperty("user.home")+"\\input.zip");
+		// Create a temporary folder in the user's home location
+		//Path temporaryDirectory= Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input");
+
+		Path temporaryDirectory= Paths.get(System.getProperty("user.home")+"\\input");
+		// Path temporaryDirectory= Paths.get("C:\\Users\\caresadmin\\JParkSimulator-git\\JPS_DIGITAL_TWIN\\src\\main\\resources\\input");
 		List<File> zipContents = new ArrayList<>();
 
 		Files.walk(temporaryDirectory)
