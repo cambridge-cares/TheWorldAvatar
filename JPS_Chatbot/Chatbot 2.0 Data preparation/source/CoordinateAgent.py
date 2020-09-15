@@ -43,19 +43,21 @@ class CoordinateAgent():
         self.sparql_query = SPARQLQuery()
         self.lda_classifier = LDAClassifier()
 
-
+        # TODO: Make the list complete ...
 
 
         topics = self.lda_classifier.classify(question)
         print(topics)
-        for topic in topics:
-            if topic == 'wiki':
-                try:
-                    result = self.wiki_query(question)
-                    return result
-                except:
-                    # TODO: add JPS results to it
-                    pass
+        result = self.wiki_query(question)
+        return result
+        # for topic in topics:
+            # if topic == 'wiki':
+            #     try:
+            #         result = self.wiki_query(question)
+            #         return result
+            #     except:
+            #         # TODO: add JPS results to it
+            #         pass
 
     def wiki_query(self, question):
         intent_and_entities = self.interpreter_parser.parse_question_interpretation(question)
@@ -81,7 +83,9 @@ class CoordinateAgent():
 
         result = self.sparql_query.start_queries(sparqls)
         print('-------------- we have a result -------------------')
-        pprint(result)
+        # pprint(result)
+        print('the result in json format', result[0])
+        print('the sparql query', result[2])
         return result[0]
 
 

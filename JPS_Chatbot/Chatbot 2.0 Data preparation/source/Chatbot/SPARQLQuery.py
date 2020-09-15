@@ -26,6 +26,9 @@ def make_request(_url, index, query):
 def identity_valid_result(result):
     try:
         r = result[0]['results']['bindings']
+        print('---------- valid result ------------')
+        print(r)
+
     except:
         return None
     if len(r) > 0:
@@ -41,16 +44,19 @@ class SPARQLQuery:
         self.query_step = 2
 
     def start_queries(self, queries):
+        self.iteration_round = 1
         valid_results = []
         r = None
         while r is None:
             if len(queries) < self.query_step:  # each time first self.query_step many steps
                 self.query_step = len(queries)
             r = self.start_multiple_queries(queries, valid_results)
-            queries = queries[self.query_step:]  # remove the first self.query_step elements from the queries
-            time.sleep(2)
             if len(queries) == 0:
                 return None
+            else:
+                queries = queries[self.query_step:]  # remove the first self.query_step elements from the queries
+            time.sleep(2)
+
         return r
 
     def start_multiple_queries(self, queries, valid_results):
@@ -77,9 +83,15 @@ class SPARQLQuery:
                 # TODO: find the result with the highest ranking ...
                 # TODO: put the attribute names in m
         # pprint(valid_results)
+        print('we have got line 83', len(valid_results))
+
         if len(valid_results) == 0:
             return None
         else:
+            print('we have got line 86')
             sorted_results = sorted(valid_results, key=lambda x: x[1])
-            # print('=============== sorted result =================')
+            print('=============== sorted result =================')
+            print(sorted_results)
+
+
             return sorted_results[0]

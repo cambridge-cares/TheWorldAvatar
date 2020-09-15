@@ -54,24 +54,55 @@ with open('../selected_instance') as f:
     instances = json.loads(f.read())
     print('The number of instances concerned', len(instances))
     newlist = sorted(instances, key=lambda x: len(x['item']))
+    newlist.insert(0, {'item': {'value': 'Q2270'}})
 
-test_list = newlist[:5]
-for item in test_list:
+# newlist = newlist[:5]
+total_length = len(newlist)
+counter = 0
+start_time = time.time()
+
+SMILE_DICTIONARY = {}
+
+for item in newlist:
+    counter = counter + 1
     instance_id = item['item']['value'].replace('http://www.wikidata.org/entity/', '')
-    print(instance_id)
+    # print(instance_id)
     SPARQL_query = SPARQL_template % (instance_id,instance_id,instance_id)
     print('---------------')
     # print(SPARQL_query)
     r = get_results(SPARQL_query)
     bindings = r['results']['bindings']
-    if (len(bindings) > 0):
+    # print(bindings)
+    if len(bindings) > 0:
         data = bindings[0]
-        class_list = data['class_list']
-        subclass_list = data['subclass_list']
-        print(class_list)
-        print(subclass_list)
-        print('----------------')
-    time.sleep(5)
+        print(data)
+        class_list = data['class_list']['value']
+        if class_list is not '':
+            all_distinct_classes = all_distinct_classes + class_list.split(',')
+        subclass_list = data['subclass_list']['value']
+        if subclass_list is not '':
+            all_distinct_classes = all_distinct_classes + subclass_list.split(',')
+        if 'smiles' in data:
+            smile = (data['smiles']['value'])
+            SMILE_DICTIONARY[instance_id] = smile
 
 
+        # print(class_list)
+        # print(subclass_list)
+        # print('----------------')
+    print(counter, ' out of ', total_length)
+    time_taken = round(time.time() - start_time)
+    print(time_taken, 'seconds taken')
+    estimated_time = time_taken / counter * (total_length - counter)
+    print(round(estimated_time / 60,2), 'mins left')
+    time.sleep(2)
 
+
+# The targets are 'diamine', 'aromatic hydrocarbon'
+
+# pprint(set(all_distinct_classes))
+with open('expanded_class_list', 'w') as f:
+    f.write(json.dumps(list(set(all_distinct_classes))))
+
+with open('smile_dict', 'w') as f1:
+    f1.write(json.dumps(SMILE_DICTIONARY))
