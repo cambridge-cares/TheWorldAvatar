@@ -36,8 +36,10 @@ public class OntomatchProperties {
 	public final static String TOPICMODEL_MODEL_PATH = "topicmodel.model.path";
 	public final static String TRAINING_DOCS_NAME ="trainingdocs.name";
 	public final static String SERVER_URL ="server.url";
+    public final static String OM_KB_PATH = "ontomatch.kb.address";
     public final static String OM_KB_URL = "ontomatch.kb.url";
     public final static String OWL_EXT= "owl.extension";
+    public final static String SUCCESS_FLAG= "success.flag";
 
     @Autowired
 	private Environment env;

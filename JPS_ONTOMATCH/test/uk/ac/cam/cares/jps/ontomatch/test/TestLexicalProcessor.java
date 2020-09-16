@@ -19,18 +19,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import uk.ac.cam.cares.jps.base.config.AgentLocator;
-import uk.ac.cam.cares.jps.ontomatch.CoordinationAgent;
 import uk.ac.cam.cares.jps.ontomatch.LexicalProcessor;
-import uk.ac.cam.cares.jps.ontomatch.test.TestCoordinationAgent.CoordinationAgentForTest;
 
 public class TestLexicalProcessor extends Mockito{
-
-	class LexicalProcessorForTest extends LexicalProcessor{
-		 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-			 super.testGet(request, response);
-		 }
-		}
 
 	   
 	    @Test 
@@ -47,23 +38,15 @@ public class TestLexicalProcessor extends Mockito{
 	        jo.put("ontologyIRI", stubIRI);
 	        jo.put("saveAddress", stubAddress);
 
-
-
 	        Reader inputString = new StringReader(jo.toString());
 	        BufferedReader reader = new BufferedReader(inputString);
 	        
 	        when(request.getMethod()).thenReturn("POST");
 	        when(request.getReader()).thenReturn(reader);
 
-	        StringWriter stringWriter = new StringWriter();
-	        PrintWriter writer = new PrintWriter(stringWriter);
 	        
-	        when(response.getWriter()).thenReturn(writer);
-
-	        new LexicalProcessorForTest().testGet(request, response);
-
-	        writer.flush(); // it may not have been flushed yet...
-	        assertTrue(stringWriter.toString().contains("success"));
+	        JSONObject result  = new LexicalProcessor().processRequestParameters(jo, request);
+	        assertTrue(result.has("success"));
 	    }
 	
 	

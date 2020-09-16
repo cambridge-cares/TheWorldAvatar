@@ -8,12 +8,14 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.internal.stubbing.answers.ThrowsException;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.query.KnowledgeBaseClient;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -31,7 +33,7 @@ import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
  */
 
 @WebServlet(urlPatterns = { "/elementMatcher" })
-public class ElementMatcher extends JPSHttpServlet {
+public class ElementMatcher extends JPSAgent {
 
 	private static final long serialVersionUID = -7032945484999523116L;
 
@@ -49,7 +51,7 @@ public class ElementMatcher extends JPSHttpServlet {
 	}
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = requestParams;
 		String savePath = null, targetOnto = null, sourceOnto = null, modelPath = null, dictPath = null;
 		MATCHERTYPE type = null;
@@ -181,9 +183,13 @@ public class ElementMatcher extends JPSHttpServlet {
 		}
 	}
 
-	// for testing
-	protected void testGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
-	}
+
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()||!requestParams.has("alignmentFileAddress")||!requestParams.has("matchingType")||!requestParams.has("targetOntoIRI")||!requestParams.has("sourceOntoIRI")||!requestParams.has("matcherType")) {
+            throw new BadRequestException();
+        }
+        return true;
+    }	
+
 }

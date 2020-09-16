@@ -6,12 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Test;
+
 import junit.framework.TestCase;
 import uk.ac.cam.cares.jps.ontomatch.AlignmentIOHelper;
 
 
 public class TestAlignmentIOHelper extends TestCase {
 
+	@Test
 	public void testWrite2KB() {
 		List<Map> testAlignment = new ArrayList<Map>();
 		Map cell1 = new HashMap();

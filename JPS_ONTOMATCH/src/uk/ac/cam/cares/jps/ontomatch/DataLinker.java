@@ -10,6 +10,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 import javax.servlet.http.HttpServlet;
 
 import org.apache.commons.io.FileUtils;
@@ -21,6 +22,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -37,7 +39,7 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
  * @since 2020-09-08
  */
 @WebServlet(urlPatterns = { "/dataLinker" })
-public class DataLinker extends JPSHttpServlet {
+public class DataLinker extends JPSAgent {
     
     
 
@@ -45,7 +47,7 @@ public class DataLinker extends JPSHttpServlet {
 
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		logger.info("Datalinker agent");
 
 		JSONObject jo = requestParams;
@@ -138,6 +140,14 @@ public class DataLinker extends JPSHttpServlet {
    			logger.error(exceptionAsString);
            }
         }
+	}
+	
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty() || !requestParams.has("alignmentIRI")) {
+			throw new BadRequestException();
+		}
+		return true;
 	}
 
 }

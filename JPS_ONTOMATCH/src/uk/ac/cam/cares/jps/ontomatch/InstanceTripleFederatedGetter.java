@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -16,6 +17,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -31,13 +33,13 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
  */
 
 @WebServlet(urlPatterns = { "/federatedAttrs" })
-public class InstanceTripleFederatedGetter extends JPSHttpServlet{
+public class InstanceTripleFederatedGetter extends JPSAgent{
 
 
 	private static final long serialVersionUID = 7607478466081757161L;
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = requestParams;
 		String entityIRI = null;
 		try {
@@ -114,7 +116,16 @@ public class InstanceTripleFederatedGetter extends JPSHttpServlet{
 
 	}
 		
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty() || !requestParams.has("entityIRI")) {
+			throw new BadRequestException();
+		}
+		return true;
+	}
+	
 
+	
 	/**only neeeded for local testing**/
     public String convertIRI(String iri, boolean local2IRI) {
     	if (local2IRI == true) {
@@ -122,4 +133,6 @@ public class InstanceTripleFederatedGetter extends JPSHttpServlet{
     	}else{
     		return iri.replace("www.theworldavatar.com","localhost:3000");
     	}}
+    
+    
 }

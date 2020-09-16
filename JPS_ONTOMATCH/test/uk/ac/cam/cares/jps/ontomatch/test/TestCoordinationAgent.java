@@ -19,24 +19,27 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import uk.ac.cam.cares.jps.ontomatch.AlignmentReader;
 import uk.ac.cam.cares.jps.ontomatch.CoordinationAgent;
 import uk.ac.cam.cares.jps.ontomatch.ElementMatcher;
 
 public class TestCoordinationAgent extends Mockito{
 	/**an workaround to test the protected HTTP method*/
-	class CoordinationAgentForTest extends CoordinationAgent{
-	 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 super.testGet(request, response);
-	 }
-	}
+
 
 	@Test 
 	public void testRetrieveTriples() {
 		String ep = "http://dbpedia.org/sparql";
-		CoordinationAgentForTest a =new CoordinationAgentForTest();
+		CoordinationAgent a =new CoordinationAgent();
 		String targetClassIRI = "http://dbpedia.org/ontology/PowerStation" ;
 		String saveIRI =  "http://www.theworldavatar.com/tmpdbp.owl";
-		a.queryPotentialInstanceAndSave(targetClassIRI, ep, true, saveIRI);
+		String[] IRIs = {targetClassIRI}; 
+		try {
+			a.queryPotentialInstanceAndSave(IRIs, ep, true, saveIRI);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	    
 	}
 	
@@ -64,20 +67,14 @@ public class TestCoordinationAgent extends Mockito{
         jo.put("dictAddress", "D:/workwork/ontoMatchData/simMatch/model/modellevel2/dictionarylevel2.gensim");
         jo.put("modelAddress", "D:/workwork/ontoMatchData/simMatch/model/modellevel2/model30t5p5a.gensim");
 
-        Reader inputString = new StringReader(jo.toString());
-        BufferedReader reader = new BufferedReader(inputString);
-        
-        when(request.getMethod()).thenReturn("POST");
-        when(request.getReader()).thenReturn(reader);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        
-        when(response.getWriter()).thenReturn(writer);
+		CoordinationAgent a =new CoordinationAgent();
+		Reader inputString = new StringReader(jo.toString());
+		BufferedReader reader = new BufferedReader(inputString);
 
-        new CoordinationAgentForTest().testGet(request, response);
-
-        writer.flush(); // it may not have been flushed yet...
-        assertTrue(stringWriter.toString().contains("success"));
+		when(request.getMethod()).thenReturn("POST");
+		when(request.getReader()).thenReturn(reader);
+		JSONObject result = a.processRequestParameters(jo, request);
+        assertTrue(result.has("success"));
     }
 }

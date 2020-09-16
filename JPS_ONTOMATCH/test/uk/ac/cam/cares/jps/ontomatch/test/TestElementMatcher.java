@@ -25,12 +25,7 @@ import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
 
 
 public class TestElementMatcher extends Mockito{
-	/**an workaround to test the protected HTTP method*/
-	class ElementMatcherForTest extends ElementMatcher{
-	 public void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 super.testGet(request, response);
-	 }
-	}
+
 
 	@Ignore
     @Test 
@@ -57,16 +52,10 @@ public class TestElementMatcher extends Mockito{
         when(request.getMethod()).thenReturn("POST");
         when(request.getReader()).thenReturn(reader);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
         
-        when(response.getWriter()).thenReturn(writer);
+        JSONObject result  = new ElementMatcher().processRequestParameters(jo, request);
+        assertTrue(result.has("success"));
 
-        new ElementMatcherForTest().testGet(request, response);
-
-       // verify(request, atLeast(1)).getParameter("username"); 
-        writer.flush(); // it may not have been flushed yet...
-        assertTrue(stringWriter.toString().contains("success"));
     }
 
 	@Ignore	
@@ -92,16 +81,8 @@ public class TestElementMatcher extends Mockito{
         when(request.getMethod()).thenReturn("POST");
         when(request.getReader()).thenReturn(reader);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
-        
-        when(response.getWriter()).thenReturn(writer);
-
-        new ElementMatcherForTest().testGet(request, response);
-
-       // verify(request, atLeast(1)).getParameter("username"); 
-        writer.flush(); // it may not have been flushed yet...
-        assertTrue(stringWriter.toString().contains("success"));
+        JSONObject result  = new ElementMatcher().processRequestParameters(jo, request);
+        assertTrue(result.has("success"));
     }
 	@Ignore
     @Test
@@ -126,16 +107,9 @@ public class TestElementMatcher extends Mockito{
         when(request.getMethod()).thenReturn("POST");
         when(request.getReader()).thenReturn(reader);
 
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter writer = new PrintWriter(stringWriter);
         
-        when(response.getWriter()).thenReturn(writer);
-
-        new ElementMatcherForTest().testGet(request, response);
-
-       // verify(request, atLeast(1)).getParameter("username"); 
-        writer.flush(); // it may not have been flushed yet...
-        assertTrue(stringWriter.toString().contains("success"));
+        JSONObject result  = new ElementMatcher().processRequestParameters(jo, request);
+        assertTrue(result.has("success"));
     }
 
         
@@ -158,23 +132,15 @@ public class TestElementMatcher extends Mockito{
 	        jo.put("matchingType", mt);
 	        jo.put("modelAddress", stubModelPath);
 	        jo.put("dictAddress", stubDictPath);
-
 	        Reader inputString = new StringReader(jo.toString());
 	        BufferedReader reader = new BufferedReader(inputString);
-            
+	        
 	        when(request.getMethod()).thenReturn("POST");
 	        when(request.getReader()).thenReturn(reader);
 
-	        StringWriter stringWriter = new StringWriter();
-	        PrintWriter writer = new PrintWriter(stringWriter);
 	        
-	        when(response.getWriter()).thenReturn(writer);
-
-	        new ElementMatcherForTest().testGet(request, response);
-
-	       // verify(request, atLeast(1)).getParameter("username"); 
-	        writer.flush(); // it may not have been flushed yet...
-	        assertTrue(stringWriter.toString().contains("success"));
+	        JSONObject result  = new ElementMatcher().processRequestParameters(jo, request);
+	        assertTrue(result.has("success"));
 	    }
 	
 	

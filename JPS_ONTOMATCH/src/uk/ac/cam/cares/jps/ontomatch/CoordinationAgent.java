@@ -20,6 +20,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.query.QuerySolution;
 import org.apache.jena.query.ResultSet;
@@ -36,6 +37,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.config.AgentLocator;
 import uk.ac.cam.cares.jps.base.discovery.AgentCaller;
 import uk.ac.cam.cares.jps.base.http.Http;
@@ -55,15 +57,14 @@ import uk.ac.cam.cares.jps.ontomatch.ElementMatcher.MATCHING_TYPE;
  * @since 2020-09-08
  */
 @WebServlet(urlPatterns = { "/coordinate" })
-public class CoordinationAgent extends JPSHttpServlet {
+public class CoordinationAgent extends JPSAgent {
 
 	private static final long serialVersionUID = 1129478305476925061L;
-	private String kb_path = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_URL);
+	private String kb_path = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_PATH);
 	private String owl_ext = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OWL_EXT);
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("Coordination agent");
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = requestParams;
 		String alignmentIRI = null, sIRI = null, tIRI = null, type = null;
 		String modelPath = null, dictPath = null;
@@ -73,7 +74,6 @@ public class CoordinationAgent extends JPSHttpServlet {
 		String[] matchers = new String[3];
 		/** get caller parameters and set component agent parameter *******/
 		try {
-			System.out.println(jo.toString());
 			alignmentIRI = jo.getString("aIRI");
 			sIRI = jo.getString("sourceIRI");
 			tIRI = jo.getString("targetIRI");
@@ -82,7 +82,6 @@ public class CoordinationAgent extends JPSHttpServlet {
 			/** get weights **/
 			JSONArray jweight = jo.getJSONArray("weights");
 			List<Double> lweight = new ArrayList<Double>();
-			System.out.println(jweight);
 			for (int i = 0; i < jweight.length(); i++) {
 				lweight.add(jweight.getDouble(i));
 			}
@@ -125,10 +124,14 @@ public class CoordinationAgent extends JPSHttpServlet {
 				uri = new URI(tIRI);
 				String[] segments = uri.getPath().split("/");
 				String name = segments[segments.length - 1] + "pt.owl";// TODO: proper format this name
-				String nameWpath = AgentLocator.getCurrentJpsAppDirectory(CoordinationAgent.class) + "/" + name;
-				logger.info(nameWpath);
-				// TODO:
-				// tIRI = queryPotentialInstanceAndSave(targetClassIRIs, tIRI, nameWpath);
+				String nameWpath = OntomatchProperties.getInstance().getProperty(OntomatchProperties.OM_KB_URL)+ "/" + name;
+				// logger.info(nameWpath);
+				try {
+					queryPotentialInstanceAndSave(targetClassIRIs, tIRI,true, nameWpath);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			} catch (URISyntaxException e) {
 				e.printStackTrace();
 			}
@@ -160,15 +163,13 @@ public class CoordinationAgent extends JPSHttpServlet {
 	protected void callLexicalProcessor(String IRI) {
 		JSONObject requestParams = new JSONObject();
 		String name = getShortName(IRI);
-		System.out.println("short name: " + name);
 		String saveAddress = AgentLocator.getCurrentJpsAppDirectory(CoordinationAgent.class) + "/tmp/" + name + ".pkl";
 		saveAddress = saveAddress.replaceAll("\\\\", "/");
-		System.out.println("Call lexical processor with saveAddress:" + saveAddress + " ontologyIRI: " + IRI);
+		//logger.info("Call lexical processor with saveAddress:" + saveAddress + " ontologyIRI: " + IRI);
 		requestParams.put("saveAddress", saveAddress);
 		requestParams.put("ontologyIRI", IRI);
 		String result = AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/ontologyProcessor",
 				requestParams.toString());
-		System.out.println(result);
 	}
 
 	/***
@@ -190,7 +191,6 @@ public class CoordinationAgent extends JPSHttpServlet {
 			// create names for each 2bgenerate alignment file
 			String name = getAlignmentFileName(tOnto, sOnto, matchers[i]);
 			names[i] = name;
-			System.out.println(name);
 			requestParams.put("alignmentFileAddress", name);
 			// handle special case: domain
 			requestParams.put("matcherType", matchers[i]);
@@ -220,9 +220,6 @@ public class CoordinationAgent extends JPSHttpServlet {
 		final DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/ddhh:mm:ssaaa");
 		Date date = new Date();
 		String dateFormatted = dateFormat.format(date);
-		System.out.println(tgtOnto);
-		System.out.println(srcOnto);
-		// TODO: remove this hardcode
 		return "file:///" + kb_path + getShortName(tgtOnto) + getShortName(srcOnto) + matcherType + owl_ext;
 	}
 
@@ -261,49 +258,53 @@ public class CoordinationAgent extends JPSHttpServlet {
 		AgentCaller.executeGetWithJsonParameter("/JPS_ONTOMATCH/matchAggregator", requestParams.toString());
 	}
 
+
+
 	/***
 	 * Get potential Instances to match according to class, save as a tmp ontology
 	 * file
 	 * 
 	 * @param targetClassIRIs
-	 * @param remoteEP
-	 * @param savePath
-	 * @return IRI of the tmp ontology file
+	 * @param ep
+	 * @param isRemote
+	 * @param saveIRI
+	 * @throws IOException 
 	 */
-	// TODO
-	public String queryPotentialInstanceAndSave(String targetClassIRI, String ep, Boolean isRemote, String saveIRI) {
-		JSONObject requestParams = new JSONObject();
+	public void queryPotentialInstanceAndSave(String targetClassIRI[], String ep, Boolean isRemote, String saveIRI) throws IOException {
 		String sparql = "SELECT DISTINCT * WHERE {?s a <" + targetClassIRI + ">. " + " ?s ?p ?o." + "}LIMIT 5";
 		// use targetClassIRI to execute remote query to remoteEP
 		String resultBody;
-		if (isRemote) {
-			JSONObject params = new JSONObject();
-			resultBody = Http.execute(Http.get(ep, null, sparql));
-			System.out.println(resultBody);
-		} else {
-			resultBody = KnowledgeBaseClient.query(ep, null, sparql);
-		}
-		InputStream targetStream = new ByteArrayInputStream(resultBody.getBytes());
-		ResultSet result = ResultSetFactory.fromXML(targetStream);
-		List<QuerySolution> rlist = ResultSetFormatter.toList(result);
-		try {// create new file
-			String addr = ResourcePathConverter.convertToLocalPath(saveIRI);
-			Model model = ModelFactory.createDefaultModel();
-			for (int i = 0; i < rlist.size(); i++) {
-				QuerySolution triple = rlist.get(i);
-				String sIRI = triple.getResource("s").toString();
-				Resource s = model.createResource(sIRI);
-				Property p = model.createProperty(triple.getResource("p").toString());
-				RDFNode o = triple.get("o");
-				s.addProperty(p, o);
+		String addr = ResourcePathConverter.convertToLocalPath(saveIRI);
+		Model model = ModelFactory.createDefaultModel();
+		
+		for (int i = 0; i <targetClassIRI.length; i++) {
+			/**query either remotely or locally*/
+			if (isRemote) {
+				JSONObject params = new JSONObject();
+				resultBody = Http.execute(Http.get(ep, null, sparql));
+			} else {
+				resultBody = KnowledgeBaseClient.query(ep, null, sparql);
 			}
-			BufferedWriter writer = new BufferedWriter(new FileWriter(addr));
-			model.write(writer);
-		} catch (Exception e) {
-			e.printStackTrace();
+			/***convert result str to list****/
+			InputStream targetStream = new ByteArrayInputStream(resultBody.getBytes());
+			ResultSet result = ResultSetFactory.fromXML(targetStream);
+			List<QuerySolution> rlist = ResultSetFormatter.toList(result);
+			try {//loop thru solution to construct model
+				for (int j = 0; j < rlist.size(); j++) {
+					QuerySolution triple = rlist.get(i);
+					String sIRI = triple.getResource("s").toString();
+					Resource s = model.createResource(sIRI);
+					Property p = model.createProperty(triple.getResource("p").toString());
+					RDFNode o = triple.get("o");
+					s.addProperty(p, o);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}	
 		}
-
-		return null;
+		/**write model to KG as file****/
+		BufferedWriter writer = new BufferedWriter(new FileWriter(addr));
+		model.write(writer);
 	}
 
 	protected String getTripleUpdateStr(String s, String p, String o) {
@@ -311,8 +312,13 @@ public class CoordinationAgent extends JPSHttpServlet {
 		return sparql;
 	}
 
-	protected void testGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty() || !requestParams.has("aIRI") || !requestParams.has("threshold")
+				|| !requestParams.has("sourceIRI") || !requestParams.has("targetIRI")
+				|| !requestParams.has("matchingType") || !requestParams.has("weights")) {
+			throw new BadRequestException();
+		}
+		return true;
 	}
 }

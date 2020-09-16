@@ -14,6 +14,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
@@ -32,11 +33,11 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
  * @since 2020-09-08
  */
 @WebServlet(urlPatterns = { "/topicModelAgent" })
-public class TopicModelAgent extends JPSHttpServlet{
+public class TopicModelAgent extends JPSAgent{
 
 	private static final long serialVersionUID = -4621180516256485859L;
 
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		logger.info("Topic model agent");
 		JSONObject jo = requestParams;
 		String docsPath = "";
@@ -57,9 +58,6 @@ public class TopicModelAgent extends JPSHttpServlet{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-        //String corpusLocation = OntomatchProperties.getInstance().getProperty(OntomatchProperties.TOPICMODEL_CORPUS_PATH);
-        //String dictionaryLocation = OntomatchProperties.getInstance().getProperty(OntomatchProperties.TOPICMODEL_DICTIONARY_PATH);
-        //String modelLocation = OntomatchProperties.getInstance().getProperty(OntomatchProperties.TOPICMODEL_MODEL_PATH);
         
         JSONObject result = new JSONObject();
 		try {
@@ -83,7 +81,6 @@ public class TopicModelAgent extends JPSHttpServlet{
 
 	}
 	
-	//TODO: duplicate, merge into a helper function
 	/**
 	 * get subject of IRI from querying metadata store
 	 * @param IRI

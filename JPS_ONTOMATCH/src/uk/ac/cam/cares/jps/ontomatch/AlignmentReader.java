@@ -9,6 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.query.ResultSet;
@@ -18,6 +19,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
 import uk.ac.cam.cares.jps.base.query.QueryBroker;
@@ -32,15 +34,15 @@ import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
  */
 
 @WebServlet(urlPatterns = { "/alignment" })
-public class AlignmentReader extends JPSHttpServlet {
+public class AlignmentReader extends JPSAgent {
     
 	private static final long serialVersionUID = -4365515995166685342L;
 
 	
 	
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		logger.info("AlignmentReader agent");
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+		//logger.info("AlignmentReader agent");
 		JSONObject jo = requestParams;
 		String afileIRI = "";
 		Double threshold = 0.0;
@@ -52,7 +54,7 @@ public class AlignmentReader extends JPSHttpServlet {
 			e1.printStackTrace();
 		}
 
-		logger.info("reading alignment from  " + afileIRI);
+		//logger.info("reading alignment from  " + afileIRI);
 	 	JSONArray instances2Equal;
 
 		JSONObject result = new JSONObject();
@@ -66,17 +68,14 @@ public class AlignmentReader extends JPSHttpServlet {
 		return result;
 	}
 
-		
 
-	/***
-	 * Protected Wrapper of private method for unit testing
-	 * @param request
-	 * @param response
-	 * @throws ServletException
-	 * @throws IOException
-	 */
-	protected void testGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		doGet(request, response);
-	}
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()||!requestParams.has("alignmentIRI")) {
+            throw new BadRequestException();
+        }
+        return true;
+    }	
+
 }
 

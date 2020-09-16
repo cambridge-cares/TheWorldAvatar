@@ -8,6 +8,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +16,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.config.KeyValueMap;
 import uk.ac.cam.cares.jps.base.scenario.JPSHttpServlet;
@@ -33,12 +35,12 @@ import uk.ac.cam.cares.jps.base.util.PythonHelper;
  * @since 2020-09-08
  */
 @WebServlet(urlPatterns = { "/ontologyProcessor" })
-public class LexicalProcessor extends JPSHttpServlet {
+public class LexicalProcessor extends JPSAgent {
 
 	private static final long serialVersionUID = -5914984180067956570L;
 
 	@Override
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = requestParams;
 		String afileIRI = null, saveAddress = null;
 
@@ -50,36 +52,35 @@ public class LexicalProcessor extends JPSHttpServlet {
 		}
 		JSONObject resultObj = new JSONObject();
 		try {
-			logger.info("Ontology processor agent: pre-process: " + afileIRI);
+			// logger.info("Ontology processor agent: pre-process: " + afileIRI);
 			/** call python ***/
 			String[] paras = { afileIRI, saveAddress };
 			String pyname = OntomatchProperties.getInstance().getProperty(OntomatchProperties.PY_NAME_LEXICALPROCESSOR);
-			String[] results = AsyncPythonHelper.callPython(pyname, paras, LexicalProcessor.class);
+			String successFlag= OntomatchProperties.getInstance().getProperty(OntomatchProperties.SUCCESS_FLAG);
+			JSONObject pyresult = AsyncPythonHelper.callPython(successFlag, pyname, paras, LexicalProcessor.class);
 
 			/** write to metadata store **/
 			String serverUrl = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SERVER_URL);
-
-			String agent = serverUrl+"/" + request.getServletPath();
+			String agent = serverUrl + "/" + request.getServletPath();
 			List<String> topics = new ArrayList<String>();
 			topics.add(afileIRI);
 			MetaDataAnnotator.annotate(saveAddress, null, agent, true, topics);
-			System.out.println("Ontology processor agent: save to metadatastore about: " + saveAddress);
+			// logger.info("Ontology processor agent: save to metadatastore about: " +
+			// saveAddress);
 
-			/** write response: success/err **/
-			if (results[0].toString().contains("success")) {
-				resultObj.put("success", true);
-			} else {
-				resultObj.put("error", results[1].toString());
-			    throw new Exception(results[1].toString());
-			}
+			/** write response **/
+            return pyresult;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return resultObj;
 	}
 
-	protected void testGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
+	@Override
+	public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+		if (requestParams.isEmpty() || !requestParams.has("ontologyIRI") || !requestParams.has("saveAddress")) {
+			throw new BadRequestException();
+		}
+		return true;
 	}
 }

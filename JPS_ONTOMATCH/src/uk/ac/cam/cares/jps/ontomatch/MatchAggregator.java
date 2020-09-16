@@ -13,6 +13,7 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.BadRequestException;
 
 import org.apache.jena.ontology.Individual;
 import org.apache.jena.ontology.OntClass;
@@ -24,6 +25,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import uk.ac.cam.cares.jps.base.agent.JPSAgent;
 import uk.ac.cam.cares.jps.base.annotate.MetaDataAnnotator;
 import uk.ac.cam.cares.jps.base.query.JenaHelper;
 import uk.ac.cam.cares.jps.base.query.JenaResultSetFormatter;
@@ -53,7 +55,7 @@ import uk.ac.cam.cares.jps.base.util.AsyncPythonHelper;
  */
 @WebServlet(urlPatterns = { "/matchAggregator" })
 
-public class MatchAggregator extends JPSHttpServlet {
+public class MatchAggregator extends JPSAgent {
 
 	private static final long serialVersionUID = -1142445270131640156L;
 	protected String srcOnto, tgtOnto;
@@ -71,9 +73,7 @@ public class MatchAggregator extends JPSHttpServlet {
 		PENALIZING, CARDINALITY
 	}
 
-	protected JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
-		System.out.println("Match Aggregator agent");
-
+	public JSONObject processRequestParameters(JSONObject requestParams, HttpServletRequest request) {
 		JSONObject jo = requestParams;
 
 		try {
@@ -93,7 +93,7 @@ public class MatchAggregator extends JPSHttpServlet {
 				String aIRI = jalignments.getString(i);
 				getAlignmentList(aIRI);
 			}
-			/** get optional steps chosen by caller agent****/
+			/** get optional steps chosen by caller agent ****/
 			if (jo.has("choices")) {
 				JSONArray functionChoice = jo.getJSONArray("choices");
 				for (int i = 0; i < functionChoice.length(); i++) {
@@ -106,21 +106,23 @@ public class MatchAggregator extends JPSHttpServlet {
 
 		JSONObject resultObj = new JSONObject();
 
-		/***reading params for optional step, if any****/
+		/*** reading params for optional step, if any ****/
 		try {
 			classAlignmentIRI = jo.getString("classAlign");
 			pFactor = jo.getInt("pFactor");
 			sameClassThreshold = jo.getInt("sameClassThreshold");
 		} catch (Exception e) {
 			// do nothing as these are optional params
-		};
-		/***execute aggregating procedure****/
+		}
+		;
+		/*** execute aggregating procedure ****/
 		try {
-			//run aggregation according to choices of steps
+			// run aggregation according to choices of steps
 			handleChoice();
-			//write result to KG
+			// write result to KG
 			AlignmentIOHelper.writeAlignment2File(finalScoreList, srcOnto, tgtOnto, thisAlignmentIRI);
-			resultObj.put("success", true);
+			String successFlag = OntomatchProperties.getInstance().getProperty(OntomatchProperties.SUCCESS_FLAG);
+			resultObj.put(successFlag, true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -129,34 +131,34 @@ public class MatchAggregator extends JPSHttpServlet {
 
 	/***
 	 * run aggregation according to choices of steps
+	 * 
 	 * @throws Exception
 	 */
 	public void handleChoice() throws Exception {
-		/*****weighted sum**************/
+		/***** weighted sum **************/
 		weighting();
-		/********cardinality filtering(optional)****************/
+		/******** cardinality filtering(optional) ****************/
 		if (choices != null && choices.contains(AGGREGATE_CHOICE.CARDINALITY)) {
 			one2oneCardinalityFiltering();
 		}
-		/********class penalizing filtering(optional)****************/
+		/******** class penalizing filtering(optional) ****************/
 		if (choices != null && choices.contains(AGGREGATE_CHOICE.PENALIZING)) {
 			penalizing(classAlignmentIRI, sameClassThreshold, pFactor);
 		}
-		/********filtering by measure value****************/
+		/******** filtering by measure value ****************/
 
 		filtering(threshold);
 	}
 
-	
 	/***
 	 * read alignment from KG and store
+	 * 
 	 * @param iriOfAlignmentFile
 	 */
 	public void getAlignmentList(String iriOfAlignmentFile) {
 		String queryStr = "PREFIX alignment: <http://knowledgeweb.semanticweb.org/heterogeneity/alignment#> "
 				+ "SELECT ?entity1 ?entity2 ?measure " + "WHERE {?cell alignment:entity1 ?entity1."
-				+ "?cell  alignment:entity2 ?entity2 ." + "?cell alignment:measure ?measure."
-				+ "}";
+				+ "?cell  alignment:entity2 ?entity2 ." + "?cell alignment:measure ?measure." + "}";
 		List<String[]> resultListfromquery = null;
 		try {
 			OntModel model = JenaHelper.createModel(iriOfAlignmentFile);
@@ -169,7 +171,7 @@ public class MatchAggregator extends JPSHttpServlet {
 			StringWriter sw = new StringWriter();
 			e.printStackTrace(new PrintWriter(sw));
 			String exceptionAsString = sw.toString();
-			logger.error(exceptionAsString);
+			//logger.error(exceptionAsString);
 		}
 		matchScoreLists.add(resultListfromquery);
 	}
@@ -201,6 +203,7 @@ public class MatchAggregator extends JPSHttpServlet {
 
 	/***
 	 * filtering by measure
+	 * 
 	 * @param threshold of measure, smaller than this will be discard
 	 */
 	protected void filtering(double threshold) {// remove cellmaps with measure<threshold
@@ -208,20 +211,24 @@ public class MatchAggregator extends JPSHttpServlet {
 		// loop thru cells to filter out based on measurement
 		Iterator<Map> it = finalScoreList.iterator();
 		while (it.hasNext()) {
-			Map mcell  = it.next();
-		    // Do something
+			Map mcell = it.next();
+			// Do something
 			if ((double) mcell.get("measure") - threshold < 0) {
-				//TODO:ERR HERE
-			    it.remove();
+				// TODO:ERR HERE
+				it.remove();
 			}
 		}
 	}
 
 	/***
-	 * Penalizing measurement based on if two entities belong to same Class(equivalent class also counts)
-	 * @param classAlignmentIRI IRI of the T-BOX matching
-	 * @param sameClassThreshold threshold of measurement to determine if two terms in T-BOX is equivalent
-	 * @param pFactor  penalizing factor(0<r<1), if not same class, current measure score multiply this factor
+	 * Penalizing measurement based on if two entities belong to same
+	 * Class(equivalent class also counts)
+	 * 
+	 * @param classAlignmentIRI  IRI of the T-BOX matching
+	 * @param sameClassThreshold threshold of measurement to determine if two terms
+	 *                           in T-BOX is equivalent
+	 * @param pFactor            penalizing factor(0<r<1), if not same class,
+	 *                           current measure score multiply this factor
 	 * @throws Exception
 	 */
 	protected void penalizing(String classAlignmentIRI, double sameClassThreshold, double pFactor) throws Exception {
@@ -246,12 +253,14 @@ public class MatchAggregator extends JPSHttpServlet {
 	}
 
 	/**
-	 * Determine if two individual entities from two A-Boxs belongs to equivalent class
-	 * @param classAlign  List of the class aligned pairs
-	 * @param icmap1 individual-class map of ontology1
-	 * @param icmap2  individual-class map of ontology2
-	 * @param indiIri1 IRI of entity1
-	 * @param indiIri2 IRI of entity2
+	 * Determine if two individual entities from two A-Boxs belongs to equivalent
+	 * class
+	 * 
+	 * @param classAlign List of the class aligned pairs
+	 * @param icmap1     individual-class map of ontology1
+	 * @param icmap2     individual-class map of ontology2
+	 * @param indiIri1   IRI of entity1
+	 * @param indiIri2   IRI of entity2
 	 * @return boolean belongs to equivalent class or not
 	 */
 	protected boolean sameClass(List<Map> classAlign, Map icmap1, Map icmap2, String indiIri1, String indiIri2) {
@@ -267,9 +276,10 @@ public class MatchAggregator extends JPSHttpServlet {
 
 	/**
 	 * Determine if two classes from two T-Boxs are equivalent
-	 * @param classAlign  List of the class aligned pairs
-	 * @param classIRI1 IRI of class1
-	 * @param classIRI2 IRI of class2
+	 * 
+	 * @param classAlign List of the class aligned pairs
+	 * @param classIRI1  IRI of class1
+	 * @param classIRI2  IRI of class2
 	 * @return boolean same class or not
 	 */
 	protected boolean sameClass(List<Map> classAlign, String classIRI1, String classIRI2) {
@@ -287,7 +297,8 @@ public class MatchAggregator extends JPSHttpServlet {
 
 	/***
 	 * Construct a Individual-class map by querying a ontology model
-	 * @param model jena model of the ontology
+	 * 
+	 * @param model        jena model of the ontology
 	 * @param ontologyIRI, IRI of the ontology
 	 * @return
 	 */
@@ -307,6 +318,7 @@ public class MatchAggregator extends JPSHttpServlet {
 
 	/***
 	 * one-to-one cardinality filtering
+	 * 
 	 * @throws IOException
 	 */
 	protected void one2oneCardinalityFiltering() throws IOException {
@@ -319,9 +331,11 @@ public class MatchAggregator extends JPSHttpServlet {
 		JSONArray scoreListNew = new JSONArray(results[0]);
 		finalScoreList = AlignmentIOHelper.Json2ScoreList(scoreListNew);
 	}
-	// for testing
-	protected void testGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-		doGet(request, response);
-	}
+    @Override
+    public boolean validateInput(JSONObject requestParams) throws BadRequestException {
+        if (requestParams.isEmpty()||!requestParams.has("threshold")||!requestParams.has("srcOnto")||!requestParams.has("tgtOnto")||!requestParams.has("alignments")||!requestParams.has("addr")) {
+            throw new BadRequestException();
+        }
+        return true;
+    }
 }
